@@ -1,0 +1,43 @@
+{
+  "schema_version": "1.0.0",
+  "topology": "ordered_chain",
+  "minimum_cell_count": 1,
+  "dimension_formulas": {
+    "interior_cusp_count": "N-1",
+    "terminal_boundary_count": "2",
+    "state_size": "6*N+1",
+    "residual_size": "7*N",
+    "structural_rank": "5*N+2",
+    "structural_nullity": "N-1"
+  },
+  "state_blocks": [
+    { "name": "plasma_potential_v", "size": "N", "unit": "V" },
+    { "name": "electron_temperature_ev", "size": "N", "unit": "eV" },
+    { "name": "ionization_source_current_a", "size": "N", "unit": "A" },
+    { "name": "electron_current_a", "size": "N+1", "unit": "A" },
+    { "name": "ion_current_a", "size": "N+1", "unit": "A" },
+    { "name": "cusp_ion_current_a", "size": "N-1", "unit": "A" }
+  ],
+  "orientation": {
+    "electron_current": "positive from cathode to anode",
+    "ion_current": "positive from anode to cathode",
+    "cusp_ion_current": "positive out of the axial ion-current control volume",
+    "terminal_ion_current": "signed; not replaced by an absolute value"
+  },
+  "geometry_requirements": {
+    "cells": "unique IDs with contiguous axial_order from zero",
+    "interior_cusps": "one geometry-identified edge per adjacent cell pair",
+    "finite_boundary_nulls": "classified and excluded, never inferred by a solver window",
+    "terminals": "one cathode on the first cell and one anode on the last cell",
+    "uncertainty": "interior and terminal loss probabilities plus optional mirror ratios carry standard uncertainty",
+    "provenance": "geometry, material, source, artifact, model, code, schema, cells, cusps, terminals, losses, and mirrors carry SHA-256 identities",
+    "identity": "canonical JSON includes positions, confidence, full loss covariance, and excluded-null IDs/reasons"
+  },
+  "publication": {
+    "default": "full numerical column rank required",
+    "rank_deficient": "prohibited unless expected structural rank holds and an orthonormal scaled right-nullspace basis passes canonical Jv tolerance",
+    "backend": "untrusted candidate generator; status and residual claims never authorize publication",
+    "false_state": "state and evaluation are null when any publication gate fails"
+  },
+  "physical_claim_status": "software formulation and verification contract only"
+}

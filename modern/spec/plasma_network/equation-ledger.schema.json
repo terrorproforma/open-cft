@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cft-revival.local/spec/plasma-network-equation-ledger.schema.json",
+  "title": "Topology-general plasma network equation ledger",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "topology_identity_sha256",
+    "dimensions",
+    "sources",
+    "equations",
+    "inequalities_are_residual_rows"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "topology_identity_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "dimensions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cell_count",
+        "interior_cusp_count",
+        "terminal_boundary_count",
+        "state_size",
+        "residual_size",
+        "structural_rank",
+        "structural_nullity"
+      ],
+      "properties": {
+        "cell_count": { "type": "integer", "minimum": 1 },
+        "interior_cusp_count": { "type": "integer", "minimum": 0 },
+        "terminal_boundary_count": { "const": 2 },
+        "state_size": { "type": "integer", "minimum": 7 },
+        "residual_size": { "type": "integer", "minimum": 7 },
+        "structural_rank": { "type": "integer", "minimum": 7 },
+        "structural_nullity": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["source_id", "role", "physical_claim_status"],
+        "properties": {
+          "source_id": { "type": "string", "minLength": 1 },
+          "role": { "type": "string", "minLength": 1 },
+          "physical_claim_status": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "equations": {
+      "type": "array",
+      "minItems": 7,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "row_index",
+          "row_id",
+          "equation_id",
+          "family",
+          "unit",
+          "normalization",
+          "orientation",
+          "expression",
+          "source_ids"
+        ],
+        "properties": {
+          "row_index": { "type": "integer", "minimum": 0 },
+          "row_id": { "type": "string", "pattern": "^R[0-9]{2,}$" },
+          "equation_id": { "type": "string", "minLength": 1 },
+          "family": { "type": "string", "minLength": 1 },
+          "unit": { "enum": ["A", "W"] },
+          "normalization": {
+            "enum": ["anode_current_a", "anode_input_power_w"]
+          },
+          "orientation": { "type": "string", "minLength": 1 },
+          "expression": { "type": "string", "minLength": 1 },
+          "source_ids": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string", "minLength": 1 }
+          }
+        }
+      }
+    },
+    "inequalities_are_residual_rows": { "const": false }
+  }
+}
