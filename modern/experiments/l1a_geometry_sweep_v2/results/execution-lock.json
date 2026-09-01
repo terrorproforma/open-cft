@@ -1,0 +1,15 @@
+{
+  "case_count": 96,
+  "device": "cuda:0",
+  "integrity": {
+    "algorithm": "sha256",
+    "canonicalization": "json-sort-keys-compact-utf8-v1",
+    "payload_sha256": "c49e4e20d515d7bbd5f9407cd1f41bd76506b86f139730932b318888a62f49a3"
+  },
+  "preregistration_commit_sha": "092f5fae692ee7d6711e0c7e1c94dac6a345f37c",
+  "protocol_file_sha256": "64b2c58c3cecb2ea1836d2bf48e23ff83dffb114866bf21e7135b411beaa2b2c",
+  "protocol_payload_sha256": "da319f2271d56b0d0c883b76d3106b094359a608b560d58ac7801de1293ecbc8",
+  "schema_version": "cft-revival.l1a-sweep-v2.execution-lock/1.0.0",
+  "started_at_utc": "2026-09-01T17:04:35.202481+00:00",
+  "state": "claimed-once"
+}

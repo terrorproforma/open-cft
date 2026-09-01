@@ -1,0 +1,312 @@
+{
+  "classification": "L1a_FIELD_ONLY_SCREENING_NOT_HARDWARE_VALID",
+  "environment": {
+    "code_revision": "092f5fae692ee7d6711e0c7e1c94dac6a345f37c",
+    "floating_replay_policy": "CUDA floating outputs are compared numerically and are never required or claimed bitwise-identical",
+    "gpu": {
+      "architecture": "sm_120",
+      "driver_version": "595.97",
+      "memory_mib": 32607,
+      "nvidia_smi_name": "NVIDIA GeForce RTX 5090",
+      "requested_device": "cuda:0",
+      "uuid": "GPU-4df2f6b5-e866-14a0-eeac-332cb2b757d4",
+      "warp_name": "NVIDIA GeForce RTX 5090"
+    },
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.10",
+    "scalar": "IEEE-754 binary64",
+    "warp": {
+      "cuda_driver_runtime_version": [
+        13,
+        2
+      ],
+      "cuda_toolkit_version": [
+        12,
+        9
+      ],
+      "version": "1.14.0"
+    }
+  },
+  "evaluated_count": 96,
+  "failed_count": 0,
+  "integrity": {
+    "algorithm": "sha256",
+    "canonicalization": "json-sort-keys-compact-utf8-v1",
+    "payload_sha256": "2b7643890a365e6b2f86597f30f138dcbf8f58baf754fb0f36e6a27dfe3f09dc"
+  },
+  "nondominated_case_ids": [
+    "l1a-gs-v2-000-48d2ccedd5",
+    "l1a-gs-v2-005-942c2d458e",
+    "l1a-gs-v2-028-8c0a501d9c",
+    "l1a-gs-v2-029-3940e2552f",
+    "l1a-gs-v2-032-570ad83ba6",
+    "l1a-gs-v2-040-827cdb9c2a",
+    "l1a-gs-v2-044-2f03fc2fb5",
+    "l1a-gs-v2-048-9e4abaf530",
+    "l1a-gs-v2-049-cf0a7d1028",
+    "l1a-gs-v2-054-58f94d4676",
+    "l1a-gs-v2-056-87997ee6f2",
+    "l1a-gs-v2-060-c3bf7e5c98",
+    "l1a-gs-v2-062-70a6b2f959",
+    "l1a-gs-v2-064-9f6ecd1a94",
+    "l1a-gs-v2-065-9e98f08f3b",
+    "l1a-gs-v2-067-dd5a30270f",
+    "l1a-gs-v2-068-375d1b1b13",
+    "l1a-gs-v2-071-f0c9ebbd40",
+    "l1a-gs-v2-075-a6696084a4",
+    "l1a-gs-v2-082-ec510a5bdb",
+    "l1a-gs-v2-083-4c9976a050",
+    "l1a-gs-v2-084-7fbadd6e3c",
+    "l1a-gs-v2-088-54d047707b",
+    "l1a-gs-v2-092-d532fb20ca",
+    "l1a-gs-v2-095-27f6ceb96c"
+  ],
+  "nondominated_count": 25,
+  "preregistration_commit_sha": "092f5fae692ee7d6711e0c7e1c94dac6a345f37c",
+  "protocol_payload_sha256": "da319f2271d56b0d0c883b76d3106b094359a608b560d58ac7801de1293ecbc8",
+  "qoi_ranges": {
+    "axis_cusp_count": [
+      3.0,
+      5.0
+    ],
+    "axis_null_count": [
+      4.0,
+      6.0
+    ],
+    "boundary_to_peak_ratio": [
+      0.0017870480430936453,
+      0.011652580349992949
+    ],
+    "centreline_abs_bz_peak_t": [
+      0.05749980363363065,
+      0.3718867476111333
+    ],
+    "centreline_bz_max_t": [
+      0.05720692492541416,
+      0.3718867476111333
+    ],
+    "centreline_bz_min_t": [
+      -0.3434147085556397,
+      -0.05749980363363065
+    ],
+    "centreline_mid_abs_bz_t": [
+      0.00084943931652243,
+      0.3434147085556397
+    ],
+    "field_energy_j": [
+      0.012331729557738617,
+      0.9537912904428748
+    ],
+    "field_peak_t": [
+      0.3831904660606699,
+      0.9678319214639943
+    ],
+    "flux_reconstruction_identity_t_per_m": [
+      1.4210854715202004e-13,
+      4.547473508864641e-13
+    ],
+    "maximum_mirror_ratio": [
+      4.367799159577215,
+      2672.7658289964456
+    ],
+    "minimum_mirror_ratio": [
+      3.3195098194233905,
+      22.233371790641478
+    ],
+    "relative_residual_l2": [
+      8.713139371948216e-11,
+      9.998083198193306e-11
+    ],
+    "source_representation_error": [
+      0.002129443081419348,
+      0.017476475601085336
+    ],
+    "stage_gradient_max_abs_t_per_m": [
+      3.717745036336784,
+      48.04762195771229
+    ],
+    "stage_gradient_rms_t_per_m": [
+      2.5173914371882797,
+      39.16925918201846
+    ],
+    "topology_confidence": [
+      0.9117788360760948,
+      0.9579934155903538
+    ]
+  },
+  "raw_results_payload_sha256": "c53fdbf1cb1cb1d90447ceccf0f2e2f81a03a2096446a4509f537f27be0712fa",
+  "replay_contract": {
+    "artifact_policy": "artifact hashes identify this run only",
+    "cuda_policy": "CUDA floating outputs are compared numerically and are never required or claimed bitwise-identical",
+    "identity_policy": "sampling, geometry, source and config hashes must match bitwise",
+    "scale_aware_tolerances": {
+      "dimensionless_qoi": {
+        "absolute": 1e-08,
+        "relative": 1e-09
+      },
+      "energy_j": {
+        "absolute": 1e-10,
+        "relative": 1e-09
+      },
+      "flux_identity_t_per_m": {
+        "absolute": 1e-10,
+        "relative": 0.001
+      },
+      "gradient_t_per_m": {
+        "absolute": 1e-08,
+        "relative": 1e-09
+      },
+      "magnetic_field_t": {
+        "absolute": 1e-10,
+        "relative": 1e-09
+      },
+      "manufacturing_margin_m": {
+        "absolute": 1e-12,
+        "relative": 1e-09
+      },
+      "psi": {
+        "absolute": 1e-16,
+        "relative": 1e-09
+      },
+      "residual": {
+        "absolute": 1e-12,
+        "relative": 0.001
+      }
+    }
+  },
+  "representative_roles": [
+    {
+      "case_id": "l1a-gs-v2-065-9e98f08f3b",
+      "role": "strongest-centreline"
+    },
+    {
+      "case_id": "l1a-gs-v2-032-570ad83ba6",
+      "role": "strongest-mirror"
+    },
+    {
+      "case_id": "l1a-gs-v2-068-375d1b1b13",
+      "role": "steepest-stage-gradient"
+    },
+    {
+      "case_id": "l1a-gs-v2-000-48d2ccedd5",
+      "role": "lowest-field-energy"
+    },
+    {
+      "case_id": "l1a-gs-v2-000-48d2ccedd5",
+      "role": "best-boundary-isolation"
+    }
+  ],
+  "requested_count": 96,
+  "schema_version": "cft-revival.l1a-sweep-v2.summary/1.0.0",
+  "screening_level": "L1a_field_only_design_space_screening",
+  "terminal_gates": [
+    {
+      "definition": {
+        "aggregation": "maximum",
+        "comparator": "<=",
+        "gate_id": "boundary",
+        "limit": 0.05,
+        "metric": "boundary_to_peak_ratio"
+      },
+      "failed_case_ids": [],
+      "failure_count": 0,
+      "gate_id": "boundary",
+      "observed": 0.011652580349992949,
+      "passed": true
+    },
+    {
+      "definition": {
+        "aggregation": "maximum",
+        "comparator": "<=",
+        "gate_id": "residual",
+        "limit": 1e-10,
+        "metric": "relative_residual_l2"
+      },
+      "failed_case_ids": [],
+      "failure_count": 0,
+      "gate_id": "residual",
+      "observed": 9.998083198193306e-11,
+      "passed": true
+    },
+    {
+      "definition": {
+        "aggregation": "maximum",
+        "comparator": "<=",
+        "gate_id": "cpu_cuda_parity",
+        "limits": {
+          "br": 2e-08,
+          "bz": 2e-08,
+          "psi": 2e-09
+        },
+        "metric": "component_scale_relative_difference"
+      },
+      "failed_case_ids": [],
+      "failure_count": 0,
+      "gate_id": "cpu_cuda_parity",
+      "observed": {
+        "br": 5.3105473081447324e-15,
+        "bz": 2.893550379622971e-15,
+        "psi": 1.633321727281456e-15
+      },
+      "passed": true
+    },
+    {
+      "definition": {
+        "aggregation": "maximum",
+        "comparator": "<=",
+        "gate_id": "flux_identity",
+        "limit": 1e-08,
+        "metric": "flux_reconstruction_identity_t_per_m"
+      },
+      "failed_case_ids": [],
+      "failure_count": 0,
+      "gate_id": "flux_identity",
+      "observed": 4.547473508864641e-13,
+      "passed": true
+    },
+    {
+      "definition": {
+        "aggregation": "maximum",
+        "comparator": "<=",
+        "gate_id": "source_representation",
+        "limit": 0.25,
+        "metric": "source_representation_error"
+      },
+      "failed_case_ids": [],
+      "failure_count": 0,
+      "gate_id": "source_representation",
+      "observed": 0.017476475601085336,
+      "passed": true
+    },
+    {
+      "definition": {
+        "aggregation": "minimum",
+        "comparator": ">=",
+        "gate_id": "topology_confidence",
+        "limit": 0.5,
+        "metric": "topology_confidence"
+      },
+      "failed_case_ids": [],
+      "failure_count": 0,
+      "gate_id": "topology_confidence",
+      "observed": 0.9117788360760948,
+      "passed": true
+    },
+    {
+      "definition": {
+        "aggregation": "minimum",
+        "comparator": ">=",
+        "gate_id": "manufacturability",
+        "limit": 0.0,
+        "metric": "minimum_of_radial_and_axial_manufacturing_margins_m"
+      },
+      "failed_case_ids": [],
+      "failure_count": 0,
+      "gate_id": "manufacturability",
+      "observed": 4.9999999999999806e-05,
+      "passed": true
+    }
+  ],
+  "terminal_status": "ACCEPTED",
+  "unique_representative_count": 4
+}
