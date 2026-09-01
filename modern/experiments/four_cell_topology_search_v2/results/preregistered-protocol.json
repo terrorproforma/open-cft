@@ -1,0 +1,231 @@
+{
+  "schema_version": "cft-revival.four-cell-topology-search-v2.protocol/1.0.0",
+  "experiment_id": "four-cell-topology-search-v2",
+  "status": "preregistered_pending_single_execution",
+  "accepted_dependency_baseline": {
+    "coupling_v3_commit": "f80a360fd740a30017cdac1874cedbfa2806874a",
+    "coupling_schema": "cft-field-plasma-coupling/3.0.0",
+    "field_artifact_schema": "cft-axisymmetric-field-map/1.1.0",
+    "geometry_model": "cft-geometry/1.1.0",
+    "field_model_level": "L1a",
+    "plasma_model": "topology-general plasma_network"
+  },
+  "claim_boundary": {
+    "physical_mirror_claim_requires": "every preregistered connected constant-psi component and quantile passes v3 field, topology, uncertainty, and electron-adiabaticity gates",
+    "same_z_proxy_allowed": false,
+    "null_residue_fallback_allowed": false,
+    "fake_penalty_allowed": false,
+    "residual_root_is_performance": false,
+    "unique_state_claim_requires_full_column_rank": true,
+    "state_dependent_observable_claim_requires_nullspace_invariance": true,
+    "default_publication": "rank, nullity, residual and conservation diagnostics only; no state, power or performance"
+  },
+  "sampling": {
+    "algorithm": "deterministic shifted Halton, bases 2 through 41",
+    "candidate_count": 128,
+    "sequence_offset": 113,
+    "stage_count": 4,
+    "include_boundary_values": false,
+    "manufacturing_rounding_m": 1e-06,
+    "manufacturing_rounding_ratio": 0.0001,
+    "variables": {
+      "axial_pitch_m": [0.0042, 0.0058],
+      "stack_start_m": [0.0028, 0.0038],
+      "stack_offset_fraction": [-0.12, 0.12],
+      "chamber_outer_radius_m": [0.0066, 0.0094],
+      "dielectric_thickness_m": [0.001, 0.0018],
+      "radial_clearance_m": [0.00095, 0.00155],
+      "magnet_radial_thickness_m": [0.003, 0.0048],
+      "magnet_axial_fraction": [0.42, 0.66],
+      "wall_sample_gap_m": [0.0004, 0.0012],
+      "alternating_strength_ratio": [0.16, 0.42],
+      "radial_padding_m": [0.0075, 0.0135],
+      "upstream_padding_pitch": [1.3, 2.5],
+      "downstream_padding_pitch": [1.3, 2.5]
+    },
+    "source_policy": {
+      "polarity": "strict stage-alternating; inner/outer equivalent-current sheets remain paired",
+      "first_stage_sign": 1,
+      "odd_stage_strength": 1.0,
+      "even_stage_strength": "alternating_strength_ratio",
+      "source_amplitude_scale": 1.0,
+      "source_smear_thickness_m": 0.0015
+    }
+  },
+  "maps": {
+    "independent_solves_per_candidate": 3,
+    "roles": {
+      "primary": {
+        "radial_intervals": 56,
+        "axial_intervals": 168,
+        "domain_scale": 1.0
+      },
+      "downsampled": {
+        "radial_intervals": 40,
+        "axial_intervals": 120,
+        "domain_scale": 1.0
+      },
+      "enlarged_domain": {
+        "radial_intervals": 64,
+        "axial_intervals": 192,
+        "domain_scale": 1.25
+      }
+    },
+    "solver": {
+      "backend": "warp",
+      "device": "cuda:0",
+      "scheme": "axisymmetric finite-volume",
+      "relative_tolerance": 1e-10,
+      "absolute_tolerance": 1e-13,
+      "maximum_iterations": 6500,
+      "residual_history_stride": 8,
+      "maximum_true_residual_restarts": 2
+    },
+    "validation": {
+      "minimum_radial_samples": 32,
+      "minimum_axial_samples": 96,
+      "maximum_normalized_residual": 2e-08,
+      "maximum_boundary_to_peak_ratio": 0.08,
+      "maximum_source_discretization_relative_error": 0.3,
+      "maximum_flux_reconstruction_identity_t_per_m": 2e-08,
+      "axis_br_absolute_tolerance_t": 2e-10,
+      "axis_br_relative_tolerance": 1e-08,
+      "require_axis": true,
+      "maximum_age_s": null,
+      "maximum_future_skew_s": 315576000.0,
+      "enlarged_boundary_ratio_growth_factor": 1.05
+    }
+  },
+  "topology": {
+    "required_stable_cell_count": 4,
+    "required_geometry_registered_cusp_count": 4,
+    "geometry_cusp_slots": "one upstream return-field slot at first_stage_center-0.75*pitch followed by all three adjacent-stage midplanes",
+    "maximum_geometry_slot_error_pitch_fraction": 0.45,
+    "maximum_cross_map_cusp_shift_m": 0.0008,
+    "endpoint_exclusion_cells": 3,
+    "boundary_null_policy": "finite-box boundary nulls are diagnostics only and never cells or plasma closures",
+    "cusp_deduplication_tolerance_m": 1e-09,
+    "contour_connectivity_policy": "every component at every quantile must be one simple closed non-boundary contour",
+    "saddle_tie_policy": "reject",
+    "flux_quantiles": [0.35, 0.55, 0.75]
+  },
+  "coupling_v3": {
+    "surface_policy": {
+      "psi_absolute_tolerance_wb": 1e-12,
+      "psi_relative_tolerance": 1e-08,
+      "connectivity_tolerance_m": 1e-09,
+      "boundary_exclusion_cells": 3,
+      "minimum_contour_points": 8,
+      "interpolation_relative_error": 0.01,
+      "surface_relative_error": 0.01,
+      "uncertainty_dominance_factor": 5.0,
+      "null_field_absolute_floor_t": 1e-12,
+      "null_field_relative_floor": 1e-08,
+      "segment_bound_absolute_tolerance_t": 1e-10,
+      "segment_bound_relative_tolerance": 0.01,
+      "segment_max_depth": 18,
+      "saddle_tie_policy": "reject"
+    },
+    "field_uncertainty": {
+      "absolute_independent_sigma_t": 2e-05,
+      "relative_independent_sigma": 0.01,
+      "common_mode_sigma_t": 1e-05,
+      "residual_correlation": 0.25,
+      "coverage_factor": 2.0
+    },
+    "electron_distribution": {
+      "name": "prescribed monoenergetic isotropic screening distribution",
+      "kinetic_energy_ev": 100.0,
+      "perpendicular_energy_fraction": 0.6666666666666666,
+      "maximum_gyroradius_to_scale_length": 0.1,
+      "nonrelativistic_validity_ceiling_ev": 510998.95069
+    },
+    "cell_distribution_reduction": {
+      "nominal": "arithmetic mean over every accepted quantile/component",
+      "lower": "minimum covered lower bound over every accepted quantile/component",
+      "upper": "maximum covered upper bound over every accepted quantile/component",
+      "standard_uncertainty": "max(nominal-lower, upper-nominal)/coverage_factor",
+      "cross_cell_covariance": "fully positively correlated standard uncertainties"
+    }
+  },
+  "plasma_network": {
+    "topology_rule": "N=4 only when the accepted v3 record has exactly four stable geometry-registered cells/cusps",
+    "mapping": "first three bounded cell distributions define ordered interior edges; fourth defines the anode-arrival boundary",
+    "probability_interval_propagation": "nominal plus every vertex of the four-dimensional lower/upper probability box",
+    "operating_points": [
+      {"anode_voltage_v": 800.0, "anode_current_a": 2.0},
+      {"anode_voltage_v": 1200.0, "anode_current_a": 3.0},
+      {"anode_voltage_v": 1800.0, "anode_current_a": 4.5}
+    ],
+    "deterministic_start_count": 9,
+    "residual_tolerance": 1e-09,
+    "conservation_tolerance": 1e-09,
+    "maximum_iterations": 450,
+    "publication_policy": "require_full_rank",
+    "observable_nullspace_gradient_tolerance": 1e-10,
+    "publish_state_vectors": false,
+    "publish_power_or_performance": false
+  },
+  "failure_taxonomy": {
+    "GEOMETRY_INVALID": "strict geometry or manufacturing identity failed",
+    "FIELD_PRIMARY_INVALID": "primary L1a map or evidence gate failed",
+    "FIELD_DOWNSAMPLED_INVALID": "independent lower-resolution L1a map or evidence gate failed",
+    "FIELD_ENLARGED_INVALID": "independent enlarged-domain L1a map or evidence gate failed",
+    "FIELD_DOMAIN_UNSTABLE": "enlarged-domain boundary metric exceeded the preregistered comparison",
+    "TOPOLOGY_COUNT": "a map did not contain exactly four accepted interior cusps",
+    "TOPOLOGY_GEOMETRY_REGISTRATION": "a cusp did not match its preregistered geometry slot",
+    "TOPOLOGY_ENDPOINT": "a cusp was inside the endpoint exclusion region",
+    "TOPOLOGY_UNSTABLE": "cell count or cusp positions changed across maps",
+    "CONTOUR_OPEN": "a required constant-psi component was open or boundary-truncated",
+    "CONTOUR_DISCONNECTED": "a required component was disconnected, branched, retraced, self-intersecting or saddle-ambiguous",
+    "CONTOUR_NULL": "a required same-contour field bound included an exact or near null",
+    "COUPLING_UNCERTAINTY": "covered complete field uncertainty invalidated a required quantile",
+    "NONADIABATIC": "rho_e/L_B exceeded the preregistered threshold",
+    "COUPLING_INVALID": "a required v3 record or distribution could not be built",
+    "PLASMA_INPUT_INVALID": "bounded probabilities could not form an exact N=4 plasma topology",
+    "PLASMA_NONCONVERGENCE": "no strict residual root at at least one required interval scenario",
+    "PLASMA_RANK_DEFICIENT": "a residual root was not full-column-rank; unique state, power and performance publication prohibited",
+    "PLASMA_UNIDENTIFIABLE_OBSERVABLE": "a requested state-dependent observable varied across a validated nullspace direction"
+  },
+  "ranking": {
+    "ordered_keys": [
+      "coupled all-interval-scenario completeness",
+      "adiabatic all-quantile v3 acceptance",
+      "three-map topology stability",
+      "minimum contour/mirror confidence",
+      "maximum normalized field residual",
+      "maximum boundary-to-peak ratio",
+      "candidate_id"
+    ],
+    "missing_stage_policy": "rank by completed terminal gate only; no numerical fake penalty"
+  },
+  "replay": {
+    "gpu_replay_candidate_ids": ["v2-000", "v2-031", "v2-063", "v2-127"],
+    "comparison": "tolerance based, never bitwise",
+    "maximum_b_component_absolute_difference_t": 2e-08,
+    "maximum_psi_absolute_difference_wb": 2e-10,
+    "maximum_diagnostic_relative_difference": 5e-06,
+    "required_runtime_identity": [
+      "GPU name",
+      "GPU UUID",
+      "compute capability",
+      "driver version",
+      "reported CUDA version",
+      "Warp version",
+      "Warp device architecture"
+    ]
+  },
+  "execution": {
+    "single_execution": true,
+    "clean_detached_worktree_required": true,
+    "exclusive_create_lock": "results/execution-lock.json",
+    "dependency_closure": "all tracked blobs under the v2 experiment and imported cft_revival coupling, fields, geometry, magnetics, optimization, plasma and plasma_network package trees, plus pyproject and machine-readable ledgers/specifications",
+    "no_install": true,
+    "zero_pass_policy": "publish the immutable null result and failure taxonomy without patching or rerunning"
+  },
+  "result_lifecycle": {
+    "pre_run": "tests pass while results directory is absent",
+    "post_run": "the same tests strictly validate sealed dataset, manifest, report, lock, representative artifacts and preregistration identity",
+    "result_files_are_immutable_after_single_run": true
+  }
+}

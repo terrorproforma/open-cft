@@ -1,0 +1,8 @@
+{
+  "experiment_id": "four-cell-topology-search-v2",
+  "lock_identity_sha256": "59a653a73ffea03b2637b7886434b848f1c02428b7ab006b98ce0f18f3d36df0",
+  "preregistration_commit_sha": "d6317910703de91ca6dc25c4d4d855e36cc3b14d",
+  "protocol_sha256": "ec2e9a732b7d0e909ff742ebbbb0215e1102909c148b812306df6f0759f48e49",
+  "schema_version": "cft-revival.exclusive-execution-lock/1.0.0",
+  "status": "exclusive_lock_acquired_before_single_execution"
+}
