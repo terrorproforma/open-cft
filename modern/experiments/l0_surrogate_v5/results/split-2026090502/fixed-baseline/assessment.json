@@ -1,0 +1,5465 @@
+{
+  "assessment_hash": "bbfc108880726d0b6f5c08a3f8b4acf86122be1862b094e10be97fb51efdd9a8",
+  "campaign": "fixed-baseline",
+  "document_type": "cft-revival-l0-surrogate-v5-final-assessment",
+  "frozen_hash": "eccb3cc4cf0c0072ebbe5191fd53300a14c367f9404f1ae3037ff3b0ceae4c49",
+  "metrics": {
+    "all_scopes_outputs_passed": false,
+    "boundary": {
+      "axial_thrust_n": {
+        "all_gates_passed": false,
+        "coverage": 0.9393939393939394,
+        "coverage_passed": true,
+        "nrmse_passed": true,
+        "range_normalized_rmse": 0.043185803633307034,
+        "rows": 99,
+        "worst_error_passed": false,
+        "worst_range_normalized_error": 0.2310553002118445
+      },
+      "specific_impulse_s": {
+        "all_gates_passed": true,
+        "coverage": 0.9090909090909091,
+        "coverage_passed": true,
+        "nrmse_passed": true,
+        "range_normalized_rmse": 0.03170710720165954,
+        "rows": 99,
+        "worst_error_passed": true,
+        "worst_range_normalized_error": 0.11787180359816239
+      }
+    },
+    "interpolation": {
+      "axial_thrust_n": {
+        "all_gates_passed": false,
+        "coverage": 0.9791666666666666,
+        "coverage_passed": false,
+        "nrmse_passed": true,
+        "range_normalized_rmse": 0.009378928161901128,
+        "rows": 96,
+        "worst_error_passed": true,
+        "worst_range_normalized_error": 0.05036082316288315
+      },
+      "specific_impulse_s": {
+        "all_gates_passed": true,
+        "coverage": 0.90625,
+        "coverage_passed": true,
+        "nrmse_passed": true,
+        "range_normalized_rmse": 0.018281341864177566,
+        "rows": 96,
+        "worst_error_passed": true,
+        "worst_range_normalized_error": 0.04800161031778711
+      }
+    },
+    "ood": {
+      "axial_thrust_n": {
+        "all_gates_passed": false,
+        "coverage": 0.8921568627450981,
+        "coverage_passed": true,
+        "nrmse_passed": false,
+        "range_normalized_rmse": 0.12303777382386666,
+        "rows": 102,
+        "worst_error_passed": false,
+        "worst_range_normalized_error": 0.43010384863922896
+      },
+      "specific_impulse_s": {
+        "all_gates_passed": false,
+        "coverage": 0.8235294117647058,
+        "coverage_passed": false,
+        "nrmse_passed": false,
+        "range_normalized_rmse": 0.10342466685707907,
+        "rows": 102,
+        "worst_error_passed": false,
+        "worst_range_normalized_error": 0.29238740926833034
+      }
+    },
+    "overall": {
+      "axial_thrust_n": {
+        "all_gates_passed": false,
+        "coverage": 0.936026936026936,
+        "coverage_passed": true,
+        "nrmse_passed": false,
+        "range_normalized_rmse": 0.07647950119080477,
+        "rows": 297,
+        "worst_error_passed": false,
+        "worst_range_normalized_error": 0.43010384863922896
+      },
+      "specific_impulse_s": {
+        "all_gates_passed": false,
+        "coverage": 0.8787878787878788,
+        "coverage_passed": true,
+        "nrmse_passed": false,
+        "range_normalized_rmse": 0.06416183597546471,
+        "rows": 297,
+        "worst_error_passed": false,
+        "worst_range_normalized_error": 0.29238740926833034
+      }
+    }
+  },
+  "raw": {
+    "boundary": {
+      "axial_thrust_n": [
+        {
+          "covered": true,
+          "index": 551,
+          "lower": 0.013329190678935761,
+          "predicted_mean": 0.017124965831242362,
+          "predicted_standard_deviation": 0.004106992090669351,
+          "truth": 0.016216465742608276,
+          "upper": 0.020920740983548965
+        },
+        {
+          "covered": true,
+          "index": 1703,
+          "lower": 0.012717139115529096,
+          "predicted_mean": 0.015809380834875014,
+          "predicted_standard_deviation": 0.004018003657811055,
+          "truth": 0.015058360133172206,
+          "upper": 0.018901622554220936
+        },
+        {
+          "covered": true,
+          "index": 2351,
+          "lower": 0.015444244269184367,
+          "predicted_mean": 0.019362201735123666,
+          "predicted_standard_deviation": 0.0040997269414093564,
+          "truth": 0.018663172701953685,
+          "upper": 0.023280159201062967
+        },
+        {
+          "covered": true,
+          "index": 5303,
+          "lower": 0.016103410818470314,
+          "predicted_mean": 0.019465910494171495,
+          "predicted_standard_deviation": 0.003914812820843042,
+          "truth": 0.018283556085969245,
+          "upper": 0.022828410169872675
+        },
+        {
+          "covered": true,
+          "index": 7751,
+          "lower": 0.012347368872783008,
+          "predicted_mean": 0.01609368388678517,
+          "predicted_standard_deviation": 0.0036145067768837704,
+          "truth": 0.015822506038131335,
+          "upper": 0.019839998900787335
+        },
+        {
+          "covered": true,
+          "index": 11351,
+          "lower": 0.013632791060486427,
+          "predicted_mean": 0.01789352100854935,
+          "predicted_standard_deviation": 0.004155811269055235,
+          "truth": 0.01700485097068463,
+          "upper": 0.02215425095661228
+        },
+        {
+          "covered": true,
+          "index": 12503,
+          "lower": 0.012712426728471097,
+          "predicted_mean": 0.016251923103281066,
+          "predicted_standard_deviation": 0.0038541953442814817,
+          "truth": 0.015403010884045562,
+          "upper": 0.019791419478091037
+        },
+        {
+          "covered": false,
+          "index": 4473,
+          "lower": 0.027504571008375236,
+          "predicted_mean": 0.029892950480766227,
+          "predicted_standard_deviation": 0.0034612218421232084,
+          "truth": 0.03340887118220584,
+          "upper": 0.03228132995315722
+        },
+        {
+          "covered": true,
+          "index": 4593,
+          "lower": 0.026470135084975532,
+          "predicted_mean": 0.030710704987522777,
+          "predicted_standard_deviation": 0.003849545992831868,
+          "truth": 0.03114743751684909,
+          "upper": 0.03495127489007002
+        },
+        {
+          "covered": false,
+          "index": 5673,
+          "lower": 0.02491013017588718,
+          "predicted_mean": 0.027488592874334937,
+          "predicted_standard_deviation": 0.0031324270106879216,
+          "truth": 0.030163625264385277,
+          "upper": 0.030067055572782695
+        },
+        {
+          "covered": true,
+          "index": 6393,
+          "lower": 0.0239779314480821,
+          "predicted_mean": 0.026115120179208192,
+          "predicted_standard_deviation": 0.003042571790572737,
+          "truth": 0.0258109960789284,
+          "upper": 0.028252308910334284
+        },
+        {
+          "covered": true,
+          "index": 8793,
+          "lower": 0.024867681921223284,
+          "predicted_mean": 0.028760538253346932,
+          "predicted_standard_deviation": 0.003916794193714327,
+          "truth": 0.029280540056919265,
+          "upper": 0.032653394585470584
+        },
+        {
+          "covered": true,
+          "index": 9873,
+          "lower": 0.02715647413056197,
+          "predicted_mean": 0.03064540387513578,
+          "predicted_standard_deviation": 0.003931845594792485,
+          "truth": 0.03394668916698814,
+          "upper": 0.03413433361970959
+        },
+        {
+          "covered": true,
+          "index": 9993,
+          "lower": 0.019327593750172147,
+          "predicted_mean": 0.023929757919296735,
+          "predicted_standard_deviation": 0.005010267876938439,
+          "truth": 0.026298146406951793,
+          "upper": 0.028531922088421324
+        },
+        {
+          "covered": true,
+          "index": 12873,
+          "lower": 0.025443633498455187,
+          "predicted_mean": 0.029102783801414345,
+          "predicted_standard_deviation": 0.003512730158753819,
+          "truth": 0.029290151590047334,
+          "upper": 0.0327619341043735
+        },
+        {
+          "covered": true,
+          "index": 14193,
+          "lower": 0.024268401696886995,
+          "predicted_mean": 0.027735384450157555,
+          "predicted_standard_deviation": 0.0038559503892581946,
+          "truth": 0.02943206824541982,
+          "upper": 0.031202367203428116
+        },
+        {
+          "covered": true,
+          "index": 15273,
+          "lower": 0.027201171533648316,
+          "predicted_mean": 0.030513909873139042,
+          "predicted_standard_deviation": 0.0040436983522875725,
+          "truth": 0.033062965187335654,
+          "upper": 0.03382664821262977
+        },
+        {
+          "covered": true,
+          "index": 16113,
+          "lower": 0.026226877648531776,
+          "predicted_mean": 0.03020334923197402,
+          "predicted_standard_deviation": 0.003612988751320777,
+          "truth": 0.0304273858202277,
+          "upper": 0.03417982081541627
+        },
+        {
+          "covered": true,
+          "index": 2817,
+          "lower": 0.016365288342197325,
+          "predicted_mean": 0.02143207812548338,
+          "predicted_standard_deviation": 0.005363708445586822,
+          "truth": 0.02373442497763828,
+          "upper": 0.026498867908769437
+        },
+        {
+          "covered": true,
+          "index": 3357,
+          "lower": 0.02411270990982407,
+          "predicted_mean": 0.02677900747134642,
+          "predicted_standard_deviation": 0.0033664445017271,
+          "truth": 0.02681887617465263,
+          "upper": 0.02944530503286877
+        },
+        {
+          "covered": true,
+          "index": 3537,
+          "lower": 0.020935957952056918,
+          "predicted_mean": 0.025204857271087806,
+          "predicted_standard_deviation": 0.004380420863969804,
+          "truth": 0.02738920353158383,
+          "upper": 0.029473756590118694
+        },
+        {
+          "covered": true,
+          "index": 6237,
+          "lower": 0.02157046043016095,
+          "predicted_mean": 0.025481310192676278,
+          "predicted_standard_deviation": 0.003606651927757107,
+          "truth": 0.024580285861754994,
+          "upper": 0.029392159955191604
+        },
+        {
+          "covered": true,
+          "index": 7137,
+          "lower": 0.01982049942509896,
+          "predicted_mean": 0.02365212192379383,
+          "predicted_standard_deviation": 0.0046229079093895115,
+          "truth": 0.02517946445662107,
+          "upper": 0.0274837444224887
+        },
+        {
+          "covered": true,
+          "index": 10557,
+          "lower": 0.024563501359563644,
+          "predicted_mean": 0.028032628718801484,
+          "predicted_standard_deviation": 0.0032068950647631176,
+          "truth": 0.02858109381847044,
+          "upper": 0.03150175607803933
+        },
+        {
+          "covered": true,
+          "index": 13437,
+          "lower": 0.024364587437785284,
+          "predicted_mean": 0.027190649136931092,
+          "predicted_standard_deviation": 0.002411052403932934,
+          "truth": 0.026637494433916924,
+          "upper": 0.0300167108360769
+        },
+        {
+          "covered": true,
+          "index": 14337,
+          "lower": 0.024080659640907495,
+          "predicted_mean": 0.027882718198518435,
+          "predicted_standard_deviation": 0.0034279477783311497,
+          "truth": 0.02907554320861652,
+          "upper": 0.03168477675612938
+        },
+        {
+          "covered": true,
+          "index": 15057,
+          "lower": 0.020342965418602338,
+          "predicted_mean": 0.024445513157919034,
+          "predicted_standard_deviation": 0.003646358503080985,
+          "truth": 0.02424954126463483,
+          "upper": 0.02854806089723573
+        },
+        {
+          "covered": true,
+          "index": 16317,
+          "lower": 0.021956131208593712,
+          "predicted_mean": 0.025919892623454635,
+          "predicted_standard_deviation": 0.0037342172853512766,
+          "truth": 0.025748103368135246,
+          "upper": 0.029883654038315558
+        },
+        {
+          "covered": true,
+          "index": 259,
+          "lower": 0.001196237090092934,
+          "predicted_mean": 0.0033812709584048924,
+          "predicted_standard_deviation": 0.0019226807125383798,
+          "truth": 0.003388953210024496,
+          "upper": 0.0055663048267168514
+        },
+        {
+          "covered": true,
+          "index": 3139,
+          "lower": 0.0011346874098585285,
+          "predicted_mean": 0.005519485648687905,
+          "predicted_standard_deviation": 0.004029749512332419,
+          "truth": 0.004955804744406998,
+          "upper": 0.009904283887517283
+        },
+        {
+          "covered": true,
+          "index": 3859,
+          "lower": 0.002620411713523839,
+          "predicted_mean": 0.004470255376368217,
+          "predicted_standard_deviation": 0.0024297288895820763,
+          "truth": 0.003877384905490044,
+          "upper": 0.006320099039212596
+        },
+        {
+          "covered": false,
+          "index": 8179,
+          "lower": 0.004295150080866923,
+          "predicted_mean": 0.006299477899458351,
+          "predicted_standard_deviation": 0.0032391240775054703,
+          "truth": 0.0038831002202343637,
+          "upper": 0.00830380571804978
+        },
+        {
+          "covered": true,
+          "index": 10339,
+          "lower": 0.0007210429065428523,
+          "predicted_mean": 0.0033965816456697877,
+          "predicted_standard_deviation": 0.0028137902982190727,
+          "truth": 0.0038501681447763755,
+          "upper": 0.006072120384796723
+        },
+        {
+          "covered": true,
+          "index": 11059,
+          "lower": 0.0019640651628776893,
+          "predicted_mean": 0.006806114692970855,
+          "predicted_standard_deviation": 0.004807539368545187,
+          "truth": 0.0023601924163999186,
+          "upper": 0.011648164223064021
+        },
+        {
+          "covered": true,
+          "index": 12139,
+          "lower": 0.0019274872968235571,
+          "predicted_mean": 0.0049834291260136675,
+          "predicted_standard_deviation": 0.003993416698944275,
+          "truth": 0.003255389948696525,
+          "upper": 0.00803937095520378
+        },
+        {
+          "covered": true,
+          "index": 14659,
+          "lower": -0.0005844505069659097,
+          "predicted_mean": 0.0031461123095799324,
+          "predicted_standard_deviation": 0.0033848501192208116,
+          "truth": 0.004469845749791918,
+          "upper": 0.006876675126125775
+        },
+        {
+          "covered": true,
+          "index": 685,
+          "lower": 0.005730277406384511,
+          "predicted_mean": 0.008556835880985738,
+          "predicted_standard_deviation": 0.0034216830617896177,
+          "truth": 0.008245838974012005,
+          "upper": 0.011383394355586966
+        },
+        {
+          "covered": true,
+          "index": 1405,
+          "lower": 0.006683775211596186,
+          "predicted_mean": 0.010805164174033276,
+          "predicted_standard_deviation": 0.00453022199891034,
+          "truth": 0.00916941555824709,
+          "upper": 0.014926553136470367
+        },
+        {
+          "covered": true,
+          "index": 2305,
+          "lower": 0.0053219555214878925,
+          "predicted_mean": 0.009844983728179789,
+          "predicted_standard_deviation": 0.004395214231841173,
+          "truth": 0.00922912977605865,
+          "upper": 0.014368011934871685
+        },
+        {
+          "covered": true,
+          "index": 4285,
+          "lower": 0.0016817547072335238,
+          "predicted_mean": 0.006556761731196058,
+          "predicted_standard_deviation": 0.004179293998153382,
+          "truth": 0.008067525886112748,
+          "upper": 0.011431768755158594
+        },
+        {
+          "covered": true,
+          "index": 5185,
+          "lower": 0.0067907158346653075,
+          "predicted_mean": 0.010588980594261409,
+          "predicted_standard_deviation": 0.004206755987585403,
+          "truth": 0.009411864819147,
+          "upper": 0.014387245353857511
+        },
+        {
+          "covered": true,
+          "index": 5905,
+          "lower": 0.002419276990861942,
+          "predicted_mean": 0.007226098432813573,
+          "predicted_standard_deviation": 0.004159766808961444,
+          "truth": 0.0077438196104578924,
+          "upper": 0.012032919874765206
+        },
+        {
+          "covered": true,
+          "index": 8785,
+          "lower": 0.00417476442030328,
+          "predicted_mean": 0.007444556176944983,
+          "predicted_standard_deviation": 0.0036544113620294192,
+          "truth": 0.00854885628911949,
+          "upper": 0.010714347933586686
+        },
+        {
+          "covered": true,
+          "index": 9505,
+          "lower": 0.0024294975237495703,
+          "predicted_mean": 0.006733531112414938,
+          "predicted_standard_deviation": 0.0038270673051933736,
+          "truth": 0.007878387126924945,
+          "upper": 0.011037564701080306
+        },
+        {
+          "covered": true,
+          "index": 11485,
+          "lower": 0.006196839147549521,
+          "predicted_mean": 0.010775973161118113,
+          "predicted_standard_deviation": 0.004285542981106936,
+          "truth": 0.009672754135258274,
+          "upper": 0.015355107174686706
+        },
+        {
+          "covered": true,
+          "index": 12205,
+          "lower": 0.006150870617158234,
+          "predicted_mean": 0.010241067868355496,
+          "predicted_standard_deviation": 0.005040278446836682,
+          "truth": 0.009370414751740773,
+          "upper": 0.01433126511955276
+        },
+        {
+          "covered": true,
+          "index": 12385,
+          "lower": 0.0043417958680261525,
+          "predicted_mean": 0.007836968455219232,
+          "predicted_standard_deviation": 0.00454268862942506,
+          "truth": 0.006863238905259829,
+          "upper": 0.011332141042412312
+        },
+        {
+          "covered": true,
+          "index": 15805,
+          "lower": 0.004326208609314406,
+          "predicted_mean": 0.007956260769237168,
+          "predicted_standard_deviation": 0.0035035510412668716,
+          "truth": 0.009007988184115034,
+          "upper": 0.011586312929159933
+        },
+        {
+          "covered": true,
+          "index": 303,
+          "lower": 0.020518071336897162,
+          "predicted_mean": 0.022908461008895722,
+          "predicted_standard_deviation": 0.003076307762237399,
+          "truth": 0.021132827943691316,
+          "upper": 0.025298850680894283
+        },
+        {
+          "covered": true,
+          "index": 951,
+          "lower": 0.015317593737238977,
+          "predicted_mean": 0.01902491562577967,
+          "predicted_standard_deviation": 0.004232724667417247,
+          "truth": 0.01757658174643252,
+          "upper": 0.022732237514320366
+        },
+        {
+          "covered": true,
+          "index": 3471,
+          "lower": 0.014376393712604933,
+          "predicted_mean": 0.018072526506632523,
+          "predicted_standard_deviation": 0.0039479542650754165,
+          "truth": 0.017548114388699364,
+          "upper": 0.021768659300660114
+        },
+        {
+          "covered": true,
+          "index": 4551,
+          "lower": 0.017215917919805056,
+          "predicted_mean": 0.02108427053793596,
+          "predicted_standard_deviation": 0.0040704429067440874,
+          "truth": 0.020469724895559704,
+          "upper": 0.02495262315606686
+        },
+        {
+          "covered": true,
+          "index": 8151,
+          "lower": 0.01413649312932828,
+          "predicted_mean": 0.017971664278232498,
+          "predicted_standard_deviation": 0.00418548723789414,
+          "truth": 0.017392847918696993,
+          "upper": 0.021806835427136715
+        },
+        {
+          "covered": true,
+          "index": 9303,
+          "lower": 0.016446418272338482,
+          "predicted_mean": 0.020111880990421525,
+          "predicted_standard_deviation": 0.0038090615689346284,
+          "truth": 0.018609254236622696,
+          "upper": 0.023777343708504567
+        },
+        {
+          "covered": true,
+          "index": 12471,
+          "lower": 0.017114223809708968,
+          "predicted_mean": 0.020783101899304393,
+          "predicted_standard_deviation": 0.003875720023874289,
+          "truth": 0.019380125631008795,
+          "upper": 0.02445197998889982
+        },
+        {
+          "covered": true,
+          "index": 12903,
+          "lower": 0.014211808084852845,
+          "predicted_mean": 0.018299714189303345,
+          "predicted_standard_deviation": 0.004382822227825367,
+          "truth": 0.01695322568313249,
+          "upper": 0.022387620293753848
+        },
+        {
+          "covered": true,
+          "index": 13551,
+          "lower": 0.017524029416768505,
+          "predicted_mean": 0.02010840395789839,
+          "predicted_standard_deviation": 0.003471352466128417,
+          "truth": 0.019140133342536017,
+          "upper": 0.022692778499028274
+        },
+        {
+          "covered": true,
+          "index": 14703,
+          "lower": 0.013422849222150349,
+          "predicted_mean": 0.017692647177412972,
+          "predicted_standard_deviation": 0.004360971830203753,
+          "truth": 0.017448581939489713,
+          "upper": 0.021962445132675597
+        },
+        {
+          "covered": true,
+          "index": 15351,
+          "lower": 0.016973172673386296,
+          "predicted_mean": 0.020621843361320474,
+          "predicted_standard_deviation": 0.004164699595583009,
+          "truth": 0.01915944836080886,
+          "upper": 0.024270514049254652
+        },
+        {
+          "covered": true,
+          "index": 2685,
+          "lower": 0.012556304374279775,
+          "predicted_mean": 0.01809599671753781,
+          "predicted_standard_deviation": 0.0048851885564955505,
+          "truth": 0.01830100856698994,
+          "upper": 0.023635689060795845
+        },
+        {
+          "covered": true,
+          "index": 3585,
+          "lower": 0.016156876606892603,
+          "predicted_mean": 0.019602878041181618,
+          "predicted_standard_deviation": 0.0037722846944877376,
+          "truth": 0.01940706180439015,
+          "upper": 0.023048879475470633
+        },
+        {
+          "covered": true,
+          "index": 4305,
+          "lower": 0.014021567832862987,
+          "predicted_mean": 0.01802480680518937,
+          "predicted_standard_deviation": 0.0038241994431178687,
+          "truth": 0.01818031519203629,
+          "upper": 0.022028045777515756
+        },
+        {
+          "covered": true,
+          "index": 6465,
+          "lower": 0.019401959551329676,
+          "predicted_mean": 0.02202874304725891,
+          "predicted_standard_deviation": 0.003315298676665463,
+          "truth": 0.021346409105025853,
+          "upper": 0.02465552654318814
+        },
+        {
+          "covered": true,
+          "index": 7005,
+          "lower": 0.014604859201255338,
+          "predicted_mean": 0.019541151299628322,
+          "predicted_standard_deviation": 0.005110020885508455,
+          "truth": 0.0205006194594296,
+          "upper": 0.024477443398001307
+        },
+        {
+          "covered": true,
+          "index": 7485,
+          "lower": 0.015464881890843725,
+          "predicted_mean": 0.017477202039166674,
+          "predicted_standard_deviation": 0.00314242830219869,
+          "truth": 0.017700067030490537,
+          "upper": 0.019489522187489627
+        },
+        {
+          "covered": true,
+          "index": 7905,
+          "lower": 0.01612485348808149,
+          "predicted_mean": 0.02117169670117407,
+          "predicted_standard_deviation": 0.004854167448108438,
+          "truth": 0.021910391202449434,
+          "upper": 0.02621853991426665
+        },
+        {
+          "covered": true,
+          "index": 10785,
+          "lower": 0.014225190811503073,
+          "predicted_mean": 0.018637399095230538,
+          "predicted_standard_deviation": 0.0044263700576460275,
+          "truth": 0.019511323699321865,
+          "upper": 0.023049607378958004
+        },
+        {
+          "covered": true,
+          "index": 13485,
+          "lower": 0.01974812378720559,
+          "predicted_mean": 0.021738562693187365,
+          "predicted_standard_deviation": 0.003683729036115705,
+          "truth": 0.02169901785357491,
+          "upper": 0.02372900159916914
+        },
+        {
+          "covered": true,
+          "index": 15105,
+          "lower": 0.01692324908721497,
+          "predicted_mean": 0.02146754829474147,
+          "predicted_standard_deviation": 0.004194115216732747,
+          "truth": 0.02085567762177665,
+          "upper": 0.02601184750226797
+        },
+        {
+          "covered": true,
+          "index": 15585,
+          "lower": 0.017877416626976797,
+          "predicted_mean": 0.021151223067448825,
+          "predicted_standard_deviation": 0.004681576280741192,
+          "truth": 0.02116526728931538,
+          "upper": 0.024425029507920852
+        },
+        {
+          "covered": true,
+          "index": 2804,
+          "lower": 0.013648490771873542,
+          "predicted_mean": 0.017624213580157363,
+          "predicted_standard_deviation": 0.004444498164767348,
+          "truth": 0.01815455075839161,
+          "upper": 0.021599936388441186
+        },
+        {
+          "covered": true,
+          "index": 5684,
+          "lower": 0.01677230410310799,
+          "predicted_mean": 0.019415154705025903,
+          "predicted_standard_deviation": 0.0035326826367528454,
+          "truth": 0.019380410768407748,
+          "upper": 0.022058005306943816
+        },
+        {
+          "covered": true,
+          "index": 6164,
+          "lower": 0.012967748263657248,
+          "predicted_mean": 0.01773379964845104,
+          "predicted_standard_deviation": 0.0047908785720015895,
+          "truth": 0.018825740112594684,
+          "upper": 0.022499851033244835
+        },
+        {
+          "covered": true,
+          "index": 6764,
+          "lower": 0.016270589899045264,
+          "predicted_mean": 0.019406127563586655,
+          "predicted_standard_deviation": 0.0036496642694277674,
+          "truth": 0.019420204774228924,
+          "upper": 0.022541665228128047
+        },
+        {
+          "covered": true,
+          "index": 9284,
+          "lower": 0.01685683155333283,
+          "predicted_mean": 0.01961679768259086,
+          "predicted_standard_deviation": 0.0039720094965592385,
+          "truth": 0.019791081978781225,
+          "upper": 0.02237676381184889
+        },
+        {
+          "covered": true,
+          "index": 10484,
+          "lower": 0.014227580822131441,
+          "predicted_mean": 0.018697265041775313,
+          "predicted_standard_deviation": 0.004579806771085455,
+          "truth": 0.01914509525047129,
+          "upper": 0.023166949261419188
+        },
+        {
+          "covered": true,
+          "index": 11084,
+          "lower": 0.01582122445560076,
+          "predicted_mean": 0.019545375889682984,
+          "predicted_standard_deviation": 0.00417261648744027,
+          "truth": 0.02070163144433594,
+          "upper": 0.023269527323765207
+        },
+        {
+          "covered": true,
+          "index": 15764,
+          "lower": 0.01715123431759618,
+          "predicted_mean": 0.02087674859563093,
+          "predicted_standard_deviation": 0.0038999809486123644,
+          "truth": 0.020954477546211103,
+          "upper": 0.02460226287366568
+        },
+        {
+          "covered": true,
+          "index": 15884,
+          "lower": 0.017963459690403853,
+          "predicted_mean": 0.02020065440771604,
+          "predicted_standard_deviation": 0.003304858370328762,
+          "truth": 0.020754771020029986,
+          "upper": 0.022437849125028227
+        },
+        {
+          "covered": true,
+          "index": 363,
+          "lower": 0.023317309911464787,
+          "predicted_mean": 0.026329764729181054,
+          "predicted_standard_deviation": 0.0040201247512436505,
+          "truth": 0.0260759179408333,
+          "upper": 0.029342219546897322
+        },
+        {
+          "covered": true,
+          "index": 843,
+          "lower": 0.020984933612753883,
+          "predicted_mean": 0.025327811798054135,
+          "predicted_standard_deviation": 0.004471179421199936,
+          "truth": 0.027125066196854338,
+          "upper": 0.029670689983354388
+        },
+        {
+          "covered": true,
+          "index": 1443,
+          "lower": 0.019712149645399867,
+          "predicted_mean": 0.023701333585088018,
+          "predicted_standard_deviation": 0.004312037129863306,
+          "truth": 0.024070588302197268,
+          "upper": 0.027690517524776168
+        },
+        {
+          "covered": true,
+          "index": 5043,
+          "lower": 0.022846160837026137,
+          "predicted_mean": 0.027204186373616508,
+          "predicted_standard_deviation": 0.004488367863273734,
+          "truth": 0.02894796005965329,
+          "upper": 0.03156221191020688
+        },
+        {
+          "covered": true,
+          "index": 6123,
+          "lower": 0.019259766094730537,
+          "predicted_mean": 0.02265363709494478,
+          "predicted_standard_deviation": 0.004174754703315196,
+          "truth": 0.022940815649359122,
+          "upper": 0.02604750809515902
+        },
+        {
+          "covered": true,
+          "index": 6243,
+          "lower": 0.022938540279186397,
+          "predicted_mean": 0.025324162370826065,
+          "predicted_standard_deviation": 0.003444911984174426,
+          "truth": 0.02483982517113928,
+          "upper": 0.027709784462465734
+        },
+        {
+          "covered": true,
+          "index": 7923,
+          "lower": 0.023194033803177125,
+          "predicted_mean": 0.02724550558432582,
+          "predicted_standard_deviation": 0.004189090149743361,
+          "truth": 0.027260857010807826,
+          "upper": 0.03129697736547452
+        },
+        {
+          "covered": true,
+          "index": 12243,
+          "lower": 0.01988513654822532,
+          "predicted_mean": 0.023760222823011684,
+          "predicted_standard_deviation": 0.0039558422670506075,
+          "truth": 0.023480873818659254,
+          "upper": 0.027635309097798048
+        },
+        {
+          "covered": true,
+          "index": 12723,
+          "lower": 0.01429287251444567,
+          "predicted_mean": 0.020427369441643563,
+          "predicted_standard_deviation": 0.005262107316001798,
+          "truth": 0.022166288975970828,
+          "upper": 0.026561866368841457
+        },
+        {
+          "covered": true,
+          "index": 13323,
+          "lower": 0.02197662097135415,
+          "predicted_mean": 0.024745612774877912,
+          "predicted_standard_deviation": 0.0036598373518068293,
+          "truth": 0.026573810295816645,
+          "upper": 0.027514604578401675
+        },
+        {
+          "covered": true,
+          "index": 15843,
+          "lower": 0.019891020731011688,
+          "predicted_mean": 0.02245319598808419,
+          "predicted_standard_deviation": 0.0037380677319548846,
+          "truth": 0.023201386786730685,
+          "upper": 0.02501537124515669
+        },
+        {
+          "covered": false,
+          "index": 1116,
+          "lower": 0.03123282002526448,
+          "predicted_mean": 0.03417444197133457,
+          "predicted_standard_deviation": 0.004683299571709976,
+          "truth": 0.045596542170856826,
+          "upper": 0.03711606391740466
+        },
+        {
+          "covered": true,
+          "index": 1296,
+          "lower": 0.027427143765378192,
+          "predicted_mean": 0.031730852614302474,
+          "predicted_standard_deviation": 0.004581401534203498,
+          "truth": 0.03442495719999231,
+          "upper": 0.03603456146322676
+        },
+        {
+          "covered": false,
+          "index": 2016,
+          "lower": 0.027443604031494668,
+          "predicted_mean": 0.03180097245668928,
+          "predicted_standard_deviation": 0.004688311379521414,
+          "truth": 0.04117017490177378,
+          "upper": 0.036158340881883896
+        },
+        {
+          "covered": true,
+          "index": 3996,
+          "lower": 0.03480587543776628,
+          "predicted_mean": 0.038117646421309284,
+          "predicted_standard_deviation": 0.0037241908868014895,
+          "truth": 0.038307606531569026,
+          "upper": 0.04142941740485229
+        },
+        {
+          "covered": true,
+          "index": 4896,
+          "lower": 0.03489730217935292,
+          "predicted_mean": 0.038705416741432644,
+          "predicted_standard_deviation": 0.003955707927422334,
+          "truth": 0.04205055116623895,
+          "upper": 0.04251353130351237
+        },
+        {
+          "covered": true,
+          "index": 5436,
+          "lower": 0.03861640291798407,
+          "predicted_mean": 0.040224971878746275,
+          "predicted_standard_deviation": 0.0020554532458551523,
+          "truth": 0.03926422126664249,
+          "upper": 0.04183354083950848
+        },
+        {
+          "covered": true,
+          "index": 8316,
+          "lower": 0.026994643581824157,
+          "predicted_mean": 0.031671814025369366,
+          "predicted_standard_deviation": 0.004448251536181076,
+          "truth": 0.034041619360166454,
+          "upper": 0.03634898446891458
+        },
+        {
+          "covered": false,
+          "index": 9216,
+          "lower": 0.03365615231732874,
+          "predicted_mean": 0.0374023063826105,
+          "predicted_standard_deviation": 0.004389375566426484,
+          "truth": 0.04299745499349746,
+          "upper": 0.04114846044789226
+        },
+        {
+          "covered": true,
+          "index": 15696,
+          "lower": 0.02615097392703439,
+          "predicted_mean": 0.03212902534609963,
+          "predicted_standard_deviation": 0.004842845781904252,
+          "truth": 0.03758456910306667,
+          "upper": 0.038107076765164866
+        }
+      ],
+      "specific_impulse_s": [
+        {
+          "covered": true,
+          "index": 551,
+          "lower": 1170.185080448322,
+          "predicted_mean": 1263.336964117499,
+          "predicted_standard_deviation": 134.73502070001453,
+          "truth": 1221.2977265337443,
+          "upper": 1430.3090496202863
+        },
+        {
+          "covered": true,
+          "index": 1703,
+          "lower": 1118.4897153547809,
+          "predicted_mean": 1200.3779435611743,
+          "predicted_standard_deviation": 118.44325297446134,
+          "truth": 1156.57571960966,
+          "upper": 1347.1602490087876
+        },
+        {
+          "covered": true,
+          "index": 2351,
+          "lower": 1398.0169332511653,
+          "predicted_mean": 1485.4257079245633,
+          "predicted_standard_deviation": 126.42817945376719,
+          "truth": 1448.4129259433744,
+          "upper": 1642.1034349181798
+        },
+        {
+          "covered": false,
+          "index": 5303,
+          "lower": 1383.1396336450127,
+          "predicted_mean": 1474.7480170315032,
+          "predicted_standard_deviation": 132.5024996349888,
+          "truth": 1371.4172396342435,
+          "upper": 1638.953422452011
+        },
+        {
+          "covered": true,
+          "index": 7751,
+          "lower": 1186.9809338249943,
+          "predicted_mean": 1270.476133175527,
+          "predicted_standard_deviation": 120.76757838626759,
+          "truth": 1272.6865952399548,
+          "upper": 1420.138888408059
+        },
+        {
+          "covered": true,
+          "index": 11351,
+          "lower": 1252.9704262392784,
+          "predicted_mean": 1341.940018993123,
+          "predicted_standard_deviation": 128.68574900678647,
+          "truth": 1257.8200272111053,
+          "upper": 1501.4154677258744
+        },
+        {
+          "covered": true,
+          "index": 12503,
+          "lower": 1204.609837382369,
+          "predicted_mean": 1295.1571522344238,
+          "predicted_standard_deviation": 130.96776855580768,
+          "truth": 1207.0757617910951,
+          "upper": 1457.4606226743642
+        },
+        {
+          "covered": false,
+          "index": 4473,
+          "lower": 1632.49891014712,
+          "predicted_mean": 1712.2997833439808,
+          "predicted_standard_deviation": 115.42409963756823,
+          "truth": 1858.849374612284,
+          "upper": 1855.3405646763742
+        },
+        {
+          "covered": true,
+          "index": 4593,
+          "lower": 1716.7791043811949,
+          "predicted_mean": 1806.7916611879527,
+          "predicted_standard_deviation": 130.19429373742983,
+          "truth": 1829.1321772545084,
+          "upper": 1968.1365931362861
+        },
+        {
+          "covered": true,
+          "index": 5673,
+          "lower": 1604.0784897074043,
+          "predicted_mean": 1682.3123699252412,
+          "predicted_standard_deviation": 113.157598702221,
+          "truth": 1716.0476140485082,
+          "upper": 1822.5443611895237
+        },
+        {
+          "covered": true,
+          "index": 6393,
+          "lower": 1478.0358000322385,
+          "predicted_mean": 1540.5850380950988,
+          "predicted_standard_deviation": 90.47130936288504,
+          "truth": 1526.9276816077793,
+          "upper": 1652.702757185538
+        },
+        {
+          "covered": true,
+          "index": 8793,
+          "lower": 1560.364494982876,
+          "predicted_mean": 1646.508676610328,
+          "predicted_standard_deviation": 124.59907022364403,
+          "truth": 1642.510718394369,
+          "upper": 1800.919656761295
+        },
+        {
+          "covered": true,
+          "index": 9873,
+          "lower": 1739.0381553670004,
+          "predicted_mean": 1829.6026085235633,
+          "predicted_standard_deviation": 130.9925574244996,
+          "truth": 1875.3915116193584,
+          "upper": 1991.9367988838426
+        },
+        {
+          "covered": true,
+          "index": 9993,
+          "lower": 1407.335289160939,
+          "predicted_mean": 1525.5816699031805,
+          "predicted_standard_deviation": 171.03173794733883,
+          "truth": 1508.6823308997068,
+          "upper": 1737.5349232137378
+        },
+        {
+          "covered": true,
+          "index": 12873,
+          "lower": 1628.2947570203237,
+          "predicted_mean": 1706.5129763947766,
+          "predicted_standard_deviation": 113.13494683545859,
+          "truth": 1725.424457195142,
+          "upper": 1846.7168960455008
+        },
+        {
+          "covered": true,
+          "index": 14193,
+          "lower": 1536.9315095642319,
+          "predicted_mean": 1627.4578161850445,
+          "predicted_standard_deviation": 130.93738221943116,
+          "truth": 1639.464008238839,
+          "upper": 1789.7236299717317
+        },
+        {
+          "covered": true,
+          "index": 15273,
+          "lower": 1670.5220906004683,
+          "predicted_mean": 1764.2198044213358,
+          "predicted_standard_deviation": 135.524510229264,
+          "truth": 1867.4650972405739,
+          "upper": 1932.1702748495604
+        },
+        {
+          "covered": true,
+          "index": 16113,
+          "lower": 1689.3573685793315,
+          "predicted_mean": 1771.2246742061511,
+          "predicted_standard_deviation": 118.41299052478286,
+          "truth": 1801.553469573243,
+          "upper": 1917.969476528675
+        },
+        {
+          "covered": true,
+          "index": 2817,
+          "lower": 1147.8833730099677,
+          "predicted_mean": 1270.6629539374794,
+          "predicted_standard_deviation": 177.58856532153172,
+          "truth": 1243.1542606550026,
+          "upper": 1490.7418388415354
+        },
+        {
+          "covered": true,
+          "index": 3357,
+          "lower": 1355.0653835926398,
+          "predicted_mean": 1421.227360852155,
+          "predicted_standard_deviation": 95.69678061769893,
+          "truth": 1397.620432964437,
+          "upper": 1539.8208115572706
+        },
+        {
+          "covered": true,
+          "index": 3537,
+          "lower": 1335.8874620156305,
+          "predicted_mean": 1441.3933826003636,
+          "predicted_standard_deviation": 152.6039177526777,
+          "truth": 1484.799855305302,
+          "upper": 1630.509725706085
+        },
+        {
+          "covered": true,
+          "index": 6237,
+          "lower": 1199.945921054272,
+          "predicted_mean": 1283.828946380357,
+          "predicted_standard_deviation": 121.32853044419497,
+          "truth": 1309.979818875397,
+          "upper": 1434.1868685746233
+        },
+        {
+          "covered": true,
+          "index": 7137,
+          "lower": 1204.530251861701,
+          "predicted_mean": 1304.720691896374,
+          "predicted_standard_deviation": 144.915598915387,
+          "truth": 1289.4656087075812,
+          "upper": 1484.3091882433005
+        },
+        {
+          "covered": true,
+          "index": 10557,
+          "lower": 1387.023554249391,
+          "predicted_mean": 1465.5009460495958,
+          "predicted_standard_deviation": 113.50981421090053,
+          "truth": 1535.1582640638765,
+          "upper": 1606.1694248560561
+        },
+        {
+          "covered": true,
+          "index": 13437,
+          "lower": 1408.8648183388075,
+          "predicted_mean": 1465.8553316705359,
+          "predicted_standard_deviation": 82.43116178653975,
+          "truth": 1466.6524117146184,
+          "upper": 1568.009195769172
+        },
+        {
+          "covered": true,
+          "index": 14337,
+          "lower": 1392.6515450841612,
+          "predicted_mean": 1475.4903513579147,
+          "predicted_standard_deviation": 119.8181704805591,
+          "truth": 1534.0790175640202,
+          "upper": 1623.9765407860602
+        },
+        {
+          "covered": true,
+          "index": 15057,
+          "lower": 1202.5499270713394,
+          "predicted_mean": 1288.7765444732386,
+          "predicted_standard_deviation": 124.71830544830182,
+          "truth": 1326.1358766612204,
+          "upper": 1443.3352883906198
+        },
+        {
+          "covered": true,
+          "index": 16317,
+          "lower": 1211.216601803839,
+          "predicted_mean": 1297.4268090792225,
+          "predicted_standard_deviation": 124.69456981732273,
+          "truth": 1331.6742876631133,
+          "upper": 1451.9561383144762
+        },
+        {
+          "covered": true,
+          "index": 259,
+          "lower": 1387.5453631351497,
+          "predicted_mean": 1433.187578222756,
+          "predicted_standard_deviation": 66.01696661833546,
+          "truth": 1457.4362390106132,
+          "upper": 1514.9999425031156
+        },
+        {
+          "covered": true,
+          "index": 3139,
+          "lower": 1364.543202726599,
+          "predicted_mean": 1460.469193544574,
+          "predicted_standard_deviation": 138.7474933349721,
+          "truth": 1499.6668375059485,
+          "upper": 1632.4137867176084
+        },
+        {
+          "covered": true,
+          "index": 3859,
+          "lower": 1363.4343250398733,
+          "predicted_mean": 1418.5524654929197,
+          "predicted_standard_deviation": 79.72295891795044,
+          "truth": 1458.2673855551184,
+          "upper": 1517.350154793173
+        },
+        {
+          "covered": true,
+          "index": 8179,
+          "lower": 1244.8686547033528,
+          "predicted_mean": 1303.4532617032569,
+          "predicted_standard_deviation": 84.73686119828952,
+          "truth": 1255.1018177044305,
+          "upper": 1408.4644930796967
+        },
+        {
+          "covered": true,
+          "index": 10339,
+          "lower": 1345.0450449367938,
+          "predicted_mean": 1407.0947381767862,
+          "predicted_standard_deviation": 89.74876700089999,
+          "truth": 1408.597790310618,
+          "upper": 1518.3170374690326
+        },
+        {
+          "covered": true,
+          "index": 11059,
+          "lower": 1137.2465201048274,
+          "predicted_mean": 1242.3235362647486,
+          "predicted_standard_deviation": 151.98354976569627,
+          "truth": 1142.3390047170012,
+          "upper": 1430.6710804640884
+        },
+        {
+          "covered": true,
+          "index": 12139,
+          "lower": 1202.7082019937454,
+          "predicted_mean": 1285.995814898769,
+          "predicted_standard_deviation": 120.46732504805233,
+          "truth": 1244.9125959570415,
+          "upper": 1435.2864773687772
+        },
+        {
+          "covered": true,
+          "index": 14659,
+          "lower": 1314.3454376882069,
+          "predicted_mean": 1393.199080681553,
+          "predicted_standard_deviation": 114.05402448662983,
+          "truth": 1412.006842519152,
+          "upper": 1534.541978983542
+        },
+        {
+          "covered": true,
+          "index": 685,
+          "lower": 1060.0102942401982,
+          "predicted_mean": 1129.2439865896324,
+          "predicted_standard_deviation": 100.13971381371047,
+          "truth": 1104.3465993685215,
+          "upper": 1253.3433986820203
+        },
+        {
+          "covered": false,
+          "index": 1405,
+          "lower": 1348.2568839204587,
+          "predicted_mean": 1457.749533147681,
+          "predicted_standard_deviation": 158.37032788860986,
+          "truth": 1344.290491085722,
+          "upper": 1654.0119732462897
+        },
+        {
+          "covered": true,
+          "index": 2305,
+          "lower": 1152.0120849040134,
+          "predicted_mean": 1246.3665190548254,
+          "predicted_standard_deviation": 136.47439147442972,
+          "truth": 1228.9513777728728,
+          "upper": 1415.4941418793705
+        },
+        {
+          "covered": true,
+          "index": 4285,
+          "lower": 1131.6726777376775,
+          "predicted_mean": 1222.8245940828751,
+          "predicted_standard_deviation": 131.84226503924089,
+          "truth": 1265.6144334128408,
+          "upper": 1386.2117953957918
+        },
+        {
+          "covered": true,
+          "index": 5185,
+          "lower": 1307.6637885874043,
+          "predicted_mean": 1407.9362000266904,
+          "predicted_standard_deviation": 145.0341624748373,
+          "truth": 1328.4830620579514,
+          "upper": 1587.6716277703924
+        },
+        {
+          "covered": true,
+          "index": 5905,
+          "lower": 1104.0382653046559,
+          "predicted_mean": 1198.554428237965,
+          "predicted_standard_deviation": 136.7083162218339,
+          "truth": 1202.6497078064956,
+          "upper": 1367.9719452765153
+        },
+        {
+          "covered": true,
+          "index": 8785,
+          "lower": 974.0949134626968,
+          "predicted_mean": 1048.7831055550125,
+          "predicted_standard_deviation": 108.029110214704,
+          "truth": 1127.1935733517514,
+          "upper": 1182.6595523306476
+        },
+        {
+          "covered": true,
+          "index": 9505,
+          "lower": 987.3747580417913,
+          "predicted_mean": 1069.8754511171123,
+          "predicted_standard_deviation": 119.3291230561234,
+          "truth": 1135.4613316304565,
+          "upper": 1217.7555823137486
+        },
+        {
+          "covered": true,
+          "index": 11485,
+          "lower": 1257.811799635651,
+          "predicted_mean": 1356.0053656720852,
+          "predicted_standard_deviation": 142.027317445486,
+          "truth": 1306.908965187912,
+          "upper": 1532.014522527001
+        },
+        {
+          "covered": true,
+          "index": 12205,
+          "lower": 1317.4978928094545,
+          "predicted_mean": 1420.583637359721,
+          "predicted_standard_deviation": 149.103371598833,
+          "truth": 1387.0711302616132,
+          "upper": 1605.3618841882496
+        },
+        {
+          "covered": true,
+          "index": 12385,
+          "lower": 1022.8767938168174,
+          "predicted_mean": 1117.7360987568693,
+          "predicted_standard_deviation": 137.20463732196038,
+          "truth": 1053.7105346206135,
+          "upper": 1287.7686880219023
+        },
+        {
+          "covered": true,
+          "index": 15805,
+          "lower": 1009.7360640799867,
+          "predicted_mean": 1085.048464439184,
+          "predicted_standard_deviation": 108.9319659643323,
+          "truth": 1149.9300936374866,
+          "upper": 1220.0437866685832
+        },
+        {
+          "covered": true,
+          "index": 303,
+          "lower": 1384.3693001386914,
+          "predicted_mean": 1454.015123041418,
+          "predicted_standard_deviation": 100.73582004840726,
+          "truth": 1391.8842479070865,
+          "upper": 1578.8532673555508
+        },
+        {
+          "covered": true,
+          "index": 951,
+          "lower": 1162.837229910739,
+          "predicted_mean": 1257.446102896637,
+          "predicted_standard_deviation": 136.84241217741334,
+          "truth": 1166.3374991512023,
+          "upper": 1427.0298000511234
+        },
+        {
+          "covered": true,
+          "index": 3471,
+          "lower": 1181.9489536133121,
+          "predicted_mean": 1271.706963979562,
+          "predicted_standard_deviation": 129.82611739380624,
+          "truth": 1226.6426001078094,
+          "upper": 1432.5956287183146
+        },
+        {
+          "covered": true,
+          "index": 4551,
+          "lower": 1419.1242086844547,
+          "predicted_mean": 1511.418016017625,
+          "predicted_standard_deviation": 133.49389783335656,
+          "truth": 1464.4689561754815,
+          "upper": 1676.8520242459633
+        },
+        {
+          "covered": false,
+          "index": 8151,
+          "lower": 1215.1546671048698,
+          "predicted_mean": 1311.1646415256587,
+          "predicted_standard_deviation": 138.86896734084172,
+          "truth": 1199.6206343482957,
+          "upper": 1483.2597729031559
+        },
+        {
+          "covered": true,
+          "index": 9303,
+          "lower": 1274.9057724199577,
+          "predicted_mean": 1359.8768905716743,
+          "predicted_standard_deviation": 122.90234949766365,
+          "truth": 1301.3891305938414,
+          "upper": 1512.185188015051
+        },
+        {
+          "covered": false,
+          "index": 12471,
+          "lower": 1308.3477345747042,
+          "predicted_mean": 1394.879953548568,
+          "predicted_standard_deviation": 125.16032800869176,
+          "truth": 1297.209711761972,
+          "upper": 1549.9864795374858
+        },
+        {
+          "covered": false,
+          "index": 12903,
+          "lower": 1149.869508116547,
+          "predicted_mean": 1247.3674287636327,
+          "predicted_standard_deviation": 141.0211349375014,
+          "truth": 1145.7696003961,
+          "upper": 1422.129661167268
+        },
+        {
+          "covered": true,
+          "index": 13551,
+          "lower": 1271.603523425096,
+          "predicted_mean": 1343.2238362311405,
+          "predicted_standard_deviation": 103.59172513069538,
+          "truth": 1310.729789122238,
+          "upper": 1471.6011971877626
+        },
+        {
+          "covered": true,
+          "index": 14703,
+          "lower": 1243.2830538075737,
+          "predicted_mean": 1342.7184764995332,
+          "predicted_standard_deviation": 143.82354072727043,
+          "truth": 1260.375970403882,
+          "upper": 1520.9536258679766
+        },
+        {
+          "covered": false,
+          "index": 15351,
+          "lower": 1382.1112222346528,
+          "predicted_mean": 1477.162225488063,
+          "predicted_standard_deviation": 137.4819100426088,
+          "truth": 1378.066307836736,
+          "upper": 1647.5384284934523
+        },
+        {
+          "covered": true,
+          "index": 2685,
+          "lower": 1078.8531639148953,
+          "predicted_mean": 1197.923475518822,
+          "predicted_standard_deviation": 172.22347275002716,
+          "truth": 1135.736269234312,
+          "upper": 1411.353601318338
+        },
+        {
+          "covered": true,
+          "index": 3585,
+          "lower": 1120.399885554567,
+          "predicted_mean": 1211.6099661015905,
+          "predicted_standard_deviation": 131.926393825781,
+          "truth": 1166.9666710552258,
+          "upper": 1375.101425081641
+        },
+        {
+          "covered": true,
+          "index": 4305,
+          "lower": 1058.926662500657,
+          "predicted_mean": 1147.990099900896,
+          "predicted_standard_deviation": 128.8214860405051,
+          "truth": 1138.89491602191,
+          "upper": 1307.6337624765088
+        },
+        {
+          "covered": true,
+          "index": 6465,
+          "lower": 1260.0588831758346,
+          "predicted_mean": 1328.8962976944085,
+          "predicted_standard_deviation": 99.56653697991132,
+          "truth": 1319.5157042565693,
+          "upper": 1452.2853931163118
+        },
+        {
+          "covered": true,
+          "index": 7005,
+          "lower": 1279.3689547311687,
+          "predicted_mean": 1400.3633118052417,
+          "predicted_standard_deviation": 175.00641493044063,
+          "truth": 1306.3395408084273,
+          "upper": 1617.2422340444887
+        },
+        {
+          "covered": true,
+          "index": 7485,
+          "lower": 1086.9076838786696,
+          "predicted_mean": 1146.199443820522,
+          "predicted_standard_deviation": 85.75968824717515,
+          "truth": 1157.653077869329,
+          "upper": 1252.478226606935
+        },
+        {
+          "covered": true,
+          "index": 7905,
+          "lower": 1282.508923428771,
+          "predicted_mean": 1396.512637010041,
+          "predicted_standard_deviation": 164.8951379641666,
+          "truth": 1329.1779078200568,
+          "upper": 1600.8610308582022
+        },
+        {
+          "covered": true,
+          "index": 10785,
+          "lower": 1136.282247634945,
+          "predicted_mean": 1234.26806906176,
+          "predicted_standard_deviation": 141.72683533847044,
+          "truth": 1216.6021695572845,
+          "upper": 1409.9048496495109
+        },
+        {
+          "covered": true,
+          "index": 13485,
+          "lower": 1336.6002408694353,
+          "predicted_mean": 1401.6542091191818,
+          "predicted_standard_deviation": 94.094154766383,
+          "truth": 1376.4112425578169,
+          "upper": 1518.261585385116
+        },
+        {
+          "covered": true,
+          "index": 15105,
+          "lower": 1231.656672373704,
+          "predicted_mean": 1317.6137418526762,
+          "predicted_standard_deviation": 124.32843093857986,
+          "truth": 1312.6120521829273,
+          "upper": 1471.6893288325778
+        },
+        {
+          "covered": true,
+          "index": 15585,
+          "lower": 1322.7679926785772,
+          "predicted_mean": 1419.7844541595346,
+          "predicted_standard_deviation": 140.32475169586033,
+          "truth": 1373.975029813352,
+          "upper": 1593.6836847870775
+        },
+        {
+          "covered": true,
+          "index": 2804,
+          "lower": 1583.6158150137594,
+          "predicted_mean": 1684.781581611015,
+          "predicted_standard_deviation": 146.32631268114955,
+          "truth": 1713.8247626192904,
+          "upper": 1866.1183229078667
+        },
+        {
+          "covered": true,
+          "index": 5684,
+          "lower": 1834.1578439242553,
+          "predicted_mean": 1900.1283754519027,
+          "predicted_standard_deviation": 95.41987323128744,
+          "truth": 1906.0361397217498,
+          "upper": 2018.378665161755
+        },
+        {
+          "covered": true,
+          "index": 6164,
+          "lower": 1830.3452415214033,
+          "predicted_mean": 1935.966994731823,
+          "predicted_standard_deviation": 152.7714582317841,
+          "truth": 1944.0779142710123,
+          "upper": 2125.2909645039986
+        },
+        {
+          "covered": true,
+          "index": 6764,
+          "lower": 1898.9382646300514,
+          "predicted_mean": 1969.4822125703527,
+          "predicted_standard_deviation": 102.03486941555249,
+          "truth": 1974.9222181731272,
+          "upper": 2095.930220310315
+        },
+        {
+          "covered": true,
+          "index": 9284,
+          "lower": 1753.6287820803182,
+          "predicted_mean": 1829.1657464892805,
+          "predicted_standard_deviation": 109.25677573415952,
+          "truth": 1855.2797019782815,
+          "upper": 1964.5635933509388
+        },
+        {
+          "covered": true,
+          "index": 10484,
+          "lower": 1841.680495472102,
+          "predicted_mean": 1942.4980591244318,
+          "predicted_standard_deviation": 145.82267143263766,
+          "truth": 2007.3591052473005,
+          "upper": 2123.2106566079506
+        },
+        {
+          "covered": true,
+          "index": 11084,
+          "lower": 1888.5993181568924,
+          "predicted_mean": 1979.2407831066644,
+          "predicted_standard_deviation": 131.1039473947659,
+          "truth": 2014.829021493145,
+          "upper": 2141.7130149022205
+        },
+        {
+          "covered": true,
+          "index": 15764,
+          "lower": 1933.3256492645385,
+          "predicted_mean": 2012.5636438169458,
+          "predicted_standard_deviation": 114.60995114346623,
+          "truth": 2002.385164342837,
+          "upper": 2154.595481288546
+        },
+        {
+          "covered": true,
+          "index": 15884,
+          "lower": 2055.6790340229213,
+          "predicted_mean": 2105.622290178498,
+          "predicted_standard_deviation": 72.2379987059164,
+          "truth": 2134.781868270662,
+          "upper": 2195.1441474789085
+        },
+        {
+          "covered": true,
+          "index": 363,
+          "lower": 1555.8228912380102,
+          "predicted_mean": 1635.0535720745966,
+          "predicted_standard_deviation": 114.59937257421198,
+          "truth": 1654.1406942897604,
+          "upper": 1777.0722999199031
+        },
+        {
+          "covered": true,
+          "index": 843,
+          "lower": 1637.276550212038,
+          "predicted_mean": 1742.7973539198679,
+          "predicted_standard_deviation": 152.6254447236795,
+          "truth": 1765.9018559880935,
+          "upper": 1931.9403745977902
+        },
+        {
+          "covered": true,
+          "index": 1443,
+          "lower": 1398.4259886054942,
+          "predicted_mean": 1496.600403873807,
+          "predicted_standard_deviation": 141.9996177464822,
+          "truth": 1475.5575934482745,
+          "upper": 1672.5752335249533
+        },
+        {
+          "covered": true,
+          "index": 5043,
+          "lower": 1620.9513529928342,
+          "predicted_mean": 1722.8320111980256,
+          "predicted_standard_deviation": 147.360332947831,
+          "truth": 1741.2341273369807,
+          "upper": 1905.4501752421552
+        },
+        {
+          "covered": true,
+          "index": 6123,
+          "lower": 1357.2676519622535,
+          "predicted_mean": 1453.8602018615452,
+          "predicted_standard_deviation": 139.7116053645039,
+          "truth": 1389.3446707058301,
+          "upper": 1626.999583111153
+        },
+        {
+          "covered": true,
+          "index": 6243,
+          "lower": 1541.8625359077148,
+          "predicted_mean": 1602.8887265994827,
+          "predicted_standard_deviation": 88.26837141908531,
+          "truth": 1603.0882776993014,
+          "upper": 1712.27642686632
+        },
+        {
+          "covered": true,
+          "index": 7923,
+          "lower": 1574.2303630953736,
+          "predicted_mean": 1663.5835090060598,
+          "predicted_standard_deviation": 129.24052085348526,
+          "truth": 1683.4340072770806,
+          "upper": 1823.7464657952933
+        },
+        {
+          "covered": true,
+          "index": 12243,
+          "lower": 1382.7773437693663,
+          "predicted_mean": 1471.5597047819574,
+          "predicted_standard_deviation": 128.41493674255932,
+          "truth": 1462.645862977178,
+          "upper": 1630.699545977019
+        },
+        {
+          "covered": true,
+          "index": 12723,
+          "lower": 1362.3992619567869,
+          "predicted_mean": 1494.383899443364,
+          "predicted_standard_deviation": 190.90277258367522,
+          "truth": 1423.706954610838,
+          "upper": 1730.9625847840575
+        },
+        {
+          "covered": true,
+          "index": 13323,
+          "lower": 1551.0366518828089,
+          "predicted_mean": 1633.860198484075,
+          "predicted_standard_deviation": 119.79609886796791,
+          "truth": 1690.8228834630488,
+          "upper": 1782.319035386013
+        },
+        {
+          "covered": true,
+          "index": 15843,
+          "lower": 1361.692380849129,
+          "predicted_mean": 1444.7196874296433,
+          "predicted_standard_deviation": 120.09081759979033,
+          "truth": 1401.8514530569519,
+          "upper": 1593.5437582628447
+        },
+        {
+          "covered": false,
+          "index": 1116,
+          "lower": 2090.797040020413,
+          "predicted_mean": 2182.7451223759185,
+          "predicted_standard_deviation": 132.99384072031256,
+          "truth": 2394.6529603553113,
+          "upper": 2347.55942847632
+        },
+        {
+          "covered": true,
+          "index": 1296,
+          "lower": 1689.4261444538317,
+          "predicted_mean": 1796.28693417475,
+          "predicted_standard_deviation": 154.5636024516798,
+          "truth": 1823.3987675816256,
+          "upper": 1987.831841431204
+        },
+        {
+          "covered": false,
+          "index": 2016,
+          "lower": 1921.7437778914255,
+          "predicted_mean": 2033.3630380349096,
+          "predicted_standard_deviation": 161.44626102637667,
+          "truth": 2260.566538108785,
+          "upper": 2233.43736733806
+        },
+        {
+          "covered": true,
+          "index": 3996,
+          "lower": 1964.8777452384709,
+          "predicted_mean": 2054.266000368525,
+          "predicted_standard_deviation": 129.29130287969832,
+          "truth": 2057.790553529375,
+          "upper": 2214.491889428662
+        },
+        {
+          "covered": true,
+          "index": 4896,
+          "lower": 2058.943502497808,
+          "predicted_mean": 2150.6855786935093,
+          "predicted_standard_deviation": 132.69587310965136,
+          "truth": 2169.1914248331677,
+          "upper": 2315.1306246482864
+        },
+        {
+          "covered": true,
+          "index": 5436,
+          "lower": 2009.3055422295624,
+          "predicted_mean": 2059.3287807630995,
+          "predicted_standard_deviation": 72.35368533430967,
+          "truth": 2015.388125607123,
+          "upper": 2148.9940041869368
+        },
+        {
+          "covered": true,
+          "index": 8316,
+          "lower": 1700.9891257564334,
+          "predicted_mean": 1810.167839358291,
+          "predicted_standard_deviation": 157.91625094120008,
+          "truth": 1843.1051045157437,
+          "upper": 2005.8675588331612
+        },
+        {
+          "covered": true,
+          "index": 9216,
+          "lower": 2112.622354241312,
+          "predicted_mean": 2206.7901806165382,
+          "predicted_standard_deviation": 136.20448171505555,
+          "truth": 2267.22999659238,
+          "upper": 2375.583314343994
+        },
+        {
+          "covered": true,
+          "index": 15696,
+          "lower": 1805.7856411674527,
+          "predicted_mean": 1919.611221095558,
+          "predicted_standard_deviation": 164.63748518784925,
+          "truth": 1974.342689960727,
+          "upper": 2123.6403154685436
+        }
+      ]
+    },
+    "interpolation": {
+      "axial_thrust_n": [
+        {
+          "covered": true,
+          "index": 1414,
+          "lower": 0.01050119721449601,
+          "predicted_mean": 0.011395161265047665,
+          "predicted_standard_deviation": 0.0032863043971898525,
+          "truth": 0.01153118881729614,
+          "upper": 0.01228912531559932
+        },
+        {
+          "covered": true,
+          "index": 2134,
+          "lower": 0.009010479325273343,
+          "predicted_mean": 0.00991495103730837,
+          "predicted_standard_deviation": 0.0033249316486052556,
+          "truth": 0.010470011167602291,
+          "upper": 0.010819422749343397
+        },
+        {
+          "covered": true,
+          "index": 3214,
+          "lower": 0.0096520673550748,
+          "predicted_mean": 0.010624103958408673,
+          "predicted_standard_deviation": 0.0035733071836550542,
+          "truth": 0.011328263331149805,
+          "upper": 0.011596140561742546
+        },
+        {
+          "covered": true,
+          "index": 4654,
+          "lower": 0.010250300252913857,
+          "predicted_mean": 0.011081294563895616,
+          "predicted_standard_deviation": 0.003054821115607392,
+          "truth": 0.011309298195632228,
+          "upper": 0.011912288874877375
+        },
+        {
+          "covered": true,
+          "index": 5014,
+          "lower": 0.007767322818295118,
+          "predicted_mean": 0.008938340363533331,
+          "predicted_standard_deviation": 0.004304781725538134,
+          "truth": 0.008903290889811961,
+          "upper": 0.010109357908771545
+        },
+        {
+          "covered": true,
+          "index": 5734,
+          "lower": 0.012542001544330404,
+          "predicted_mean": 0.013463709485322963,
+          "predicted_standard_deviation": 0.0033882938106286073,
+          "truth": 0.013492849392333296,
+          "upper": 0.014385417426315522
+        },
+        {
+          "covered": true,
+          "index": 7534,
+          "lower": 0.009287368289914897,
+          "predicted_mean": 0.010379751995451877,
+          "predicted_standard_deviation": 0.00401571559025157,
+          "truth": 0.010481376831490096,
+          "upper": 0.011472135700988857
+        },
+        {
+          "covered": true,
+          "index": 10054,
+          "lower": 0.011106093846032637,
+          "predicted_mean": 0.012059108436661352,
+          "predicted_standard_deviation": 0.0035033802957026914,
+          "truth": 0.012223283772783484,
+          "upper": 0.013012123027290066
+        },
+        {
+          "covered": true,
+          "index": 12214,
+          "lower": 0.009877469641722349,
+          "predicted_mean": 0.010735704160356543,
+          "predicted_standard_deviation": 0.003154958938972119,
+          "truth": 0.010745429056993494,
+          "upper": 0.011593938678990737
+        },
+        {
+          "covered": true,
+          "index": 12934,
+          "lower": 0.010837622337617701,
+          "predicted_mean": 0.011875934024703216,
+          "predicted_standard_deviation": 0.0038169412526343864,
+          "truth": 0.011635307506181459,
+          "upper": 0.012914245711788732
+        },
+        {
+          "covered": true,
+          "index": 321,
+          "lower": 0.019960965049169995,
+          "predicted_mean": 0.02107761671447441,
+          "predicted_standard_deviation": 0.004104927122689965,
+          "truth": 0.021293436739475168,
+          "upper": 0.022194268379778826
+        },
+        {
+          "covered": true,
+          "index": 861,
+          "lower": 0.022936162340353318,
+          "predicted_mean": 0.023657788495745118,
+          "predicted_standard_deviation": 0.002652772453352972,
+          "truth": 0.023667229966710685,
+          "upper": 0.024379414651136917
+        },
+        {
+          "covered": false,
+          "index": 1041,
+          "lower": 0.02132917964604273,
+          "predicted_mean": 0.022361228824455452,
+          "predicted_standard_deviation": 0.003793919622428844,
+          "truth": 0.024850790274763983,
+          "upper": 0.023393278002868174
+        },
+        {
+          "covered": true,
+          "index": 3741,
+          "lower": 0.02115904059973369,
+          "predicted_mean": 0.022237060506826327,
+          "predicted_standard_deviation": 0.0039629127801622,
+          "truth": 0.02245946216473662,
+          "upper": 0.023315080413918964
+        },
+        {
+          "covered": true,
+          "index": 4641,
+          "lower": 0.020512359951594523,
+          "predicted_mean": 0.021509116100050008,
+          "predicted_standard_deviation": 0.0036641787906056314,
+          "truth": 0.02132225254093767,
+          "upper": 0.022505872248505494
+        },
+        {
+          "covered": true,
+          "index": 7341,
+          "lower": 0.019252407124959705,
+          "predicted_mean": 0.0202450834437665,
+          "predicted_standard_deviation": 0.0036491809144538956,
+          "truth": 0.020379345977909507,
+          "upper": 0.021237759762573295
+        },
+        {
+          "covered": true,
+          "index": 7521,
+          "lower": 0.019704175215919915,
+          "predicted_mean": 0.020784820152471517,
+          "predicted_standard_deviation": 0.0039725626602087555,
+          "truth": 0.021664737122669326,
+          "upper": 0.02186546508902312
+        },
+        {
+          "covered": true,
+          "index": 11841,
+          "lower": 0.02527900984111642,
+          "predicted_mean": 0.02595964922202107,
+          "predicted_standard_deviation": 0.002502100827194584,
+          "truth": 0.025327071306509442,
+          "upper": 0.026640288602925718
+        },
+        {
+          "covered": true,
+          "index": 13821,
+          "lower": 0.0232382315016186,
+          "predicted_mean": 0.024236573043659268,
+          "predicted_standard_deviation": 0.0036700068615521724,
+          "truth": 0.02365390324698402,
+          "upper": 0.025234914585699937
+        },
+        {
+          "covered": true,
+          "index": 15441,
+          "lower": 0.02087165108733722,
+          "predicted_mean": 0.02179041299260664,
+          "predicted_standard_deviation": 0.003377463878322877,
+          "truth": 0.021610585312884702,
+          "upper": 0.022709174897876064
+        },
+        {
+          "covered": true,
+          "index": 7169,
+          "lower": 0.015171118884628102,
+          "predicted_mean": 0.01611682819591306,
+          "predicted_standard_deviation": 0.003476525332558172,
+          "truth": 0.01611749227518522,
+          "upper": 0.01706253750719802
+        },
+        {
+          "covered": true,
+          "index": 7649,
+          "lower": 0.012431580435016836,
+          "predicted_mean": 0.013521234944431984,
+          "predicted_standard_deviation": 0.0040056827827685,
+          "truth": 0.013802826528400572,
+          "upper": 0.014610889453847132
+        },
+        {
+          "covered": true,
+          "index": 8189,
+          "lower": 0.01479857549019909,
+          "predicted_mean": 0.015669182670032394,
+          "predicted_standard_deviation": 0.00320044212241612,
+          "truth": 0.015688982975657833,
+          "upper": 0.0165397898498657
+        },
+        {
+          "covered": true,
+          "index": 11489,
+          "lower": 0.012635290341477775,
+          "predicted_mean": 0.013700213609086352,
+          "predicted_standard_deviation": 0.003914768177593108,
+          "truth": 0.014265464692612445,
+          "upper": 0.014765136876694928
+        },
+        {
+          "covered": true,
+          "index": 13469,
+          "lower": 0.017808710173833682,
+          "predicted_mean": 0.018740416314906607,
+          "predicted_standard_deviation": 0.003425048229184713,
+          "truth": 0.018818007418231027,
+          "upper": 0.019672122455979532
+        },
+        {
+          "covered": true,
+          "index": 13649,
+          "lower": 0.015622270597519406,
+          "predicted_mean": 0.01651080185999451,
+          "predicted_standard_deviation": 0.003266332905792688,
+          "truth": 0.016545150482754553,
+          "upper": 0.017399333122469617
+        },
+        {
+          "covered": true,
+          "index": 16289,
+          "lower": 0.011746778552117872,
+          "predicted_mean": 0.012712727535597376,
+          "predicted_standard_deviation": 0.003550928462851361,
+          "truth": 0.01307845952567014,
+          "upper": 0.01367867651907688
+        },
+        {
+          "covered": true,
+          "index": 314,
+          "lower": 0.013207438709699718,
+          "predicted_mean": 0.014014426336061554,
+          "predicted_standard_deviation": 0.0029665700576596795,
+          "truth": 0.013836059459658972,
+          "upper": 0.01482141396242339
+        },
+        {
+          "covered": true,
+          "index": 4094,
+          "lower": 0.01439585748075805,
+          "predicted_mean": 0.015194335472355283,
+          "predicted_standard_deviation": 0.002935287759307598,
+          "truth": 0.015050520928875122,
+          "upper": 0.01599281346395252
+        },
+        {
+          "covered": true,
+          "index": 6074,
+          "lower": 0.014847614472044348,
+          "predicted_mean": 0.01585978241162166,
+          "predicted_standard_deviation": 0.003720834130270557,
+          "truth": 0.01565392614926234,
+          "upper": 0.016871950351198973
+        },
+        {
+          "covered": true,
+          "index": 8414,
+          "lower": 0.01351640523244773,
+          "predicted_mean": 0.01446704583338097,
+          "predicted_standard_deviation": 0.0034946532638155526,
+          "truth": 0.01424752230618047,
+          "upper": 0.01541768643431421
+        },
+        {
+          "covered": true,
+          "index": 10394,
+          "lower": 0.013389475263309534,
+          "predicted_mean": 0.01431603861075624,
+          "predicted_standard_deviation": 0.003406142787408561,
+          "truth": 0.013956586879019545,
+          "upper": 0.015242601958202947
+        },
+        {
+          "covered": true,
+          "index": 10574,
+          "lower": 0.012311120112036987,
+          "predicted_mean": 0.013408555441284636,
+          "predicted_standard_deviation": 0.004034285881979828,
+          "truth": 0.013819894265522534,
+          "upper": 0.014505990770532285
+        },
+        {
+          "covered": true,
+          "index": 13274,
+          "lower": 0.015040380211203477,
+          "predicted_mean": 0.01613930309371271,
+          "predicted_standard_deviation": 0.0040397542817679115,
+          "truth": 0.016520891034308465,
+          "upper": 0.01723822597622194
+        },
+        {
+          "covered": true,
+          "index": 13994,
+          "lower": 0.01728066736641159,
+          "predicted_mean": 0.018184494517130893,
+          "predicted_standard_deviation": 0.003322562174480621,
+          "truth": 0.01782833340679275,
+          "upper": 0.019088321667850194
+        },
+        {
+          "covered": true,
+          "index": 15614,
+          "lower": 0.017195417098331237,
+          "predicted_mean": 0.018291147229220227,
+          "predicted_standard_deviation": 0.004028017396283236,
+          "truth": 0.018327725421199984,
+          "upper": 0.019386877360109217
+        },
+        {
+          "covered": true,
+          "index": 2969,
+          "lower": 0.010774517263095014,
+          "predicted_mean": 0.01166574671120318,
+          "predicted_standard_deviation": 0.003276251715508687,
+          "truth": 0.01239345280741254,
+          "upper": 0.012556976159311348
+        },
+        {
+          "covered": true,
+          "index": 3689,
+          "lower": 0.009362319145288458,
+          "predicted_mean": 0.010198837614422725,
+          "predicted_standard_deviation": 0.003075128492862834,
+          "truth": 0.01081298729952388,
+          "upper": 0.011035356083556993
+        },
+        {
+          "covered": true,
+          "index": 5489,
+          "lower": 0.01240969907344073,
+          "predicted_mean": 0.013283086132267023,
+          "predicted_standard_deviation": 0.003210661245380487,
+          "truth": 0.013738555368413067,
+          "upper": 0.014156473191093316
+        },
+        {
+          "covered": true,
+          "index": 7289,
+          "lower": 0.01001706251850569,
+          "predicted_mean": 0.011166472265346956,
+          "predicted_standard_deviation": 0.004225349221690062,
+          "truth": 0.011047715982558496,
+          "upper": 0.012315882012188223
+        },
+        {
+          "covered": true,
+          "index": 8369,
+          "lower": 0.010922067081330587,
+          "predicted_mean": 0.011930252403731374,
+          "predicted_standard_deviation": 0.003706193617230394,
+          "truth": 0.012444615673074907,
+          "upper": 0.01293843772613216
+        },
+        {
+          "covered": true,
+          "index": 9449,
+          "lower": 0.012536750130498979,
+          "predicted_mean": 0.013422629298066844,
+          "predicted_standard_deviation": 0.0032565835303563365,
+          "truth": 0.013731034749136055,
+          "upper": 0.014308508465634709
+        },
+        {
+          "covered": true,
+          "index": 10169,
+          "lower": 0.010038037681014033,
+          "predicted_mean": 0.01102434259686631,
+          "predicted_standard_deviation": 0.0036257589775955034,
+          "truth": 0.01098153114836755,
+          "upper": 0.012010647512718586
+        },
+        {
+          "covered": true,
+          "index": 11249,
+          "lower": 0.011572148929293657,
+          "predicted_mean": 0.012512528041320406,
+          "predicted_standard_deviation": 0.0034569309682777076,
+          "truth": 0.012948921026100358,
+          "upper": 0.013452907153347154
+        },
+        {
+          "covered": true,
+          "index": 12689,
+          "lower": 0.013446736897213638,
+          "predicted_mean": 0.01414024087483035,
+          "predicted_standard_deviation": 0.002549392416511681,
+          "truth": 0.013854385681147215,
+          "upper": 0.014833744852447064
+        },
+        {
+          "covered": true,
+          "index": 13769,
+          "lower": 0.011092182313212613,
+          "predicted_mean": 0.01200339522068197,
+          "predicted_standard_deviation": 0.003349712980902097,
+          "truth": 0.012539292829741241,
+          "upper": 0.012914608128151326
+        },
+        {
+          "covered": true,
+          "index": 14489,
+          "lower": 0.009582943973898278,
+          "predicted_mean": 0.01047596946575391,
+          "predicted_standard_deviation": 0.003282854158259262,
+          "truth": 0.01069436235329201,
+          "upper": 0.01136899495760954
+        },
+        {
+          "covered": true,
+          "index": 182,
+          "lower": 0.014805671898300126,
+          "predicted_mean": 0.015691534312315628,
+          "predicted_standard_deviation": 0.003256521942563444,
+          "truth": 0.016054513879574663,
+          "upper": 0.016577396726331132
+        },
+        {
+          "covered": true,
+          "index": 1262,
+          "lower": 0.01923979672470947,
+          "predicted_mean": 0.020169562460852723,
+          "predicted_standard_deviation": 0.0034179150997833974,
+          "truth": 0.020210025698405742,
+          "upper": 0.021099328196995976
+        },
+        {
+          "covered": true,
+          "index": 1382,
+          "lower": 0.017565747900150766,
+          "predicted_mean": 0.01864135634092402,
+          "predicted_standard_deviation": 0.00395404798032582,
+          "truth": 0.01867044500344744,
+          "upper": 0.019716964781697273
+        },
+        {
+          "covered": true,
+          "index": 3182,
+          "lower": 0.014786836325362701,
+          "predicted_mean": 0.015667940790249912,
+          "predicted_standard_deviation": 0.0032390312290025824,
+          "truth": 0.01589168069699701,
+          "upper": 0.016549045255137125
+        },
+        {
+          "covered": true,
+          "index": 6662,
+          "lower": 0.01731029559049572,
+          "predicted_mean": 0.018430788991880658,
+          "predicted_standard_deviation": 0.004119049742236541,
+          "truth": 0.018889523775285983,
+          "upper": 0.019551282393265593
+        },
+        {
+          "covered": true,
+          "index": 7862,
+          "lower": 0.015495973364293928,
+          "predicted_mean": 0.016342934151025425,
+          "predicted_standard_deviation": 0.0031135155333880697,
+          "truth": 0.016685307235956678,
+          "upper": 0.017189894937756925
+        },
+        {
+          "covered": true,
+          "index": 8942,
+          "lower": 0.01870291157336237,
+          "predicted_mean": 0.01975733920197457,
+          "predicted_standard_deviation": 0.003876185122084527,
+          "truth": 0.01987416261577425,
+          "upper": 0.020811766830586772
+        },
+        {
+          "covered": true,
+          "index": 10982,
+          "lower": 0.015559292020359715,
+          "predicted_mean": 0.016398549386383406,
+          "predicted_standard_deviation": 0.0030851969613718425,
+          "truth": 0.016834759145030295,
+          "upper": 0.0172378067524071
+        },
+        {
+          "covered": true,
+          "index": 12182,
+          "lower": 0.018133900236786533,
+          "predicted_mean": 0.018966497329673048,
+          "predicted_standard_deviation": 0.0030607131078167872,
+          "truth": 0.018926935279495762,
+          "upper": 0.019799094422559563
+        },
+        {
+          "covered": true,
+          "index": 15062,
+          "lower": 0.015399486698125273,
+          "predicted_mean": 0.01633469505233412,
+          "predicted_standard_deviation": 0.003437922727237933,
+          "truth": 0.01673422091041644,
+          "upper": 0.017269903406542966
+        },
+        {
+          "covered": true,
+          "index": 3866,
+          "lower": 0.019558315356560985,
+          "predicted_mean": 0.02038065777490372,
+          "predicted_standard_deviation": 0.0030230158625817235,
+          "truth": 0.02014332121335205,
+          "upper": 0.021203000193246457
+        },
+        {
+          "covered": true,
+          "index": 7646,
+          "lower": 0.019284629415954095,
+          "predicted_mean": 0.02017166697674935,
+          "predicted_standard_deviation": 0.0032608419037825315,
+          "truth": 0.020099515290098624,
+          "upper": 0.021058704537544604
+        },
+        {
+          "covered": true,
+          "index": 8186,
+          "lower": 0.01783910255700206,
+          "predicted_mean": 0.01867189788842965,
+          "predicted_standard_deviation": 0.003061441853216358,
+          "truth": 0.01907779215894224,
+          "upper": 0.019504693219857237
+        },
+        {
+          "covered": true,
+          "index": 9146,
+          "lower": 0.01978129168433223,
+          "predicted_mean": 0.020697572739151415,
+          "predicted_standard_deviation": 0.0033683440152385046,
+          "truth": 0.021327444120142525,
+          "upper": 0.0216138537939706
+        },
+        {
+          "covered": true,
+          "index": 11966,
+          "lower": 0.02192162185383378,
+          "predicted_mean": 0.022984923687838176,
+          "predicted_standard_deviation": 0.003908807619805697,
+          "truth": 0.0229129049588699,
+          "upper": 0.024048225521842572
+        },
+        {
+          "covered": false,
+          "index": 13466,
+          "lower": 0.021231232900278244,
+          "predicted_mean": 0.02234081410827985,
+          "predicted_standard_deviation": 0.004078935389677853,
+          "truth": 0.02416437459905457,
+          "upper": 0.023450395316281458
+        },
+        {
+          "covered": true,
+          "index": 566,
+          "lower": 0.013535221276972615,
+          "predicted_mean": 0.014521634268668787,
+          "predicted_standard_deviation": 0.003626156275586187,
+          "truth": 0.014222446260877515,
+          "upper": 0.01550804726036496
+        },
+        {
+          "covered": true,
+          "index": 1646,
+          "lower": 0.01590896724320201,
+          "predicted_mean": 0.016981581800421294,
+          "predicted_standard_deviation": 0.003943042154440522,
+          "truth": 0.016825030513611717,
+          "upper": 0.01805419635764058
+        },
+        {
+          "covered": true,
+          "index": 3446,
+          "lower": 0.014503042148420763,
+          "predicted_mean": 0.015542838881294463,
+          "predicted_standard_deviation": 0.0038224004346906764,
+          "truth": 0.01578375341573849,
+          "upper": 0.016582635614168163
+        },
+        {
+          "covered": true,
+          "index": 7046,
+          "lower": 0.014443039376386746,
+          "predicted_mean": 0.015529868345583998,
+          "predicted_standard_deviation": 0.003995295804414308,
+          "truth": 0.015544131986390274,
+          "upper": 0.016616697314781253
+        },
+        {
+          "covered": true,
+          "index": 7766,
+          "lower": 0.01355509866562475,
+          "predicted_mean": 0.01472853615962038,
+          "predicted_standard_deviation": 0.004313677707694868,
+          "truth": 0.015088071981423132,
+          "upper": 0.015901973653616012
+        },
+        {
+          "covered": true,
+          "index": 8486,
+          "lower": 0.014301998199999423,
+          "predicted_mean": 0.015109028476866421,
+          "predicted_standard_deviation": 0.0029667268453320386,
+          "truth": 0.015127615562459245,
+          "upper": 0.015916058753733423
+        },
+        {
+          "covered": true,
+          "index": 11366,
+          "lower": 0.014943451791764538,
+          "predicted_mean": 0.01606160151895489,
+          "predicted_standard_deviation": 0.004110434153269085,
+          "truth": 0.015904894934697402,
+          "upper": 0.017179751246145247
+        },
+        {
+          "covered": true,
+          "index": 13166,
+          "lower": 0.01288980243514587,
+          "predicted_mean": 0.013765781655083794,
+          "predicted_standard_deviation": 0.003220190297979551,
+          "truth": 0.013652882540313029,
+          "upper": 0.014641760875021718
+        },
+        {
+          "covered": true,
+          "index": 14246,
+          "lower": 0.01613026381691167,
+          "predicted_mean": 0.01678435907992777,
+          "predicted_standard_deviation": 0.0024045219018643893,
+          "truth": 0.016661564299475698,
+          "upper": 0.017438454342943874
+        },
+        {
+          "covered": true,
+          "index": 14966,
+          "lower": 0.01551597522714128,
+          "predicted_mean": 0.016399202938006972,
+          "predicted_standard_deviation": 0.003246836501027891,
+          "truth": 0.016053416579599578,
+          "upper": 0.01728243064887267
+        },
+        {
+          "covered": true,
+          "index": 15686,
+          "lower": 0.01512151381198717,
+          "predicted_mean": 0.01610864015326299,
+          "predicted_standard_deviation": 0.0036287786224902703,
+          "truth": 0.015739170161202902,
+          "upper": 0.01709576649453881
+        },
+        {
+          "covered": true,
+          "index": 946,
+          "lower": 0.010573694977259011,
+          "predicted_mean": 0.011383154855711949,
+          "predicted_standard_deviation": 0.0029756583122857285,
+          "truth": 0.012100355102105432,
+          "upper": 0.012192614734164886
+        },
+        {
+          "covered": true,
+          "index": 3466,
+          "lower": 0.013394790667549181,
+          "predicted_mean": 0.014402351218556417,
+          "predicted_standard_deviation": 0.0037038968929084285,
+          "truth": 0.01458460325244206,
+          "upper": 0.015409911769563652
+        },
+        {
+          "covered": true,
+          "index": 4546,
+          "lower": 0.012777459208259633,
+          "predicted_mean": 0.014068494893478192,
+          "predicted_standard_deviation": 0.004745980832948059,
+          "truth": 0.013703250271172012,
+          "upper": 0.01535953057869675
+        },
+        {
+          "covered": true,
+          "index": 5266,
+          "lower": 0.013494919426179782,
+          "predicted_mean": 0.014657054123752698,
+          "predicted_standard_deviation": 0.004272127457926344,
+          "truth": 0.014961369998263401,
+          "upper": 0.015819188821325617
+        },
+        {
+          "covered": true,
+          "index": 8866,
+          "lower": 0.012390991302019906,
+          "predicted_mean": 0.013266411373221185,
+          "predicted_standard_deviation": 0.003218134809337936,
+          "truth": 0.013556382092162058,
+          "upper": 0.014141831444422465
+        },
+        {
+          "covered": true,
+          "index": 11746,
+          "lower": 0.011659441697791949,
+          "predicted_mean": 0.012568268887395512,
+          "predicted_standard_deviation": 0.0033409428350467114,
+          "truth": 0.012583844486243893,
+          "upper": 0.013477096076999075
+        },
+        {
+          "covered": true,
+          "index": 12466,
+          "lower": 0.01239835949888992,
+          "predicted_mean": 0.01318859644313115,
+          "predicted_standard_deviation": 0.002904992816074958,
+          "truth": 0.0133669100152156,
+          "upper": 0.01397883338737238
+        },
+        {
+          "covered": true,
+          "index": 13186,
+          "lower": 0.013608715310550246,
+          "predicted_mean": 0.014670291060076418,
+          "predicted_standard_deviation": 0.0039024623545713733,
+          "truth": 0.014400217913213192,
+          "upper": 0.01573186680960259
+        },
+        {
+          "covered": true,
+          "index": 14986,
+          "lower": 0.011180712014412501,
+          "predicted_mean": 0.012044669285351969,
+          "predicted_standard_deviation": 0.0031759963688925336,
+          "truth": 0.012319702807009184,
+          "upper": 0.012908626556291436
+        },
+        {
+          "covered": true,
+          "index": 16066,
+          "lower": 0.014191660745001968,
+          "predicted_mean": 0.014966927350810835,
+          "predicted_standard_deviation": 0.0028499603021977645,
+          "truth": 0.015116267239642784,
+          "upper": 0.015742193956619705
+        },
+        {
+          "covered": true,
+          "index": 797,
+          "lower": 0.014741608338113369,
+          "predicted_mean": 0.015580704043783008,
+          "predicted_standard_deviation": 0.003084602681174509,
+          "truth": 0.015822181752689353,
+          "upper": 0.016419799749452648
+        },
+        {
+          "covered": true,
+          "index": 2129,
+          "lower": 0.013050245760238827,
+          "predicted_mean": 0.013899877967023164,
+          "predicted_standard_deviation": 0.0031233359500602753,
+          "truth": 0.014486726663417975,
+          "upper": 0.014749510173807502
+        },
+        {
+          "covered": true,
+          "index": 3329,
+          "lower": 0.014438657823535431,
+          "predicted_mean": 0.015552651319475821,
+          "predicted_standard_deviation": 0.004095155416921621,
+          "truth": 0.015617264305351541,
+          "upper": 0.016666644815416215
+        },
+        {
+          "covered": true,
+          "index": 4829,
+          "lower": 0.015428711132827391,
+          "predicted_mean": 0.016234226977220045,
+          "predicted_standard_deviation": 0.0029611596347751787,
+          "truth": 0.016352829769283136,
+          "upper": 0.0170397428216127
+        },
+        {
+          "covered": true,
+          "index": 5597,
+          "lower": 0.01195531476011169,
+          "predicted_mean": 0.012954453961559052,
+          "predicted_standard_deviation": 0.0036729391401086322,
+          "truth": 0.013157660168114784,
+          "upper": 0.013953593163006414
+        },
+        {
+          "covered": true,
+          "index": 6017,
+          "lower": 0.01568213099008496,
+          "predicted_mean": 0.01682142819005773,
+          "predicted_standard_deviation": 0.004188174452503052,
+          "truth": 0.016909225874930316,
+          "upper": 0.017960725390030498
+        },
+        {
+          "covered": true,
+          "index": 8897,
+          "lower": 0.012353843896747912,
+          "predicted_mean": 0.013300986722618204,
+          "predicted_standard_deviation": 0.0034817950805780336,
+          "truth": 0.01411613418804522,
+          "upper": 0.014248129548488496
+        },
+        {
+          "covered": true,
+          "index": 9917,
+          "lower": 0.013715911961824406,
+          "predicted_mean": 0.014399182755438346,
+          "predicted_standard_deviation": 0.0025117741727301644,
+          "truth": 0.014150755337023835,
+          "upper": 0.015082453549052285
+        },
+        {
+          "covered": true,
+          "index": 13217,
+          "lower": 0.01143486173329081,
+          "predicted_mean": 0.012449336382640785,
+          "predicted_standard_deviation": 0.003729313834196317,
+          "truth": 0.012637860416364746,
+          "upper": 0.013463811031990762
+        },
+        {
+          "covered": true,
+          "index": 13697,
+          "lower": 0.012201852226633676,
+          "predicted_mean": 0.013206850179267888,
+          "predicted_standard_deviation": 0.003694476515996962,
+          "truth": 0.01356838540483505,
+          "upper": 0.0142118481319021
+        },
+        {
+          "covered": true,
+          "index": 15197,
+          "lower": 0.012344347221464479,
+          "predicted_mean": 0.013356444338396804,
+          "predicted_standard_deviation": 0.0037205737788956962,
+          "truth": 0.013794971489997953,
+          "upper": 0.014368541455329129
+        },
+        {
+          "covered": true,
+          "index": 15917,
+          "lower": 0.012782452460115149,
+          "predicted_mean": 0.013633458389568842,
+          "predicted_standard_deviation": 0.0031283858968070588,
+          "truth": 0.014235971136770746,
+          "upper": 0.014484464319022535
+        }
+      ],
+      "specific_impulse_s": [
+        {
+          "covered": true,
+          "index": 1414,
+          "lower": 1478.3178500922513,
+          "predicted_mean": 1542.7964154923873,
+          "predicted_standard_deviation": 96.66313545234999,
+          "truth": 1542.678493243757,
+          "upper": 1602.644907266189
+        },
+        {
+          "covered": true,
+          "index": 2134,
+          "lower": 1472.174032912963,
+          "predicted_mean": 1536.652598313099,
+          "predicted_standard_deviation": 88.82241338670659,
+          "truth": 1537.9986877185404,
+          "upper": 1596.5010900869006
+        },
+        {
+          "covered": true,
+          "index": 3214,
+          "lower": 1644.1043396383775,
+          "predicted_mean": 1708.5829050385134,
+          "predicted_standard_deviation": 91.62324900606342,
+          "truth": 1692.1602888794664,
+          "upper": 1768.4313968123151
+        },
+        {
+          "covered": true,
+          "index": 4654,
+          "lower": 1424.5230723403608,
+          "predicted_mean": 1489.0016377404968,
+          "predicted_standard_deviation": 83.67915268863662,
+          "truth": 1495.7651526853795,
+          "upper": 1548.8501295142985
+        },
+        {
+          "covered": true,
+          "index": 5014,
+          "lower": 1326.670449662784,
+          "predicted_mean": 1391.14901506292,
+          "predicted_standard_deviation": 136.62763199514325,
+          "truth": 1394.9609636638863,
+          "upper": 1450.9975068367216
+        },
+        {
+          "covered": true,
+          "index": 5734,
+          "lower": 1760.2755027449434,
+          "predicted_mean": 1824.7540681450794,
+          "predicted_standard_deviation": 105.50453227730557,
+          "truth": 1839.545687994106,
+          "upper": 1884.602559918881
+        },
+        {
+          "covered": true,
+          "index": 7534,
+          "lower": 1394.1467364440618,
+          "predicted_mean": 1458.6253018441978,
+          "predicted_standard_deviation": 128.2667959966625,
+          "truth": 1470.1396135045993,
+          "upper": 1518.4737936179995
+        },
+        {
+          "covered": true,
+          "index": 10054,
+          "lower": 1492.7566600516077,
+          "predicted_mean": 1557.2352254517436,
+          "predicted_standard_deviation": 106.48845030134919,
+          "truth": 1573.171466956031,
+          "upper": 1617.0837172255453
+        },
+        {
+          "covered": true,
+          "index": 12214,
+          "lower": 1376.9539859990653,
+          "predicted_mean": 1441.4325513992012,
+          "predicted_standard_deviation": 88.01557145288885,
+          "truth": 1450.25908335188,
+          "upper": 1501.281043173003
+        },
+        {
+          "covered": true,
+          "index": 12934,
+          "lower": 1640.5249058953784,
+          "predicted_mean": 1705.0034712955144,
+          "predicted_standard_deviation": 133.49621487322358,
+          "truth": 1728.0707543766591,
+          "upper": 1764.851963069316
+        },
+        {
+          "covered": true,
+          "index": 321,
+          "lower": 1362.4196946039453,
+          "predicted_mean": 1426.8982600040813,
+          "predicted_standard_deviation": 141.22389535518974,
+          "truth": 1429.8262761595033,
+          "upper": 1486.746751777883
+        },
+        {
+          "covered": true,
+          "index": 861,
+          "lower": 1562.5653913979445,
+          "predicted_mean": 1627.0439567980804,
+          "predicted_standard_deviation": 66.16061740924603,
+          "truth": 1633.4891547442005,
+          "upper": 1686.8924485718821
+        },
+        {
+          "covered": false,
+          "index": 1041,
+          "lower": 1608.810667377745,
+          "predicted_mean": 1673.289232777881,
+          "predicted_standard_deviation": 124.6644420990337,
+          "truth": 1744.3289659172249,
+          "upper": 1733.1377245516826
+        },
+        {
+          "covered": true,
+          "index": 3741,
+          "lower": 1512.151849426997,
+          "predicted_mean": 1576.6304148271329,
+          "predicted_standard_deviation": 126.88530542680368,
+          "truth": 1596.9845311639087,
+          "upper": 1636.4789066009346
+        },
+        {
+          "covered": true,
+          "index": 4641,
+          "lower": 1359.6208729386187,
+          "predicted_mean": 1424.0994383387547,
+          "predicted_standard_deviation": 120.10751999829881,
+          "truth": 1445.3391556376948,
+          "upper": 1483.9479301125564
+        },
+        {
+          "covered": true,
+          "index": 7341,
+          "lower": 1344.1440459057935,
+          "predicted_mean": 1408.6226113059295,
+          "predicted_standard_deviation": 118.04714278545491,
+          "truth": 1399.3733744650012,
+          "upper": 1468.4711030797312
+        },
+        {
+          "covered": true,
+          "index": 7521,
+          "lower": 1423.1930464972652,
+          "predicted_mean": 1487.6716118974011,
+          "predicted_standard_deviation": 134.3786805791563,
+          "truth": 1512.7892349718954,
+          "upper": 1547.5201036712028
+        },
+        {
+          "covered": true,
+          "index": 11841,
+          "lower": 1777.4319971505076,
+          "predicted_mean": 1841.9105625506436,
+          "predicted_standard_deviation": 86.9681508082742,
+          "truth": 1810.7009668142578,
+          "upper": 1901.7590543244453
+        },
+        {
+          "covered": true,
+          "index": 13821,
+          "lower": 1575.2930720067616,
+          "predicted_mean": 1639.7716374068975,
+          "predicted_standard_deviation": 109.78106802827539,
+          "truth": 1637.9427095119704,
+          "upper": 1699.6201291806992
+        },
+        {
+          "covered": true,
+          "index": 15441,
+          "lower": 1415.2268809508498,
+          "predicted_mean": 1479.7054463509858,
+          "predicted_standard_deviation": 107.03305620989885,
+          "truth": 1492.0032982259672,
+          "upper": 1539.5539381247875
+        },
+        {
+          "covered": true,
+          "index": 7169,
+          "lower": 1557.5360983004366,
+          "predicted_mean": 1622.0146637005726,
+          "predicted_standard_deviation": 100.1358704684715,
+          "truth": 1621.7506504158225,
+          "upper": 1681.8631554743743
+        },
+        {
+          "covered": true,
+          "index": 7649,
+          "lower": 1352.527603913114,
+          "predicted_mean": 1417.00616931325,
+          "predicted_standard_deviation": 128.59484520075216,
+          "truth": 1459.9907834612525,
+          "upper": 1476.8546610870517
+        },
+        {
+          "covered": true,
+          "index": 8189,
+          "lower": 1558.527325001431,
+          "predicted_mean": 1623.005890401567,
+          "predicted_standard_deviation": 98.44514205586208,
+          "truth": 1628.903955188658,
+          "upper": 1682.8543821753688
+        },
+        {
+          "covered": false,
+          "index": 11489,
+          "lower": 1248.4462919307234,
+          "predicted_mean": 1312.9248573308594,
+          "predicted_standard_deviation": 123.26885274609997,
+          "truth": 1374.3802909899252,
+          "upper": 1372.773349104661
+        },
+        {
+          "covered": true,
+          "index": 13469,
+          "lower": 1679.9899449573359,
+          "predicted_mean": 1744.4685103574718,
+          "predicted_standard_deviation": 104.29570061106934,
+          "truth": 1750.0832371390234,
+          "upper": 1804.3170021312735
+        },
+        {
+          "covered": true,
+          "index": 13649,
+          "lower": 1581.4893619700863,
+          "predicted_mean": 1645.9679273702222,
+          "predicted_standard_deviation": 101.26129641148131,
+          "truth": 1652.8498838910155,
+          "upper": 1705.816419144024
+        },
+        {
+          "covered": true,
+          "index": 16289,
+          "lower": 1232.5741260827042,
+          "predicted_mean": 1297.0526914828401,
+          "predicted_standard_deviation": 113.8261945428829,
+          "truth": 1341.8743445581838,
+          "upper": 1356.9011832566418
+        },
+        {
+          "covered": true,
+          "index": 314,
+          "lower": 1611.6665253801593,
+          "predicted_mean": 1676.1450907802953,
+          "predicted_standard_deviation": 92.39734203645926,
+          "truth": 1656.1091445101847,
+          "upper": 1735.993582554097
+        },
+        {
+          "covered": true,
+          "index": 4094,
+          "lower": 1887.6878487893161,
+          "predicted_mean": 1952.166414189452,
+          "predicted_standard_deviation": 84.114893888352,
+          "truth": 1913.6320941684767,
+          "upper": 2012.0149059632538
+        },
+        {
+          "covered": true,
+          "index": 6074,
+          "lower": 1649.886184754365,
+          "predicted_mean": 1714.364750154501,
+          "predicted_standard_deviation": 124.54632431042616,
+          "truth": 1719.7392537045894,
+          "upper": 1774.2132419283028
+        },
+        {
+          "covered": true,
+          "index": 8414,
+          "lower": 1668.5112535194346,
+          "predicted_mean": 1732.9898189195706,
+          "predicted_standard_deviation": 97.76029075252549,
+          "truth": 1716.5995327005655,
+          "upper": 1792.8383106933723
+        },
+        {
+          "covered": true,
+          "index": 10394,
+          "lower": 1535.9001500055363,
+          "predicted_mean": 1600.3787154056722,
+          "predicted_standard_deviation": 113.11996786049023,
+          "truth": 1592.7435587928549,
+          "upper": 1660.227207179474
+        },
+        {
+          "covered": true,
+          "index": 10574,
+          "lower": 1706.4699124016136,
+          "predicted_mean": 1770.9484778017495,
+          "predicted_standard_deviation": 102.87698464836303,
+          "truth": 1740.6869957260726,
+          "upper": 1830.7969695755512
+        },
+        {
+          "covered": false,
+          "index": 13274,
+          "lower": 1853.4014516493344,
+          "predicted_mean": 1917.8800170494703,
+          "predicted_standard_deviation": 134.12612175503853,
+          "truth": 1988.7851262771715,
+          "upper": 1977.728508823272
+        },
+        {
+          "covered": true,
+          "index": 13994,
+          "lower": 1897.071471551605,
+          "predicted_mean": 1961.550036951741,
+          "predicted_standard_deviation": 96.54401719273731,
+          "truth": 1925.4220004195706,
+          "upper": 2021.3985287255427
+        },
+        {
+          "covered": true,
+          "index": 15614,
+          "lower": 1867.233235813023,
+          "predicted_mean": 1931.7118012131589,
+          "predicted_standard_deviation": 128.0459785262429,
+          "truth": 1970.1958589020435,
+          "upper": 1991.5602929869606
+        },
+        {
+          "covered": true,
+          "index": 2969,
+          "lower": 1335.1318584648072,
+          "predicted_mean": 1399.6104238649432,
+          "predicted_standard_deviation": 89.41170766734685,
+          "truth": 1427.8005551240472,
+          "upper": 1459.4589156387449
+        },
+        {
+          "covered": true,
+          "index": 3689,
+          "lower": 1233.6421815777364,
+          "predicted_mean": 1298.1207469778724,
+          "predicted_standard_deviation": 87.70125540639397,
+          "truth": 1345.8370705953482,
+          "upper": 1357.969238751674
+        },
+        {
+          "covered": true,
+          "index": 5489,
+          "lower": 1403.029090139166,
+          "predicted_mean": 1467.507655539302,
+          "predicted_standard_deviation": 88.91221812228036,
+          "truth": 1486.9029625201779,
+          "upper": 1527.3561473131037
+        },
+        {
+          "covered": true,
+          "index": 7289,
+          "lower": 1120.62712118771,
+          "predicted_mean": 1185.1056865878459,
+          "predicted_standard_deviation": 133.84473459299042,
+          "truth": 1212.0295277492673,
+          "upper": 1244.9541783616476
+        },
+        {
+          "covered": true,
+          "index": 8369,
+          "lower": 1318.2365207506532,
+          "predicted_mean": 1382.7150861507891,
+          "predicted_standard_deviation": 101.08692134187741,
+          "truth": 1412.8210834886129,
+          "upper": 1442.5635779245908
+        },
+        {
+          "covered": true,
+          "index": 9449,
+          "lower": 1523.002608140356,
+          "predicted_mean": 1587.481173540492,
+          "predicted_standard_deviation": 102.75868375244643,
+          "truth": 1603.9383118971848,
+          "upper": 1647.3296653142936
+        },
+        {
+          "covered": true,
+          "index": 10169,
+          "lower": 1290.5166396754034,
+          "predicted_mean": 1354.9952050755394,
+          "predicted_standard_deviation": 104.2289227659567,
+          "truth": 1387.4119435667935,
+          "upper": 1414.843696849341
+        },
+        {
+          "covered": true,
+          "index": 11249,
+          "lower": 1470.1903280742335,
+          "predicted_mean": 1534.6688934743695,
+          "predicted_standard_deviation": 101.59319193305278,
+          "truth": 1548.5931215614762,
+          "upper": 1594.5173852481712
+        },
+        {
+          "covered": true,
+          "index": 12689,
+          "lower": 1522.0555371167509,
+          "predicted_mean": 1586.5341025168868,
+          "predicted_standard_deviation": 81.59990100806785,
+          "truth": 1598.2555154732731,
+          "upper": 1646.3825942906885
+        },
+        {
+          "covered": true,
+          "index": 13769,
+          "lower": 1282.7443711363771,
+          "predicted_mean": 1347.222936536513,
+          "predicted_standard_deviation": 97.91833640560567,
+          "truth": 1394.3255111935568,
+          "upper": 1407.0714283103148
+        },
+        {
+          "covered": true,
+          "index": 14489,
+          "lower": 1188.6743082967025,
+          "predicted_mean": 1253.1528736968385,
+          "predicted_standard_deviation": 104.76707803230043,
+          "truth": 1281.1634568574182,
+          "upper": 1313.0013654706402
+        },
+        {
+          "covered": true,
+          "index": 182,
+          "lower": 1254.80365827362,
+          "predicted_mean": 1319.2822236737559,
+          "predicted_standard_deviation": 94.61354766630122,
+          "truth": 1336.6659976015826,
+          "upper": 1379.1307154475576
+        },
+        {
+          "covered": true,
+          "index": 1262,
+          "lower": 1632.9789495655289,
+          "predicted_mean": 1697.4575149656648,
+          "predicted_standard_deviation": 101.77803045893715,
+          "truth": 1687.1805649066966,
+          "upper": 1757.3060067394665
+        },
+        {
+          "covered": true,
+          "index": 1382,
+          "lower": 1524.7520198454936,
+          "predicted_mean": 1589.2305852456295,
+          "predicted_standard_deviation": 129.64384070761017,
+          "truth": 1607.3913621738766,
+          "upper": 1649.0790770194312
+        },
+        {
+          "covered": true,
+          "index": 3182,
+          "lower": 1391.4122580360593,
+          "predicted_mean": 1455.8908234361952,
+          "predicted_standard_deviation": 96.8029232644461,
+          "truth": 1466.6794431146286,
+          "upper": 1515.739315209997
+        },
+        {
+          "covered": true,
+          "index": 6662,
+          "lower": 1484.5418143170687,
+          "predicted_mean": 1549.0203797172046,
+          "predicted_standard_deviation": 132.17255365707004,
+          "truth": 1563.0165705460022,
+          "upper": 1608.8688714910063
+        },
+        {
+          "covered": true,
+          "index": 7862,
+          "lower": 1349.6499431754498,
+          "predicted_mean": 1414.1285085755858,
+          "predicted_standard_deviation": 88.13654995462747,
+          "truth": 1427.338344121567,
+          "upper": 1473.9770003493875
+        },
+        {
+          "covered": true,
+          "index": 8942,
+          "lower": 1653.346830190905,
+          "predicted_mean": 1717.825395591041,
+          "predicted_standard_deviation": 126.93366429957412,
+          "truth": 1749.2441350122258,
+          "upper": 1777.6738873648426
+        },
+        {
+          "covered": true,
+          "index": 10982,
+          "lower": 1332.0274198937277,
+          "predicted_mean": 1396.5059852938637,
+          "predicted_standard_deviation": 79.35848794285084,
+          "truth": 1409.3093135717147,
+          "upper": 1456.3544770676654
+        },
+        {
+          "covered": true,
+          "index": 12182,
+          "lower": 1584.21866029922,
+          "predicted_mean": 1648.6972256993558,
+          "predicted_standard_deviation": 93.1848221106817,
+          "truth": 1638.7095424583215,
+          "upper": 1708.5457174731575
+        },
+        {
+          "covered": true,
+          "index": 15062,
+          "lower": 1407.5338414393857,
+          "predicted_mean": 1472.0124068395216,
+          "predicted_standard_deviation": 111.33094025468633,
+          "truth": 1508.3591235788779,
+          "upper": 1531.8608986133233
+        },
+        {
+          "covered": true,
+          "index": 3866,
+          "lower": 1771.0065271867295,
+          "predicted_mean": 1835.4850925868654,
+          "predicted_standard_deviation": 89.1976422566726,
+          "truth": 1805.281413459018,
+          "upper": 1895.3335843606671
+        },
+        {
+          "covered": true,
+          "index": 7646,
+          "lower": 1721.2590178912717,
+          "predicted_mean": 1785.7375832914076,
+          "predicted_standard_deviation": 91.4103220165511,
+          "truth": 1760.739851998632,
+          "upper": 1845.5860750652093
+        },
+        {
+          "covered": true,
+          "index": 8186,
+          "lower": 1558.2477356082127,
+          "predicted_mean": 1622.7263010083486,
+          "predicted_standard_deviation": 98.51092455164448,
+          "truth": 1645.6374870750328,
+          "upper": 1682.5747927821503
+        },
+        {
+          "covered": true,
+          "index": 9146,
+          "lower": 1665.8257114708806,
+          "predicted_mean": 1730.3042768710166,
+          "predicted_standard_deviation": 97.0524197161299,
+          "truth": 1746.8539113293514,
+          "upper": 1790.1527686448183
+        },
+        {
+          "covered": true,
+          "index": 11966,
+          "lower": 2008.9482381631208,
+          "predicted_mean": 2073.4268035632567,
+          "predicted_standard_deviation": 110.75091580383072,
+          "truth": 2032.1006094392924,
+          "upper": 2133.2752953370587
+        },
+        {
+          "covered": false,
+          "index": 13466,
+          "lower": 1858.4073545937406,
+          "predicted_mean": 1922.8859199938765,
+          "predicted_standard_deviation": 139.2185124597381,
+          "truth": 2003.6480869903971,
+          "upper": 1982.7344117676782
+        },
+        {
+          "covered": true,
+          "index": 566,
+          "lower": 1508.7072017311684,
+          "predicted_mean": 1573.1857671313044,
+          "predicted_standard_deviation": 114.92780424536255,
+          "truth": 1568.9693667709437,
+          "upper": 1633.034258905106
+        },
+        {
+          "covered": false,
+          "index": 1646,
+          "lower": 1943.7803744953824,
+          "predicted_mean": 2008.2589398955183,
+          "predicted_standard_deviation": 123.07431058888015,
+          "truth": 1921.0770853784834,
+          "upper": 2068.1074316693202
+        },
+        {
+          "covered": true,
+          "index": 3446,
+          "lower": 1842.748121553284,
+          "predicted_mean": 1907.2266869534199,
+          "predicted_standard_deviation": 119.15169356192207,
+          "truth": 1958.6199726607454,
+          "upper": 1967.0751787272216
+        },
+        {
+          "covered": true,
+          "index": 7046,
+          "lower": 1632.1695967582727,
+          "predicted_mean": 1696.6481621584087,
+          "predicted_standard_deviation": 95.52934420241247,
+          "truth": 1700.8069052466528,
+          "upper": 1756.4966539322104
+        },
+        {
+          "covered": true,
+          "index": 7766,
+          "lower": 1736.7466842446886,
+          "predicted_mean": 1801.2252496448245,
+          "predicted_standard_deviation": 121.28116491484302,
+          "truth": 1776.412402768073,
+          "upper": 1861.0737414186262
+        },
+        {
+          "covered": true,
+          "index": 8486,
+          "lower": 1588.9086548755076,
+          "predicted_mean": 1653.3872202756436,
+          "predicted_standard_deviation": 95.22196928339554,
+          "truth": 1649.405865557899,
+          "upper": 1713.2357120494453
+        },
+        {
+          "covered": true,
+          "index": 11366,
+          "lower": 1741.6789263658045,
+          "predicted_mean": 1806.1574917659404,
+          "predicted_standard_deviation": 128.12790017122995,
+          "truth": 1822.9228175402761,
+          "upper": 1866.0059835397421
+        },
+        {
+          "covered": true,
+          "index": 13166,
+          "lower": 1665.0606006895687,
+          "predicted_mean": 1729.5391660897046,
+          "predicted_standard_deviation": 97.23586632393688,
+          "truth": 1703.1063386465707,
+          "upper": 1789.3876578635063
+        },
+        {
+          "covered": true,
+          "index": 14246,
+          "lower": 1995.8676682374,
+          "predicted_mean": 2060.346233637536,
+          "predicted_standard_deviation": 83.02026630690798,
+          "truth": 2009.6245801680177,
+          "upper": 2120.194725411338
+        },
+        {
+          "covered": true,
+          "index": 14966,
+          "lower": 1702.0702789578959,
+          "predicted_mean": 1766.5488443580318,
+          "predicted_standard_deviation": 85.12387557396313,
+          "truth": 1736.7625868013206,
+          "upper": 1826.3973361318335
+        },
+        {
+          "covered": true,
+          "index": 15686,
+          "lower": 1824.5148407684371,
+          "predicted_mean": 1888.993406168573,
+          "predicted_standard_deviation": 101.90478407760483,
+          "truth": 1835.2426192404548,
+          "upper": 1948.8418979423748
+        },
+        {
+          "covered": true,
+          "index": 946,
+          "lower": 1820.5566994094415,
+          "predicted_mean": 1885.0352648095775,
+          "predicted_standard_deviation": 98.7260921237448,
+          "truth": 1841.5354556194638,
+          "upper": 1944.8837565833792
+        },
+        {
+          "covered": false,
+          "index": 3466,
+          "lower": 1984.760709198694,
+          "predicted_mean": 2049.23927459883,
+          "predicted_standard_deviation": 114.49485284438936,
+          "truth": 1969.6060240820652,
+          "upper": 2109.087766372632
+        },
+        {
+          "covered": true,
+          "index": 4546,
+          "lower": 1671.7125711409815,
+          "predicted_mean": 1736.1911365411174,
+          "predicted_standard_deviation": 152.25073506126728,
+          "truth": 1789.46542077921,
+          "upper": 1796.0396283149191
+        },
+        {
+          "covered": false,
+          "index": 5266,
+          "lower": 1976.6681523908608,
+          "predicted_mean": 2041.1467177909967,
+          "predicted_standard_deviation": 141.5988226940386,
+          "truth": 2133.67210164415,
+          "upper": 2100.9952095647986
+        },
+        {
+          "covered": true,
+          "index": 8866,
+          "lower": 1752.3880262248028,
+          "predicted_mean": 1816.8665916249388,
+          "predicted_standard_deviation": 88.60896256852575,
+          "truth": 1804.737468085848,
+          "upper": 1876.7150833987405
+        },
+        {
+          "covered": true,
+          "index": 11746,
+          "lower": 1719.2041655894545,
+          "predicted_mean": 1783.6827309895905,
+          "predicted_standard_deviation": 116.45184204208557,
+          "truth": 1775.7578649712034,
+          "upper": 1843.5312227633922
+        },
+        {
+          "covered": false,
+          "index": 12466,
+          "lower": 2084.0085731379127,
+          "predicted_mean": 2148.487138538049,
+          "predicted_standard_deviation": 93.17772385115168,
+          "truth": 2075.362606575713,
+          "upper": 2208.3356303118508
+        },
+        {
+          "covered": true,
+          "index": 13186,
+          "lower": 1891.2600959906817,
+          "predicted_mean": 1955.7386613908177,
+          "predicted_standard_deviation": 128.82714198856536,
+          "truth": 1955.8384835058478,
+          "upper": 2015.5871531646194
+        },
+        {
+          "covered": true,
+          "index": 14986,
+          "lower": 1724.6168051802106,
+          "predicted_mean": 1789.0953705803465,
+          "predicted_standard_deviation": 106.07723635167707,
+          "truth": 1762.1219344761655,
+          "upper": 1848.9438623541482
+        },
+        {
+          "covered": true,
+          "index": 16066,
+          "lower": 2163.365435186639,
+          "predicted_mean": 2227.844000586775,
+          "predicted_standard_deviation": 92.95944403230197,
+          "truth": 2178.8921273867873,
+          "upper": 2287.692492360577
+        },
+        {
+          "covered": true,
+          "index": 797,
+          "lower": 1440.7777913393188,
+          "predicted_mean": 1505.2563567394548,
+          "predicted_standard_deviation": 91.84522324950046,
+          "truth": 1528.9831115326465,
+          "upper": 1565.1048485132565
+        },
+        {
+          "covered": true,
+          "index": 2129,
+          "lower": 1239.7451937518997,
+          "predicted_mean": 1304.2237591520357,
+          "predicted_standard_deviation": 99.38587498874261,
+          "truth": 1350.0872270336404,
+          "upper": 1364.0722509258374
+        },
+        {
+          "covered": true,
+          "index": 3329,
+          "lower": 1527.3337348908628,
+          "predicted_mean": 1591.8123002909988,
+          "predicted_standard_deviation": 132.44166011593543,
+          "truth": 1626.7592263085178,
+          "upper": 1651.6607920648005
+        },
+        {
+          "covered": true,
+          "index": 4829,
+          "lower": 1479.1209155044578,
+          "predicted_mean": 1543.5994809045937,
+          "predicted_standard_deviation": 91.15392226259196,
+          "truth": 1562.3893406357604,
+          "upper": 1603.4479726783954
+        },
+        {
+          "covered": true,
+          "index": 5597,
+          "lower": 1242.556026600568,
+          "predicted_mean": 1307.034592000704,
+          "predicted_standard_deviation": 112.65993175461823,
+          "truth": 1341.974191577649,
+          "upper": 1366.8830837745056
+        },
+        {
+          "covered": true,
+          "index": 6017,
+          "lower": 1477.9262484858275,
+          "predicted_mean": 1542.4048138859634,
+          "predicted_standard_deviation": 136.26714286657636,
+          "truth": 1576.6421334423765,
+          "upper": 1602.2533056597651
+        },
+        {
+          "covered": false,
+          "index": 8897,
+          "lower": 1238.5725964517685,
+          "predicted_mean": 1303.0511618519045,
+          "predicted_standard_deviation": 112.44483612381089,
+          "truth": 1374.2417530957446,
+          "upper": 1362.8996536257062
+        },
+        {
+          "covered": true,
+          "index": 9917,
+          "lower": 1447.535254496431,
+          "predicted_mean": 1512.013819896567,
+          "predicted_standard_deviation": 84.0767324541069,
+          "truth": 1507.9503398123281,
+          "upper": 1571.8623116703686
+        },
+        {
+          "covered": true,
+          "index": 13217,
+          "lower": 1143.6538921450865,
+          "predicted_mean": 1208.1324575452225,
+          "predicted_standard_deviation": 121.17373495188298,
+          "truth": 1248.4213529023098,
+          "upper": 1267.9809493190241
+        },
+        {
+          "covered": true,
+          "index": 13697,
+          "lower": 1273.6308072169682,
+          "predicted_mean": 1338.109372617104,
+          "predicted_standard_deviation": 116.77667313111475,
+          "truth": 1395.9952155065062,
+          "upper": 1397.9578643909058
+        },
+        {
+          "covered": true,
+          "index": 15197,
+          "lower": 1189.309291113502,
+          "predicted_mean": 1253.787856513638,
+          "predicted_standard_deviation": 117.43383389715748,
+          "truth": 1303.1546436034603,
+          "upper": 1313.6363482874397
+        },
+        {
+          "covered": true,
+          "index": 15917,
+          "lower": 1330.8941351012238,
+          "predicted_mean": 1395.3727005013598,
+          "predicted_standard_deviation": 94.17129052562471,
+          "truth": 1432.1725199333982,
+          "upper": 1455.2211922751615
+        }
+      ]
+    },
+    "ood": {
+      "axial_thrust_n": [
+        {
+          "covered": true,
+          "index": 2148,
+          "lower": 0.01739797922080197,
+          "predicted_mean": 0.027742197625443575,
+          "predicted_standard_deviation": 0.0052882763212931975,
+          "truth": 0.033185442676273866,
+          "upper": 0.03808641603008518
+        },
+        {
+          "covered": true,
+          "index": 5748,
+          "lower": 0.0196212026680961,
+          "predicted_mean": 0.0294714329366072,
+          "predicted_standard_deviation": 0.005035734692616207,
+          "truth": 0.033705312867939576,
+          "upper": 0.039321663205118304
+        },
+        {
+          "covered": true,
+          "index": 6468,
+          "lower": 0.013309788628668755,
+          "predicted_mean": 0.02430369872457911,
+          "predicted_standard_deviation": 0.005620418301738603,
+          "truth": 0.029959188081395922,
+          "upper": 0.03529760882048947
+        },
+        {
+          "covered": true,
+          "index": 10068,
+          "lower": 0.016882575147011362,
+          "predicted_mean": 0.027073924144017936,
+          "predicted_standard_deviation": 0.005210124871176512,
+          "truth": 0.035805067688315505,
+          "upper": 0.03726527314102451
+        },
+        {
+          "covered": true,
+          "index": 11148,
+          "lower": 0.015454961658892862,
+          "predicted_mean": 0.025361904796104316,
+          "predicted_standard_deviation": 0.005064728020959517,
+          "truth": 0.030606507761639982,
+          "upper": 0.03526884793331577
+        },
+        {
+          "covered": true,
+          "index": 12948,
+          "lower": 0.013396997724971403,
+          "predicted_mean": 0.02413285107273959,
+          "predicted_standard_deviation": 0.005488491911810699,
+          "truth": 0.03007640407653963,
+          "upper": 0.03486870442050778
+        },
+        {
+          "covered": false,
+          "index": 15468,
+          "lower": 0.014375371950585279,
+          "predicted_mean": 0.02540062534042203,
+          "predicted_standard_deviation": 0.005636441938577896,
+          "truth": 0.03719346894612538,
+          "upper": 0.036425878730258786
+        },
+        {
+          "covered": true,
+          "index": 428,
+          "lower": 0.013557047017477683,
+          "predicted_mean": 0.02304084096045683,
+          "predicted_standard_deviation": 0.004848401395138381,
+          "truth": 0.02584921062136458,
+          "upper": 0.03252463490343598
+        },
+        {
+          "covered": true,
+          "index": 1628,
+          "lower": 0.009507572353257278,
+          "predicted_mean": 0.019570546766216126,
+          "predicted_standard_deviation": 0.005144495913383933,
+          "truth": 0.021302523260469178,
+          "upper": 0.029633521179174976
+        },
+        {
+          "covered": true,
+          "index": 2876,
+          "lower": 0.012072145923677027,
+          "predicted_mean": 0.02063111362550958,
+          "predicted_standard_deviation": 0.004375602337630898,
+          "truth": 0.021088041935285604,
+          "upper": 0.029190081327342136
+        },
+        {
+          "covered": true,
+          "index": 3776,
+          "lower": 0.012759537187034884,
+          "predicted_mean": 0.022313724409950317,
+          "predicted_standard_deviation": 0.004884388562162832,
+          "truth": 0.024380548404520325,
+          "upper": 0.03186791163286575
+        },
+        {
+          "covered": true,
+          "index": 4928,
+          "lower": 0.012087182006758831,
+          "predicted_mean": 0.0216512747231613,
+          "predicted_standard_deviation": 0.004889452549078915,
+          "truth": 0.025107204465935572,
+          "upper": 0.03121536743956377
+        },
+        {
+          "covered": true,
+          "index": 10976,
+          "lower": 0.014721723840766072,
+          "predicted_mean": 0.021802844719942933,
+          "predicted_standard_deviation": 0.003620082485571155,
+          "truth": 0.02188033657449654,
+          "upper": 0.028883965599119796
+        },
+        {
+          "covered": true,
+          "index": 11228,
+          "lower": 0.009773277806126728,
+          "predicted_mean": 0.019181548683481212,
+          "predicted_standard_deviation": 0.004809791727009646,
+          "truth": 0.020020291619139843,
+          "upper": 0.028589819560835696
+        },
+        {
+          "covered": true,
+          "index": 15296,
+          "lower": 0.012999731107602702,
+          "predicted_mean": 0.02195943973048078,
+          "predicted_standard_deviation": 0.004580473178601091,
+          "truth": 0.022763381141092054,
+          "upper": 0.03091914835335886
+        },
+        {
+          "covered": true,
+          "index": 2588,
+          "lower": 0.011222041905673143,
+          "predicted_mean": 0.021691760967878643,
+          "predicted_standard_deviation": 0.0053524360412198465,
+          "truth": 0.026720534496829148,
+          "upper": 0.03216148003008415
+        },
+        {
+          "covered": true,
+          "index": 4988,
+          "lower": 0.010675444507040882,
+          "predicted_mean": 0.02075837162444242,
+          "predicted_standard_deviation": 0.005154696337458766,
+          "truth": 0.02409946638113771,
+          "upper": 0.030841298741843957
+        },
+        {
+          "covered": true,
+          "index": 6188,
+          "lower": 0.01287209202423837,
+          "predicted_mean": 0.02209987467994284,
+          "predicted_standard_deviation": 0.004717520706475528,
+          "truth": 0.023639922080570256,
+          "upper": 0.03132765733564732
+        },
+        {
+          "covered": true,
+          "index": 6608,
+          "lower": 0.0175212094672698,
+          "predicted_mean": 0.02518277922079483,
+          "predicted_standard_deviation": 0.003916825450371603,
+          "truth": 0.027052211805195084,
+          "upper": 0.03284434897431986
+        },
+        {
+          "covered": true,
+          "index": 7808,
+          "lower": 0.013900262867869558,
+          "predicted_mean": 0.023942380728251507,
+          "predicted_standard_deviation": 0.005133833414892338,
+          "truth": 0.026701804690558054,
+          "upper": 0.03398449858863346
+        },
+        {
+          "covered": true,
+          "index": 10688,
+          "lower": 0.013618914825215708,
+          "predicted_mean": 0.022562955896350705,
+          "predicted_standard_deviation": 0.0045724634537814375,
+          "truth": 0.02369527975285472,
+          "upper": 0.031506996967485705
+        },
+        {
+          "covered": true,
+          "index": 13088,
+          "lower": 0.014035877607461255,
+          "predicted_mean": 0.02228697542012965,
+          "predicted_standard_deviation": 0.004218209968172087,
+          "truth": 0.02341220179713494,
+          "upper": 0.030538073232798047
+        },
+        {
+          "covered": true,
+          "index": 14288,
+          "lower": 0.014306890267048906,
+          "predicted_mean": 0.02405618367414346,
+          "predicted_standard_deviation": 0.004984132725865848,
+          "truth": 0.02842872189232737,
+          "upper": 0.033805477081238024
+        },
+        {
+          "covered": true,
+          "index": 108,
+          "lower": 0.02762658169087232,
+          "predicted_mean": 0.036240580191049095,
+          "predicted_standard_deviation": 0.0044037357408946,
+          "truth": 0.04449240496212619,
+          "upper": 0.044854578691225874
+        },
+        {
+          "covered": false,
+          "index": 1188,
+          "lower": 0.016398277102791924,
+          "predicted_mean": 0.027569909635799337,
+          "predicted_standard_deviation": 0.005711275369822274,
+          "truth": 0.0403354284280443,
+          "upper": 0.03874154216880676
+        },
+        {
+          "covered": false,
+          "index": 4788,
+          "lower": 0.022977530535163913,
+          "predicted_mean": 0.03313935163637116,
+          "predicted_standard_deviation": 0.005195029320593096,
+          "truth": 0.045748044718130966,
+          "upper": 0.043301172737578414
+        },
+        {
+          "covered": true,
+          "index": 5508,
+          "lower": 0.020808473041746302,
+          "predicted_mean": 0.030545827103073256,
+          "predicted_standard_deviation": 0.004978028972344343,
+          "truth": 0.0376118905565348,
+          "upper": 0.04028318116440021
+        },
+        {
+          "covered": true,
+          "index": 9108,
+          "lower": 0.02839426231719276,
+          "predicted_mean": 0.03689296646870183,
+          "predicted_standard_deviation": 0.004344793793790623,
+          "truth": 0.04474261778073388,
+          "upper": 0.0453916706202109
+        },
+        {
+          "covered": true,
+          "index": 10188,
+          "lower": 0.019860337814627173,
+          "predicted_mean": 0.029843993041871457,
+          "predicted_standard_deviation": 0.005103945554214179,
+          "truth": 0.03897158946258238,
+          "upper": 0.039827648269115744
+        },
+        {
+          "covered": true,
+          "index": 11988,
+          "lower": 0.028796875510050463,
+          "predicted_mean": 0.03600913550896969,
+          "predicted_standard_deviation": 0.0036871247573601576,
+          "truth": 0.042634120951831,
+          "upper": 0.04322139550788892
+        },
+        {
+          "covered": true,
+          "index": 12708,
+          "lower": 0.022163680644240447,
+          "predicted_mean": 0.03155125686867455,
+          "predicted_standard_deviation": 0.004799211996503651,
+          "truth": 0.03832011061768976,
+          "upper": 0.040938833093108654
+        },
+        {
+          "covered": false,
+          "index": 15588,
+          "lower": 0.017676716378450627,
+          "predicted_mean": 0.028879223301125315,
+          "predicted_standard_deviation": 0.005727059288667082,
+          "truth": 0.050141186350028316,
+          "upper": 0.04008173022380001
+        },
+        {
+          "covered": false,
+          "index": 16308,
+          "lower": 0.01662764404875944,
+          "predicted_mean": 0.027764445083986917,
+          "predicted_standard_deviation": 0.005693468458005507,
+          "truth": 0.04398920629824034,
+          "upper": 0.038901246119214396
+        },
+        {
+          "covered": true,
+          "index": 48,
+          "lower": 0.016876053941063427,
+          "predicted_mean": 0.02707921593322494,
+          "predicted_standard_deviation": 0.005216164030455417,
+          "truth": 0.032484140292309165,
+          "upper": 0.03728237792538645
+        },
+        {
+          "covered": true,
+          "index": 168,
+          "lower": 0.019894187302279997,
+          "predicted_mean": 0.02942645714328053,
+          "predicted_standard_deviation": 0.0048731837357301935,
+          "truth": 0.03625834128586264,
+          "upper": 0.038958726984281065
+        },
+        {
+          "covered": true,
+          "index": 1848,
+          "lower": 0.02183687546362724,
+          "predicted_mean": 0.030770474251199692,
+          "predicted_standard_deviation": 0.00456712504359481,
+          "truth": 0.033754972486917875,
+          "upper": 0.03970407303877215
+        },
+        {
+          "covered": false,
+          "index": 5448,
+          "lower": 0.015653337207406293,
+          "predicted_mean": 0.026797874230952784,
+          "predicted_standard_deviation": 0.005697423328470239,
+          "truth": 0.04120899636184635,
+          "upper": 0.03794241125449928
+        },
+        {
+          "covered": true,
+          "index": 6168,
+          "lower": 0.025116511813381193,
+          "predicted_mean": 0.033860317718098804,
+          "predicted_standard_deviation": 0.004470097199722056,
+          "truth": 0.03726846047609843,
+          "upper": 0.04260412362281642
+        },
+        {
+          "covered": true,
+          "index": 6648,
+          "lower": 0.01846041301904177,
+          "predicted_mean": 0.027651400125742027,
+          "predicted_standard_deviation": 0.004698709712457782,
+          "truth": 0.03252224215842165,
+          "upper": 0.036842387232442285
+        },
+        {
+          "covered": true,
+          "index": 9768,
+          "lower": 0.027965061398655063,
+          "predicted_mean": 0.03498888445985629,
+          "predicted_standard_deviation": 0.0035907901135224015,
+          "truth": 0.036563512152701025,
+          "upper": 0.04201270752105752
+        },
+        {
+          "covered": true,
+          "index": 10488,
+          "lower": 0.018570042323677753,
+          "predicted_mean": 0.027768848317055336,
+          "predicted_standard_deviation": 0.004702706963062624,
+          "truth": 0.031168743685783727,
+          "upper": 0.036967654310432925
+        },
+        {
+          "covered": true,
+          "index": 10968,
+          "lower": 0.016528902580333685,
+          "predicted_mean": 0.0256482987406279,
+          "predicted_standard_deviation": 0.004662110262224968,
+          "truth": 0.029433752176815216,
+          "upper": 0.034767694900922116
+        },
+        {
+          "covered": true,
+          "index": 11568,
+          "lower": 0.02720343219435675,
+          "predicted_mean": 0.03543399342480708,
+          "predicted_standard_deviation": 0.004207711048174869,
+          "truth": 0.03951624461221139,
+          "upper": 0.04366455465525742
+        },
+        {
+          "covered": true,
+          "index": 12648,
+          "lower": 0.02093722134062184,
+          "predicted_mean": 0.03084931741050151,
+          "predicted_standard_deviation": 0.005067362355497767,
+          "truth": 0.038902618082463515,
+          "upper": 0.04076141348038118
+        },
+        {
+          "covered": true,
+          "index": 16248,
+          "lower": 0.025312150276424184,
+          "predicted_mean": 0.034151356470705954,
+          "predicted_standard_deviation": 0.004518868704016694,
+          "truth": 0.04011805306425514,
+          "upper": 0.04299056266498773
+        },
+        {
+          "covered": false,
+          "index": 16368,
+          "lower": 0.0145677240125432,
+          "predicted_mean": 0.025669746977238533,
+          "predicted_standard_deviation": 0.00567568885980862,
+          "truth": 0.038144209131105,
+          "upper": 0.036771769941933874
+        },
+        {
+          "covered": true,
+          "index": 128,
+          "lower": 0.015169233288399342,
+          "predicted_mean": 0.024050921200714705,
+          "predicted_standard_deviation": 0.004540586639077318,
+          "truth": 0.027878130099505283,
+          "upper": 0.03293260911303007
+        },
+        {
+          "covered": true,
+          "index": 4028,
+          "lower": 0.014151158941375296,
+          "predicted_mean": 0.023728100247217,
+          "predicted_standard_deviation": 0.0048960211353785855,
+          "truth": 0.02778971519204382,
+          "upper": 0.03330504155305871
+        },
+        {
+          "covered": true,
+          "index": 6176,
+          "lower": 0.01374248515666297,
+          "predicted_mean": 0.023454078540700158,
+          "predicted_standard_deviation": 0.004964859337442705,
+          "truth": 0.028311588605291482,
+          "upper": 0.03316567192473735
+        },
+        {
+          "covered": true,
+          "index": 7376,
+          "lower": 0.016221280684210217,
+          "predicted_mean": 0.023073174464145887,
+          "predicted_standard_deviation": 0.003502894681360449,
+          "truth": 0.02315658232089414,
+          "upper": 0.029925068244081556
+        },
+        {
+          "covered": true,
+          "index": 8096,
+          "lower": 0.011297007036483472,
+          "predicted_mean": 0.020577544958342395,
+          "predicted_standard_deviation": 0.004744490789077702,
+          "truth": 0.02184786605647091,
+          "upper": 0.02985808288020132
+        },
+        {
+          "covered": true,
+          "index": 8528,
+          "lower": 0.012604339260442996,
+          "predicted_mean": 0.020457098593663837,
+          "predicted_standard_deviation": 0.0040145673277791494,
+          "truth": 0.020750530258709196,
+          "upper": 0.028309857926884677
+        },
+        {
+          "covered": true,
+          "index": 8876,
+          "lower": 0.014805801578240478,
+          "predicted_mean": 0.023312037905187818,
+          "predicted_standard_deviation": 0.0043486444689658675,
+          "truth": 0.023861851741132693,
+          "upper": 0.03181827423213516
+        },
+        {
+          "covered": true,
+          "index": 10076,
+          "lower": 0.014053816795153133,
+          "predicted_mean": 0.023776059282260394,
+          "predicted_standard_deviation": 0.004970303479997082,
+          "truth": 0.02854568048126796,
+          "upper": 0.03349830176936766
+        },
+        {
+          "covered": true,
+          "index": 12128,
+          "lower": 0.014937413659626357,
+          "predicted_mean": 0.024079310033130817,
+          "predicted_standard_deviation": 0.004673613049587849,
+          "truth": 0.026442015415087405,
+          "upper": 0.033221206406635284
+        },
+        {
+          "covered": true,
+          "index": 13628,
+          "lower": 0.01854722114986158,
+          "predicted_mean": 0.025805560223348664,
+          "predicted_standard_deviation": 0.0037106817695395367,
+          "truth": 0.02721449803193842,
+          "upper": 0.03306389929683575
+        },
+        {
+          "covered": true,
+          "index": 14828,
+          "lower": 0.018845538537348654,
+          "predicted_mean": 0.024975992386434154,
+          "predicted_standard_deviation": 0.00313407283766867,
+          "truth": 0.02601352440251146,
+          "upper": 0.031106446235519655
+        },
+        {
+          "covered": true,
+          "index": 148,
+          "lower": 0.002516910049767522,
+          "predicted_mean": 0.01040641693818703,
+          "predicted_standard_deviation": 0.0040333537859165115,
+          "truth": 0.01011379049251017,
+          "upper": 0.018295923826606542
+        },
+        {
+          "covered": true,
+          "index": 4468,
+          "lower": 0.0014436778360030157,
+          "predicted_mean": 0.011990000497567172,
+          "predicted_standard_deviation": 0.005391598110770934,
+          "truth": 0.008488272586157085,
+          "upper": 0.022536323159131334
+        },
+        {
+          "covered": true,
+          "index": 4948,
+          "lower": 0.0021026047101879003,
+          "predicted_mean": 0.01023973535736452,
+          "predicted_standard_deviation": 0.004159946517121535,
+          "truth": 0.0092008043737014,
+          "upper": 0.01837686600454114
+        },
+        {
+          "covered": true,
+          "index": 8068,
+          "lower": 0.003134755966146868,
+          "predicted_mean": 0.01228319939879994,
+          "predicted_standard_deviation": 0.0046769601036150705,
+          "truth": 0.011691815047851661,
+          "upper": 0.021431642831453015
+        },
+        {
+          "covered": true,
+          "index": 9268,
+          "lower": 0.003729873321113806,
+          "predicted_mean": 0.011436570017109833,
+          "predicted_standard_deviation": 0.003939895703916778,
+          "truth": 0.00924274692493442,
+          "upper": 0.01914326671310586
+        },
+        {
+          "covered": true,
+          "index": 9868,
+          "lower": 0.0033150739612225126,
+          "predicted_mean": 0.013495941454796203,
+          "predicted_standard_deviation": 0.005204766410609711,
+          "truth": 0.010915589205883305,
+          "upper": 0.023676808948369897
+        },
+        {
+          "covered": true,
+          "index": 10948,
+          "lower": 0.0025955451086132563,
+          "predicted_mean": 0.01090937014368714,
+          "predicted_standard_deviation": 0.00425027801545912,
+          "truth": 0.00988708452463454,
+          "upper": 0.01922319517876103
+        },
+        {
+          "covered": true,
+          "index": 14548,
+          "lower": 0.004104668146164348,
+          "predicted_mean": 0.014031472109591435,
+          "predicted_standard_deviation": 0.005074881474114598,
+          "truth": 0.012076118629745706,
+          "upper": 0.023958276073018526
+        },
+        {
+          "covered": true,
+          "index": 14668,
+          "lower": 0.0023549676680566785,
+          "predicted_mean": 0.012408624930704028,
+          "predicted_standard_deviation": 0.005139732705237428,
+          "truth": 0.009551723002898938,
+          "upper": 0.02246228219335138
+        },
+        {
+          "covered": true,
+          "index": 15268,
+          "lower": 0.0029888077851047946,
+          "predicted_mean": 0.011729448740590225,
+          "predicted_standard_deviation": 0.004468479182252983,
+          "truth": 0.009966250547436982,
+          "upper": 0.020470089696075656
+        },
+        {
+          "covered": true,
+          "index": 15748,
+          "lower": 0.0015557721940964422,
+          "predicted_mean": 0.01115506266910891,
+          "predicted_standard_deviation": 0.004907446704474584,
+          "truth": 0.00800299587612071,
+          "upper": 0.02075435314412138
+        },
+        {
+          "covered": true,
+          "index": 1508,
+          "lower": 0.008103776973306743,
+          "predicted_mean": 0.019216852760336692,
+          "predicted_standard_deviation": 0.005681339395822959,
+          "truth": 0.022727312091759762,
+          "upper": 0.030329928547366644
+        },
+        {
+          "covered": true,
+          "index": 2228,
+          "lower": 0.017892655966029573,
+          "predicted_mean": 0.02233513339823757,
+          "predicted_standard_deviation": 0.00227112840174404,
+          "truth": 0.02162919001518719,
+          "upper": 0.02677761083044557
+        },
+        {
+          "covered": true,
+          "index": 2708,
+          "lower": 0.012030619076847623,
+          "predicted_mean": 0.0209006663522188,
+          "predicted_standard_deviation": 0.004534635594512261,
+          "truth": 0.022390418929656226,
+          "upper": 0.02977071362758998
+        },
+        {
+          "covered": true,
+          "index": 4388,
+          "lower": 0.010128252514515892,
+          "predicted_mean": 0.01960371814360756,
+          "predicted_standard_deviation": 0.0048441437099847415,
+          "truth": 0.02107123308540113,
+          "upper": 0.02907918377269923
+        },
+        {
+          "covered": true,
+          "index": 8708,
+          "lower": 0.011454373136633908,
+          "predicted_mean": 0.021219342661574908,
+          "predicted_standard_deviation": 0.004992146829935804,
+          "truth": 0.024733614910275217,
+          "upper": 0.03098431218651591
+        },
+        {
+          "covered": true,
+          "index": 9188,
+          "lower": 0.007804374888359702,
+          "predicted_mean": 0.018307339734013522,
+          "predicted_standard_deviation": 0.005369432288061822,
+          "truth": 0.02070335390162953,
+          "upper": 0.028810304579667347
+        },
+        {
+          "covered": true,
+          "index": 15188,
+          "lower": 0.0162804770146658,
+          "predicted_mean": 0.022371952083654934,
+          "predicted_standard_deviation": 0.0031141457100933257,
+          "truth": 0.023005896106578796,
+          "upper": 0.028463427152644067
+        },
+        {
+          "covered": true,
+          "index": 1008,
+          "lower": 0.019927974428122615,
+          "predicted_mean": 0.030058394886390595,
+          "predicted_standard_deviation": 0.00517897636520938,
+          "truth": 0.03690509169632003,
+          "upper": 0.040188815344658575
+        },
+        {
+          "covered": true,
+          "index": 2088,
+          "lower": 0.022479121422272076,
+          "predicted_mean": 0.03230679771955416,
+          "predicted_standard_deviation": 0.005024204422533352,
+          "truth": 0.040914916362158354,
+          "upper": 0.04213447401683624
+        },
+        {
+          "covered": true,
+          "index": 2808,
+          "lower": 0.028109143282349577,
+          "predicted_mean": 0.03536537102821557,
+          "predicted_standard_deviation": 0.003709602395204197,
+          "truth": 0.03601649035089685,
+          "upper": 0.042621598774081566
+        },
+        {
+          "covered": false,
+          "index": 3888,
+          "lower": 0.024404381475290622,
+          "predicted_mean": 0.03347135502096439,
+          "predicted_standard_deviation": 0.0046353102411162495,
+          "truth": 0.04731475852035954,
+          "upper": 0.04253832856663816
+        },
+        {
+          "covered": false,
+          "index": 6408,
+          "lower": 0.02530201093292469,
+          "predicted_mean": 0.03463838440273463,
+          "predicted_standard_deviation": 0.004773035604603185,
+          "truth": 0.04600837398940412,
+          "upper": 0.043974757872544575
+        },
+        {
+          "covered": true,
+          "index": 9288,
+          "lower": 0.02572371300655758,
+          "predicted_mean": 0.03494294319108006,
+          "predicted_standard_deviation": 0.004713148425354706,
+          "truth": 0.04258429275645232,
+          "upper": 0.04416217337560254
+        },
+        {
+          "covered": true,
+          "index": 10728,
+          "lower": 0.033408670039655586,
+          "predicted_mean": 0.039564347392234286,
+          "predicted_standard_deviation": 0.003146967853129989,
+          "truth": 0.041586352245515476,
+          "upper": 0.04572002474481299
+        },
+        {
+          "covered": true,
+          "index": 12888,
+          "lower": 0.03021951357625067,
+          "predicted_mean": 0.03750673238924071,
+          "predicted_standard_deviation": 0.0037254459630826726,
+          "truth": 0.041329435803104234,
+          "upper": 0.04479395120223075
+        },
+        {
+          "covered": true,
+          "index": 13608,
+          "lower": 0.02502925186218948,
+          "predicted_mean": 0.03410891569599346,
+          "predicted_standard_deviation": 0.004641797899014046,
+          "truth": 0.03800721653417363,
+          "upper": 0.04318857952979745
+        },
+        {
+          "covered": false,
+          "index": 2628,
+          "lower": 0.02469789051884336,
+          "predicted_mean": 0.03371064144722055,
+          "predicted_standard_deviation": 0.004607590004370342,
+          "truth": 0.04284679370149999,
+          "upper": 0.042723392375597746
+        },
+        {
+          "covered": true,
+          "index": 3276,
+          "lower": 0.023877120822726704,
+          "predicted_mean": 0.032902310309517985,
+          "predicted_standard_deviation": 0.004613948970447734,
+          "truth": 0.03815430734965413,
+          "upper": 0.04192749979630927
+        },
+        {
+          "covered": true,
+          "index": 4428,
+          "lower": 0.031173921819377247,
+          "predicted_mean": 0.03884257087814422,
+          "predicted_standard_deviation": 0.003920444604648678,
+          "truth": 0.04303662200791298,
+          "upper": 0.04651121993691119
+        },
+        {
+          "covered": true,
+          "index": 5076,
+          "lower": 0.029570556448103975,
+          "predicted_mean": 0.03800498949079252,
+          "predicted_standard_deviation": 0.004311936465220849,
+          "truth": 0.04315773750957178,
+          "upper": 0.046439422533481066
+        },
+        {
+          "covered": true,
+          "index": 8676,
+          "lower": 0.02983822403024995,
+          "predicted_mean": 0.037004286840283895,
+          "predicted_standard_deviation": 0.003663507361580625,
+          "truth": 0.0431067111306684,
+          "upper": 0.044170349650317846
+        },
+        {
+          "covered": true,
+          "index": 9828,
+          "lower": 0.021967570004430118,
+          "predicted_mean": 0.031676885353848126,
+          "predicted_standard_deviation": 0.0049636947374638125,
+          "truth": 0.03808685108979389,
+          "upper": 0.04138620070326614
+        },
+        {
+          "covered": false,
+          "index": 13428,
+          "lower": 0.01788054819063036,
+          "predicted_mean": 0.028784373115216276,
+          "predicted_standard_deviation": 0.005574364046136177,
+          "truth": 0.04498362619297519,
+          "upper": 0.0396881980398022
+        },
+        {
+          "covered": true,
+          "index": 15876,
+          "lower": 0.02310149430326169,
+          "predicted_mean": 0.03292571372317277,
+          "predicted_standard_deviation": 0.005022437162598227,
+          "truth": 0.041388180211287984,
+          "upper": 0.04274993314308385
+        },
+        {
+          "covered": true,
+          "index": 368,
+          "lower": 0.007807719125842472,
+          "predicted_mean": 0.017191958853637574,
+          "predicted_standard_deviation": 0.004797506278828147,
+          "truth": 0.018710214796418306,
+          "upper": 0.02657619858143268
+        },
+        {
+          "covered": true,
+          "index": 1448,
+          "lower": 0.010184796743685354,
+          "predicted_mean": 0.017759914225843335,
+          "predicted_standard_deviation": 0.0038726284427574535,
+          "truth": 0.018237031026508334,
+          "upper": 0.025335031708001318
+        },
+        {
+          "covered": true,
+          "index": 2168,
+          "lower": 0.013531235449742943,
+          "predicted_mean": 0.01891036006579056,
+          "predicted_standard_deviation": 0.0027499706815515136,
+          "truth": 0.018475396339432872,
+          "upper": 0.02428948468183818
+        },
+        {
+          "covered": true,
+          "index": 5048,
+          "lower": 0.009413322353975592,
+          "predicted_mean": 0.01871774065924338,
+          "predicted_standard_deviation": 0.004756699161057535,
+          "truth": 0.01994799934025291,
+          "upper": 0.028022158964511167
+        },
+        {
+          "covered": true,
+          "index": 5768,
+          "lower": 0.010360699888207965,
+          "predicted_mean": 0.015637633072963092,
+          "predicted_standard_deviation": 0.0026977273408559372,
+          "truth": 0.015606970235275224,
+          "upper": 0.02091456625771822
+        },
+        {
+          "covered": true,
+          "index": 8648,
+          "lower": 0.00835778708145855,
+          "predicted_mean": 0.01891897722103903,
+          "predicted_standard_deviation": 0.005399198813779659,
+          "truth": 0.021354269750417352,
+          "upper": 0.02948016736061951
+        },
+        {
+          "covered": true,
+          "index": 9368,
+          "lower": 0.01198392002929514,
+          "predicted_mean": 0.018962585547804115,
+          "predicted_standard_deviation": 0.0035677042162215425,
+          "truth": 0.018546802550238287,
+          "upper": 0.025941251066313092
+        },
+        {
+          "covered": true,
+          "index": 12248,
+          "lower": 0.010359628451796126,
+          "predicted_mean": 0.01766761196984785,
+          "predicted_standard_deviation": 0.0037360615063553367,
+          "truth": 0.016888810226086664,
+          "upper": 0.024975595487899578
+        },
+        {
+          "covered": true,
+          "index": 14768,
+          "lower": 0.01207266448198493,
+          "predicted_mean": 0.01759595151340484,
+          "predicted_standard_deviation": 0.0028236708547121694,
+          "truth": 0.017229079233150982,
+          "upper": 0.023119238544824755
+        },
+        {
+          "covered": true,
+          "index": 15848,
+          "lower": 0.008767667278657375,
+          "predicted_mean": 0.018845427295485703,
+          "predicted_standard_deviation": 0.005152054759860329,
+          "truth": 0.021722451669464207,
+          "upper": 0.028923187312314035
+        }
+      ],
+      "specific_impulse_s": [
+        {
+          "covered": true,
+          "index": 2148,
+          "lower": 1889.0444691862594,
+          "predicted_mean": 2215.4809919501536,
+          "predicted_standard_deviation": 172.89301678900938,
+          "truth": 2408.0274161913726,
+          "upper": 2541.9175147140477
+        },
+        {
+          "covered": true,
+          "index": 5748,
+          "lower": 1868.9272143739697,
+          "predicted_mean": 2123.132895187403,
+          "predicted_standard_deviation": 159.6074276775444,
+          "truth": 2263.676391057842,
+          "upper": 2377.3385760008364
+        },
+        {
+          "covered": true,
+          "index": 6468,
+          "lower": 1663.7745735712226,
+          "predicted_mean": 1974.8259924617748,
+          "predicted_standard_deviation": 181.72862601182786,
+          "truth": 2107.4085242210467,
+          "upper": 2285.8774113523273
+        },
+        {
+          "covered": true,
+          "index": 10068,
+          "lower": 1878.7771750463596,
+          "predicted_mean": 2153.674255791806,
+          "predicted_standard_deviation": 168.41316471544934,
+          "truth": 2428.540085584888,
+          "upper": 2428.5713365372526
+        },
+        {
+          "covered": true,
+          "index": 11148,
+          "lower": 1663.2839486783585,
+          "predicted_mean": 1936.0728322916277,
+          "predicted_standard_deviation": 174.49861440191202,
+          "truth": 2123.207831237697,
+          "upper": 2208.861715904897
+        },
+        {
+          "covered": true,
+          "index": 12948,
+          "lower": 1758.5835739479494,
+          "predicted_mean": 2012.5507754950113,
+          "predicted_standard_deviation": 168.412186865086,
+          "truth": 2105.0302757128047,
+          "upper": 2266.5179770420737
+        },
+        {
+          "covered": false,
+          "index": 15468,
+          "lower": 1688.5838703602612,
+          "predicted_mean": 2048.057359264504,
+          "predicted_standard_deviation": 197.69139466319186,
+          "truth": 2505.035167702385,
+          "upper": 2407.530848168747
+        },
+        {
+          "covered": true,
+          "index": 428,
+          "lower": 2061.1107948756494,
+          "predicted_mean": 2329.5809916711146,
+          "predicted_standard_deviation": 149.32666275040924,
+          "truth": 2420.5427332049453,
+          "upper": 2598.05118846658
+        },
+        {
+          "covered": true,
+          "index": 1628,
+          "lower": 1895.6287927240123,
+          "predicted_mean": 2186.9563435605933,
+          "predicted_standard_deviation": 157.51620425091056,
+          "truth": 2212.140043429319,
+          "upper": 2478.283894397174
+        },
+        {
+          "covered": true,
+          "index": 2876,
+          "lower": 1958.9883641361844,
+          "predicted_mean": 2167.849893032443,
+          "predicted_standard_deviation": 125.05233263871473,
+          "truth": 2137.319362285998,
+          "upper": 2376.7114219287023
+        },
+        {
+          "covered": true,
+          "index": 3776,
+          "lower": 1970.0602264552838,
+          "predicted_mean": 2237.2153814807702,
+          "predicted_standard_deviation": 151.45037971469924,
+          "truth": 2305.0837097248477,
+          "upper": 2504.370536506257
+        },
+        {
+          "covered": true,
+          "index": 4928,
+          "lower": 1959.0883428031314,
+          "predicted_mean": 2221.5576919039186,
+          "predicted_standard_deviation": 156.82346813555637,
+          "truth": 2419.3260901598856,
+          "upper": 2484.027041004706
+        },
+        {
+          "covered": true,
+          "index": 10976,
+          "lower": 2046.0483814001875,
+          "predicted_mean": 2221.667616983273,
+          "predicted_standard_deviation": 95.03749775094735,
+          "truth": 2191.5254306835136,
+          "upper": 2397.286852566359
+        },
+        {
+          "covered": true,
+          "index": 11228,
+          "lower": 1643.4584850493147,
+          "predicted_mean": 1856.3887955891344,
+          "predicted_standard_deviation": 154.34174625148566,
+          "truth": 1886.2813467629642,
+          "upper": 2069.3191061289544
+        },
+        {
+          "covered": true,
+          "index": 15296,
+          "lower": 1972.4603099988135,
+          "predicted_mean": 2226.5005421009846,
+          "predicted_standard_deviation": 138.75501835346716,
+          "truth": 2185.355055063825,
+          "upper": 2480.5407742031557
+        },
+        {
+          "covered": false,
+          "index": 2588,
+          "lower": 1740.2528702066681,
+          "predicted_mean": 2092.7165454559595,
+          "predicted_standard_deviation": 187.53790742243558,
+          "truth": 2451.489734610601,
+          "upper": 2445.180220705251
+        },
+        {
+          "covered": true,
+          "index": 4988,
+          "lower": 1596.3530221679955,
+          "predicted_mean": 1876.1347501661778,
+          "predicted_standard_deviation": 172.7083724894023,
+          "truth": 2024.6128600562988,
+          "upper": 2155.9164781643603
+        },
+        {
+          "covered": true,
+          "index": 6188,
+          "lower": 1826.460191789771,
+          "predicted_mean": 2039.9565753572704,
+          "predicted_standard_deviation": 134.91966465977495,
+          "truth": 2068.770574295542,
+          "upper": 2253.45295892477
+        },
+        {
+          "covered": true,
+          "index": 6608,
+          "lower": 2037.0595365573122,
+          "predicted_mean": 2235.113500201656,
+          "predicted_standard_deviation": 127.66134109156157,
+          "truth": 2265.6763350715437,
+          "upper": 2433.1674638459995
+        },
+        {
+          "covered": true,
+          "index": 7808,
+          "lower": 1919.727790948118,
+          "predicted_mean": 2217.509121601758,
+          "predicted_standard_deviation": 164.73529787176906,
+          "truth": 2312.94165257842,
+          "upper": 2515.2904522553986
+        },
+        {
+          "covered": true,
+          "index": 10688,
+          "lower": 1925.1140072693483,
+          "predicted_mean": 2125.6964843602086,
+          "predicted_standard_deviation": 128.53811463990974,
+          "truth": 2135.112162692544,
+          "upper": 2326.2789614510693
+        },
+        {
+          "covered": true,
+          "index": 13088,
+          "lower": 1801.0723986236515,
+          "predicted_mean": 2003.6844997095598,
+          "predicted_standard_deviation": 121.71903136451587,
+          "truth": 1981.0546426194455,
+          "upper": 2206.2966007954683
+        },
+        {
+          "covered": true,
+          "index": 14288,
+          "lower": 1991.9985287152388,
+          "predicted_mean": 2289.4735525848882,
+          "predicted_standard_deviation": 161.36248089204952,
+          "truth": 2506.534866400199,
+          "upper": 2586.948576454538
+        },
+        {
+          "covered": true,
+          "index": 108,
+          "lower": 1937.7425904969882,
+          "predicted_mean": 2172.8579198157886,
+          "predicted_standard_deviation": 154.96890008256167,
+          "truth": 2389.332107048854,
+          "upper": 2407.973249134589
+        },
+        {
+          "covered": true,
+          "index": 1188,
+          "lower": 1663.5327912775817,
+          "predicted_mean": 1989.076542928368,
+          "predicted_standard_deviation": 190.0081351821922,
+          "truth": 2202.3691731634763,
+          "upper": 2314.6202945791547
+        },
+        {
+          "covered": true,
+          "index": 4788,
+          "lower": 1746.9742150508425,
+          "predicted_mean": 2090.6949067780542,
+          "predicted_standard_deviation": 179.04277672833442,
+          "truth": 2357.9643069191293,
+          "upper": 2434.415598505266
+        },
+        {
+          "covered": true,
+          "index": 5508,
+          "lower": 1604.0497005094194,
+          "predicted_mean": 1866.6700863500494,
+          "predicted_standard_deviation": 179.7333155864615,
+          "truth": 2005.347737756299,
+          "upper": 2129.29047219068
+        },
+        {
+          "covered": true,
+          "index": 9108,
+          "lower": 1902.0332966833146,
+          "predicted_mean": 2150.664873247597,
+          "predicted_standard_deviation": 152.74556355173777,
+          "truth": 2323.6497117193685,
+          "upper": 2399.2964498118795
+        },
+        {
+          "covered": true,
+          "index": 10188,
+          "lower": 1563.6624707163726,
+          "predicted_mean": 1848.344913142816,
+          "predicted_standard_deviation": 184.02097900361557,
+          "truth": 2047.9756463554522,
+          "upper": 2133.0273555692597
+        },
+        {
+          "covered": true,
+          "index": 11988,
+          "lower": 1870.5916595984525,
+          "predicted_mean": 2070.249278264993,
+          "predicted_standard_deviation": 134.12321855293152,
+          "truth": 2264.1316889474624,
+          "upper": 2269.9068969315335
+        },
+        {
+          "covered": true,
+          "index": 12708,
+          "lower": 1661.3085108093499,
+          "predicted_mean": 1910.7439406177805,
+          "predicted_standard_deviation": 173.04925246155526,
+          "truth": 2107.2923758354764,
+          "upper": 2160.1793704262113
+        },
+        {
+          "covered": false,
+          "index": 15588,
+          "lower": 1666.6262391380144,
+          "predicted_mean": 2030.760222613435,
+          "predicted_standard_deviation": 203.43736016963672,
+          "truth": 2594.350841704743,
+          "upper": 2394.8942060888558
+        },
+        {
+          "covered": false,
+          "index": 16308,
+          "lower": 1616.9575294169929,
+          "predicted_mean": 1985.3523960690472,
+          "predicted_standard_deviation": 196.0144030415873,
+          "truth": 2354.7112217687372,
+          "upper": 2353.747262721102
+        },
+        {
+          "covered": true,
+          "index": 48,
+          "lower": 1559.9630128499693,
+          "predicted_mean": 1860.5295929050822,
+          "predicted_standard_deviation": 180.84475713321643,
+          "truth": 1966.9882444210155,
+          "upper": 2161.096172960195
+        },
+        {
+          "covered": true,
+          "index": 168,
+          "lower": 1836.0496841689283,
+          "predicted_mean": 2118.417366506706,
+          "predicted_standard_deviation": 168.40774641534028,
+          "truth": 2339.599041741454,
+          "upper": 2400.785048844484
+        },
+        {
+          "covered": true,
+          "index": 1848,
+          "lower": 1744.6638626938663,
+          "predicted_mean": 2039.9894890677892,
+          "predicted_standard_deviation": 155.60819248495827,
+          "truth": 2090.9484626255226,
+          "upper": 2335.3151154417124
+        },
+        {
+          "covered": false,
+          "index": 5448,
+          "lower": 1587.3260088579764,
+          "predicted_mean": 1978.9588668962758,
+          "predicted_standard_deviation": 205.20900945004536,
+          "truth": 2475.1365407113153,
+          "upper": 2370.5917249345753
+        },
+        {
+          "covered": true,
+          "index": 6168,
+          "lower": 1938.326104817634,
+          "predicted_mean": 2219.7663165185395,
+          "predicted_standard_deviation": 155.52970360948495,
+          "truth": 2328.7728991205868,
+          "upper": 2501.2065282194453
+        },
+        {
+          "covered": true,
+          "index": 6648,
+          "lower": 1775.0768642853302,
+          "predicted_mean": 2033.5568200206985,
+          "predicted_standard_deviation": 148.31396613746927,
+          "truth": 2088.4931453122467,
+          "upper": 2292.036775756067
+        },
+        {
+          "covered": true,
+          "index": 9768,
+          "lower": 2011.6241034823067,
+          "predicted_mean": 2137.174013430925,
+          "predicted_standard_deviation": 109.77059281920087,
+          "truth": 2215.5675329403116,
+          "upper": 2262.723923379543
+        },
+        {
+          "covered": true,
+          "index": 10488,
+          "lower": 1688.3006613696894,
+          "predicted_mean": 1952.0725540506705,
+          "predicted_standard_deviation": 153.37226917503583,
+          "truth": 1965.5775683838892,
+          "upper": 2215.8444467316517
+        },
+        {
+          "covered": true,
+          "index": 10968,
+          "lower": 1595.5644430455845,
+          "predicted_mean": 1827.6491098818424,
+          "predicted_standard_deviation": 162.7842479620213,
+          "truth": 1907.293910277089,
+          "upper": 2059.7337767181007
+        },
+        {
+          "covered": true,
+          "index": 11568,
+          "lower": 2061.9073963881906,
+          "predicted_mean": 2288.37542495023,
+          "predicted_standard_deviation": 149.58123914005225,
+          "truth": 2440.6438910008196,
+          "upper": 2514.843453512269
+        },
+        {
+          "covered": true,
+          "index": 12648,
+          "lower": 1816.5216648219055,
+          "predicted_mean": 2143.01918535533,
+          "predicted_standard_deviation": 179.80417343806292,
+          "truth": 2419.6313612507925,
+          "upper": 2469.516705888755
+        },
+        {
+          "covered": true,
+          "index": 16248,
+          "lower": 1980.920742800335,
+          "predicted_mean": 2235.5006163796525,
+          "predicted_standard_deviation": 160.94586053533206,
+          "truth": 2449.054996902105,
+          "upper": 2490.0804899589702
+        },
+        {
+          "covered": false,
+          "index": 16368,
+          "lower": 1604.9976494127443,
+          "predicted_mean": 1981.136521517242,
+          "predicted_standard_deviation": 203.74895313904344,
+          "truth": 2451.780335092223,
+          "upper": 2357.27539362174
+        },
+        {
+          "covered": true,
+          "index": 128,
+          "lower": 1927.9140706225432,
+          "predicted_mean": 2176.683331624412,
+          "predicted_standard_deviation": 154.6129011561831,
+          "truth": 2349.4956634931445,
+          "upper": 2425.452592626281
+        },
+        {
+          "covered": false,
+          "index": 4028,
+          "lower": 2000.1456513552707,
+          "predicted_mean": 2238.5362514057006,
+          "predicted_standard_deviation": 154.50312087146256,
+          "truth": 2479.8024421571954,
+          "upper": 2476.926851456131
+        },
+        {
+          "covered": true,
+          "index": 6176,
+          "lower": 1796.2087148650696,
+          "predicted_mean": 2090.042596430214,
+          "predicted_standard_deviation": 173.9844215691851,
+          "truth": 2343.5163100163204,
+          "upper": 2383.8764779953585
+        },
+        {
+          "covered": true,
+          "index": 7376,
+          "lower": 1868.315588393849,
+          "predicted_mean": 2044.116150737053,
+          "predicted_standard_deviation": 102.85271046897428,
+          "truth": 1986.4072633903963,
+          "upper": 2219.916713080257
+        },
+        {
+          "covered": true,
+          "index": 8096,
+          "lower": 1721.422100336308,
+          "predicted_mean": 1971.629997283637,
+          "predicted_standard_deviation": 143.96127574524667,
+          "truth": 1984.0386739702055,
+          "upper": 2221.8378942309664
+        },
+        {
+          "covered": true,
+          "index": 8528,
+          "lower": 1747.6964973223467,
+          "predicted_mean": 1934.6760781151947,
+          "predicted_standard_deviation": 116.04029922141669,
+          "truth": 1907.692557662456,
+          "upper": 2121.6556589080433
+        },
+        {
+          "covered": true,
+          "index": 8876,
+          "lower": 1816.5618408613439,
+          "predicted_mean": 2030.7510333298321,
+          "predicted_standard_deviation": 126.83482233877726,
+          "truth": 2010.254574877638,
+          "upper": 2244.9402257983206
+        },
+        {
+          "covered": false,
+          "index": 10076,
+          "lower": 1963.3115171230618,
+          "predicted_mean": 2184.2151470196377,
+          "predicted_standard_deviation": 157.29713699364848,
+          "truth": 2487.73419887293,
+          "upper": 2405.118776916214
+        },
+        {
+          "covered": true,
+          "index": 12128,
+          "lower": 2054.1905191625297,
+          "predicted_mean": 2315.7227691077965,
+          "predicted_standard_deviation": 143.95720313264007,
+          "truth": 2375.7012317812705,
+          "upper": 2577.2550190530633
+        },
+        {
+          "covered": true,
+          "index": 13628,
+          "lower": 2045.1096454680505,
+          "predicted_mean": 2226.6048318638927,
+          "predicted_standard_deviation": 120.02262480688525,
+          "truth": 2232.649202008311,
+          "upper": 2408.1000182597354
+        },
+        {
+          "covered": true,
+          "index": 14828,
+          "lower": 2042.9295909077362,
+          "predicted_mean": 2221.0302155715103,
+          "predicted_standard_deviation": 99.92894944816453,
+          "truth": 2220.8872743302413,
+          "upper": 2399.1308402352847
+        },
+        {
+          "covered": true,
+          "index": 148,
+          "lower": 1916.1743204866457,
+          "predicted_mean": 2143.0987830988443,
+          "predicted_standard_deviation": 136.9742871912375,
+          "truth": 2307.2567808355743,
+          "upper": 2370.0232457110433
+        },
+        {
+          "covered": true,
+          "index": 4468,
+          "lower": 1600.2389725373478,
+          "predicted_mean": 1841.6419889845945,
+          "predicted_standard_deviation": 174.69189847954652,
+          "truth": 2000.2683060183074,
+          "upper": 2083.0450054318417
+        },
+        {
+          "covered": true,
+          "index": 4948,
+          "lower": 2006.091608396359,
+          "predicted_mean": 2235.0479451307624,
+          "predicted_standard_deviation": 137.38840003567864,
+          "truth": 2396.0420804906626,
+          "upper": 2464.004281865166
+        },
+        {
+          "covered": false,
+          "index": 8068,
+          "lower": 1905.1185857246317,
+          "predicted_mean": 2178.4645208208076,
+          "predicted_standard_deviation": 168.5190872305453,
+          "truth": 2453.8843511214936,
+          "upper": 2451.8104559169838
+        },
+        {
+          "covered": false,
+          "index": 9268,
+          "lower": 2090.479222126943,
+          "predicted_mean": 2267.7933601286713,
+          "predicted_standard_deviation": 129.04528719795394,
+          "truth": 2502.2186543447474,
+          "upper": 2445.1074981303996
+        },
+        {
+          "covered": false,
+          "index": 9868,
+          "lower": 1754.0682055634095,
+          "predicted_mean": 2053.827471088315,
+          "predicted_standard_deviation": 188.36729714196628,
+          "truth": 2496.8116301918426,
+          "upper": 2353.586736613221
+        },
+        {
+          "covered": false,
+          "index": 10948,
+          "lower": 1948.2757027060427,
+          "predicted_mean": 2112.101673056047,
+          "predicted_standard_deviation": 127.53357885838852,
+          "truth": 2289.735719732319,
+          "upper": 2275.927643406051
+        },
+        {
+          "covered": false,
+          "index": 14548,
+          "lower": 1809.3249857917979,
+          "predicted_mean": 2105.9727347285607,
+          "predicted_standard_deviation": 184.15278153145803,
+          "truth": 2601.1268976657984,
+          "upper": 2402.6204836653237
+        },
+        {
+          "covered": false,
+          "index": 14668,
+          "lower": 1793.5766514606555,
+          "predicted_mean": 2113.176314218695,
+          "predicted_standard_deviation": 185.8477952335869,
+          "truth": 2500.860571326766,
+          "upper": 2432.775976976735
+        },
+        {
+          "covered": false,
+          "index": 15268,
+          "lower": 2022.3608528305192,
+          "predicted_mean": 2251.0295404814156,
+          "predicted_standard_deviation": 158.73861144557412,
+          "truth": 2506.9680034788275,
+          "upper": 2479.698228132312
+        },
+        {
+          "covered": true,
+          "index": 15748,
+          "lower": 1806.4754439705866,
+          "predicted_mean": 2064.191219025323,
+          "predicted_standard_deviation": 160.5512811560581,
+          "truth": 2292.3726314284486,
+          "upper": 2321.9069940800596
+        },
+        {
+          "covered": true,
+          "index": 1508,
+          "lower": 1582.3078260045831,
+          "predicted_mean": 1922.1794355075542,
+          "predicted_standard_deviation": 189.34126849336798,
+          "truth": 2134.6589645492363,
+          "upper": 2262.0510450105253
+        },
+        {
+          "covered": true,
+          "index": 2228,
+          "lower": 2111.2889799565855,
+          "predicted_mean": 2222.5260109837263,
+          "predicted_standard_deviation": 65.53727616954333,
+          "truth": 2167.344097626417,
+          "upper": 2333.763042010867
+        },
+        {
+          "covered": true,
+          "index": 2708,
+          "lower": 2067.2023926958154,
+          "predicted_mean": 2309.2174693496177,
+          "predicted_standard_deviation": 134.05842606103923,
+          "truth": 2338.176601402477,
+          "upper": 2551.23254600342
+        },
+        {
+          "covered": true,
+          "index": 4388,
+          "lower": 1725.948412036459,
+          "predicted_mean": 1969.4082899697476,
+          "predicted_standard_deviation": 154.83792418344754,
+          "truth": 2065.76689135861,
+          "upper": 2212.8681679030365
+        },
+        {
+          "covered": true,
+          "index": 8708,
+          "lower": 2096.560374337281,
+          "predicted_mean": 2309.718629634261,
+          "predicted_standard_deviation": 147.8788560733353,
+          "truth": 2508.402179815008,
+          "upper": 2522.8768849312414
+        },
+        {
+          "covered": true,
+          "index": 9188,
+          "lower": 1786.8661354083627,
+          "predicted_mean": 2058.8829519216633,
+          "predicted_standard_deviation": 166.4277634481244,
+          "truth": 2208.1156873454643,
+          "upper": 2330.8997684349642
+        },
+        {
+          "covered": true,
+          "index": 15188,
+          "lower": 2096.330986943133,
+          "predicted_mean": 2222.7067728646693,
+          "predicted_standard_deviation": 108.09048692245909,
+          "truth": 2316.328652731435,
+          "upper": 2349.0825587862055
+        },
+        {
+          "covered": true,
+          "index": 1008,
+          "lower": 1499.581406538773,
+          "predicted_mean": 1833.6316865224371,
+          "predicted_standard_deviation": 181.09645083828107,
+          "truth": 1909.0602780209929,
+          "upper": 2167.6819665061016
+        },
+        {
+          "covered": true,
+          "index": 2088,
+          "lower": 1729.9222500926908,
+          "predicted_mean": 2008.7645962579788,
+          "predicted_standard_deviation": 164.63712428255477,
+          "truth": 2143.9350083325453,
+          "upper": 2287.6069424232674
+        },
+        {
+          "covered": true,
+          "index": 2808,
+          "lower": 1743.4663607301122,
+          "predicted_mean": 1941.521902554333,
+          "predicted_standard_deviation": 116.63612998999967,
+          "truth": 1953.3495783469307,
+          "upper": 2139.5774443785544
+        },
+        {
+          "covered": false,
+          "index": 3888,
+          "lower": 2032.3377482640578,
+          "predicted_mean": 2209.5691785819104,
+          "predicted_standard_deviation": 130.04929962645184,
+          "truth": 2502.5710900929716,
+          "upper": 2386.800608899763
+        },
+        {
+          "covered": true,
+          "index": 6408,
+          "lower": 1976.722391883024,
+          "predicted_mean": 2190.5997647280346,
+          "predicted_standard_deviation": 141.68939004891004,
+          "truth": 2357.1092278682577,
+          "upper": 2404.4771375730456
+        },
+        {
+          "covered": true,
+          "index": 9288,
+          "lower": 1830.2458960159665,
+          "predicted_mean": 2127.7888111232555,
+          "predicted_standard_deviation": 161.49543803051742,
+          "truth": 2300.2672958203502,
+          "upper": 2425.331726230545
+        },
+        {
+          "covered": true,
+          "index": 10728,
+          "lower": 2020.0321250263262,
+          "predicted_mean": 2154.6836218045723,
+          "predicted_standard_deviation": 97.50666453555422,
+          "truth": 2145.9405061694347,
+          "upper": 2289.3351185828187
+        },
+        {
+          "covered": true,
+          "index": 12888,
+          "lower": 1917.409070268932,
+          "predicted_mean": 2080.7028991582465,
+          "predicted_standard_deviation": 119.48048164930876,
+          "truth": 2109.642713582674,
+          "upper": 2243.996728047561
+        },
+        {
+          "covered": true,
+          "index": 13608,
+          "lower": 1680.255723198976,
+          "predicted_mean": 1963.0478358721318,
+          "predicted_standard_deviation": 159.9617130872587,
+          "truth": 2006.184841990007,
+          "upper": 2245.839948545288
+        },
+        {
+          "covered": true,
+          "index": 2628,
+          "lower": 1755.4980490431467,
+          "predicted_mean": 1997.5197317271738,
+          "predicted_standard_deviation": 168.73089223991258,
+          "truth": 2233.827882137799,
+          "upper": 2239.5414144112015
+        },
+        {
+          "covered": true,
+          "index": 3276,
+          "lower": 1661.4324451580603,
+          "predicted_mean": 1905.7464752714418,
+          "predicted_standard_deviation": 164.79234537738057,
+          "truth": 1980.8485673282562,
+          "upper": 2150.0605053848235
+        },
+        {
+          "covered": true,
+          "index": 4428,
+          "lower": 1997.6393011413254,
+          "predicted_mean": 2216.697276782622,
+          "predicted_standard_deviation": 138.87215205217248,
+          "truth": 2328.648908639584,
+          "upper": 2435.7552524239186
+        },
+        {
+          "covered": true,
+          "index": 5076,
+          "lower": 1922.43912982293,
+          "predicted_mean": 2220.089023665556,
+          "predicted_standard_deviation": 151.96417018856772,
+          "truth": 2349.567975207118,
+          "upper": 2517.738917508182
+        },
+        {
+          "covered": true,
+          "index": 8676,
+          "lower": 1900.9383854272517,
+          "predicted_mean": 2078.588882778335,
+          "predicted_standard_deviation": 130.92166503913933,
+          "truth": 2216.393748906559,
+          "upper": 2256.239380129419
+        },
+        {
+          "covered": true,
+          "index": 9828,
+          "lower": 1652.5573204646762,
+          "predicted_mean": 1934.9654565148903,
+          "predicted_standard_deviation": 176.424682664581,
+          "truth": 2046.6222796350044,
+          "upper": 2217.373592565105
+        },
+        {
+          "covered": false,
+          "index": 13428,
+          "lower": 1662.623217158317,
+          "predicted_mean": 1996.2736636529944,
+          "predicted_standard_deviation": 191.59664153746053,
+          "truth": 2354.368783436507,
+          "upper": 2329.924110147672
+        },
+        {
+          "covered": true,
+          "index": 15876,
+          "lower": 1720.848391022034,
+          "predicted_mean": 2038.7188326636385,
+          "predicted_standard_deviation": 171.40121808198768,
+          "truth": 2192.7430364295437,
+          "upper": 2356.589274305243
+        },
+        {
+          "covered": true,
+          "index": 368,
+          "lower": 1977.8562538078095,
+          "predicted_mean": 2276.537325615823,
+          "predicted_standard_deviation": 158.99288140861796,
+          "truth": 2362.78671382122,
+          "upper": 2575.2183974238374
+        },
+        {
+          "covered": true,
+          "index": 1448,
+          "lower": 1974.4899759593281,
+          "predicted_mean": 2152.4574279122444,
+          "predicted_standard_deviation": 121.21386335015957,
+          "truth": 2153.7537705630757,
+          "upper": 2330.424879865161
+        },
+        {
+          "covered": true,
+          "index": 2168,
+          "lower": 1869.117882910165,
+          "predicted_mean": 2034.3742498064266,
+          "predicted_standard_deviation": 93.85224245886033,
+          "truth": 2007.1619055120773,
+          "upper": 2199.6306167026887
+        },
+        {
+          "covered": true,
+          "index": 5048,
+          "lower": 1943.0616595430993,
+          "predicted_mean": 2245.8081566993555,
+          "predicted_standard_deviation": 154.88235102283792,
+          "truth": 2272.073027547004,
+          "upper": 2548.554653855612
+        },
+        {
+          "covered": true,
+          "index": 5768,
+          "lower": 1779.8504957714763,
+          "predicted_mean": 1896.2048518341933,
+          "predicted_standard_deviation": 96.51546064408038,
+          "truth": 1918.746253341941,
+          "upper": 2012.5592078969103
+        },
+        {
+          "covered": true,
+          "index": 8648,
+          "lower": 1869.3035510497073,
+          "predicted_mean": 2164.9134501147096,
+          "predicted_standard_deviation": 167.3592703206376,
+          "truth": 2301.312006259891,
+          "upper": 2460.523349179712
+        },
+        {
+          "covered": true,
+          "index": 9368,
+          "lower": 1976.1743682464619,
+          "predicted_mean": 2176.6272255456092,
+          "predicted_standard_deviation": 102.2229994793667,
+          "truth": 2148.2451338441806,
+          "upper": 2377.080082844757
+        },
+        {
+          "covered": true,
+          "index": 12248,
+          "lower": 1833.9111236668948,
+          "predicted_mean": 2037.9941507050742,
+          "predicted_standard_deviation": 121.87077778262453,
+          "truth": 2057.509027838193,
+          "upper": 2242.0771777432537
+        },
+        {
+          "covered": true,
+          "index": 14768,
+          "lower": 1796.465387455951,
+          "predicted_mean": 1964.639300460664,
+          "predicted_standard_deviation": 99.58463907459029,
+          "truth": 1967.0098329661062,
+          "upper": 2132.813213465377
+        },
+        {
+          "covered": false,
+          "index": 15848,
+          "lower": 1914.339424948237,
+          "predicted_mean": 2189.2114447275344,
+          "predicted_standard_deviation": 168.25230909377288,
+          "truth": 2495.338728333913,
+          "upper": 2464.083464506832
+        }
+      ]
+    }
+  },
+  "replicate_id": "split-2026090502",
+  "schema_version": "5.0"
+}

@@ -1,0 +1,701 @@
+{
+  "all_active_replicates_passed": false,
+  "claim": "deterministic L0 software-emulation accuracy only; no physical claim",
+  "commit_binding": {
+    "clean_protocol": true,
+    "commit_sha": "4fbe801320d0bd7d5d0871d2f6257c8c61a8856e",
+    "dependency_tree_hash": "df7aa3bdcfad9f967d426c98530dc2a8a1206e0192952e70920f4e3b0593019b",
+    "detached_head": true,
+    "protocol_tree_hash": "e747aaaad146e398a183814b3f2b7683af0df334ddf2f039418b430db1071977",
+    "remote_ref": "origin/feat/sota-foundation"
+  },
+  "document_type": "cft-revival-l0-surrogate-v5-run-manifest",
+  "environment": {
+    "cwd": "C:\\Users\\Angus\\AppData\\Local\\Temp\\l0-surrogate-v5-4fbe801\\modern",
+    "detached_worktree": true,
+    "executable": "C:\\Users\\Angus\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]"
+  },
+  "exclusive_lock": {
+    "atomic_create": "O_CREAT|O_EXCL",
+    "content_commit_sha": "4fbe801320d0bd7d5d0871d2f6257c8c61a8856e",
+    "lock_file_name": "l0-surrogate-v5.execution.lock",
+    "path_role": "git-common-directory",
+    "retained": true
+  },
+  "normalized_design_hash": "f675743921744f579e592e3ea32eec5dd75306bd60691a983d21c96aafda22a7",
+  "partitions_hash": "5c2818553a469c7a7e72c6ab9881ead59064d7a442636db1265a9d5848537d13",
+  "predeclaration_hash": "b86e6ce688188d2df308ed3e91b27fd2fb37abbedf8486be1043f4565d464317",
+  "preflight_hash": "a8303aa0611ce160bfd4d67a3e56441f98d3b9d4cb3748a4f26ce3d04c482e63",
+  "prior_coordinate_intersection_count": 0,
+  "replicates": [
+    {
+      "active": {
+        "all_scopes_outputs_passed": false,
+        "boundary": {
+          "axial_thrust_n": {
+            "all_gates_passed": false,
+            "coverage": 0.8469387755102041,
+            "coverage_passed": false,
+            "nrmse_passed": true,
+            "range_normalized_rmse": 0.020694811929973387,
+            "rows": 98,
+            "worst_error_passed": true,
+            "worst_range_normalized_error": 0.07770119146901913
+          },
+          "specific_impulse_s": {
+            "all_gates_passed": true,
+            "coverage": 0.9285714285714286,
+            "coverage_passed": true,
+            "nrmse_passed": true,
+            "range_normalized_rmse": 0.01830129264491432,
+            "rows": 98,
+            "worst_error_passed": true,
+            "worst_range_normalized_error": 0.05881383435906075
+          }
+        },
+        "interpolation": {
+          "axial_thrust_n": {
+            "all_gates_passed": true,
+            "coverage": 0.90625,
+            "coverage_passed": true,
+            "nrmse_passed": true,
+            "range_normalized_rmse": 0.011053700212308264,
+            "rows": 96,
+            "worst_error_passed": true,
+            "worst_range_normalized_error": 0.03782419358253981
+          },
+          "specific_impulse_s": {
+            "all_gates_passed": true,
+            "coverage": 0.9375,
+            "coverage_passed": true,
+            "nrmse_passed": true,
+            "range_normalized_rmse": 0.016135951203328773,
+            "rows": 96,
+            "worst_error_passed": true,
+            "worst_range_normalized_error": 0.0393292875459501
+          }
+        },
+        "ood": {
+          "axial_thrust_n": {
+            "all_gates_passed": true,
+            "coverage": 0.8942307692307693,
+            "coverage_passed": true,
+            "nrmse_passed": true,
+            "range_normalized_rmse": 0.03647484092312736,
+            "rows": 104,
+            "worst_error_passed": true,
+            "worst_range_normalized_error": 0.1279030970192195
+          },
+          "specific_impulse_s": {
+            "all_gates_passed": false,
+            "coverage": 0.8461538461538461,
+            "coverage_passed": false,
+            "nrmse_passed": true,
+            "range_normalized_rmse": 0.036300760689519054,
+            "rows": 104,
+            "worst_error_passed": false,
+            "worst_range_normalized_error": 0.1649621665612231
+          }
+        },
+        "overall": {
+          "axial_thrust_n": {
+            "all_gates_passed": true,
+            "coverage": 0.8825503355704698,
+            "coverage_passed": true,
+            "nrmse_passed": true,
+            "range_normalized_rmse": 0.025387184541350423,
+            "rows": 298,
+            "worst_error_passed": true,
+            "worst_range_normalized_error": 0.1279030970192195
+          },
+          "specific_impulse_s": {
+            "all_gates_passed": false,
+            "coverage": 0.9026845637583892,
+            "coverage_passed": true,
+            "nrmse_passed": true,
+            "range_normalized_rmse": 0.025571637538775848,
+            "rows": 298,
+            "worst_error_passed": false,
+            "worst_range_normalized_error": 0.1649621665612231
+          }
+        }
+      },
+      "active_method_diagnostics_passed": false,
+      "active_passed": false,
+      "fixed-baseline": {
+        "all_scopes_outputs_passed": false,
+        "boundary": {
+          "axial_thrust_n": {
+            "all_gates_passed": false,
+            "coverage": 0.7857142857142857,
+            "coverage_passed": false,
+            "nrmse_passed": false,
+            "range_normalized_rmse": 0.06078163830288114,
+            "rows": 98,
+            "worst_error_passed": false,
+            "worst_range_normalized_error": 0.2916515231796755
+          },
+          "specific_impulse_s": {
+            "all_gates_passed": false,
+            "coverage": 0.8469387755102041,
+            "coverage_passed": false,
+            "nrmse_passed": true,
+            "range_normalized_rmse": 0.0424775005900351,
+            "rows": 98,
+            "worst_error_passed": true,
+            "worst_range_normalized_error": 0.1450355260069127
+          }
+        },
+        "interpolation": {
+          "axial_thrust_n": {
+            "all_gates_passed": true,
+            "coverage": 0.8854166666666666,
+            "coverage_passed": true,
+            "nrmse_passed": true,
+            "range_normalized_rmse": 0.013575834578506895,
+            "rows": 96,
+            "worst_error_passed": true,
+            "worst_range_normalized_error": 0.032937883445565704
+          },
+          "specific_impulse_s": {
+            "all_gates_passed": true,
+            "coverage": 0.875,
+            "coverage_passed": true,
+            "nrmse_passed": true,
+            "range_normalized_rmse": 0.01585567292044374,
+            "rows": 96,
+            "worst_error_passed": true,
+            "worst_range_normalized_error": 0.04448715191309083
+          }
+        },
+        "ood": {
+          "axial_thrust_n": {
+            "all_gates_passed": false,
+            "coverage": 0.8846153846153846,
+            "coverage_passed": true,
+            "nrmse_passed": false,
+            "range_normalized_rmse": 0.10680838534490651,
+            "rows": 104,
+            "worst_error_passed": false,
+            "worst_range_normalized_error": 0.29930460066466685
+          },
+          "specific_impulse_s": {
+            "all_gates_passed": false,
+            "coverage": 0.9038461538461539,
+            "coverage_passed": true,
+            "nrmse_passed": false,
+            "range_normalized_rmse": 0.10497654404240302,
+            "rows": 104,
+            "worst_error_passed": false,
+            "worst_range_normalized_error": 0.32564994985766116
+          }
+        },
+        "overall": {
+          "axial_thrust_n": {
+            "all_gates_passed": false,
+            "coverage": 0.8523489932885906,
+            "coverage_passed": true,
+            "nrmse_passed": false,
+            "range_normalized_rmse": 0.07249578322380697,
+            "rows": 298,
+            "worst_error_passed": false,
+            "worst_range_normalized_error": 0.29930460066466685
+          },
+          "specific_impulse_s": {
+            "all_gates_passed": false,
+            "coverage": 0.8758389261744967,
+            "coverage_passed": true,
+            "nrmse_passed": false,
+            "range_normalized_rmse": 0.06723312980561945,
+            "rows": 298,
+            "worst_error_passed": false,
+            "worst_range_normalized_error": 0.32564994985766116
+          }
+        }
+      },
+      "fixed_baseline_method_diagnostics_passed": false,
+      "fixed_baseline_passed": false,
+      "frozen_hash": "a01d208e08f2720c80dd42a10ca0698b6c0a56e6e62b6d57d7cc5cbc7bf7915b",
+      "replicate_id": "split-2026090501",
+      "replicate_result_hash": "2473038fbf3a742810987a2c8158343e3842f75e0aa40d6083dab66c5ebd6854",
+      "selected_methods": {
+        "active": {
+          "boundary": {
+            "axial_thrust_n": "symmetric-absolute",
+            "specific_impulse_s": "asymmetric-signed-absolute"
+          },
+          "interpolation": {
+            "axial_thrust_n": "symmetric-raw-gp-sd",
+            "specific_impulse_s": "asymmetric-signed-absolute"
+          },
+          "ood": {
+            "axial_thrust_n": "symmetric-input-distance",
+            "specific_impulse_s": "asymmetric-signed-raw-gp-sd"
+          }
+        },
+        "fixed-baseline": {
+          "boundary": {
+            "axial_thrust_n": "symmetric-input-distance",
+            "specific_impulse_s": "asymmetric-signed-raw-gp-sd"
+          },
+          "interpolation": {
+            "axial_thrust_n": "symmetric-input-distance",
+            "specific_impulse_s": "symmetric-input-distance"
+          },
+          "ood": {
+            "axial_thrust_n": "symmetric-absolute",
+            "specific_impulse_s": "asymmetric-signed-raw-gp-sd"
+          }
+        }
+      }
+    },
+    {
+      "active": {
+        "all_scopes_outputs_passed": false,
+        "boundary": {
+          "axial_thrust_n": {
+            "all_gates_passed": true,
+            "coverage": 0.8585858585858586,
+            "coverage_passed": true,
+            "nrmse_passed": true,
+            "range_normalized_rmse": 0.023956996219831193,
+            "rows": 99,
+            "worst_error_passed": true,
+            "worst_range_normalized_error": 0.09205530858119898
+          },
+          "specific_impulse_s": {
+            "all_gates_passed": true,
+            "coverage": 0.8888888888888888,
+            "coverage_passed": true,
+            "nrmse_passed": true,
+            "range_normalized_rmse": 0.022666306655414047,
+            "rows": 99,
+            "worst_error_passed": true,
+            "worst_range_normalized_error": 0.06766207727394594
+          }
+        },
+        "interpolation": {
+          "axial_thrust_n": {
+            "all_gates_passed": true,
+            "coverage": 0.9166666666666666,
+            "coverage_passed": true,
+            "nrmse_passed": true,
+            "range_normalized_rmse": 0.012435300147873973,
+            "rows": 96,
+            "worst_error_passed": true,
+            "worst_range_normalized_error": 0.03574484285592004
+          },
+          "specific_impulse_s": {
+            "all_gates_passed": false,
+            "coverage": 0.84375,
+            "coverage_passed": false,
+            "nrmse_passed": true,
+            "range_normalized_rmse": 0.02293531846746748,
+            "rows": 96,
+            "worst_error_passed": true,
+            "worst_range_normalized_error": 0.0783822286847175
+          }
+        },
+        "ood": {
+          "axial_thrust_n": {
+            "all_gates_passed": false,
+            "coverage": 0.9607843137254902,
+            "coverage_passed": false,
+            "nrmse_passed": true,
+            "range_normalized_rmse": 0.036936310299842984,
+            "rows": 102,
+            "worst_error_passed": true,
+            "worst_range_normalized_error": 0.11507501821420311
+          },
+          "specific_impulse_s": {
+            "all_gates_passed": false,
+            "coverage": 0.7941176470588235,
+            "coverage_passed": false,
+            "nrmse_passed": true,
+            "range_normalized_rmse": 0.04484448673069106,
+            "rows": 102,
+            "worst_error_passed": true,
+            "worst_range_normalized_error": 0.09457507564771603
+          }
+        },
+        "overall": {
+          "axial_thrust_n": {
+            "all_gates_passed": true,
+            "coverage": 0.9124579124579124,
+            "coverage_passed": true,
+            "nrmse_passed": true,
+            "range_normalized_rmse": 0.026642832482006506,
+            "rows": 297,
+            "worst_error_passed": true,
+            "worst_range_normalized_error": 0.11507501821420311
+          },
+          "specific_impulse_s": {
+            "all_gates_passed": false,
+            "coverage": 0.8417508417508418,
+            "coverage_passed": false,
+            "nrmse_passed": true,
+            "range_normalized_rmse": 0.03212381388312583,
+            "rows": 297,
+            "worst_error_passed": true,
+            "worst_range_normalized_error": 0.09457507564771603
+          }
+        }
+      },
+      "active_method_diagnostics_passed": false,
+      "active_passed": false,
+      "fixed-baseline": {
+        "all_scopes_outputs_passed": false,
+        "boundary": {
+          "axial_thrust_n": {
+            "all_gates_passed": false,
+            "coverage": 0.9393939393939394,
+            "coverage_passed": true,
+            "nrmse_passed": true,
+            "range_normalized_rmse": 0.043185803633307034,
+            "rows": 99,
+            "worst_error_passed": false,
+            "worst_range_normalized_error": 0.2310553002118445
+          },
+          "specific_impulse_s": {
+            "all_gates_passed": true,
+            "coverage": 0.9090909090909091,
+            "coverage_passed": true,
+            "nrmse_passed": true,
+            "range_normalized_rmse": 0.03170710720165954,
+            "rows": 99,
+            "worst_error_passed": true,
+            "worst_range_normalized_error": 0.11787180359816239
+          }
+        },
+        "interpolation": {
+          "axial_thrust_n": {
+            "all_gates_passed": false,
+            "coverage": 0.9791666666666666,
+            "coverage_passed": false,
+            "nrmse_passed": true,
+            "range_normalized_rmse": 0.009378928161901128,
+            "rows": 96,
+            "worst_error_passed": true,
+            "worst_range_normalized_error": 0.05036082316288315
+          },
+          "specific_impulse_s": {
+            "all_gates_passed": true,
+            "coverage": 0.90625,
+            "coverage_passed": true,
+            "nrmse_passed": true,
+            "range_normalized_rmse": 0.018281341864177566,
+            "rows": 96,
+            "worst_error_passed": true,
+            "worst_range_normalized_error": 0.04800161031778711
+          }
+        },
+        "ood": {
+          "axial_thrust_n": {
+            "all_gates_passed": false,
+            "coverage": 0.8921568627450981,
+            "coverage_passed": true,
+            "nrmse_passed": false,
+            "range_normalized_rmse": 0.12303777382386666,
+            "rows": 102,
+            "worst_error_passed": false,
+            "worst_range_normalized_error": 0.43010384863922896
+          },
+          "specific_impulse_s": {
+            "all_gates_passed": false,
+            "coverage": 0.8235294117647058,
+            "coverage_passed": false,
+            "nrmse_passed": false,
+            "range_normalized_rmse": 0.10342466685707907,
+            "rows": 102,
+            "worst_error_passed": false,
+            "worst_range_normalized_error": 0.29238740926833034
+          }
+        },
+        "overall": {
+          "axial_thrust_n": {
+            "all_gates_passed": false,
+            "coverage": 0.936026936026936,
+            "coverage_passed": true,
+            "nrmse_passed": false,
+            "range_normalized_rmse": 0.07647950119080477,
+            "rows": 297,
+            "worst_error_passed": false,
+            "worst_range_normalized_error": 0.43010384863922896
+          },
+          "specific_impulse_s": {
+            "all_gates_passed": false,
+            "coverage": 0.8787878787878788,
+            "coverage_passed": true,
+            "nrmse_passed": false,
+            "range_normalized_rmse": 0.06416183597546471,
+            "rows": 297,
+            "worst_error_passed": false,
+            "worst_range_normalized_error": 0.29238740926833034
+          }
+        }
+      },
+      "fixed_baseline_method_diagnostics_passed": false,
+      "fixed_baseline_passed": false,
+      "frozen_hash": "eccb3cc4cf0c0072ebbe5191fd53300a14c367f9404f1ae3037ff3b0ceae4c49",
+      "replicate_id": "split-2026090502",
+      "replicate_result_hash": "aed6f5ad325ed13f7df7ec248239c0fab1568c33fc1c851c51b4de354c8dd850",
+      "selected_methods": {
+        "active": {
+          "boundary": {
+            "axial_thrust_n": "symmetric-absolute",
+            "specific_impulse_s": "asymmetric-signed-raw-gp-sd"
+          },
+          "interpolation": {
+            "axial_thrust_n": "symmetric-input-distance",
+            "specific_impulse_s": "symmetric-absolute"
+          },
+          "ood": {
+            "axial_thrust_n": "symmetric-raw-gp-sd",
+            "specific_impulse_s": "asymmetric-signed-input-distance"
+          }
+        },
+        "fixed-baseline": {
+          "boundary": {
+            "axial_thrust_n": "symmetric-input-distance",
+            "specific_impulse_s": "asymmetric-signed-raw-gp-sd"
+          },
+          "interpolation": {
+            "axial_thrust_n": "symmetric-raw-gp-sd",
+            "specific_impulse_s": "asymmetric-signed-absolute"
+          },
+          "ood": {
+            "axial_thrust_n": "symmetric-raw-gp-sd",
+            "specific_impulse_s": "symmetric-input-distance"
+          }
+        }
+      }
+    },
+    {
+      "active": {
+        "all_scopes_outputs_passed": false,
+        "boundary": {
+          "axial_thrust_n": {
+            "all_gates_passed": false,
+            "coverage": 0.7346938775510204,
+            "coverage_passed": false,
+            "nrmse_passed": true,
+            "range_normalized_rmse": 0.0176659980035462,
+            "rows": 98,
+            "worst_error_passed": true,
+            "worst_range_normalized_error": 0.05034546385591985
+          },
+          "specific_impulse_s": {
+            "all_gates_passed": true,
+            "coverage": 0.8979591836734694,
+            "coverage_passed": true,
+            "nrmse_passed": true,
+            "range_normalized_rmse": 0.018845058506205842,
+            "rows": 98,
+            "worst_error_passed": true,
+            "worst_range_normalized_error": 0.054293198937138985
+          }
+        },
+        "interpolation": {
+          "axial_thrust_n": {
+            "all_gates_passed": false,
+            "coverage": 0.7291666666666666,
+            "coverage_passed": false,
+            "nrmse_passed": true,
+            "range_normalized_rmse": 0.01587022517168541,
+            "rows": 96,
+            "worst_error_passed": true,
+            "worst_range_normalized_error": 0.03967736970277772
+          },
+          "specific_impulse_s": {
+            "all_gates_passed": true,
+            "coverage": 0.90625,
+            "coverage_passed": true,
+            "nrmse_passed": true,
+            "range_normalized_rmse": 0.017788782784043698,
+            "rows": 96,
+            "worst_error_passed": true,
+            "worst_range_normalized_error": 0.049749353847043154
+          }
+        },
+        "ood": {
+          "axial_thrust_n": {
+            "all_gates_passed": false,
+            "coverage": 0.89,
+            "coverage_passed": true,
+            "nrmse_passed": true,
+            "range_normalized_rmse": 0.04358613821320725,
+            "rows": 100,
+            "worst_error_passed": false,
+            "worst_range_normalized_error": 0.1965266705387777
+          },
+          "specific_impulse_s": {
+            "all_gates_passed": false,
+            "coverage": 0.84,
+            "coverage_passed": false,
+            "nrmse_passed": true,
+            "range_normalized_rmse": 0.03551027727129597,
+            "rows": 100,
+            "worst_error_passed": true,
+            "worst_range_normalized_error": 0.10958993429211941
+          }
+        },
+        "overall": {
+          "axial_thrust_n": {
+            "all_gates_passed": false,
+            "coverage": 0.7857142857142857,
+            "coverage_passed": false,
+            "nrmse_passed": true,
+            "range_normalized_rmse": 0.02885211333594053,
+            "rows": 294,
+            "worst_error_passed": false,
+            "worst_range_normalized_error": 0.1965266705387777
+          },
+          "specific_impulse_s": {
+            "all_gates_passed": true,
+            "coverage": 0.8809523809523809,
+            "coverage_passed": true,
+            "nrmse_passed": true,
+            "range_normalized_rmse": 0.02550707824000675,
+            "rows": 294,
+            "worst_error_passed": true,
+            "worst_range_normalized_error": 0.10958993429211941
+          }
+        }
+      },
+      "active_method_diagnostics_passed": false,
+      "active_passed": false,
+      "fixed-baseline": {
+        "all_scopes_outputs_passed": false,
+        "boundary": {
+          "axial_thrust_n": {
+            "all_gates_passed": false,
+            "coverage": 0.7857142857142857,
+            "coverage_passed": false,
+            "nrmse_passed": true,
+            "range_normalized_rmse": 0.04653516446968374,
+            "rows": 98,
+            "worst_error_passed": true,
+            "worst_range_normalized_error": 0.1430731792381716
+          },
+          "specific_impulse_s": {
+            "all_gates_passed": false,
+            "coverage": 0.9897959183673469,
+            "coverage_passed": false,
+            "nrmse_passed": true,
+            "range_normalized_rmse": 0.025580979279090844,
+            "rows": 98,
+            "worst_error_passed": true,
+            "worst_range_normalized_error": 0.10110228219141053
+          }
+        },
+        "interpolation": {
+          "axial_thrust_n": {
+            "all_gates_passed": true,
+            "coverage": 0.875,
+            "coverage_passed": true,
+            "nrmse_passed": true,
+            "range_normalized_rmse": 0.010190443045924555,
+            "rows": 96,
+            "worst_error_passed": true,
+            "worst_range_normalized_error": 0.03161878644471403
+          },
+          "specific_impulse_s": {
+            "all_gates_passed": true,
+            "coverage": 0.8541666666666666,
+            "coverage_passed": true,
+            "nrmse_passed": true,
+            "range_normalized_rmse": 0.017185134223986823,
+            "rows": 96,
+            "worst_error_passed": true,
+            "worst_range_normalized_error": 0.05181305997644821
+          }
+        },
+        "ood": {
+          "axial_thrust_n": {
+            "all_gates_passed": false,
+            "coverage": 0.81,
+            "coverage_passed": false,
+            "nrmse_passed": false,
+            "range_normalized_rmse": 0.12140676484644161,
+            "rows": 100,
+            "worst_error_passed": false,
+            "worst_range_normalized_error": 0.4470786705417733
+          },
+          "specific_impulse_s": {
+            "all_gates_passed": false,
+            "coverage": 0.91,
+            "coverage_passed": true,
+            "nrmse_passed": false,
+            "range_normalized_rmse": 0.10820526553396768,
+            "rows": 100,
+            "worst_error_passed": false,
+            "worst_range_normalized_error": 0.3024253266355764
+          }
+        },
+        "overall": {
+          "axial_thrust_n": {
+            "all_gates_passed": false,
+            "coverage": 0.8231292517006803,
+            "coverage_passed": false,
+            "nrmse_passed": false,
+            "range_normalized_rmse": 0.07595537755623635,
+            "rows": 294,
+            "worst_error_passed": false,
+            "worst_range_normalized_error": 0.4470786705417733
+          },
+          "specific_impulse_s": {
+            "all_gates_passed": false,
+            "coverage": 0.9183673469387755,
+            "coverage_passed": true,
+            "nrmse_passed": false,
+            "range_normalized_rmse": 0.06555154264518516,
+            "rows": 294,
+            "worst_error_passed": false,
+            "worst_range_normalized_error": 0.3024253266355764
+          }
+        }
+      },
+      "fixed_baseline_method_diagnostics_passed": false,
+      "fixed_baseline_passed": false,
+      "frozen_hash": "d6d4d8835865ca767a73f969b0994a55a53ce1426eea00d66c56c1e1ae980a6a",
+      "replicate_id": "split-2026090503",
+      "replicate_result_hash": "73ab78c8ee97f87b9110d435f50f7f65cc67c5c353377726715053d85db421c2",
+      "selected_methods": {
+        "active": {
+          "boundary": {
+            "axial_thrust_n": "asymmetric-signed-input-distance",
+            "specific_impulse_s": "asymmetric-signed-input-distance"
+          },
+          "interpolation": {
+            "axial_thrust_n": "symmetric-absolute",
+            "specific_impulse_s": "symmetric-raw-gp-sd"
+          },
+          "ood": {
+            "axial_thrust_n": "symmetric-raw-gp-sd",
+            "specific_impulse_s": "symmetric-raw-gp-sd"
+          }
+        },
+        "fixed-baseline": {
+          "boundary": {
+            "axial_thrust_n": "symmetric-absolute",
+            "specific_impulse_s": "symmetric-raw-gp-sd"
+          },
+          "interpolation": {
+            "axial_thrust_n": "symmetric-absolute",
+            "specific_impulse_s": "asymmetric-signed-absolute"
+          },
+          "ood": {
+            "axial_thrust_n": "symmetric-absolute",
+            "specific_impulse_s": "asymmetric-signed-absolute"
+          }
+        }
+      }
+    }
+  ],
+  "run_manifest_hash": "1be0864030e7387dde438769a3a316ec2ce01e127249ca7774ad59b21cdcdb82",
+  "schema_version": "5.0",
+  "scientific_identity_valid": true,
+  "status": "failed-predeclared-gates"
+}

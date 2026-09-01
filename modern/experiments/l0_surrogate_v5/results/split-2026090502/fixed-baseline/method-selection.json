@@ -1,0 +1,1194 @@
+{
+  "all_diagnostic_gates_passed": false,
+  "boundary": {
+    "axial_thrust_n": {
+      "candidates": [
+        {
+          "diagnostic_coverage_passed": true,
+          "diagnostic_stability_passed": false,
+          "equal_group_coverage_standard_deviation": 0.15510245178680138,
+          "equal_group_mean_coverage": 0.8897546897546897,
+          "equal_group_mean_normalized_width": 0.1591637553259706,
+          "family": "symmetric-absolute",
+          "group_coverages": {
+            "0=0:1=0:2=10": 0.5555555555555556,
+            "0=0:1=3:2=4": 1.0,
+            "0=0:1=7:2=7": 1.0,
+            "0=11:1=7:2=0": 1.0,
+            "0=1:1=0:2=1": 0.8181818181818182,
+            "0=1:1=9:2=0": 1.0,
+            "0=4:1=0:2=3": 1.0,
+            "0=4:1=11:2=9": 0.6666666666666666,
+            "0=7:1=0:2=2": 1.0,
+            "0=7:1=11:2=3": 0.8571428571428571
+          },
+          "maximum_group_coverage_deviation": 0.34444444444444444,
+          "selection_key": [
+            0.01024531024531028,
+            0.15510245178680138,
+            0.1591637553259706,
+            "symmetric-absolute"
+          ]
+        },
+        {
+          "diagnostic_coverage_passed": true,
+          "diagnostic_stability_passed": false,
+          "equal_group_coverage_standard_deviation": 0.19170935715552362,
+          "equal_group_mean_coverage": 0.8703102453102453,
+          "equal_group_mean_normalized_width": 0.15683188785960128,
+          "family": "asymmetric-signed-absolute",
+          "group_coverages": {
+            "0=0:1=0:2=10": 0.4444444444444444,
+            "0=0:1=3:2=4": 1.0,
+            "0=0:1=7:2=7": 1.0,
+            "0=11:1=7:2=0": 1.0,
+            "0=1:1=0:2=1": 0.8181818181818182,
+            "0=1:1=9:2=0": 1.0,
+            "0=4:1=0:2=3": 1.0,
+            "0=4:1=11:2=9": 0.5833333333333334,
+            "0=7:1=0:2=2": 1.0,
+            "0=7:1=11:2=3": 0.8571428571428571
+          },
+          "maximum_group_coverage_deviation": 0.4555555555555556,
+          "selection_key": [
+            0.029689754689754766,
+            0.19170935715552362,
+            0.15683188785960128,
+            "asymmetric-signed-absolute"
+          ]
+        },
+        {
+          "diagnostic_coverage_passed": true,
+          "diagnostic_stability_passed": false,
+          "equal_group_coverage_standard_deviation": 0.14478824825289974,
+          "equal_group_mean_coverage": 0.8980880230880232,
+          "equal_group_mean_normalized_width": 0.15081756886254327,
+          "family": "symmetric-raw-gp-sd",
+          "group_coverages": {
+            "0=0:1=0:2=10": 0.5555555555555556,
+            "0=0:1=3:2=4": 1.0,
+            "0=0:1=7:2=7": 1.0,
+            "0=11:1=7:2=0": 1.0,
+            "0=1:1=0:2=1": 0.8181818181818182,
+            "0=1:1=9:2=0": 1.0,
+            "0=4:1=0:2=3": 1.0,
+            "0=4:1=11:2=9": 0.75,
+            "0=7:1=0:2=2": 1.0,
+            "0=7:1=11:2=3": 0.8571428571428571
+          },
+          "maximum_group_coverage_deviation": 0.34444444444444444,
+          "selection_key": [
+            0.0019119769119768648,
+            0.14478824825289974,
+            0.15081756886254327,
+            "symmetric-raw-gp-sd"
+          ]
+        },
+        {
+          "diagnostic_coverage_passed": false,
+          "diagnostic_stability_passed": false,
+          "equal_group_coverage_standard_deviation": 0.22049506194861074,
+          "equal_group_mean_coverage": 0.8361832611832613,
+          "equal_group_mean_normalized_width": 0.15415809115185777,
+          "family": "asymmetric-signed-raw-gp-sd",
+          "group_coverages": {
+            "0=0:1=0:2=10": 0.5555555555555556,
+            "0=0:1=3:2=4": 1.0,
+            "0=0:1=7:2=7": 1.0,
+            "0=11:1=7:2=0": 1.0,
+            "0=1:1=0:2=1": 0.8181818181818182,
+            "0=1:1=9:2=0": 1.0,
+            "0=4:1=0:2=3": 1.0,
+            "0=4:1=11:2=9": 0.4166666666666667,
+            "0=7:1=0:2=2": 1.0,
+            "0=7:1=11:2=3": 0.5714285714285714
+          },
+          "maximum_group_coverage_deviation": 0.48333333333333334,
+          "selection_key": [
+            0.06381673881673877,
+            0.22049506194861074,
+            0.15415809115185777,
+            "asymmetric-signed-raw-gp-sd"
+          ]
+        },
+        {
+          "diagnostic_coverage_passed": true,
+          "diagnostic_stability_passed": true,
+          "equal_group_coverage_standard_deviation": 0.13319622455137659,
+          "equal_group_mean_coverage": 0.9008658008658008,
+          "equal_group_mean_normalized_width": 0.15108179157788834,
+          "family": "symmetric-input-distance",
+          "group_coverages": {
+            "0=0:1=0:2=10": 0.6666666666666666,
+            "0=0:1=3:2=4": 1.0,
+            "0=0:1=7:2=7": 1.0,
+            "0=11:1=7:2=0": 1.0,
+            "0=1:1=0:2=1": 0.8181818181818182,
+            "0=1:1=9:2=0": 1.0,
+            "0=4:1=0:2=3": 1.0,
+            "0=4:1=11:2=9": 0.6666666666666666,
+            "0=7:1=0:2=2": 1.0,
+            "0=7:1=11:2=3": 0.8571428571428571
+          },
+          "maximum_group_coverage_deviation": 0.2333333333333334,
+          "selection_key": [
+            0.0008658008658007921,
+            0.13319622455137659,
+            0.15108179157788834,
+            "symmetric-input-distance"
+          ]
+        },
+        {
+          "diagnostic_coverage_passed": true,
+          "diagnostic_stability_passed": false,
+          "equal_group_coverage_standard_deviation": 0.2082174580769258,
+          "equal_group_mean_coverage": 0.8675324675324676,
+          "equal_group_mean_normalized_width": 0.1617201117832504,
+          "family": "asymmetric-signed-input-distance",
+          "group_coverages": {
+            "0=0:1=0:2=10": 0.6666666666666666,
+            "0=0:1=3:2=4": 1.0,
+            "0=0:1=7:2=7": 1.0,
+            "0=11:1=7:2=0": 1.0,
+            "0=1:1=0:2=1": 0.8181818181818182,
+            "0=1:1=9:2=0": 1.0,
+            "0=4:1=0:2=3": 1.0,
+            "0=4:1=11:2=9": 0.3333333333333333,
+            "0=7:1=0:2=2": 1.0,
+            "0=7:1=11:2=3": 0.8571428571428571
+          },
+          "maximum_group_coverage_deviation": 0.5666666666666667,
+          "selection_key": [
+            0.03246753246753242,
+            0.2082174580769258,
+            0.1617201117832504,
+            "asymmetric-signed-input-distance"
+          ]
+        }
+      ],
+      "diagnostic_gates_passed": true,
+      "selected_diagnostics": {
+        "diagnostic_coverage_passed": true,
+        "diagnostic_stability_passed": true,
+        "equal_group_coverage_standard_deviation": 0.13319622455137659,
+        "equal_group_mean_coverage": 0.9008658008658008,
+        "equal_group_mean_normalized_width": 0.15108179157788834,
+        "family": "symmetric-input-distance",
+        "group_coverages": {
+          "0=0:1=0:2=10": 0.6666666666666666,
+          "0=0:1=3:2=4": 1.0,
+          "0=0:1=7:2=7": 1.0,
+          "0=11:1=7:2=0": 1.0,
+          "0=1:1=0:2=1": 0.8181818181818182,
+          "0=1:1=9:2=0": 1.0,
+          "0=4:1=0:2=3": 1.0,
+          "0=4:1=11:2=9": 0.6666666666666666,
+          "0=7:1=0:2=2": 1.0,
+          "0=7:1=11:2=3": 0.8571428571428571
+        },
+        "maximum_group_coverage_deviation": 0.2333333333333334,
+        "selection_key": [
+          0.0008658008658007921,
+          0.13319622455137659,
+          0.15108179157788834,
+          "symmetric-input-distance"
+        ]
+      },
+      "selected_family": "symmetric-input-distance"
+    },
+    "specific_impulse_s": {
+      "candidates": [
+        {
+          "diagnostic_coverage_passed": true,
+          "diagnostic_stability_passed": false,
+          "equal_group_coverage_standard_deviation": 0.14243842611514557,
+          "equal_group_mean_coverage": 0.9103030303030304,
+          "equal_group_mean_normalized_width": 0.1460363277435364,
+          "family": "symmetric-absolute",
+          "group_coverages": {
+            "0=0:1=0:2=10": 0.6666666666666666,
+            "0=0:1=3:2=4": 1.0,
+            "0=0:1=7:2=7": 1.0,
+            "0=11:1=7:2=0": 1.0,
+            "0=1:1=0:2=1": 0.6363636363636364,
+            "0=1:1=9:2=0": 0.8,
+            "0=4:1=0:2=3": 1.0,
+            "0=4:1=11:2=9": 1.0,
+            "0=7:1=0:2=2": 1.0,
+            "0=7:1=11:2=3": 1.0
+          },
+          "maximum_group_coverage_deviation": 0.26363636363636367,
+          "selection_key": [
+            0.01030303030303037,
+            0.14243842611514557,
+            0.1460363277435364,
+            "symmetric-absolute"
+          ]
+        },
+        {
+          "diagnostic_coverage_passed": true,
+          "diagnostic_stability_passed": true,
+          "equal_group_coverage_standard_deviation": 0.11243754856049307,
+          "equal_group_mean_coverage": 0.8914646464646465,
+          "equal_group_mean_normalized_width": 0.13226515199536656,
+          "family": "asymmetric-signed-absolute",
+          "group_coverages": {
+            "0=0:1=0:2=10": 0.6666666666666666,
+            "0=0:1=3:2=4": 0.9,
+            "0=0:1=7:2=7": 1.0,
+            "0=11:1=7:2=0": 0.8888888888888888,
+            "0=1:1=0:2=1": 0.9090909090909091,
+            "0=1:1=9:2=0": 0.8,
+            "0=4:1=0:2=3": 1.0,
+            "0=4:1=11:2=9": 0.75,
+            "0=7:1=0:2=2": 1.0,
+            "0=7:1=11:2=3": 1.0
+          },
+          "maximum_group_coverage_deviation": 0.2333333333333334,
+          "selection_key": [
+            0.008535353535353507,
+            0.11243754856049307,
+            0.13226515199536656,
+            "asymmetric-signed-absolute"
+          ]
+        },
+        {
+          "diagnostic_coverage_passed": true,
+          "diagnostic_stability_passed": false,
+          "equal_group_coverage_standard_deviation": 0.13956807305258123,
+          "equal_group_mean_coverage": 0.9073737373737373,
+          "equal_group_mean_normalized_width": 0.13638721677268212,
+          "family": "symmetric-raw-gp-sd",
+          "group_coverages": {
+            "0=0:1=0:2=10": 0.5555555555555556,
+            "0=0:1=3:2=4": 0.9,
+            "0=0:1=7:2=7": 1.0,
+            "0=11:1=7:2=0": 1.0,
+            "0=1:1=0:2=1": 0.8181818181818182,
+            "0=1:1=9:2=0": 0.8,
+            "0=4:1=0:2=3": 1.0,
+            "0=4:1=11:2=9": 1.0,
+            "0=7:1=0:2=2": 1.0,
+            "0=7:1=11:2=3": 1.0
+          },
+          "maximum_group_coverage_deviation": 0.34444444444444444,
+          "selection_key": [
+            0.007373737373737255,
+            0.13956807305258123,
+            0.13638721677268212,
+            "symmetric-raw-gp-sd"
+          ]
+        },
+        {
+          "diagnostic_coverage_passed": true,
+          "diagnostic_stability_passed": true,
+          "equal_group_coverage_standard_deviation": 0.08920793294589635,
+          "equal_group_mean_coverage": 0.900909090909091,
+          "equal_group_mean_normalized_width": 0.12001548407319629,
+          "family": "asymmetric-signed-raw-gp-sd",
+          "group_coverages": {
+            "0=0:1=0:2=10": 0.7777777777777778,
+            "0=0:1=3:2=4": 0.8,
+            "0=0:1=7:2=7": 1.0,
+            "0=11:1=7:2=0": 0.8888888888888888,
+            "0=1:1=0:2=1": 0.9090909090909091,
+            "0=1:1=9:2=0": 0.8,
+            "0=4:1=0:2=3": 1.0,
+            "0=4:1=11:2=9": 0.8333333333333334,
+            "0=7:1=0:2=2": 1.0,
+            "0=7:1=11:2=3": 1.0
+          },
+          "maximum_group_coverage_deviation": 0.12222222222222223,
+          "selection_key": [
+            0.0009090909090909705,
+            0.08920793294589635,
+            0.12001548407319629,
+            "asymmetric-signed-raw-gp-sd"
+          ]
+        },
+        {
+          "diagnostic_coverage_passed": true,
+          "diagnostic_stability_passed": false,
+          "equal_group_coverage_standard_deviation": 0.1307807389232017,
+          "equal_group_mean_coverage": 0.9084848484848485,
+          "equal_group_mean_normalized_width": 0.15638238799321788,
+          "family": "symmetric-input-distance",
+          "group_coverages": {
+            "0=0:1=0:2=10": 0.7777777777777778,
+            "0=0:1=3:2=4": 1.0,
+            "0=0:1=7:2=7": 0.8888888888888888,
+            "0=11:1=7:2=0": 1.0,
+            "0=1:1=0:2=1": 0.8181818181818182,
+            "0=1:1=9:2=0": 0.6,
+            "0=4:1=0:2=3": 1.0,
+            "0=4:1=11:2=9": 1.0,
+            "0=7:1=0:2=2": 1.0,
+            "0=7:1=11:2=3": 1.0
+          },
+          "maximum_group_coverage_deviation": 0.30000000000000004,
+          "selection_key": [
+            0.008484848484848428,
+            0.1307807389232017,
+            0.15638238799321788,
+            "symmetric-input-distance"
+          ]
+        },
+        {
+          "diagnostic_coverage_passed": true,
+          "diagnostic_stability_passed": true,
+          "equal_group_coverage_standard_deviation": 0.07727477385551494,
+          "equal_group_mean_coverage": 0.912929292929293,
+          "equal_group_mean_normalized_width": 0.12610754625137313,
+          "family": "asymmetric-signed-input-distance",
+          "group_coverages": {
+            "0=0:1=0:2=10": 0.8888888888888888,
+            "0=0:1=3:2=4": 0.8,
+            "0=0:1=7:2=7": 1.0,
+            "0=11:1=7:2=0": 0.8888888888888888,
+            "0=1:1=0:2=1": 0.8181818181818182,
+            "0=1:1=9:2=0": 0.9,
+            "0=4:1=0:2=3": 1.0,
+            "0=4:1=11:2=9": 0.8333333333333334,
+            "0=7:1=0:2=2": 1.0,
+            "0=7:1=11:2=3": 1.0
+          },
+          "maximum_group_coverage_deviation": 0.09999999999999998,
+          "selection_key": [
+            0.012929292929293013,
+            0.07727477385551494,
+            0.12610754625137313,
+            "asymmetric-signed-input-distance"
+          ]
+        }
+      ],
+      "diagnostic_gates_passed": true,
+      "selected_diagnostics": {
+        "diagnostic_coverage_passed": true,
+        "diagnostic_stability_passed": true,
+        "equal_group_coverage_standard_deviation": 0.08920793294589635,
+        "equal_group_mean_coverage": 0.900909090909091,
+        "equal_group_mean_normalized_width": 0.12001548407319629,
+        "family": "asymmetric-signed-raw-gp-sd",
+        "group_coverages": {
+          "0=0:1=0:2=10": 0.7777777777777778,
+          "0=0:1=3:2=4": 0.8,
+          "0=0:1=7:2=7": 1.0,
+          "0=11:1=7:2=0": 0.8888888888888888,
+          "0=1:1=0:2=1": 0.9090909090909091,
+          "0=1:1=9:2=0": 0.8,
+          "0=4:1=0:2=3": 1.0,
+          "0=4:1=11:2=9": 0.8333333333333334,
+          "0=7:1=0:2=2": 1.0,
+          "0=7:1=11:2=3": 1.0
+        },
+        "maximum_group_coverage_deviation": 0.12222222222222223,
+        "selection_key": [
+          0.0009090909090909705,
+          0.08920793294589635,
+          0.12001548407319629,
+          "asymmetric-signed-raw-gp-sd"
+        ]
+      },
+      "selected_family": "asymmetric-signed-raw-gp-sd"
+    }
+  },
+  "interpolation": {
+    "axial_thrust_n": {
+      "candidates": [
+        {
+          "diagnostic_coverage_passed": true,
+          "diagnostic_stability_passed": true,
+          "equal_group_coverage_standard_deviation": 0.1127457610429627,
+          "equal_group_mean_coverage": 0.908287419651056,
+          "equal_group_mean_normalized_width": 0.04685460917028029,
+          "family": "symmetric-absolute",
+          "group_coverages": {
+            "0=3:1=7:2=3": 0.8888888888888888,
+            "0=3:1=8:2=4": 1.0,
+            "0=3:1=8:2=5": 1.0,
+            "0=5:1=8:2=8": 0.7,
+            "0=6:1=4:2=4": 1.0,
+            "0=6:1=5:2=6": 1.0,
+            "0=6:1=7:2=6": 0.875,
+            "0=7:1=7:2=3": 1.0,
+            "0=7:1=7:2=7": 0.8,
+            "0=8:1=6:2=6": 1.0,
+            "0=8:1=8:2=3": 0.7272727272727273
+          },
+          "maximum_group_coverage_deviation": 0.20000000000000007,
+          "selection_key": [
+            0.00828741965105595,
+            0.1127457610429627,
+            0.04685460917028029,
+            "symmetric-absolute"
+          ]
+        },
+        {
+          "diagnostic_coverage_passed": true,
+          "diagnostic_stability_passed": true,
+          "equal_group_coverage_standard_deviation": 0.11549900940448414,
+          "equal_group_mean_coverage": 0.918388429752066,
+          "equal_group_mean_normalized_width": 0.0524023113007811,
+          "family": "asymmetric-signed-absolute",
+          "group_coverages": {
+            "0=3:1=7:2=3": 1.0,
+            "0=3:1=8:2=4": 1.0,
+            "0=3:1=8:2=5": 1.0,
+            "0=5:1=8:2=8": 0.7,
+            "0=6:1=4:2=4": 1.0,
+            "0=6:1=5:2=6": 1.0,
+            "0=6:1=7:2=6": 0.875,
+            "0=7:1=7:2=3": 1.0,
+            "0=7:1=7:2=7": 0.8,
+            "0=8:1=6:2=6": 1.0,
+            "0=8:1=8:2=3": 0.7272727272727273
+          },
+          "maximum_group_coverage_deviation": 0.20000000000000007,
+          "selection_key": [
+            0.018388429752066004,
+            0.11549900940448414,
+            0.0524023113007811,
+            "asymmetric-signed-absolute"
+          ]
+        },
+        {
+          "diagnostic_coverage_passed": true,
+          "diagnostic_stability_passed": false,
+          "equal_group_coverage_standard_deviation": 0.12801014989031367,
+          "equal_group_mean_coverage": 0.9000229568411388,
+          "equal_group_mean_normalized_width": 0.04714496293660555,
+          "family": "symmetric-raw-gp-sd",
+          "group_coverages": {
+            "0=3:1=7:2=3": 0.8888888888888888,
+            "0=3:1=8:2=4": 1.0,
+            "0=3:1=8:2=5": 1.0,
+            "0=5:1=8:2=8": 0.7,
+            "0=6:1=4:2=4": 1.0,
+            "0=6:1=5:2=6": 1.0,
+            "0=6:1=7:2=6": 0.875,
+            "0=7:1=7:2=3": 1.0,
+            "0=7:1=7:2=7": 0.8,
+            "0=8:1=6:2=6": 1.0,
+            "0=8:1=8:2=3": 0.6363636363636364
+          },
+          "maximum_group_coverage_deviation": 0.26363636363636367,
+          "selection_key": [
+            2.2956841138732642e-05,
+            0.12801014989031367,
+            0.04714496293660555,
+            "symmetric-raw-gp-sd"
+          ]
+        },
+        {
+          "diagnostic_coverage_passed": true,
+          "diagnostic_stability_passed": false,
+          "equal_group_coverage_standard_deviation": 0.11651722500324602,
+          "equal_group_mean_coverage": 0.9091138659320478,
+          "equal_group_mean_normalized_width": 0.0527978567217785,
+          "family": "asymmetric-signed-raw-gp-sd",
+          "group_coverages": {
+            "0=3:1=7:2=3": 0.8888888888888888,
+            "0=3:1=8:2=4": 1.0,
+            "0=3:1=8:2=5": 1.0,
+            "0=5:1=8:2=8": 0.8,
+            "0=6:1=4:2=4": 1.0,
+            "0=6:1=5:2=6": 1.0,
+            "0=6:1=7:2=6": 0.875,
+            "0=7:1=7:2=3": 1.0,
+            "0=7:1=7:2=7": 0.8,
+            "0=8:1=6:2=6": 1.0,
+            "0=8:1=8:2=3": 0.6363636363636364
+          },
+          "maximum_group_coverage_deviation": 0.26363636363636367,
+          "selection_key": [
+            0.009113865932047771,
+            0.11651722500324602,
+            0.0527978567217785,
+            "asymmetric-signed-raw-gp-sd"
+          ]
+        },
+        {
+          "diagnostic_coverage_passed": true,
+          "diagnostic_stability_passed": false,
+          "equal_group_coverage_standard_deviation": 0.13108002082638545,
+          "equal_group_mean_coverage": 0.9101239669421488,
+          "equal_group_mean_normalized_width": 0.0472615430923068,
+          "family": "symmetric-input-distance",
+          "group_coverages": {
+            "0=3:1=7:2=3": 1.0,
+            "0=3:1=8:2=4": 1.0,
+            "0=3:1=8:2=5": 1.0,
+            "0=5:1=8:2=8": 0.7,
+            "0=6:1=4:2=4": 1.0,
+            "0=6:1=5:2=6": 1.0,
+            "0=6:1=7:2=6": 0.875,
+            "0=7:1=7:2=3": 1.0,
+            "0=7:1=7:2=7": 0.8,
+            "0=8:1=6:2=6": 1.0,
+            "0=8:1=8:2=3": 0.6363636363636364
+          },
+          "maximum_group_coverage_deviation": 0.26363636363636367,
+          "selection_key": [
+            0.010123966942148788,
+            0.13108002082638545,
+            0.0472615430923068,
+            "symmetric-input-distance"
+          ]
+        },
+        {
+          "diagnostic_coverage_passed": true,
+          "diagnostic_stability_passed": false,
+          "equal_group_coverage_standard_deviation": 0.13108002082638545,
+          "equal_group_mean_coverage": 0.9101239669421488,
+          "equal_group_mean_normalized_width": 0.052597770184774115,
+          "family": "asymmetric-signed-input-distance",
+          "group_coverages": {
+            "0=3:1=7:2=3": 1.0,
+            "0=3:1=8:2=4": 1.0,
+            "0=3:1=8:2=5": 1.0,
+            "0=5:1=8:2=8": 0.7,
+            "0=6:1=4:2=4": 1.0,
+            "0=6:1=5:2=6": 1.0,
+            "0=6:1=7:2=6": 0.875,
+            "0=7:1=7:2=3": 1.0,
+            "0=7:1=7:2=7": 0.8,
+            "0=8:1=6:2=6": 1.0,
+            "0=8:1=8:2=3": 0.6363636363636364
+          },
+          "maximum_group_coverage_deviation": 0.26363636363636367,
+          "selection_key": [
+            0.010123966942148788,
+            0.13108002082638545,
+            0.052597770184774115,
+            "asymmetric-signed-input-distance"
+          ]
+        }
+      ],
+      "diagnostic_gates_passed": false,
+      "selected_diagnostics": {
+        "diagnostic_coverage_passed": true,
+        "diagnostic_stability_passed": false,
+        "equal_group_coverage_standard_deviation": 0.12801014989031367,
+        "equal_group_mean_coverage": 0.9000229568411388,
+        "equal_group_mean_normalized_width": 0.04714496293660555,
+        "family": "symmetric-raw-gp-sd",
+        "group_coverages": {
+          "0=3:1=7:2=3": 0.8888888888888888,
+          "0=3:1=8:2=4": 1.0,
+          "0=3:1=8:2=5": 1.0,
+          "0=5:1=8:2=8": 0.7,
+          "0=6:1=4:2=4": 1.0,
+          "0=6:1=5:2=6": 1.0,
+          "0=6:1=7:2=6": 0.875,
+          "0=7:1=7:2=3": 1.0,
+          "0=7:1=7:2=7": 0.8,
+          "0=8:1=6:2=6": 1.0,
+          "0=8:1=8:2=3": 0.6363636363636364
+        },
+        "maximum_group_coverage_deviation": 0.26363636363636367,
+        "selection_key": [
+          2.2956841138732642e-05,
+          0.12801014989031367,
+          0.04714496293660555,
+          "symmetric-raw-gp-sd"
+        ]
+      },
+      "selected_family": "symmetric-raw-gp-sd"
+    },
+    "specific_impulse_s": {
+      "candidates": [
+        {
+          "diagnostic_coverage_passed": true,
+          "diagnostic_stability_passed": false,
+          "equal_group_coverage_standard_deviation": 0.12901506162645862,
+          "equal_group_mean_coverage": 0.8911845730027548,
+          "equal_group_mean_normalized_width": 0.07421531502083599,
+          "family": "symmetric-absolute",
+          "group_coverages": {
+            "0=3:1=7:2=3": 0.6666666666666666,
+            "0=3:1=8:2=4": 0.6363636363636364,
+            "0=3:1=8:2=5": 0.9,
+            "0=5:1=8:2=8": 0.8,
+            "0=6:1=4:2=4": 0.9,
+            "0=6:1=5:2=6": 1.0,
+            "0=6:1=7:2=6": 1.0,
+            "0=7:1=7:2=3": 1.0,
+            "0=7:1=7:2=7": 0.9,
+            "0=8:1=6:2=6": 1.0,
+            "0=8:1=8:2=3": 1.0
+          },
+          "maximum_group_coverage_deviation": 0.26363636363636367,
+          "selection_key": [
+            0.008815426997245246,
+            0.12901506162645862,
+            0.07421531502083599,
+            "symmetric-absolute"
+          ]
+        },
+        {
+          "diagnostic_coverage_passed": true,
+          "diagnostic_stability_passed": false,
+          "equal_group_coverage_standard_deviation": 0.13972703942463255,
+          "equal_group_mean_coverage": 0.8946969696969697,
+          "equal_group_mean_normalized_width": 0.07210348761850537,
+          "family": "asymmetric-signed-absolute",
+          "group_coverages": {
+            "0=3:1=7:2=3": 0.6666666666666666,
+            "0=3:1=8:2=4": 1.0,
+            "0=3:1=8:2=5": 1.0,
+            "0=5:1=8:2=8": 0.8,
+            "0=6:1=4:2=4": 0.9,
+            "0=6:1=5:2=6": 1.0,
+            "0=6:1=7:2=6": 0.875,
+            "0=7:1=7:2=3": 1.0,
+            "0=7:1=7:2=7": 0.6,
+            "0=8:1=6:2=6": 1.0,
+            "0=8:1=8:2=3": 1.0
+          },
+          "maximum_group_coverage_deviation": 0.30000000000000004,
+          "selection_key": [
+            0.005303030303030365,
+            0.13972703942463255,
+            0.07210348761850537,
+            "asymmetric-signed-absolute"
+          ]
+        },
+        {
+          "diagnostic_coverage_passed": true,
+          "diagnostic_stability_passed": true,
+          "equal_group_coverage_standard_deviation": 0.10507055525553952,
+          "equal_group_mean_coverage": 0.9054407713498623,
+          "equal_group_mean_normalized_width": 0.0701104096766734,
+          "family": "symmetric-raw-gp-sd",
+          "group_coverages": {
+            "0=3:1=7:2=3": 0.6666666666666666,
+            "0=3:1=8:2=4": 0.8181818181818182,
+            "0=3:1=8:2=5": 0.9,
+            "0=5:1=8:2=8": 0.8,
+            "0=6:1=4:2=4": 1.0,
+            "0=6:1=5:2=6": 1.0,
+            "0=6:1=7:2=6": 0.875,
+            "0=7:1=7:2=3": 1.0,
+            "0=7:1=7:2=7": 0.9,
+            "0=8:1=6:2=6": 1.0,
+            "0=8:1=8:2=3": 1.0
+          },
+          "maximum_group_coverage_deviation": 0.2333333333333334,
+          "selection_key": [
+            0.005440771349862317,
+            0.10507055525553952,
+            0.0701104096766734,
+            "symmetric-raw-gp-sd"
+          ]
+        },
+        {
+          "diagnostic_coverage_passed": true,
+          "diagnostic_stability_passed": false,
+          "equal_group_coverage_standard_deviation": 0.12196284408025355,
+          "equal_group_mean_coverage": 0.8934638593729503,
+          "equal_group_mean_normalized_width": 0.06601145624819667,
+          "family": "asymmetric-signed-raw-gp-sd",
+          "group_coverages": {
+            "0=3:1=7:2=3": 0.7777777777777778,
+            "0=3:1=8:2=4": 0.8181818181818182,
+            "0=3:1=8:2=5": 1.0,
+            "0=5:1=8:2=8": 0.9,
+            "0=6:1=4:2=4": 1.0,
+            "0=6:1=5:2=6": 1.0,
+            "0=6:1=7:2=6": 0.875,
+            "0=7:1=7:2=3": 1.0,
+            "0=7:1=7:2=7": 0.6,
+            "0=8:1=6:2=6": 0.8571428571428571,
+            "0=8:1=8:2=3": 1.0
+          },
+          "maximum_group_coverage_deviation": 0.30000000000000004,
+          "selection_key": [
+            0.006536140627049769,
+            0.12196284408025355,
+            0.06601145624819667,
+            "asymmetric-signed-raw-gp-sd"
+          ]
+        },
+        {
+          "diagnostic_coverage_passed": true,
+          "diagnostic_stability_passed": true,
+          "equal_group_coverage_standard_deviation": 0.09602936927589166,
+          "equal_group_mean_coverage": 0.9054407713498623,
+          "equal_group_mean_normalized_width": 0.06704255668755564,
+          "family": "symmetric-input-distance",
+          "group_coverages": {
+            "0=3:1=7:2=3": 0.6666666666666666,
+            "0=3:1=8:2=4": 0.8181818181818182,
+            "0=3:1=8:2=5": 0.9,
+            "0=5:1=8:2=8": 0.9,
+            "0=6:1=4:2=4": 0.9,
+            "0=6:1=5:2=6": 1.0,
+            "0=6:1=7:2=6": 0.875,
+            "0=7:1=7:2=3": 1.0,
+            "0=7:1=7:2=7": 0.9,
+            "0=8:1=6:2=6": 1.0,
+            "0=8:1=8:2=3": 1.0
+          },
+          "maximum_group_coverage_deviation": 0.2333333333333334,
+          "selection_key": [
+            0.005440771349862317,
+            0.09602936927589166,
+            0.06704255668755564,
+            "symmetric-input-distance"
+          ]
+        },
+        {
+          "diagnostic_coverage_passed": true,
+          "diagnostic_stability_passed": false,
+          "equal_group_coverage_standard_deviation": 0.13605950380790321,
+          "equal_group_mean_coverage": 0.8825364029909484,
+          "equal_group_mean_normalized_width": 0.0691039039204348,
+          "family": "asymmetric-signed-input-distance",
+          "group_coverages": {
+            "0=3:1=7:2=3": 0.6666666666666666,
+            "0=3:1=8:2=4": 0.9090909090909091,
+            "0=3:1=8:2=5": 1.0,
+            "0=5:1=8:2=8": 0.8,
+            "0=6:1=4:2=4": 1.0,
+            "0=6:1=5:2=6": 1.0,
+            "0=6:1=7:2=6": 0.875,
+            "0=7:1=7:2=3": 1.0,
+            "0=7:1=7:2=7": 0.6,
+            "0=8:1=6:2=6": 0.8571428571428571,
+            "0=8:1=8:2=3": 1.0
+          },
+          "maximum_group_coverage_deviation": 0.30000000000000004,
+          "selection_key": [
+            0.017463597009051646,
+            0.13605950380790321,
+            0.0691039039204348,
+            "asymmetric-signed-input-distance"
+          ]
+        }
+      ],
+      "diagnostic_gates_passed": false,
+      "selected_diagnostics": {
+        "diagnostic_coverage_passed": true,
+        "diagnostic_stability_passed": false,
+        "equal_group_coverage_standard_deviation": 0.13972703942463255,
+        "equal_group_mean_coverage": 0.8946969696969697,
+        "equal_group_mean_normalized_width": 0.07210348761850537,
+        "family": "asymmetric-signed-absolute",
+        "group_coverages": {
+          "0=3:1=7:2=3": 0.6666666666666666,
+          "0=3:1=8:2=4": 1.0,
+          "0=3:1=8:2=5": 1.0,
+          "0=5:1=8:2=8": 0.8,
+          "0=6:1=4:2=4": 0.9,
+          "0=6:1=5:2=6": 1.0,
+          "0=6:1=7:2=6": 0.875,
+          "0=7:1=7:2=3": 1.0,
+          "0=7:1=7:2=7": 0.6,
+          "0=8:1=6:2=6": 1.0,
+          "0=8:1=8:2=3": 1.0
+        },
+        "maximum_group_coverage_deviation": 0.30000000000000004,
+        "selection_key": [
+          0.005303030303030365,
+          0.13972703942463255,
+          0.07210348761850537,
+          "asymmetric-signed-absolute"
+        ]
+      },
+      "selected_family": "asymmetric-signed-absolute"
+    }
+  },
+  "method_selection_hash": "f78420351cc0353e6d8bb5368d337675247fb6a36c9abb80b08e91ae80cc09a0",
+  "ood": {
+    "axial_thrust_n": {
+      "candidates": [
+        {
+          "diagnostic_coverage_passed": true,
+          "diagnostic_stability_passed": false,
+          "equal_group_coverage_standard_deviation": 0.24321633145061933,
+          "equal_group_mean_coverage": 0.8875,
+          "equal_group_mean_normalized_width": 0.25826711281178333,
+          "family": "symmetric-absolute",
+          "group_coverages": {
+            "0=10:1=0:2=11": 1.0,
+            "0=10:1=2:2=9": 1.0,
+            "0=10:1=8:2=9": 1.0,
+            "0=11:1=5:2=9": 1.0,
+            "0=11:1=6:2=9": 1.0,
+            "0=11:1=9:2=11": 0.18181818181818182,
+            "0=9:1=0:2=11": 0.875,
+            "0=9:1=10:2=9": 0.8181818181818182,
+            "0=9:1=1:2=11": 1.0,
+            "0=9:1=5:2=11": 1.0
+          },
+          "maximum_group_coverage_deviation": 0.7181818181818183,
+          "selection_key": [
+            0.012500000000000067,
+            0.24321633145061933,
+            0.25826711281178333,
+            "symmetric-absolute"
+          ]
+        },
+        {
+          "diagnostic_coverage_passed": true,
+          "diagnostic_stability_passed": false,
+          "equal_group_coverage_standard_deviation": 0.23889956625080117,
+          "equal_group_mean_coverage": 0.8606060606060606,
+          "equal_group_mean_normalized_width": 0.2609425137906232,
+          "family": "asymmetric-signed-absolute",
+          "group_coverages": {
+            "0=10:1=0:2=11": 0.5833333333333334,
+            "0=10:1=2:2=9": 1.0,
+            "0=10:1=8:2=9": 1.0,
+            "0=11:1=5:2=9": 1.0,
+            "0=11:1=6:2=9": 1.0,
+            "0=11:1=9:2=11": 0.2727272727272727,
+            "0=9:1=0:2=11": 0.75,
+            "0=9:1=10:2=9": 1.0,
+            "0=9:1=1:2=11": 1.0,
+            "0=9:1=5:2=11": 1.0
+          },
+          "maximum_group_coverage_deviation": 0.6272727272727273,
+          "selection_key": [
+            0.039393939393939426,
+            0.23889956625080117,
+            0.2609425137906232,
+            "asymmetric-signed-absolute"
+          ]
+        },
+        {
+          "diagnostic_coverage_passed": true,
+          "diagnostic_stability_passed": false,
+          "equal_group_coverage_standard_deviation": 0.19917183909278768,
+          "equal_group_mean_coverage": 0.9090909090909092,
+          "equal_group_mean_normalized_width": 0.22564520482531797,
+          "family": "symmetric-raw-gp-sd",
+          "group_coverages": {
+            "0=10:1=0:2=11": 1.0,
+            "0=10:1=2:2=9": 1.0,
+            "0=10:1=8:2=9": 1.0,
+            "0=11:1=5:2=9": 1.0,
+            "0=11:1=6:2=9": 1.0,
+            "0=11:1=9:2=11": 0.36363636363636365,
+            "0=9:1=0:2=11": 1.0,
+            "0=9:1=10:2=9": 0.7272727272727273,
+            "0=9:1=1:2=11": 1.0,
+            "0=9:1=5:2=11": 1.0
+          },
+          "maximum_group_coverage_deviation": 0.5363636363636364,
+          "selection_key": [
+            0.00909090909090915,
+            0.19917183909278768,
+            0.22564520482531797,
+            "symmetric-raw-gp-sd"
+          ]
+        },
+        {
+          "diagnostic_coverage_passed": true,
+          "diagnostic_stability_passed": false,
+          "equal_group_coverage_standard_deviation": 0.20373154566665547,
+          "equal_group_mean_coverage": 0.8689393939393939,
+          "equal_group_mean_normalized_width": 0.23243395770876196,
+          "family": "asymmetric-signed-raw-gp-sd",
+          "group_coverages": {
+            "0=10:1=0:2=11": 0.6666666666666666,
+            "0=10:1=2:2=9": 1.0,
+            "0=10:1=8:2=9": 1.0,
+            "0=11:1=5:2=9": 1.0,
+            "0=11:1=6:2=9": 1.0,
+            "0=11:1=9:2=11": 0.36363636363636365,
+            "0=9:1=0:2=11": 0.75,
+            "0=9:1=10:2=9": 0.9090909090909091,
+            "0=9:1=1:2=11": 1.0,
+            "0=9:1=5:2=11": 1.0
+          },
+          "maximum_group_coverage_deviation": 0.5363636363636364,
+          "selection_key": [
+            0.031060606060606122,
+            0.20373154566665547,
+            0.23243395770876196,
+            "asymmetric-signed-raw-gp-sd"
+          ]
+        },
+        {
+          "diagnostic_coverage_passed": true,
+          "diagnostic_stability_passed": false,
+          "equal_group_coverage_standard_deviation": 0.16032395535651253,
+          "equal_group_mean_coverage": 0.9147727272727273,
+          "equal_group_mean_normalized_width": 0.24411134202260865,
+          "family": "symmetric-input-distance",
+          "group_coverages": {
+            "0=10:1=0:2=11": 1.0,
+            "0=10:1=2:2=9": 1.0,
+            "0=10:1=8:2=9": 0.9090909090909091,
+            "0=11:1=5:2=9": 1.0,
+            "0=11:1=6:2=9": 1.0,
+            "0=11:1=9:2=11": 0.45454545454545453,
+            "0=9:1=0:2=11": 0.875,
+            "0=9:1=10:2=9": 0.9090909090909091,
+            "0=9:1=1:2=11": 1.0,
+            "0=9:1=5:2=11": 1.0
+          },
+          "maximum_group_coverage_deviation": 0.4454545454545455,
+          "selection_key": [
+            0.01477272727272727,
+            0.16032395535651253,
+            0.24411134202260865,
+            "symmetric-input-distance"
+          ]
+        },
+        {
+          "diagnostic_coverage_passed": true,
+          "diagnostic_stability_passed": false,
+          "equal_group_coverage_standard_deviation": 0.19290086521748132,
+          "equal_group_mean_coverage": 0.8696969696969697,
+          "equal_group_mean_normalized_width": 0.2833196623840354,
+          "family": "asymmetric-signed-input-distance",
+          "group_coverages": {
+            "0=10:1=0:2=11": 0.5833333333333334,
+            "0=10:1=2:2=9": 1.0,
+            "0=10:1=8:2=9": 1.0,
+            "0=11:1=5:2=9": 1.0,
+            "0=11:1=6:2=9": 1.0,
+            "0=11:1=9:2=11": 0.45454545454545453,
+            "0=9:1=0:2=11": 0.75,
+            "0=9:1=10:2=9": 0.9090909090909091,
+            "0=9:1=1:2=11": 1.0,
+            "0=9:1=5:2=11": 1.0
+          },
+          "maximum_group_coverage_deviation": 0.4454545454545455,
+          "selection_key": [
+            0.030303030303030276,
+            0.19290086521748132,
+            0.2833196623840354,
+            "asymmetric-signed-input-distance"
+          ]
+        }
+      ],
+      "diagnostic_gates_passed": false,
+      "selected_diagnostics": {
+        "diagnostic_coverage_passed": true,
+        "diagnostic_stability_passed": false,
+        "equal_group_coverage_standard_deviation": 0.19917183909278768,
+        "equal_group_mean_coverage": 0.9090909090909092,
+        "equal_group_mean_normalized_width": 0.22564520482531797,
+        "family": "symmetric-raw-gp-sd",
+        "group_coverages": {
+          "0=10:1=0:2=11": 1.0,
+          "0=10:1=2:2=9": 1.0,
+          "0=10:1=8:2=9": 1.0,
+          "0=11:1=5:2=9": 1.0,
+          "0=11:1=6:2=9": 1.0,
+          "0=11:1=9:2=11": 0.36363636363636365,
+          "0=9:1=0:2=11": 1.0,
+          "0=9:1=10:2=9": 0.7272727272727273,
+          "0=9:1=1:2=11": 1.0,
+          "0=9:1=5:2=11": 1.0
+        },
+        "maximum_group_coverage_deviation": 0.5363636363636364,
+        "selection_key": [
+          0.00909090909090915,
+          0.19917183909278768,
+          0.22564520482531797,
+          "symmetric-raw-gp-sd"
+        ]
+      },
+      "selected_family": "symmetric-raw-gp-sd"
+    },
+    "specific_impulse_s": {
+      "candidates": [
+        {
+          "diagnostic_coverage_passed": true,
+          "diagnostic_stability_passed": false,
+          "equal_group_coverage_standard_deviation": 0.1415918818975288,
+          "equal_group_mean_coverage": 0.905378787878788,
+          "equal_group_mean_normalized_width": 0.2539278258390548,
+          "family": "symmetric-absolute",
+          "group_coverages": {
+            "0=10:1=0:2=11": 0.8333333333333334,
+            "0=10:1=2:2=9": 0.8,
+            "0=10:1=8:2=9": 1.0,
+            "0=11:1=5:2=9": 1.0,
+            "0=11:1=6:2=9": 1.0,
+            "0=11:1=9:2=11": 0.5454545454545454,
+            "0=9:1=0:2=11": 0.875,
+            "0=9:1=10:2=9": 1.0,
+            "0=9:1=1:2=11": 1.0,
+            "0=9:1=5:2=11": 1.0
+          },
+          "maximum_group_coverage_deviation": 0.3545454545454546,
+          "selection_key": [
+            0.005378787878787983,
+            0.1415918818975288,
+            0.2539278258390548,
+            "symmetric-absolute"
+          ]
+        },
+        {
+          "diagnostic_coverage_passed": true,
+          "diagnostic_stability_passed": true,
+          "equal_group_coverage_standard_deviation": 0.08514642630108281,
+          "equal_group_mean_coverage": 0.9162878787878789,
+          "equal_group_mean_normalized_width": 0.22434595514574326,
+          "family": "asymmetric-signed-absolute",
+          "group_coverages": {
+            "0=10:1=0:2=11": 0.8333333333333334,
+            "0=10:1=2:2=9": 1.0,
+            "0=10:1=8:2=9": 1.0,
+            "0=11:1=5:2=9": 0.8181818181818182,
+            "0=11:1=6:2=9": 1.0,
+            "0=11:1=9:2=11": 0.8181818181818182,
+            "0=9:1=0:2=11": 0.875,
+            "0=9:1=10:2=9": 0.8181818181818182,
+            "0=9:1=1:2=11": 1.0,
+            "0=9:1=5:2=11": 1.0
+          },
+          "maximum_group_coverage_deviation": 0.09999999999999998,
+          "selection_key": [
+            0.01628787878787885,
+            0.08514642630108281,
+            0.22434595514574326,
+            "asymmetric-signed-absolute"
+          ]
+        },
+        {
+          "diagnostic_coverage_passed": true,
+          "diagnostic_stability_passed": false,
+          "equal_group_coverage_standard_deviation": 0.14224755319928908,
+          "equal_group_mean_coverage": 0.8937878787878788,
+          "equal_group_mean_normalized_width": 0.23509029011124513,
+          "family": "symmetric-raw-gp-sd",
+          "group_coverages": {
+            "0=10:1=0:2=11": 0.8333333333333334,
+            "0=10:1=2:2=9": 0.9,
+            "0=10:1=8:2=9": 0.9090909090909091,
+            "0=11:1=5:2=9": 1.0,
+            "0=11:1=6:2=9": 1.0,
+            "0=11:1=9:2=11": 0.5454545454545454,
+            "0=9:1=0:2=11": 0.75,
+            "0=9:1=10:2=9": 1.0,
+            "0=9:1=1:2=11": 1.0,
+            "0=9:1=5:2=11": 1.0
+          },
+          "maximum_group_coverage_deviation": 0.3545454545454546,
+          "selection_key": [
+            0.006212121212121224,
+            0.14224755319928908,
+            0.23509029011124513,
+            "symmetric-raw-gp-sd"
+          ]
+        },
+        {
+          "diagnostic_coverage_passed": true,
+          "diagnostic_stability_passed": true,
+          "equal_group_coverage_standard_deviation": 0.08514642630108281,
+          "equal_group_mean_coverage": 0.9162878787878789,
+          "equal_group_mean_normalized_width": 0.1828959463020314,
+          "family": "asymmetric-signed-raw-gp-sd",
+          "group_coverages": {
+            "0=10:1=0:2=11": 0.8333333333333334,
+            "0=10:1=2:2=9": 1.0,
+            "0=10:1=8:2=9": 1.0,
+            "0=11:1=5:2=9": 0.8181818181818182,
+            "0=11:1=6:2=9": 1.0,
+            "0=11:1=9:2=11": 0.8181818181818182,
+            "0=9:1=0:2=11": 0.875,
+            "0=9:1=10:2=9": 0.8181818181818182,
+            "0=9:1=1:2=11": 1.0,
+            "0=9:1=5:2=11": 1.0
+          },
+          "maximum_group_coverage_deviation": 0.09999999999999998,
+          "selection_key": [
+            0.01628787878787885,
+            0.08514642630108281,
+            0.1828959463020314,
+            "asymmetric-signed-raw-gp-sd"
+          ]
+        },
+        {
+          "diagnostic_coverage_passed": true,
+          "diagnostic_stability_passed": false,
+          "equal_group_coverage_standard_deviation": 0.13205308223939954,
+          "equal_group_mean_coverage": 0.9045454545454545,
+          "equal_group_mean_normalized_width": 0.2671455134226791,
+          "family": "symmetric-input-distance",
+          "group_coverages": {
+            "0=10:1=0:2=11": 0.75,
+            "0=10:1=2:2=9": 1.0,
+            "0=10:1=8:2=9": 0.9090909090909091,
+            "0=11:1=5:2=9": 1.0,
+            "0=11:1=6:2=9": 1.0,
+            "0=11:1=9:2=11": 0.6363636363636364,
+            "0=9:1=0:2=11": 0.75,
+            "0=9:1=10:2=9": 1.0,
+            "0=9:1=1:2=11": 1.0,
+            "0=9:1=5:2=11": 1.0
+          },
+          "maximum_group_coverage_deviation": 0.26363636363636367,
+          "selection_key": [
+            0.004545454545454519,
+            0.13205308223939954,
+            0.2671455134226791,
+            "symmetric-input-distance"
+          ]
+        },
+        {
+          "diagnostic_coverage_passed": true,
+          "diagnostic_stability_passed": true,
+          "equal_group_coverage_standard_deviation": 0.10187633620614689,
+          "equal_group_mean_coverage": 0.9196969696969697,
+          "equal_group_mean_normalized_width": 0.18118693656355417,
+          "family": "asymmetric-signed-input-distance",
+          "group_coverages": {
+            "0=10:1=0:2=11": 0.8333333333333334,
+            "0=10:1=2:2=9": 1.0,
+            "0=10:1=8:2=9": 1.0,
+            "0=11:1=5:2=9": 0.8181818181818182,
+            "0=11:1=6:2=9": 1.0,
+            "0=11:1=9:2=11": 0.8181818181818182,
+            "0=9:1=0:2=11": 1.0,
+            "0=9:1=10:2=9": 0.7272727272727273,
+            "0=9:1=1:2=11": 1.0,
+            "0=9:1=5:2=11": 1.0
+          },
+          "maximum_group_coverage_deviation": 0.17272727272727273,
+          "selection_key": [
+            0.019696969696969657,
+            0.10187633620614689,
+            0.18118693656355417,
+            "asymmetric-signed-input-distance"
+          ]
+        }
+      ],
+      "diagnostic_gates_passed": false,
+      "selected_diagnostics": {
+        "diagnostic_coverage_passed": true,
+        "diagnostic_stability_passed": false,
+        "equal_group_coverage_standard_deviation": 0.13205308223939954,
+        "equal_group_mean_coverage": 0.9045454545454545,
+        "equal_group_mean_normalized_width": 0.2671455134226791,
+        "family": "symmetric-input-distance",
+        "group_coverages": {
+          "0=10:1=0:2=11": 0.75,
+          "0=10:1=2:2=9": 1.0,
+          "0=10:1=8:2=9": 0.9090909090909091,
+          "0=11:1=5:2=9": 1.0,
+          "0=11:1=6:2=9": 1.0,
+          "0=11:1=9:2=11": 0.6363636363636364,
+          "0=9:1=0:2=11": 0.75,
+          "0=9:1=10:2=9": 1.0,
+          "0=9:1=1:2=11": 1.0,
+          "0=9:1=5:2=11": 1.0
+        },
+        "maximum_group_coverage_deviation": 0.26363636363636367,
+        "selection_key": [
+          0.004545454545454519,
+          0.13205308223939954,
+          0.2671455134226791,
+          "symmetric-input-distance"
+        ]
+      },
+      "selected_family": "symmetric-input-distance"
+    }
+  }
+}
