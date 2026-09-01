@@ -1,0 +1,58 @@
+cff-version: 1.2.0
+message: >-
+  If you use this repository, please cite the software and the relevant
+  research publication(s) below.
+title: Open CFT
+type: software
+abstract: >-
+  A preservation and modernization repository for historical cusped-field
+  thruster research code. The modern implementation currently verifies a cusp
+  loss-cone kernel across Python, C++17, and optional NVIDIA Warp CPU/CUDA
+  backends; it is not a complete validated plasma or magnetostatic solver.
+authors:
+  - family-names: Muffatti
+    given-names: Angus
+version: 0.1.0
+date-released: 2026-09-01
+license: MIT
+repository-code: https://github.com/terrorproforma/open-cft
+url: https://github.com/terrorproforma/open-cft
+keywords:
+  - cusped-field thruster
+  - HEMP thruster
+  - electric propulsion
+  - MATLAB preservation
+  - scientific software modernization
+  - NVIDIA Warp
+references:
+  - type: conference-paper
+    title: >-
+      Multi-objective Design Optimisation of a Small Scale Cusped Field
+      Thruster for Micro-satellite Platforms
+    authors:
+      - family-names: Muffatti
+        given-names: Angus
+      - family-names: Ogawa
+        given-names: Hideaki
+    year: 2017
+    collection-title: >-
+      Proceedings of the 31st International Symposium on Space Technology and
+      Science
+    notes: ISTS 2017-b-32
+    url: https://archive.ists.ne.jp/upload_pdf/2017-b-32.pdf
+  - type: article
+    title: >-
+      High Fidelity Multi-Objective Design Optimization of a Downscaled
+      Cusped Field Thruster
+    authors:
+      - family-names: Fahey
+        given-names: Thomas
+      - family-names: Muffatti
+        given-names: Angus
+      - family-names: Ogawa
+        given-names: Hideaki
+    year: 2017
+    journal: Aerospace
+    volume: 4
+    issue: 4
+    doi: 10.3390/aerospace4040055

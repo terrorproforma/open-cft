@@ -1,0 +1,180 @@
+# Development Log
+
+## 2026-09-01 — Phase 1 foundation
+
+### Investigated
+
+- Read and traced every MATLAB file under `FYP/`.
+- Mapped decision variables, 30 plasma unknowns, globals, objective signs,
+  solver flags, FEMM automation/export flow, plotting/surrogate dependencies,
+  and I/O conventions.
+- Separated confirmed implementation defects from physics requiring source
+  verification in `docs/AUDIT.md`.
+
+### Implemented
+
+- Added Python package/CLI/config metadata under `modern/`.
+- Added immutable unit-explicit models and validation for design geometry,
+  constants, profiles, plasma results, and app configuration.
+- Added magnetic/plasma backend interfaces, safe unimplemented plasma backend,
+  and legacy FEMM export parser.
+- Translated the cusp loss-cone probability to analytic Python and C++17
+  kernels with pybind11 bindings.
+- Translated performance post-processing behind a requirement for a validated
+  converged plasma solution.
+- Added focused Python and C++ tests and architecture/migration documents.
+
+### Deliberate deferrals
+
+- No legacy source was edited.
+- No external optimizer, surrogate, FEMM automation, or plasma residual was
+  guessed.
+- CUDA was designed as a future batched backend, not added before profiling and
+  correctness baselines.
+
+### Verification record
+
+- `python -m pytest`: 11 passed in 0.51 s.
+- `python -m compileall -q src tests`: passed.
+- `python -m cft_revival validate-config config/default.json`: passed with
+  resolved output path.
+- Cusp CLI for `B_low=0.2 T`, `B_high=1.0 T`: returned
+  `0.052786404500042072`.
+- CMake 4.3.2 + GNU C++ 16.1.0 configured and built with
+  `CFT_BUILD_PYTHON=OFF`; CTest: 1/1 passed.
+- Optional extension configuration is blocked because no
+  `pybind11Config.cmake`/`pybind11-config.cmake` is installed.
+- `pybind11`, `scikit-build-core`, `ruff`, and `mypy` are not installed, so the
+  wheel build and those two static analyzers were not run. No packages or
+  machine-wide toolchains were installed.
+- No CUDA compiler (`nvcc`) is available; CUDA was not built or benchmarked.
+
+## 2026-09-01 — Phase 2A Warp and publication reconciliation
+
+### Evidence reconciled
+
+- Retrieved ISTS 2017-b-32 from the official archive and recorded its
+  citation, file hash, equation links, and evidence classes in
+  `docs/REFERENCES.md`.
+- Documented publication/snapshot differences: 3 versus 4 objectives, 100
+  versus 50 generations, 8 claimed versus 5 reported variables, failed 5%
+  surrogate quality versus Sobol use, sensitivity prose/table conflict, and
+  inconsistent S1 power.
+- Kept the ISTS paper as source traceability, not proof for the complete
+  Kornfeld residual set or the exact publication-run source revision.
+
+### Implemented
+
+- Added `warp_backend.py` with a real float64 Warp kernel for batched
+  cusp-arrival probability on `cpu`, `cuda`, `cuda:N`, or `auto`.
+- Reused the scalar validation contract for finite fields,
+  `B_low >= 0`, `B_high > 0`, and `B_low <= B_high`.
+- Added a dependency-free analytic reference function and preserved optional
+  C++ dispatch.
+- Added deterministic Warp CPU/CUDA edge and random-batch parity tests.
+- Added `benchmark-cusp`, reporting device, batch, warmup/repeats, end-to-end
+  timing scope, sample outputs, maximum error, and a mandatory
+  non-authoritative timing label.
+- Specified the 2D axisymmetric magnetostatic weak form, permanent-magnet and
+  material handling, manufactured solutions, mesh convergence, FEMM profile
+  parity, nonlinear iron gate, and MFEM-versus-Warp-FEM decision criteria.
+
+### Verification record
+
+- Environment: Warp 1.14.0; Warp CUDA Toolkit 12.9; driver CUDA 13.2;
+  RTX 5090 32 GiB, `sm_120`; standalone `nvcc` absent.
+- `python -m pytest`: 19 passed, including Warp CPU and CUDA tests.
+- `python -m compileall -q src tests`: passed.
+- Native CMake rebuild: no compilation work needed; CTest 1/1 passed.
+- Warp CPU smoke, batch 32,768, 1 warmup, 3 measured runs:
+  maximum absolute error `0.0`.
+- Warp CUDA smoke with the same batch/run counts:
+  maximum absolute error `0.0`.
+- Timing was printed by the CLI but is not accepted as benchmark evidence.
+  The GPU had been reported at 100% utilization and no speedup claim was made.
+- No packages or machine configuration were changed.
+
+## 2026-09-01 — Phase 2A numerical stability correction
+
+### Independent verification finding
+
+- The initially used expression `0.5*(1-sqrt(1-r))` catastrophically cancels
+  when `r=B_low/B_high` is tiny. At `r=1e-18`, binary64 rounds `1-r` to one
+  and the expression incorrectly returns zero instead of approximately
+  `2.5e-19`.
+- The prior random-batch maximum-error result did not exercise this regime and
+  was therefore normal-scale parity evidence only.
+- Warp batch emptiness used `if not sequence`, which is ambiguous for
+  multi-element NumPy arrays and raises before validation.
+
+### Correction
+
+- Python, C++17, and Warp now use the algebraically equivalent stable form
+  `0.5*r/(1+sqrt(1-r))`.
+- Validation still requires finite fields, `B_low >= 0`, `B_high > 0`, and
+  `B_low <= B_high`; `r=0` returns exactly 0 and `r=1` exactly 0.5.
+- Warp uses explicit lengths and optional one-dimensional shape checks. It
+  validates values in place and passes the original sequence/NumPy array to
+  Warp, avoiding intermediate tuple copies.
+- Added tiny-ratio relative checks, infinities, one- and two-dimensional NumPy
+  arrays, missing-Warp behavior, unavailable devices, and an optional native
+  extension test.
+
+### Verification record
+
+- `python -m pytest`: 32 passed, 1 skipped. The skip is the pybind11 extension
+  test because that optional extension is not installed/built.
+- `python -m compileall -q src tests`: passed.
+- Native C++ rebuilt successfully; CTest 1/1 passed, including `r=1e-18` and
+  infinity rejection.
+- Direct Warp CPU and `cuda:0` smoke values for
+  `r=[0,1e-30,1e-18,0.2,1]` were
+  `[0,2.5e-31,2.5e-19,0.052786404500042065,0.5]` on both devices.
+- Maximum observed relative difference from the Python reference over nonzero
+  smoke values was `0.0` on both Warp CPU and CUDA.
+- No speed benchmark was run and no package or machine configuration changed.
+
+## 2026-09-01 — Signed-zero canonicalization
+
+- Accepted `B_low=-0.0` previously propagated a negative zero through Python,
+  C++ and Warp. All implementations now return explicit positive `0.0` when
+  the validated low field/ratio compares equal to zero.
+- The branch is exact-zero only; tiny positive values continue through the
+  stable rationalized formula.
+- Added Python/native/Warp CPU/CUDA sign-bit checks and retained a positive
+  subnormal regression (`r=2e-323` gives `5e-324`).
+- Full verification: 33 passed, 1 optional pybind11-extension test skipped;
+  `compileall` passed; native CTest 1/1 passed; focused Warp CPU/CUDA sign and
+  subnormal checks passed.
+- No performance benchmark, installation, machine change, or `FYP` edit was
+  performed.
+
+## 2026-09-01 — Public repository preparation
+
+### Changed
+
+- Added root public-repository metadata: `README.md`, MIT `LICENSE`,
+  `CITATION.cff`, and a root `.gitignore`.
+- Updated `modern/pyproject.toml` from proprietary placeholder metadata to MIT
+  licensing and the project author's name.
+- Excluded builds, caches, outputs, FEMM exports/results, compiled artifacts,
+  virtual environments, local PDFs/decks, and AppleDouble metadata.
+- Preserved all 16 historical `FYP/*.m` source files without edits.
+
+### Validation
+
+- Candidate scans found no likely tokens, credentials, private keys, or
+  user-home absolute paths.
+- `python -m pytest`: 33 passed, 1 optional pybind11-extension test skipped.
+- `python -m compileall -q src tests`: passed.
+- Configuration validation: passed.
+- CMake configure/build: passed; CTest: 1/1 passed.
+- Focused Warp CPU/CUDA parity and tiny-ratio smoke: 4 passed.
+- No benchmarks, dependency installations, or machine configuration changes
+  were performed.
+
+### Follow-up
+
+- The repository still intentionally lacks a validated complete plasma,
+  magnetostatic, or optimization workflow; public documentation states these
+  limitations explicitly.

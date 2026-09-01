@@ -1,0 +1,7 @@
+{
+  "output_directory": "../outputs",
+  "femm_export_directory": "../../FYP/FEMM data",
+  "magnetic_backend": "femm-export",
+  "plasma_backend": "unimplemented",
+  "serialize_femm": true
+}

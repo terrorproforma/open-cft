@@ -1,0 +1,82 @@
+# Operating systems and editors
+.DS_Store
+Thumbs.db
+Desktop.ini
+._*
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+*.code-workspace
+
+# Python caches, environments, and packaging
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+*.egg-info/
+.eggs/
+dist/
+.venv/
+venv/
+env/
+
+# Native builds and compiled artifacts
+modern/build*/
+CMakeUserPresets.json
+compile_commands.json
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.dll
+*.dylib
+*.exe
+*.pyd
+
+# Generated application output and simulation results
+outputs/
+Outputs/
+results/
+Results/
+modern/outputs/
+FYP/FEMM Analysis Files/
+FYP/FEMM data/
+FYP/Outputs/
+*.fem
+*.ans
+CFTsolverOut_gen_*_id_*.dat
+CFTOpt-SAEA_rev-EVS.dat
+CFTOpt-SAEA_rev-ND.dat
+CFTOpt-SAEA_rev-Rng.mat
+CFTOpt-SAEA_rev-Sur.mat
+CFTOpt-sensitivity_*.csv
+
+# Large or machine-local scientific artifacts
+*.npy
+*.npz
+*.h5
+*.hdf5
+*.vtk
+*.vtu
+*.xdmf
+
+# Local environment and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Locally retrieved papers (link canonical publications instead)
+*.pdf
+
+# Local presentation/source decks with unverified redistribution rights
+*.ppt
+*.pptx
