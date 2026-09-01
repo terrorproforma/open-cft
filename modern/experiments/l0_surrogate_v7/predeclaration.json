@@ -1,0 +1,85 @@
+{
+  "document_type": "cft-revival-l0-surrogate-v7-predeclaration",
+  "schema_version": "7.0",
+  "predeclaration_hash": "cc35b51512270a62446309fd99bfe49f790e5206976524a6fe952801854724f4",
+  "development_evidence": {
+    "v6_preregistration_commit": "4e917b682e9f89dbbe22173903f0794395baef46",
+    "v6_results_commit": "020aa584b09b3778ef4cc066fb77a4028ee1787b",
+    "v6_run_manifest_hash": "1b8488af1504e41c94145e5f06b495d1268bdeb77400eb8cd75df35d50d22ee4",
+    "defect": "v6 equalized group mass but computed finite-sample ranks from pooled row count; v7 replaces this with group-count ranks"
+  },
+  "design": {
+    "rows": 32768,
+    "dimensions": 8,
+    "bases": [2, 3, 5, 7, 11, 13, 17, 19],
+    "skip": 8209,
+    "scramble_seed": 202609020701,
+    "digits_per_coordinate": 21,
+    "source_config_hash": "1434eac84d954a4dfbf8e7a9621b16c5c645f1490d56ad23d8e1d979a2bbf2e4"
+  },
+  "partition": {
+    "seed": 2026090701,
+    "grouping_dimensions": [0, 1, 2],
+    "bins_per_dimension": 18,
+    "minimum_groups_per_stage_stratum": 40,
+    "minimum_rows_per_stage_stratum": 240,
+    "global_roles": ["candidate", "method-selection", "final-calibration", "assessment"],
+    "strata": {
+      "interpolation": {"all_dimensions_between": [4, 13]},
+      "boundary": {"any_dimension_in": [0, 17]},
+      "ood": {"dimension_bins": {"0": [14, 15, 16, 17], "2": [14, 15, 16, 17]}}
+    },
+    "domain_disclosure": "prospective same-domain validation with fresh exact coordinates; coarse spatial-domain overlap is intentional"
+  },
+  "campaign": {
+    "initial_rows": 32,
+    "acquisition_batch_rows": 16,
+    "final_rows": 160,
+    "active_score": {
+      "uncertainty_weight": 1.0,
+      "posterior_change_weight": 0.35,
+      "input_ood_weight": 0.2,
+      "pending_repulsion_length_scale": 0.15
+    }
+  },
+  "features": {
+    "names": ["discharge_voltage", "propellant_mass_flow", "ionized_number_fraction", "xe_double_plus_fraction_of_ions", "axial_momentum_fraction_of_ion_momentum"]
+  },
+  "model_selection": {
+    "budgets": [96, 128, 160],
+    "family": "accepted ExactGP ARD Matern-5/2",
+    "selection": "smallest budget passing every method-group NRMSE and worst-error gate"
+  },
+  "conformal": {
+    "exchangeability_unit": "independent spatial group",
+    "coverage_target": "simultaneous coverage of every row in a future exchangeable group",
+    "symmetric": "per-group maximum absolute normalized residual; k=min(G,ceil((G+1)*9/10))",
+    "asymmetric": "per-group lower and upper one-sided maximum normalized residuals; each k=min(G,ceil((G+1)*19/20)); union bound gives at least 90% simultaneous-group target",
+    "candidate_families": ["symmetric-absolute", "asymmetric-signed-absolute", "symmetric-raw-gp-sd", "asymmetric-signed-raw-gp-sd", "symmetric-input-distance", "asymmetric-signed-input-distance"],
+    "rank_arithmetic": "Fraction and integer ceiling only; no floating probability ranks",
+    "regressions": {"n99_symmetric_rank": 90, "n239_symmetric_rank": 216}
+  },
+  "gates": {
+    "quality_scales": {"axial_thrust_n": 0.04943448684816939, "specific_impulse_s": 1927.5474976902592},
+    "range_normalized_rmse_maximum": 0.05,
+    "worst_case_range_normalized_error_maximum": 0.15,
+    "row_coverage_interval": [0.85, 0.95],
+    "simultaneous_group_coverage_minimum": 0.85,
+    "equal_group_row_coverage_standard_deviation_maximum": 0.20,
+    "method_selection_group_coverage_minimum": 0.85,
+    "method_selection_equal_group_row_coverage_minimum": 0.85,
+    "acceptance": "all point, row-coverage, simultaneous-group coverage and group-stability gates pass for interpolation, boundary, OOD and overall"
+  },
+  "identity": {
+    "commit_subject": "preregister L0 surrogate v7 experiment",
+    "remote_ref": "origin/feat/sota-foundation",
+    "execution": "clean detached exact preregistration commit with explicit worktree PYTHONPATH",
+    "runtime_closure": "actual imported repository module paths and HEAD Git blob IDs including initializers",
+    "exclusive_lock": "retained atomic O_CREAT|O_EXCL Git-common-directory lock",
+    "no_rerun_or_post_assessment_tuning": true
+  },
+  "claims": {
+    "allowed": "prospective same-domain deterministic L0 software-emulation validation",
+    "forbidden": "physical accuracy, higher-fidelity accuracy, or untouched coarse spatial regions"
+  }
+}

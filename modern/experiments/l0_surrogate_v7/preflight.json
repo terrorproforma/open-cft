@@ -1,0 +1,40 @@
+{
+  "assessment_label_access_count": 0,
+  "document_type": "cft-revival-l0-surrogate-v7-cluster-preflight",
+  "partitions_hash": "bc2c549ac66cdaec7bdda7f75e38d995d52ca019e44843fa68ce3e63d10ca689",
+  "passed": true,
+  "physics_label_access_count": 0,
+  "predeclaration_hash": "cc35b51512270a62446309fd99bfe49f790e5206976524a6fe952801854724f4",
+  "preflight_hash": "ef1678e815d850bc34a5dabbc929331bd4d9b2f6d9750752aee65c7b2b1a0123",
+  "rank_regressions": {
+    "n239": 216,
+    "n99": 90
+  },
+  "schema_version": "7.0",
+  "serialization_files": [
+    "cluster-calibration.json",
+    "development/budget-128/axial_thrust_n.model.json",
+    "development/budget-128/point-metrics.json",
+    "development/budget-128/specific_impulse_s.model.json",
+    "development/budget-160/axial_thrust_n.model.json",
+    "development/budget-160/point-metrics.json",
+    "development/budget-160/specific_impulse_s.model.json",
+    "development/budget-96/axial_thrust_n.model.json",
+    "development/budget-96/point-metrics.json",
+    "development/budget-96/specific_impulse_s.model.json",
+    "failure-manifest.json",
+    "final-assessment.json",
+    "frozen-before-assessment.json",
+    "frozen-method-selection.json",
+    "run-manifest.json",
+    "runtime-diagnostics.json",
+    "training-selection.json"
+  ],
+  "temporary_file_count": 0,
+  "unequal_correlated_group_regression": {
+    "duplicating_correlated_rows_does_not_create_exchangeability_units": true,
+    "groups": 2,
+    "rank_uses_groups": true,
+    "rows": 5
+  }
+}
