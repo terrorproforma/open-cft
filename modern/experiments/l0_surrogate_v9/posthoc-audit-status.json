@@ -1,0 +1,52 @@
+{
+  "document_type": "cft-revival-l0-surrogate-v9-posthoc-audit-status",
+  "schema_version": "1.0",
+  "semantic_status": "NUMERICAL_PASS_SCIENTIFIC_SURROGATE_FAIL",
+  "posthoc_audit_hash": "ee17cb90b1f345e4e52a7a21df2ffac19cb3c5f640f5b8b5ffd645f661509c24",
+  "bindings": {
+    "preregistration_commit": "a4fc39dd46e1b93d775eab1456d0d8693ff4f4f9",
+    "result_commit": "71712057f93a73ba8d5cc82f50a111023de5077e",
+    "preregistration_blob": "37b7387ef5e7b4d8fea0d3693e9bbf7c46b91838",
+    "result_tree": "0fd24303cf28ecb78e66e19cfc2577801ec053ce",
+    "run_manifest_blob": "1aff92987bb3a6df7e8919fa3d8e4afc5b11879d",
+    "run_manifest_hash": "c8170ed1264dfced07241feb93f9b6b9ae34946899c556bf8998b4f8a66e3944",
+    "final_assessment_blob": "c1f69d6bc2a46390963c876e221191e77ba58fc8",
+    "final_assessment_hash": "28da1e151cecace8ab61f4f943d65ae40a1f38fb41bb4b417cc167ba9d1ee6b4",
+    "preflight_blob": "20dfba6ea146a6e23ac8ca8a863f2287f9db48f1",
+    "preflight_hash": "fffa14e564767d6e6246e518fb19f7ed1c645f0ae9a793e45e85643ab097d7f3",
+    "selected_thrust_model_blob": "e8da41ed2f567063216e9e4708e36882fab37d12",
+    "selected_thrust_model_hash": "d46452576f16aacb35cd2744385e466191de147bfb877ae02a4be8011ac7b32c"
+  },
+  "reviewer_evidence_summary": {
+    "numerical_and_reproducibility_gates_passed": true,
+    "scientific_surrogate_and_acceleration_claim_passed": false,
+    "analytic_leading_term_is_complete_l0_thrust_and_isp_target": true,
+    "gp_correction_content": "binary64 regrouping and roundoff only",
+    "preflight_accepted_l0_reference_evaluations": 36,
+    "preflight_design_indices_evaluated": [0, 31],
+    "preflight_final_calibration_indices_accessed": [24],
+    "preflight_assessment_indices_accessed": [],
+    "recorded_physics_label_access_count": 0,
+    "information_barrier_valid": false,
+    "permitted_claim": "Algebraic implementation plus negligible GP matched fresh same-domain evaluations.",
+    "speed_claim_permitted": false,
+    "next_work": "L1 discrepancy surrogate; no L0 v10"
+  },
+  "reviewer_evidence_summary_hash": "773d5d421593fc125129d8a16c047d92b7f9b7db178f6abedc3e2a39b9fdaef4",
+  "diagnostic_speed_probe": {
+    "diagnostic_only": true,
+    "rows": 4096,
+    "warmups": 2,
+    "trials": 7,
+    "generator": "modular-primes-v1",
+    "output": "axial_thrust_n",
+    "specification_hash": "b7a55b991d26b67b447bac60e35797d8f6f2c569e0056f85f59bb61b9bb9b9f9",
+    "direct_seconds_median": 0.0012726997956633568,
+    "gp_seconds_median": 0.6128954002633691,
+    "gp_over_direct_ratio": 481.5710683318808,
+    "machine_dependent": true,
+    "speed_claim": "none"
+  },
+  "raw_artifacts_modified": false,
+  "experiment_rerun": false
+}
