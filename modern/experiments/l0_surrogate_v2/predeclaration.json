@@ -1,0 +1,125 @@
+{
+  "document_type": "cft-revival-l0-surrogate-v2-predeclaration",
+  "schema_version": "2.0",
+  "predeclaration_hash": "640ec66125d4de07944b012402a64e6cd7be012f1b6877b166b12c4271ff15cf",
+  "source": {
+    "config_path": "config/l0-deterministic-sweep.json",
+    "config_hash": "1434eac84d954a4dfbf8e7a9621b16c5c645f1490d56ad23d8e1d979a2bbf2e4",
+    "required_rows": 8192,
+    "truth_role": "deterministic-L0-software-emulation-only"
+  },
+  "features": {
+    "names": [
+      "normalized_discharge_voltage",
+      "normalized_propellant_mass_flow",
+      "normalized_ionized_fraction",
+      "normalized_xe_double_plus_share_of_ions",
+      "normalized_axial_momentum_fraction"
+    ],
+    "selection_policy": "five accepted L0 dependency coordinates for thrust and Isp"
+  },
+  "partition": {
+    "replicate_seeds": [2026090201, 2026090202, 2026090203],
+    "grouping": {
+      "dimensions": [0, 1, 2],
+      "bins_per_dimension": 8
+    },
+    "stratum_priority": ["ood", "boundary", "interpolation"],
+    "strata": {
+      "interpolation": {
+        "rule": "all_between",
+        "dimensions": [0, 1, 2],
+        "minimum_bin": 2,
+        "maximum_bin": 5
+      },
+      "boundary": {
+        "rule": "any_in",
+        "dimensions": [0, 1, 2],
+        "bins": [0, 7]
+      },
+      "ood": {
+        "rule": "all_dimension_in",
+        "conditions": [
+          {"dimension": 0, "bins": [6, 7]},
+          {"dimension": 2, "bins": [6, 7]}
+        ]
+      }
+    },
+    "calibration_minimum_rows_per_stratum": 96,
+    "calibration_minimum_groups_per_stratum": 6,
+    "assessment_minimum_rows_per_stratum": 96,
+    "assessment_minimum_groups_per_stratum": 6,
+    "disjointness": ["index", "exact-coordinate", "spatial-group"]
+  },
+  "campaign": {
+    "initial_rows": 32,
+    "acquisition_batch_rows": 16,
+    "final_rows": 96,
+    "assessment_based_stopping": false,
+    "active_inputs": [
+      "training observations",
+      "raw GP epistemic variance",
+      "posterior change from preceding training-only fit",
+      "input-only OOD distance"
+    ],
+    "forbidden_active_inputs": [
+      "calibration labels",
+      "assessment labels",
+      "calibration scales",
+      "assessment scales",
+      "assessment metrics"
+    ],
+    "active_score": {
+      "uncertainty_weight": 1.0,
+      "posterior_change_weight": 0.35,
+      "input_ood_weight": 0.2,
+      "pending_repulsion_length_scale": 0.15
+    },
+    "fixed_baseline": "first 96 eligible rows in accepted deterministic prime-base radical-inverse order"
+  },
+  "model": {
+    "runtime": "cft-surrogate-exact-gp/2.0.0",
+    "kernel": "ARD-Matern-5/2",
+    "hyperparameters": "accepted deterministic bounded selection",
+    "maximum_exact_gp_rows": 96,
+    "outputs": ["axial_thrust_n", "specific_impulse_s"]
+  },
+  "intervals": {
+    "nominal_probability": 0.9,
+    "calibration": "per-output per-input-only-stratum split conformal",
+    "finite_sample_quantile": "ceil((n+1)*p) order statistic with outward nextafter rounding",
+    "thrust": {
+      "method": "asymmetric-signed-residual",
+      "tails": "0.05 lower and 0.95 upper"
+    },
+    "specific_impulse": {
+      "method": "symmetric-absolute-residual-normalized-by-raw-epistemic-sd",
+      "scale_floor": "smallest positive calibration predictive sd times 1e-12; input-only"
+    }
+  },
+  "quality_gates": {
+    "scopes": ["interpolation", "boundary", "ood", "overall"],
+    "quality_scales": {
+      "axial_thrust_n": 0.04943448684816939,
+      "specific_impulse_s": 1927.5474976902592
+    },
+    "range_normalized_rmse_maximum": 0.05,
+    "worst_case_range_normalized_absolute_error_maximum": 0.15,
+    "coverage_minimum": 0.85,
+    "coverage_maximum": 0.95,
+    "minimum_assessment_rows_per_stratum": 96,
+    "acceptance": "every output and scope in every replicate must pass every gate",
+    "thresholds_tunable_after_execution": false
+  },
+  "execution": {
+    "campaigns_per_replicate": ["active", "fixed-baseline"],
+    "single_execution_only": true,
+    "assessment_loader": "single-use after selection/model/calibration artifacts are frozen",
+    "wall_clock_role": "diagnostic-only-excluded-from-scientific-hashes"
+  },
+  "claims": {
+    "v1_status": "failed-development-evidence-only",
+    "v2_allowed": "hash integrity and accuracy against deterministic L0 software outputs",
+    "forbidden": "physical, experimental, L1, L1b, L2, or L3 accuracy"
+  }
+}
