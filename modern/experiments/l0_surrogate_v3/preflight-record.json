@@ -1,0 +1,30 @@
+{
+  "atomic_model_reload_passed": true,
+  "deep_parent_serialization_passed": true,
+  "document_type": "cft-revival-l0-surrogate-v3-preflight",
+  "minimum_free_bytes": 104857600,
+  "observed_free_bytes_at_check": 206369452032,
+  "partitions_hash": "97332e2ed553d6281ff0b030357fbe47e4f292beebea6d101e211465a506e09f",
+  "passed": true,
+  "permission_failure_cleanup_passed": true,
+  "predeclaration_hash": "eaa17e6c26e1c7ff5a3f78dd5dc77161067ad6ca4519e66f77bea4fbd5e84895",
+  "preflight_hash": "c04225c5b51ee135e5409292db06c877dcf4025c1df02c60837114e1848d621d",
+  "python": "3.12.10",
+  "real_v3_assessment_labels_accessed": false,
+  "schema_version": "3.0",
+  "source_config_hash": "1434eac84d954a4dfbf8e7a9621b16c5c645f1490d56ad23d8e1d979a2bbf2e4",
+  "synthetic_pipeline": {
+    "frozen_hashes": [
+      "f7dc2ca820732c2c43afcbb03d6d909a1327e5f37e18e751e242753d5c9c7484",
+      "2e5621f92ab08420631e3c630e9004de94c103e1b87ada5115b81bf59d59accc",
+      "d80d869758d71a6d37dfb31012c7acb2b59872b75c1a62ac3791b8ab0bafafc0"
+    ],
+    "model_hashes": [
+      "83bb78971a547a731db2f8e1d73676ffa8f5e5d1dde7d7a7e5e63dab6fd697fe",
+      "83bb78971a547a731db2f8e1d73676ffa8f5e5d1dde7d7a7e5e63dab6fd697fe",
+      "83bb78971a547a731db2f8e1d73676ffa8f5e5d1dde7d7a7e5e63dab6fd697fe"
+    ],
+    "replicate_count": 3
+  },
+  "v2_failure_manifest_hash": "cc0e608928e6c000c059bcc01f23a288edf9ff99d8736c3c212e70a0c2f1d63d"
+}

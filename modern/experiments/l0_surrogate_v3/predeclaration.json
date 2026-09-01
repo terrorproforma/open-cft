@@ -1,0 +1,79 @@
+{
+  "document_type": "cft-revival-l0-surrogate-v3-predeclaration",
+  "schema_version": "3.0",
+  "predeclaration_hash": "eaa17e6c26e1c7ff5a3f78dd5dc77161067ad6ca4519e66f77bea4fbd5e84895",
+  "provenance": {
+    "v2_predeclaration_path": "modern/experiments/l0_surrogate_v2/predeclaration.json",
+    "v2_predeclaration_hash": "640ec66125d4de07944b012402a64e6cd7be012f1b6877b166b12c4271ff15cf",
+    "v2_preregistration_commit_sha": "9c93d004e62229a88cedfe8ad782b17acc432199",
+    "v2_failure_manifest_path": "modern/experiments/l0_surrogate_v2/results/failure-manifest.json",
+    "v2_failure_manifest_hash": "cc0e608928e6c000c059bcc01f23a288edf9ff99d8736c3c212e70a0c2f1d63d",
+    "v2_partitions_hash": "a19d317e148ff0318c38095123a1dad4c8f850833f7df32a821f3f7ad0c91897",
+    "v2_status": "immutable-execution-failure-before-calibration-or-assessment"
+  },
+  "scientific_protocol": {
+    "inheritance": "all source, feature, partition, campaign, model, interval, quality-gate, execution and claim fields are loaded from and required bit-identical to the hash-pinned v2 predeclaration",
+    "source_rows": 8192,
+    "replicate_seeds": [2026090201, 2026090202, 2026090203],
+    "grouping_dimensions": [0, 1, 2],
+    "calibration_minimum_rows_per_stratum": 96,
+    "calibration_minimum_groups_per_stratum": 6,
+    "assessment_minimum_rows_per_stratum": 96,
+    "assessment_minimum_groups_per_stratum": 6,
+    "active_rows": 96,
+    "fixed_baseline_rows": 96,
+    "assessment_based_stopping": false,
+    "acquisition_forbidden_inputs": [
+      "calibration labels",
+      "assessment labels",
+      "calibration scales",
+      "assessment scales",
+      "assessment metrics"
+    ],
+    "conformal_intervals": {
+      "nominal_probability": 0.9,
+      "thrust": "per-stratum asymmetric signed residual",
+      "specific_impulse": "per-stratum symmetric absolute residual normalized by raw epistemic standard deviation",
+      "quantiles": "finite-sample order statistics rounded outward with nextafter"
+    },
+    "gates": {
+      "scopes": ["interpolation", "boundary", "ood", "overall"],
+      "range_normalized_rmse_maximum": 0.05,
+      "worst_case_range_normalized_absolute_error_maximum": 0.15,
+      "coverage_minimum": 0.85,
+      "coverage_maximum": 0.95,
+      "acceptance": "every output and scope in every replicate must pass"
+    }
+  },
+  "versioned_delta": {
+    "scientific_change": false,
+    "change_scope": "artifact serialization and preflight only",
+    "v2_failure_fixed": "create every output parent before serialization",
+    "atomic_file_policy": "same-directory temporary file, flush, fsync, os.replace; remove temporary file on every failure",
+    "model_policy": "serialize ExactGP.dumps atomically then reload and require the original model hash",
+    "path_policy": "all writes are relative to one declared root; absolute and parent-traversal paths are rejected",
+    "execution_lock_policy": "atomically create immutable lock before loading real labels; refuse an existing lock",
+    "no_patch_or_rerun_after_execution": true
+  },
+  "preflight": {
+    "required_before_preregistration_commit": true,
+    "minimum_free_bytes": 104857600,
+    "checks": [
+      "Python and dependency imports",
+      "source config and inherited v2 hashes",
+      "input-only partition hashes",
+      "result path absent and writable",
+      "available disk",
+      "missing and deep parent creation",
+      "atomic JSON and ExactGP save/reload",
+      "permission-failure cleanup",
+      "three-replicate synthetic output pipeline",
+      "single-use synthetic assessment"
+    ],
+    "real_v3_assessment_labels_accessed": false
+  },
+  "claims": {
+    "allowed": "hash integrity and deterministic L0 software-emulation accuracy after successful execution",
+    "forbidden": "physical, experimental, L1, L1b, L2 or L3 accuracy"
+  }
+}
