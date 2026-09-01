@@ -31,9 +31,11 @@ from .reference import evaluate_batch, evaluate_performance
 from .workflows import (
     L0_MODEL_CLAIM,
     L0_MODEL_FIDELITY,
+    MAX_L0_SWEEP_BATCH_SIZE,
     PhysicsConfigurationError,
     evaluate_operating_point_artifact,
     evaluate_sweep_artifact,
+    load_l0_json,
     operating_point_from_config,
 )
 
@@ -54,6 +56,7 @@ __all__ = [
     "IdealPerformanceResult",
     "L0_MODEL_CLAIM",
     "L0_MODEL_FIDELITY",
+    "MAX_L0_SWEEP_BATCH_SIZE",
     "MassUtilization",
     "OptionalDependencyError",
     "PhysicsDeviceError",
@@ -69,5 +72,6 @@ __all__ = [
     "evaluate_operating_point_artifact",
     "evaluate_performance",
     "evaluate_sweep_artifact",
+    "load_l0_json",
     "operating_point_from_config",
 ]

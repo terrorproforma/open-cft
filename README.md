@@ -44,15 +44,16 @@ domain review.
 
 ## Verification
 
-The commands below use only dependencies and toolchains already present on the
-machine. Warp tests skip cleanly when Warp or a requested device is unavailable.
+Run these commands from the repository root. They use only dependencies and
+toolchains already present on the machine. Warp tests skip cleanly when Warp or
+a requested device is unavailable.
 
 ```powershell
 cd modern
+$env:PYTHONPATH = "$PWD\src"
 python -m pytest
 python -m compileall -q src tests
 python -m cft_revival l0-evaluate config/l0-representative-point.json
-python -m cft_revival l0-sweep config/l0-deterministic-sweep.json --device cuda:0 --output $env:TEMP\cft-l0-sweep.json
 python -m cft_revival validate-campaign-spec spec/optimization/campaign-v1.json
 python -m cft_revival generate-initial-design spec/optimization/campaign-v1.json --count 32 --seed 7
 
@@ -64,12 +65,19 @@ ctest --test-dir build --output-on-failure
 python -m pytest tests/test_warp_backend.py -k "matches_analytic_reference or preserves_tiny_ratios"
 ```
 
-For a dependency-free scalar check:
+No package installation is required for those core CLI commands. The
+`PYTHONPATH` assignment is required because the repository uses a `src/`
+layout. On POSIX shells, use `export PYTHONPATH="$PWD/src"` after
+`cd modern`.
+
+If the optional Warp package and CUDA device are already available, the L0
+GPU command is:
 
 ```powershell
 cd modern
 $env:PYTHONPATH = "$PWD\src"
-python -m cft_revival cusp-probability --low-t 0.2 --high-t 1.0
+python -m cft_revival l0-sweep config/l0-deterministic-sweep.json `
+  --device cuda:0 --output (Join-Path $env:TEMP "cft-l0-sweep.json")
 ```
 
 See [`modern/README.md`](modern/README.md) for package details and

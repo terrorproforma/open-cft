@@ -17,6 +17,10 @@ ROOT = Path(__file__).parents[2]
 SPEC_PATH = ROOT / "spec" / "optimization" / "campaign-v1.json"
 
 
+def _raw_spec() -> dict[str, object]:
+    return json.loads(SPEC_PATH.read_text(encoding="utf-8"))
+
+
 def test_checked_campaign_spec_matches_executable_policy() -> None:
     validated = validate_campaign_spec(load_json_strict(SPEC_PATH))
     assert validated.campaign_spec_id.endswith("@1.4")
@@ -40,6 +44,114 @@ def test_campaign_spec_rejects_duplicate_json_keys(tmp_path: Path) -> None:
     path = tmp_path / "duplicate.json"
     path.write_text('{"schema_version":"1.4","schema_version":"1.5"}')
     with pytest.raises(CampaignSpecError, match="duplicate key"):
+        load_json_strict(path)
+
+
+@pytest.mark.parametrize(
+    ("mutate", "message"),
+    [
+        (
+            lambda raw: raw.__setitem__("unknown_top_level", True),
+            "unknown field",
+        ),
+        (
+            lambda raw: raw["decision_space"]["variables"][0].__setitem__(
+                "legacy_alias", "Ua"
+            ),
+            "unknown field",
+        ),
+        (
+            lambda raw: raw["iteration_policy"]["promotion"].__setitem__(
+                "unknown_gate", True
+            ),
+            "unknown field",
+        ),
+        (
+            lambda raw: raw["iteration_policy"].__setitem__(
+                "botorch_output_transform", [1.0, -1.0, 1.0, -1.0]
+            ),
+            "botorch_output_transform",
+        ),
+        (
+            lambda raw: raw["iteration_policy"]["acquisition_mix"][0].__setitem__(
+                "fraction", 2.0
+            ),
+            "fraction must lie",
+        ),
+        (
+            lambda raw: raw["iteration_policy"]["acquisition_mix"][0].__setitem__(
+                "fraction", 0.5
+            ),
+            "sum to one",
+        ),
+        (
+            lambda raw: raw["iteration_policy"]["acquisition_mix"][0].__setitem__(
+                "fraction", "0.6"
+            ),
+            "real number",
+        ),
+        (
+            lambda raw: raw["iteration_policy"][
+                "cheap_medium_evaluations"
+            ].__setitem__("minimum", 17),
+            "minimum <= maximum",
+        ),
+        (
+            lambda raw: raw["highest_fidelity_attempt_policy"].__setitem__(
+                "total_attempt_limit", 17
+            ),
+            "attempt limit",
+        ),
+        (
+            lambda raw: raw["stopping_gates"][
+                "all_must_hold_unless_cost_ceiling_reached"
+            ][0].__setitem__("value", 11),
+            "must match",
+        ),
+        (
+            lambda raw: raw["iteration_policy"].__setitem__(
+                "asynchronous_pending_aware", False
+            ),
+            "must be true",
+        ),
+        (
+            lambda raw: raw["objectives"][3].__setitem__(
+                "direction", "maximize"
+            ),
+            "ordered as",
+        ),
+        (
+            lambda raw: raw["benchmark"].__setitem__("results", {}),
+            "must remain null",
+        ),
+    ],
+)
+def test_campaign_spec_rejects_adversarial_policy_mutations(
+    mutate, message: str
+) -> None:
+    raw = _raw_spec()
+    mutate(raw)
+    with pytest.raises(CampaignSpecError, match=message):
+        validate_campaign_spec(raw)
+
+
+def test_campaign_spec_accepts_nearby_valid_acquisition_mix() -> None:
+    raw = _raw_spec()
+    mix = raw["iteration_policy"]["acquisition_mix"]
+    mix[0]["fraction"] = 0.5
+    mix[1]["fraction"] = 0.25
+    mix[2]["fraction"] = 0.25
+    validated = validate_campaign_spec(raw)
+    assert validated.campaign_spec_id.endswith("@1.4")
+
+
+@pytest.mark.parametrize("literal", ["NaN", "Infinity", "1e999"])
+def test_campaign_spec_loader_rejects_nonfinite_numbers(
+    tmp_path: Path, literal: str
+) -> None:
+    path = tmp_path / "nonfinite.json"
+    path.write_text(f'{{"value":{literal}}}', encoding="utf-8")
+    with pytest.raises(CampaignSpecError, match="non-finite|contains"):
         load_json_strict(path)
 
 

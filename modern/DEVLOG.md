@@ -234,3 +234,38 @@
 
 Detailed workstream timelines remain in `docs/workstreams/physics-devlog.md`
 and `docs/workstreams/optimization-devlog.md`.
+
+## 2026-09-01 — Integration defect corrections
+
+### Corrected
+
+- Made every documented src-layout CLI block runnable from the repository root
+  without installing the package: `cd modern`, then
+  `$env:PYTHONPATH="$PWD\src"`. Added the POSIX equivalent and removed the
+  unnecessary package-install command from the core path.
+- Replaced permissive campaign-spec parsing with a closed v1.4 schema:
+  recursive allowlists, exact objective transform/order, typed/ranged
+  acquisition fractions summing to one, policy cross-checks, exact stopping
+  gates, and null-until-verified benchmark results.
+- Replaced permissive L0 config parsing with closed point/sweep schemas,
+  strict duplicate/non-finite JSON loading, exact input/range fields, bounded
+  batch sizes, and pre-evaluation device validation.
+- Added adversarial tests for unknown/missing fields, malformed types/ranges,
+  bad devices, wrong direction transforms, invalid acquisition fractions,
+  contradictory retry/stopping policy, duplicate keys, and NaN/Infinity.
+- Added subprocess smoke coverage for documented no-install core commands and
+  a guard requiring every PowerShell CLI block to set the source path.
+
+### Verification
+
+- Full Python suite: 232 passed, one expected optional pybind11 skip.
+- Strict schema/documentation selection: 52 passed.
+- `python -m compileall -q src tests`: passed.
+- Native CTest: 1/1 passed.
+- Exact documented no-install config, cusp, L0 point, campaign validation, and
+  32-design commands: passed from `modern/` with only `PYTHONPATH` set.
+- Focused Warp CPU/CUDA parity: 26 passed; documented cusp selection: 4 passed.
+- Repeated 8,192-point RTX 5090 CUDA sweep: zero parity mismatches and output
+  ranges exactly matched `docs/FIRST_RESULTS.md`.
+- JSON syntax checks, `git diff --check`, and `git diff --exit-code -- FYP`:
+  passed. No dependencies were installed.

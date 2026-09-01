@@ -4,8 +4,11 @@ from __future__ import annotations
 
 from dataclasses import asdict
 from enum import Enum
+import json
 from math import fsum, isfinite
 from numbers import Real
+from pathlib import Path
+import re
 from time import perf_counter
 from typing import Any, Mapping, Sequence
 
@@ -29,10 +32,132 @@ L0_MODEL_CLAIM = (
     "charge-state, beam-current, divergence, cathode, and PPU factors; not a "
     "calibrated or predictive plasma model."
 )
+MAX_L0_SWEEP_BATCH_SIZE = 1_000_000
+
+_POINT_TOP_LEVEL_FIELDS = {
+    "document_type",
+    "schema_version",
+    "model_fidelity",
+    "hypothetical_inputs",
+    "description",
+    "inputs",
+}
+_POINT_INPUT_FIELDS = {
+    "discharge_voltage_v",
+    "propellant_mass_flow_kg_per_s",
+    "charge_state_number_fractions",
+    "beam_current_fraction_of_anode_current",
+    "axial_momentum_fraction_of_ion_momentum",
+    "cathode_input_power_w",
+    "ppu_input_power_w",
+    "xenon_atom_mass_kg",
+}
+_CHARGE_FRACTION_FIELDS = {
+    "xe_neutral",
+    "xe_plus",
+    "xe_double_plus",
+}
+_SWEEP_RANGE_FIELDS = {
+    "discharge_voltage_v",
+    "propellant_mass_flow_kg_per_s",
+    "ionized_number_fraction",
+    "xe_double_plus_fraction_of_ions",
+    "beam_current_fraction_of_anode_current",
+    "axial_momentum_fraction_of_ion_momentum",
+    "cathode_input_power_w",
+    "ppu_efficiency_fraction",
+}
+_SWEEP_TOP_LEVEL_FIELDS = {
+    "document_type",
+    "schema_version",
+    "model_fidelity",
+    "hypothetical_inputs",
+    "description",
+    "batch_size",
+    "seed",
+    "ranges",
+}
 
 
 class PhysicsConfigurationError(PhysicsValidationError):
     """A checked L0 JSON configuration is malformed or semantically invalid."""
+
+
+def _allow_keys(
+    raw: Mapping[str, Any],
+    *,
+    path: str,
+    allowed: set[str],
+    required: set[str],
+) -> None:
+    unknown = set(raw) - allowed
+    if unknown:
+        names = ", ".join(sorted(unknown))
+        raise PhysicsConfigurationError(
+            f"{path} contains unknown field(s): {names}"
+        )
+    missing = required - set(raw)
+    if missing:
+        names = ", ".join(sorted(missing))
+        raise PhysicsConfigurationError(
+            f"{path} is missing required field(s): {names}"
+        )
+
+
+def _reject_json_constant(value: str) -> None:
+    raise PhysicsConfigurationError(f"L0 configuration contains {value}")
+
+
+def _unique_json_object(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    result: dict[str, Any] = {}
+    for key, value in pairs:
+        if key in result:
+            raise PhysicsConfigurationError(
+                f"L0 configuration contains duplicate key {key!r}"
+            )
+        result[key] = value
+    return result
+
+
+def _validate_json_finite(value: object, path: str = "$") -> None:
+    if value is None or isinstance(value, (bool, str, int)):
+        return
+    if isinstance(value, float):
+        if not isfinite(value):
+            raise PhysicsConfigurationError(
+                f"L0 configuration contains non-finite number at {path}"
+            )
+        return
+    if isinstance(value, list):
+        for index, item in enumerate(value):
+            _validate_json_finite(item, f"{path}[{index}]")
+        return
+    if isinstance(value, dict):
+        for key, item in value.items():
+            _validate_json_finite(item, f"{path}.{key}")
+        return
+    raise PhysicsConfigurationError(
+        f"L0 configuration contains unsupported value at {path}"
+    )
+
+
+def load_l0_json(path: Path) -> Mapping[str, Any]:
+    """Load strict JSON without duplicate fields or non-finite extensions."""
+
+    try:
+        decoded = json.loads(
+            path.read_text(encoding="utf-8"),
+            parse_constant=_reject_json_constant,
+            object_pairs_hook=_unique_json_object,
+        )
+    except (OSError, UnicodeError, json.JSONDecodeError) as error:
+        raise PhysicsConfigurationError(
+            f"cannot read L0 configuration {path}: {error}"
+        ) from error
+    if not isinstance(decoded, dict):
+        raise PhysicsConfigurationError("L0 configuration root must be an object")
+    _validate_json_finite(decoded)
+    return decoded
 
 
 def _mapping(name: str, value: object) -> Mapping[str, Any]:
@@ -73,7 +198,14 @@ def _optional_number(
     return _number(mapping, name)
 
 
-def _require_header(raw: Mapping[str, Any], document_type: str) -> None:
+def _require_header(
+    raw: Mapping[str, Any],
+    document_type: str,
+    *,
+    allowed: set[str],
+    required: set[str],
+) -> None:
+    _allow_keys(raw, path="$", allowed=allowed, required=required)
     if _text(raw, "document_type") != document_type:
         raise PhysicsConfigurationError(
             f"document_type must be {document_type!r}"
@@ -88,16 +220,35 @@ def _require_header(raw: Mapping[str, Any], document_type: str) -> None:
         raise PhysicsConfigurationError(
             "hypothetical_inputs must be true; L0 examples are not fitted data"
         )
+    if "description" in raw:
+        _text(raw, "description")
 
 
 def operating_point_from_config(raw: Mapping[str, Any]) -> XenonOperatingPoint:
     """Build one validated operating point from an SI-explicit JSON mapping."""
 
-    _require_header(raw, "cft-revival-l0-operating-point")
+    _require_header(
+        raw,
+        "cft-revival-l0-operating-point",
+        allowed=_POINT_TOP_LEVEL_FIELDS,
+        required=_POINT_TOP_LEVEL_FIELDS - {"description"},
+    )
     inputs = _mapping("inputs", raw.get("inputs"))
+    _allow_keys(
+        inputs,
+        path="$.inputs",
+        allowed=_POINT_INPUT_FIELDS,
+        required=_POINT_INPUT_FIELDS - {"xenon_atom_mass_kg"},
+    )
     fractions_raw = _mapping(
         "inputs.charge_state_number_fractions",
         inputs.get("charge_state_number_fractions"),
+    )
+    _allow_keys(
+        fractions_raw,
+        path="$.inputs.charge_state_number_fractions",
+        allowed=_CHARGE_FRACTION_FIELDS,
+        required=_CHARGE_FRACTION_FIELDS,
     )
     fractions = ChargeStateFractions(
         _number(fractions_raw, "xe_neutral"),
@@ -235,14 +386,27 @@ def sweep_points_from_config(
 ) -> tuple[tuple[XenonOperatingPoint, ...], dict[str, Any]]:
     """Generate a deterministic, domain-checked L0 operating-point batch."""
 
-    _require_header(raw, "cft-revival-l0-sweep")
+    _require_header(
+        raw,
+        "cft-revival-l0-sweep",
+        allowed=_SWEEP_TOP_LEVEL_FIELDS,
+        required=_SWEEP_TOP_LEVEL_FIELDS - {"description"},
+    )
     count = _integer(raw, "batch_size")
     seed = _integer(raw, "seed")
-    if count < 1:
-        raise PhysicsConfigurationError("batch_size must be positive")
+    if not 1 <= count <= MAX_L0_SWEEP_BATCH_SIZE:
+        raise PhysicsConfigurationError(
+            f"batch_size must lie in [1, {MAX_L0_SWEEP_BATCH_SIZE}]"
+        )
     if seed < 0:
         raise PhysicsConfigurationError("seed must be non-negative")
     ranges = _mapping("ranges", raw.get("ranges"))
+    _allow_keys(
+        ranges,
+        path="$.ranges",
+        allowed=_SWEEP_RANGE_FIELDS,
+        required=_SWEEP_RANGE_FIELDS,
+    )
     bounds = (
         _range(ranges, "discharge_voltage_v", lower_bound=0.0),
         _range(ranges, "propellant_mass_flow_kg_per_s", lower_bound=0.0),
@@ -276,6 +440,14 @@ def sweep_points_from_config(
                 if name != "xe_double_plus_fraction_of_ions"
                 else f"ranges.{name} must lie in [0, 1]"
             )
+    if bounds[0][0] <= 0.0:
+        raise PhysicsConfigurationError(
+            "ranges.discharge_voltage_v minimum must be greater than zero"
+        )
+    if bounds[1][0] <= 0.0:
+        raise PhysicsConfigurationError(
+            "ranges.propellant_mass_flow_kg_per_s minimum must be greater than zero"
+        )
 
     points: list[XenonOperatingPoint] = []
     for coordinates in _coordinates(count, seed):
@@ -502,6 +674,12 @@ def evaluate_sweep_artifact(
     *,
     device: str,
 ) -> dict[str, Any]:
+    if not isinstance(device, str) or re.fullmatch(
+        r"(?:python|cpu|cuda|cuda:(?:0|[1-9][0-9]*))", device
+    ) is None:
+        raise PhysicsConfigurationError(
+            "device must be 'python', 'cpu', 'cuda', or 'cuda:N'"
+        )
     points, sampling = sweep_points_from_config(raw)
     reference_started = perf_counter()
     reference = evaluate_batch(points)

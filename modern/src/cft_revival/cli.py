@@ -122,17 +122,22 @@ def _run(arguments: argparse.Namespace) -> int:
         return _benchmark_cusp(arguments)
 
     if arguments.command == "l0-evaluate":
-        from .physics.workflows import evaluate_operating_point_artifact
+        from .physics.workflows import (
+            evaluate_operating_point_artifact,
+            load_l0_json,
+        )
 
-        artifact = evaluate_operating_point_artifact(_read_json(arguments.config))
+        artifact = evaluate_operating_point_artifact(
+            load_l0_json(arguments.config)
+        )
         _emit_json(artifact, arguments.output)
         return 0
 
     if arguments.command == "l0-sweep":
-        from .physics.workflows import evaluate_sweep_artifact
+        from .physics.workflows import evaluate_sweep_artifact, load_l0_json
 
         artifact = evaluate_sweep_artifact(
-            _read_json(arguments.config),
+            load_l0_json(arguments.config),
             device=arguments.device,
         )
         _emit_json(artifact, arguments.output)

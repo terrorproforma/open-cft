@@ -122,3 +122,25 @@ This is the running evidence/decision ledger for the rebuild.
 Detailed derivations and review history remain in
 `docs/workstreams/physics-learning-ledger.md` and
 `docs/workstreams/optimization-learning-ledger.md`.
+
+## 2026-09-01 schema and fresh-checkout corrections
+
+- [self] In a `src/` layout, `python -m cft_revival` from a fresh checkout
+  requires either installation or an explicit source path. Every standalone
+  PowerShell CLI block now performs `cd modern` followed by
+  `$env:PYTHONPATH="$PWD\src"`; documentation tests inspect each block and
+  execute the dependency-free commands in a clean subprocess.
+- [self] Rejecting duplicate keys and non-finite JSON does not make a schema
+  strict. Versioned configuration boundaries must also reject unknown and
+  missing fields recursively, then validate types, ranges, simplex sums, and
+  cross-policy identities before constructing runtime records.
+- [self] Optimization direction is executable policy: campaign v1.4 requires
+  `[+1,+1,+1,-1]` for thrust, efficiency, Isp, and power, and acquisition
+  fractions must each lie in `[0,1]` and sum to one.
+- [self] L0 device validation belongs before point generation or optional Warp
+  import. Accepted values are `python`, `cpu`, `cuda`, and canonical
+  `cuda:N`; malformed selectors and oversized batches fail with
+  `PhysicsConfigurationError`.
+- [self] Preserve accepted numerical evidence while hardening boundaries:
+  rerun the exact 8,192-point CUDA config and compare complete ranges/parity,
+  rather than assuming validation-only edits cannot affect outputs.

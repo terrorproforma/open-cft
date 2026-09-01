@@ -8,7 +8,7 @@ CUDA path. It is a numerical model result, not measured-thruster validation,
 plasma-solver output, a fitted 2020 case, or a reproduction of the flawed 2017
 objective outputs.
 
-Run on 1 September 2026:
+Run from the repository root on 1 September 2026:
 
 ```powershell
 cd modern

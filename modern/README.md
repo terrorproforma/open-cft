@@ -26,10 +26,12 @@ quarantined until equations are checked against the cited source.
 
 ## Quick start
 
-No third-party runtime dependency is required for the Python fallback:
+From the repository root, no third-party runtime dependency is required for
+the Python fallback:
 
 ```powershell
 cd modern
+$env:PYTHONPATH = "$PWD\src"
 python -m pytest
 python -m cft_revival validate-config config/default.json
 python -m cft_revival cusp-probability --low-t 0.02 --high-t 0.2
@@ -38,10 +40,17 @@ python -m cft_revival validate-campaign-spec spec/optimization/campaign-v1.json
 python -m cft_revival generate-initial-design spec/optimization/campaign-v1.json --count 32 --seed 7
 ```
 
+The `PYTHONPATH` assignment is required for a fresh checkout because this
+package uses a `src/` layout. It runs the core CLI without installing the
+package or any optional native/GPU/model dependencies. On POSIX shells, use
+`export PYTHONPATH="$PWD/src"` after `cd modern`.
+
 With the optional Warp dependency already installed, run the checked 8,192
 point L0 CUDA sweep or the older cusp parity/timing smoke:
 
 ```powershell
+cd modern
+$env:PYTHONPATH = "$PWD\src"
 python -m cft_revival l0-sweep config/l0-deterministic-sweep.json --device cuda:0 --output $env:TEMP\cft-l0-sweep.json
 python -m cft_revival benchmark-cusp --device cuda:0 --batch-size 65536 --gpu-busy
 ```
@@ -52,26 +61,18 @@ reference parity. See `docs/FIRST_RESULTS.md`. This is a CUDA execution result
 for reduced conservation equations, not a plasma/FEMM speed or physical
 accuracy claim.
 
-When running outside pytest, either install the package or expose `src`:
-
-```powershell
-$env:PYTHONPATH = "$PWD\src"
-python -m cft_revival validate-config config/default.json
-```
-
 Build and test the dependency-free C++ kernel:
 
 ```powershell
+cd modern
 cmake -S . -B build -DCFT_BUILD_PYTHON=OFF -DBUILD_TESTING=ON
 cmake --build build
 ctest --test-dir build --output-on-failure
 ```
 
-The Python extension additionally needs `pybind11` and `scikit-build-core`:
-
-```powershell
-python -m pip install .
-```
+Building the optional Python native extension additionally requires a C++17
+toolchain plus the declared `pybind11` and `scikit-build-core` build
+dependencies. It is not required for the no-install CLI path above.
 
 See `docs/AUDIT.md`, `docs/REFERENCES.md`, `docs/ARCHITECTURE.md`, and
 `docs/MIGRATION.md` before translating more physics. Workstream-level evidence
@@ -85,3 +86,7 @@ Optional packages are metadata-only and imported lazily:
 The accepted core requires none of these packages. The optimization model
 adapter remains runtime-unverified until those versions are tested deliberately
 in an isolated environment.
+
+The L0 point/sweep schemas and optimization campaign v1.4 schema are closed and
+versioned: unknown fields, duplicate JSON keys, non-finite numbers, malformed
+types/ranges, and contradictory policy values are rejected with typed errors.
