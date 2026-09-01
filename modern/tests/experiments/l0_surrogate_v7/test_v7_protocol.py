@@ -80,7 +80,7 @@ def test_results_lifecycle() -> None:
     declared = value.pop("run_manifest_hash")
     assert canonical_hash(value) == declared
     assert value["valid_prospective_result"] is True
-    if value["status"].startswith("failed-") and "assessment" not in value:
+    if "assessment_metrics" not in value:
         assert value["assessment_labels_accessed"] is False
     else:
         assert value["assessment_prior_coordinate_intersection_count"] == 0

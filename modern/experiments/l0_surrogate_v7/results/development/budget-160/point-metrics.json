@@ -1,0 +1,84 @@
+{
+  "all_selection_gates_passed": true,
+  "budget": 160,
+  "candidate_hash": "647c197216f7a0dd3f46895296e1f8bd622a2c9faba4b3a38568374c9303b34a",
+  "model_hashes": {
+    "axial_thrust_n": "71ef3c667972701e7db548575da773328ffcfc1dad0d5df9516ad9089e811b40",
+    "specific_impulse_s": "fa778c5e3040974b2284a45f268b51a55300515e80d624095a2f896f6b6b1cca"
+  },
+  "point_metrics": {
+    "all_scopes_outputs_passed": true,
+    "boundary": {
+      "axial_thrust_n": {
+        "all_gates_passed": true,
+        "nrmse_passed": true,
+        "range_normalized_rmse": 0.0150447572444575,
+        "rows": 240,
+        "worst_error_passed": true,
+        "worst_range_normalized_error": 0.060991518171188426
+      },
+      "specific_impulse_s": {
+        "all_gates_passed": true,
+        "nrmse_passed": true,
+        "range_normalized_rmse": 0.012962529569691544,
+        "rows": 240,
+        "worst_error_passed": true,
+        "worst_range_normalized_error": 0.04826341510172732
+      }
+    },
+    "interpolation": {
+      "axial_thrust_n": {
+        "all_gates_passed": true,
+        "nrmse_passed": true,
+        "range_normalized_rmse": 0.008880440998466821,
+        "rows": 245,
+        "worst_error_passed": true,
+        "worst_range_normalized_error": 0.028840049600457177
+      },
+      "specific_impulse_s": {
+        "all_gates_passed": true,
+        "nrmse_passed": true,
+        "range_normalized_rmse": 0.012102206992624988,
+        "rows": 245,
+        "worst_error_passed": true,
+        "worst_range_normalized_error": 0.04037367962636416
+      }
+    },
+    "ood": {
+      "axial_thrust_n": {
+        "all_gates_passed": true,
+        "nrmse_passed": true,
+        "range_normalized_rmse": 0.023451495749032856,
+        "rows": 241,
+        "worst_error_passed": true,
+        "worst_range_normalized_error": 0.0749886683984404
+      },
+      "specific_impulse_s": {
+        "all_gates_passed": true,
+        "nrmse_passed": true,
+        "range_normalized_rmse": 0.020308616022198328,
+        "rows": 241,
+        "worst_error_passed": true,
+        "worst_range_normalized_error": 0.05689531769823009
+      }
+    },
+    "overall": {
+      "axial_thrust_n": {
+        "all_gates_passed": true,
+        "nrmse_passed": true,
+        "range_normalized_rmse": 0.01685243805234986,
+        "rows": 726,
+        "worst_error_passed": true,
+        "worst_range_normalized_error": 0.0749886683984404
+      },
+      "specific_impulse_s": {
+        "all_gates_passed": true,
+        "nrmse_passed": true,
+        "range_normalized_rmse": 0.015552633029676214,
+        "rows": 726,
+        "worst_error_passed": true,
+        "worst_range_normalized_error": 0.05689531769823009
+      }
+    }
+  }
+}
