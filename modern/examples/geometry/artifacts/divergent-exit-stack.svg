@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="580.000" height="570.000" viewBox="0 0 580.000 570.000" role="img">
+<title>Divergent-exit PPM stack (hypothetical) meridional cross-section</title>
+<metadata data-schema="cft_revival.geometry.viewer_data/1.1.0" data-geometry-sha256="9b7ec5608d02754dcf7605d0389915efddfe4202f5bc466feb4652a46d004217">Hypothetical CFT geometry; no performance prediction. TWT inspiration is limited to PPM stack hardware geometry.</metadata>
+<style>.region{stroke:#111;stroke-width:0.7}.axis{stroke:#111;stroke-dasharray:4 3}.dim{stroke:#1d3557;stroke-width:0.7;fill:none}.label{font:9px sans-serif;fill:#111}.small{font:7px sans-serif;fill:#111}.polarity{font:bold 10px sans-serif;fill:white;text-anchor:middle}</style>
+<line class="axis" x1="45.000000" y1="285.000000" x2="535.000000" y2="285.000000"/>
+<g id="material-regions">
+<polygon id="anode-top" class="region" points="45.000000,285.000000 45.000000,245.000000 55.000000,245.000000 55.000000,285.000000" fill="#d97706" data-material="copper-anode-assumed" data-role="anode"/>
+<polygon id="anode-bottom" class="region" points="45.000000,285.000000 45.000000,325.000000 55.000000,325.000000 55.000000,285.000000" fill="#d97706" data-material="copper-anode-assumed" data-role="anode"/>
+<polygon id="injector-zone-top" class="region" points="55.000000,285.000000 55.000000,245.000000 85.000000,245.000000 85.000000,285.000000" fill="#e7f4ff" data-material="vacuum-plasma-placeholder" data-role="injector_plasma"/>
+<polygon id="injector-zone-bottom" class="region" points="55.000000,285.000000 55.000000,325.000000 85.000000,325.000000 85.000000,285.000000" fill="#e7f4ff" data-material="vacuum-plasma-placeholder" data-role="injector_plasma"/>
+<polygon id="dielectric-straight-top" class="region" points="55.000000,245.000000 55.000000,225.000000 415.000000,225.000000 415.000000,245.000000" fill="#e9d8a6" data-material="bn-dielectric-assumed" data-role="dielectric_wall"/>
+<polygon id="dielectric-straight-bottom" class="region" points="55.000000,325.000000 55.000000,345.000000 415.000000,345.000000 415.000000,325.000000" fill="#e9d8a6" data-material="bn-dielectric-assumed" data-role="dielectric_wall"/>
+<polygon id="shield-shell-top" class="region" points="55.000000,105.000000 55.000000,85.000000 535.000000,85.000000 535.000000,105.000000" fill="#adb5bd" data-material="al6061-assumed" data-role="shield"/>
+<polygon id="shield-shell-bottom" class="region" points="55.000000,465.000000 55.000000,485.000000 535.000000,485.000000 535.000000,465.000000" fill="#adb5bd" data-material="al6061-assumed" data-role="shield"/>
+<polygon id="return-yoke-top" class="region" points="55.000000,85.000000 55.000000,45.000000 535.000000,45.000000 535.000000,85.000000" fill="#495057" data-material="soft-iron-assumed" data-role="yoke"/>
+<polygon id="return-yoke-bottom" class="region" points="55.000000,485.000000 55.000000,525.000000 535.000000,525.000000 535.000000,485.000000" fill="#495057" data-material="soft-iron-assumed" data-role="yoke"/>
+<polygon id="magnet-01-top" class="region" points="75.000000,197.000000 75.000000,105.000000 155.000000,105.000000 155.000000,197.000000" fill="#d1495b" data-material="synthetic-smco-like-example-v1" data-role="permanent_magnet"/>
+<polygon id="magnet-01-bottom" class="region" points="75.000000,373.000000 75.000000,465.000000 155.000000,465.000000 155.000000,373.000000" fill="#d1495b" data-material="synthetic-smco-like-example-v1" data-role="permanent_magnet"/>
+<polygon id="channel-straight-top" class="region" points="85.000000,285.000000 85.000000,245.000000 415.000000,245.000000 415.000000,285.000000" fill="#e7f4ff" data-material="vacuum-plasma-placeholder" data-role="channel_plasma"/>
+<polygon id="channel-straight-bottom" class="region" points="85.000000,285.000000 85.000000,325.000000 415.000000,325.000000 415.000000,285.000000" fill="#e7f4ff" data-material="vacuum-plasma-placeholder" data-role="channel_plasma"/>
+<polygon id="pole-01-top" class="region" points="155.000000,197.000000 155.000000,105.000000 195.000000,105.000000 195.000000,197.000000" fill="#495057" data-material="soft-iron-assumed" data-role="pole_piece"/>
+<polygon id="pole-01-bottom" class="region" points="155.000000,373.000000 155.000000,465.000000 195.000000,465.000000 195.000000,373.000000" fill="#495057" data-material="soft-iron-assumed" data-role="pole_piece"/>
+<polygon id="magnet-02-top" class="region" points="195.000000,197.000000 195.000000,105.000000 275.000000,105.000000 275.000000,197.000000" fill="#d1495b" data-material="synthetic-smco-like-example-v1" data-role="permanent_magnet"/>
+<polygon id="magnet-02-bottom" class="region" points="195.000000,373.000000 195.000000,465.000000 275.000000,465.000000 275.000000,373.000000" fill="#d1495b" data-material="synthetic-smco-like-example-v1" data-role="permanent_magnet"/>
+<polygon id="pole-02-top" class="region" points="275.000000,197.000000 275.000000,105.000000 315.000000,105.000000 315.000000,197.000000" fill="#495057" data-material="soft-iron-assumed" data-role="pole_piece"/>
+<polygon id="pole-02-bottom" class="region" points="275.000000,373.000000 275.000000,465.000000 315.000000,465.000000 315.000000,373.000000" fill="#495057" data-material="soft-iron-assumed" data-role="pole_piece"/>
+<polygon id="magnet-03-top" class="region" points="315.000000,197.000000 315.000000,105.000000 395.000000,105.000000 395.000000,197.000000" fill="#d1495b" data-material="synthetic-smco-like-example-v1" data-role="permanent_magnet"/>
+<polygon id="magnet-03-bottom" class="region" points="315.000000,373.000000 315.000000,465.000000 395.000000,465.000000 395.000000,373.000000" fill="#d1495b" data-material="synthetic-smco-like-example-v1" data-role="permanent_magnet"/>
+<polygon id="pole-03-top" class="region" points="395.000000,197.000000 395.000000,105.000000 435.000000,105.000000 435.000000,197.000000" fill="#495057" data-material="soft-iron-assumed" data-role="pole_piece"/>
+<polygon id="pole-03-bottom" class="region" points="395.000000,373.000000 395.000000,465.000000 435.000000,465.000000 435.000000,373.000000" fill="#495057" data-material="soft-iron-assumed" data-role="pole_piece"/>
+<polygon id="channel-divergent-exit-top" class="region" points="415.000000,285.000000 415.000000,245.000000 535.000000,225.000000 535.000000,285.000000" fill="#e7f4ff" data-material="vacuum-plasma-placeholder" data-role="channel_plasma"/>
+<polygon id="channel-divergent-exit-bottom" class="region" points="415.000000,285.000000 415.000000,325.000000 535.000000,345.000000 535.000000,285.000000" fill="#e7f4ff" data-material="vacuum-plasma-placeholder" data-role="channel_plasma"/>
+<polygon id="dielectric-divergent-exit-top" class="region" points="415.000000,245.000000 415.000000,225.000000 535.000000,205.000000 535.000000,225.000000" fill="#e9d8a6" data-material="bn-dielectric-assumed" data-role="dielectric_wall"/>
+<polygon id="dielectric-divergent-exit-bottom" class="region" points="415.000000,325.000000 415.000000,345.000000 535.000000,365.000000 535.000000,345.000000" fill="#e9d8a6" data-material="bn-dielectric-assumed" data-role="dielectric_wall"/>
+<polygon id="magnet-04-top" class="region" points="435.000000,197.000000 435.000000,105.000000 515.000000,105.000000 515.000000,197.000000" fill="#d1495b" data-material="synthetic-smco-like-example-v1" data-role="permanent_magnet"/>
+<polygon id="magnet-04-bottom" class="region" points="435.000000,373.000000 435.000000,465.000000 515.000000,465.000000 515.000000,373.000000" fill="#d1495b" data-material="synthetic-smco-like-example-v1" data-role="permanent_magnet"/>
+</g>
+<g id="stage-polarity">
+<text class="polarity" x="115.000000" y="154.000000" data-stage="stage-01" data-polarity="1">+z</text>
+<text class="polarity" x="235.000000" y="154.000000" data-stage="stage-02" data-polarity="-1">−z</text>
+<text class="polarity" x="355.000000" y="154.000000" data-stage="stage-03" data-polarity="1">+z</text>
+<text class="polarity" x="475.000000" y="154.000000" data-stage="stage-04" data-polarity="-1">−z</text>
+</g>
+<g id="dimensions">
+<line class="dim" x1="55.000000" y1="556.000000" x2="535.000000" y2="556.000000"/>
+<text class="label" x="295.000000" y="553.000000" text-anchor="middle">L=24.000 mm</text>
+<text class="label" x="45.000000" y="12">r-axis; all dimensions SI (labels shown in mm), pitch=6.000 mm, cusps=3</text>
+<text class="small" x="45.000000" y="23">channel R=2.000 mm; envelope R=12.000 mm</text>
+<line class="dim" x1="415.000000" y1="45.000000" x2="415.000000" y2="525.000000" stroke-dasharray="2 2"/>
+<text class="small" x="417.000000" y="54.000000">divergent exit to R=3.000 mm</text>
+</g>
+<text class="small" x="4" y="38" transform="rotate(-90 4 38)">−r / +r</text>
+</svg>

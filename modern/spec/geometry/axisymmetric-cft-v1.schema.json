@@ -1,0 +1,292 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cft_revival.geometry.axisymmetric_cft/1.1.0",
+  "title": "Closed SI axisymmetric CFT geometry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "coordinate_system",
+    "length_unit",
+    "config_id",
+    "title",
+    "classification",
+    "chamber",
+    "electrodes",
+    "manufacturing",
+    "permanent_magnet_plan",
+    "materials",
+    "regions",
+    "stages",
+    "external_components",
+    "evidence",
+    "design_variable_order",
+    "integrity"
+  ],
+  "properties": {
+    "schema_version": {"const": "cft_revival.geometry.axisymmetric_cft/1.1.0"},
+    "coordinate_system": {"const": "right_handed_cylindrical_r_z_axisymmetric"},
+    "length_unit": {"const": "m"},
+    "config_id": {"$ref": "#/$defs/id"},
+    "title": {"type": "string", "minLength": 1},
+    "classification": {"const": "hypothetical_not_optimized_not_build_qualified"},
+    "chamber": {"$ref": "#/$defs/chamber"},
+    "electrodes": {"$ref": "#/$defs/electrodes"},
+    "manufacturing": {"$ref": "#/$defs/manufacturing"},
+    "permanent_magnet_plan": {"$ref": "#/$defs/permanentMagnetPlan"},
+    "materials": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/material"}
+    },
+    "regions": {
+      "type": "array",
+      "minItems": 8,
+      "items": {"$ref": "#/$defs/region"}
+    },
+    "stages": {
+      "type": "array",
+      "minItems": 2,
+      "items": {"$ref": "#/$defs/stage"}
+    },
+    "external_components": {
+      "type": "array",
+      "minItems": 2,
+      "items": {"$ref": "#/$defs/external"}
+    },
+    "evidence": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/evidence"}
+    },
+    "design_variable_order": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/id"},
+      "uniqueItems": true
+    },
+    "integrity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "canonicalization", "payload_sha256"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "canonicalization": {"const": "json-sort-keys-compact-utf8-v1"},
+        "payload_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[a-z0-9](?:[a-z0-9._-]*[a-z0-9])?$",
+      "not": {"pattern": "\\.\\."}
+    },
+    "nonnegative": {"type": "number", "minimum": 0},
+    "positive": {"type": "number", "exclusiveMinimum": 0},
+    "chamber": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "inner_radius_m",
+        "outer_radius_m",
+        "length_m",
+        "injector_length_m",
+        "dielectric_thickness_m",
+        "exit_length_m",
+        "exit_outer_radius_m"
+      ],
+      "properties": {
+        "inner_radius_m": {"$ref": "#/$defs/nonnegative"},
+        "outer_radius_m": {"$ref": "#/$defs/positive"},
+        "length_m": {"$ref": "#/$defs/positive"},
+        "injector_length_m": {"$ref": "#/$defs/positive"},
+        "dielectric_thickness_m": {"$ref": "#/$defs/positive"},
+        "exit_length_m": {"$ref": "#/$defs/nonnegative"},
+        "exit_outer_radius_m": {"$ref": "#/$defs/positive"}
+      }
+    },
+    "electrodes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["anode_region_id", "anode_thickness_m", "injector_region_id"],
+      "properties": {
+        "anode_region_id": {"$ref": "#/$defs/id"},
+        "anode_thickness_m": {"$ref": "#/$defs/positive"},
+        "injector_region_id": {"$ref": "#/$defs/id"}
+      }
+    },
+    "manufacturing": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "minimum_thickness_m",
+        "minimum_clearance_m",
+        "radial_tolerance_m",
+        "axial_tolerance_m",
+        "thermal_clearance_m"
+      ],
+      "properties": {
+        "minimum_thickness_m": {"$ref": "#/$defs/positive"},
+        "minimum_clearance_m": {"$ref": "#/$defs/positive"},
+        "radial_tolerance_m": {"$ref": "#/$defs/positive"},
+        "axial_tolerance_m": {"$ref": "#/$defs/positive"},
+        "thermal_clearance_m": {"$ref": "#/$defs/positive"}
+      }
+    },
+    "material": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "material_id",
+        "category",
+        "relative_permeability",
+        "density_kg_per_m3",
+        "provenance",
+        "assumption"
+      ],
+      "properties": {
+        "material_id": {"$ref": "#/$defs/id"},
+        "category": {
+          "enum": [
+            "vacuum_or_plasma",
+            "dielectric",
+            "permanent_magnet",
+            "soft_magnetic",
+            "nonmagnetic_shield",
+            "electrode"
+          ]
+        },
+        "relative_permeability": {"$ref": "#/$defs/positive"},
+        "density_kg_per_m3": {
+          "oneOf": [
+            {
+              "type": "number",
+              "minimum": 0.001,
+              "maximum": 1000000
+            },
+            {"type": "null"}
+          ]
+        },
+        "provenance": {"type": "string", "minLength": 1},
+        "assumption": {"type": "boolean"}
+      }
+    },
+    "permanentMagnetPlan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["plan_id", "authority", "solver_authoritative"],
+      "properties": {
+        "plan_id": {"$ref": "#/$defs/id"},
+        "authority": {
+          "enum": [
+            "recoil_remanence_constitutive",
+            "equivalent_bound_current"
+          ]
+        },
+        "solver_authoritative": {"const": true}
+      }
+    },
+    "region": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "region_id",
+        "owner_id",
+        "role",
+        "material_id",
+        "shape",
+        "r_inner_start_m",
+        "r_inner_end_m",
+        "r_outer_start_m",
+        "r_outer_end_m",
+        "z_min_m",
+        "z_max_m",
+        "polarity"
+      ],
+      "properties": {
+        "region_id": {"$ref": "#/$defs/id"},
+        "owner_id": {"$ref": "#/$defs/id"},
+        "role": {"$ref": "#/$defs/id"},
+        "material_id": {"$ref": "#/$defs/id"},
+        "shape": {
+          "enum": ["rectangular_annulus", "linear_taper_annulus"]
+        },
+        "r_inner_start_m": {"$ref": "#/$defs/nonnegative"},
+        "r_inner_end_m": {"$ref": "#/$defs/nonnegative"},
+        "r_outer_start_m": {"$ref": "#/$defs/positive"},
+        "r_outer_end_m": {"$ref": "#/$defs/positive"},
+        "z_min_m": {"type": "number"},
+        "z_max_m": {"type": "number"},
+        "polarity": {
+          "oneOf": [{"enum": [-1, 1]}, {"type": "null"}]
+        }
+      }
+    },
+    "stage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "stage_id",
+        "index",
+        "center_z_m",
+        "pitch_m",
+        "z_min_m",
+        "z_max_m",
+        "magnet_region_id",
+        "pole_after_region_id",
+        "magnetization"
+      ],
+      "properties": {
+        "stage_id": {"$ref": "#/$defs/id"},
+        "index": {"type": "integer", "minimum": 0},
+        "center_z_m": {"type": "number"},
+        "pitch_m": {"$ref": "#/$defs/positive"},
+        "z_min_m": {"type": "number", "minimum": 0},
+        "z_max_m": {"type": "number", "exclusiveMinimum": 0},
+        "magnet_region_id": {"$ref": "#/$defs/id"},
+        "pole_after_region_id": {
+          "oneOf": [{"$ref": "#/$defs/id"}, {"type": "null"}]
+        },
+        "magnetization": {"enum": ["axial_positive", "axial_negative"]}
+      }
+    },
+    "external": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "component_id",
+        "kind",
+        "axisymmetry",
+        "location",
+        "included_in_2d_model"
+      ],
+      "properties": {
+        "component_id": {"$ref": "#/$defs/id"},
+        "kind": {"enum": ["cathode", "neutralizer"]},
+        "axisymmetry": {"const": "external_non_axisymmetric_metadata"},
+        "location": {"type": "string", "minLength": 1},
+        "included_in_2d_model": {"const": false}
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["note_id", "classification", "statement", "source"],
+      "properties": {
+        "note_id": {"$ref": "#/$defs/id"},
+        "classification": {"enum": ["traceable", "assumption", "limitation"]},
+        "statement": {"type": "string", "minLength": 1},
+        "source": {"type": "string", "minLength": 1}
+      }
+    }
+  },
+  "x-cross-field-invariants": [
+    "strict constructors enforce geometric ordering and non-overlap",
+    "strict constructors enforce minimum thickness, clearance and tolerance stacks",
+    "stage magnetization alternates; centers differ by pitch; serialized envelopes form one chamber-contained magnet/pole stack",
+    "permanent-magnet regions are rectangular in v1.1 and clearance is checked over every overlapping dielectric segment",
+    "region/material/owner references and identifiers are unique",
+    "payload_sha256 excludes only the top-level integrity object"
+  ]
+}

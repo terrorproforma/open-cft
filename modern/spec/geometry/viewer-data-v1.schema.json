@@ -1,0 +1,178 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cft_revival.geometry.viewer_data/1.1.0",
+  "title": "Closed geometry viewer data contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "coordinate_system",
+    "length_unit",
+    "config_id",
+    "geometry_payload_sha256",
+    "permanent_magnet_plan",
+    "regions",
+    "stage_annotations",
+    "interfaces",
+    "external_components",
+    "claim_limit"
+  ],
+  "properties": {
+    "schema_version": {"const": "cft_revival.geometry.viewer_data/1.1.0"},
+    "coordinate_system": {"const": "right_handed_cylindrical_r_z_axisymmetric"},
+    "length_unit": {"const": "m"},
+    "config_id": {"type": "string", "minLength": 1},
+    "geometry_payload_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "permanent_magnet_plan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["plan_id", "authority", "solver_authoritative"],
+      "properties": {
+        "plan_id": {"$ref": "#/$defs/id"},
+        "authority": {
+          "enum": [
+            "recoil_remanence_constitutive",
+            "equivalent_bound_current"
+          ]
+        },
+        "solver_authoritative": {"const": true}
+      }
+    },
+    "regions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "region_id",
+          "role",
+          "material_id",
+          "shape",
+          "polygon_rz_m",
+          "polarity"
+        ],
+        "properties": {
+          "region_id": {"type": "string", "minLength": 1},
+          "role": {"type": "string", "minLength": 1},
+          "material_id": {"type": "string", "minLength": 1},
+          "shape": {"enum": ["rectangular_annulus", "linear_taper_annulus"]},
+          "polygon_rz_m": {
+            "type": "array",
+            "minItems": 4,
+            "maxItems": 4,
+            "items": {
+              "type": "array",
+              "minItems": 2,
+              "maxItems": 2,
+              "items": {"type": "number"}
+            }
+          },
+          "polarity": {"oneOf": [{"enum": [-1, 1]}, {"type": "null"}]}
+        }
+      }
+    },
+    "stage_annotations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "stage_id",
+          "center_z_m",
+          "pitch_m",
+          "z_min_m",
+          "z_max_m",
+          "polarity"
+        ],
+        "properties": {
+          "stage_id": {"type": "string", "minLength": 1},
+          "center_z_m": {"type": "number"},
+          "pitch_m": {"type": "number", "exclusiveMinimum": 0},
+          "z_min_m": {"type": "number", "minimum": 0},
+          "z_max_m": {"type": "number", "exclusiveMinimum": 0},
+          "polarity": {"enum": [-1, 1]}
+        }
+      }
+    },
+    "interfaces": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "interface_id",
+          "region_id",
+          "adjacent_region_id",
+          "surface",
+          "orientation",
+          "start_rz_m",
+          "end_rz_m",
+          "unit_normal_rz",
+          "free_surface_current_phi_a_per_m"
+        ],
+        "properties": {
+          "interface_id": {"$ref": "#/$defs/id"},
+          "region_id": {"$ref": "#/$defs/id"},
+          "adjacent_region_id": {"$ref": "#/$defs/id"},
+          "surface": {"enum": ["inner", "outer", "z_min", "z_max"]},
+          "orientation": {
+            "enum": [
+              "outward_from_region_to_adjacent",
+              "outward_from_region_to_ambient",
+              "outward_to_symmetry_axis"
+            ]
+          },
+          "start_rz_m": {"$ref": "#/$defs/point"},
+          "end_rz_m": {"$ref": "#/$defs/point"},
+          "unit_normal_rz": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["radial", "axial"],
+            "properties": {
+              "radial": {"type": "number"},
+              "axial": {"type": "number"}
+            }
+          },
+          "free_surface_current_phi_a_per_m": {"const": 0}
+        }
+      }
+    },
+    "external_components": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/external"}
+    },
+    "claim_limit": {"const": "geometry display data only; no field or performance result"}
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9](?:[a-z0-9._-]*[a-z0-9])?$",
+      "not": {"pattern": "\\.\\."}
+    },
+    "point": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": {"type": "number"}
+    },
+    "external": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "component_id",
+        "kind",
+        "axisymmetry",
+        "location",
+        "included_in_2d_model"
+      ],
+      "properties": {
+        "component_id": {"$ref": "#/$defs/id"},
+        "kind": {"enum": ["cathode", "neutralizer"]},
+        "axisymmetry": {"const": "external_non_axisymmetric_metadata"},
+        "location": {"type": "string", "minLength": 1},
+        "included_in_2d_model": {"const": false}
+      }
+    }
+  }
+}

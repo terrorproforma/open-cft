@@ -1,0 +1,147 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cft_revival.geometry.artifact_manifest/1.1.0",
+  "title": "Closed geometry artifact manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "generator",
+    "generator_version",
+    "configurations",
+    "claim_limit"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "cft_revival.geometry.artifact_manifest/1.1.0"
+    },
+    "generator": {
+      "const": "modern/examples/geometry/generate_reference_artifacts.py"
+    },
+    "generator_version": {"const": "1.1.0"},
+    "configurations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/configuration"}
+    },
+    "claim_limit": {
+      "const": "Hypothetical geometry artifacts only; not optimized, build-qualified, or predictive of propulsion performance."
+    }
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "configuration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "config_id",
+        "geometry_payload_sha256",
+        "dimensions",
+        "descriptors",
+        "artifact_file_sha256"
+      ],
+      "properties": {
+        "config_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9](?:[a-z0-9._-]*[a-z0-9])?$",
+          "not": {"pattern": "\\.\\."}
+        },
+        "geometry_payload_sha256": {"$ref": "#/$defs/sha256"},
+        "dimensions": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "chamber_inner_radius_m",
+            "chamber_outer_radius_m",
+            "chamber_length_m",
+            "exit_outer_radius_m",
+            "stage_count",
+            "stage_pitch_m"
+          ],
+          "properties": {
+            "chamber_inner_radius_m": {"type": "number", "minimum": 0},
+            "chamber_outer_radius_m": {"type": "number", "exclusiveMinimum": 0},
+            "chamber_length_m": {"type": "number", "exclusiveMinimum": 0},
+            "exit_outer_radius_m": {"type": "number", "exclusiveMinimum": 0},
+            "stage_count": {"type": "integer", "minimum": 2},
+            "stage_pitch_m": {"type": "number", "exclusiveMinimum": 0}
+          }
+        },
+        "descriptors": {"$ref": "#/$defs/descriptors"},
+        "artifact_file_sha256": {
+          "type": "object",
+          "minProperties": 3,
+          "maxProperties": 3,
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?\\.(?:json|viewer\\.json|svg)$": {
+              "$ref": "#/$defs/sha256"
+            }
+          }
+        }
+      }
+    },
+    "descriptors": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "active_volume_m3",
+        "channel_volume_m3",
+        "channel_inlet_area_m2",
+        "channel_exit_area_m2",
+        "stage_pitch_m",
+        "cusp_count",
+        "minimum_radial_gap_m",
+        "minimum_axial_gap_m",
+        "magnet_mass_estimate_kg",
+        "magnet_density_basis",
+        "envelope",
+        "manufacturability_warnings",
+        "design_variable_vector",
+        "claim_limit"
+      ],
+      "properties": {
+        "active_volume_m3": {"type": "number", "exclusiveMinimum": 0},
+        "channel_volume_m3": {"type": "number", "exclusiveMinimum": 0},
+        "channel_inlet_area_m2": {"type": "number", "exclusiveMinimum": 0},
+        "channel_exit_area_m2": {"type": "number", "exclusiveMinimum": 0},
+        "stage_pitch_m": {"type": "number", "exclusiveMinimum": 0},
+        "cusp_count": {"type": "integer", "minimum": 1},
+        "minimum_radial_gap_m": {"type": "number", "exclusiveMinimum": 0},
+        "minimum_axial_gap_m": {"type": "number", "exclusiveMinimum": 0},
+        "magnet_mass_estimate_kg": {"type": "number", "exclusiveMinimum": 0},
+        "magnet_density_basis": {"type": "string", "minLength": 1},
+        "envelope": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["radius_m", "z_min_m", "z_max_m"],
+          "properties": {
+            "radius_m": {"type": "number", "exclusiveMinimum": 0},
+            "z_min_m": {"type": "number"},
+            "z_max_m": {"type": "number"}
+          }
+        },
+        "manufacturability_warnings": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        },
+        "design_variable_vector": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["names", "values_si"],
+          "properties": {
+            "names": {
+              "type": "array",
+              "items": {"type": "string", "minLength": 1}
+            },
+            "values_si": {
+              "type": "array",
+              "items": {"type": "number"}
+            }
+          }
+        },
+        "claim_limit": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}

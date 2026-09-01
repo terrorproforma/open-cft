@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="500.000" height="410.000" viewBox="0 0 500.000 410.000" role="img">
+<title>Compact high-gradient PPM stack (hypothetical) meridional cross-section</title>
+<metadata data-schema="cft_revival.geometry.viewer_data/1.1.0" data-geometry-sha256="66e033e98aa2dc98af96d4d7072218c4b298839c784a44ee66621e29a58a4f6f">Hypothetical CFT geometry; no performance prediction. TWT inspiration is limited to PPM stack hardware geometry.</metadata>
+<style>.region{stroke:#111;stroke-width:0.7}.axis{stroke:#111;stroke-dasharray:4 3}.dim{stroke:#1d3557;stroke-width:0.7;fill:none}.label{font:9px sans-serif;fill:#111}.small{font:7px sans-serif;fill:#111}.polarity{font:bold 10px sans-serif;fill:white;text-anchor:middle}</style>
+<line class="axis" x1="45.000000" y1="205.000000" x2="455.000000" y2="205.000000"/>
+<g id="material-regions">
+<polygon id="anode-top" class="region" points="45.000000,205.000000 45.000000,175.000000 55.000000,175.000000 55.000000,205.000000" fill="#d97706" data-material="copper-anode-assumed" data-role="anode"/>
+<polygon id="anode-bottom" class="region" points="45.000000,205.000000 45.000000,235.000000 55.000000,235.000000 55.000000,205.000000" fill="#d97706" data-material="copper-anode-assumed" data-role="anode"/>
+<polygon id="injector-zone-top" class="region" points="55.000000,205.000000 55.000000,175.000000 75.000000,175.000000 75.000000,205.000000" fill="#e7f4ff" data-material="vacuum-plasma-placeholder" data-role="injector_plasma"/>
+<polygon id="injector-zone-bottom" class="region" points="55.000000,205.000000 55.000000,235.000000 75.000000,235.000000 75.000000,205.000000" fill="#e7f4ff" data-material="vacuum-plasma-placeholder" data-role="injector_plasma"/>
+<polygon id="dielectric-straight-top" class="region" points="55.000000,175.000000 55.000000,160.000000 455.000000,160.000000 455.000000,175.000000" fill="#e9d8a6" data-material="bn-dielectric-assumed" data-role="dielectric_wall"/>
+<polygon id="dielectric-straight-bottom" class="region" points="55.000000,235.000000 55.000000,250.000000 455.000000,250.000000 455.000000,235.000000" fill="#e9d8a6" data-material="bn-dielectric-assumed" data-role="dielectric_wall"/>
+<polygon id="shield-shell-top" class="region" points="55.000000,85.000000 55.000000,70.000000 455.000000,70.000000 455.000000,85.000000" fill="#adb5bd" data-material="al6061-assumed" data-role="shield"/>
+<polygon id="shield-shell-bottom" class="region" points="55.000000,325.000000 55.000000,340.000000 455.000000,340.000000 455.000000,325.000000" fill="#adb5bd" data-material="al6061-assumed" data-role="shield"/>
+<polygon id="return-yoke-top" class="region" points="55.000000,70.000000 55.000000,45.000000 455.000000,45.000000 455.000000,70.000000" fill="#495057" data-material="soft-iron-assumed" data-role="yoke"/>
+<polygon id="return-yoke-bottom" class="region" points="55.000000,340.000000 55.000000,365.000000 455.000000,365.000000 455.000000,340.000000" fill="#495057" data-material="soft-iron-assumed" data-role="yoke"/>
+<polygon id="magnet-01-top" class="region" points="70.000000,153.000000 70.000000,85.000000 120.000000,85.000000 120.000000,153.000000" fill="#d1495b" data-material="synthetic-smco-like-example-v1" data-role="permanent_magnet"/>
+<polygon id="magnet-01-bottom" class="region" points="70.000000,257.000000 70.000000,325.000000 120.000000,325.000000 120.000000,257.000000" fill="#d1495b" data-material="synthetic-smco-like-example-v1" data-role="permanent_magnet"/>
+<polygon id="channel-straight-top" class="region" points="75.000000,205.000000 75.000000,175.000000 455.000000,175.000000 455.000000,205.000000" fill="#e7f4ff" data-material="vacuum-plasma-placeholder" data-role="channel_plasma"/>
+<polygon id="channel-straight-bottom" class="region" points="75.000000,205.000000 75.000000,235.000000 455.000000,235.000000 455.000000,205.000000" fill="#e7f4ff" data-material="vacuum-plasma-placeholder" data-role="channel_plasma"/>
+<polygon id="pole-01-top" class="region" points="120.000000,153.000000 120.000000,85.000000 150.000000,85.000000 150.000000,153.000000" fill="#495057" data-material="soft-iron-assumed" data-role="pole_piece"/>
+<polygon id="pole-01-bottom" class="region" points="120.000000,257.000000 120.000000,325.000000 150.000000,325.000000 150.000000,257.000000" fill="#495057" data-material="soft-iron-assumed" data-role="pole_piece"/>
+<polygon id="magnet-02-top" class="region" points="150.000000,153.000000 150.000000,85.000000 200.000000,85.000000 200.000000,153.000000" fill="#d1495b" data-material="synthetic-smco-like-example-v1" data-role="permanent_magnet"/>
+<polygon id="magnet-02-bottom" class="region" points="150.000000,257.000000 150.000000,325.000000 200.000000,325.000000 200.000000,257.000000" fill="#d1495b" data-material="synthetic-smco-like-example-v1" data-role="permanent_magnet"/>
+<polygon id="pole-02-top" class="region" points="200.000000,153.000000 200.000000,85.000000 230.000000,85.000000 230.000000,153.000000" fill="#495057" data-material="soft-iron-assumed" data-role="pole_piece"/>
+<polygon id="pole-02-bottom" class="region" points="200.000000,257.000000 200.000000,325.000000 230.000000,325.000000 230.000000,257.000000" fill="#495057" data-material="soft-iron-assumed" data-role="pole_piece"/>
+<polygon id="magnet-03-top" class="region" points="230.000000,153.000000 230.000000,85.000000 280.000000,85.000000 280.000000,153.000000" fill="#d1495b" data-material="synthetic-smco-like-example-v1" data-role="permanent_magnet"/>
+<polygon id="magnet-03-bottom" class="region" points="230.000000,257.000000 230.000000,325.000000 280.000000,325.000000 280.000000,257.000000" fill="#d1495b" data-material="synthetic-smco-like-example-v1" data-role="permanent_magnet"/>
+<polygon id="pole-03-top" class="region" points="280.000000,153.000000 280.000000,85.000000 310.000000,85.000000 310.000000,153.000000" fill="#495057" data-material="soft-iron-assumed" data-role="pole_piece"/>
+<polygon id="pole-03-bottom" class="region" points="280.000000,257.000000 280.000000,325.000000 310.000000,325.000000 310.000000,257.000000" fill="#495057" data-material="soft-iron-assumed" data-role="pole_piece"/>
+<polygon id="magnet-04-top" class="region" points="310.000000,153.000000 310.000000,85.000000 360.000000,85.000000 360.000000,153.000000" fill="#d1495b" data-material="synthetic-smco-like-example-v1" data-role="permanent_magnet"/>
+<polygon id="magnet-04-bottom" class="region" points="310.000000,257.000000 310.000000,325.000000 360.000000,325.000000 360.000000,257.000000" fill="#d1495b" data-material="synthetic-smco-like-example-v1" data-role="permanent_magnet"/>
+<polygon id="pole-04-top" class="region" points="360.000000,153.000000 360.000000,85.000000 390.000000,85.000000 390.000000,153.000000" fill="#495057" data-material="soft-iron-assumed" data-role="pole_piece"/>
+<polygon id="pole-04-bottom" class="region" points="360.000000,257.000000 360.000000,325.000000 390.000000,325.000000 390.000000,257.000000" fill="#495057" data-material="soft-iron-assumed" data-role="pole_piece"/>
+<polygon id="magnet-05-top" class="region" points="390.000000,153.000000 390.000000,85.000000 440.000000,85.000000 440.000000,153.000000" fill="#d1495b" data-material="synthetic-smco-like-example-v1" data-role="permanent_magnet"/>
+<polygon id="magnet-05-bottom" class="region" points="390.000000,257.000000 390.000000,325.000000 440.000000,325.000000 440.000000,257.000000" fill="#d1495b" data-material="synthetic-smco-like-example-v1" data-role="permanent_magnet"/>
+</g>
+<g id="stage-polarity">
+<text class="polarity" x="95.000000" y="122.000000" data-stage="stage-01" data-polarity="1">+z</text>
+<text class="polarity" x="175.000000" y="122.000000" data-stage="stage-02" data-polarity="-1">−z</text>
+<text class="polarity" x="255.000000" y="122.000000" data-stage="stage-03" data-polarity="1">+z</text>
+<text class="polarity" x="335.000000" y="122.000000" data-stage="stage-04" data-polarity="-1">−z</text>
+<text class="polarity" x="415.000000" y="122.000000" data-stage="stage-05" data-polarity="1">+z</text>
+</g>
+<g id="dimensions">
+<line class="dim" x1="55.000000" y1="396.000000" x2="455.000000" y2="396.000000"/>
+<text class="label" x="255.000000" y="393.000000" text-anchor="middle">L=20.000 mm</text>
+<text class="label" x="45.000000" y="12">r-axis; all dimensions SI (labels shown in mm), pitch=4.000 mm, cusps=4</text>
+<text class="small" x="45.000000" y="23">channel R=1.500 mm; envelope R=8.000 mm</text>
+</g>
+<text class="small" x="4" y="38" transform="rotate(-90 4 38)">−r / +r</text>
+</svg>
