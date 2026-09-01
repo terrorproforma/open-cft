@@ -1,0 +1,16 @@
+{
+  "document_type": "cft-revival-l0-surrogate-v3-provenance-failure",
+  "schema_version": "3.0",
+  "provenance_failure_hash": "ec6d262bf4b1c54a198501b53d2cc7742fed21c377e01518d1f6024d47672af0",
+  "actual_preregistration_commit_sha": "658fe5c34dd6b669d1e426d8aa162782d7809ca4",
+  "supplied_preregistration_commit_sha": "658fe5c6b3be8db3337e1d5d90e69ca9b2171831",
+  "run_manifest_hash": "b5d40e295100136abfc4fdb78588f35dfccdc28678b6b84a71cefd40c7347b41",
+  "failure_stage": "execution-invocation-preregistration-identity",
+  "detected_after_execution": true,
+  "technical_execution_completed": true,
+  "numerical_gate_status_from_run": "failed-predeclared-gates",
+  "scientific_acceptance": false,
+  "rerun_performed": false,
+  "integrity_statement": "The supplied SHA is not a Git object and does not identify the pushed preregistration commit. Generated artifacts are preserved exactly, but the run is invalid as a preregistered experiment regardless of numerical results.",
+  "required_next_step": "Use a separately preregistered successor with pre-execution git cat-file commit verification and exact equality to the expected preregistration SHA."
+}

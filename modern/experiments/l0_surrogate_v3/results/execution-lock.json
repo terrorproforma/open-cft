@@ -1,0 +1,9 @@
+{
+  "document_type": "cft-revival-l0-surrogate-v3-execution-lock",
+  "partitions_hash": "97332e2ed553d6281ff0b030357fbe47e4f292beebea6d101e211465a506e09f",
+  "predeclaration_hash": "eaa17e6c26e1c7ff5a3f78dd5dc77161067ad6ca4519e66f77bea4fbd5e84895",
+  "preflight_hash": "c04225c5b51ee135e5409292db06c877dcf4025c1df02c60837114e1848d621d",
+  "preregistration_commit_sha": "658fe5c6b3be8db3337e1d5d90e69ca9b2171831",
+  "schema_version": "3.0",
+  "single_execution": true
+}

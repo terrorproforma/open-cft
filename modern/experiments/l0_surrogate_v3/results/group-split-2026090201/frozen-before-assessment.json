@@ -1,0 +1,22 @@
+{
+  "calibration_hashes": {
+    "active": "e4a70b3f84a04d7ae3b5cca31cf20a3d79dc906809fefe6573a878c1414d209c",
+    "fixed-baseline": "d532851990adf9865406ffbd74c59353718e0d2bedd690f5f582a4cade3f026b"
+  },
+  "frozen_hash": "b8f0865dd4bd2aa95fda80a12bc25cacaf1bdc36ff542a4538e64139183a7525",
+  "model_hashes": {
+    "active": {
+      "axial_thrust_n": "b82a6c8a5b4e6fd56a5e5b3319237215fa89693e2eeb34333e73e7e86834ed80",
+      "specific_impulse_s": "1d35dd69aebfa7f222741ad953f855a20ee8983a7da8b44dd3afec1a6a831d79"
+    },
+    "fixed-baseline": {
+      "axial_thrust_n": "399e718805350ace4bec90dfb65f391de91ba37c75a40638503373caea2f294a",
+      "specific_impulse_s": "3342f9b2399b0c3ba2ac24121e19feaaaf8ca5007c0741980a4eed11be28e709"
+    }
+  },
+  "replicate_partition_hash": "30a3ab97d7748835a82f9971461797312406fd04ade24ec96d0e61e5cbb537b0",
+  "selection_hashes": {
+    "active": "8628d313f8abd8584d3c3cff4ce66dca82cf614ed9bc38a8a361d0fef301f92c",
+    "fixed-baseline": "2a62f576ce0309699dae3f31a9baf5bc8786c93650dc5f1a23082aa15d317501"
+  }
+}
