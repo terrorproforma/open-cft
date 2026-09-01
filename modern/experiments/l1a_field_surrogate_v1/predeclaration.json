@@ -1,0 +1,123 @@
+{
+  "schema_version": "cft-revival.l1a-field-surrogate-v1.protocol/1.0.0",
+  "classification": "L1a_NUMERICAL_EMULATION_ONLY_NOT_MATERIAL_PLASMA_OR_HARDWARE_ACCURACY",
+  "execution": {
+    "maximum_executions": 1,
+    "device": "cuda:0",
+    "required_gpu_name": "NVIDIA GeForce RTX 5090",
+    "detached_clean_pushed_preregistration": true,
+    "exclusive_lock": "git-common-dir atomic O_CREAT|O_EXCL",
+    "preflight_solver_access_count": 0,
+    "no_patch_or_rerun": true
+  },
+  "sampling": {
+    "algorithm": "accepted shifted-Halton 256-row pool without reusable canonical boundary points; raw[0:96] development/calibration, then six lowest-index remaining interpolation rows, five smallest coordinate-to-boundary-distance rows, and five largest nearest-candidate-distance rows with hash tie-breaks",
+    "seed": 20260919,
+    "rows": 112,
+    "prior_l1a_v2_coordinate_intersection_required": 0,
+    "roles": {
+      "candidate": [0, 64],
+      "method_selection": [64, 80],
+      "final_calibration": [80, 96],
+      "single_use_assessment": [96, 112]
+    },
+    "assessment_strata": {
+      "interpolation": [96, 102],
+      "boundary": [102, 107],
+      "ood": [107, 112]
+    },
+    "high_fidelity_indices": "candidate[0:32] plus every development/calibration/assessment index",
+    "model_budgets": [24, 32]
+  },
+  "geometry": {
+    "schema_version": "cft_revival.geometry.axisymmetric_cft/1.1.0",
+    "family": "fresh seed, accepted L1a-v2 bounded 11-variable PPM-stack construction",
+    "pairing": "low and high problems share geometry_sha256 and signed ampere-turns; coarse bands use a preregistered 0.0016 m radial smear required by the 41-node radial grid"
+  },
+  "fidelities": {
+    "low": {"radial_intervals": 40, "axial_intervals": 72, "shape": [41, 73]},
+    "high": {"radial_intervals": 80, "axial_intervals": 144, "shape": [81, 145]},
+    "domain": {"radius_m": 0.03, "z_min_m": -0.015, "z_max_m": 0.05},
+    "solver": {
+      "relative_tolerance": 1e-10,
+      "absolute_tolerance": 1e-13,
+      "max_iterations": 20000,
+      "residual_history_stride": 10,
+      "max_true_residual_restarts": 2
+    },
+    "pairing_hash": "sha256(geometry_sha256, signed ampere-turn sequence)",
+    "interpolation": "exact nested-grid bilinear prolongation; coincident nodes copied exactly"
+  },
+  "outputs": {
+    "scalar_qois": [
+      "centreline_mid_abs_bz_t",
+      "centreline_abs_bz_peak_t",
+      "minimum_mirror_ratio",
+      "maximum_mirror_ratio",
+      "axis_cusp_count",
+      "axis_null_count",
+      "stage_gradient_rms_t_per_m",
+      "stage_gradient_max_abs_t_per_m",
+      "field_energy_j",
+      "boundary_to_peak_ratio",
+      "source_representation_error"
+    ],
+    "field": "concatenated Br,Bz on fixed accepted high-fidelity mesh",
+    "pod_requested_rank": 6,
+    "pod_minimum_retained_energy": 0.995
+  },
+  "candidate_models": {
+    "scalar": ["high_only_ard_gp", "ar1_low_plus_discrepancy_gp", "coarse_observed_plus_discrepancy_gp"],
+    "field": ["high_only_pod_gp", "coarse_observed_plus_discrepancy_pod_gp"],
+    "selection": "smallest budget passing all development gates; then minimum worst scalar NRMSE, field L2, lexical family",
+    "assessment_labels_forbidden_until_freeze": true
+  },
+  "uncertainty": {
+    "method": "absolute-residual split group conformal",
+    "nominal_coverage": 0.8,
+    "rank": "ceil((n_group+1)*0.8), capped at n_group",
+    "groups": ["interpolation", "boundary", "ood"],
+    "coverage_gate": "each assessment group observed coverage >=0.6 and exact-rank interval recorded",
+    "width_gate": "median and p95 full width normalized by development range <=0.30 and <=0.60"
+  },
+  "gates": {
+    "numerics": {
+      "relative_residual_l2_max": 1e-10,
+      "boundary_to_peak_ratio_max": 0.05,
+      "source_representation_error_max": 0.25,
+      "topology_confidence_min": 0.5,
+      "flux_identity_t_per_m_max": 1e-8,
+      "zero_failures": true
+    },
+    "scalar": {"nrmse_max": 0.05, "worst_range_normalized_error_max": 0.15},
+    "field": {"relative_l2_max": 0.05, "relative_energy_error_max": 0.05},
+    "topology": {
+      "cusp_count_exact": true,
+      "null_count_exact": true,
+      "position_tolerance_m": 0.0009027777777777778,
+      "status_match": true
+    },
+    "decision_safety": "no point is surrogate-acceptable when assessment stratum is OOD or topology uncertainty/mismatch is flagged",
+    "latency": {
+      "comparison": "coarse solve plus all scalar/field inference and safety checks versus high solve",
+      "warmup_cases": 3,
+      "timed_cases": 13,
+      "statistics": ["median", "p95"],
+      "minimum_median_speedup": 3.0,
+      "preprocessing_and_transfers_included": true,
+      "peak_host_memory_measured": true
+    }
+  },
+  "integrity": {
+    "protocol_commit_subject": "preregister L1a field surrogate v1 experiment",
+    "results_commit_subject": "record L1a field surrogate v1 results",
+    "remote": "origin/feat/sota-foundation",
+    "full_git_blob_closure": "all HEAD blobs under new experiment/tests and imported accepted package roots recorded before label access",
+    "results": "strict JSON, SHA-256 sidecars, manifest closure, model hashes, viewer-ready representative predictions"
+  },
+  "claim_limits": [
+    "The high-fidelity target is the accepted L1a numerical discretization, not physical truth.",
+    "No material, plasma, thermal, structural, propulsion or hardware accuracy is claimed.",
+    "Accepted L1a-v2 results are disclosed development evidence only and provide no labels."
+  ]
+}

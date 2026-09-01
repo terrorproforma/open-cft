@@ -1,0 +1,23 @@
+{
+  "assessment_label_access_count": 0,
+  "exact_conformal_rank_examples": {
+    "n5": 5,
+    "n6": 6
+  },
+  "high_shape": [
+    81,
+    145
+  ],
+  "low_shape": [
+    41,
+    73
+  ],
+  "nested_grid": true,
+  "partition_hash": "8d1948a61018fef56a612d810935078744726c886dcdde9baae42d6b26a3c33d",
+  "passed": true,
+  "preflight_hash": "e374c95abe7464284e72b705b189ace445d8c7f1887009021612eca35c81e0a2",
+  "protocol_hash": "32cc0d445e6f066f0ee4a588e76737185c123c4dab8e6079a0ad9298a0403c24",
+  "role_disjoint": true,
+  "schema_version": "cft-revival.l1a-field-surrogate-v1.preflight/1.0.0",
+  "solver_access_count": 0
+}
