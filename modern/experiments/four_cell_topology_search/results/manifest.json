@@ -1,0 +1,144 @@
+{
+  "classification": "DEVELOPMENT_EVIDENCE_INVALID_FOR_PHYSICAL_MIRROR_OR_PERFORMANCE_CLAIMS",
+  "dataset_payload_sha256": "fced0eb33b9073a83911e8ec7717a88e7764708b344020007e9a516a40836491",
+  "deterministic_files": [
+    {
+      "file_sha256": "145decd7f1856b9e00429e07f06d47beb2a1de24523d75e6eb10c8f0856344de",
+      "kind": "dataset",
+      "path": "dataset.json",
+      "payload_sha256": "fced0eb33b9073a83911e8ec7717a88e7764708b344020007e9a516a40836491"
+    },
+    {
+      "file_sha256": "6566e34a3bdbc0158d005a2e0673dceffb605a8ed17d49125c67256f6bb98fd9",
+      "kind": "report",
+      "path": "report.md",
+      "payload_sha256": null
+    },
+    {
+      "file_sha256": "f78b5ef0ba1c1973b585d321e38e65ba422cf4fb5e163c7f3a6c1e4bedb195e2",
+      "kind": "field",
+      "path": "representatives/four-cell-029-52bb37501f.field-full.json",
+      "payload_sha256": "911336c52ecec68fd6d359d999fe067e21aa3b1b7c4331216741e6d1a1587b95"
+    },
+    {
+      "file_sha256": "b562cbbabf99d38379e7a38ab695b1dd1af2f1befbef9d8c5d56d191a5d73ef8",
+      "kind": "geometry",
+      "path": "representatives/four-cell-029-52bb37501f.geometry.json",
+      "payload_sha256": "71e534cc4e06a0beec89c88cf1ded447237d2edcce8244773af54d6e30f235e5"
+    },
+    {
+      "file_sha256": "40ecbe7e18914d1a9ec96ca2893e787634ab39b1e2cdf70da9e6a7698dcbad30",
+      "kind": "field",
+      "path": "representatives/four-cell-005-8885e09139.field-full.json",
+      "payload_sha256": "99ba34d091735c0dc58262752c8889d73fbb795d9bbeeaafa83cb2185eed5466"
+    },
+    {
+      "file_sha256": "6ccd7e6d195b8bd7e945d4f63afe670f48a0dc7afe6ae424aa5b82dc24e7b721",
+      "kind": "geometry",
+      "path": "representatives/four-cell-005-8885e09139.geometry.json",
+      "payload_sha256": "484e08fa7b7e588ea49fb967a637db2d9af58f9c617fbe26fcd4f4be84b0ebf1"
+    },
+    {
+      "file_sha256": "a90ea96b4047e73ab656888904b402f97d6556280f92e5aad1f078d6edca308d",
+      "kind": "field",
+      "path": "representatives/four-cell-059-80ac2000e2.field-full.json",
+      "payload_sha256": "9ddbcfde6e49f93e7c8d214099b16655944e95cde6b27b8fa5fff5bf1425d3d3"
+    },
+    {
+      "file_sha256": "969317f817063d4ce429b76b6548375c0837d3cd86d708e1089fe3ae5f3e84de",
+      "kind": "geometry",
+      "path": "representatives/four-cell-059-80ac2000e2.geometry.json",
+      "payload_sha256": "5a0b7a07407dc57a82c7a5b996c9a077bcc881b28ed2c95c71aeba0dd023130d"
+    }
+  ],
+  "integrity": {
+    "algorithm": "sha256",
+    "canonicalization": "json-sort-keys-compact-utf8-v1",
+    "payload_sha256": "2ff65a4887058ebfb9e23542caca066515c2ba03b04efa6f0b9da4cfd787f38d"
+  },
+  "protocol_status": {
+    "experiment_version": "v1",
+    "invalidity_reasons": [
+      "the search protocol and gates were not preregistered before execution",
+      "coupling v2 used the deprecated same-z centreline-low/wall-high mirror proxy",
+      "selected null lows are roundoff-scale and not physical mirror minima"
+    ],
+    "permitted_use": "audit-preserved non-identifiable screening-equation diagnostics",
+    "preregistered": false,
+    "status": "development_evidence_only",
+    "supersession_required": {
+      "coupling_model": "coupling v3",
+      "requirement": "both coupling v3 and a preregistered v2 search are required before physical mirror, identifiable-state, or performance claims",
+      "search_protocol": "preregistered four-cell topology search v2"
+    },
+    "valid_for_identifiable_state_claims": false,
+    "valid_for_performance_claims": false,
+    "valid_for_physical_mirror_claims": false
+  },
+  "representatives": [
+    {
+      "case_id": "four-cell-029-52bb37501f",
+      "field": {
+        "file_sha256": "f78b5ef0ba1c1973b585d321e38e65ba422cf4fb5e163c7f3a6c1e4bedb195e2",
+        "path": "representatives/four-cell-029-52bb37501f.field-full.json",
+        "payload_sha256": "911336c52ecec68fd6d359d999fe067e21aa3b1b7c4331216741e6d1a1587b95",
+        "stride": 1
+      },
+      "geometry": {
+        "file_sha256": "b562cbbabf99d38379e7a38ab695b1dd1af2f1befbef9d8c5d56d191a5d73ef8",
+        "path": "representatives/four-cell-029-52bb37501f.geometry.json",
+        "payload_sha256": "71e534cc4e06a0beec89c88cf1ded447237d2edcce8244773af54d6e30f235e5"
+      },
+      "rank": 1
+    },
+    {
+      "case_id": "four-cell-005-8885e09139",
+      "field": {
+        "file_sha256": "40ecbe7e18914d1a9ec96ca2893e787634ab39b1e2cdf70da9e6a7698dcbad30",
+        "path": "representatives/four-cell-005-8885e09139.field-full.json",
+        "payload_sha256": "99ba34d091735c0dc58262752c8889d73fbb795d9bbeeaafa83cb2185eed5466",
+        "stride": 1
+      },
+      "geometry": {
+        "file_sha256": "6ccd7e6d195b8bd7e945d4f63afe670f48a0dc7afe6ae424aa5b82dc24e7b721",
+        "path": "representatives/four-cell-005-8885e09139.geometry.json",
+        "payload_sha256": "484e08fa7b7e588ea49fb967a637db2d9af58f9c617fbe26fcd4f4be84b0ebf1"
+      },
+      "rank": 2
+    },
+    {
+      "case_id": "four-cell-059-80ac2000e2",
+      "field": {
+        "file_sha256": "a90ea96b4047e73ab656888904b402f97d6556280f92e5aad1f078d6edca308d",
+        "path": "representatives/four-cell-059-80ac2000e2.field-full.json",
+        "payload_sha256": "9ddbcfde6e49f93e7c8d214099b16655944e95cde6b27b8fa5fff5bf1425d3d3",
+        "stride": 1
+      },
+      "geometry": {
+        "file_sha256": "969317f817063d4ce429b76b6548375c0837d3cd86d708e1089fe3ae5f3e84de",
+        "path": "representatives/four-cell-059-80ac2000e2.geometry.json",
+        "payload_sha256": "5a0b7a07407dc57a82c7a5b996c9a077bcc881b28ed2c95c71aeba0dd023130d"
+      },
+      "rank": 3
+    }
+  ],
+  "schema_version": "cft-revival.experiment.four-cell-topology-search-manifest/1.0.1",
+  "semantic_correction": {
+    "kind": "semantic_publication_metadata_correction",
+    "numerical_simulations_rerun": false,
+    "numerical_values_modified": false,
+    "prior_dataset_file_sha256": "4386830c897fa40c33372a9bb9dc9fc0dd94f72fbb5dc26500949e2104da911c",
+    "prior_dataset_payload_sha256": "ae33ea6630296c6226f957711ed12743f6fe11bec2361ee5a4385eceb6bd4aa9",
+    "prior_manifest_file_sha256": "8f64329c777b824ca64e3b01af4d600bbc06b243168548bcc6d85dcd918ba966",
+    "prior_manifest_payload_sha256": "2c1f7ec83ed66d1e4dc08c79f2a996ea542b9d26300687bb7e2bbbe0d9610377",
+    "prior_report_file_sha256": "ee3e865bcc7174b0c88802988de9aaac12ade5245f6c677bef92a769cec99544",
+    "representative_artifacts_modified": false,
+    "selection_identity_sha256": "b4a03ffb0ec4544c19d2fe97fa3421132f4047caebc4dbcb3ffb9491338ca7ed",
+    "selection_or_ranking_modified": false,
+    "supersession_required": {
+      "coupling_model": "coupling v3",
+      "requirement": "both coupling v3 and a preregistered v2 search are required before physical mirror, identifiable-state, or performance claims",
+      "search_protocol": "preregistered four-cell topology search v2"
+    }
+  }
+}
