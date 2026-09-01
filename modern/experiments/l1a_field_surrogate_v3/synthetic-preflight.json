@@ -1,0 +1,14 @@
+{
+  "dependency_lock_hash": "b2b55c9131852136d16ff1eeb326595ce87970ba60ac684fff458d65788dce6c",
+  "field_solver_access_count": 0,
+  "frozen_hash_failure_count": 0,
+  "frozen_rebuild_count": 240,
+  "geometry_preflight_hash": "99733373bb11f9b0c98fdabcfab1ce34d95f4998029184ed64d07d287597b744",
+  "partition_hash": "7c5ecdfe29f1a8170f9cecfc6e98d5ae915d5e7bb839abbaac463afe94a0c455",
+  "passed": true,
+  "protocol_hash": "0df8883caa0fc1b9ae5d5db484adf1a924c0e51ffd5fdcdccff2e0a799019e24",
+  "qoi_label_access_count": 0,
+  "schema_version": "cft-revival.l1a-field-surrogate-v3.synthetic-preflight/3.0.0",
+  "synthetic_linear_algebra_only": true,
+  "synthetic_preflight_hash": "fa62f2b0f0472864589629d17a6d3bd9da2f74f4a056217c7ef87ce4dab1b313"
+}

@@ -1,0 +1,149 @@
+{
+  "schema_version": "cft-revival.l1a-field-surrogate-v3.protocol/3.0.0",
+  "classification": "L1a_NUMERICAL_EMULATION_ONLY_NOT_MATERIAL_PLASMA_OR_HARDWARE_ACCURACY",
+  "branch": "exp/l1a-field-surrogate-v3",
+  "execution": {
+    "maximum_lock_claims": 1,
+    "device": "cuda:0",
+    "required_gpu_name": "NVIDIA GeForce RTX 5090",
+    "clean_detached_pushed_preregistration": true,
+    "exclusive_lock": "git-common-dir O_CREAT|O_EXCL",
+    "no_patch_or_rerun": true,
+    "result_commit_must_be_direct_child": true
+  },
+  "sampling": {
+    "algorithm": "shifted-Halton without canonical boundary points",
+    "seed": 20261117,
+    "raw_rows": 512,
+    "frozen_rows": 240,
+    "prior_v1_v2_role_coordinate_intersection_required": 0,
+    "roles": {
+      "candidate": [0, 128],
+      "method_selection": [128, 144],
+      "final_calibration": [144, 192],
+      "single_use_assessment": [192, 240]
+    },
+    "calibration_strata": {
+      "interpolation": [144, 160],
+      "boundary": [160, 176],
+      "ood": [176, 192]
+    },
+    "assessment_strata": {
+      "interpolation": [192, 208],
+      "boundary": [208, 224],
+      "ood": [224, 240]
+    },
+    "selection_after_geometry_preflight": "first 144 valid raw rows are candidate+method; from remaining valid pool select calibration then assessment: 16 lowest-index interpolation, 16 smallest coordinate-boundary-distance, 16 largest nearest-candidate-distance with design-id ties; remove each selected set before next role",
+    "high_training_budgets": [64, 96, 128]
+  },
+  "geometry_preflight": {
+    "schema_version": "cft_revival.geometry.axisymmetric_cft/1.1.0",
+    "attempt_policy": "actual constructor at requested radius then actual constructor at each nextafter(radius,chamber_radius)",
+    "maximum_nextafter_steps": 4096,
+    "preview_required": true,
+    "rebuild_all_frozen": true,
+    "frozen_hash_failures_required": 0,
+    "field_solver_access_count": 0,
+    "qoi_label_access_count": 0
+  },
+  "staged_access": {
+    "stage_1_before_method_freeze": ["candidate low+fine", "method low+fine"],
+    "stage_2_after_method_freeze": ["calibration low+fine"],
+    "stage_3_after_calibration_freeze": ["assessment low+fine exactly once"],
+    "future_role_materialization_forbidden": true,
+    "sequential_checkpoint_format": "NumPy NPZ working cache deleted before terminal bundle"
+  },
+  "fidelities": {
+    "low": {"radial_intervals": 40, "axial_intervals": 72, "shape": [41, 73]},
+    "high": {"radial_intervals": 80, "axial_intervals": 144, "shape": [81, 145]},
+    "domain": {"radius_m": 0.03, "z_min_m": -0.015, "z_max_m": 0.05},
+    "physical_source_radial_smear_m": 0.0008,
+    "coarse_transfer": "same physical source bands conservatively integrated over coarse dual cells; direct accepted current-density solve",
+    "solver": {
+      "relative_tolerance": 1e-10,
+      "absolute_tolerance": 1e-13,
+      "max_iterations": 20000,
+      "residual_history_stride": 10,
+      "max_true_residual_restarts": 2
+    },
+    "interpolation": "exact nested-grid bilinear prolongation"
+  },
+  "scalar_model": {
+    "qois": [
+      "centreline_mid_abs_bz_t",
+      "centreline_abs_bz_peak_t",
+      "minimum_mirror_ratio",
+      "maximum_mirror_ratio",
+      "stage_gradient_rms_t_per_m",
+      "stage_gradient_max_abs_t_per_m",
+      "field_energy_j",
+      "boundary_to_peak_ratio",
+      "source_representation_error"
+    ],
+    "families": ["high_only_log_matern52_gp", "observed_coarse_log_ratio_matern52_gp"],
+    "positive_transform": "log(max(qoi,1e-15)); ratio family predicts log(high/coarse) and adds no GP prediction of known coarse value",
+    "shared_kernel_length_scales": [0.18, 0.3, 0.5],
+    "ridge": 1e-8
+  },
+  "field_model": {
+    "families": ["high_only_aligned_pod_gp", "observed_coarse_residual_aligned_pod_gp"],
+    "alignment": "piecewise-linear axial map through z_min, injector exit, every stage centre, chamber end, z_max; landmarks depend only on frozen geometry",
+    "normalization": "fine-minus-prolonged-coarse divided by cylindrical coarse-field norm",
+    "pod_weighting": "axisymmetric cylindrical node weights on aligned fixed grid",
+    "retained_training_energy_min": 0.995,
+    "rank_cap": 64,
+    "coefficient_model": "shared-kernel Matern-5/2 multi-output GP",
+    "diagnostics": ["coarse_baseline", "pod_projection_oracle", "coefficient_regression", "learning_curves"]
+  },
+  "selection": {
+    "smallest_passing_budget": true,
+    "tie_break": "worst scalar NRMSE, field L2, rank, lexical families",
+    "assessment_forbidden_before_method_and_calibration_freezes": true
+  },
+  "uncertainty": {
+    "method": "stratum-specific absolute-residual exact split conformal",
+    "nominal_coverage": 0.8,
+    "exact_rank": "ceil((n+1)*0.8), capped at n",
+    "coverage_minimum": 0.6,
+    "median_normalized_width_max": 0.3,
+    "p95_normalized_width_max": 0.6
+  },
+  "gates": {
+    "numerics": {
+      "relative_residual_l2_max": 1e-10,
+      "boundary_to_peak_ratio_max": 0.05,
+      "source_representation_error_max": 0.25,
+      "flux_identity_t_per_m_max": 1e-8,
+      "zero_frozen_execution_failures": true
+    },
+    "scalar": {"nrmse_max": 0.05, "worst_range_normalized_error_max": 0.15},
+    "field": {"relative_l2_max": 0.05, "relative_energy_error_max": 0.05},
+    "topology": {
+      "cusp_count_exact": true,
+      "null_count_exact": true,
+      "position_tolerance_m": 0.0009027777777777778,
+      "status_match": true,
+      "derived_from_reconstructed_field": true
+    },
+    "decision_safety": "OOD or topology uncertainty forbids surrogate point acceptance",
+    "latency": {
+      "warmup_per_assessment_stratum": 1,
+      "timed_assessment_rows": 45,
+      "minimum_median_speedup": 3.0,
+      "coarse_solve_plus_alignment_scalar_field_inference_topology_and_transfers": true
+    }
+  },
+  "integrity": {
+    "protocol_commit_subject": "preregister L1a field surrogate v3 experiment",
+    "results_commit_subject": "record L1a field surrogate v3 results",
+    "remote_branch": "origin/exp/l1a-field-surrogate-v3",
+    "dependency_lock": "experiment-local exact runtime versions and file hashes plus modern/pyproject.toml Git blob",
+    "full_git_blob_closure_before_first_solve": true,
+    "strict_success_failure_loader": true
+  },
+  "claim_limits": [
+    "High fidelity means accepted L1a numerical discretization, not physical truth.",
+    "No material, plasma, thermal, structural, propulsion or hardware accuracy is claimed.",
+    "V1 and v2 are immutable disclosed development evidence and contribute no v3 labels."
+  ]
+}

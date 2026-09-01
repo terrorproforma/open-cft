@@ -1,0 +1,40 @@
+{
+  "cuda": {
+    "driver_runtime_version": [
+      13,
+      2
+    ],
+    "nvidia_smi": "NVIDIA GeForce RTX 5090, 595.97, 32607",
+    "toolkit_version": [
+      12,
+      9
+    ]
+  },
+  "dependency_lock_hash": "b2b55c9131852136d16ff1eeb326595ce87970ba60ac684fff458d65788dce6c",
+  "packages": {
+    "numpy": {
+      "distribution_version": "2.5.2",
+      "module_file": "C:\\Users\\Angus\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\numpy\\__init__.py",
+      "module_file_sha256": "a6958cb364663b7acce81ccfd58eeb65a2b34d5376157f924777b97211a73be4",
+      "version": "2.5.2"
+    },
+    "warp-lang": {
+      "distribution_version": "1.14.0",
+      "module_file": "C:\\Users\\Angus\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\warp\\__init__.py",
+      "module_file_sha256": "f29f6368f025003a48a17a0dd6ed4eb1ef3d825c041026c07a6e1d00a31abc52",
+      "version": "1.14.0"
+    }
+  },
+  "protocol_hash": "0df8883caa0fc1b9ae5d5db484adf1a924c0e51ffd5fdcdccff2e0a799019e24",
+  "pyproject": {
+    "git_blob": "a01feb138b297e58a8fd8f1c5900490afb65bedb",
+    "path": "modern/pyproject.toml",
+    "sha256": "1071951910ec4b6458f2787a44d7181d56cd339befde33cfa0a1d33d2259862c"
+  },
+  "python": {
+    "executable": "C:\\Users\\Angus\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+    "executable_sha256": "4d6f5f81a4bca11191c4c7c6b43632694d0a4ce74e068619d8fdc161d469859a",
+    "version": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]"
+  },
+  "schema_version": "cft-revival.l1a-field-surrogate-v3.dependency-lock/3.0.0"
+}
