@@ -1,0 +1,378 @@
+{
+  "accepted_coupling_v3_commit_sha": "f80a360fd740a30017cdac1874cedbfa2806874a",
+  "artifacts": [
+    {
+      "identity_method": "canonical-json-sha256",
+      "path": "dataset.json",
+      "semantic_sha256": "046364dcf427b435b1621921e8463c7276f093eb2d4fb3c8f1ccd2c3c748be44"
+    },
+    {
+      "identity_method": "canonical-json-sha256",
+      "path": "execution-lock.json",
+      "semantic_sha256": "0a84686f644a4b381ccdd9ce1cb0ee3df1a96e684fc998107577da43b63e03a8"
+    },
+    {
+      "identity_method": "canonical-json-sha256",
+      "path": "preregistered-protocol.json",
+      "semantic_sha256": "5dcdc162d0f3d33e8fecea0434c2ebfd37d5718f122a7f4b6b12a81bf413172b"
+    },
+    {
+      "identity_method": "normalized-lf-text-sha256",
+      "path": "report.md",
+      "semantic_sha256": "caf99a0aa6553948a94bfe610c763dfcfefbfb76c671e18af6e0b2707bd428b3"
+    },
+    {
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s02-p0-r0-neg/enlarged_domain-field.json",
+      "semantic_sha256": "eddcd2a35bbc2b16e0f78136c41516641f0dfa4118bf1175d539cc63512a355f"
+    },
+    {
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s02-p0-r0-neg/geometry.json",
+      "semantic_sha256": "c04820b33c4d1db5405e5511bef4e34f010c317ab1db93f46d82b0ab7493f14c"
+    },
+    {
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s02-p0-r0-neg/primary-field.json",
+      "semantic_sha256": "421fd310644b2a4131defc843723fef5924f98f65a41f483247db1c0d44b26bd"
+    },
+    {
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s02-p0-r0-neg/refined-field.json",
+      "semantic_sha256": "fdd5e88daf3f7bc5817ee42c292894600ff605278dbb818071e36b13538169e9"
+    },
+    {
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s03-p0-r0-neg/enlarged_domain-field.json",
+      "semantic_sha256": "d5589a3b08723975f6a8864e37dbc77a0dcf5296dc9295b8bedb65e574410b50"
+    },
+    {
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s03-p0-r0-neg/geometry.json",
+      "semantic_sha256": "a9138f698170e632797d414d0581b2813e20041d459ba689b43e166a0861f64a"
+    },
+    {
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s03-p0-r0-neg/primary-field.json",
+      "semantic_sha256": "0f564b079f32022bc6ba1ce3f3d8a6e582672336cb1dfbf155bb343a02368b45"
+    },
+    {
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s03-p0-r0-neg/refined-field.json",
+      "semantic_sha256": "b593254a5e31f747719d499b50043b76cc41e2b96fa2f1471b84ed7b122a7e4b"
+    },
+    {
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s04-p0-r0-neg/enlarged_domain-field.json",
+      "semantic_sha256": "8fa98b22f02720c5096038a060a08c34f43ef582afc88bff38c75777899f26bc"
+    },
+    {
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s04-p0-r0-neg/geometry.json",
+      "semantic_sha256": "30b3b0b3ba8afc6b965e14f1c7aebd89144cc8090e21c8e8d3a0e52f358cd3ac"
+    },
+    {
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s04-p0-r0-neg/primary-field.json",
+      "semantic_sha256": "6666214427879c246b0af6695330b17dbee3d1d29874f03b22faa6be9c44383f"
+    },
+    {
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s04-p0-r0-neg/refined-field.json",
+      "semantic_sha256": "846a52f001dbdafe2a0e80a8e18cf460cceb009e03097675969dec9b70a79e51"
+    },
+    {
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s05-p0-r0-neg/enlarged_domain-field.json",
+      "semantic_sha256": "b06f7931ec0425591b4b027821347bad5072098443a6698bf40edc32e3ec9058"
+    },
+    {
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s05-p0-r0-neg/geometry.json",
+      "semantic_sha256": "8232371a5f45d4de02a4b3339396fab99a46bab23fc9fbbb471e77c7d35348cd"
+    },
+    {
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s05-p0-r0-neg/primary-field.json",
+      "semantic_sha256": "b88567ddb875856de13d880cfc465ca3331d39898741c46b28fa88d27268265b"
+    },
+    {
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s05-p0-r0-neg/refined-field.json",
+      "semantic_sha256": "f043441ed9aa08b932616ec74fa8149d37683f126e32c0356a5ac11bc25c8fb1"
+    },
+    {
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s06-p0-r0-neg/enlarged_domain-field.json",
+      "semantic_sha256": "29fc8cb1e37222e06dbddd0a7de00f464b6aafca5d8a873637d421a0926d24b1"
+    },
+    {
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s06-p0-r0-neg/geometry.json",
+      "semantic_sha256": "f7feb9df6e2cdbbf4a211a821f628206b6fb4f79314e5471d78e2f84b80a90a1"
+    },
+    {
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s06-p0-r0-neg/primary-field.json",
+      "semantic_sha256": "548d87b421c0412385ee35beb2289be873dc7102a6c51b325dd621cb6c657398"
+    },
+    {
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s06-p0-r0-neg/refined-field.json",
+      "semantic_sha256": "83d08a1801fbe379063fd0a4592163e68f9c5dd06b7ad6caa9b982dcfa4d45b3"
+    },
+    {
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s07-p0-r0-neg/enlarged_domain-field.json",
+      "semantic_sha256": "ce5bb0fe181ee7ba27566a16ebd22d9c5ffaf9309ac47126a06c5087092caf33"
+    },
+    {
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s07-p0-r0-neg/geometry.json",
+      "semantic_sha256": "64fd9c074684ab301487aed50f0fd62206e92479484d7d18c5e7573a65a2800e"
+    },
+    {
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s07-p0-r0-neg/primary-field.json",
+      "semantic_sha256": "a1aad66a2fbc2d3dfd8f580a5226ba6bb746d422f83fb43f3e701597a0f7ecff"
+    },
+    {
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s07-p0-r0-neg/refined-field.json",
+      "semantic_sha256": "11fad2c384a7f4f3bb0a0d1b68b4170f762e51c281faa180085c9142aa5cedea"
+    },
+    {
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s08-p0-r0-neg/enlarged_domain-field.json",
+      "semantic_sha256": "ec73b133a3630fb0534a812235f0bb896df8d7d5de083d4f9be23dca62778d94"
+    },
+    {
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s08-p0-r0-neg/geometry.json",
+      "semantic_sha256": "84ba6952057e9342aea36678a5ecb1cd2cb710d71e156e4eb4aaba7cb5cecc0d"
+    },
+    {
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s08-p0-r0-neg/primary-field.json",
+      "semantic_sha256": "b823af8f152f78c744e49131b560fe68c07df13200cfa0d6a852fbe278988852"
+    },
+    {
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s08-p0-r0-neg/refined-field.json",
+      "semantic_sha256": "5cbb7110bf1cfcce1a018a1f66f7bb14a5cd06eeaa74425d4bb89c327b8844fd"
+    },
+    {
+      "identity_method": "canonical-json-sha256",
+      "path": "runtime.json",
+      "semantic_sha256": "9b0814069a5b0b807e8849f5f1068b08ad63fca77a80282b3a345fc81a09b54a"
+    }
+  ],
+  "dependency_closure_semantic_sha256": "8e5e1eedd0bac915c5faeba599c774b63e56426028a6c4f9d8788ed0ade84b29",
+  "experiment_id": "cft-topology-characterization-v1",
+  "preregistration_commit_sha": "af88470b86fd95882ae7fddc48e2860cbfba1219",
+  "protocol_semantic_sha256": "5dcdc162d0f3d33e8fecea0434c2ebfd37d5718f122a7f4b6b12a81bf413172b",
+  "representatives": [
+    {
+      "case_id": "topology-s02-p0-r0-neg",
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s02-p0-r0-neg/enlarged_domain-field.json",
+      "semantic_sha256": "eddcd2a35bbc2b16e0f78136c41516641f0dfa4118bf1175d539cc63512a355f"
+    },
+    {
+      "case_id": "topology-s02-p0-r0-neg",
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s02-p0-r0-neg/geometry.json",
+      "semantic_sha256": "c04820b33c4d1db5405e5511bef4e34f010c317ab1db93f46d82b0ab7493f14c"
+    },
+    {
+      "case_id": "topology-s02-p0-r0-neg",
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s02-p0-r0-neg/primary-field.json",
+      "semantic_sha256": "421fd310644b2a4131defc843723fef5924f98f65a41f483247db1c0d44b26bd"
+    },
+    {
+      "case_id": "topology-s02-p0-r0-neg",
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s02-p0-r0-neg/refined-field.json",
+      "semantic_sha256": "fdd5e88daf3f7bc5817ee42c292894600ff605278dbb818071e36b13538169e9"
+    },
+    {
+      "case_id": "topology-s03-p0-r0-neg",
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s03-p0-r0-neg/enlarged_domain-field.json",
+      "semantic_sha256": "d5589a3b08723975f6a8864e37dbc77a0dcf5296dc9295b8bedb65e574410b50"
+    },
+    {
+      "case_id": "topology-s03-p0-r0-neg",
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s03-p0-r0-neg/geometry.json",
+      "semantic_sha256": "a9138f698170e632797d414d0581b2813e20041d459ba689b43e166a0861f64a"
+    },
+    {
+      "case_id": "topology-s03-p0-r0-neg",
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s03-p0-r0-neg/primary-field.json",
+      "semantic_sha256": "0f564b079f32022bc6ba1ce3f3d8a6e582672336cb1dfbf155bb343a02368b45"
+    },
+    {
+      "case_id": "topology-s03-p0-r0-neg",
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s03-p0-r0-neg/refined-field.json",
+      "semantic_sha256": "b593254a5e31f747719d499b50043b76cc41e2b96fa2f1471b84ed7b122a7e4b"
+    },
+    {
+      "case_id": "topology-s04-p0-r0-neg",
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s04-p0-r0-neg/enlarged_domain-field.json",
+      "semantic_sha256": "8fa98b22f02720c5096038a060a08c34f43ef582afc88bff38c75777899f26bc"
+    },
+    {
+      "case_id": "topology-s04-p0-r0-neg",
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s04-p0-r0-neg/geometry.json",
+      "semantic_sha256": "30b3b0b3ba8afc6b965e14f1c7aebd89144cc8090e21c8e8d3a0e52f358cd3ac"
+    },
+    {
+      "case_id": "topology-s04-p0-r0-neg",
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s04-p0-r0-neg/primary-field.json",
+      "semantic_sha256": "6666214427879c246b0af6695330b17dbee3d1d29874f03b22faa6be9c44383f"
+    },
+    {
+      "case_id": "topology-s04-p0-r0-neg",
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s04-p0-r0-neg/refined-field.json",
+      "semantic_sha256": "846a52f001dbdafe2a0e80a8e18cf460cceb009e03097675969dec9b70a79e51"
+    },
+    {
+      "case_id": "topology-s05-p0-r0-neg",
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s05-p0-r0-neg/enlarged_domain-field.json",
+      "semantic_sha256": "b06f7931ec0425591b4b027821347bad5072098443a6698bf40edc32e3ec9058"
+    },
+    {
+      "case_id": "topology-s05-p0-r0-neg",
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s05-p0-r0-neg/geometry.json",
+      "semantic_sha256": "8232371a5f45d4de02a4b3339396fab99a46bab23fc9fbbb471e77c7d35348cd"
+    },
+    {
+      "case_id": "topology-s05-p0-r0-neg",
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s05-p0-r0-neg/primary-field.json",
+      "semantic_sha256": "b88567ddb875856de13d880cfc465ca3331d39898741c46b28fa88d27268265b"
+    },
+    {
+      "case_id": "topology-s05-p0-r0-neg",
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s05-p0-r0-neg/refined-field.json",
+      "semantic_sha256": "f043441ed9aa08b932616ec74fa8149d37683f126e32c0356a5ac11bc25c8fb1"
+    },
+    {
+      "case_id": "topology-s06-p0-r0-neg",
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s06-p0-r0-neg/enlarged_domain-field.json",
+      "semantic_sha256": "29fc8cb1e37222e06dbddd0a7de00f464b6aafca5d8a873637d421a0926d24b1"
+    },
+    {
+      "case_id": "topology-s06-p0-r0-neg",
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s06-p0-r0-neg/geometry.json",
+      "semantic_sha256": "f7feb9df6e2cdbbf4a211a821f628206b6fb4f79314e5471d78e2f84b80a90a1"
+    },
+    {
+      "case_id": "topology-s06-p0-r0-neg",
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s06-p0-r0-neg/primary-field.json",
+      "semantic_sha256": "548d87b421c0412385ee35beb2289be873dc7102a6c51b325dd621cb6c657398"
+    },
+    {
+      "case_id": "topology-s06-p0-r0-neg",
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s06-p0-r0-neg/refined-field.json",
+      "semantic_sha256": "83d08a1801fbe379063fd0a4592163e68f9c5dd06b7ad6caa9b982dcfa4d45b3"
+    },
+    {
+      "case_id": "topology-s07-p0-r0-neg",
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s07-p0-r0-neg/enlarged_domain-field.json",
+      "semantic_sha256": "ce5bb0fe181ee7ba27566a16ebd22d9c5ffaf9309ac47126a06c5087092caf33"
+    },
+    {
+      "case_id": "topology-s07-p0-r0-neg",
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s07-p0-r0-neg/geometry.json",
+      "semantic_sha256": "64fd9c074684ab301487aed50f0fd62206e92479484d7d18c5e7573a65a2800e"
+    },
+    {
+      "case_id": "topology-s07-p0-r0-neg",
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s07-p0-r0-neg/primary-field.json",
+      "semantic_sha256": "a1aad66a2fbc2d3dfd8f580a5226ba6bb746d422f83fb43f3e701597a0f7ecff"
+    },
+    {
+      "case_id": "topology-s07-p0-r0-neg",
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s07-p0-r0-neg/refined-field.json",
+      "semantic_sha256": "11fad2c384a7f4f3bb0a0d1b68b4170f762e51c281faa180085c9142aa5cedea"
+    },
+    {
+      "case_id": "topology-s08-p0-r0-neg",
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s08-p0-r0-neg/enlarged_domain-field.json",
+      "semantic_sha256": "ec73b133a3630fb0534a812235f0bb896df8d7d5de083d4f9be23dca62778d94"
+    },
+    {
+      "case_id": "topology-s08-p0-r0-neg",
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s08-p0-r0-neg/geometry.json",
+      "semantic_sha256": "84ba6952057e9342aea36678a5ecb1cd2cb710d71e156e4eb4aaba7cb5cecc0d"
+    },
+    {
+      "case_id": "topology-s08-p0-r0-neg",
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s08-p0-r0-neg/primary-field.json",
+      "semantic_sha256": "b823af8f152f78c744e49131b560fe68c07df13200cfa0d6a852fbe278988852"
+    },
+    {
+      "case_id": "topology-s08-p0-r0-neg",
+      "identity_method": "canonical-json-sha256",
+      "path": "representatives/topology-s08-p0-r0-neg/refined-field.json",
+      "semantic_sha256": "5cbb7110bf1cfcce1a018a1f66f7bb14a5cd06eeaa74425d4bb89c327b8844fd"
+    }
+  ],
+  "schema_version": "cft-revival.cft-topology-characterization-v1.manifest/1.0.0",
+  "semantic_integrity": {
+    "algorithm": "sha256",
+    "canonicalization": "json-sort-keys-compact-utf8-v1",
+    "payload_sha256": "f42bb4286a6c76f7b3aaaab19e5dd7792b944efb83d0b96f1930868c10e445d0"
+  },
+  "single_execution": true,
+  "summary": {
+    "declared_case_count": 56,
+    "evaluated_count": 56,
+    "failure_counts": {
+      "CROSS_MAP_CLASS_CHANGED": 12,
+      "CROSS_MAP_ELIGIBILITY_CHANGED": 0,
+      "CROSS_MAP_UNMATCHED": 56,
+      "FIELD_ENLARGED_INVALID": 0,
+      "FIELD_PRIMARY_INVALID": 0,
+      "FIELD_REFINED_INVALID": 0,
+      "GEOMETRY_INVALID": 0,
+      "GPU_FIELD_REPLAY_FAILURE": 0,
+      "GPU_RESIDUAL_REPLAY_FAILURE": 0,
+      "ROOT_CLASSIFICATION_DEGENERATE": 0,
+      "ROOT_EXCLUDED_HARDWARE": 56,
+      "ROOT_OUTSIDE_CHANNEL": 54,
+      "ROOT_WALL_ONLY": 0,
+      "SEPARATRIX_UNRESOLVED": 56
+    },
+    "gpu_replay_pass_count": 3,
+    "gpu_replay_required_count": 3,
+    "mirror_probability_count": 0,
+    "plasma_publication_count": 0,
+    "stable_eligible_cell_count": 0,
+    "stable_eligible_cusp_count": 0,
+    "three_map_accepted_count": 56
+  }
+}

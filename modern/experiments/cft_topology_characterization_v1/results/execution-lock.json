@@ -1,0 +1,8 @@
+{
+  "experiment_id": "cft-topology-characterization-v1",
+  "lock_semantic_sha256": "c23106557d82d9457a212bd6e50299631c42f320dc55a38f4ca791ad006b757b",
+  "preregistration_commit_sha": "af88470b86fd95882ae7fddc48e2860cbfba1219",
+  "protocol_semantic_sha256": "5dcdc162d0f3d33e8fecea0434c2ebfd37d5718f122a7f4b6b12a81bf413172b",
+  "schema_version": "cft-revival.exclusive-execution-lock/1.0.0",
+  "status": "exclusive_lock_acquired_before_single_execution"
+}
