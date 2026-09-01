@@ -1,0 +1,100 @@
+{
+  "document_type": "cft-revival-l0-surrogate-v5-predeclaration",
+  "schema_version": "5.0",
+  "predeclaration_hash": "b86e6ce688188d2df308ed3e91b27fd2fb37abbedf8486be1043f4565d464317",
+  "provenance": {
+    "v4_result_commit_sha": "2c3107508053ae6e880be525c425c0cfcf2e2508",
+    "v4_run_manifest_hash": "9230e1b5c288379c79e3f91efa41af96e0ec4e2710bac0d5d68455d70c15c688",
+    "v4_role": "development-evidence-only",
+    "prior_coordinate_policy": "no v3/v4 calibration or assessment coordinate may occur in v5"
+  },
+  "design": {
+    "rows": 16384,
+    "dimensions": 8,
+    "bases": [2, 3, 5, 7, 11, 13, 17, 19],
+    "skip": 257,
+    "scramble": "position-specific SHA-256 digit permutation followed by base-specific digital digit shift",
+    "scramble_seed": 202609020501,
+    "digits_per_coordinate": 18,
+    "source_ranges": "config/l0-deterministic-sweep.json",
+    "source_config_hash": "1434eac84d954a4dfbf8e7a9621b16c5c645f1490d56ad23d8e1d979a2bbf2e4"
+  },
+  "partition": {
+    "replicate_seeds": [2026090501, 2026090502, 2026090503],
+    "grouping_dimensions": [0, 1, 2],
+    "bins_per_dimension": 12,
+    "minimum_rows_per_stage_stratum": 96,
+    "minimum_groups_per_stage_stratum": 8,
+    "heldout_stages": ["method-selection", "final-calibration", "assessment"],
+    "strata": {
+      "interpolation": {"all_dimensions_between": [3, 8]},
+      "boundary": {"any_dimension_in": [0, 11]},
+      "ood": {"dimension_bins": {"0": [9, 10, 11], "2": [9, 10, 11]}}
+    },
+    "role_disjointness": ["group", "index", "exact-coordinate"]
+  },
+  "campaign": {
+    "initial_rows": 32,
+    "acquisition_batch_rows": 16,
+    "final_rows": 96,
+    "active_and_baseline_exact_rows": true,
+    "active_inputs": ["training labels", "raw GP epistemic variance", "posterior change", "input-only nearest-training distance"],
+    "forbidden_inputs": ["method-selection labels", "final-calibration labels", "assessment labels", "heldout output scales"],
+    "active_score": {
+      "uncertainty_weight": 1.0,
+      "posterior_change_weight": 0.35,
+      "input_ood_weight": 0.2,
+      "pending_repulsion_length_scale": 0.15
+    }
+  },
+  "features": {
+    "names": [
+      "discharge_voltage",
+      "propellant_mass_flow",
+      "ionized_number_fraction",
+      "xe_double_plus_fraction_of_ions",
+      "axial_momentum_fraction_of_ion_momentum"
+    ],
+    "normalization": "unit-cube coordinates inherited directly from the v5 design"
+  },
+  "interval_method_selection": {
+    "candidate_families": [
+      "symmetric-absolute",
+      "asymmetric-signed-absolute",
+      "symmetric-raw-gp-sd",
+      "asymmetric-signed-raw-gp-sd",
+      "symmetric-input-distance",
+      "asymmetric-signed-input-distance"
+    ],
+    "selection": "lexicographic minimum of equal-group-weight LOGO coverage error, coverage standard deviation, normalized interval width, candidate name",
+    "labels": "method-selection groups only",
+    "final_quantile_labels": "separate final-calibration groups only",
+    "quantiles": "finite-sample outward-rounded order statistics"
+  },
+  "gates": {
+    "scopes": ["interpolation", "boundary", "ood", "overall"],
+    "quality_scales": {
+      "axial_thrust_n": 0.04943448684816939,
+      "specific_impulse_s": 1927.5474976902592
+    },
+    "range_normalized_rmse_maximum": 0.05,
+    "worst_case_range_normalized_error_maximum": 0.15,
+    "coverage_interval": [0.85, 0.95],
+    "minimum_assessment_rows_per_stratum": 96,
+    "group_heldout_method_selection_coverage_interval": [0.85, 0.95],
+    "maximum_group_coverage_deviation": 0.25,
+    "acceptance": "all point-error, assessment-coverage and method-selection diagnostic gates pass for every output/stratum/replicate"
+  },
+  "identity": {
+    "commit_subject": "preregister L0 surrogate v5 experiment",
+    "remote_ref": "origin/feat/sota-foundation",
+    "execution_environment": "clean detached temporary worktree at exact pushed preregistration commit",
+    "exclusive_lock": "atomic O_CREAT|O_EXCL lock in Git common directory retained after execution",
+    "transitive_dependencies": "dependency-manifest.json",
+    "no_patch_or_rerun": true
+  },
+  "claims": {
+    "allowed": "deterministic L0 software-emulation accuracy on the new v5 design",
+    "forbidden": "physical, experimental, L1, L1b, L2 or L3 accuracy"
+  }
+}
