@@ -1,0 +1,88 @@
+{
+  "schema_version": "cft-revival.cft-wall-cusp-validation-v1.failure-manifest/1.0.0",
+  "experiment_id": "cft-wall-cusp-validation-v1",
+  "status": "failed_immutable_no_rerun",
+  "accepted_coupling_commit_sha": "f10d8213117fbafd8c2b69bdc103b6ef7b5d6d8c",
+  "preregistration_commit_sha": "18fe790e2b35aaa4a2f173ed55568e683bcef927",
+  "protocol_semantic_sha256": "09442bbc6fa77c727a9c3a56604dc056b251d60c990dddc80691a72c279233bf",
+  "dependency_closure_semantic_sha256": "157b28d3d695d5332df63feba2d38cdaded5c45d73b71fd3df9f8f2fca23959d",
+  "single_execution": true,
+  "no_patch_or_rerun": true,
+  "summary": {
+    "declared_case_count": 24,
+    "declared_map_count": 72,
+    "attempted_case_count": 1,
+    "completed_outcome_count": 0,
+    "materialized_map_count": 3,
+    "criterion_numerically_promoted": false,
+    "search_v3_ready": false,
+    "plasma_coupling_ready": false
+  },
+  "artifacts": [
+    {
+      "path": ".gitattributes",
+      "byte_sha256": "8b9c3028d6467ff3be7c793141927841d70f47f52d0590677438f488ca154992",
+      "semantic_sha256": "705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da",
+      "identity_method": "byte-and-normalized-lf-text-sha256"
+    },
+    {
+      "path": "execution-lock.json",
+      "byte_sha256": "092700cb3efff0d1e4aba345ee88b8d4f5eaa1ad800451fc67ff9fd1af9347cf",
+      "semantic_sha256": "cfcf3a8916bccd90ad947d4b59071a08ba1437f982dd647dda702d82ccee0c5e",
+      "identity_method": "byte-and-canonical-json-sha256"
+    },
+    {
+      "path": "failure.json",
+      "byte_sha256": "ed7769b331c3ac53ac87d8b33379a3dea51b93468ae1f614454049d775d63043",
+      "semantic_sha256": "1c5297dcb38b40fa108b6ae265ac108965ed7e02b4b505aa526f7b7da43ec862",
+      "identity_method": "byte-and-canonical-json-sha256"
+    },
+    {
+      "path": "fields/wcval-f1-s04-p0-r0-neg/enlarged-field.json",
+      "byte_sha256": "4452d2201bcf7f595b8505efa52ab83623e945f128cccd43c69fe7266efce30c",
+      "semantic_sha256": "4452d2201bcf7f595b8505efa52ab83623e945f128cccd43c69fe7266efce30c",
+      "identity_method": "byte-and-canonical-json-sha256"
+    },
+    {
+      "path": "fields/wcval-f1-s04-p0-r0-neg/primary-field.json",
+      "byte_sha256": "3e6c7bfff9e8699f923d829e10817bb853896f89f76f33cb7508a6ab71cdc4aa",
+      "semantic_sha256": "3e6c7bfff9e8699f923d829e10817bb853896f89f76f33cb7508a6ab71cdc4aa",
+      "identity_method": "byte-and-canonical-json-sha256"
+    },
+    {
+      "path": "fields/wcval-f1-s04-p0-r0-neg/refined-field.json",
+      "byte_sha256": "32d89f6bb1f2889e27831a1faa689534b9e13358cf2d3137c3fcabb86cd367e7",
+      "semantic_sha256": "32d89f6bb1f2889e27831a1faa689534b9e13358cf2d3137c3fcabb86cd367e7",
+      "identity_method": "byte-and-canonical-json-sha256"
+    },
+    {
+      "path": "preregistered-protocol.json",
+      "byte_sha256": "30aafe93caf072cb2f4d75a5be15c509127e8e5b279037849dc572a384b39cf8",
+      "semantic_sha256": "09442bbc6fa77c727a9c3a56604dc056b251d60c990dddc80691a72c279233bf",
+      "identity_method": "byte-and-canonical-json-sha256"
+    },
+    {
+      "path": "report.md",
+      "byte_sha256": "536252b1690738af09b6b029abbe18a390d45b31c0c7d8cb76b006b919c7d144",
+      "semantic_sha256": "090dc29567d17a949866d17911f097d5399c2a6e535cd3b4a06962357ec5d685",
+      "identity_method": "byte-and-normalized-lf-text-sha256"
+    },
+    {
+      "path": "runtime.json",
+      "byte_sha256": "53eafe21e889a90c30e907a09c4dbb39e8e419367f1aa3a053bf040124a5b1a9",
+      "semantic_sha256": "ee70b2e0f870d0b93baf6691e82903a08f00ca3240a1b4e1242d4abd889efb4f",
+      "identity_method": "byte-and-canonical-json-sha256"
+    },
+    {
+      "path": "verification.json",
+      "byte_sha256": "2d19a998f0cdd8cbd971c68b6f9912a47442c78b3afc527ac41fa9a287b3a5fa",
+      "semantic_sha256": "2e931ed7043eecb1c0d96058aa2919ccf7ce6f820f0c73f0d1e221620420d14c",
+      "identity_method": "byte-and-canonical-json-sha256"
+    }
+  ],
+  "semantic_integrity": {
+    "algorithm": "sha256",
+    "canonicalization": "json-sort-keys-compact-utf8-v1",
+    "payload_sha256": "d1ddcfaef7a084e9612d0952f7dec72db8959c06bf325ea3722ce3e8f3d79fc6"
+  }
+}

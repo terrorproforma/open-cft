@@ -1,0 +1,45 @@
+{
+  "schema_version": "cft-revival.cft-wall-cusp-validation-v1.verification/1.0.0",
+  "pre_run_manufactured_tests": {
+    "command": "python -m pytest -q experiments/cft_wall_cusp_validation_v1/tests tests/coupling/test_v4_cft_contract.py",
+    "passed": 45,
+    "failed": 0,
+    "status": "passed"
+  },
+  "python_compile": {
+    "command": "python -m compileall -q src tests experiments/cft_wall_cusp_validation_v1",
+    "status": "passed"
+  },
+  "native_build_and_test": {
+    "command": "cmake -S . -B build -DCFT_BUILD_PYTHON=OFF -DBUILD_TESTING=ON; cmake --build build; ctest --test-dir build --output-on-failure",
+    "tests_passed": 1,
+    "tests_failed": 0,
+    "status": "passed"
+  },
+  "full_python_suite_default_import": {
+    "command": "python -m pytest -q",
+    "status": "collection_failed",
+    "collection_errors": 3,
+    "reason": "existing duplicate test module basenames require importlib import mode"
+  },
+  "full_python_suite_importlib": {
+    "command": "python -m pytest -q --import-mode=importlib",
+    "passed": 1040,
+    "failed": 13,
+    "errors": 36,
+    "skipped": 2,
+    "status": "failed",
+    "reason": "pre-existing experiment/result and visualization artifact identity or missing-artifact failures outside the new validation path"
+  },
+  "fyp": {
+    "git_diff_against_accepted_commit": "clean",
+    "matlab_available": false,
+    "octave_available": false,
+    "execution_status": "not_run_runtime_unavailable"
+  },
+  "failure_manifest": {
+    "semantic_integrity_checked": true,
+    "artifact_byte_inventory_checked": true,
+    "status": "passed_before_verification_entry_was_added"
+  }
+}

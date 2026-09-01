@@ -1,0 +1,125 @@
+{
+  "schema_version": "cft-revival.cft-wall-cusp-validation-v1.failure/1.0.0",
+  "status": "failed_immutable_no_rerun",
+  "accepted_coupling_commit_sha": "f10d8213117fbafd8c2b69bdc103b6ef7b5d6d8c",
+  "preregistration_commit_sha": "18fe790e2b35aaa4a2f173ed55568e683bcef927",
+  "protocol_semantic_sha256": "09442bbc6fa77c727a9c3a56604dc056b251d60c990dddc80691a72c279233bf",
+  "dependency_closure_semantic_sha256": "157b28d3d695d5332df63feba2d38cdaded5c45d73b71fd3df9f8f2fca23959d",
+  "execution": {
+    "started_at_utc": "2026-09-01T23:04:53.826Z",
+    "runtime_identity_generated_at_utc": "2026-09-01T23:05:19.415230Z",
+    "ended_at_utc": "2026-09-01T23:06:14.269Z",
+    "elapsed_ms": 80443,
+    "exit_code": 1,
+    "exclusive_lock_acquired": true,
+    "clean_detached_head_confirmed": true,
+    "run_count": 1,
+    "patch_count_after_run": 0,
+    "rerun_count": 0
+  },
+  "failure": {
+    "phase": "topology_diagnostics_serialization",
+    "case_id": "wcval-f1-s04-p0-r0-neg",
+    "exception_type": "TypeError",
+    "message": "'BoundaryNullDiagnostic' object is not iterable",
+    "source": "experiment.py:1119",
+    "cause": "finite-boundary null diagnostics are typed objects, but the preregistered serializer called list(point)"
+  },
+  "coverage": {
+    "declared_case_count": 24,
+    "declared_map_count": 72,
+    "attempted_case_count": 1,
+    "completed_case_outcome_count": 0,
+    "materialized_accepted_l1a_map_count": 3,
+    "held_out_outcome_count": 0,
+    "v4_record_count": 0,
+    "opaque_projection_count": 0,
+    "gpu_replay_result_count": 0,
+    "gpu_replay_note": "the first primary replay executed before the exception but was not serialized and is not counted"
+  },
+  "materialized_maps": [
+    {
+      "role": "primary",
+      "artifact_byte_sha256": "3e6c7bfff9e8699f923d829e10817bb853896f89f76f33cb7508a6ab71cdc4aa",
+      "artifact_semantic_sha256": "3e6c7bfff9e8699f923d829e10817bb853896f89f76f33cb7508a6ab71cdc4aa",
+      "full_map_sha256": "d2be8e0d0364ed6f40df896d0f56d926a6584aed1e6bb549838d1495ec7bbda4",
+      "v4_evidence_fingerprint": "87e3cbef74e8430a6f7745572a0c22eb46015f0c33a850a688dadd8ad5d8ad16",
+      "initial_residual_l2": 10868.775566247146,
+      "final_residual_l2": 1.0464019725388665e-06,
+      "relative_residual_l2": 9.6275975721539e-11,
+      "iterations": 413,
+      "boundary_to_peak_ratio": 0.012241318152770311,
+      "source_discretization_relative_error": 0.0025550624614027895,
+      "flux_reconstruction_identity_t_per_m": 2.2737367544323206e-13,
+      "field_gates_passed": true
+    },
+    {
+      "role": "refined",
+      "artifact_byte_sha256": "32d89f6bb1f2889e27831a1faa689534b9e13358cf2d3137c3fcabb86cd367e7",
+      "artifact_semantic_sha256": "32d89f6bb1f2889e27831a1faa689534b9e13358cf2d3137c3fcabb86cd367e7",
+      "full_map_sha256": "a8ccba0d85d4433fec87feb3b33c54956d2e3f1e7033a85cc210dc9ac8c9788a",
+      "v4_evidence_fingerprint": "a8c94a08bbf178a7ac5b6625555936dd0fafffc6eff675bd48e27734c787a4da",
+      "initial_residual_l2": 16392.32422360983,
+      "final_residual_l2": 1.5977776145196468e-06,
+      "relative_residual_l2": 9.74710841930744e-11,
+      "iterations": 623,
+      "boundary_to_peak_ratio": 0.012319474645036722,
+      "source_discretization_relative_error": 0.0010703574708169925,
+      "flux_reconstruction_identity_t_per_m": 5.258016244624741e-13,
+      "field_gates_passed": true
+    },
+    {
+      "role": "enlarged",
+      "artifact_byte_sha256": "4452d2201bcf7f595b8505efa52ab83623e945f128cccd43c69fe7266efce30c",
+      "artifact_semantic_sha256": "4452d2201bcf7f595b8505efa52ab83623e945f128cccd43c69fe7266efce30c",
+      "full_map_sha256": "2259de51de80923ba9035f9dae3b02f29c65bd9019d533518dcca42a3fb60ae0",
+      "v4_evidence_fingerprint": "b79009e70b0d21ef181e6d31ee28816a048fd3276d3479ae706857f0cea8fd57",
+      "initial_residual_l2": 10868.775566247175,
+      "final_residual_l2": 1.0662750631962918e-06,
+      "relative_residual_l2": 9.810443289560541e-11,
+      "iterations": 508,
+      "boundary_to_peak_ratio": 0.0043903407204442975,
+      "source_discretization_relative_error": 0.0025550624614027895,
+      "flux_reconstruction_identity_t_per_m": 2.2737367544323206e-13,
+      "field_gates_passed": true
+    }
+  ],
+  "read_only_reconstruction_from_exact_maps": {
+    "authority": "diagnostic_only_not_a_held_out_outcome_or_projection",
+    "cusp_counts_primary_refined_enlarged": [5, 5, 5],
+    "cell_counts_primary_refined_enlarged": [4, 4, 4],
+    "stable_cusps": 15,
+    "detected_cusps": 15,
+    "resolved_cells": 0,
+    "detected_cells": 12,
+    "wall_terminated_paths": 24,
+    "required_paths": 24,
+    "resolved_path_status_count": 0,
+    "nonadiabatic_path_status_count": 24,
+    "resolved_orbit_count": 24,
+    "nonadiabatic_orbit_count": 48,
+    "required_orbit_count": 72,
+    "primary_cell_mean_axial_fractions": [
+      0.9661174633605321,
+      0.7341445392354871,
+      0.7463197079071323,
+      0.9612628650304946
+    ],
+    "primary_cell_axial_passing_fractions": [
+      0.99375,
+      0.7045454545454546,
+      0.7202380952380952,
+      0.9940476190476191
+    ],
+    "all_primary_axial_cells_passed": true,
+    "v4_status": "ambiguous",
+    "v4_stability_passed": false
+  },
+  "promotion": {
+    "criterion_numerically_promoted": false,
+    "search_v3_ready": false,
+    "plasma_coupling_ready": false,
+    "hardware_validated": false,
+    "reason": "the complete held-out manifest was not evaluated and no opaque v4 projection was accepted"
+  }
+}

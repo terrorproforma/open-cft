@@ -1,0 +1,254 @@
+{
+  "accepted_coupling": {
+    "commit_sha": "f10d8213117fbafd8c2b69bdc103b6ef7b5d6d8c",
+    "criterion_id": "cft-hemp-wall-cusp-v4",
+    "criterion_version": "4.0.0",
+    "record_schema": "cft-field-plasma-coupling/4.1.0"
+  },
+  "classification": "preregistered_held_out_numerical_validation",
+  "criterion": {
+    "axial_core": {
+      "core_radius_wall_fraction": 0.55,
+      "minimum_mean_axial_fraction": 0.7,
+      "minimum_passing_fraction": 0.6,
+      "pointwise_axial_fraction_threshold": 0.6
+    },
+    "electron_samples": [
+      {
+        "kinetic_energy_ev": 20.0,
+        "maximum_mu_relative_variation": 0.05,
+        "maximum_rho_over_scale": 0.35,
+        "pitch_angle_deg": 15.0,
+        "sample_id": "e020-p15"
+      },
+      {
+        "kinetic_energy_ev": 100.0,
+        "maximum_mu_relative_variation": 0.05,
+        "maximum_rho_over_scale": 0.35,
+        "pitch_angle_deg": 45.0,
+        "sample_id": "e100-p45"
+      },
+      {
+        "kinetic_energy_ev": 500.0,
+        "maximum_mu_relative_variation": 0.05,
+        "maximum_rho_over_scale": 0.35,
+        "pitch_angle_deg": 75.0,
+        "sample_id": "e500-p75"
+      }
+    ],
+    "field_line": {
+      "interpolation_relative_error": 0.005,
+      "maximum_psi_drift_wb": 5e-07,
+      "maximum_steps": 4000,
+      "minimum_b_t": 1e-10,
+      "path_relative_error": 0.005,
+      "step_m": 5e-05,
+      "uncertainty_dominance_factor": 100.0,
+      "wall_tolerance_m": 1e-06
+    },
+    "seed": {
+      "axial_location": "preregistered stage center",
+      "directions": [
+        -1,
+        1
+      ],
+      "radial_wall_fraction": 0.82
+    },
+    "stability": {
+      "maximum_axial_metric_change": 0.12,
+      "maximum_cell_bound_shift_pitch_fraction": 0.2,
+      "maximum_cusp_shift_pitch_fraction": 0.2,
+      "maximum_cusp_strength_relative_change": 0.25,
+      "maximum_endpoint_shift_pitch_fraction": 0.35
+    },
+    "uncertainty": {
+      "absolute_independent_sigma_t": 1e-06,
+      "common_mode_sigma_t": 5e-07,
+      "coverage_factor": 2.0,
+      "relative_independent_sigma": 0.002,
+      "residual_correlation": 0.0
+    },
+    "wall_cusp": {
+      "axial_boundary_margin_pitch_fraction": 0.1,
+      "endpoint_plane_tolerance_pitch_fraction": 0.48,
+      "minimum_bundle_paths": 1,
+      "minimum_cusp_separation_pitch_fraction": 0.55,
+      "minimum_endpoint_high_field_fraction": 0.6,
+      "minimum_prominence_t": 0.004,
+      "minimum_wall_radial_fraction": 0.65,
+      "prominence_support_half_width_pitch_fraction": 0.55
+    }
+  },
+  "development_evidence": {
+    "case_count": 56,
+    "dataset_semantic_sha256": "9e64caa5396038dfb7b88a81dddc1f94d8787b922c14107d3261adecf1bdf541",
+    "geometry_family_ids": [
+      "cft-topology-characterization-v1-cartesian-family"
+    ],
+    "manifest_hash": "fede46f6b49cfebf39f97f7b17a92174f5260d7ac0242303cb45c1b0a8840892",
+    "manifest_id": "assessed-56-case-characterization",
+    "role": "development_non_validation"
+  },
+  "execution": {
+    "clean_detached_worktree_required": true,
+    "exclusive_create_lock": "results/execution-lock.json",
+    "no_install": true,
+    "no_patch_or_rerun": true,
+    "preflight": "manufactured tests only before execution",
+    "single_execution": true
+  },
+  "experiment_id": "cft-wall-cusp-validation-v1",
+  "failure_taxonomy": [
+    "GEOMETRY_INVALID",
+    "FIELD_PRIMARY_INVALID",
+    "FIELD_REFINED_INVALID",
+    "FIELD_ENLARGED_INVALID",
+    "GPU_FIELD_REPLAY_FAILURE",
+    "GPU_RESIDUAL_REPLAY_FAILURE",
+    "CUSP_COUNT_DISAGREEMENT",
+    "CELL_COUNT_DISAGREEMENT",
+    "CUSP_ASSIGNMENT_SHIFT",
+    "CUSP_STRENGTH_DRIFT",
+    "WALL_ENDPOINT_SHIFT",
+    "CELL_BOUND_SHIFT",
+    "AXIAL_METRIC_DRIFT",
+    "WALL_CUSP_UNRESOLVED",
+    "PATH_NOT_WALL_CONNECTED",
+    "PATH_PSI_DRIFT",
+    "PATH_EXTREMA_INVALID",
+    "UNCERTAINTY_DOMINATED",
+    "ORBIT_NONADIABATIC",
+    "ORBIT_UNVERIFIED",
+    "HELD_OUT_MEMBERSHIP_INVALID",
+    "OPAQUE_PROJECTION_REJECTED"
+  ],
+  "gpu_replay": {
+    "absolute_final_residual_difference_limit": "0.1 times max(original stopping scale, replay stopping scale)",
+    "case_policy": "every held-out case",
+    "maximum_b_component_absolute_difference_t": 1e-10,
+    "maximum_psi_absolute_difference_wb": 1e-12,
+    "roles": [
+      "primary"
+    ]
+  },
+  "held_out_family": {
+    "case_count": 24,
+    "chamber_outer_radius_m": [
+      0.0074,
+      0.0102
+    ],
+    "disjointness_rule": "all held-out case IDs and the geometry-family ID must have empty intersection with the frozen development manifest",
+    "first_polarity": [
+      -1,
+      1
+    ],
+    "fixed_geometry": {
+      "dielectric_thickness_m": 0.00135,
+      "downstream_padding_pitch": 2.0,
+      "first_stage_center_pitch_fraction": 0.9,
+      "magnet_axial_fraction": 0.55,
+      "magnet_radial_thickness_m": 0.0037,
+      "radial_clearance_m": 0.00105,
+      "radial_padding_m": 0.011,
+      "shield_radial_thickness_m": 0.0008,
+      "source_smear_thickness_m": 0.0015,
+      "thermal_clearance_m": 0.00025,
+      "upstream_padding_pitch": 2.0,
+      "yoke_radial_thickness_m": 0.0018
+    },
+    "geometry_family_id": "cft-wall-cusp-offset-ppm-family-v1",
+    "manifest_id": "cft-wall-cusp-held-out-family-v1",
+    "pitch_m": [
+      0.0051,
+      0.0068
+    ],
+    "source_policy": "equal-strength strictly alternating accepted inner/outer L1a equivalent-current sheet pairs",
+    "stage_counts": [
+      4,
+      6,
+      8
+    ]
+  },
+  "maps": {
+    "field_gates": {
+      "maximum_boundary_to_peak_ratio": 0.1,
+      "maximum_flux_reconstruction_identity_t_per_m": 2e-08,
+      "maximum_normalized_residual": 2e-08,
+      "maximum_source_discretization_relative_error": 0.3
+    },
+    "roles": {
+      "enlarged": {
+        "axial_intervals": 240,
+        "domain_scale": 1.25,
+        "radial_intervals": 60
+      },
+      "primary": {
+        "axial_intervals": 192,
+        "domain_scale": 1.0,
+        "radial_intervals": 48
+      },
+      "refined": {
+        "axial_intervals": 288,
+        "domain_scale": 1.0,
+        "radial_intervals": 72
+      }
+    },
+    "solver": {
+      "absolute_tolerance": 1e-13,
+      "device": "cuda:0",
+      "maximum_iterations": 6500,
+      "maximum_true_residual_restarts": 2,
+      "relative_tolerance": 1e-10,
+      "residual_history_stride": 8
+    }
+  },
+  "numerical_targets": {
+    "all_case_three_map_field_gates": true,
+    "all_energy_pitch_direction_orbits_adiabatic": true,
+    "all_held_out_cases_must_pass_for_promotion": true,
+    "all_path_psi_drift_within_tolerance": true,
+    "all_registered_paths_wall_connected": true,
+    "all_uncertainty_bounds_finite_ordered": true,
+    "cross_map_cell_count_agreement": true,
+    "cross_map_cusp_count_agreement": true,
+    "maximum_axial_metric_change": "case stability policy",
+    "maximum_cell_bound_shift": "case stability policy",
+    "maximum_cusp_assignment_shift": "case stability policy",
+    "maximum_wall_endpoint_shift": "case stability policy",
+    "promotion_claim": "numerically_stable_and_source_consistent_not_hardware_validated",
+    "same_line_extrema_required": true
+  },
+  "orbit_verification": {
+    "adapter_id": "experiments.cft-wall-cusp-validation-v1.adiabatic-path-orbit",
+    "adapter_version": "1.0.0",
+    "convergence_id": "polyline-halving-mu-invariance",
+    "convergence_version": "1.0.0",
+    "method": "deterministic nested-polyline guiding-centre transport; magnetic moment is evaluated on the exact map-bound path and convergence is the relative coarse/fine path-length defect",
+    "orbit_model_id": "field-line-guided-first-invariant-transport",
+    "orbit_model_version": "1.0.0"
+  },
+  "provenance": {
+    "canonical_json": "SHA-256 of sort-key compact UTF-8 JSON without nonfinite values",
+    "dependency_closure": "Git blob SHA-1 for every tracked experiment/package/spec/pyproject input at the preregistration commit, with accepted package/spec blobs equal to f10d8213117fbafd8c2b69bdc103b6ef7b5d6d8c",
+    "map_evidence": "v4 opaque map-set fingerprints bind exact artifact bytes and complete schema/model/source/geometry/material/mesh/domain/code/config/backend/adapter/policy/diagnostic identity",
+    "normalized_text": "SHA-256 after CRLF and CR normalization to LF"
+  },
+  "publication_boundary": {
+    "criterion_promotion_only_if": "all held-out outcomes are numerically stable, source-consistent, replay-consistent, orbit-complete, and accepted by opaque v4 projection",
+    "experimental_truth_claim": false,
+    "hardware_validation_claim": false,
+    "plasma_performance_claim": false
+  },
+  "schema_version": "cft-revival.cft-wall-cusp-validation-v1.protocol/1.0.0",
+  "status": "preregistered_pending_single_execution",
+  "topology_diagnostics": {
+    "coverage_target": "report every map and aggregate every observed class; absence of a class is not failure",
+    "gating_role": "diagnostic_only",
+    "reported_separately": [
+      "magnetic_null",
+      "X",
+      "O",
+      "degenerate"
+    ]
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "compute_capability": "12.0",
+  "driver_version": "595.97",
+  "generated_at_utc": "2026-09-01T23:05:19.415230Z",
+  "gpu_name": "NVIDIA GeForce RTX 5090",
+  "gpu_uuid": "GPU-4df2f6b5-e866-14a0-eeac-332cb2b757d4",
+  "platform": "win32",
+  "python_version": "3.12.10",
+  "reported_cuda_version": "13.2",
+  "semantic_integrity": {
+    "algorithm": "sha256",
+    "canonicalization": "json-sort-keys-compact-utf8-v1",
+    "payload_sha256": "772b93dd3aa50b6ecd3052d6c16b6e2210ed01293fd71a00fb402f0957360f20"
+  },
+  "warp_device": "cuda:0",
+  "warp_device_architecture": 120,
+  "warp_device_name": "NVIDIA GeForce RTX 5090",
+  "warp_device_uuid": "GPU-4df2f6b5-e866-14a0-eeac-332cb2b757d4",
+  "warp_version": "1.14.0"
+}

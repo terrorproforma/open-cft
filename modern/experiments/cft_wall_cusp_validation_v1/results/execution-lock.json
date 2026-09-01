@@ -1,0 +1,8 @@
+{
+  "experiment_id": "cft-wall-cusp-validation-v1",
+  "lock_semantic_sha256": "7b4fc4da56a183b59b0c779197b0050a1c1dc78ba3282a5a8efc5570f0df9d1d",
+  "preregistration_commit_sha": "18fe790e2b35aaa4a2f173ed55568e683bcef927",
+  "protocol_semantic_sha256": "09442bbc6fa77c727a9c3a56604dc056b251d60c990dddc80691a72c279233bf",
+  "schema_version": "cft-revival.exclusive-execution-lock/1.0.0",
+  "status": "exclusive_lock_acquired_before_single_execution"
+}
