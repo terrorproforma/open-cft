@@ -1,0 +1,11 @@
+{
+  "assessment_access_count": 0,
+  "calibration_hash": "2e5926e1b34d7575f2b0641c681351b0b51ea51e7799ddfb0e2c30cb5ee7c3d1",
+  "frozen_calibration_hash": "ae33d99e25750a5be554f36688f327d55f4a2efefecab2ac4d12aff5a5a685d9",
+  "frozen_method_hash": "e1f3723b0300a4bd390cb34b809f35e9dd0991772f41a3d8e0cd79525e566e87",
+  "model_hashes": {
+    "axial_thrust_n": "2c9920f602b2e8257244784e6c3a2d87415d451c0c605b1dcf2d3373386c800f",
+    "specific_impulse_s": "4e58ee061cee9ad66e0227da453f3047beb83423df5752cbb344582b5e8480a7"
+  },
+  "selected_budget": 96
+}

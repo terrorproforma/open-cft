@@ -1,0 +1,445 @@
+{
+  "assessment_labels_accessed_once_after_calibration_freeze": true,
+  "assessment_metrics": {
+    "all_scopes_outputs_passed": true,
+    "boundary": {
+      "axial_thrust_n": {
+        "all_gates_passed": true,
+        "coverage": 0.9343434343434344,
+        "coverage_passed": true,
+        "nrmse_passed": true,
+        "range_normalized_rmse": 0.021342768594157544,
+        "rows": 198,
+        "worst_error_passed": true,
+        "worst_range_normalized_error": 0.06225765297606689
+      },
+      "specific_impulse_s": {
+        "all_gates_passed": true,
+        "coverage": 0.9040404040404041,
+        "coverage_passed": true,
+        "nrmse_passed": true,
+        "range_normalized_rmse": 0.021602617842762874,
+        "rows": 198,
+        "worst_error_passed": true,
+        "worst_range_normalized_error": 0.05064380677097115
+      }
+    },
+    "interpolation": {
+      "axial_thrust_n": {
+        "all_gates_passed": true,
+        "coverage": 0.90625,
+        "coverage_passed": true,
+        "nrmse_passed": true,
+        "range_normalized_rmse": 0.010751708976265935,
+        "rows": 192,
+        "worst_error_passed": true,
+        "worst_range_normalized_error": 0.03061413032357655
+      },
+      "specific_impulse_s": {
+        "all_gates_passed": true,
+        "coverage": 0.921875,
+        "coverage_passed": true,
+        "nrmse_passed": true,
+        "range_normalized_rmse": 0.01328322813518474,
+        "rows": 192,
+        "worst_error_passed": true,
+        "worst_range_normalized_error": 0.03277454228791181
+      }
+    },
+    "ood": {
+      "axial_thrust_n": {
+        "all_gates_passed": true,
+        "coverage": 0.8979591836734694,
+        "coverage_passed": true,
+        "nrmse_passed": true,
+        "range_normalized_rmse": 0.029218975101877313,
+        "rows": 196,
+        "worst_error_passed": true,
+        "worst_range_normalized_error": 0.09788094855775148
+      },
+      "specific_impulse_s": {
+        "all_gates_passed": true,
+        "coverage": 0.8979591836734694,
+        "coverage_passed": true,
+        "nrmse_passed": true,
+        "range_normalized_rmse": 0.036802290531701046,
+        "rows": 196,
+        "worst_error_passed": true,
+        "worst_range_normalized_error": 0.07810538982033673
+      }
+    },
+    "overall": {
+      "axial_thrust_n": {
+        "all_gates_passed": true,
+        "coverage": 0.9129692832764505,
+        "coverage_passed": true,
+        "nrmse_passed": true,
+        "range_normalized_rmse": 0.021848121774844156,
+        "rows": 586,
+        "worst_error_passed": true,
+        "worst_range_normalized_error": 0.09788094855775148
+      },
+      "specific_impulse_s": {
+        "all_gates_passed": true,
+        "coverage": 0.9078498293515358,
+        "coverage_passed": true,
+        "nrmse_passed": true,
+        "range_normalized_rmse": 0.025855420850798602,
+        "rows": 586,
+        "worst_error_passed": true,
+        "worst_range_normalized_error": 0.07810538982033673
+      }
+    }
+  },
+  "assessment_prior_coordinate_intersection_count": 0,
+  "claim": "prospective same-domain deterministic L0 software-emulation validation; not ahistorical independence or physical accuracy",
+  "commit_binding": {
+    "clean_status": true,
+    "commit_sha": "4e917b682e9f89dbbe22173903f0794395baef46",
+    "detached_head": true,
+    "protocol_tree_hash": "df658e80d23743a1d30cba78b64d2440fccd2ad4b7ed4a54bbcf3534a63a9bf9",
+    "remote_ref": "origin/feat/sota-foundation",
+    "runtime_closure": [
+      {
+        "blob": "52f342399a167264b1de39459fb2a4404ee41121",
+        "module": "cft_revival",
+        "path": "modern/src/cft_revival/__init__.py"
+      },
+      {
+        "blob": "ad197d32bd8a58e9da42bcf271da4453768a65bd",
+        "module": "cft_revival.active_learning",
+        "path": "modern/src/cft_revival/active_learning/__init__.py"
+      },
+      {
+        "blob": "e3d15951def96b6e18db28ae1bea669bdf79fe87",
+        "module": "cft_revival.active_learning.acquisition",
+        "path": "modern/src/cft_revival/active_learning/acquisition.py"
+      },
+      {
+        "blob": "da5758359e6cb64c1a9e91f679ed3a0c5e35cffd",
+        "module": "cft_revival.active_learning.calibration",
+        "path": "modern/src/cft_revival/active_learning/calibration.py"
+      },
+      {
+        "blob": "d776c8c576f1a829440cb628209e8b90475b1ffc",
+        "module": "cft_revival.active_learning.contracts",
+        "path": "modern/src/cft_revival/active_learning/contracts.py"
+      },
+      {
+        "blob": "b90222f37b7c0ee4615a31229c72404550c0f453",
+        "module": "cft_revival.active_learning.robustness",
+        "path": "modern/src/cft_revival/active_learning/robustness.py"
+      },
+      {
+        "blob": "dc20a95bacf5cace147a9306613212169d6f318a",
+        "module": "cft_revival.active_learning.stopping",
+        "path": "modern/src/cft_revival/active_learning/stopping.py"
+      },
+      {
+        "blob": "de6146c61b18b01adbcf2d7988e9f18b811eccc5",
+        "module": "cft_revival.active_learning.uncertainty",
+        "path": "modern/src/cft_revival/active_learning/uncertainty.py"
+      },
+      {
+        "blob": "0e101bc2af727d1a7e11461c8d75978ffae474a3",
+        "module": "cft_revival.kernels",
+        "path": "modern/src/cft_revival/kernels.py"
+      },
+      {
+        "blob": "54a098504f2aabdd114ec288c13cc5013d22ae2a",
+        "module": "cft_revival.models",
+        "path": "modern/src/cft_revival/models.py"
+      },
+      {
+        "blob": "ccda5863dd46d0644e7af9a570364d3773dccc77",
+        "module": "cft_revival.optimization",
+        "path": "modern/src/cft_revival/optimization/__init__.py"
+      },
+      {
+        "blob": "1b877b60a7a102651bbc6f294e797b00e1cbbedc",
+        "module": "cft_revival.optimization.campaign",
+        "path": "modern/src/cft_revival/optimization/campaign.py"
+      },
+      {
+        "blob": "7e7b8aa144de5c5c7287bb44d6d576f8153841c9",
+        "module": "cft_revival.optimization.domain",
+        "path": "modern/src/cft_revival/optimization/domain.py"
+      },
+      {
+        "blob": "8b2bc61b0bd0803c8fa5e0da1ff5b172dfbe6987",
+        "module": "cft_revival.optimization.pareto",
+        "path": "modern/src/cft_revival/optimization/pareto.py"
+      },
+      {
+        "blob": "2c6d918455ef15d969c670cb4804e1a9a1227fc2",
+        "module": "cft_revival.optimization.sampling",
+        "path": "modern/src/cft_revival/optimization/sampling.py"
+      },
+      {
+        "blob": "f788c916c2ca794bbfe69be4d70e451164b038ca",
+        "module": "cft_revival.optimization.spec",
+        "path": "modern/src/cft_revival/optimization/spec.py"
+      },
+      {
+        "blob": "8a3359f788a092630c3adb9601adea4f658dc8c5",
+        "module": "cft_revival.physics",
+        "path": "modern/src/cft_revival/physics/__init__.py"
+      },
+      {
+        "blob": "78e2e4cf39aea4ac8d178624e3e5fe49f81f0a7c",
+        "module": "cft_revival.physics.fields",
+        "path": "modern/src/cft_revival/physics/fields.py"
+      },
+      {
+        "blob": "d639e02e77dcbb23e6b511feaf44c0a5b5d05b13",
+        "module": "cft_revival.physics.models",
+        "path": "modern/src/cft_revival/physics/models.py"
+      },
+      {
+        "blob": "7ea8c8795d1baeb63e3f8e99faca50513865f059",
+        "module": "cft_revival.physics.numerics",
+        "path": "modern/src/cft_revival/physics/numerics.py"
+      },
+      {
+        "blob": "ca03f13b028ed778c9f6ac973e7e1fae60787017",
+        "module": "cft_revival.physics.reference",
+        "path": "modern/src/cft_revival/physics/reference.py"
+      },
+      {
+        "blob": "d527acb53bdb9bafc0572bd4cb21b629f39e9b9e",
+        "module": "cft_revival.physics.workflows",
+        "path": "modern/src/cft_revival/physics/workflows.py"
+      },
+      {
+        "blob": "cf022757d7b05dd2e9acfb8718d8dfea933b6122",
+        "module": "cft_revival.surrogates",
+        "path": "modern/src/cft_revival/surrogates/__init__.py"
+      },
+      {
+        "blob": "6c35abf992a0d3c15b651426ad4c57694d45c00c",
+        "module": "cft_revival.surrogates._linalg",
+        "path": "modern/src/cft_revival/surrogates/_linalg.py"
+      },
+      {
+        "blob": "b5f742e330152ddc8149174f6c18992f667c7859",
+        "module": "cft_revival.surrogates.benchmark",
+        "path": "modern/src/cft_revival/surrogates/benchmark.py"
+      },
+      {
+        "blob": "e71a8acbf161c72d746cc18ffc6de581954d7da7",
+        "module": "cft_revival.surrogates.gp",
+        "path": "modern/src/cft_revival/surrogates/gp.py"
+      },
+      {
+        "blob": "d33359277ef5162688a2da608abfa0ac06bb1d52",
+        "module": "cft_revival.surrogates.identity",
+        "path": "modern/src/cft_revival/surrogates/identity.py"
+      },
+      {
+        "blob": "2cea64eaa5869cf9cd24f3544db3a453309c776a",
+        "module": "cft_revival.surrogates.interop",
+        "path": "modern/src/cft_revival/surrogates/interop.py"
+      },
+      {
+        "blob": "16ae1fff697b9140169bfc2c9e3b72be14cfd42d",
+        "module": "cft_revival.surrogates.multifidelity",
+        "path": "modern/src/cft_revival/surrogates/multifidelity.py"
+      },
+      {
+        "blob": "514cd65f0f1db4b81c6b480cc9c0837077583aea",
+        "module": "cft_revival.surrogates.normalization",
+        "path": "modern/src/cft_revival/surrogates/normalization.py"
+      },
+      {
+        "blob": "e80fcd74eb9cc71b8240cfdb82b6a9c25681b339",
+        "module": "cft_revival.surrogates.pod",
+        "path": "modern/src/cft_revival/surrogates/pod.py"
+      },
+      {
+        "blob": "bb4f5f00410016650c8bf17f6ff59cc2c8b6bcbe",
+        "module": "cft_revival.surrogates.validation",
+        "path": "modern/src/cft_revival/surrogates/validation.py"
+      },
+      {
+        "blob": "15c283b9a34f5e48d983cc572d26809e516734ff",
+        "module": "experiments.l0_surrogate_v2",
+        "path": "modern/experiments/l0_surrogate_v2/__init__.py"
+      },
+      {
+        "blob": "a9ebb35218dd9482933096c30a5ea2118100e14c",
+        "module": "experiments.l0_surrogate_v2.protocol",
+        "path": "modern/experiments/l0_surrogate_v2/protocol.py"
+      },
+      {
+        "blob": "b034805a9dc6d1802f3a7bedf23248905726fcdf",
+        "module": "experiments.l0_surrogate_v3",
+        "path": "modern/experiments/l0_surrogate_v3/__init__.py"
+      },
+      {
+        "blob": "48ec27fb75717f09fbc80f7d672a2b186bac1652",
+        "module": "experiments.l0_surrogate_v3.serialization",
+        "path": "modern/experiments/l0_surrogate_v3/serialization.py"
+      },
+      {
+        "blob": "c68679f62bb61645d8ae3d239deef594e9e76863",
+        "module": "experiments.l0_surrogate_v5",
+        "path": "modern/experiments/l0_surrogate_v5/__init__.py"
+      },
+      {
+        "blob": "a971fd0aeeff3f16d0f33dd47bf788e663670890",
+        "module": "experiments.l0_surrogate_v5.design",
+        "path": "modern/experiments/l0_surrogate_v5/design.py"
+      },
+      {
+        "blob": "678af92728c18343269bd357eca5e1980c3da35b",
+        "module": "experiments.l0_surrogate_v5.identity",
+        "path": "modern/experiments/l0_surrogate_v5/identity.py"
+      },
+      {
+        "blob": "dc484cdeca5d954cb1d3457d91f625b7278b978a",
+        "module": "experiments.l0_surrogate_v5.intervals",
+        "path": "modern/experiments/l0_surrogate_v5/intervals.py"
+      },
+      {
+        "blob": "fee95dd09013fc05e3747738d5987f7b790f9125",
+        "module": "experiments.l0_surrogate_v5.protocol",
+        "path": "modern/experiments/l0_surrogate_v5/protocol.py"
+      },
+      {
+        "blob": "7e5d73fe69b091bfeb8abd4024c18526a0ff50b9",
+        "module": "experiments.l0_surrogate_v6",
+        "path": "modern/experiments/l0_surrogate_v6/__init__.py"
+      },
+      {
+        "blob": "1f52787f686d4b54c0193aba436d6721b4034682",
+        "module": "experiments.l0_surrogate_v6.conformal",
+        "path": "modern/experiments/l0_surrogate_v6/conformal.py"
+      },
+      {
+        "blob": "1e0300716623443424583438c32cbfe67c54cbd6",
+        "module": "experiments.l0_surrogate_v6.design",
+        "path": "modern/experiments/l0_surrogate_v6/design.py"
+      },
+      {
+        "blob": "16bf922b92fc09e2e1a01ad73026761a0947ab86",
+        "module": "experiments.l0_surrogate_v6.identity",
+        "path": "modern/experiments/l0_surrogate_v6/identity.py"
+      }
+    ],
+    "runtime_closure_hash": "8b567220672c73aa2a44f54063ac1b127645bcbf3d8d129891f69c1ab5b137cd"
+  },
+  "document_type": "cft-revival-l0-surrogate-v6-run-manifest",
+  "environment": {
+    "cwd": "C:\\Users\\Angus\\AppData\\Local\\Temp\\l0-surrogate-v6-4e917b6\\modern",
+    "executable": "C:\\Users\\Angus\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]"
+  },
+  "exclusive_lock": {
+    "atomic": "O_CREAT|O_EXCL",
+    "file": "l0-surrogate-v6.execution.lock",
+    "retained": true
+  },
+  "final_calibration_labels_accessed_after_method_freeze": true,
+  "frozen_calibration_hash": "ae33d99e25750a5be554f36688f327d55f4a2efefecab2ac4d12aff5a5a685d9",
+  "frozen_method_hash": "e1f3723b0300a4bd390cb34b809f35e9dd0991772f41a3d8e0cd79525e566e87",
+  "method_selection_interval_diagnostics_passed": true,
+  "method_selection_point_metrics": {
+    "all_scopes_outputs_passed": true,
+    "boundary": {
+      "axial_thrust_n": {
+        "all_gates_passed": true,
+        "nrmse_passed": true,
+        "range_normalized_rmse": 0.02144265505672174,
+        "rows": 244,
+        "worst_error_passed": true,
+        "worst_range_normalized_error": 0.09248139867008931
+      },
+      "specific_impulse_s": {
+        "all_gates_passed": true,
+        "nrmse_passed": true,
+        "range_normalized_rmse": 0.02315193828813079,
+        "rows": 244,
+        "worst_error_passed": true,
+        "worst_range_normalized_error": 0.09945398002063079
+      }
+    },
+    "interpolation": {
+      "axial_thrust_n": {
+        "all_gates_passed": true,
+        "nrmse_passed": true,
+        "range_normalized_rmse": 0.010896452597796853,
+        "rows": 243,
+        "worst_error_passed": true,
+        "worst_range_normalized_error": 0.031046365141645438
+      },
+      "specific_impulse_s": {
+        "all_gates_passed": true,
+        "nrmse_passed": true,
+        "range_normalized_rmse": 0.01304415813117373,
+        "rows": 243,
+        "worst_error_passed": true,
+        "worst_range_normalized_error": 0.03567681590852826
+      }
+    },
+    "ood": {
+      "axial_thrust_n": {
+        "all_gates_passed": true,
+        "nrmse_passed": true,
+        "range_normalized_rmse": 0.024168504077589633,
+        "rows": 242,
+        "worst_error_passed": true,
+        "worst_range_normalized_error": 0.10956998773589204
+      },
+      "specific_impulse_s": {
+        "all_gates_passed": true,
+        "nrmse_passed": true,
+        "range_normalized_rmse": 0.03416876051635546,
+        "rows": 242,
+        "worst_error_passed": true,
+        "worst_range_normalized_error": 0.11720503103255936
+      }
+    },
+    "overall": {
+      "axial_thrust_n": {
+        "all_gates_passed": true,
+        "nrmse_passed": true,
+        "range_normalized_rmse": 0.019681845119479183,
+        "rows": 729,
+        "worst_error_passed": true,
+        "worst_range_normalized_error": 0.10956998773589204
+      },
+      "specific_impulse_s": {
+        "all_gates_passed": true,
+        "nrmse_passed": true,
+        "range_normalized_rmse": 0.024973771379677837,
+        "rows": 729,
+        "worst_error_passed": true,
+        "worst_range_normalized_error": 0.11720503103255936
+      }
+    }
+  },
+  "normalized_design_hash": "1f210609dd7c6112cd4dbc4eecafe31a991a42e8b35fd40b678f08e91e1a425b",
+  "partitions_hash": "9ec0f77cbce74eae81060563c70f3ec1783ef3b087b57f65efddc425ddc92231",
+  "preflight_hash": "6e5f62f455735206a6547f6eda5a5ea7c0730f0632e7d3e445029858a5cf71f5",
+  "run_manifest_hash": "1b8488af1504e41c94145e5f06b495d1268bdeb77400eb8cd75df35d50d22ee4",
+  "same_domain_spatial_overlap_disclosed": true,
+  "schema_version": "6.0",
+  "selected_budget": 96,
+  "selected_methods": {
+    "boundary": {
+      "axial_thrust_n": "symmetric-input-distance",
+      "specific_impulse_s": "symmetric-input-distance"
+    },
+    "interpolation": {
+      "axial_thrust_n": "asymmetric-signed-absolute",
+      "specific_impulse_s": "symmetric-raw-gp-sd"
+    },
+    "ood": {
+      "axial_thrust_n": "symmetric-raw-gp-sd",
+      "specific_impulse_s": "symmetric-raw-gp-sd"
+    }
+  },
+  "status": "accepted",
+  "valid_prospective_result": true
+}
