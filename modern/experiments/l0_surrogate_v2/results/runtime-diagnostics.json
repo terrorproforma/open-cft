@@ -1,0 +1,8 @@
+{
+  "document_type": "cft-revival-l0-surrogate-v2-failed-runtime-diagnostics",
+  "schema_version": "2.0",
+  "wall_seconds": 67.623,
+  "wall_clock_role": "diagnostic-only-excluded-from-scientific-hashes",
+  "process_exit_code": 1,
+  "failure_manifest_hash": "cc0e608928e6c000c059bcc01f23a288edf9ff99d8736c3c212e70a0c2f1d63d"
+}

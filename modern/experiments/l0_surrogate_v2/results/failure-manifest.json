@@ -1,0 +1,33 @@
+{
+  "document_type": "cft-revival-l0-surrogate-v2-execution-failure",
+  "schema_version": "2.0",
+  "failure_manifest_hash": "cc0e608928e6c000c059bcc01f23a288edf9ff99d8736c3c212e70a0c2f1d63d",
+  "execution_attempt_count": 1,
+  "preregistration_commit_sha": "9c93d004e62229a88cedfe8ad782b17acc432199",
+  "predeclaration_hash": "640ec66125d4de07944b012402a64e6cd7be012f1b6877b166b12c4271ff15cf",
+  "partitions_hash": "a19d317e148ff0318c38095123a1dad4c8f850833f7df32a821f3f7ad0c91897",
+  "status": "execution-failed-before-assessment",
+  "failed_stage": "first-replicate-active-model-serialization",
+  "exception_type": "FileNotFoundError",
+  "exception_message": "No such file or directory: results/group-split-2026090201/active/axial_thrust_n.model.json",
+  "root_cause": "The preregistered _save_models function did not create its campaign model directory before ExactGP.save.",
+  "completed_artifacts": {
+    "execution_lock": "execution-lock.json",
+    "first_replicate_active_selection": "group-split-2026090201/active.selection.json",
+    "first_replicate_active_selection_hash": "c11f6a3f6662019c0ecabfea32c5bcc7feab1d25bbfba0ef7c3a8f17ea366f5f",
+    "first_replicate_active_training_rows": 96
+  },
+  "assessment_loader_invocation_count": 0,
+  "calibration_labels_loaded": false,
+  "assessment_labels_loaded": false,
+  "replicate_metrics": {
+    "group-split-2026090201": null,
+    "group-split-2026090202": null,
+    "group-split-2026090203": null
+  },
+  "active_acceptance": false,
+  "gate_status": "not-evaluated",
+  "rerun_performed": false,
+  "integrity_statement": "The execution lock and partial selection are preserved. No protocol patch, lock deletion, rerun, calibration, or final assessment was performed after failure.",
+  "required_next_step": "Create a separately preregistered successor experiment that fixes directory creation and tests the complete artifact-writing path before execution."
+}
