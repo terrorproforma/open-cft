@@ -178,3 +178,59 @@
 - The repository still intentionally lacks a validated complete plasma,
   magnetostatic, or optimization workflow; public documentation states these
   limitations explicitly.
+
+## 2026-09-01 — Physics/optimization foundation integration
+
+### Integrated
+
+- Retained the accepted 86-test physics and 54-test optimization workstreams,
+  their machine-readable specs, and detailed workstream reports.
+- Added domain-explicit shared exports:
+  `L0XenonOperatingPoint`/`evaluate_l0_performance` and
+  `OptimizationDesign`/`OptimizationCampaign`. Legacy `DesignPoint` remains
+  unchanged and distinct.
+- Added checked L0 operating-point and deterministic sweep workflows with
+  complete JSON inputs, outputs, diagnostics, model-fidelity labels, aggregate
+  ranges, and full CPU-reference parity.
+- Added strict campaign spec v1.4 validation and dependency-free initial
+  design manifests. Fixed the discovered zero-count initial-design edge case.
+- Added optional metadata for Warp and lazy
+  Torch/BoTorch/GPyTorch/pymoo model boundaries without installing packages.
+- Added hypothetical representative point and 8,192-point sweep configs;
+  neither uses the 2017 archived objectives nor treats 2020 fixtures as fitted
+  values.
+- Reconciled architecture, migration, provenance, roadmap, citation, workstream
+  development history, and learning guardrails.
+
+### First result
+
+- Executed 8,192 points on Warp 1.14.0 `cuda:0`, NVIDIA GeForce RTX 5090
+  (`sm_120`, 32,607 MiB), CUDA Toolkit 12.9/driver CUDA 13.2.
+- Full-batch Python parity passed all 26 published numeric fields within the
+  documented binary64 gates; no point failed.
+- Axial thrust spanned `0.00188384225`–`0.0513183291 N`; Isp
+  `799.268670`–`2726.81617 s`; beam power
+  `17.2688569`–`786.015592 W`.
+- Maximum relative particle, mass, current, and beam-power conservation
+  residuals were `2.36837e-16`, `3.24198e-16`, `4.10551e-16`, and
+  `4.43207e-16`.
+- End-to-end CUDA time was 0.634302 s (12,914.99 points/s) and the separate
+  Python reference construction was 0.141245 s. Load/clocks were uncontrolled,
+  so no speedup or slowdown claim was accepted.
+
+### Verification
+
+- Full Python suite: 184 passed, one expected optional pybind11 skip.
+- `python -m compileall -q src tests`: passed.
+- CMake configure/build and native CTest: 1/1 passed.
+- Focused Warp CPU/CUDA tests: 26 passed.
+- Full 8,192-point Warp CPU sweep: full Python-reference parity passed.
+- L0 point/sweep JSON, campaign spec v1.4, and 256-design manifest validation:
+  passed.
+- `git diff --check`: passed; `git diff --exit-code -- FYP`: passed.
+- Ruff was unavailable in the existing environment and was not installed;
+  compileall, tests, diff checks, and direct line-length review were used.
+- No dependencies, system packages, drivers, or machine configuration changed.
+
+Detailed workstream timelines remain in `docs/workstreams/physics-devlog.md`
+and `docs/workstreams/optimization-devlog.md`.

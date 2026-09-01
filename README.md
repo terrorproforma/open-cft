@@ -11,18 +11,29 @@ cusped-field thruster (CFT/HEMP) design study.
 - [`modern/`](modern/) is the 2026 modernization. It contains typed Python
   models and configuration, FEMM-export readers, a Python implementation of the
   independently checkable cusp loss-cone kernel, an equivalent C++17 kernel,
-  and an optional NVIDIA Warp implementation for CPU/CUDA batch execution.
+  an optional NVIDIA Warp implementation for CPU/CUDA batch execution, an
+  SI-explicit Xe/Xe+/Xe2+ L0 conservation model, and a dependency-free
+  multi-fidelity optimization campaign foundation.
 
 The Python, C++17, and Warp CPU/CUDA implementations of the cusp kernel have
 correctness tests covering endpoints, tiny ratios, signed zero, subnormal
 values, invalid inputs, and cross-backend parity. This is a verified numerical
 kernel, not evidence of GPU acceleration for the complete thruster model.
 
+The L0 model now has checked point/sweep JSON workflows and a first 8,192-point
+RTX 5090 result with full CPU-reference parity. See
+[`modern/docs/FIRST_RESULTS.md`](modern/docs/FIRST_RESULTS.md). Its charge-state,
+beam, divergence, cathode, and PPU quantities are external hypothetical inputs,
+so numerical closure is not measured-performance accuracy. The optimization
+package supplies immutable records, constrained Pareto logic, async replay,
+budgets/retries, guardrails, and shifted-Halton designs; it does not silently
+turn L0 outputs into validated campaign objectives.
+
 ## Current limitations
 
 Open CFT does **not** yet provide a validated complete plasma solver,
-magnetostatic field solver, optimizer, or end-to-end reproduction of the 2017
-results. The historical MATLAB model depends on absent optimizer/surrogate
+magnetostatic field solver, fitted surrogate optimizer, or end-to-end
+reproduction of the 2017 results. The historical MATLAB model depends on absent optimizer/surrogate
 libraries, FEMM, archived run data, and equations not fully specified in the
 available publication. Confirmed source defects and publication/snapshot
 differences are documented in [`modern/docs/AUDIT.md`](modern/docs/AUDIT.md).
@@ -40,6 +51,10 @@ machine. Warp tests skip cleanly when Warp or a requested device is unavailable.
 cd modern
 python -m pytest
 python -m compileall -q src tests
+python -m cft_revival l0-evaluate config/l0-representative-point.json
+python -m cft_revival l0-sweep config/l0-deterministic-sweep.json --device cuda:0 --output $env:TEMP\cft-l0-sweep.json
+python -m cft_revival validate-campaign-spec spec/optimization/campaign-v1.json
+python -m cft_revival generate-initial-design spec/optimization/campaign-v1.json --count 32 --seed 7
 
 cmake -S . -B build -DCFT_BUILD_PYTHON=OFF -DBUILD_TESTING=ON
 cmake --build build
@@ -59,7 +74,7 @@ python -m cft_revival cusp-probability --low-t 0.2 --high-t 1.0
 
 See [`modern/README.md`](modern/README.md) for package details and
 [`modern/docs/ARCHITECTURE.md`](modern/docs/ARCHITECTURE.md) for the staged
-validation plan.
+validation plan. Repository milestones are tracked in [`ROADMAP.md`](ROADMAP.md).
 
 ## Publications
 

@@ -1,0 +1,250 @@
+{
+  "schema_version": "1.0.0",
+  "workstream": "verified-l0-xenon-physics",
+  "binary64_contract": {
+    "running_point_domain": "mdot_Xe > 0 and V_d > 0; every published scalar must be finite",
+    "nonrelativistic_gate": "computed Xe2+ speed must be <= 0.01 c",
+    "fraction_policy": "the exact rational sum of the three binary64 inputs is compared with unity; discrepancies no larger than two exact ULPs at unity are deterministically normalized",
+    "ppu_boundary_policy": "required load is canonically computed with stable summation; requested values within four scale-aware ULPs are snapped to that effective load and produce +0.0 loss; requested/effective/adjustment metadata remain distinct",
+    "tiny_state_policy": "Isp is evaluated directly from charge-state-weighted exhaust speed, not thrust divided by mass flow",
+    "scaled_arithmetic_policy": "ratios and products separate binary exponents where regrouping could destroy a representable custom-mass or custom-flow result",
+    "undefined_efficiency_policy": "a zero represented input-power denominator produces null/None efficiency rather than a fabricated 0/0 value",
+    "backend_policy": "Python canonical validation/preparation runs before Warp launch; Warp results are rejected before publication if any scalar is nonfinite"
+  },
+  "constants": [
+    {
+      "symbol": "e",
+      "value": 1.602176634e-19,
+      "si_unit": "C",
+      "provenance": "2019 SI definition",
+      "source_url": "https://www.bipm.org/en/measurement-units/si-defining-constants"
+    },
+    {
+      "symbol": "g0",
+      "value": 9.80665,
+      "si_unit": "m s^-2",
+      "provenance": "standard acceleration of gravity",
+      "source_url": "https://www.bipm.org/en/committees/cc/ccu"
+    },
+    {
+      "symbol": "m_Xe",
+      "value": 2.180171556711138e-25,
+      "si_unit": "kg particle^-1",
+      "provenance": "131.293 u standard atomic weight times the atomic mass constant",
+      "source_url": "https://ciaaw.org/xenon.htm"
+    }
+  ],
+  "equations": [
+    {
+      "id": "PHY-L0-001",
+      "expression": "Ndot_Xe = mdot_Xe / m_Xe",
+      "symbols": {
+        "Ndot_Xe": "s^-1",
+        "mdot_Xe": "kg s^-1",
+        "m_Xe": "kg particle^-1"
+      },
+      "provenance": "mass conservation for one xenon atomic mass",
+      "source_url": null,
+      "validity_domain": "steady mdot_Xe > 0; finite representable particle rate; Xe, Xe+, and Xe2+ use the same atomic mass; electron mass neglected",
+      "confidence": "high"
+    },
+    {
+      "id": "PHY-L0-002",
+      "expression": "Ndot_z = f_z Ndot_Xe; f_0 + f_1 + f_2 = 1",
+      "symbols": {
+        "Ndot_z": "s^-1",
+        "f_z": "1"
+      },
+      "provenance": "definition of number fraction and particle conservation",
+      "source_url": null,
+      "validity_domain": "three represented xenon charge states: Xe, Xe+, Xe2+; exact-rational two-ULP normalization policy stated in binary64_contract",
+      "confidence": "high"
+    },
+    {
+      "id": "PHY-L0-003",
+      "expression": "eta_m = f_1 + f_2",
+      "symbols": {
+        "eta_m": "1",
+        "f_1": "1",
+        "f_2": "1"
+      },
+      "provenance": "ionized xenon mass divided by inlet xenon mass for equal species masses",
+      "source_url": null,
+      "validity_domain": "no unrepresented xenon charge states or condensates",
+      "confidence": "high"
+    },
+    {
+      "id": "PHY-L0-004",
+      "expression": "v_z = sqrt(2 z e V_d / m_Xe), z in {1,2}",
+      "symbols": {
+        "v_z": "m s^-1",
+        "z": "1",
+        "e": "C",
+        "V_d": "V",
+        "m_Xe": "kg"
+      },
+      "provenance": "nonrelativistic work-energy theorem, z e V_d = m_Xe v_z^2 / 2",
+      "source_url": "https://openstax.org/books/university-physics-volume-2/pages/7-2-electric-potential-and-potential-difference",
+      "validity_domain": "V_d > 0; collisionless acceleration from negligible directed inlet speed; Xe2+ speed <= 0.01 c",
+      "confidence": "high"
+    },
+    {
+      "id": "PHY-L0-005",
+      "expression": "I_b = e (Ndot_1 + 2 Ndot_2)",
+      "symbols": {
+        "I_b": "A",
+        "e": "C",
+        "Ndot_1": "s^-1",
+        "Ndot_2": "s^-1"
+      },
+      "provenance": "electric charge conservation",
+      "source_url": null,
+      "validity_domain": "steady extracted Xe+ and Xe2+ beam",
+      "confidence": "high"
+    },
+    {
+      "id": "PHY-L0-006",
+      "expression": "F_ion = m_Xe (Ndot_1 v_1 + Ndot_2 v_2)",
+      "symbols": {
+        "F_ion": "N",
+        "m_Xe": "kg",
+        "Ndot_z": "s^-1",
+        "v_z": "m s^-1"
+      },
+      "provenance": "steady control-volume axial momentum conservation",
+      "source_url": "https://openstax.org/books/university-physics-volume-1/pages/9-6-collisions-of-point-masses-in-two-dimensions",
+      "validity_domain": "pressure thrust, neutral directed momentum, inlet momentum, and facility effects omitted",
+      "confidence": "high"
+    },
+    {
+      "id": "PHY-L0-007",
+      "expression": "F_axial = k_div F_ion",
+      "symbols": {
+        "F_axial": "N",
+        "k_div": "1",
+        "F_ion": "N"
+      },
+      "provenance": "definition of supplied axial momentum fraction",
+      "source_url": null,
+      "validity_domain": "k_div in [0,1] supplied externally; not predicted by L0",
+      "confidence": "high for accounting; closure confidence external"
+    },
+    {
+      "id": "PHY-L0-008",
+      "expression": "Isp = F_axial / (mdot_Xe g0) = k_div (f_1 v_1 + f_2 v_2) / g0",
+      "symbols": {
+        "Isp": "s",
+        "F_axial": "N",
+        "mdot_Xe": "kg s^-1",
+        "g0": "m s^-2"
+      },
+      "provenance": "standard specific impulse definition",
+      "source_url": "https://www.grc.nasa.gov/www/k-12/airplane/specimp.html",
+      "validity_domain": "mdot_Xe > 0; direct exhaust-speed form is used to preserve representable tiny values",
+      "confidence": "high"
+    },
+    {
+      "id": "PHY-L0-009",
+      "expression": "P_beam = sum_z (m_Xe Ndot_z v_z^2 / 2)",
+      "symbols": {
+        "P_beam": "W",
+        "m_Xe": "kg",
+        "Ndot_z": "s^-1",
+        "v_z": "m s^-1"
+      },
+      "provenance": "kinetic-energy flux",
+      "source_url": null,
+      "validity_domain": "same acceleration assumptions as PHY-L0-004",
+      "confidence": "high"
+    },
+    {
+      "id": "PHY-L0-010",
+      "expression": "P_beam = V_d I_b",
+      "symbols": {
+        "P_beam": "W",
+        "V_d": "V",
+        "I_b": "A"
+      },
+      "provenance": "derived by substituting PHY-L0-004 into PHY-L0-009 and using PHY-L0-005",
+      "source_url": null,
+      "validity_domain": "verified conservation identity, not an independent closure",
+      "confidence": "high"
+    },
+    {
+      "id": "PHY-L0-011",
+      "expression": "I_a = I_b / k_b; P_anode = V_d I_a",
+      "symbols": {
+        "I_a": "A",
+        "I_b": "A",
+        "k_b": "1",
+        "P_anode": "W",
+        "V_d": "V"
+      },
+      "provenance": "definition of supplied beam-current fraction and electrical power",
+      "source_url": null,
+      "validity_domain": "k_b in (0,1] supplied externally; L0 does not predict discharge-current losses",
+      "confidence": "high for accounting; closure confidence external"
+    },
+    {
+      "id": "PHY-L0-012",
+      "expression": "P_thruster = fsum(P_anode,P_cathode); P_PPU_effective = canonical(P_PPU_requested,P_thruster); P_PPU_loss = P_PPU_effective - P_thruster",
+      "symbols": {
+        "P_thruster": "W",
+        "P_anode": "W",
+        "P_cathode": "W",
+        "P_PPU_loss": "W",
+        "P_PPU_requested": "W",
+        "P_PPU_effective": "W"
+      },
+      "provenance": "explicit electrical boundary accounting",
+      "source_url": null,
+      "validity_domain": "requested PPU input within four scale-aware ULPs of canonical required load is represented by the effective required load and +0.0 loss; larger deficits are rejected",
+      "confidence": "high"
+    },
+    {
+      "id": "PHY-L0-013",
+      "expression": "eta_anode_to_beam=P_beam/P_anode; eta_thruster_electrical_to_beam=P_beam/P_thruster; eta_PPU_input_to_beam=P_beam/P_PPU_effective",
+      "symbols": {
+        "eta_anode_to_beam": "1",
+        "eta_thruster_electrical_to_beam": "1",
+        "eta_PPU_input_to_beam": "1"
+      },
+      "provenance": "boundary-specific conversion-efficiency definitions",
+      "source_url": null,
+      "validity_domain": "all ratios use the same effective power values; a represented zero denominator returns null/None because 0/0 is undefined",
+      "confidence": "high"
+    },
+    {
+      "id": "PHY-FIELD-MMS-001",
+      "expression": "A_phi(r,z) = B0 r / 2",
+      "symbols": {
+        "A_phi": "T m",
+        "B0": "T",
+        "r": "m"
+      },
+      "provenance": "manufactured regular axisymmetric vector potential",
+      "source_url": null,
+      "validity_domain": "axisymmetric cylindrical coordinates; A_phi(0,z)=+0.0; exponent-scaled half-product preserves representable normal/subnormal outputs and rejects only nonrepresentable products",
+      "confidence": "high"
+    },
+    {
+      "id": "PHY-FIELD-MMS-002",
+      "expression": "B_r = -partial(A_phi)/partial(z) = 0; B_z = (1/r) partial(r A_phi)/partial(r) = B0",
+      "symbols": {
+        "B_r": "T",
+        "B_z": "T",
+        "A_phi": "T m"
+      },
+      "provenance": "cylindrical curl of an axisymmetric azimuthal vector potential",
+      "source_url": "https://mathworld.wolfram.com/Curl.html",
+      "validity_domain": "analytic r->0 limit used on the symmetry axis",
+      "confidence": "high"
+    }
+  ],
+  "excluded_claims": [
+    "No Kornfeld residual system or disputed residual sign is implemented.",
+    "No unknown beam-current, divergence, ionization, cathode, or wall-loss closure is calibrated.",
+    "No FEM solver exists in this workstream.",
+    "L0 outputs are verification baselines, not experimentally validated thruster predictions."
+  ]
+}

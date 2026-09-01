@@ -6,9 +6,11 @@ title: Open CFT
 type: software
 abstract: >-
   A preservation and modernization repository for historical cusped-field
-  thruster research code. The modern implementation currently verifies a cusp
-  loss-cone kernel across Python, C++17, and optional NVIDIA Warp CPU/CUDA
-  backends; it is not a complete validated plasma or magnetostatic solver.
+  thruster research code. The modern implementation verifies a cusp loss-cone
+  kernel and an SI-explicit L0 xenon conservation model across dependency-free
+  Python and optional NVIDIA Warp CPU/CUDA paths, with a dependency-free
+  multi-fidelity campaign foundation. It is not a complete validated plasma or
+  magnetostatic solver and makes no measured-performance accuracy claim.
 authors:
   - family-names: Muffatti
     given-names: Angus

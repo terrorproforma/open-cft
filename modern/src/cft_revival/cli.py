@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+from math import isfinite
 from pathlib import Path
 from typing import Sequence
 
@@ -55,14 +56,60 @@ def _parser() -> argparse.ArgumentParser:
         metavar=("U", "I", "FLOW", "R1", "R2", "R3", "R4", "R5"),
         required=True,
     )
+
+    l0_point = commands.add_parser(
+        "l0-evaluate",
+        help="evaluate one checked hypothetical L0 operating point",
+    )
+    l0_point.add_argument("config", type=Path)
+    l0_point.add_argument("--output", type=Path)
+
+    l0_sweep = commands.add_parser(
+        "l0-sweep",
+        help="run a deterministic checked L0 batch with CPU-reference parity",
+    )
+    l0_sweep.add_argument("config", type=Path)
+    l0_sweep.add_argument(
+        "--device",
+        default="python",
+        help="'python', 'cpu', 'cuda', or 'cuda:N'",
+    )
+    l0_sweep.add_argument("--output", type=Path)
+
+    validate_campaign = commands.add_parser(
+        "validate-campaign-spec",
+        help="strictly validate optimization campaign spec v1.4 without BoTorch",
+    )
+    validate_campaign.add_argument("spec", type=Path)
+
+    initial_design = commands.add_parser(
+        "generate-initial-design",
+        help="validate a campaign spec and emit deterministic initial designs",
+    )
+    initial_design.add_argument("spec", type=Path)
+    initial_design.add_argument("--count", type=int, required=True)
+    initial_design.add_argument("--seed", type=int, default=0)
+    initial_design.add_argument("--output", type=Path)
     return parser
 
 
 def main(argv: Sequence[str] | None = None) -> int:
-    arguments = _parser().parse_args(argv)
+    parser = _parser()
+    arguments = parser.parse_args(argv)
+    try:
+        return _run(arguments)
+    except (OSError, UnicodeError, json.JSONDecodeError, ValueError, RuntimeError) as error:
+        parser.exit(
+            2,
+            f"{parser.prog}: error [{type(error).__name__}]: {error}\n",
+        )
+    return 2
+
+
+def _run(arguments: argparse.Namespace) -> int:
     if arguments.command == "validate-config":
         path: Path = arguments.path
-        raw = json.loads(path.read_text(encoding="utf-8"))
+        raw = _read_json(path)
         config = AppConfig.from_mapping(raw, path.parent)
         print(f"valid configuration; outputs={config.output_directory}")
         return 0
@@ -73,6 +120,47 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     if arguments.command == "benchmark-cusp":
         return _benchmark_cusp(arguments)
+
+    if arguments.command == "l0-evaluate":
+        from .physics.workflows import evaluate_operating_point_artifact
+
+        artifact = evaluate_operating_point_artifact(_read_json(arguments.config))
+        _emit_json(artifact, arguments.output)
+        return 0
+
+    if arguments.command == "l0-sweep":
+        from .physics.workflows import evaluate_sweep_artifact
+
+        artifact = evaluate_sweep_artifact(
+            _read_json(arguments.config),
+            device=arguments.device,
+        )
+        _emit_json(artifact, arguments.output)
+        return 0
+
+    if arguments.command in {
+        "validate-campaign-spec",
+        "generate-initial-design",
+    }:
+        from .optimization.spec import (
+            campaign_spec_artifact,
+            campaign_validation_artifact,
+            load_json_strict,
+        )
+
+        spec = load_json_strict(arguments.spec)
+        if arguments.command == "validate-campaign-spec":
+            artifact = campaign_validation_artifact(spec)
+            output = None
+        else:
+            artifact = campaign_spec_artifact(
+                spec,
+                initial_design_count=arguments.count,
+                seed=arguments.seed,
+            )
+            output = arguments.output
+        _emit_json(artifact, output)
+        return 0
 
     design = DesignPoint.from_sequence(arguments.design)
     fields = FemmExportBackend(arguments.directory).solve(
@@ -92,6 +180,67 @@ def main(argv: Sequence[str] | None = None) -> int:
         )
     )
     return 0
+
+
+def _reject_json_constant(value: str) -> None:
+    raise ValueError(f"JSON contains non-finite constant {value}")
+
+
+def _unique_json_object(pairs: list[tuple[str, object]]) -> dict[str, object]:
+    result: dict[str, object] = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError(f"JSON contains duplicate key {key!r}")
+        result[key] = value
+    return result
+
+
+def _check_finite_json(value: object, path: str = "$") -> None:
+    if value is None or isinstance(value, (bool, str, int)):
+        return
+    if isinstance(value, float):
+        if not isfinite(value):
+            raise ValueError(f"JSON contains non-finite number at {path}")
+        return
+    if isinstance(value, list):
+        for index, item in enumerate(value):
+            _check_finite_json(item, f"{path}[{index}]")
+        return
+    if isinstance(value, dict):
+        for key, item in value.items():
+            _check_finite_json(item, f"{path}.{key}")
+        return
+    raise ValueError(f"JSON contains unsupported value at {path}")
+
+
+def _read_json(path: Path) -> dict[str, object]:
+    raw = json.loads(
+        path.read_text(encoding="utf-8"),
+        parse_constant=_reject_json_constant,
+        object_pairs_hook=_unique_json_object,
+    )
+    if not isinstance(raw, dict):
+        raise ValueError(f"{path} must contain a JSON object")
+    _check_finite_json(raw)
+    return raw
+
+
+def _emit_json(artifact: dict[str, object], output: Path | None) -> None:
+    encoded = json.dumps(artifact, indent=2, sort_keys=True, allow_nan=False)
+    if output is None:
+        print(encoded)
+        return
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(f"{encoded}\n", encoding="utf-8")
+    print(
+        json.dumps(
+            {
+                "document_type": artifact.get("document_type"),
+                "output": str(output),
+            },
+            indent=2,
+        )
+    )
 
 
 def _benchmark_cusp(arguments: argparse.Namespace) -> int:

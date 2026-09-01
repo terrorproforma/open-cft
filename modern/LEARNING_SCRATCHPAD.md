@@ -83,3 +83,42 @@ This is the running evidence/decision ledger for the rebuild.
 - [self] Before a public push, inspect the exact staged list, scan candidates
   for credentials and user-home paths, and verify that generated scientific
   results and locally retrieved papers remain ignored.
+
+## 2026-09-01 integrated physics and optimization guardrails
+
+- [user] Preserve `FYP/` byte-for-byte while integrating shared package, CLI,
+  documentation, and campaign surfaces.
+- [self] L0's charge-state, beam-current, divergence, cathode, and PPU inputs
+  are externally supplied. Conservation closure and CPU/CUDA parity justify
+  implementation-consistency claims only, never measured predictive accuracy.
+- [self] The campaign's historical `total_efficiency` objective is not
+  interchangeable with L0's explicitly bounded anode-to-beam,
+  thruster-electrical-to-beam, or PPU-input-to-beam efficiencies. Do not map
+  them without a reviewed accounting boundary and uncertainty contract.
+- [self] Charge-state current/energy uses charge number `z`; momentum uses
+  common xenon mass and scales with `sqrt(z)`. Divergence changes axial
+  momentum, not kinetic beam power.
+- [self] Binary64 edge contracts are part of the model: exact-rational
+  charge-fraction admission, canonical PPU snapping, `None` for represented
+  `0/0` efficiencies, exponent-separated products, and finite-publication
+  checks must remain shared across Python and Warp.
+- [self] Optimization identities must include schemas and result context.
+  Failed solves remain typed failures; retries require terminal retryable
+  failures and paid F3 attempts; pre-execution rejection is a separate
+  zero-cost, non-attempt event.
+- [self] Pareto comparison is valid only inside one comparable context.
+  Pending jobs block duplicates, fidelity budgets distinguish committed from
+  charged cost, and F3 attempt/success/failure counts remain separate.
+- [self] Shifted Halton must never be relabelled Sobol. Verified hypervolume
+  requires a frozen F3 reference/normalization and cannot be inferred from
+  surrogate outcomes.
+- [tool] Warp 1.14.0 executes the full float64 L0 batch on RTX 5090 `cuda:0`,
+  but varying shared GPU load and transfer-inclusive one-shot timings are not
+  controlled benchmark evidence.
+- [self] A campaign-spec validation-only request exposed that
+  `initial_designs(..., count=0)` did not return an empty design. Keep the
+  explicit zero-count regression.
+
+Detailed derivations and review history remain in
+`docs/workstreams/physics-learning-ledger.md` and
+`docs/workstreams/optimization-learning-ledger.md`.

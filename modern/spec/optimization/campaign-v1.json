@@ -1,0 +1,185 @@
+{
+  "document_type": "cft-revival-optimization-campaign",
+  "schema_version": "1.4",
+  "campaign": "cft-8d-4objective-multifidelity",
+  "campaign_spec_id": "cft-8d-4objective-multifidelity@1.4",
+  "identity_policy": {
+    "design_id_fields": ["ordered variable names", "bounds", "units", "values"],
+    "evaluation_key_fields": [
+      "design_id",
+      "fidelity",
+      "seed",
+      "requested_replicates",
+      "objective schema",
+      "constraint schema",
+      "result context"
+    ],
+    "event_log": "canonical JSONL with SHA-256 hash chain",
+    "decoded_number_policy": "recursively reject NaN, Infinity and exponent overflow before hashing",
+    "decoded_object_policy": "reject duplicate object keys at every nesting level before dictionary construction"
+  },
+  "decision_space": {
+    "dimensions": 8,
+    "variables": [
+      {"name": "anode_voltage_v", "lower": 1.0, "upper": 1000.0, "units": "V"},
+      {"name": "anode_current_a", "lower": 0.001, "upper": 10.0, "units": "A"},
+      {"name": "mass_flow_sccm", "lower": 0.2, "upper": 50.0, "units": "sccm"},
+      {"name": "inner_magnet_radius_mm", "lower": 2.5, "upper": 49.95, "units": "mm"},
+      {"name": "outer_magnet_radius_mm", "lower": 2.51, "upper": 49.96, "units": "mm"},
+      {"name": "inner_shield_radius_mm", "lower": 2.52, "upper": 49.97, "units": "mm"},
+      {"name": "outer_shield_radius_mm", "lower": 2.53, "upper": 49.98, "units": "mm"},
+      {"name": "outer_enclosure_radius_mm", "lower": 2.54, "upper": 49.99, "units": "mm"}
+    ],
+    "coupled_constraints": [
+      {
+        "name": "successive_radial_clearance",
+        "type": "continuous",
+        "sense": ">=",
+        "threshold": 0.01,
+        "units": "mm",
+        "violation_scale": 0.01,
+        "applies_pairwise_to_variables_3_through_7": true
+      }
+    ]
+  },
+  "objectives": [
+    {"name": "thrust_n", "direction": "maximize", "units": "N", "comparison_scale": 1.0, "absolute_tolerance": 1e-9, "relative_tolerance": 1e-10},
+    {"name": "total_efficiency", "direction": "maximize", "units": "1", "comparison_scale": 1.0, "absolute_tolerance": 1e-12, "relative_tolerance": 1e-10},
+    {"name": "specific_impulse_s", "direction": "maximize", "units": "s", "comparison_scale": 1000.0, "absolute_tolerance": 1e-9, "relative_tolerance": 1e-10},
+    {"name": "anode_power_w", "direction": "minimize", "units": "W", "comparison_scale": 1000.0, "absolute_tolerance": 1e-9, "relative_tolerance": 1e-10}
+  ],
+  "information_sources": [
+    {
+      "fidelity": "F0",
+      "name": "corrected-analytical",
+      "initial_budget": 256,
+      "equivalent_f3_cost": 0.00390625
+    },
+    {
+      "fidelity": "F1",
+      "name": "fields-reduced",
+      "initial_budget": 96,
+      "equivalent_f3_cost": 0.010416666666666666
+    },
+    {
+      "fidelity": "F2",
+      "name": "hybrid",
+      "initial_budget": 32,
+      "equivalent_f3_cost": 0.03125
+    },
+    {
+      "fidelity": "F3",
+      "name": "pic-experiment",
+      "initial_budget": 12,
+      "equivalent_f3_cost": 1.0
+    }
+  ],
+  "iteration_policy": {
+    "cheap_medium_evaluations": {"minimum": 8, "maximum": 16, "fidelities": ["F0", "F1", "F2"]},
+    "high_fidelity_evaluations": {"minimum": 1, "maximum": 4, "fidelities": ["F3"]},
+    "asynchronous_pending_aware": true,
+    "botorch_output_transform": [1.0, 1.0, 1.0, -1.0],
+    "model_output_layout": {
+      "ordering": ["four objective outputs", "continuous constraint outputs"],
+      "acquisition_objective_selector": "objective indices only",
+      "constraint_selector": "separate constraint indices only",
+      "constraints_can_be_objectives": false,
+      "constraint_variance_transform": "Yvar / violation_scale^2",
+      "objective_variance_transform": "unchanged"
+    },
+    "botorch_constraint_convention": "strictly negative is feasible; normalized physical equality is shifted by a small negative epsilon",
+    "source_task_model": {
+      "outcome_transform": "StratifiedStandardize by task feature for each single output",
+      "known_differing_task_noise": "rejected with UnsupportedTaskNoiseError",
+      "supported_noise_contract": "MultiTaskGP inferred noise, or per-source SingleTaskGP fixed-noise alternative"
+    },
+    "acquisition_mix": [
+      {"strategy": "constrained-qLogNEHVI", "fraction": 0.6},
+      {"strategy": "MORBO-trust-region", "fraction": 0.25},
+      {"strategy": "constrained-qLogNParEGO", "fraction": 0.15}
+    ],
+    "qLogNParEGO_batch_path": "one random scalarization per candidate optimized with optimize_acqf_list",
+    "promotion": {
+      "requires_nondominated": true,
+      "requires_robust_feasibility_sigma": 2.0,
+      "minimum_per_constraint_feasibility_probability": 0.95,
+      "probability_policy": "every marginal must pass; no independence assumption and no product of marginals",
+      "mandatory_highest_available_reevaluation": true,
+      "maximum_retries_per_promotion": 1,
+      "concurrent_attempts_per_promotion_source": 1,
+      "retry_requires_terminal_failure_key": true,
+      "retry_requires_solver_failure_retryable": true,
+      "lineage_identity": [
+        "canonical design ID",
+        "target fidelity",
+        "campaign spec ID",
+        "objective and constraint schemas",
+        "result context",
+        "source model version and code revision"
+      ],
+      "pareto_comparable_context_identity": [
+        "campaign spec ID",
+        "fidelity",
+        "complete information-source record",
+        "objective and constraint schemas",
+        "result context",
+        "source model version and code revision"
+      ],
+      "cross_context_pareto_comparison": false,
+      "source_seed_or_observation_id_defines_lineage": false
+    }
+  },
+  "highest_fidelity_attempt_policy": {
+    "initial_attempt_budget": 12,
+    "successful_validation_target": 12,
+    "reserved_retry_attempts": 4,
+    "total_attempt_limit": 16,
+    "failed_attempts_consume_cost": true,
+    "failed_f3_charged_cost_must_be_finite_positive": true,
+    "all_retry_charged_cost_must_be_finite_positive": true,
+    "pre_execution_rejection": "distinct reject event; zero cost and not an attempt",
+    "retry_slots_are_not_available_to_initial_attempts": true
+  },
+  "stopping_gates": {
+    "all_must_hold_unless_cost_ceiling_reached": [
+      {"gate": "mandatory_f3_success_count", "value": 12},
+      {
+        "gate": "minimum_f3_success_fraction",
+        "value": 0.03,
+        "numerator": "successful completed F3 observations",
+        "denominator": "all successful completed observations; failures and pending jobs are excluded"
+      },
+      {"gate": "verified_hypervolume_relative_improvement", "maximum": 0.005, "window_iterations": 5},
+      {"gate": "pending_jobs", "value": 0},
+      {"gate": "surrogate_calibration_checked", "value": true},
+      {"gate": "promoted_candidates_pass_guardrails", "value": true},
+      {"gate": "acquisition_converged", "value": true},
+      {"gate": "iteration_acquisition_policy_satisfied", "value": true, "evidence_source": "external scheduler accounting supplied to stopping_diagnostics"}
+    ],
+    "terminal_failure": "validation_exhausted when initial and bounded retry capacity are exhausted before both validation gates",
+    "hard_equivalent_f3_cost_ceiling": 19.0
+  },
+  "benchmark": {
+    "results": null,
+    "comparison_metric": {
+      "primary": "verified_hypervolume",
+      "cost_axis": "equivalent_f3_cost",
+      "verification_fidelity": "F3",
+      "report_uncertainty_across_repeated_campaign_seeds": true
+    },
+    "strategies": [
+      {"name": "qLogNEHVI-MORBO-mix", "role": "candidate"},
+      {"name": "Sobol", "role": "baseline", "implementation_requirement": "validated Sobol implementation"},
+      {"name": "NSGA-III", "role": "baseline", "same_cost_and_F3_verification": true},
+      {"name": "MOEA-D", "role": "baseline", "same_cost_and_F3_verification": true}
+    ],
+    "fairness_requirements": [
+      "same initial observations",
+      "same equivalent-F3 cost checkpoints",
+      "same constraint and failure policy",
+      "same F3-verified reference point and objective normalization",
+      "no failed solve encoded as an objective or categorical signed constraint",
+      "publish seeds and confidence intervals; do not invent benchmark outcomes"
+    ]
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "document_type": "cft-revival-l0-sweep",
+  "schema_version": "1.0",
+  "model_fidelity": "L0-conservation-reduced-performance",
+  "hypothetical_inputs": true,
+  "description": "Deterministic hypothetical L0 domain sweep; bounds are exploratory inputs, not calibration intervals.",
+  "batch_size": 8192,
+  "seed": 20260901,
+  "ranges": {
+    "discharge_voltage_v": [150.0, 500.0],
+    "propellant_mass_flow_kg_per_s": [2e-7, 2e-6],
+    "ionized_number_fraction": [0.65, 0.98],
+    "xe_double_plus_fraction_of_ions": [0.0, 0.15],
+    "beam_current_fraction_of_anode_current": [0.75, 0.98],
+    "axial_momentum_fraction_of_ion_momentum": [0.75, 0.98],
+    "cathode_input_power_w": [5.0, 25.0],
+    "ppu_efficiency_fraction": [0.82, 0.95]
+  }
+}

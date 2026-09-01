@@ -1,0 +1,43 @@
+{
+  "schema_version": "1.0.0",
+  "policy": "External cross-model evidence only. These values are not fitted truth, experimental validation, or acceptance tolerances for the L0 implementation.",
+  "source": {
+    "citation": "Yeo et al. (2020), Multiobjective Optimization and Particle-in-Cell Simulation of Cusped Field Thrusters for Microsatellite Platforms",
+    "doi_url": "https://doi.org/10.2514/1.A34584",
+    "public_author_pdf_url": "http://aero.kyushu-u.ac.jp/stsel/_stsel/wp-content/uploads/2020/09/Yeo2020_JSR-Multiobjective-Optimization-and-Particle-In-Cell-Simulation-of-Cusped-Field-Thrusters-for-Microsatellite-Platforms.pdf"
+  },
+  "fixtures": [
+    {
+      "fixture_id": "YEO2020-S1-CORRECTED-GLOBAL",
+      "evidence_label": "published corrected low-fidelity model output",
+      "role": "external_regression_only",
+      "thrust_n": 0.1027,
+      "reported_model_efficiency_fraction": 0.365,
+      "specific_impulse_s": 2131.0
+    },
+    {
+      "fixture_id": "YEO2020-S1-PIC",
+      "evidence_label": "published 2D3V PIC-MCC cross-model output",
+      "role": "external_regression_only_not_experimental_truth",
+      "thrust_n": 0.0628,
+      "reported_model_efficiency_fraction": 0.152,
+      "specific_impulse_s": 1333.0
+    },
+    {
+      "fixture_id": "YEO2020-S1-PIC-INFORMED",
+      "evidence_label": "published PIC-informed reduced-model output",
+      "role": "external_regression_only_cross_model_calibrated",
+      "thrust_n": 0.0617,
+      "reported_model_efficiency_fraction": 0.146,
+      "specific_impulse_s": 1280.0
+    }
+  ],
+  "known_comparison": {
+    "corrected_global_vs_pic_relative_errors_reported_fraction": {
+      "thrust": 0.389,
+      "reported_model_efficiency": 0.583,
+      "specific_impulse": 0.374
+    },
+    "pic_informed_claim": "Published values are within approximately 4.1% of that paper's PIC case; this is cross-model agreement after PIC-informed correction."
+  }
+}

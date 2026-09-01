@@ -2,9 +2,11 @@
 
 ## MATLAB-to-modern map
 
-- `CFTOpt.m` → `models.DesignPoint`, future `optimization/problem.py`.
+- `CFTOpt.m` → `models.DesignPoint` for legacy compatibility and
+  `optimization.Design`/campaign spec v1.4 for the new multi-fidelity boundary.
   Decision ranges and objective directions are captured; external SAEA
-  integration is not translated.
+  behavior and archived objective values are not treated as a correctness
+  oracle.
 - `Performance_est.m` → `kernels.calculate_performance`,
   `pipeline.evaluate_design`. Only dimensional post-processing is translated;
   categorical failure codes will become typed statuses.
@@ -64,6 +66,24 @@
 - Did not translate disputed plasma signs, logical constraints, sensitivity
   analysis, or FEMM into a pretend GPU solve.
 
+## Integrated foundation additions
+
+- Added `physics.XenonOperatingPoint` and
+  `physics.evaluate_performance` as an independent L0 conservation layer. It
+  does not call `pipeline.evaluate_design` or the quarantined legacy plasma
+  residual.
+- Added checked hypothetical point/sweep configs and JSON result schemas. The
+  deterministic sweep can run on Python, Warp CPU, or Warp CUDA and always
+  computes CPU-reference parity.
+- Added a strict campaign spec validator and dependency-free deterministic
+  initial-design command. BoTorch is not required for schema validation,
+  scheduling records, Pareto operations, or design generation.
+- Kept `DesignPoint`, `L0XenonOperatingPoint`, and `OptimizationDesign`
+  distinct at the shared package boundary.
+- Recorded the first 8,192-point RTX 5090 L0 sweep in `FIRST_RESULTS.md`;
+  timing is explicitly uncontrolled and no physical-accuracy or speedup claim
+  is made.
+
 ## Recommended next phase
 
 1. Obtain the exact Kornfeld paper/equations, MATLAB/FEMM versions, optimizer
@@ -79,8 +99,9 @@
 5. Implement the CPU C++ residual and Jacobian only after equation sign-off.
 6. Build a serialized FEMM worker and immutable golden dataset. Compare field
    profiles and cusp probabilities, not only final objectives.
-7. Select an optimizer after defining continuous feasibility margins and
-   expensive-evaluation policy. Do not restore 12-way FEMM parallelism on one
+7. Runtime-verify the optional BoTorch/GPyTorch and pymoo boundaries, calibrate
+   source costs, and freeze F3-verified hypervolume policy before running an
+   optimization benchmark. Do not restore 12-way FEMM parallelism on one
    desktop.
 
 ## Exit criteria for Phase 2

@@ -1,0 +1,20 @@
+{
+  "document_type": "cft-revival-l0-operating-point",
+  "schema_version": "1.0",
+  "model_fidelity": "L0-conservation-reduced-performance",
+  "hypothetical_inputs": true,
+  "description": "Representative, physically plausible but hypothetical xenon L0 point; not fitted to 2017 or 2020 outputs.",
+  "inputs": {
+    "discharge_voltage_v": 300.0,
+    "propellant_mass_flow_kg_per_s": 5e-7,
+    "charge_state_number_fractions": {
+      "xe_neutral": 0.15,
+      "xe_plus": 0.8,
+      "xe_double_plus": 0.05
+    },
+    "beam_current_fraction_of_anode_current": 0.86,
+    "axial_momentum_fraction_of_ion_momentum": 0.9,
+    "cathode_input_power_w": 12.0,
+    "ppu_input_power_w": 145.0
+  }
+}

@@ -48,6 +48,19 @@ in `Power_B_EQs.m`.
   implementation is migrated because the surrogate validity and published
   interpretation conflict.
 
+The accepted L0 implementation has a separate machine-readable equation and
+evidence ledger at `../spec/physics/equation-ledger.json`. Its assumptions and
+permitted claims are documented in `workstreams/physics-foundation.md`. The
+2020 values under `../spec/physics/external-regression-fixtures.json` are
+cross-model fixtures only, not fitted truth.
+
+The optimization policy source of truth is
+`../spec/optimization/campaign-v1.json`; architecture and known limitations are
+in `workstreams/optimization-architecture.md` and
+`workstreams/optimization-workstream-report.md`. Its benchmark `results`
+remains null. `FIRST_RESULTS.md` records only the L0 numerical sweep and does
+not fill or imply optimization benchmark results.
+
 ## Publication/snapshot reconciliation
 
 - **Objectives:** paper abstract, §§1, 2.3, and 4 consistently describe three

@@ -17,12 +17,35 @@
 part of every field name; serialization will include a schema version.
 `pipeline.evaluate_design` orchestrates backends without knowing whether they
 are FEMM, a surrogate, CPU C++, or CUDA. The CLI currently validates configs,
-tests the translated kernel, and inspects legacy FEMM exports.
+tests the translated kernel, inspects legacy FEMM exports, evaluates checked L0
+point/sweep configurations, and validates/generates optimization campaign
+manifests.
 
 Future Python modules should own experiment manifests, optimizer adapters,
 cache keys, structured logging, dataset generation, and property/regression
 tests. Optimizers must receive continuous constraint margins separately from
 failure/status enums.
+
+### L0 physics and optimization boundaries
+
+`cft_revival.physics` owns the SI-explicit, conservation-based
+Xe/Xe+/Xe2+ reduced-performance model. `cft_revival.optimization` owns immutable
+campaign data, constrained Pareto semantics, scheduling/replay, guardrails, and
+sampling. Shared package exports use names such as `L0XenonOperatingPoint` and
+`OptimizationDesign`; the two historical `DesignPoint`/`Design` meanings are
+not collapsed.
+
+The checked L0 workflows label every artifact
+`L0-conservation-reduced-performance`, require hypothetical-input provenance,
+and publish all external factors and accounting boundaries. The optimization
+campaign's `total_efficiency` objective is intentionally not mapped to
+`anode_to_beam`, `thruster_electrical_to_beam`, or `ppu_input_to_beam`.
+Creating such a mapping requires an explicit objective/accounting decision,
+closure provenance, and uncertainty calibration.
+
+The dependency-free optimization core does not import Torch. Optional Warp and
+Torch/BoTorch/GPyTorch/pymoo dependencies are declared as extras and loaded
+only by the corresponding backend adapter.
 
 ### C++17 numerical core
 
@@ -210,3 +233,7 @@ separately:
 - surrogate inference and fallback rate.
 
 No GPU claim is meaningful until profiling shows a dominant batchable kernel.
+
+The first L0 CUDA execution is documented in `FIRST_RESULTS.md`. Its reported
+throughput is an uncontrolled, transfer-inclusive diagnostic and does not meet
+this benchmark protocol.

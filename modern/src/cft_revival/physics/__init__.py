@@ -1,0 +1,73 @@
+"""Verified modern physics foundations, isolated from the legacy model."""
+
+from .fields import AxisymmetricMagneticField, UniformAxialFieldFixture
+from .models import (
+    ELEMENTARY_CHARGE_C,
+    FRACTION_SUM_TOLERANCE_ULPS,
+    STANDARD_GRAVITY_M_PER_S2,
+    XENON_ATOM_MASS_KG,
+    ApplicabilityWarning,
+    ApplicabilityWarningCode,
+    BeamDivergenceFactors,
+    ChargeStateFractions,
+    ConservationDiagnostics,
+    IdealPerformanceResult,
+    MassUtilization,
+    OptionalDependencyError,
+    PhysicsDeviceError,
+    PhysicsError,
+    PhysicsValidationError,
+    PowerBoundaryInputs,
+    PropellantMassFlow,
+    ReportedPowerBudget,
+    XenonOperatingPoint,
+)
+from .numerics import (
+    MAX_L0_SPEED_FRACTION_OF_LIGHT,
+    PPU_BOUNDARY_TOLERANCE_ULPS,
+    SPEED_OF_LIGHT_M_PER_S,
+)
+from .reference import evaluate_batch, evaluate_performance
+from .workflows import (
+    L0_MODEL_CLAIM,
+    L0_MODEL_FIDELITY,
+    PhysicsConfigurationError,
+    evaluate_operating_point_artifact,
+    evaluate_sweep_artifact,
+    operating_point_from_config,
+)
+
+__all__ = [
+    "ELEMENTARY_CHARGE_C",
+    "FRACTION_SUM_TOLERANCE_ULPS",
+    "MAX_L0_SPEED_FRACTION_OF_LIGHT",
+    "PPU_BOUNDARY_TOLERANCE_ULPS",
+    "SPEED_OF_LIGHT_M_PER_S",
+    "STANDARD_GRAVITY_M_PER_S2",
+    "XENON_ATOM_MASS_KG",
+    "ApplicabilityWarning",
+    "ApplicabilityWarningCode",
+    "AxisymmetricMagneticField",
+    "BeamDivergenceFactors",
+    "ChargeStateFractions",
+    "ConservationDiagnostics",
+    "IdealPerformanceResult",
+    "L0_MODEL_CLAIM",
+    "L0_MODEL_FIDELITY",
+    "MassUtilization",
+    "OptionalDependencyError",
+    "PhysicsDeviceError",
+    "PhysicsError",
+    "PhysicsConfigurationError",
+    "PhysicsValidationError",
+    "PowerBoundaryInputs",
+    "PropellantMassFlow",
+    "ReportedPowerBudget",
+    "UniformAxialFieldFixture",
+    "XenonOperatingPoint",
+    "evaluate_batch",
+    "evaluate_operating_point_artifact",
+    "evaluate_performance",
+    "evaluate_sweep_artifact",
+    "operating_point_from_config",
+]
