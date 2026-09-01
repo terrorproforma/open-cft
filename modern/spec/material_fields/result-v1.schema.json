@@ -1,0 +1,331 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cft_revival.material_fields.result/1.4.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "model_level", "classification", "acceptance", "anchors", "formulation", "domain", "handoff_provenance", "diagnostics", "summary", "full_field_map", "downsampled_field_map", "limitations", "integrity"],
+  "properties": {
+    "schema_version": {"const": "cft_revival.material_fields.result/1.4.0"},
+    "model_level": {"const": "L1b"},
+    "classification": {"const": "hypothetical_design_simulation_not_validated_hardware_prediction"},
+    "acceptance": {"$ref": "#/$defs/acceptance"},
+    "anchors": {"$ref": "#/$defs/anchors"},
+    "formulation": {"$ref": "#/$defs/formulation"},
+    "domain": {"$ref": "#/$defs/domain"},
+    "handoff_provenance": {"$ref": "#/$defs/provenance"},
+    "diagnostics": {"$ref": "#/$defs/diagnostics"},
+    "summary": {"$ref": "viewer-v1.schema.json#/$defs/summary"},
+    "full_field_map": {"$ref": "#/$defs/fullMap"},
+    "downsampled_field_map": {"$ref": "viewer-v1.schema.json#/$defs/map"},
+    "limitations": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "integrity": {"$ref": "viewer-v1.schema.json#/$defs/integrity"}
+  },
+  "$defs": {
+    "hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "anchors": {
+      "type": "object", "additionalProperties": false,
+      "required": ["problem_id", "geometry_sha256", "magnetics_sha256", "design_geometry_sha256", "material_registry_sha256", "base_run_sha256", "config_sha256", "solver_config_identity_sha256", "implementation_sha256", "evidence_implementation_sha256", "grid_sha256", "domain_sha256", "problem_sha256"],
+      "properties": {
+        "problem_id": {"type": "string", "minLength": 1},
+        "geometry_sha256": {"$ref": "#/$defs/hash"},
+        "magnetics_sha256": {"$ref": "#/$defs/hash"},
+        "design_geometry_sha256": {"$ref": "#/$defs/hash"}, "material_registry_sha256": {"$ref": "#/$defs/hash"},
+        "base_run_sha256": {"$ref": "#/$defs/hash"}, "config_sha256": {"$ref": "#/$defs/hash"},
+        "solver_config_identity_sha256": {"$ref": "#/$defs/hash"},
+        "implementation_sha256": {"$ref": "#/$defs/hash"}, "grid_sha256": {"$ref": "#/$defs/hash"},
+        "evidence_implementation_sha256": {"$ref": "#/$defs/hash"},
+        "domain_sha256": {"$ref": "#/$defs/hash"}, "problem_sha256": {"$ref": "#/$defs/hash"}
+      }
+    },
+    "study": {
+      "type": "object", "additionalProperties": false,
+      "required": ["study_id", "role", "run_sha256", "domain_sha256", "grid_sha256", "padding_characteristic_lengths", "boundary_b_max_t", "interior_cellwise_max_t", "boundary_to_peak_ratio", "fixed_qois_bz_t", "minimum_effective_feature_cells"],
+      "properties": {
+        "study_id": {"type": "string", "minLength": 1},
+        "role": {"enum": ["base", "domain_expansion", "mesh_refinement", "mesh_refinement_2", "grid_alignment", "model_form", "backend_parity_cpu", "backend_parity_cuda"]},
+        "run_sha256": {"$ref": "#/$defs/hash"},
+        "domain_sha256": {"$ref": "#/$defs/hash"},
+        "grid_sha256": {"$ref": "#/$defs/hash"},
+        "padding_characteristic_lengths": {"type": "number", "minimum": 0},
+        "boundary_b_max_t": {"type": "number", "minimum": 0},
+        "interior_cellwise_max_t": {"type": "number", "exclusiveMinimum": 0},
+        "boundary_to_peak_ratio": {"type": "number", "minimum": 0},
+        "fixed_qois_bz_t": {"type": "object", "minProperties": 1, "additionalProperties": {"type": "number"}},
+        "minimum_effective_feature_cells": {"type": "number", "exclusiveMinimum": 0}
+      }
+    },
+    "gate": {
+      "type": "object", "additionalProperties": false,
+      "required": ["gate_id", "status", "measured_value", "threshold", "diagnostic_status"],
+      "properties": {
+        "gate_id": {"type": "string", "minLength": 1},
+        "status": {"enum": ["PASS", "FAIL", "NOT_EVALUATED"]},
+        "measured_value": {"type": "number", "minimum": 0},
+        "threshold": {"type": "number", "minimum": 0},
+        "diagnostic_status": {"enum": ["MEASURED_HIGH_RESOLUTION", "MEASURED_REDUCED_RESOURCE_ONLY"]}
+      }
+    },
+    "acceptance": {
+      "type": "object", "additionalProperties": false,
+      "required": ["status", "qualification", "raw_runs", "studies", "gates", "warning_codes", "pm_model_form_comparison", "structured_convergence", "backend_parity"],
+      "properties": {
+        "status": {"enum": ["ACCEPTED_PUBLICATION_EVIDENCE", "SCREENING_NOT_ACCEPTED"]},
+        "qualification": {"$ref": "#/$defs/qualification"},
+        "raw_runs": {"type": "array", "minItems": 10, "maxItems": 10, "items": {"$ref": "#/$defs/rawRun"}},
+        "studies": {"type": "array", "minItems": 10, "maxItems": 10, "items": {"$ref": "#/$defs/study"}},
+        "gates": {"type": "array", "minItems": 18, "maxItems": 18, "items": {"$ref": "#/$defs/gate"}},
+        "warning_codes": {"type": "array", "minItems": 3, "uniqueItems": true, "items": {"enum": ["CELLWISE_MAXIMUM_SCREENING_ONLY", "HOST_MEMORY_LIMITED_QUALIFICATION", "LINEAR_IRON_SATURATION_UNASSESSED", "PM_IRREVERSIBLE_DEMAGNETIZATION_UNASSESSED", "UNDERRESOLVED_GEOMETRIC_FEATURE", "STRUCTURED_GRID_METHOD_INSUFFICIENT"]}},
+        "pm_model_form_comparison": {"$ref": "viewer-v1.schema.json#/$defs/comparison"},
+        "structured_convergence": {"$ref": "#/$defs/structuredConvergence"},
+        "backend_parity": {"$ref": "#/$defs/backendParity"}
+      }
+    },
+    "qualification": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "study_scope", "status", "reason_code", "required_role_count", "completed_role_count", "not_evaluated_roles", "requested_base_grid", "executed_base_grid", "estimated_requested_raster_bytes", "safe_raster_bytes"],
+      "properties": {
+        "schema_version": {"const": "cft_revival.material_fields.qualification/1.4.0"},
+        "study_scope": {"enum": ["PREREGISTERED_HIGH_RESOLUTION", "MEMORY_LIMITED_REDUCED_SCREENING"]},
+        "status": {"enum": ["EVALUATED", "NOT_EVALUATED"]},
+        "reason_code": {"enum": ["NONE", "HOST_MEMORY_LIMIT"]},
+        "required_role_count": {"const": 10},
+        "completed_role_count": {"const": 10},
+        "not_evaluated_roles": {"type": "array", "maxItems": 0},
+        "requested_base_grid": {"type": "array", "prefixItems": [{"type": "integer", "minimum": 4}, {"type": "integer", "minimum": 4}], "items": false},
+        "executed_base_grid": {"type": "array", "prefixItems": [{"type": "integer", "minimum": 4}, {"type": "integer", "minimum": 4}], "items": false},
+        "estimated_requested_raster_bytes": {"type": "integer", "minimum": 1},
+        "safe_raster_bytes": {"type": "integer", "minimum": 1}
+      }
+    },
+    "qoiConvergence": {
+      "type": "object", "additionalProperties": false,
+      "required": ["observed_order", "richardson_bz_t", "values_bz_t"],
+      "properties": {
+        "observed_order": {"type": "number", "minimum": 0},
+        "richardson_bz_t": {"type": "number"},
+        "values_bz_t": {"type": "array", "minItems": 3, "maxItems": 3, "items": {"type": "number"}}
+      }
+    },
+    "structuredConvergence": {
+      "type": "object", "additionalProperties": false,
+      "required": ["minimum_observed_order", "method_assessment", "qois"],
+      "properties": {
+        "minimum_observed_order": {"type": "number", "minimum": 0},
+        "method_assessment": {"enum": ["STRUCTURED_GRID_ADEQUATE", "STRUCTURED_GRID_L1B_INSUFFICIENT"]},
+        "qois": {"type": "object", "minProperties": 1, "additionalProperties": {"$ref": "#/$defs/qoiConvergence"}}
+      }
+    },
+    "backendParity": {
+      "type": "object", "additionalProperties": false,
+      "required": ["cpu_run_sha256", "cuda_run_sha256", "relative_field_l2"],
+      "properties": {
+        "cpu_run_sha256": {"$ref": "#/$defs/hash"}, "cuda_run_sha256": {"$ref": "#/$defs/hash"},
+        "relative_field_l2": {"type": "number", "minimum": 0}
+      }
+    },
+    "rawDomain": {
+      "type": "object", "additionalProperties": false,
+      "required": ["radius_m", "z_min_m", "z_max_m", "radial_intervals", "axial_intervals", "dr_m", "dz_m"],
+      "properties": {
+        "radius_m": {"type": "number", "exclusiveMinimum": 0}, "z_min_m": {"type": "number"}, "z_max_m": {"type": "number"},
+        "radial_intervals": {"type": "integer", "minimum": 4}, "axial_intervals": {"type": "integer", "minimum": 4},
+        "dr_m": {"type": "number", "exclusiveMinimum": 0}, "dz_m": {"type": "number", "exclusiveMinimum": 0}
+      }
+    },
+    "rawSolverDiagnostics": {
+      "type": "object", "additionalProperties": false,
+      "required": ["converged", "iterations", "initial_residual_l2", "final_true_residual_l2", "relative_true_residual_l2", "residual_history_l2", "true_residual_restarts", "backend", "magnetic_energy_j", "source_coenergy_j", "energy_balance_relative", "run_config_sha256", "implementation_sha256", "run_config_json", "host_synchronization_count", "convergence_check_interval"],
+      "properties": {
+        "converged": {"type": "boolean"}, "iterations": {"type": "integer", "minimum": 0},
+        "initial_residual_l2": {"type": "number", "minimum": 0}, "final_true_residual_l2": {"type": "number", "minimum": 0},
+        "relative_true_residual_l2": {"type": "number", "minimum": 0}, "residual_history_l2": {"type": "array", "minItems": 1, "items": {"type": "number", "minimum": 0}},
+        "true_residual_restarts": {"type": "integer", "minimum": 0}, "backend": {"type": "string", "minLength": 1},
+        "magnetic_energy_j": {"type": "number"}, "source_coenergy_j": {"type": "number"}, "energy_balance_relative": {"type": "number", "minimum": 0},
+        "run_config_sha256": {"$ref": "#/$defs/hash"}, "implementation_sha256": {"$ref": "#/$defs/hash"},
+        "run_config_json": {"type": "string", "minLength": 1}
+        ,"host_synchronization_count": {"type": "integer", "minimum": 0}, "convergence_check_interval": {"type": "integer", "minimum": 0}
+      }
+    },
+    "counts": {
+      "type": "object", "additionalProperties": false,
+      "required": ["material_regions", "pm_regions", "free_current_sources", "interfaces"],
+      "properties": {
+        "material_regions": {"type": "integer", "minimum": 1}, "pm_regions": {"type": "integer", "minimum": 0},
+        "free_current_sources": {"type": "integer", "minimum": 0}, "interfaces": {"type": "integer", "minimum": 0}
+      }
+    },
+    "rawProblem": {
+      "type": "object", "additionalProperties": false,
+      "required": ["problem_id", "geometry_schema_version", "geometry_sha256", "magnetics_sha256", "authority", "coefficient_sha256", "source_sha256", "outer_boundary_kind", "geometry_bundle_json", "magnetics_bundle_json", "raster_diagnostics", "weak_action_diagnostics", "source_envelope_m", "feature_effective_cells", "qoi_locations_rz_m", "qoi_bore_windows_m", "open_boundary_policy", "counts"],
+      "properties": {
+        "problem_id": {"type": "string", "minLength": 1}, "geometry_schema_version": {"const": "cft_revival.geometry.axisymmetric_cft/1.1.0"},
+        "geometry_sha256": {"$ref": "#/$defs/hash"}, "magnetics_sha256": {"$ref": "#/$defs/hash"},
+        "authority": {"enum": ["recoil_remanence_constitutive", "equivalent_bound_current"]},
+        "coefficient_sha256": {"$ref": "#/$defs/hash"}, "source_sha256": {"$ref": "#/$defs/hash"},
+        "outer_boundary_kind": {"const": "dipole_robin_psi"},
+        "geometry_bundle_json": {"type": "string", "minLength": 1},
+        "magnetics_bundle_json": {"type": "string", "minLength": 1},
+        "raster_diagnostics": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/raster"}},
+        "weak_action_diagnostics": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/action"}},
+        "source_envelope_m": {"type": "array", "minItems": 4, "maxItems": 4, "items": {"type": "number"}},
+        "feature_effective_cells": {"type": "array", "minItems": 1, "items": {"type": "array", "prefixItems": [{"type": "string"}, {"type": "number", "exclusiveMinimum": 0}, {"type": "number", "exclusiveMinimum": 0}], "items": false}},
+        "qoi_locations_rz_m": {"type": "array", "minItems": 1, "items": {"type": "array", "prefixItems": [{"type": "string"}, {"type": "number"}, {"type": "number"}], "items": false}},
+        "qoi_bore_windows_m": {"type": "array", "minItems": 1, "items": {"type": "array", "prefixItems": [{"type": "string"}, {"type": "number", "exclusiveMinimum": 0}, {"type": "number"}, {"type": "number"}], "items": false}},
+        "open_boundary_policy": {"$ref": "#/$defs/policy"},
+        "counts": {"$ref": "#/$defs/counts"}
+      }
+    },
+    "numericArray": {"type": "array", "minItems": 1, "items": {"type": "number"}},
+    "solution": {
+      "type": "object", "additionalProperties": false,
+      "required": ["codec", "dtype", "layout", "count", "uncompressed_sha256", "data_base64"],
+      "properties": {
+        "codec": {"const": "zlib-base64"}, "dtype": {"const": "float64-little-endian"},
+        "layout": {"const": "radial-major"}, "count": {"type": "integer", "minimum": 1},
+        "uncompressed_sha256": {"$ref": "#/$defs/hash"},
+        "data_base64": {"type": "string", "minLength": 1, "contentEncoding": "base64"}
+      }
+    },
+    "rawPayload": {
+      "type": "object", "additionalProperties": false,
+      "required": ["domain", "solution", "diagnostics", "problem"],
+      "properties": {
+        "domain": {"$ref": "#/$defs/rawDomain"}, "solution": {"$ref": "#/$defs/solution"},
+        "diagnostics": {"$ref": "#/$defs/rawSolverDiagnostics"}, "problem": {"$ref": "#/$defs/rawProblem"}
+      }
+    },
+    "rawRun": {
+      "type": "object", "additionalProperties": false,
+      "required": ["study_id", "role", "run_sha256", "config_sha256", "solver_config_identity_sha256", "geometry_sha256", "material_sha256", "design_geometry_sha256", "material_registry_sha256", "implementation_sha256", "evidence_implementation_sha256", "backend", "grid_sha256", "domain_sha256", "problem_sha256", "raw"],
+      "properties": {
+        "study_id": {"type": "string", "minLength": 1}, "role": {"enum": ["base", "domain_expansion", "mesh_refinement", "mesh_refinement_2", "grid_alignment", "model_form", "backend_parity_cpu", "backend_parity_cuda"]},
+        "run_sha256": {"$ref": "#/$defs/hash"}, "config_sha256": {"$ref": "#/$defs/hash"}, "geometry_sha256": {"$ref": "#/$defs/hash"},
+        "solver_config_identity_sha256": {"$ref": "#/$defs/hash"},
+        "material_sha256": {"$ref": "#/$defs/hash"}, "implementation_sha256": {"$ref": "#/$defs/hash"}, "backend": {"type": "string", "minLength": 1},
+        "design_geometry_sha256": {"$ref": "#/$defs/hash"}, "material_registry_sha256": {"$ref": "#/$defs/hash"},
+        "evidence_implementation_sha256": {"$ref": "#/$defs/hash"},
+        "grid_sha256": {"$ref": "#/$defs/hash"}, "domain_sha256": {"$ref": "#/$defs/hash"}, "problem_sha256": {"$ref": "#/$defs/hash"},
+        "raw": {"$ref": "#/$defs/rawPayload"}
+      }
+    },
+    "formulation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["unknown", "operator", "rhs", "face_treatment", "source_discretization", "outer_boundary", "pm_authority", "nonlinear_status"],
+      "properties": {
+        "unknown": {"const": "psi=r*A_phi [Wb/rad]"},
+        "operator": {"const": "-div((nu/r)*grad(psi))"},
+        "rhs": {"const": "J_free_phi+J_bound_phi-div(nu*Br_z,-nu*Br_r)"},
+        "face_treatment": {"const": "exact_series_resistance_with_radial_1_over_r"},
+        "source_discretization": {"const": "face_integrated_discrete_adjoint"},
+        "outer_boundary": {"const": "dipole_robin_psi"},
+        "pm_authority": {"enum": ["recoil_remanence_constitutive", "equivalent_bound_current"]},
+        "nonlinear_status": {"const": "linear_only_nonlinear_iron_gated"}
+      }
+    },
+    "policy": {
+      "type": "object", "additionalProperties": false,
+      "required": ["minimum_padding_characteristic_lengths", "maximum_boundary_to_peak_field_ratio", "domain_expansion_factor", "required_expansion_comparisons", "maximum_qoi_relative_change"],
+      "properties": {
+        "minimum_padding_characteristic_lengths": {"type": "number", "exclusiveMinimum": 0},
+        "maximum_boundary_to_peak_field_ratio": {"type": "number", "exclusiveMinimum": 0},
+        "domain_expansion_factor": {"type": "number", "exclusiveMinimum": 1},
+        "required_expansion_comparisons": {"type": "integer", "minimum": 1},
+        "maximum_qoi_relative_change": {"type": "number", "exclusiveMinimum": 0}
+      }
+    },
+    "domain": {
+      "type": "object", "additionalProperties": false,
+      "required": ["radius_m", "z_min_m", "z_max_m", "radial_intervals", "axial_intervals", "dr_m", "dz_m", "tolerances_m", "open_boundary_policy"],
+      "properties": {
+        "radius_m": {"type": "number", "exclusiveMinimum": 0},
+        "z_min_m": {"type": "number"}, "z_max_m": {"type": "number"},
+        "radial_intervals": {"type": "integer", "minimum": 4},
+        "axial_intervals": {"type": "integer", "minimum": 4},
+        "dr_m": {"type": "number", "exclusiveMinimum": 0},
+        "dz_m": {"type": "number", "exclusiveMinimum": 0},
+        "tolerances_m": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"type": "number", "minimum": 0}},
+        "open_boundary_policy": {"$ref": "#/$defs/policy"}
+      }
+    },
+    "region": {
+      "type": "object", "additionalProperties": false,
+      "required": ["region_id", "shape", "represented_in_magnetics_handoff", "disposition"],
+      "properties": {
+        "region_id": {"type": "string", "minLength": 1},
+        "shape": {"enum": ["rectangular_annulus", "linear_taper_annulus"]},
+        "represented_in_magnetics_handoff": {"type": "boolean"},
+        "disposition": {"type": "string", "minLength": 1}
+      }
+    },
+    "provenance": {
+      "type": "object", "additionalProperties": false,
+      "required": ["pm_region_count", "material_region_count", "free_current_source_count", "interface_count", "geometry_regions", "geometry_schema_version", "geometry_payload_sha256"],
+      "properties": {
+        "pm_region_count": {"type": "integer", "minimum": 0},
+        "material_region_count": {"type": "integer", "minimum": 1},
+        "free_current_source_count": {"type": "integer", "minimum": 0},
+        "interface_count": {"type": "integer", "minimum": 0},
+        "geometry_regions": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/region"}},
+        "geometry_schema_version": {"const": "cft_revival.geometry.axisymmetric_cft/1.1.0"},
+        "geometry_payload_sha256": {"$ref": "#/$defs/hash"}
+      }
+    },
+    "raster": {
+      "type": "object", "additionalProperties": false,
+      "required": ["item_id", "requested_volume_m3", "represented_volume_m3", "relative_volume_error", "requested_source_measure", "represented_source_measure", "relative_source_error"],
+      "properties": {
+        "item_id": {"type": "string", "minLength": 1},
+        "requested_volume_m3": {"type": "number"}, "represented_volume_m3": {"type": "number"},
+        "relative_volume_error": {"type": "number"}, "requested_source_measure": {"type": "number"},
+        "represented_source_measure": {"type": "number"}, "relative_source_error": {"type": "number"}
+      }
+    },
+    "action": {
+      "type": "object", "additionalProperties": false,
+      "required": ["basis_id", "analytical_action_a", "rasterized_action_a", "absolute_bias_a", "relative_bias"],
+      "properties": {
+        "basis_id": {"type": "string", "minLength": 1},
+        "analytical_action_a": {"type": "number"}, "rasterized_action_a": {"type": "number"},
+        "absolute_bias_a": {"type": "number", "minimum": 0}, "relative_bias": {"type": "number", "minimum": 0}
+      }
+    },
+    "diagnostics": {
+      "type": "object", "additionalProperties": false,
+      "required": ["converged", "iterations", "initial_residual_l2", "final_true_residual_l2", "relative_true_residual_l2", "residual_history_l2", "true_residual_restarts", "backend", "magnetic_energy_j", "source_coenergy_j", "energy_balance_relative", "run_config_sha256", "implementation_sha256", "run_config_json", "host_synchronization_count", "convergence_check_interval", "rasterization", "weak_source_action", "free_current_represented_a", "pm_bound_current_represented_a"],
+      "properties": {
+        "converged": {"const": true}, "iterations": {"type": "integer", "minimum": 0},
+        "initial_residual_l2": {"type": "number", "minimum": 0},
+        "final_true_residual_l2": {"type": "number", "minimum": 0},
+        "relative_true_residual_l2": {"type": "number", "minimum": 0},
+        "residual_history_l2": {"type": "array", "minItems": 1, "items": {"type": "number", "minimum": 0}},
+        "true_residual_restarts": {"type": "integer", "minimum": 0},
+        "backend": {"type": "string", "pattern": "^material_fields:(python|warp:(cpu|cuda:[0-9]+))$"},
+        "magnetic_energy_j": {"type": "number"}, "source_coenergy_j": {"type": "number"},
+        "energy_balance_relative": {"type": "number", "minimum": 0},
+        "run_config_sha256": {"$ref": "#/$defs/hash"}, "implementation_sha256": {"$ref": "#/$defs/hash"},
+        "run_config_json": {"type": "string", "minLength": 1},
+        "host_synchronization_count": {"type": "integer", "minimum": 0}, "convergence_check_interval": {"type": "integer", "minimum": 0},
+        "rasterization": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/raster"}},
+        "weak_source_action": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/action"}},
+        "free_current_represented_a": {"type": "number"},
+        "pm_bound_current_represented_a": {"type": "number"}
+      }
+    },
+    "matrix": {"type": "array", "minItems": 2, "items": {"type": "array", "minItems": 2}},
+    "fullMap": {
+      "type": "object", "additionalProperties": false,
+      "required": ["layout", "r_m", "z_m", "psi_wb", "b_r_t", "b_z_t", "b_magnitude_t", "material_id", "free_current_phi_a_per_m2", "pm_bound_current_phi_a_per_m2", "remanence_r_t", "remanence_z_t"],
+      "properties": {
+        "layout": {"const": "radial-major"},
+        "r_m": {"type": "array", "minItems": 2, "items": {"type": "number"}},
+        "z_m": {"type": "array", "minItems": 2, "items": {"type": "number"}},
+        "psi_wb": {"$ref": "#/$defs/matrix"}, "b_r_t": {"$ref": "#/$defs/matrix"},
+        "b_z_t": {"$ref": "#/$defs/matrix"}, "b_magnitude_t": {"$ref": "#/$defs/matrix"},
+        "material_id": {"$ref": "#/$defs/matrix"},
+        "free_current_phi_a_per_m2": {"$ref": "#/$defs/matrix"},
+        "pm_bound_current_phi_a_per_m2": {"$ref": "#/$defs/matrix"},
+        "remanence_r_t": {"$ref": "#/$defs/matrix"}, "remanence_z_t": {"$ref": "#/$defs/matrix"}
+      }
+    }
+  }
+}

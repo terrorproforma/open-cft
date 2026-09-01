@@ -1,0 +1,64 @@
+{
+  "schema_version": "cft_revival.material_fields.equation_ledger/1.4.0",
+  "coordinate_system": "right_handed_cylindrical_r_phi_z_axisymmetric",
+  "unknown": {
+    "definition": "psi(r,z)=r*A_phi(r,z)",
+    "unit": "Wb/rad",
+    "regularity": "psi=O(r^2) at r=0"
+  },
+  "reconstruction": {
+    "B_r": "-(1/r)*partial_z(psi)",
+    "B_z": "(1/r)*partial_r(psi)"
+  },
+  "constitutive_law": {
+    "linear_region": "H=nu*B",
+    "recoil_pm_region": "H=nu_rec*(B-Br)",
+    "nu": "1/mu",
+    "Br": "temperature-adjusted remanent flux-density vector"
+  },
+  "strong_form": {
+    "equation": "-div((nu/r)*grad(psi))=J_free_phi+J_bound_phi-div(G)",
+    "G": "(nu*Br_z,-nu*Br_r)",
+    "boundary": "psi=0 at r=0; for dipole psi=C*r^2/rho^3, axial alpha=3*|z-zc|/rho^2 and outer-r alpha=3*r/rho^2-2/r in d_n(psi)+alpha*psi=0",
+    "sign_check": "curl(H)_phi=partial_z(H_r)-partial_r(H_z)=J_free_phi"
+  },
+  "weak_form": {
+    "space": "V=H1(Omega), zero trace at r=0, with outer Robin boundary term",
+    "equation": "integral_Omega (nu/r)*grad(psi).grad(v) dr dz = integral_Omega (J_free_phi+J_bound_phi)*v dr dz + integral_Omega G.grad(v) dr dz",
+    "pm_authority": "Use recoil-remanence G or equivalent bound current J_b=curl(M), never both."
+  },
+  "discrete_form": {
+    "control_volume": "node-centred meridional finite volume",
+    "face_reluctivity": "radial nu_f=r_f*Delta_r/sum_k[(r_k+1^2-r_k^2)/(2*nu_k)]; axial nu_f=Delta_z/sum_k[Delta_z_k/nu_k]",
+    "radial_coefficient": "nu_f/r_f=Delta_r/integral_face_normal(r/nu dr)",
+    "axial_coefficient": "nu_f/r_i=Delta_z/(r_i*integral_face_normal(1/nu dz))",
+    "matrix": "symmetric interior operator with dipole-Robin elimination; the radial logarithmic coefficient can be negative near rectangular corners, so positivity is not assumed and is checked numerically by small-grid minimum-eigenvalue, converged-PCG and positive magnetic-energy evidence",
+    "source": "separately typed J_free_phi and mu_r-corrected PM J_bound_phi minus the exact face-flux divergence adjoint to the operator gradient",
+    "cut_cell_measure": "analytic rectangular subsegments and exact line/polygon clipping for linear tapered boundaries; series resistance is integrated along each face-normal connection",
+    "sheet_moments": "tensor-product linear deposition preserves sheet total and first r/z moments exactly"
+  },
+  "interface_conditions": {
+    "normal_B": "n.(B_plus-B_minus)=0",
+    "tangential_H": "(n cross (H_plus-H_minus))_phi=K_free_phi",
+    "pm_bound_current": "K_bound_phi=(M cross n)_phi is constitutive/source data, never K_free",
+    "harmonic_face_rationale": "constant normal flux requires integrating 1/a with a=nu/r; arithmetic cut-cell averaging is not a valid series transmissibility"
+  },
+  "analytical_checks": [
+    "Uniform nu multiplies the equation by mu and exactly recovers the accepted L1a operator -div((1/r)grad(psi))=mu*J_phi.",
+    "Reversing every Br polarity reverses psi, Br and Bz by linearity.",
+    "For zero free surface current, normal B and tangential H remain continuous; a recoil remanence jump is carried only by H=nu(B-Br).",
+    "For uniform axial M=Br/(mu0*mu_r), curl(M)=0 in the magnet interior and K_bound_phi=M_z*n_r on radial faces with opposite inner/outer signs.",
+    "Reviewer off-face oracle: an arithmetic coefficient 67.11 corresponds to exact series coefficient 3.883 for the declared subsegment contrast/fraction."
+  ],
+  "publication_gates": {
+    "open_boundary": "Exactly the required two successive >=1.5 strictly nested padding expansions, base padding >=3 characteristic lengths, every boundary/peak <=1e-3, and successive fixed physical QoI change <=1e-3.",
+    "mesh": "Interpolated fixed stage-centre QoI mesh and grid-alignment changes <=1e-2; cellwise and sampled-axis extrema are screening-only.",
+    "resolution": "Every PDE-active material feature requires at least 12 effective cells across radial and axial extents before qualification.",
+    "algebraic": "Fresh true residual <=1e-8 and converged status.",
+    "energy": "Discrete energy/source stationarity residual <=1e-8.",
+    "source": "Exact analytical weak actions for basis gradients/values and authoritative raster/source counts; relative bias <=1e-3 when absolute bias exceeds 1e-8 A, and represented totals <=1e-12.",
+    "model_form": "Fine-grid recoil/equivalent fixed and bore-averaged QoI discrepancy <=2e-2; the discrepancy trend is also reported.",
+    "status": "Each publication gate is PASS, FAIL, or NOT_EVALUATED with a measured value, threshold, and diagnostic status. Reduced-resource measurements force every gate to NOT_EVALUATED; deterministic replay under the exact implementation revision rejects forged PASS."
+  },
+  "claim_boundary": "Hypothetical linear-material design simulation, not a validated hardware prediction."
+}

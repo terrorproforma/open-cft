@@ -1,0 +1,172 @@
+{
+  "designs": [
+    {
+      "acceptance_status": "SCREENING_NOT_ACCEPTED",
+      "artifact": "historical-envelope-baseline.material-field.json",
+      "artifact_file_sha256": "2f68507d739412c7a7df3a8034e74df9f3573072f6ba4ac59d6a582c74a95dab",
+      "artifact_payload_sha256": "d91f4dd8b86251ec4294948b7df4e8a700ec362e45dc920752fca4592039a860",
+      "axis_bz_peak_t": 0.35706484671067645,
+      "boundary_to_peak_ratios": [
+        4.65962218569912e-06,
+        1.4672583254538265e-06,
+        4.5798700329415206e-07
+      ],
+      "classification": "hypothetical_design_simulation_not_validated_hardware_prediction",
+      "config_id": "historical-envelope-baseline-v1",
+      "energy_balance_relative": 1.267338667673319e-16,
+      "fixed_qois_bz_t": {
+        "stage-1-axis": -0.3375878415955639,
+        "stage-1-bore-average": -0.28627818899747065,
+        "stage-2-axis": 0.34823111591843614,
+        "stage-2-bore-average": 1.1665942779726093,
+        "stage-3-axis": -0.3525535182876206,
+        "stage-3-bore-average": -0.09317381333571752
+      },
+      "geometry_sha256": "2524848ff176d7a42b93286c3c6d27c99ce3ccdcf0084d30c0c9ffbfd38a4227",
+      "pm_model_form_comparison": {
+        "base_fixed_qoi_relative_difference": 0.5014112898545879,
+        "discrepancy_change": 0.9521517778242097,
+        "fine_fixed_qoi_relative_difference": 0.023991638798411923
+      },
+      "qualification": {
+        "completed_role_count": 10,
+        "estimated_requested_raster_bytes": 1739612160,
+        "executed_base_grid": [
+          60,
+          120
+        ],
+        "not_evaluated_roles": [],
+        "reason_code": "HOST_MEMORY_LIMIT",
+        "requested_base_grid": [
+          467,
+          1814
+        ],
+        "required_role_count": 10,
+        "safe_raster_bytes": 113822924,
+        "schema_version": "cft_revival.material_fields.qualification/1.4.0",
+        "status": "NOT_EVALUATED",
+        "study_scope": "MEMORY_LIMITED_REDUCED_SCREENING"
+      },
+      "relative_true_residual_l2": 5.493584574683692e-10,
+      "sampled_cell_peak_t": 52.231066251713365
+    },
+    {
+      "acceptance_status": "SCREENING_NOT_ACCEPTED",
+      "artifact": "compact-high-gradient-stack.material-field.json",
+      "artifact_file_sha256": "23d0d6f3b0353a92a57db8417a190f06d6ee002d1f042c83610ff6439cb1cd90",
+      "artifact_payload_sha256": "7579f1602c75cdf6773b24279dd7621dd9c290dd9c2205b875da0962e5c7ed67",
+      "axis_bz_peak_t": 0.17200647270832195,
+      "boundary_to_peak_ratios": [
+        1.180002766028622e-06,
+        3.7590017452682736e-07,
+        1.1833984813316397e-07
+      ],
+      "classification": "hypothetical_design_simulation_not_validated_hardware_prediction",
+      "config_id": "compact-high-gradient-stack-v1",
+      "energy_balance_relative": 6.107062530882355e-16,
+      "fixed_qois_bz_t": {
+        "stage-1-axis": -0.16529179483299608,
+        "stage-1-bore-average": -0.2699175532731005,
+        "stage-2-axis": 0.01274290309328475,
+        "stage-2-bore-average": 0.05705727059519331,
+        "stage-3-axis": 0.014684007246495243,
+        "stage-3-bore-average": -0.13604311840314592,
+        "stage-4-axis": -0.003932261923951628,
+        "stage-4-bore-average": 0.17124412463775854,
+        "stage-5-axis": -0.13222612522672825,
+        "stage-5-bore-average": -0.11577626085333285
+      },
+      "geometry_sha256": "66e033e98aa2dc98af96d4d7072218c4b298839c784a44ee66621e29a58a4f6f",
+      "pm_model_form_comparison": {
+        "base_fixed_qoi_relative_difference": 0.9145340752378565,
+        "discrepancy_change": 0.6690373182559098,
+        "fine_fixed_qoi_relative_difference": 0.3026766500870725
+      },
+      "qualification": {
+        "completed_role_count": 10,
+        "estimated_requested_raster_bytes": 1585836032,
+        "executed_base_grid": [
+          60,
+          120
+        ],
+        "not_evaluated_roles": [],
+        "reason_code": "HOST_MEMORY_LIMIT",
+        "requested_base_grid": [
+          670,
+          1153
+        ],
+        "required_role_count": 10,
+        "safe_raster_bytes": 84549632,
+        "schema_version": "cft_revival.material_fields.qualification/1.4.0",
+        "status": "NOT_EVALUATED",
+        "study_scope": "MEMORY_LIMITED_REDUCED_SCREENING"
+      },
+      "relative_true_residual_l2": 2.200908500696158e-10,
+      "sampled_cell_peak_t": 108.62707830398067
+    },
+    {
+      "acceptance_status": "SCREENING_NOT_ACCEPTED",
+      "artifact": "divergent-exit-stack.material-field.json",
+      "artifact_file_sha256": "f791dbcc7c4d67443ae5381d14091adaeab161987218c477e3df303258d2b573",
+      "artifact_payload_sha256": "da7ef3f3660f1b2e6f6ea3ac9840bed23b1f177efc9168f75d3c90f5c5f12966",
+      "axis_bz_peak_t": 0.16493115860128382,
+      "boundary_to_peak_ratios": [
+        2.8452865387300926e-06,
+        7.115759954940132e-07,
+        1.77067618001803e-07
+      ],
+      "classification": "hypothetical_design_simulation_not_validated_hardware_prediction",
+      "config_id": "divergent-exit-stack-v1",
+      "energy_balance_relative": 0.0,
+      "fixed_qois_bz_t": {
+        "stage-1-axis": -0.13343257073367032,
+        "stage-1-bore-average": -0.11507000036556671,
+        "stage-2-axis": 0.1259350355682167,
+        "stage-2-bore-average": 0.10425896655989919,
+        "stage-3-axis": -0.11241878222864274,
+        "stage-3-bore-average": -0.08212625477100395,
+        "stage-4-axis": 0.15593376498262163,
+        "stage-4-bore-average": 0.16662055762556632
+      },
+      "geometry_sha256": "9b7ec5608d02754dcf7605d0389915efddfe4202f5bc466feb4652a46d004217",
+      "pm_model_form_comparison": {
+        "base_fixed_qoi_relative_difference": 0.07015225458598008,
+        "discrepancy_change": 0.6825615641590327,
+        "fine_fixed_qoi_relative_difference": 0.022269021966490846
+      },
+      "qualification": {
+        "completed_role_count": 10,
+        "estimated_requested_raster_bytes": 1095874560,
+        "executed_base_grid": [
+          60,
+          120
+        ],
+        "not_evaluated_roles": [],
+        "reason_code": "HOST_MEMORY_LIMIT",
+        "requested_base_grid": [
+          516,
+          1034
+        ],
+        "required_role_count": 10,
+        "safe_raster_bytes": 118240051,
+        "schema_version": "cft_revival.material_fields.qualification/1.4.0",
+        "status": "NOT_EVALUATED",
+        "study_scope": "MEMORY_LIMITED_REDUCED_SCREENING"
+      },
+      "relative_true_residual_l2": 9.991532182558195e-10,
+      "sampled_cell_peak_t": 39.910459946537365
+    }
+  ],
+  "integrity": {
+    "algorithm": "sha256",
+    "canonicalization": "json-sort-keys-compact-utf8-v1",
+    "payload_sha256": "32ce64983a03fc7278be1ceaa7bf20fb73e9b04926786530a1801148893ba134"
+  },
+  "limitations": [
+    "Only artifacts with ACCEPTED_PUBLICATION_EVIDENCE pass strict validation.",
+    "Linear recoil/iron simulations are hypothetical, not hardware predictions.",
+    "Memory-limited reduced studies do not evaluate high-resolution qualification."
+  ],
+  "model_level": "L1b",
+  "schema_version": "cft_revival.material_fields.design_manifest/1.4.0"
+}

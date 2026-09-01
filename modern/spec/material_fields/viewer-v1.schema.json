@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cft_revival.material_fields.viewer/1.4.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "model_level", "artifact_payload_sha256", "classification", "acceptance_status", "anchors", "summary", "field_map", "units", "integrity"],
+  "properties": {
+    "schema_version": {"const": "cft_revival.material_fields.viewer/1.4.0"},
+    "model_level": {"const": "L1b"},
+    "artifact_payload_sha256": {"$ref": "#/$defs/hash"},
+    "classification": {"const": "hypothetical_design_simulation_not_validated_hardware_prediction"},
+    "acceptance_status": {"enum": ["ACCEPTED_PUBLICATION_EVIDENCE", "SCREENING_NOT_ACCEPTED"]},
+    "anchors": {"$ref": "#/$defs/anchors"},
+    "summary": {"$ref": "#/$defs/summary"},
+    "field_map": {"$ref": "#/$defs/map"},
+    "units": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["r_m", "z_m", "psi_wb", "b_r_t", "b_z_t", "b_magnitude_t", "free_current_phi_a_per_m2", "pm_bound_current_phi_a_per_m2"],
+      "properties": {
+        "r_m": {"const": "m"}, "z_m": {"const": "m"}, "psi_wb": {"const": "Wb/rad"},
+        "b_r_t": {"const": "T"}, "b_z_t": {"const": "T"}, "b_magnitude_t": {"const": "T"},
+        "free_current_phi_a_per_m2": {"const": "A/m^2"},
+        "pm_bound_current_phi_a_per_m2": {"const": "A/m^2"}
+      }
+    },
+    "integrity": {"$ref": "#/$defs/integrity"}
+  },
+  "$defs": {
+    "hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "anchors": {
+      "type": "object", "additionalProperties": false,
+      "required": ["problem_id", "geometry_sha256", "magnetics_sha256", "design_geometry_sha256", "material_registry_sha256", "base_run_sha256", "config_sha256", "solver_config_identity_sha256", "implementation_sha256", "evidence_implementation_sha256", "grid_sha256", "domain_sha256", "problem_sha256"],
+      "properties": {
+        "problem_id": {"type": "string", "minLength": 1},
+        "geometry_sha256": {"$ref": "#/$defs/hash"},
+        "magnetics_sha256": {"$ref": "#/$defs/hash"},
+        "design_geometry_sha256": {"$ref": "#/$defs/hash"}, "material_registry_sha256": {"$ref": "#/$defs/hash"},
+        "base_run_sha256": {"$ref": "#/$defs/hash"}, "config_sha256": {"$ref": "#/$defs/hash"},
+        "solver_config_identity_sha256": {"$ref": "#/$defs/hash"},
+        "implementation_sha256": {"$ref": "#/$defs/hash"}, "grid_sha256": {"$ref": "#/$defs/hash"},
+        "evidence_implementation_sha256": {"$ref": "#/$defs/hash"},
+        "domain_sha256": {"$ref": "#/$defs/hash"}, "problem_sha256": {"$ref": "#/$defs/hash"}
+      }
+    },
+    "peak": {
+      "type": "object", "additionalProperties": false,
+      "required": ["value_t", "classification", "mesh_gate_status"],
+      "properties": {
+        "value_t": {"type": "number", "minimum": 0},
+        "classification": {"type": "string", "minLength": 1},
+        "mesh_gate_status": {"enum": ["PASS", "FAIL", "NOT_EVALUATED"]}
+      }
+    },
+    "topology": {
+      "type": "object", "additionalProperties": false,
+      "required": ["axis_null_z_m", "axis_cusps", "null_tolerance_t", "classification"],
+      "properties": {
+        "axis_null_z_m": {"type": "array", "items": {"type": "number"}},
+        "axis_cusps": {
+          "type": "array",
+          "items": {
+            "type": "object", "additionalProperties": false,
+            "required": ["z_m", "b_z_t"],
+            "properties": {"z_m": {"type": "number"}, "b_z_t": {"type": "number"}}
+          }
+        },
+        "null_tolerance_t": {"type": "number", "minimum": 0},
+        "classification": {"const": "sampled_axis_topology_not_continuous_critical_point_proof"}
+      }
+    },
+    "comparison": {
+      "type": "object", "additionalProperties": false,
+      "required": ["base_fixed_qoi_relative_difference", "fine_fixed_qoi_relative_difference", "discrepancy_change"],
+      "properties": {
+        "base_fixed_qoi_relative_difference": {"type": "number", "minimum": 0},
+        "fine_fixed_qoi_relative_difference": {"type": "number", "minimum": 0},
+        "discrepancy_change": {"type": "number", "minimum": 0}
+      }
+    },
+    "summary": {
+      "type": "object", "additionalProperties": false,
+      "required": ["sampled_cell_peak", "axis_bz_peak", "fixed_qois_bz_t", "topology", "warning_codes", "pm_model_form_comparison"],
+      "properties": {
+        "sampled_cell_peak": {"$ref": "#/$defs/peak"},
+        "axis_bz_peak": {"$ref": "#/$defs/peak"},
+        "fixed_qois_bz_t": {"type": "object", "minProperties": 1, "additionalProperties": {"type": "number"}},
+        "topology": {"$ref": "#/$defs/topology"},
+        "warning_codes": {"type": "array", "minItems": 3, "uniqueItems": true, "items": {"enum": ["CELLWISE_MAXIMUM_SCREENING_ONLY", "HOST_MEMORY_LIMITED_QUALIFICATION", "LINEAR_IRON_SATURATION_UNASSESSED", "PM_IRREVERSIBLE_DEMAGNETIZATION_UNASSESSED", "UNDERRESOLVED_GEOMETRIC_FEATURE", "STRUCTURED_GRID_METHOD_INSUFFICIENT"]}},
+        "pm_model_form_comparison": {"$ref": "#/$defs/comparison"}
+      }
+    },
+    "matrix": {"type": "array", "minItems": 2, "items": {"type": "array", "minItems": 2}},
+    "map": {
+      "type": "object", "additionalProperties": false,
+      "required": ["stride", "r_m", "z_m", "psi_wb", "b_r_t", "b_z_t", "b_magnitude_t", "material_id", "free_current_phi_a_per_m2", "pm_bound_current_phi_a_per_m2"],
+      "properties": {
+        "stride": {"type": "integer", "minimum": 1},
+        "r_m": {"type": "array", "minItems": 2, "items": {"type": "number"}},
+        "z_m": {"type": "array", "minItems": 2, "items": {"type": "number"}},
+        "psi_wb": {"$ref": "#/$defs/matrix"}, "b_r_t": {"$ref": "#/$defs/matrix"},
+        "b_z_t": {"$ref": "#/$defs/matrix"}, "b_magnitude_t": {"$ref": "#/$defs/matrix"},
+        "material_id": {"$ref": "#/$defs/matrix"},
+        "free_current_phi_a_per_m2": {"$ref": "#/$defs/matrix"},
+        "pm_bound_current_phi_a_per_m2": {"$ref": "#/$defs/matrix"}
+      }
+    },
+    "integrity": {
+      "type": "object", "additionalProperties": false,
+      "required": ["algorithm", "canonicalization", "payload_sha256"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "canonicalization": {"const": "json-sort-keys-compact-utf8-v1"},
+        "payload_sha256": {"$ref": "#/$defs/hash"}
+      }
+    }
+  }
+}
