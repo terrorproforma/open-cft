@@ -1,0 +1,92 @@
+{
+  "schema_version": "2.0.0",
+  "bundle_sha256": "97e9a425c702e6a028c3e8a13411716b420c5e2b722219bb10404e62d88b69a1",
+  "integrity_notice": "SHA-256 detects accidental or post-publication modification only; it is not authentication. An attacker who can replace the payload can recompute its hash.",
+  "policy": "Published external model outputs for cross-model comparison only. They are not experimental truth, calibration targets by default, or acceptance tolerances.",
+  "source": {
+    "title": "Multiobjective Optimization and Particle-in-Cell Simulation of Cusped Field Thrusters for Microsatellite Platforms",
+    "doi": "10.2514/1.A34584",
+    "source_url": "https://doi.org/10.2514/1.A34584",
+    "publication_year": 2020
+  },
+  "records": [
+    {
+      "record_id": "YEO2020-S1-MDO-ORIGINAL",
+      "source_native_label": "MDO (original)",
+      "editorial_interpretation": "Published corrected low-fidelity model output; editorial description, not a source-native label.",
+      "role": "external_cross_model_only_not_experimental_truth",
+      "kind": "published_external_model_output",
+      "source_authority": "published_model_output",
+      "partition": "reference_only",
+      "model_context_id": "YEO2020-S1-PUBLISHED-COMPARISON",
+      "result_context_id": "YEO2020-S1-REPORTED-PERFORMANCE",
+      "group_id": "YEO2020-S1",
+      "independence_identity": {
+        "design_identity": "YEO2020-S1",
+        "run_lineage_id": "YEO2020-S1-MDO-ORIGINAL",
+        "hardware_article_id": "not_applicable",
+        "test_campaign_id": "not_applicable",
+        "specimen_id": "not_applicable"
+      },
+      "model_revision": "published-2020-mdo-original",
+      "code_revision": "external-not-available",
+      "observations": [
+        {"name": "thrust", "value": 102.7, "unit": "mN"},
+        {"name": "reported_model_efficiency", "value": 36.5, "unit": "%"},
+        {"name": "specific_impulse", "value": 2131.0, "unit": "s"}
+      ]
+    },
+    {
+      "record_id": "YEO2020-S1-PIC",
+      "source_native_label": "PIC",
+      "editorial_interpretation": "Published 2D3V PIC-MCC model output; cross-model benchmark evidence only.",
+      "role": "external_cross_model_only_not_experimental_truth",
+      "kind": "published_external_model_output",
+      "source_authority": "published_model_output",
+      "partition": "reference_only",
+      "model_context_id": "YEO2020-S1-PUBLISHED-COMPARISON",
+      "result_context_id": "YEO2020-S1-REPORTED-PERFORMANCE",
+      "group_id": "YEO2020-S1",
+      "independence_identity": {
+        "design_identity": "YEO2020-S1",
+        "run_lineage_id": "YEO2020-S1-PIC",
+        "hardware_article_id": "not_applicable",
+        "test_campaign_id": "not_applicable",
+        "specimen_id": "not_applicable"
+      },
+      "model_revision": "published-2020-pic",
+      "code_revision": "external-not-available",
+      "observations": [
+        {"name": "thrust", "value": 62.8, "unit": "mN"},
+        {"name": "reported_model_efficiency", "value": 15.2, "unit": "%"},
+        {"name": "specific_impulse", "value": 1333.0, "unit": "s"}
+      ]
+    },
+    {
+      "record_id": "YEO2020-S1-MDO-MODIFIED",
+      "source_native_label": "MDO (modified)",
+      "editorial_interpretation": "Published PIC-informed reduced-model output; editorial description of the modified MDO result.",
+      "role": "external_cross_model_only_not_experimental_truth",
+      "kind": "published_external_model_output",
+      "source_authority": "published_model_output",
+      "partition": "reference_only",
+      "model_context_id": "YEO2020-S1-PUBLISHED-COMPARISON",
+      "result_context_id": "YEO2020-S1-REPORTED-PERFORMANCE",
+      "group_id": "YEO2020-S1",
+      "independence_identity": {
+        "design_identity": "YEO2020-S1",
+        "run_lineage_id": "YEO2020-S1-MDO-MODIFIED",
+        "hardware_article_id": "not_applicable",
+        "test_campaign_id": "not_applicable",
+        "specimen_id": "not_applicable"
+      },
+      "model_revision": "published-2020-mdo-modified",
+      "code_revision": "external-not-available",
+      "observations": [
+        {"name": "thrust", "value": 61.7, "unit": "mN"},
+        {"name": "reported_model_efficiency", "value": 14.6, "unit": "%"},
+        {"name": "specific_impulse", "value": 1280.0, "unit": "s"}
+      ]
+    }
+  ]
+}

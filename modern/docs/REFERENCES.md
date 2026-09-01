@@ -61,6 +61,35 @@ in `workstreams/optimization-architecture.md` and
 remains null. `FIRST_RESULTS.md` records only the L0 numerical sweep and does
 not fill or imply optimization benchmark results.
 
+## Published 2020 cross-model evidence
+
+Yeo et al., “Multiobjective Optimization and Particle-in-Cell Simulation of
+Cusped Field Thrusters for Microsatellite Platforms,”
+DOI [10.2514/1.A34584](https://doi.org/10.2514/1.A34584), reports the S1 rows
+`MDO (original)`, `PIC`, and `MDO (modified)`. The source-native labels and
+values are preserved in
+`../data/validation/yeo-2020-s1-external-evidence-v2.json` and the authorized
+shared physics fixture uses `YEO2020-S1-MDO-ORIGINAL`. “Corrected
+low-fidelity” is retained only as an editorial interpretation, not substituted
+for the publication's model label.
+
+These records are external model outputs for cross-model comparison. They are
+not experimental truth, calibration data, or acceptance tolerances. The
+validation workstream reserves predictive-validity authority for provenance-
+and uncertainty-complete experiments.
+
+## Accepted foundation evidence boundaries
+
+The L1a field equations, artifacts, and verification record are under
+`../spec/fields/`, `../examples/axisymmetric/`, and
+`workstreams/axisymmetric-workstream-report.md`. L1a means linear-vacuum,
+equivalent-current, finite-box FDM—not FEM or material-aware production fields.
+Global plasma, hybrid, and PIC reports document numerical foundations rather
+than accepted predictive L2/L3 CFT models. The surrogate benchmark report
+records failed quality gates, so it is not a successful regression oracle.
+The manuscript checker under `../../paper/` keeps L1--L3 result gates closed
+until accepted committed manifests exist.
+
 ## Publication/snapshot reconciliation
 
 - **Objectives:** paper abstract, §§1, 2.3, and 4 consistently describe three

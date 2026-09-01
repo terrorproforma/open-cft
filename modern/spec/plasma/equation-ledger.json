@@ -1,0 +1,85 @@
+{
+  "schema_version": "2.0.0",
+  "workstream": "corrected-global-xenon-discharge",
+  "source_label": "MDO (original)",
+  "source_label_policy": "This exact label identifies the inherited low-fidelity MDO lineage. Editorial corrections and interpretations are separate fields and do not alter the source label.",
+  "primary_source": {
+    "citation": "Kornfeld, Koch, and Harmann, Physics and Evolution of HEMP-Thrusters, IEPC-2007-108, 2007",
+    "url": "https://electricrocket.org/IEPC/IEPC-2007-108.pdf"
+  },
+  "state_layout": {
+    "size": 25,
+    "order": [
+      "phi_1..phi_4 [V]",
+      "T_e1..T_e4 [eV]",
+      "I_1..I_4 [A]",
+      "j_e0..j_e4 [A]",
+      "j_i0..j_i4 [A]",
+      "j_ic1..j_ic3 [A]"
+    ],
+    "editorial_interpretation": "The three printed cusp potentials cancel from the published power expressions. Without a sheath closure they are unidentifiable and are eliminated."
+  },
+  "residual_rows": [
+    {"row": 0, "id": "R00", "expression": "j_e0-p0*(phi_1-phi_0)^(3/2)", "unit": "A", "source": "Kornfeld definition equations", "sign": "as printed", "confidence": "high", "branch": "all"},
+    {"row": 1, "id": "R01", "expression": "j_e1-j_e0*(1-p1)-I1", "unit": "A", "source": "Kornfeld definition equations", "sign": "as printed", "confidence": "high", "branch": "all"},
+    {"row": 2, "id": "R02", "expression": "j_e2-j_e1*(1-p2)-I2", "unit": "A", "source": "Kornfeld definition equations", "sign": "as printed", "confidence": "high", "branch": "all"},
+    {"row": 3, "id": "R03", "expression": "j_e3-j_e2*(1-p3)-I3", "unit": "A", "source": "Kornfeld definition equations", "sign": "as printed", "confidence": "high", "branch": "all"},
+    {"row": 4, "id": "R04", "expression": "I1-j_e0*(1-p1)*CI*(phi_1-phi_0+T0)/EI", "unit": "A", "source": "Kornfeld definition equations", "sign": "as printed", "confidence": "high", "branch": "all"},
+    {"row": 5, "id": "R05", "expression": "I2-j_e1*(1-p2)*CI*(phi_2-phi_1+T1)/EI", "unit": "A", "source": "Kornfeld definition equations", "sign": "as printed", "confidence": "high", "branch": "all"},
+    {"row": 6, "id": "R06", "expression": "I3-j_e2*(1-p3)*CI*(phi_3-phi_2+T2)/EI", "unit": "A", "source": "Kornfeld definition equations", "sign": "as printed", "confidence": "high", "branch": "all"},
+    {"row": 7, "id": "R07", "expression": "I4-j_e3*(1-p4)*CI*(phi_4-phi_3+T3)/EI", "unit": "A", "source": "Kornfeld definition equations", "sign": "as printed", "confidence": "high", "branch": "all"},
+    {"row": 8, "id": "R08", "expression": "j_i0-j_i1-I1+j_ic1", "unit": "A", "source": "charge conservation and DM9.2 table", "sign": "cusp outflow positive in residual", "confidence": "high", "branch": "all", "editorial_interpretation": "Table closes as 0.893+0.008-0.007=0.894 A."},
+    {"row": 9, "id": "R09", "expression": "j_i1-j_i2-I2+j_ic2", "unit": "A", "source": "charge conservation and DM9.2 table", "sign": "cusp outflow positive in residual", "confidence": "high", "branch": "all", "editorial_interpretation": "Table closes as 0.363+0.543-0.013=0.893 A."},
+    {"row": 10, "id": "R10", "expression": "j_i2-j_i3-I3+j_ic3", "unit": "A", "source": "charge conservation and DM9.2 table", "sign": "cusp outflow positive in residual", "confidence": "high", "branch": "all", "editorial_interpretation": "Table closes as 0.155+0.310-0.102=0.363 A; the inherited plus-cusp RHS misses by 0.204 A."},
+    {"row": 11, "id": "R11", "expression": "j_i3-I4-j_i4", "unit": "A", "source": "Kornfeld signed terminal-current definition and DM9.2 table", "sign": "signed j_i4 is subtracted", "confidence": "high", "branch": "all", "editorial_interpretation": "Because j_i4=-0.002 A, 0.155-0.157-(-0.002)=0 and equivalently 0.155+0.002=0.157 A."},
+    {"row": 12, "id": "R12", "expression": "T2*(j_e1*(1-p2)+I2)-CT*j_e1*(1-p2)*(phi_2-phi_1+T1)", "unit": "W", "source": "Kornfeld thermal transport definition", "sign": "received minus thermalized", "confidence": "high", "branch": "all"},
+    {"row": 13, "id": "R13", "expression": "T3*(j_e2*(1-p3)+I3)-CT*j_e2*(1-p3)*(phi_3-phi_2+T2)", "unit": "W", "source": "Kornfeld thermal transport definition", "sign": "received minus thermalized", "confidence": "high", "branch": "all"},
+    {"row": 14, "id": "R14", "expression": "T4*(j_e3*(1-p4)+I4)-CT*j_e3*(1-p4)*(phi_4-phi_3+T3)", "unit": "W", "source": "Kornfeld definition equation immediately before anode-loss expression", "sign": "received minus thermalized", "confidence": "high", "branch": "all", "editorial_interpretation": "No j_e4 transport recurrence is printed. Substituting j_e4 is not equivalent because p4*j_e3 goes directly to the anode boundary."},
+    {"row": 15, "id": "R15", "expression": "j_e0+j_i0-Ia", "unit": "A", "source": "Kornfeld interface current conditions", "sign": "as printed", "confidence": "high", "branch": "all"},
+    {"row": 16, "id": "R16", "expression": "j_e1+j_i1-Ia", "unit": "A", "source": "Kornfeld interface current conditions", "sign": "as printed", "confidence": "high", "branch": "all"},
+    {"row": 17, "id": "R17", "expression": "j_e2+j_i2-Ia", "unit": "A", "source": "Kornfeld interface current conditions", "sign": "as printed", "confidence": "high", "branch": "all"},
+    {"row": 18, "id": "R18", "expression": "j_e3+j_i3-Ia", "unit": "A", "source": "Kornfeld interface current conditions", "sign": "as printed", "confidence": "high", "branch": "all"},
+    {"row": 19, "id": "R19", "expression": "j_e4+j_i4-Ia", "unit": "A", "source": "Kornfeld interface current conditions", "sign": "as printed", "confidence": "high", "branch": "all"},
+    {"row": 20, "id": "R20", "expression": "j_ic1-p1*j_e0", "unit": "A", "source": "Kornfeld dielectric cusp conditions", "sign": "as printed", "confidence": "high", "branch": "all"},
+    {"row": 21, "id": "R21", "expression": "j_ic2-p2*j_e1", "unit": "A", "source": "Kornfeld dielectric cusp conditions", "sign": "as printed", "confidence": "high", "branch": "all"},
+    {"row": 22, "id": "R22", "expression": "j_ic3-p3*j_e2", "unit": "A", "source": "Kornfeld dielectric cusp conditions", "sign": "as printed", "confidence": "high", "branch": "all"},
+    {"row": 23, "id": "R23", "expression": "(1-CE)*j_e0*(1-p1)*dE1-[j_e0*(1-p1)+I1]*T1-I1*EI", "unit": "W", "source": "Kornfeld cell power statement and CE+CI+CT=1", "sign": "excitation subtracted as loss", "confidence": "high", "branch": "all"},
+    {"row": 24, "id": "R24", "expression": "(1-CE)*j_e1*(1-p2)*dE2-[j_e1*(1-p2)+I2]*T2-I2*EI", "unit": "W", "source": "Kornfeld cell power statement and CE+CI+CT=1", "sign": "excitation subtracted as loss", "confidence": "high", "branch": "all"},
+    {"row": 25, "id": "R25", "expression": "(1-CE)*j_e2*(1-p3)*dE3-[j_e2*(1-p3)+I3]*T3-I3*EI", "unit": "W", "source": "Kornfeld cell power statement and CE+CI+CT=1", "sign": "excitation subtracted as loss", "confidence": "high", "branch": "all"},
+    {"row": 26, "id": "R26", "expression": "(1-CE)*j_e3*(1-p4)*dE4-[j_e3*(1-p4)+I4]*T4-I4*EI", "unit": "W", "source": "Kornfeld cell power statement and CE+CI+CT=1", "sign": "excitation subtracted as loss", "confidence": "high", "branch": "all"},
+    {"row": 27, "id": "R27", "expression": "Pb+PI+PE+Pcusp+Panode_net-Ua*Ia", "unit": "W", "source": "Kornfeld global power balance", "sign": "losses minus input", "confidence": "high for accounting; component transcription varies", "branch": "anode-ion branch"}
+  ],
+  "power_expressions": [
+    {"id": "Pb", "expression": "j_i3*phi_4+(j_i2-j_i3)*phi_3+(j_i1-j_i2)*phi_2+(j_i0-j_i1)*phi_1", "unit": "W", "source": "Kornfeld global terms", "sign": "directed ion-energy flux", "confidence": "high", "branch": "all"},
+    {"id": "PI", "expression": "EI*(I1+I2+I3+I4)", "unit": "W", "source": "Kornfeld global terms", "sign": "nonnegative loss", "confidence": "high", "branch": "all"},
+    {"id": "PE", "expression": "CE*sum_k(j_e,k-1*(1-pk)*dEk)", "unit": "W", "source": "Kornfeld global terms", "sign": "nonnegative loss", "confidence": "high", "branch": "all"},
+    {"id": "Pcusp", "expression": "j_e0*p1*(phi_1-phi_0+EI)+j_e1*p2*(phi_2-phi_1+EI+T1)+j_e2*p3*(phi_3-phi_2+EI+T2)", "unit": "W", "source": "Kornfeld cusp-loss expression after algebraic cusp-potential cancellation", "sign": "nonnegative boundary loss", "confidence": "medium-high", "branch": "all"},
+    {"id": "Panode_e", "expression": "j_e3*p4*(Ua-phi_3+T3)+[I4+j_e3*(1-p4)]*(phi_4-Ua+T4)", "unit": "W", "source": "Kornfeld anode-loss expression", "sign": "nonnegative electron/recombination boundary loss", "confidence": "medium-high", "branch": "all"},
+    {"id": "Panode_i_exchange", "expression": "s*j_i4*(phi_4-Ua)", "unit": "W", "source": "Kornfeld raster equation; operator not independently machine-readable", "sign": "signed exchange; positive means plasma-to-anode, negative means anode-to-plasma", "confidence": "disputed", "branch": "s=-1 source-minus; s=+1 OCR-plus"},
+    {"id": "Panode_net", "expression": "Panode_e+Panode_i_exchange", "unit": "W", "source": "derived accounting sum", "sign": "net boundary transfer, not a named nonnegative loss", "confidence": "high given selected branch", "branch": "anode-ion branch"}
+  ],
+  "numerical_contract": {
+    "normalization": "Rows in A divide by Ia; rows in W divide by exactly Ua*Ia. Ua and Ia must each be finite positive normal binary64 values, and Ua*Ia must also be finite positive normal because it is a divisor.",
+    "derived_scale_gate": "The cathode law requires Ua^(3/2) to be finite positive and normal in the accepted domain. Therefore Ua=sys.float_info.min is intentionally rejected even though Ua itself is normal: Ua^(3/2) underflows. Ia=sys.float_info.min remains admissible only when Ua, Ua*Ia, Ua^(3/2), and every derived bound all pass their contracts.",
+    "constraints": "Finite box bounds plus explicit inequality margins; no Boolean residuals.",
+    "linear_algebra": "Variable-scaled, column-pivoted QR Levenberg-Marquardt steps; reported rank and condition estimate refer to the numerically independent scaled Jacobian columns.",
+    "publication": "Status alone never publishes a state. Every normalized row must meet tolerance and the state must pass finite, bound, and nonlinear feasibility checks."
+  },
+  "evidence_comparisons": {
+    "yeo2020_s1_id": "YEO2020-S1-MDO-ORIGINAL",
+    "yeo2020_s1_source_label": "MDO (original)",
+    "dm92_published_max_normalized_residual": 0.0014866093499999807,
+    "dm92_published_max_row": 27,
+    "single_start_observed_residual_floor_500_iterations": 0.0004893506813569956,
+    "jacobian_rank_at_dm92": 22,
+    "editorial_interpretation": "The rounded table is a minimum-error evidence point, not a strict root. The rank-deficient 28-by-25 formulation and remaining power-component discrepancy block a unique predictive solve."
+  },
+  "limitations": [
+    "No neutral density or mass-flow balance; anode current is prescribed.",
+    "No double ionization, charge exchange, kinetic electron distribution, plume divergence, or facility effects.",
+    "CE, CI, and CT are empirical thermal-loss partitions, not independent xenon rate closures.",
+    "Three cusp potentials remain unidentifiable without a sheath closure.",
+    "Original machine-readable MathCAD equations and experimental uncertainty data remain unavailable.",
+    "Yeo et al. 2020 values are external cross-model evidence only."
+  ]
+}

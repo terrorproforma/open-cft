@@ -1,0 +1,22 @@
+{
+  "document_type": "paper-deterministic-build-config",
+  "schema_version": "1.0",
+  "evidence_revision": "41bf909127dc021abe8078fd77a98aa3a6e4cf33",
+  "source_date_epoch": 1788270043,
+  "source_date_basis": "Commit timestamp of evidence_revision",
+  "pdf_metadata": {
+    "author": "Angus Muffatti",
+    "title": "From Legacy Snapshot to Evidence-Gated Computation: A Reproducible Modernization Path for Cusped-Field-Thruster Design",
+    "creator": "paper/scripts/build.py deterministic TeX pipeline",
+    "producer": "pdfTeX deterministic build"
+  },
+  "determinism_controls": [
+    "SOURCE_DATE_EPOCH",
+    "FORCE_SOURCE_DATE",
+    "TZ=UTC",
+    "pdfinfoomitdate",
+    "pdftrailerid",
+    "pdfsuppressptexinfo",
+    "clean output directory before each build"
+  ]
+}

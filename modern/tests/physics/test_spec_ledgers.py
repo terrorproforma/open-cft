@@ -28,6 +28,13 @@ def test_2020_outputs_are_labeled_external_evidence_not_truth() -> None:
     assert "not fitted truth" in fixtures["policy"]
     assert fixtures["source"]["doi_url"] == "https://doi.org/10.2514/1.A34584"
     assert len(fixtures["fixtures"]) == 3
+    original = fixtures["fixtures"][0]
+    assert original["fixture_id"] == "YEO2020-S1-MDO-ORIGINAL"
+    assert original["source_model_label"] == "MDO (original)"
+    assert "editorial_interpretation" in original
+    assert "mdo_original_vs_pic_relative_errors_reported_fraction" in (
+        fixtures["known_comparison"]
+    )
     for fixture in fixtures["fixtures"]:
         assert fixture["role"].startswith("external_regression_only")
         assert fixture["role"] != "fitted_truth"

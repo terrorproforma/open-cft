@@ -144,3 +144,25 @@ Detailed derivations and review history remain in
 - [self] Preserve accepted numerical evidence while hardening boundaries:
   rerun the exact 8,192-point CUDA config and compare complete ranges/parity,
   rather than assuming validation-only edits cannot affect outputs.
+
+## 2026-09-02 accepted-workstream integration guardrails
+
+- [user] Integrate only independently accepted workstreams. Every
+  `material_fields` source, test, spec, example, and workstream report remains
+  screening-only and must stay unstaged.
+- [self] “Accepted” is local to a stated contract. L1a convergence and
+  CPU/CUDA parity do not make it FEM or material-aware; reduced plasma,
+  prescribed-field hybrid, and electrostatic PIC verification do not establish
+  predictive L2/L3 CFT validity.
+- [self] A surrogate runtime can be correct while its model-quality benchmark
+  fails. Keep the benchmark rejection visible and never turn API integration
+  into an accuracy claim.
+- [self] Public package convenience should expose domain modules lazily rather
+  than flattening similarly named concepts or importing Warp, NumPy, or the
+  Torch family at base import.
+- [tool] Generic `results/` ignore rules can hide reviewed scientific evidence.
+  Re-include only the exact accepted axisymmetric result directory while
+  retaining broad simulation-output and paper-build exclusions.
+- [self] Paper source integration does not reopen result gates. L1--L3 remain
+  closed until committed manifests satisfy their evidence policies, and human
+  authorship/approval fields remain human-controlled.

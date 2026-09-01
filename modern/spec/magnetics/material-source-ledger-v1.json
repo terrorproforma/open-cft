@@ -1,0 +1,196 @@
+{
+  "schema_version": "1.0.0",
+  "workstream": "magnetic-material-source-foundations",
+  "scope": {
+    "included": [
+      "linear isotropic permeability",
+      "single-valued monotone tabulated B-H laws",
+      "SmCo-like permanent-magnet recoil parameters",
+      "axisymmetric magnetization and equivalent bound currents",
+      "material-region and Maxwell interface contracts",
+      "demagnetization screening warnings",
+      "finite-domain open-boundary acceptance policy"
+    ],
+    "explicitly_excluded": [
+      "hysteresis loops, minor loops, and loss",
+      "eddy-current and rate-dependent constitutive response",
+      "irreversible demagnetization prediction",
+      "a solver implementation or edits to the active axisymmetric worker",
+      "claims that a finite Dirichlet box is an exact open boundary"
+    ]
+  },
+  "si_units": {
+    "H": "A m^-1",
+    "B": "T",
+    "M": "A m^-1",
+    "mu": "H m^-1",
+    "J_bound": "A m^-2",
+    "K_bound": "A m^-1",
+    "temperature": "K",
+    "energy_density": "J m^-3",
+    "length": "m"
+  },
+  "constitutive_equations": [
+    {
+      "id": "MAG-MAT-001",
+      "expression": "B = mu0 * mu_r * H",
+      "domain": "linear isotropic material with mu_r > 0"
+    },
+    {
+      "id": "MAG-MAT-002",
+      "expression": "mu_diff = dB/dH; mu_sec = B/H with mu_sec(0) = dB/dH|0",
+      "domain": "single-valued odd-symmetric monotone B-H interpolation"
+    },
+    {
+      "id": "MAG-MAT-003",
+      "expression": "w_co(H) = integral_0^H B(h) dh; w(B) = H B - w_co(H)",
+      "domain": "single-valued conservative constitutive law only"
+    },
+    {
+      "id": "MAG-PM-001",
+      "expression": "Br(T)=Br_ref[1+alpha_Br(T-T_ref)]",
+      "domain": "declared closed temperature validity interval"
+    },
+    {
+      "id": "MAG-PM-002",
+      "expression": "Hci(T)=Hci_ref[1+alpha_Hci(T-T_ref)]",
+      "domain": "declared closed temperature validity interval"
+    },
+    {
+      "id": "MAG-PM-003",
+      "expression": "B_parallel = Br(T) + mu0 * mu_recoil * H_parallel",
+      "domain": "linear recoil-line approximation before irreversible demagnetization"
+    },
+    {
+      "id": "MAG-SRC-001",
+      "expression": "J_bound_phi = (curl M)_phi = partial_z M_r - partial_r M_z",
+      "coordinates": "right-handed cylindrical (r, phi, z), partial_phi=0"
+    },
+    {
+      "id": "MAG-SRC-002",
+      "expression": "K_bound_phi = (M cross n)_phi = M_z n_r - M_r n_z",
+      "coordinates": "right-handed cylindrical (r, phi, z)"
+    },
+    {
+      "id": "MAG-IFACE-001",
+      "expression": "n dot (B_plus-B_minus)=0; [n cross (H_plus-H_minus)]_phi=K_free_phi",
+      "warning": "bound magnetization current is not free current and must not be double-counted"
+    }
+  ],
+  "nonlinear_curve_policy": {
+    "data_domain": "strictly increasing first-quadrant samples beginning at (0,0)",
+    "symmetry": "odd B(-H)=-B(H)",
+    "interpolation": "interval-scale-normalized Fritsch-Carlson/Hyman-limited monotone piecewise cubic Hermite evaluated in Bernstein form",
+    "required_knot_property": "strictly positive differential permeability; valid abrupt terminal data receives a positive shape-preserving endpoint limit rather than curve rejection",
+    "extrapolation_options": [
+      "error",
+      "linear_tangent"
+    ],
+    "inverse": "interval-local direct extended-range inversion for linear intervals; Decimal safeguarded Newton/bisection for nonlinear intervals with stopping on reconstructed physical-H binary64 adjacency",
+    "endpoint_oracle": "(0,0)->(binary64_max,binary64_max) maps B=2^-1074 to H=2^-1074 and B=2^-1073 to H=2^-1073 exactly",
+    "energy": "direct positive integrals of B dH and H dB using normalized intervals; zero is returned only for a true nonnegative value below binary64 minimum subnormal; no HB-minus-coenergy cancellation",
+    "hysteresis": "out_of_scope"
+  },
+  "datasets": [
+    {
+      "dataset_id": "synthetic-soft-magnetic-example-v1",
+      "classification": "synthetic checked algorithm example",
+      "redistribution": "authored in this repository",
+      "measured": false,
+      "warning": "not representative of a named material grade",
+      "H_A_per_m": [
+        0.0,
+        100.0,
+        300.0,
+        1000.0,
+        3000.0,
+        10000.0,
+        30000.0,
+        100000.0
+      ],
+      "B_T": [
+        0.0,
+        0.08,
+        0.22,
+        0.58,
+        0.92,
+        1.28,
+        1.4,
+        1.66
+      ]
+    },
+    {
+      "dataset_id": "synthetic-smco-like-example-v1",
+      "classification": "synthetic checked parameter example",
+      "redistribution": "authored in this repository",
+      "measured": false,
+      "warning": "not a vendor grade or qualification dataset",
+      "parameters": {
+        "Br_ref_T": 1.05,
+        "Hci_ref_A_per_m": 1600000.0,
+        "mu_recoil_relative": 1.05,
+        "T_ref_K": 293.15,
+        "alpha_Br_per_K": -0.0003,
+        "alpha_Hci_per_K": -0.002,
+        "T_min_K": 253.15,
+        "T_max_K": 473.15
+      }
+    }
+  ],
+  "demagnetization_policy": {
+    "screen": "opposing local H projected against magnetization direction compared with Hci(T)",
+    "default_warning_fraction_of_Hci": 0.8,
+    "invalid": "temperature outside validity interval or opposing H >= Hci(T)",
+    "claim_limit": "screening only; requires worst-case local operating field and does not predict irreversible state"
+  },
+  "permanent_magnet_representation": {
+    "authorities": [
+      "recoil_remanence_constitutive",
+      "equivalent_bound_current"
+    ],
+    "rule": "exactly one authority per permanent-magnet material in a solver handoff",
+    "equivalent_current_host": "linear isotropic region with relative permeability exactly matching the permanent-magnet recoil relative permeability",
+    "equivalent_current_source": "constructed from the typed permanent-magnet material, in-range temperature, and direction; M is derived as Br(T)/mu0 and cannot be independently supplied",
+    "magnetization_relative_tolerance": 7.105427357601002e-15,
+    "axis_regularity": "radial magnetization is forbidden on regions touching r=0"
+  },
+  "open_boundary_policy": {
+    "method": "finite-box truncation accepted only with geometric padding, low boundary field, and repeated domain-expansion QoI convergence",
+    "default_expansion_factor": 1.5,
+    "default_required_comparisons": 2,
+    "claim_limit": "finite-domain convergence evidence, not an exact infinite boundary"
+  },
+  "solver_handoff": {
+    "contract": "AxisymmetricMaterialProblemContract 1.0.0",
+    "requirements": [
+      "deterministic material-region assignment",
+      "Maxwell interface jumps",
+      "separate free and bound currents",
+      "mutually exclusive permanent-magnet representation authority",
+      "unique material, region, interface, and source identifiers",
+      "differential-permeability nonlinear Jacobian or equivalent consistent linearization",
+      "independent algebraic and constitutive residuals",
+      "nonfinite rejection",
+      "retained open-domain expansion evidence",
+      "canonical SHA-256-digested strict handoff serialization"
+    ]
+  },
+  "validation_evidence": [
+    "linear vacuum and constant-mu analytic limits",
+    "knot interpolation and odd symmetry",
+    "dense monotonicity and positive interpolation derivatives",
+    "seeded property checks across subnormal, tiny, ordinary, and huge scales",
+    "Fraction-oracle exact inversion of binary64 minimum subnormals over the full finite range",
+    "finite-difference derivative checks",
+    "B-H inverse consistency",
+    "energy/coenergy Legendre consistency",
+    "temperature coefficient and recoil-line checks",
+    "equivalent bound-current signs and zero uniform volume current",
+    "Maxwell interface residual checks",
+    "nonfinite/extreme input rejection",
+    "overflow-safe vector normalization and axis/current-sheet regularity",
+    "canonical signed-zero JSON and cross-process SHA-256 digest equality",
+    "closed-schema deserialization, duplicate-key rejection, and tamper detection",
+    "rehashed inconsistent source temperature and magnetization rejection"
+  ]
+}

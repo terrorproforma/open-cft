@@ -1,0 +1,128 @@
+{
+  "document_type": "cft-revival-active-learning-contract",
+  "schema_version": "1.2",
+  "independence": {
+    "imports_existing_optimization_or_surrogate_code": false,
+    "posterior_boundary": "structural PosteriorAdapter.predict(design, source)",
+    "campaign_boundary": "structural CampaignRecordAdapter counts and pending designs",
+    "runtime_dependencies": ["python-standard-library"]
+  },
+  "uncertainty": {
+    "components": [
+      "epistemic",
+      "aleatoric",
+      "model_discrepancy_spread",
+      "estimated_mean_bias_uncertainty"
+    ],
+    "combination": "sum independent labelled variances",
+    "covariance_policy": "components combine in quadrature only under the documented zero-covariance assumption; never infer absent covariance",
+    "bias_correction": "paired additive residual equals highest minus lower",
+    "paired_residual_contract": {
+      "mean": "additive bias correction",
+      "sample_variance": "irreducible or model-discrepancy heterogeneity",
+      "sample_variance_divided_by_pair_count": "uncertainty of estimated mean bias"
+    }
+  },
+  "selection": {
+    "score_terms": [
+      "predicted_improvement",
+      "minimum_marginal_feasibility_probability",
+      "model_discrepancy",
+      "total_labelled_uncertainty"
+    ],
+    "normalization": "bounded component scaling followed by utility/(utility+positive equivalent-highest cost), monotonic in utility/cost and finite",
+    "uncertainty_signal": {
+      "combination_order": "for each objective, quadrature across epistemic, aleatoric, model-discrepancy spread and estimated-bias standard error before normalization",
+      "formula": "total_sd = sqrt(epistemic_sd^2 + aleatoric_sd^2 + discrepancy_sd^2 + bias_standard_error^2)",
+      "objective_scale": "required positive declared scale when outputs use differing units; defaults to 1",
+      "bounded_transform": "log1p(total_sd/objective_scale) / (1 + log1p(total_sd/objective_scale))",
+      "overflow_policy": "evaluate the equivalent transform through scaled hypot and log-domain arithmetic",
+      "forbidden": "separate component saturation before combination"
+    },
+    "finite_policy": "reject nonfinite inputs, overflowed corrected means, components, and final scores before ranking",
+    "tie_policy": "descending score, descending source rank, ascending source name; independent of input order",
+    "highest_fidelity_quota": "reserve remaining slots when remaining equals quota deficit",
+    "infeasible_quota": "reject when remaining slots are less than quota deficit",
+    "pending_method": {
+      "label": "asynchronous-posterior-mean-fantasy-approximation",
+      "claim": "deterministic approximation, not exact conditional GP fantasization",
+      "duplicate_control": "radial spatial repulsion around pending designs"
+    }
+  },
+  "robustness": {
+    "tolerance_kinds": ["manufacturing", "operating"],
+    "distributions": ["normal", "uniform", "triangular"],
+    "monte_carlo": "local deterministic PRNG initialized from required non-negative seed",
+    "distribution_adapter": {
+      "required_method": "callable sample(rng)",
+      "return_contract": "one finite non-boolean numbers.Real scalar; validate type before float conversion",
+      "accepted_types": "standard real int/float/Fraction and optional NumPy integer/floating scalars registered with numbers.Real",
+      "rejected_types": "bool and NumPy bool, str, bytes, bytearray, Decimal, complex, containers and objects that only define numeric coercion such as __float__",
+      "error_policy": "missing, inaccessible, non-callable, bad-signature, raised, non-scalar, malformed or nonfinite results become ActiveLearningError",
+      "seed_policy": "all adapters receive only the propagation-local seeded random.Random instance"
+    },
+    "summaries": ["mean", "empirical_quantile", "lower_CVaR", "upper_CVaR"],
+    "cvar": "finite-sample empirical expected shortfall with observation mass 1/n and fractional boundary mass; probability is tail mass for both tails and lies in (0,1]",
+    "promotion": {
+      "requires_nondominated": true,
+      "robust_sigma": 2.0,
+      "minimum_per_constraint_feasibility_probability": 0.95,
+      "probability_policy": "every marginal must pass; no independence assumption",
+      "requires_highest_fidelity_reevaluation": true
+    },
+    "promotion_input_policy": "validate finite non-empty objective vector, every finite same-sized comparison vector, exact direction labels and finite probabilities before feasibility or dominance logic; an empty comparison set is allowed only after candidate validation"
+  },
+  "calibration": {
+    "diagnostic": "held-out marginal Gaussian interval coverage within exactly one declared in-domain or ood stratum",
+    "strata": ["in-domain", "ood"],
+    "cross_stratum_aggregation": false,
+    "reports": [
+      "sample_count",
+      "nominal_coverage",
+      "observed_coverage",
+      "absolute_error",
+      "mean_interval_width",
+      "binomial_standard_error",
+      "Wilson_confidence_interval",
+      "confidence_level",
+      "stratum"
+    ]
+  },
+  "integer_contracts": {
+    "policy": "reject booleans, floats including integer-valued floats, and out-of-range integers",
+    "fields": [
+      "source_rank",
+      "source_counts",
+      "highest_fidelity_quota",
+      "remaining_evaluation_slots",
+      "Monte_Carlo_draws",
+      "Monte_Carlo_seed",
+      "paired_discrepancy_count",
+      "calibration_sample_count",
+      "stopping_counts",
+      "stopping_window_iterations"
+    ]
+  },
+  "stopping": {
+    "aligned_optimization_schema_version": "1.4",
+    "all_required_gates": [
+      "mandatory_f3_success_count",
+      "minimum_f3_success_fraction",
+      "verified_hypervolume_relative_improvement",
+      "pending_jobs",
+      "surrogate_calibration_checked",
+      "promoted_candidates_pass_guardrails",
+      "acquisition_converged",
+      "iteration_acquisition_policy_satisfied"
+    ],
+    "terminal_overrides": [
+      "hard_equivalent_f3_cost_ceiling",
+      "validation_exhausted"
+    ]
+  },
+  "verification": {
+    "truth_source": "closed-form analytical synthetic functions",
+    "legacy_outputs_used_as_truth": false,
+    "benchmark_results": null
+  }
+}

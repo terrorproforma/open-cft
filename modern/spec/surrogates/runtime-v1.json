@@ -1,0 +1,92 @@
+{
+  "document_type": "cft-revival-surrogate-runtime",
+  "schema_version": "2.0",
+  "dependency_policy": {
+    "required": ["Python >=3.10 standard library"],
+    "optional_acceleration": ["NumPy"],
+    "optimization_package_dependency": false,
+    "botorch": "lazy data interoperability only"
+  },
+  "errors": {
+    "base": "SurrogateError",
+    "validation": "SurrogateValidationError",
+    "policy": "accepted outputs, intervals, distances and metrics are finite; overflow and invalid values fail closed with a typed error"
+  },
+  "normalization": {
+    "policy_version": "affine-unit-box-and-population-standardize-v1",
+    "inputs": "per-dimension training minimum/span; unrepresentable finite spans are rejected",
+    "constant_dimensions": "unit span preserves query drift detection",
+    "outputs": "stable population mean and standard deviation",
+    "signed_zero": "both signs canonicalize to +0.0 before identity or grouping"
+  },
+  "exact_gp": {
+    "artifact_schema": "cft-surrogate-exact-gp/2.0.0",
+    "kernel": {
+      "family": "Matern",
+      "version": "matern-5/2-v1",
+      "nu": 2.5
+    },
+    "length_scales": {
+      "default_mode": "ard",
+      "isotropic_mode": "explicit",
+      "bounds": [0.03, 4.0],
+      "candidate_factors": [0.35, 0.7, 1.4],
+      "distance": "sqrt(sum(((x_i-x'_i)/ell_i)^2)) in fitted unit-box coordinates"
+    },
+    "signal_variance_candidates": [0.5, 1.0, 2.0],
+    "jitter_policy": [0.0, 1e-12, 1e-10, 1e-8, 1e-6, 1e-4],
+    "observation_noise": "optional per-row physical variance, normalized by output scale squared",
+    "prediction": {
+      "mean": "posterior latent mean in physical units",
+      "variance": "calibrated posterior latent variance in squared physical units",
+      "nominal_probability": "explicit on every Prediction",
+      "extreme_extrapolation": "stable zero covariance limit or typed rejection"
+    }
+  },
+  "identity": {
+    "format": "strict finite canonical JSON",
+    "model_hash_covers": [
+      "schema and schema hash",
+      "raw and normalized training data",
+      "normalization bounds and output scale",
+      "observation noise",
+      "kernel family and version",
+      "ARD/isotropic mode and fitted length-scale vector",
+      "signal variance and likelihood",
+      "complete jitter policy and selected jitter",
+      "calibration scale, nominal probability and source",
+      "OOD metric, quantile, multiplier and exact-coordinate tolerance",
+      "output uncertainty semantics"
+    ],
+    "load": "reject unknown keys, verify canonical model hash, reject unsupported policy constants, refit and require exact deterministic artifact reconstruction"
+  },
+  "two_fidelity": {
+    "artifact_schema": "cft-surrogate-ar1/1.0.0",
+    "equation": "high(x)=rho*low(x)+discrepancy(x)",
+    "rho_bounds_default": [-3.0, 3.0],
+    "variance": "rho^2*low_variance+discrepancy_variance under explicit posterior independence",
+    "physical_truth": false
+  },
+  "calibration_and_assessment": {
+    "calibration_role": "calibration-fit",
+    "assessment_role": "held-out-assessment",
+    "nominal_probability": "carried through predictions, calibrator and reports",
+    "coverage_acceptance": "n>=declared minimum and abs(observed-target)<=predeclared tolerance",
+    "rmse_acceptance": "RMSE / declared positive output scale <= one predeclared output-independent threshold",
+    "software_reproducibility": "exact expected dataset, split, configuration and benchmark hashes only",
+    "model_quality": "all per-output RMSE and coverage gates; never implied by reproducibility"
+  },
+  "spatial_split": {
+    "policy": "grouped-spatial-coordinate-closure-v2",
+    "leakage_prevention": "transitive closure over caller group IDs and exact canonical coordinates",
+    "coordinate_tolerance": 0.0,
+    "near_coordinate_policy": "nonzero tolerance rejected; callers must supply unit-aware canonical groups"
+  },
+  "field_reduction": {
+    "artifact_schema": "cft-surrogate-pod-basis/1.0.0",
+    "method": "fixed-mesh proper orthogonal decomposition",
+    "zero_energy": "backend-independent mean-only rank-0 representation",
+    "mesh_identity": "SHA-256 over signed-zero-canonical finite coordinates",
+    "neural_operator": false
+  }
+}

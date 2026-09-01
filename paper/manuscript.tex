@@ -1,0 +1,350 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{microtype}
+\usepackage{xcolor}
+
+\ifdefined\pdfinfoomitdate\pdfinfoomitdate=1\fi
+\ifdefined\pdftrailerid\pdftrailerid{}\fi
+\ifdefined\pdfsuppressptexinfo\pdfsuppressptexinfo=15\fi
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue,
+  citecolor=blue,
+  urlcolor=blue,
+  pdfauthor={Angus Muffatti},
+  pdftitle={From Legacy Snapshot to Evidence-Gated Computation: A Reproducible Modernization Path for Cusped-Field-Thruster Design},
+  pdfcreator={paper/scripts/build.py deterministic TeX pipeline},
+  pdfproducer={pdfTeX deterministic build}
+}
+\newcommand{\EvidenceClaim}[2]{#2\textsuperscript{\textcolor{blue}{[#1]}}}
+\newcommand{\ArtifactClaim}[3]{#3\par\noindent\textsuperscript{\textcolor{blue}{[#1; #2]}}}
+\newcommand{\EvidenceRevision}{\texttt{41bf909\allowbreak{}127dc021\allowbreak{}abe8078f\allowbreak{}
+d77a98aa\allowbreak{}3a6e4cf33}}
+\newcommand{\EvidenceGate}[2]{%
+  \par\medskip\noindent
+  \fbox{\begin{minipage}{0.94\linewidth}
+  \textbf{Evidence gate #1 (closed).} #2
+  \end{minipage}}
+  \par\medskip}
+
+\title{From Legacy Snapshot to Evidence-Gated Computation:\\
+A Reproducible Modernization Path for Cusped-Field-Thruster Design}
+\author{Angus Muffatti}
+\date{Scaffold evidence boundary: Git revision \EvidenceRevision}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Computational propulsion studies are difficult to update when the available
+research artifact is an incomplete source snapshot rather than an executable
+publication package. This paper develops an evidence-gated modernization
+workflow around a preserved cusped-field-thruster design study. The current
+contribution is reproducibility infrastructure: a technical audit of the
+legacy MATLAB chain, a machine-readable equation ledger, a conservation-reduced
+L0 operating-point model with Python and NVIDIA Warp cross-backend evaluations,
+and a manifest-governed multi-fidelity optimization protocol.
+\EvidenceClaim{CLM-010}{Current conservation and cross-backend parity establish
+implementation consistency, not physical predictive accuracy or experimental
+validation.} Higher-fidelity
+physics, optimization outcomes, uncertainty calibration, and experimental
+comparison remain closed evidence gates. The resulting scaffold separates
+verified results from planned work and provides a reproducible route for
+updating the paper without manufacturing conclusions ahead of manifests.
+\end{abstract}
+
+\section{Introduction}
+
+Cusped-field and highly efficient multistage plasma thrusters use permanent
+periodic magnetic structures to shape electron confinement and acceleration.
+Their coupled electromagnetic, plasma, and design-optimization behavior has
+motivated reduced power-balance models, finite-element magnetic analyses,
+surrogate-assisted optimization, and particle-in-cell (PIC) follow-up
+\cite{Kornfeld2007,Muffatti2017,Fahey2017,Yeo2020}. Updating such a study is
+not simply a matter of rerunning old scripts: the archived source can differ
+from the publication narrative, external dependencies may be absent, and
+numerical completion can be mistaken for physical validation.
+
+This work therefore asks a narrower, auditable question: what can be claimed
+now from the committed repository, and what evidence must exist before stronger
+claims are admitted? The contribution is a modernization and reproducibility
+architecture rather than a new best-performing thruster. It preserves the
+legacy snapshot, separates code facts from publication claims, defines typed
+fidelity and failure semantics, and requires every result section to be opened
+by a committed manifest.
+
+The paper contributes a traceable legacy audit, an equation-ledger-based L0
+baseline, a manifest-bound current result, and a constrained asynchronous
+multi-fidelity campaign policy. Each substantive result is stated later through
+an exact registered claim or generated artifact rather than authorized by a
+detached identifier.
+
+\section{Literature lineage and scope}
+
+Kornfeld, Koch, and Harmann described HEMP-thruster physics and a reduced
+power-balance treatment in IEPC-2007-108 \cite{Kornfeld2007}. Muffatti and
+Ogawa subsequently presented a small-scale CFT multi-objective design study at
+ISTS 2017 \cite{Muffatti2017}. Related work coupled higher-fidelity magnetic
+analysis and surrogate-assisted optimization \cite{Fahey2017}, and later used
+PIC analysis to interrogate selected designs \cite{Yeo2020}. These papers
+provide the scientific lineage, but they are not assumed to be bit-for-bit
+oracles for the preserved source snapshot.
+
+The optimization lineage combines classical constrained evolutionary
+multi-objective search \cite{Deb2002}, scalarization-based Bayesian
+optimization for expensive objectives \cite{Knowles2006}, noisy expected
+hypervolume improvement \cite{Daulton2021}, and trust-region multi-objective
+Bayesian optimization \cite{Daulton2022}. Multi-level emulation follows the
+general principle that cheap and expensive codes must be related explicitly,
+not pooled as exchangeable observations \cite{Kennedy2000}. The V\&V framing
+distinguishes code verification, solution verification, model validation, and
+prediction \cite{Oberkampf2002}; global sensitivity estimates, when eventually
+admitted, must state their sampling assumptions and estimator
+\cite{Saltelli2002}.
+
+\section{Methods architecture}
+
+\subsection{Immutable evidence boundary}
+
+All current result statements are pinned to Git revision
+\EvidenceRevision. The machine-readable
+claim matrix records source paths, Git blob identities, and limitations.
+Working-tree presence is insufficient evidence. A future result enters the
+paper only after its result manifest and hashed artifacts are committed,
+schema-validated, and referenced by an opened gate.
+
+\subsection{Legacy, model, and campaign layers}
+
+The architecture has four non-interchangeable layers:
+\begin{enumerate}
+  \item the preserved legacy MATLAB snapshot, treated as historical evidence;
+  \item machine-readable equation, assumption, and provenance ledgers;
+  \item evaluators that return typed numerical outputs, applicability
+        diagnostics, residuals, and failures; and
+  \item an optimization campaign that records designs, fidelity, seeds,
+        objectives, constraints, cost, uncertainty, and immutable provenance.
+\end{enumerate}
+
+\EvidenceClaim{CLM-003}{L0 is an algebraic conservation-reduced operating-point
+baseline with externally supplied charge-state, beam-current, axial-momentum,
+cathode, and PPU inputs; it has no spatial mesh or geometric decision
+variables.} The equation ledger excludes magnetic topology, channel geometry,
+ionization, wall or thermal losses, cathode--plasma coupling, plume behavior,
+erosion, and facility effects from the current model scope.
+
+\subsection{Verified L0 equations and implementation}
+
+For xenon mass flow $\dot m_{\mathrm{Xe}}$ and xenon particle mass
+$m_{\mathrm{Xe}}$, the particle rate is
+\begin{equation}
+  \dot N_{\mathrm{Xe}} = \dot m_{\mathrm{Xe}}/m_{\mathrm{Xe}}.
+\end{equation}
+The represented charge-state fractions satisfy
+$f_0+f_1+f_2=1$. For $z\in\{1,2\}$, the ideal directed ion speed is
+\begin{equation}
+  v_z = \sqrt{2 z e V_d/m_{\mathrm{Xe}}},
+\end{equation}
+subject to the documented nonrelativistic applicability gate. The beam current,
+undiverged ion momentum flux, and axial thrust are
+\begin{align}
+  I_b &= e(\dot N_1+2\dot N_2),\\
+  F_{\mathrm{ion}} &= m_{\mathrm{Xe}}
+    (\dot N_1v_1+\dot N_2v_2),\\
+  F_{\mathrm{axial}} &= k_{\mathrm{div}}F_{\mathrm{ion}},
+\end{align}
+where $k_{\mathrm{div}}$ is supplied. Beam power is checked through the
+independent forms
+\begin{equation}
+  P_{\mathrm{beam}} =
+  \sum_z m_{\mathrm{Xe}}\dot N_zv_z^2/2 = V_d I_b.
+\end{equation}
+The implementation reports explicitly bounded anode-to-beam,
+thruster-electrical-to-beam, and PPU-input-to-beam efficiencies; it does not
+emit an ambiguous total efficiency.
+\EvidenceClaim{CLM-004}{Python and Warp share canonical preprocessing and then
+evaluate the same ledgered relations through cross-backend implementations.}
+The equation ledger is the normative source for domains and numerical edge
+policies.
+
+\subsection{Multi-fidelity optimization protocol}
+
+Physics levels L0--L3 and campaign information sources F0--F3 are related by a
+mapping recorded in each evaluation manifest; the labels are not silently
+treated as synonyms. The committed campaign policy currently names F0
+corrected-analytical, F1 fields/reduced, F2 hybrid, and F3 PIC/experiment.
+\EvidenceClaim{CLM-009}{The committed campaign policy defines an eight-variable,
+four-objective constrained record, asynchronous pending-aware ask/tell, typed
+failures, immutable identities, bounded retries, equivalent-F3 planning cost,
+and same-context Pareto comparisons; its benchmark results field remains
+null.}
+
+The acquisition portfolio is specified as constrained qLogNEHVI, MORBO-style
+trust regions, and constrained qLogNParEGO. This is a policy, not a completed
+benchmark. Publication requires common initial observations, equivalent-cost
+checkpoints, a frozen F3-verified reference point and normalization, repeated
+campaign seeds, confidence intervals, and identical failure and constraint
+handling across candidate and baseline algorithms.
+
+\section{Legacy audit}
+
+\EvidenceClaim{CLM-001}{The preserved snapshot contains 16 MATLAB files but no
+archived datasets, finite-element model files, optimizer framework, dependency
+manifest, or test suite.} The audit reconstructs the intended chain as optimizer,
+geometry checks, FEMM automation, cusp extraction, nonlinear plasma solve, and
+performance post-processing.
+
+\EvidenceClaim{CLM-002}{Confirmed implementation defects include a local/global
+break affecting anode voltage and current, logical comparisons appended to a
+least-squares residual with reversed optimization meaning, a hard-coded 1000~V
+condition, internally contradictory energy-balance signs, unsafe parallel FEMM
+automation, stale or undefined cusp state, result acceptance without residual
+quality, and non-finite objectives that can pass success checks.} Publication
+and snapshot also disagree on objective count,
+generation count, reported decision variables, surrogate quality gating, and
+sensitivity interpretation. Consequently, the archived objective values are
+not used as regression truth.
+
+\section{Verification, validation, and uncertainty protocol}
+
+The protocol follows a staged evidence hierarchy:
+\begin{enumerate}
+  \item \textbf{Code verification:} unit and property tests, manufactured
+        solutions, analytic limits, binary64 edge cases, independent backend
+        tests where available, cross-backend parity, and schema rejection tests.
+  \item \textbf{Solution verification:} residual closure, mesh/time-step/domain
+        refinement where discretization exists, repeated-run determinism or
+        stochastic convergence, and numerical uncertainty.
+  \item \textbf{Model-form assessment:} explicit discrepancy terms for omitted
+        physics; no absorption of model discrepancy into emulator variance.
+  \item \textbf{Validation:} preregistered comparisons with measurements,
+        including instrument uncertainty, operating-condition uncertainty,
+        facility effects, and withheld validation cases.
+  \item \textbf{Prediction/UQ:} propagate aleatory and epistemic terms
+        separately, report calibration and coverage diagnostics, and limit
+        predictions to a declared applicability domain.
+\end{enumerate}
+
+For optimization, train/validation partitions are grouped by design so that
+fidelities and replicates cannot leak across partitions. Promotion requires
+feasibility, model calibration, out-of-distribution and invariant guardrails,
+and reevaluation at the highest available source. Sensitivity analysis remains
+closed until input distributions and dependencies are justified, estimator
+convergence is shown, and surrogate error is propagated.
+
+\section{Accepted L0 result}
+
+\subsection{Result identity}
+
+\EvidenceClaim{CLM-005}{The committed configuration specifies 8,192 deterministic
+prime-base radical-inverse points with seed 20260901 over hypothetical input
+bounds.} Those bounds are exploratory and are
+neither calibration intervals nor measured uncertainty distributions. The
+accepted manifest records the run environment and cross-backend comparison
+provenance without inferring an unrecorded run revision.
+
+\subsection{Observed numerical range}
+
+\input{generated/l0-ranges.tex}
+
+\EvidenceClaim{CLM-007}{All 8,192 records and 26 published numeric fields passed
+the documented Python/CUDA binary64 comparison; no point failed or was
+rejected. Maximum relative particle, mass, current, and beam-power conservation
+residuals were $2.36837\times10^{-16}$, $3.24198\times10^{-16}$,
+$4.10551\times10^{-16}$, and $4.43207\times10^{-16}$, respectively.}
+
+\subsection{Timing status}
+
+\EvidenceClaim{CLM-008}{The recorded end-to-end CUDA diagnostic was 0.634302~s
+(12,914.99 points/s), and separate Python reference construction was
+0.141245~s. The observation includes preprocessing, allocations, transfers,
+synchronization, and Python record construction. It was a single shared-GPU
+diagnostic without controlled clocks, warm-up protocol, repetitions, or a
+kernel-only interval. The two timings are not a comparative benchmark and
+establish neither acceleration nor regression.}
+
+\section{Planned L1 result: field-resolved reduction}
+
+\EvidenceGate{GATE-L1}{This section remains non-result text until
+\texttt{paper-L1-result-manifest} is committed and accepted. The manifest must
+identify equations and closures, geometry and material provenance, field
+solver/version, manufactured-solution tests, mesh/domain convergence,
+L0-to-L1 mapping, deterministic cases, residual and uncertainty summaries,
+artifact hashes, and the exact Git revision. Until then, no magnetic-topology,
+geometry-response, or L1 performance claim is admissible.}
+
+\section{Planned L2 result: coupled hybrid model}
+
+\EvidenceGate{GATE-L2}{This section remains non-result text until
+\texttt{paper-L2-result-manifest} is committed and accepted. Required evidence
+includes the coupling contract, ionization/excitation and wall/thermal/cathode
+closure provenance, conservation across interfaces, temporal and spatial
+convergence, code-to-code comparisons, discrepancy treatment, calibrated
+uncertainties, failed-case accounting, and hashes for every reported artifact.
+No L2 accuracy or optimization improvement is currently claimed.}
+
+\section{Planned L3 result: PIC and experimental comparison}
+
+\EvidenceGate{GATE-L3}{This section remains non-result text until
+\texttt{paper-L3-result-manifest} is committed and accepted. Required evidence
+includes PIC collision/boundary/scaling data, independent verification,
+preregistered experimental cases, diagnostic and facility metadata,
+measurement uncertainty, withheld validation cases, model-discrepancy
+assessment, and traceable hashes. Optimization outcomes additionally require
+the fair-benchmark manifest. No experimental agreement or validated
+high-fidelity Pareto improvement is currently claimed.}
+
+\section{Limitations}
+
+The present result is driven by hypothetical inputs and external closure
+fractions. No measured-thruster comparison, geometric field response, plasma
+chemistry, wall interaction, cathode model, thermal model, erosion model, or
+facility correction is active. The legacy end-to-end workflow remains
+unreproducible because source inputs and dependencies are missing. The current
+optimization implementation has no admitted surrogate fit, acquisition
+execution, hypervolume result, or baseline comparison. The current batch does
+not supply measurement comparison or calibrated model discrepancy.
+
+\section{Reproducibility and data availability}
+
+The manuscript, BibTeX database, claim matrix, evidence-gate registry,
+figure/table contract, notation, author checklist, supplementary outline,
+build wrapper, and lint tests live under \texttt{paper/}. Paper-specific
+development and learning records live under
+\texttt{modern/docs/workstreams/paper-*}. Policy checks require only the
+Python standard library. The TeX build wrapper detects available tools and
+installs nothing.
+
+Current claims resolve to committed repository documents and specifications;
+their Git blob identities are listed in the claim matrix. The original ISTS
+paper is identified by archive URL and SHA-256 in the committed provenance
+record, but its PDF is not redistributed. The current repository does not
+contain the original optimization dataset, publication-run revision, or
+experimental dataset. Future data availability statements must be generated
+from accepted manifests rather than inferred from local files.
+\EvidenceClaim{CLM-011}{The accepted committed HTML embeds complete per-point
+columns for all 8,192 reconstructed reference-sweep records; it does not
+preserve raw CUDA device buffers.}
+
+The current author line identifies Angus Muffatti. Coauthor inclusion and order,
+contribution statements, affiliations, and corresponding-author details remain
+explicit human-approval gates in
+\texttt{paper/evidence/submission-gates.json}; none are inferred here.
+
+\section{Conclusion}
+
+The updated-paper workstream converts an incomplete legacy study into an
+auditable sequence of claims. At this evidence boundary, the accepted result is
+limited to the strict L0 manifest, registered claim text, and generated table,
+accompanied by a technical audit and campaign policy.
+The stronger inferences prohibited by the claim matrix remain outside scope.
+Manifest-controlled L1--L3 sections make those future contributions visible
+without presenting them as completed work.
+
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}

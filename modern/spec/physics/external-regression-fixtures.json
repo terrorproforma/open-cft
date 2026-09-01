@@ -8,8 +8,9 @@
   },
   "fixtures": [
     {
-      "fixture_id": "YEO2020-S1-CORRECTED-GLOBAL",
-      "evidence_label": "published corrected low-fidelity model output",
+      "fixture_id": "YEO2020-S1-MDO-ORIGINAL",
+      "source_model_label": "MDO (original)",
+      "editorial_interpretation": "postprocessed/corrected low-fidelity interpretation",
       "role": "external_regression_only",
       "thrust_n": 0.1027,
       "reported_model_efficiency_fraction": 0.365,
@@ -33,7 +34,7 @@
     }
   ],
   "known_comparison": {
-    "corrected_global_vs_pic_relative_errors_reported_fraction": {
+    "mdo_original_vs_pic_relative_errors_reported_fraction": {
       "thrust": 0.389,
       "reported_model_efficiency": 0.583,
       "specific_impulse": 0.374

@@ -47,6 +47,32 @@ The dependency-free optimization core does not import Torch. Optional Warp and
 Torch/BoTorch/GPyTorch/pymoo dependencies are declared as extras and loaded
 only by the corresponding backend adapter.
 
+### Independently accepted scientific foundations
+
+The shared package lazily exposes `fields`, `plasma`, `magnetics`, `coupling`,
+`hybrid`, `pic`, `surrogates`, `active_learning`, and `validation`. Importing
+`cft_revival` does not require Warp, NumPy, Torch, BoTorch, or GPyTorch.
+Package boundaries remain explicit:
+
+- `fields` is the accepted L1a constant-permeability, equivalent-current,
+  structured-grid FDM solver and sealed artifact format. It is not FEM or the
+  material-aware production solver described below.
+- `magnetics` defines independent constitutive/source/handoff contracts;
+  `coupling` accepts only verified immutable field evidence and preserves
+  topology, uncertainty, and identity.
+- `plasma` is a corrected, source-ledgered global-discharge numerical
+  foundation. `hybrid` is prescribed-field and `pic` is a reduced
+  electrostatic foundation. None is an accepted predictive L2/L3 CFT model.
+- `surrogates` and `active_learning` provide model/runtime, uncertainty, and
+  campaign policies. The recorded held-out surrogate quality gate failed, so
+  these tools do not authorize replacement-model accuracy claims.
+- `validation` separates implementation verification, cross-model comparison,
+  and experimental predictive validity by source authority.
+
+The CLI preserves all earlier commands and adds
+`validate-axisymmetric-results`, which validates the manifest, sidecars, and
+every referenced L1a artifact without loading an optional backend.
+
 ### C++17 numerical core
 
 CMake builds `cft_kernels`; pybind11 exposes it as `cft_revival._native`.

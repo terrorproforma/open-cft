@@ -1,0 +1,51 @@
+{
+  "document_type": "paper-submission-gate-registry",
+  "schema_version": "1.0",
+  "gates": [
+    {
+      "id": "AUTHOR-IDENTITY",
+      "status": "satisfied",
+      "value": "Angus Muffatti",
+      "basis": [
+        "Known original-project author specified by the current paper workstream",
+        "Authorship of the archived ISTS 2017-b-32 project publication"
+      ]
+    },
+    {
+      "id": "COAUTHOR-APPROVAL",
+      "status": "human-approval-required",
+      "required_before": "submission",
+      "requirements": [
+        "Identify all contributors meeting the target venue's authorship criteria",
+        "Obtain explicit approval of author inclusion, order, and manuscript"
+      ]
+    },
+    {
+      "id": "CONTRIBUTION-STATEMENT-APPROVAL",
+      "status": "human-approval-required",
+      "required_before": "submission",
+      "requirements": [
+        "Map contributor work to the target venue's contribution taxonomy",
+        "Obtain each listed author's approval"
+      ]
+    },
+    {
+      "id": "AFFILIATION-APPROVAL",
+      "status": "human-approval-required",
+      "required_before": "submission",
+      "requirements": [
+        "Supply current affiliations from the authors",
+        "Verify institutional naming and permission to use each affiliation"
+      ]
+    },
+    {
+      "id": "CORRESPONDING-AUTHOR-APPROVAL",
+      "status": "human-approval-required",
+      "required_before": "submission",
+      "requirements": [
+        "Select the corresponding author",
+        "Obtain an author-approved correspondence address"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,87 @@
+{
+  "schema_version": "2.0.0",
+  "workstream": "verification-validation-evidence",
+  "package_import": "cft_revival.validation",
+  "authority_claim_ceiling": {
+    "analytical_reference": "verified_implementation",
+    "manufactured_reference": "verified_implementation",
+    "independent_code": "cross_model_agreement",
+    "simulation": "cross_model_agreement",
+    "published_model_output": "cross_model_agreement",
+    "experiment": "predictive_validity"
+  },
+  "experimental_evidence_requirements": [
+    "experiment source authority",
+    "experimental-truth provenance flag",
+    "facility",
+    "hardware article identity",
+    "campaign identity",
+    "UTC acquisition timestamp",
+    "instrument identities",
+    "raw-data locator",
+    "uncertainty budget for every observation"
+  ],
+  "context_of_use_binding": [
+    "exact quantity name",
+    "exact SI unit",
+    "minimum evidence count",
+    "minimum independent-group count",
+    "applicability parameter names, SI units, and ranges",
+    "model context identity",
+    "result context identity",
+    "model revision",
+    "code revision",
+    "immutable hardware article, campaign, run-lineage, specimen, and design identities",
+    "calibration-versus-validation physical independence"
+  ],
+  "numerical_gate_binding": [
+    "record identity and canonical SHA-256",
+    "provenance locator",
+    "model and result contexts",
+    "model and code revisions",
+    "immutable run and design identity",
+    "quantity name and exact unit",
+    "mesh identity",
+    "raw residual observation and explicit scale/tolerance",
+    "recomputed status; precomputed pass flags are not accepted",
+    "per-level convergence evidence record and content hash"
+  ],
+  "pic_replicate_policy": {
+    "minimum_replicates": 3,
+    "required_homogeneity": [
+      "source authority",
+      "model context",
+      "result context",
+      "immutable run and design identity",
+      "partition",
+      "model revision",
+      "code revision",
+      "seed policy",
+      "mesh",
+      "operating parameters",
+      "quantity names",
+      "quantity units"
+    ],
+    "interval": "two-sided conservative tabulated Student-t 95% interval with n-1 degrees of freedom"
+  },
+  "report_status": {
+    "empty_registry": "NOT_EVALUATED",
+    "missing_calibration_or_validation_partition": "NOT_EVALUATED",
+    "physical_identity_leakage": "FAIL",
+    "disjoint_calibration_and_validation_partitions": "PASS"
+  },
+  "integrity_policy": {
+    "canonical_identity": "sorted-key UTF-8 JSON SHA-256",
+    "authentication": false,
+    "limitation": "A malicious actor able to replace the payload can recompute the unkeyed hash. Authenticate distribution separately."
+  },
+  "compatibility": {
+    "python": ">=3.10",
+    "third_party_runtime_dependencies": [],
+    "unknown_fields": "reject",
+    "nulls": "reject in published bundles",
+    "nonfinite_numbers": "reject",
+    "boolean_as_number": "reject",
+    "duplicate_json_keys": "reject"
+  }
+}

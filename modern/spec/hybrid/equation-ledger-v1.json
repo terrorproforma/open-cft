@@ -1,0 +1,105 @@
+{
+  "schema_version": "1.0.0",
+  "workstream": "l2-hybrid-prescribed-field-first-slice",
+  "claim": "Verification-grade kinetic heavy-species and fluid-electron interface; not a self-consistent or calibrated thruster model.",
+  "constants": [
+    {
+      "symbol": "e",
+      "value": 1.602176634e-19,
+      "si_unit": "C",
+      "provenance": "2019 SI definition",
+      "source_url": "https://www.bipm.org/en/measurement-units/si-defining-constants"
+    },
+    {
+      "symbol": "m_Xe",
+      "value": 2.180171556711138e-25,
+      "si_unit": "kg",
+      "provenance": "131.293 u standard atomic weight times atomic mass constant",
+      "source_url": "https://ciaaw.org/xenon.htm"
+    }
+  ],
+  "represented_species": [
+    {"symbol": "Xe", "charge_state": 0, "charge_c": 0.0},
+    {"symbol": "Xe+", "charge_state": 1, "charge_c": 1.602176634e-19},
+    {"symbol": "Xe2+", "charge_state": 2, "charge_c": 3.204353268e-19}
+  ],
+  "species_contract": "For supported xenon states, charge is derived exactly as q=z*e. Custom identifiers and positive finite masses are allowed; custom charge is not.",
+  "equations": [
+    {
+      "id": "HYB-PUSH-001",
+      "expression": "dv/dt = (q/m)(E + v cross B); dx/dt = v",
+      "method": "leapfrog v^(n-1/2) to v^(n+1/2) kick-rotate-kick Boris update, then x^n to x^(n+1) drift with v^(n+1/2)",
+      "source_url": "https://www.particleincell.com/2011/vxb-rotation/",
+      "validity_domain": "state is explicitly x^n and v^(n-1/2), fields are E^n and B^n, and inputs are finite SI values"
+    },
+    {
+      "id": "HYB-TIME-001",
+      "expression": "initialize: v^(n-1/2)=BorisVelocity(v^n,E^n,B^n,-dt/2); synchronize: v^n=BorisVelocity(v^(n-1/2),E^n,B^n,+dt/2)",
+      "method": "explicit half-step initialization and diagnostic synchronization without moving x^n",
+      "source_url": "https://www.particleincell.com/2011/vxb-rotation/",
+      "validity_domain": "prescribed fields at n; synchronization is diagnostic and must not be advanced as leapfrog state"
+    },
+    {
+      "id": "HYB-DEP-001",
+      "expression": "M_i = sum_p S_ip M_p / cell_volume; sum_i S_ip = 1",
+      "method": "periodic one-dimensional cell-centred cloud-in-cell",
+      "source_url": "https://www.particleincell.com/2010/es-pic-method/",
+      "validity_domain": "particle x inside the represented periodic interval"
+    },
+    {
+      "id": "HYB-COLL-001",
+      "expression": "nu = n_n sigma(g) g; P_collision = 1 - exp(-nu dt)",
+      "method": "independent Bernoulli event keyed by splitmix64-counter-v1",
+      "source_url": "https://doi.org/10.1016/S0010-4655(02)00728-7",
+      "validity_domain": "prescribed neutral density/velocity and constant-in-fixture sigma"
+    },
+    {
+      "id": "HYB-COLL-FIXTURE-001",
+      "expression": "sigma(g) = sigma_0",
+      "method": "explicitly synthetic constant cross section for statistical verification",
+      "source_url": null,
+      "validity_domain": "tests and manufactured cases only; not xenon calibration"
+    },
+    {
+      "id": "HYB-CX-001",
+      "expression": "v_ion_after = v_neutral; Delta p_background = -Delta p_ion; Delta E_background = -Delta E_ion",
+      "method": "resonant Xe+ + Xe charge-exchange marker reset against a prescribed neutral reservoir; ion marker tracks the outgoing Xe+",
+      "source_url": "https://doi.org/10.1016/S0010-4655(02)00728-7",
+      "validity_domain": "Xe+ only with equal heavy-particle masses; Xe2+ charge-exchange is rejected until products and source accounting are implemented"
+    },
+    {
+      "id": "HYB-ELEC-001",
+      "expression": "n_e = rho_i/e; p_e = n_e k_B T_e",
+      "method": "isothermal quasineutral verification closure",
+      "source_url": null,
+      "validity_domain": "non-negative ion charge density; prescribed T_e; no electric-field solve"
+    },
+    {
+      "id": "HYB-SRC-001",
+      "expression": "Delta p_ion + Delta p_background = 0; Delta E_ion + Delta E_background = 0",
+      "method": "signed conservative source-exchange contract",
+      "source_url": null,
+      "validity_domain": "closed two-party exchange represented by this interface"
+    }
+  ],
+  "numerical_contracts": {
+    "units": "All public state is SI.",
+    "time_levels": "Canonical state is x^n, v^(n-1/2), with E^n and B^n. Current and momentum deposition therefore use half-step velocity. Synchronous diagnostic states cannot be advanced, collided, or deposited.",
+    "work": "Step electric work is the sum of time-centred work over the two electric half-kicks and is compared with kinetic energy at the two half velocity levels.",
+    "rng": "Random draws are pure functions of built-in unsigned-64 integer seed, unique particle_id, step, stream, and draw. Booleans, floats, integer-like objects, and duplicate IDs are rejected before aliasing or collision/deposition.",
+    "collision_reduction": "Particles are reduced in ascending particle-ID order with stable summation, making expected counts and aggregate momentum/energy exchange invariant under input permutation.",
+    "deposition": "Volume-integrated number, charge, half-step current, half-step momentum, and kinetic-energy densities reconstruct alive-particle totals up to binary64 summation error.",
+    "backend": "The Python path is canonical. Optional Warp uses float64 and explicit cpu/cuda selection; nonfinite outputs are rejected. Empty Warp batches return canonical empty or zero results without launch.",
+    "zero_limits": "dt=0 preserves leapfrog particle objects exactly; E=B=0 preserves velocity and performs drift only.",
+    "checkpoint": "hybrid-checkpoint-v1 is a closed typed schema preserving species identifier/mass plus derived charge, time staggering, unique particle/RNG identity, and provenance. JSON numbers must be actual finite parser int/float values and are never coerced from strings, booleans, bytes, or float-like objects. Recursive duplicate object keys are rejected before hashing/schema checks. Canonical-JSON SHA-256 detects accidental corruption or mismatch but is not a signature and provides no adversarial authenticity."
+  },
+  "explicitly_unresolved": [
+    "self-consistent Poisson solve",
+    "electron energy equation",
+    "anomalous electron mobility",
+    "sheath and material wall interaction",
+    "open plume and facility boundaries",
+    "measured xenon collision cross sections and calibration",
+    "Xe2+ charge-exchange products and reaction source accounting"
+  ]
+}

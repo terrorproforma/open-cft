@@ -1,0 +1,103 @@
+{
+  "document_type": "paper-evidence-manifest-schema-registry",
+  "schema_version": "1.0",
+  "manifest_types": {
+    "paper-L0-run-evidence-manifest": {
+      "supported_versions": ["1.0"],
+      "level": "L0",
+      "required_file_roles": [
+        "sweep-config",
+        "first-results-report",
+        "equation-ledger",
+        "model-code",
+        "reference-code",
+        "cuda-code",
+        "workflow-code",
+        "cli-code",
+        "dashboard-generator",
+        "gallery-generator",
+        "gallery-data",
+        "accepted-html"
+      ],
+      "required_metrics": [
+        "sample_count",
+        "published_numeric_fields",
+        "parity_mismatch_count",
+        "failed_or_rejected_points",
+        "raw_ranges",
+        "maximum_cuda_absolute_residuals",
+        "maximum_cuda_relative_residuals",
+        "timing_controlled"
+      ]
+    },
+    "paper-L1-result-manifest": {
+      "supported_versions": ["1.0"],
+      "level": "L1",
+      "required_file_roles": [
+        "equation-ledger",
+        "closure-provenance",
+        "geometry",
+        "materials",
+        "boundary-conditions",
+        "solver-config",
+        "result-data",
+        "verification-report"
+      ],
+      "required_metrics": [
+        "manufactured_solution_passed",
+        "mesh_levels",
+        "domain_levels",
+        "convergence_reported",
+        "numerical_uncertainty_reported",
+        "l0_mapping_present",
+        "failed_cases_count"
+      ]
+    },
+    "paper-L2-result-manifest": {
+      "supported_versions": ["1.0"],
+      "level": "L2",
+      "required_file_roles": [
+        "equation-ledger",
+        "closure-provenance",
+        "coupling-contract",
+        "solver-config",
+        "result-data",
+        "verification-report",
+        "uncertainty-report"
+      ],
+      "required_metrics": [
+        "interface_conservation_passed",
+        "spatial_levels",
+        "temporal_levels",
+        "code_comparison_passed",
+        "numerical_uncertainty_reported",
+        "failed_cases_count",
+        "uncertainty_components"
+      ]
+    },
+    "paper-L3-result-manifest": {
+      "supported_versions": ["1.0"],
+      "level": "L3",
+      "required_file_roles": [
+        "pic-model-config",
+        "collision-data",
+        "boundary-data",
+        "result-data",
+        "verification-report",
+        "experimental-protocol",
+        "measurement-data",
+        "facility-metadata",
+        "uncertainty-report"
+      ],
+      "required_metrics": [
+        "pic_convergence_passed",
+        "preregistered_case_count",
+        "withheld_validation_case_count",
+        "measurement_uncertainty_reported",
+        "facility_metadata_present",
+        "applicability_domain_defined",
+        "failed_cases_count"
+      ]
+    }
+  }
+}

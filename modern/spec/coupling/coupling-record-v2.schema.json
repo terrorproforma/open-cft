@@ -1,0 +1,347 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cft-field-plasma-coupling/2.0.0",
+  "title": "Verified topology-aware field-to-plasma coupling record",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "record_hash",
+    "topology_status",
+    "topology_reason",
+    "field_map_hash",
+    "artifact_hash",
+    "source_hash",
+    "source_map_binding_hash",
+    "artifact_schema_version",
+    "model_level",
+    "field_model_id",
+    "field_model_hash",
+    "code_hash",
+    "config_hash",
+    "backend_id",
+    "backend_version",
+    "adapter_id",
+    "adapter_code_hash",
+    "adapter_contract_id",
+    "adapter_contract_version",
+    "adapter_input_schema_version",
+    "adapter_normalized_schema_version",
+    "adapter_is_migration",
+    "generated_at_utc",
+    "maximum_age_s",
+    "maximum_future_skew_s",
+    "diagnostics",
+    "coupling_model_hash",
+    "inner_profile_radius_m",
+    "inner_profile_role",
+    "wall_radius_m",
+    "inner_profile",
+    "wall",
+    "uncertainty_model",
+    "segments",
+    "alternative_candidates",
+    "overall_confidence"
+  ],
+  "properties": {
+    "schema_version": {"const": "cft-field-plasma-coupling/2.0.0"},
+    "record_hash": {"$ref": "#/$defs/hash"},
+    "topology_status": {"$ref": "#/$defs/status"},
+    "topology_reason": {"$ref": "#/$defs/nonempty"},
+    "field_map_hash": {"$ref": "#/$defs/hash"},
+    "artifact_hash": {"$ref": "#/$defs/hash"},
+    "source_hash": {"$ref": "#/$defs/hash"},
+    "source_map_binding_hash": {"$ref": "#/$defs/hash"},
+    "artifact_schema_version": {"$ref": "#/$defs/nonempty"},
+    "model_level": {"$ref": "#/$defs/nonempty"},
+    "field_model_id": {"$ref": "#/$defs/nonempty"},
+    "field_model_hash": {"$ref": "#/$defs/hash"},
+    "code_hash": {"$ref": "#/$defs/hash"},
+    "config_hash": {"$ref": "#/$defs/hash"},
+    "backend_id": {"$ref": "#/$defs/nonempty"},
+    "backend_version": {"$ref": "#/$defs/nonempty"},
+    "adapter_id": {"$ref": "#/$defs/nonempty"},
+    "adapter_code_hash": {"$ref": "#/$defs/hash"},
+    "adapter_contract_id": {"$ref": "#/$defs/nonempty"},
+    "adapter_contract_version": {"$ref": "#/$defs/nonempty"},
+    "adapter_input_schema_version": {"$ref": "#/$defs/nonempty"},
+    "adapter_normalized_schema_version": {
+      "const": "cft-axisymmetric-field-map/1.1.0"
+    },
+    "adapter_is_migration": {"type": "boolean"},
+    "generated_at_utc": {"type": "string", "format": "date-time"},
+    "maximum_age_s": {
+      "type": ["number", "null"],
+      "minimum": 0
+    },
+    "maximum_future_skew_s": {"type": "number", "minimum": 0},
+    "diagnostics": {"$ref": "#/$defs/diagnostics"},
+    "coupling_model_hash": {"$ref": "#/$defs/hash"},
+    "inner_profile_radius_m": {"type": "number", "minimum": 0},
+    "inner_profile_role": {
+      "enum": ["centreline", "inner_radial_profile"]
+    },
+    "wall_radius_m": {"type": "number", "exclusiveMinimum": 0},
+    "inner_profile": {"$ref": "#/$defs/profile"},
+    "wall": {"$ref": "#/$defs/profile"},
+    "uncertainty_model": {"$ref": "#/$defs/uncertaintyModel"},
+    "segments": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/segment"}
+    },
+    "alternative_candidates": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/candidate"}
+    },
+    "overall_confidence": {"$ref": "#/$defs/unit"}
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "nonempty": {
+      "type": "string",
+      "minLength": 1
+    },
+    "unit": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "status": {
+      "enum": ["resolved", "no_topology", "degenerate", "ambiguous"]
+    },
+    "diagnostics": {
+      "type": "object",
+      "required": [
+        "converged",
+        "residual_norm",
+        "residual_tolerance",
+        "relative_residual",
+        "relative_tolerance",
+        "iterations"
+      ],
+      "properties": {
+        "converged": {"const": true},
+        "residual_norm": {"type": "number", "minimum": 0},
+        "residual_tolerance": {"type": "number", "minimum": 0},
+        "relative_residual": {"type": "number", "minimum": 0},
+        "relative_tolerance": {"type": "number", "minimum": 0},
+        "iterations": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "candidate": {
+      "type": "object",
+      "required": [
+        "kind",
+        "z_m",
+        "b_magnitude_t",
+        "b_r_t",
+        "b_z_t",
+        "sigma_b_t",
+        "independent_sigma_b_t",
+        "common_mode_sigma_t",
+        "prominence_t",
+        "confidence",
+        "bracket_z_m",
+        "interpolation",
+        "sample_indices"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "null",
+            "minimum",
+            "maximum",
+            "plateau_minimum",
+            "plateau_maximum",
+            "boundary_minimum",
+            "boundary_maximum"
+          ]
+        },
+        "z_m": {"type": "number"},
+        "b_magnitude_t": {"type": "number", "minimum": 0},
+        "b_r_t": {"type": "number"},
+        "b_z_t": {"type": "number"},
+        "sigma_b_t": {"type": "number", "minimum": 0},
+        "independent_sigma_b_t": {"type": "number", "minimum": 0},
+        "common_mode_sigma_t": {"type": "number", "minimum": 0},
+        "prominence_t": {"type": "number", "minimum": 0},
+        "confidence": {"$ref": "#/$defs/unit"},
+        "bracket_z_m": {
+          "type": "array",
+          "prefixItems": [{"type": "number"}, {"type": "number"}],
+          "items": false,
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "interpolation": {"$ref": "#/$defs/nonempty"},
+        "sample_indices": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "integer", "minimum": 0}
+        }
+      },
+      "additionalProperties": false
+    },
+    "profile": {
+      "type": "object",
+      "required": [
+        "name",
+        "role",
+        "sampled_r_m",
+        "minimum_b_t",
+        "maximum_b_t",
+        "integral_b_t_m",
+        "nulls",
+        "extrema",
+        "boundary_extrema",
+        "topology_status",
+        "topology_reason"
+      ],
+      "properties": {
+        "name": {"$ref": "#/$defs/nonempty"},
+        "role": {
+          "enum": ["centreline", "inner_radial_profile", "wall"]
+        },
+        "sampled_r_m": {"type": "number", "minimum": 0},
+        "minimum_b_t": {"type": "number", "minimum": 0},
+        "maximum_b_t": {"type": "number", "minimum": 0},
+        "integral_b_t_m": {"type": "number", "minimum": 0},
+        "nulls": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/candidate"}
+        },
+        "extrema": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/candidate"}
+        },
+        "boundary_extrema": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/candidate"}
+        },
+        "topology_status": {"$ref": "#/$defs/status"},
+        "topology_reason": {"$ref": "#/$defs/nonempty"}
+      },
+      "additionalProperties": false
+    },
+    "uncertaintyModel": {
+      "type": "object",
+      "required": [
+        "absolute_independent_sigma_t",
+        "relative_independent_sigma",
+        "common_mode_sigma_t",
+        "residual_correlation",
+        "coverage_factor"
+      ],
+      "properties": {
+        "absolute_independent_sigma_t": {"type": "number", "minimum": 0},
+        "relative_independent_sigma": {"type": "number", "minimum": 0},
+        "common_mode_sigma_t": {"type": "number", "minimum": 0},
+        "residual_correlation": {
+          "type": "number",
+          "minimum": -1,
+          "maximum": 1
+        },
+        "coverage_factor": {"type": "number", "exclusiveMinimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "uncertainProbability": {
+      "type": "object",
+      "required": [
+        "value",
+        "standard_uncertainty",
+        "lower",
+        "upper",
+        "ratio_standard_uncertainty",
+        "input_covariance_t2",
+        "input_correlation",
+        "coverage_factor",
+        "propagation",
+        "interval_method"
+      ],
+      "properties": {
+        "value": {"type": "number", "minimum": 0, "maximum": 0.5},
+        "standard_uncertainty": {"type": "number", "minimum": 0},
+        "lower": {"type": "number", "minimum": 0, "maximum": 0.5},
+        "upper": {"type": "number", "minimum": 0, "maximum": 0.5},
+        "ratio_standard_uncertainty": {"type": "number", "minimum": 0},
+        "input_covariance_t2": {"type": "number"},
+        "input_correlation": {
+          "type": "number",
+          "minimum": -1,
+          "maximum": 1
+        },
+        "coverage_factor": {"type": "number", "exclusiveMinimum": 0},
+        "propagation": {"$ref": "#/$defs/nonempty"},
+        "interval_method": {"$ref": "#/$defs/nonempty"}
+      },
+      "additionalProperties": false
+    },
+    "mirrorLoss": {
+      "type": "object",
+      "required": [
+        "cusp",
+        "wall_b_t",
+        "wall_independent_sigma_b_t",
+        "common_mode_sigma_t",
+        "covariance_t2",
+        "correlation",
+        "field_ratio_low_to_high",
+        "mirror_ratio_high_to_low",
+        "probability",
+        "confidence"
+      ],
+      "properties": {
+        "cusp": {"$ref": "#/$defs/candidate"},
+        "wall_b_t": {"type": "number", "exclusiveMinimum": 0},
+        "wall_independent_sigma_b_t": {"type": "number", "minimum": 0},
+        "common_mode_sigma_t": {"type": "number", "minimum": 0},
+        "covariance_t2": {"type": "number"},
+        "correlation": {
+          "type": "number",
+          "minimum": -1,
+          "maximum": 1
+        },
+        "field_ratio_low_to_high": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "mirror_ratio_high_to_low": {
+          "type": ["number", "null"],
+          "minimum": 1
+        },
+        "probability": {"$ref": "#/$defs/uncertainProbability"},
+        "confidence": {"$ref": "#/$defs/unit"}
+      },
+      "additionalProperties": false
+    },
+    "segment": {
+      "type": "object",
+      "required": [
+        "segment_id",
+        "z_start_m",
+        "z_end_m",
+        "representative_cusp_z_m",
+        "mirror_loss",
+        "confidence"
+      ],
+      "properties": {
+        "segment_id": {
+          "type": "string",
+          "pattern": "^topology-[0-9]{3}$"
+        },
+        "z_start_m": {"type": "number"},
+        "z_end_m": {"type": "number"},
+        "representative_cusp_z_m": {"type": "number"},
+        "mirror_loss": {"$ref": "#/$defs/mirrorLoss"},
+        "confidence": {"$ref": "#/$defs/unit"}
+      },
+      "additionalProperties": false
+    }
+  }
+}

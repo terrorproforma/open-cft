@@ -1,0 +1,36 @@
+{
+  "schema": "cft.pic.synthetic-cross-sections.v1",
+  "purpose": "verification-only",
+  "physical_validation": false,
+  "tables": [
+    {
+      "process": "synthetic isotropic elastic constant",
+      "energy_ev": [
+        0.0,
+        100.0
+      ],
+      "cross_section_m2": [
+        2e-20,
+        2e-20
+      ],
+      "source": "synthetic-verification:constant-cross-section-v1",
+      "use": "closed-form collision probability and binomial count test"
+    },
+    {
+      "process": "synthetic interpolation ramp",
+      "energy_ev": [
+        0.0,
+        5.0,
+        10.0
+      ],
+      "cross_section_m2": [
+        0.0,
+        2e-20,
+        4e-20
+      ],
+      "source": "synthetic-verification:linear-interpolation",
+      "use": "piecewise-linear interpolation test"
+    }
+  ],
+  "warning": "These tables are numerics fixtures, not xenon collision data."
+}

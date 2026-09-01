@@ -1,0 +1,81 @@
+"""Independent production-oriented magnetic material and source foundations."""
+
+from .common import (
+    MagneticsError,
+    MagneticsValidationError,
+    VectorRZ,
+    canonical_json,
+    content_sha256,
+)
+from .contracts import (
+    AxisymmetricMaterialProblemContract,
+    AxisymmetricTruncationDomain,
+    ConstitutiveLawKind,
+    DemagnetizationAssessment,
+    MaterialInterfaceContract,
+    MaterialRegionContract,
+    OpenBoundaryDomainPolicy,
+    ValidityWarning,
+    WarningSeverity,
+    assess_demagnetization,
+)
+from .materials import (
+    MU0_H_PER_M,
+    ExtrapolationPolicy,
+    LinearPermeability,
+    SmCoPermanentMagnet,
+    TabulatedBHCurve,
+    checked_synthetic_smco_like_magnet,
+    checked_synthetic_soft_magnetic_curve,
+)
+from .sources import (
+    MAGNETIZATION_RELATIVE_TOLERANCE,
+    AxisymmetricBoundCurrentSheet,
+    AxisymmetricBounds,
+    PermanentMagnetRepresentation,
+    SheetOrientation,
+    UniformAxisymmetricMagnetizationSource,
+    bound_surface_current_density_phi_a_per_m,
+    bound_volume_current_density_phi_a_per_m2,
+)
+from .serialization import (
+    HANDOFF_SCHEMA,
+    deserialize_handoff,
+    serialize_handoff,
+)
+
+__all__ = [
+    "MU0_H_PER_M",
+    "MAGNETIZATION_RELATIVE_TOLERANCE",
+    "AxisymmetricBoundCurrentSheet",
+    "AxisymmetricBounds",
+    "AxisymmetricMaterialProblemContract",
+    "AxisymmetricTruncationDomain",
+    "ConstitutiveLawKind",
+    "DemagnetizationAssessment",
+    "ExtrapolationPolicy",
+    "LinearPermeability",
+    "MagneticsError",
+    "MagneticsValidationError",
+    "MaterialInterfaceContract",
+    "MaterialRegionContract",
+    "OpenBoundaryDomainPolicy",
+    "PermanentMagnetRepresentation",
+    "SheetOrientation",
+    "SmCoPermanentMagnet",
+    "TabulatedBHCurve",
+    "UniformAxisymmetricMagnetizationSource",
+    "ValidityWarning",
+    "VectorRZ",
+    "WarningSeverity",
+    "assess_demagnetization",
+    "bound_surface_current_density_phi_a_per_m",
+    "bound_volume_current_density_phi_a_per_m2",
+    "canonical_json",
+    "content_sha256",
+    "deserialize_handoff",
+    "checked_synthetic_smco_like_magnet",
+    "checked_synthetic_soft_magnetic_curve",
+    "HANDOFF_SCHEMA",
+    "serialize_handoff",
+]

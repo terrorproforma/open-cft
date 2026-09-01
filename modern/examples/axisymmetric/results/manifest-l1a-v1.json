@@ -1,0 +1,86 @@
+{
+  "designs": [
+    {
+      "artifact": "hypothetical-compact-mirror-l1a-v1.json",
+      "artifact_file_sha256": "6510f6ea687022f358103bba99456e7bf651686e3add29205c0560c933981afb",
+      "artifact_payload_sha256": "92e5535af0492e1697dad2540d8f6e837ba11f28f7a81626673a1c0004183348",
+      "b_magnitude_max_t": 0.04496001463003345,
+      "b_magnitude_min_t": 0.0,
+      "backend": "python",
+      "iterations": 279,
+      "name": "hypothetical-compact-mirror",
+      "relative_residual_l2": 9.601738008549078e-11,
+      "topology": {
+        "axis_nulls": [],
+        "axis_plateaus": [],
+        "field_scale_t": 0.04496001463003345,
+        "null_tolerance_t": 4.496001463003345e-12,
+        "status": "no_resolved_axis_null"
+      }
+    },
+    {
+      "artifact": "hypothetical-opposed-cusp-l1a-v1.json",
+      "artifact_file_sha256": "dbf05208dc77e694bb40bb3ca82e4ee3e7126bb3036156f7fa1a726eab06b5c6",
+      "artifact_payload_sha256": "c4c7c3dc45466bfa4ba187e925b8e41a1c979b3700a59e185d24897501f97263",
+      "b_magnitude_max_t": 0.03836205836373955,
+      "b_magnitude_min_t": 0.0,
+      "backend": "python",
+      "iterations": 259,
+      "name": "hypothetical-opposed-cusp",
+      "relative_residual_l2": 8.972338577759675e-11,
+      "topology": {
+        "axis_nulls": [
+          {
+            "b_magnitude_t": 3.8300419578647196e-18,
+            "kind": "sign_changing_sample",
+            "r_m": 0.0,
+            "z_m": 0.0
+          }
+        ],
+        "axis_plateaus": [],
+        "field_scale_t": 0.03836205836373955,
+        "null_tolerance_t": 3.836205836373955e-12,
+        "status": "resolved_axis_nulls"
+      }
+    },
+    {
+      "artifact": "hypothetical-thick-outer-triplet-l1a-v1.json",
+      "artifact_file_sha256": "ac5420d9276d3db03adffe548a459706de95593d74c4181af4034ddbd1ce4b7a",
+      "artifact_payload_sha256": "d6ef0a42b0a73cfafc7cad1a3fdca8ca59fff4c13a444f5fe5ee8fae9ebf690b",
+      "b_magnitude_max_t": 0.03639205154020854,
+      "b_magnitude_min_t": 0.0,
+      "backend": "python",
+      "iterations": 285,
+      "name": "hypothetical-thick-outer-triplet",
+      "relative_residual_l2": 9.669998554437977e-11,
+      "topology": {
+        "axis_nulls": [
+          {
+            "b_magnitude_t": 0.0,
+            "kind": "sign_changing_interpolated",
+            "r_m": 0.0,
+            "z_m": -0.029320011598707108
+          },
+          {
+            "b_magnitude_t": 0.0,
+            "kind": "sign_changing_interpolated",
+            "r_m": 0.0,
+            "z_m": 0.029320011598707105
+          }
+        ],
+        "axis_plateaus": [],
+        "field_scale_t": 0.03639205154020854,
+        "null_tolerance_t": 3.639205154020854e-12,
+        "status": "resolved_axis_nulls"
+      }
+    }
+  ],
+  "integrity": {
+    "algorithm": "sha256",
+    "canonicalization": "json-sort-keys-compact-utf8-v1",
+    "payload_sha256": "2c912b847702e14223170917850d1ecd5fbdfb45899d96ddb222b5577531d7a6"
+  },
+  "model_level": "L1a",
+  "runtime_policy": "timings are diagnostic only and are not benchmark evidence",
+  "schema_version": "cft-axisymmetric-design-manifest/1.1.0"
+}

@@ -16,14 +16,20 @@
   `kernels.legacy_cusp_fields`, `kernels.cusp_arrival_probabilities`, and
   `native/src/kernels.cpp`; Phase 2A adds the optional batch implementation in
   `warp_backend.py`.
-- `HEMP_solver.m` → `backends.PlasmaBackend`. Implementation is intentionally
-  blocked pending equation verification.
+- `HEMP_solver.m` → `backends.PlasmaBackend` remains the compatibility
+  quarantine. The accepted `plasma` package is a corrected, source-ledgered
+  global-discharge numerical foundation, not a claim that the historical
+  solver or a predictive CFT model has been reconstructed.
 - `Power_B_EQs.m` → planned C++ residual/Jacobian module after re-derivation.
 - `boundaries.m` → `DesignPoint` handles geometry only; plasma-variable bounds
   await the corrected equation specification.
 - `params.m` → `config/default.json` for implemented settings; optimizer
   settings await selection of a maintained Python optimizer.
-- `buildSurrogates.m` → planned versioned dataset/training pipeline.
+- `buildSurrogates.m` → the accepted `surrogates` runtime supplies versioned
+  identities, dependency-free GP/POD/multifidelity foundations, optional
+  NumPy/Torch boundaries, and held-out metrics. The present quality benchmark
+  failed its acceptance gates and therefore does not replace the legacy or
+  high-fidelity models.
 - `SensitivityAnalysis_Surr_rev.m` and
   `MDO_sensitivity_analysis_CFTOpt_4objectives.m` → planned reproducible
   sensitivity notebook/report operating on versioned models.
@@ -83,6 +89,15 @@
 - Recorded the first 8,192-point RTX 5090 L0 sweep in `FIRST_RESULTS.md`;
   timing is explicitly uncontrolled and no physical-accuracy or speedup claim
   is made.
+- Added the independently accepted L1a axisymmetric equivalent-current FDM
+  solver, deterministic three-design artifact bundle, and browser-tested
+  schema-1.1 viewer. This is not FEM or a material-aware field solution.
+- Added independent magnetics, coupling, global-plasma, prescribed-field
+  hybrid, reduced PIC, surrogate, active-learning, and validation/evidence
+  packages. Their contracts are not merged into one domain model, and optional
+  Warp/NumPy/Torch-family packages remain outside base import.
+- Added evidence-gated paper source and deterministic generated table inputs.
+  Paper L1--L3 result gates remain closed; local PDF/build outputs are ignored.
 
 ## Recommended next phase
 

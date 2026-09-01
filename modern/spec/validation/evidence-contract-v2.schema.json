@@ -1,0 +1,160 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cft-revival.local/spec/validation/evidence-contract-v2.schema.json",
+  "title": "CFT revival published external evidence bundle v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "bundle_sha256",
+    "integrity_notice",
+    "policy",
+    "source",
+    "records"
+  ],
+  "properties": {
+    "schema_version": {"const": "2.0.0"},
+    "bundle_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "integrity_notice": {
+      "const": "SHA-256 detects accidental or post-publication modification only; it is not authentication. An attacker who can replace the payload can recompute its hash."
+    },
+    "policy": {"type": "string", "minLength": 1},
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "doi", "source_url", "publication_year"],
+      "properties": {
+        "title": {"type": "string", "minLength": 1},
+        "doi": {
+          "type": "string",
+          "pattern": "^10\\.[0-9]{4,9}/\\S+$"
+        },
+        "source_url": {"type": "string", "format": "uri", "pattern": "^https?://"},
+        "publication_year": {
+          "type": "integer",
+          "minimum": 1900,
+          "maximum": 2100
+        }
+      }
+    },
+    "records": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/publishedRecord"}
+    }
+  },
+  "$defs": {
+    "publishedRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "record_id",
+        "source_native_label",
+        "editorial_interpretation",
+        "role",
+        "kind",
+        "source_authority",
+        "partition",
+        "model_context_id",
+        "result_context_id",
+        "group_id",
+        "independence_identity",
+        "model_revision",
+        "code_revision",
+        "observations"
+      ],
+      "properties": {
+        "record_id": {"type": "string", "minLength": 1},
+        "source_native_label": {"type": "string", "minLength": 1},
+        "editorial_interpretation": {"type": "string", "minLength": 1},
+        "role": {
+          "const": "external_cross_model_only_not_experimental_truth"
+        },
+        "kind": {"const": "published_external_model_output"},
+        "source_authority": {"const": "published_model_output"},
+        "partition": {"const": "reference_only"},
+        "model_context_id": {"type": "string", "minLength": 1},
+        "result_context_id": {"type": "string", "minLength": 1},
+        "group_id": {"type": "string", "minLength": 1},
+        "independence_identity": {
+          "$ref": "#/$defs/independenceIdentity"
+        },
+        "model_revision": {"type": "string", "minLength": 1},
+        "code_revision": {"type": "string", "minLength": 1},
+        "observations": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/observation"}
+        }
+      }
+    },
+    "independenceIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "design_identity",
+        "run_lineage_id",
+        "hardware_article_id",
+        "test_campaign_id",
+        "specimen_id"
+      ],
+      "properties": {
+        "design_identity": {"type": "string", "minLength": 1},
+        "run_lineage_id": {"type": "string", "minLength": 1},
+        "hardware_article_id": {"type": "string", "minLength": 1},
+        "test_campaign_id": {"type": "string", "minLength": 1},
+        "specimen_id": {"type": "string", "minLength": 1}
+      }
+    },
+    "observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "value", "unit"],
+      "properties": {
+        "name": {
+          "enum": ["thrust", "reported_model_efficiency", "specific_impulse"]
+        },
+        "value": {"type": "number"},
+        "unit": {"enum": ["N", "mN", "%", "fraction", "s", "ms"]}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"name": {"const": "thrust"}}},
+          "then": {
+            "properties": {
+              "value": {"exclusiveMinimum": 0},
+              "unit": {"enum": ["N", "mN"]}
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {"name": {"const": "reported_model_efficiency"}}
+          },
+          "then": {
+            "properties": {"unit": {"enum": ["%", "fraction"]}},
+            "allOf": [
+              {
+                "if": {"properties": {"unit": {"const": "%"}}},
+                "then": {"properties": {"value": {"minimum": 0, "maximum": 100}}}
+              },
+              {
+                "if": {"properties": {"unit": {"const": "fraction"}}},
+                "then": {"properties": {"value": {"minimum": 0, "maximum": 1}}}
+              }
+            ]
+          }
+        },
+        {
+          "if": {"properties": {"name": {"const": "specific_impulse"}}},
+          "then": {
+            "properties": {
+              "value": {"exclusiveMinimum": 0},
+              "unit": {"enum": ["s", "ms"]}
+            }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,105 @@
+{
+  "document_type": "paper-result-gate-registry",
+  "schema_version": "2.0",
+  "evidence_revision": "41bf909127dc021abe8078fd77a98aa3a6e4cf33",
+  "schema_registry": {
+    "path": "paper/evidence/manifest-schemas.json",
+    "document_type": "paper-evidence-manifest-schema-registry",
+    "schema_version": "1.0"
+  },
+  "acceptance_policy": {
+    "manifest_directory": "paper/evidence/manifests",
+    "manifest_extension": ".json",
+    "manifest_must_be_committed": true,
+    "manifest_worktree_must_match_committed_blob": true,
+    "recognized_type_and_version_required": true,
+    "every_source_file_requires_git_blob_and_git_blob_sha256": true,
+    "manifest_revision_must_resolve_to_commit": true,
+    "base_revision_must_be_ancestor_of_manifest_revision": true,
+    "manifest_revision_must_be_ancestor_of_current_head": true,
+    "required_roles_and_metrics_are_fail_closed": true,
+    "closed_gate_has_visible_manuscript_block": true,
+    "accepted_gate_has_no_closed_manuscript_block": true
+  },
+  "gates": [
+    {
+      "id": "GATE-L1",
+      "title": "Field-resolved reduction",
+      "status": "closed",
+      "manifest_path": null,
+      "required_manifest_document_type": "paper-L1-result-manifest",
+      "required_manifest_schema_version": "1.0",
+      "dependencies": [],
+      "metric_constraints": {
+        "manufactured_solution_passed": {"equals": true},
+        "mesh_levels": {"integer_minimum": 3},
+        "domain_levels": {"integer_minimum": 2},
+        "convergence_reported": {"equals": true},
+        "numerical_uncertainty_reported": {"equals": true},
+        "l0_mapping_present": {"equals": true},
+        "failed_cases_count": {"integer_minimum": 0}
+      },
+      "prohibited_until_accepted": [
+        "magnetic-topology prediction",
+        "geometry-response prediction",
+        "L1 performance accuracy",
+        "optimization benefit attributed to L1"
+      ]
+    },
+    {
+      "id": "GATE-L2",
+      "title": "Coupled hybrid model",
+      "status": "closed",
+      "manifest_path": null,
+      "required_manifest_document_type": "paper-L2-result-manifest",
+      "required_manifest_schema_version": "1.0",
+      "dependencies": ["GATE-L1"],
+      "metric_constraints": {
+        "interface_conservation_passed": {"equals": true},
+        "spatial_levels": {"integer_minimum": 3},
+        "temporal_levels": {"integer_minimum": 3},
+        "code_comparison_passed": {"equals": true},
+        "numerical_uncertainty_reported": {"equals": true},
+        "failed_cases_count": {"integer_minimum": 0},
+        "uncertainty_components": {
+          "contains_all": [
+            "input",
+            "numerical",
+            "emulator",
+            "model_discrepancy"
+          ]
+        }
+      },
+      "prohibited_until_accepted": [
+        "coupled plasma predictive accuracy",
+        "calibrated wall or thermal behavior",
+        "L2 optimization improvement",
+        "validated uncertainty coverage"
+      ]
+    },
+    {
+      "id": "GATE-L3",
+      "title": "PIC and experimental comparison",
+      "status": "closed",
+      "manifest_path": null,
+      "required_manifest_document_type": "paper-L3-result-manifest",
+      "required_manifest_schema_version": "1.0",
+      "dependencies": ["GATE-L2"],
+      "metric_constraints": {
+        "pic_convergence_passed": {"equals": true},
+        "preregistered_case_count": {"integer_minimum": 1},
+        "withheld_validation_case_count": {"integer_minimum": 1},
+        "measurement_uncertainty_reported": {"equals": true},
+        "facility_metadata_present": {"equals": true},
+        "applicability_domain_defined": {"equals": true},
+        "failed_cases_count": {"integer_minimum": 0}
+      },
+      "prohibited_until_accepted": [
+        "experimental predictive accuracy",
+        "PIC-validated design ranking",
+        "validated high-fidelity Pareto improvement",
+        "generalization beyond the tested applicability domain"
+      ]
+    }
+  ]
+}

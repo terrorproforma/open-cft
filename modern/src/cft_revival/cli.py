@@ -90,6 +90,12 @@ def _parser() -> argparse.ArgumentParser:
     initial_design.add_argument("--count", type=int, required=True)
     initial_design.add_argument("--seed", type=int, default=0)
     initial_design.add_argument("--output", type=Path)
+
+    axisymmetric = commands.add_parser(
+        "validate-axisymmetric-results",
+        help="validate an L1a manifest, sidecars, and all referenced field artifacts",
+    )
+    axisymmetric.add_argument("manifest", type=Path)
     return parser
 
 
@@ -165,6 +171,23 @@ def _run(arguments: argparse.Namespace) -> int:
             )
             output = arguments.output
         _emit_json(artifact, output)
+        return 0
+
+    if arguments.command == "validate-axisymmetric-results":
+        from .fields import validate_design_manifest_file
+
+        manifest = validate_design_manifest_file(arguments.manifest)
+        print(
+            json.dumps(
+                {
+                    "schema_version": manifest["schema_version"],
+                    "model_level": manifest["model_level"],
+                    "design_count": len(manifest["designs"]),
+                    "manifest": str(arguments.manifest),
+                },
+                indent=2,
+            )
+        )
         return 0
 
     design = DesignPoint.from_sequence(arguments.design)

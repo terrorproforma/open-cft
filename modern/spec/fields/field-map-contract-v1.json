@@ -1,0 +1,401 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cft-axisymmetric-field-map/1.1.0",
+  "title": "CFT L1a closed axisymmetric field-map contract",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "model_level",
+    "model_description",
+    "input",
+    "provenance",
+    "summary",
+    "diagnostics",
+    "profiles",
+    "field_map",
+    "limitations",
+    "integrity"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "cft-axisymmetric-field-map/1.1.0"
+    },
+    "model_level": {
+      "const": "L1a"
+    },
+    "model_description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "input": {
+      "type": "object",
+      "required": [
+        "name",
+        "domain",
+        "outer_boundary",
+        "permeability_h_per_m",
+        "sources",
+        "source_convention",
+        "solver"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "domain": {
+          "type": "object",
+          "required": [
+            "radius_m",
+            "z_min_m",
+            "z_max_m",
+            "radial_intervals",
+            "axial_intervals",
+            "dr_m",
+            "dz_m"
+          ],
+          "properties": {
+            "radius_m": {"type": "number", "exclusiveMinimum": 0},
+            "z_min_m": {"type": "number"},
+            "z_max_m": {"type": "number"},
+            "radial_intervals": {"type": "integer", "minimum": 4},
+            "axial_intervals": {"type": "integer", "minimum": 4},
+            "dr_m": {"type": "number", "exclusiveMinimum": 0},
+            "dz_m": {"type": "number", "exclusiveMinimum": 0}
+          },
+          "additionalProperties": false
+        },
+        "outer_boundary": {
+          "const": "homogeneous_dirichlet_psi"
+        },
+        "permeability_h_per_m": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "sources": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/source"}
+        },
+        "source_convention": {
+          "type": "string",
+          "minLength": 1
+        },
+        "solver": {
+          "type": "object",
+          "required": [
+            "relative_tolerance",
+            "absolute_tolerance",
+            "max_iterations",
+            "residual_history_stride",
+            "max_true_residual_restarts"
+          ],
+          "properties": {
+            "relative_tolerance": {"type": "number", "exclusiveMinimum": 0},
+            "absolute_tolerance": {"type": "number", "minimum": 0},
+            "max_iterations": {"type": "integer", "minimum": 1},
+            "residual_history_stride": {"type": "integer", "minimum": 1},
+            "max_true_residual_restarts": {"type": "integer", "minimum": 0}
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "provenance": {
+      "type": "object",
+      "required": ["implementation", "scalar", "backend", "equation_ledger"],
+      "properties": {
+        "implementation": {"type": "string", "minLength": 1},
+        "scalar": {"type": "string", "minLength": 1},
+        "backend": {"type": "string", "minLength": 1},
+        "equation_ledger": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "summary": {
+      "type": "object",
+      "required": [
+        "b_magnitude_min_t",
+        "b_magnitude_max_t",
+        "outer_boundary_b_magnitude_min_t",
+        "signed_requested_ampere_turns_a",
+        "topology"
+      ],
+      "properties": {
+        "b_magnitude_min_t": {"type": "number", "minimum": 0},
+        "b_magnitude_max_t": {"type": "number", "minimum": 0},
+        "outer_boundary_b_magnitude_min_t": {"type": "number", "minimum": 0},
+        "signed_requested_ampere_turns_a": {"type": "number"},
+        "topology": {"$ref": "#/$defs/topology"}
+      },
+      "additionalProperties": false
+    },
+    "diagnostics": {
+      "type": "object",
+      "required": [
+        "converged",
+        "iterations",
+        "initial_residual_l2",
+        "final_residual_l2",
+        "relative_residual_l2",
+        "residual_history_l2",
+        "max_flux_reconstruction_identity_t_per_m",
+        "true_residual_restarts",
+        "stagnation_detected",
+        "backend",
+        "requested_signed_ampere_turns_a",
+        "sampled_signed_ampere_turns_a",
+        "ampere_turn_balance_error_a",
+        "source_discretization"
+      ],
+      "properties": {
+        "converged": {"const": true},
+        "iterations": {"type": "integer", "minimum": 0},
+        "initial_residual_l2": {"type": "number", "minimum": 0},
+        "final_residual_l2": {"type": "number", "minimum": 0},
+        "relative_residual_l2": {"type": "number", "minimum": 0},
+        "residual_history_l2": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "number", "minimum": 0}
+        },
+        "max_flux_reconstruction_identity_t_per_m": {
+          "type": "number",
+          "minimum": 0
+        },
+        "true_residual_restarts": {"type": "integer", "minimum": 0},
+        "stagnation_detected": {"const": false},
+        "backend": {"type": "string", "minLength": 1},
+        "requested_signed_ampere_turns_a": {"type": "number"},
+        "sampled_signed_ampere_turns_a": {"type": "number"},
+        "ampere_turn_balance_error_a": {"type": "number"},
+        "source_discretization": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/sourceDiscretization"}
+        }
+      },
+      "additionalProperties": false
+    },
+    "profiles": {
+      "type": "object",
+      "required": ["centreline", "wall"],
+      "properties": {
+        "centreline": {"$ref": "#/$defs/centrelineProfile"},
+        "wall": {"$ref": "#/$defs/wallProfile"}
+      },
+      "additionalProperties": false
+    },
+    "field_map": {
+      "type": "object",
+      "required": [
+        "layout",
+        "downsample_stride",
+        "r_m",
+        "z_m",
+        "psi_wb",
+        "b_r_t",
+        "b_z_t",
+        "b_magnitude_t"
+      ],
+      "properties": {
+        "layout": {
+          "const": "radial-major; values[field_r_index][field_z_index]"
+        },
+        "downsample_stride": {"type": "integer", "minimum": 1},
+        "r_m": {"$ref": "#/$defs/numericVector"},
+        "z_m": {"$ref": "#/$defs/numericVector"},
+        "psi_wb": {"$ref": "#/$defs/numericMatrix"},
+        "b_r_t": {"$ref": "#/$defs/numericMatrix"},
+        "b_z_t": {"$ref": "#/$defs/numericMatrix"},
+        "b_magnitude_t": {"$ref": "#/$defs/numericMatrix"}
+      },
+      "additionalProperties": false
+    },
+    "limitations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "integrity": {"$ref": "#/$defs/integrity"}
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "numericVector": {
+      "type": "array",
+      "minItems": 2,
+      "items": {"type": "number"}
+    },
+    "numericMatrix": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "array",
+        "minItems": 2,
+        "items": {"type": "number"}
+      }
+    },
+    "integrity": {
+      "type": "object",
+      "required": ["algorithm", "canonicalization", "payload_sha256"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "canonicalization": {"const": "json-sort-keys-compact-utf8-v1"},
+        "payload_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      },
+      "additionalProperties": false
+    },
+    "source": {
+      "type": "object",
+      "required": [
+        "name",
+        "r_inner_m",
+        "r_outer_m",
+        "z_min_m",
+        "z_max_m",
+        "ampere_turns_a",
+        "polarity"
+      ],
+      "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "r_inner_m": {"type": "number", "exclusiveMinimum": 0},
+        "r_outer_m": {"type": "number", "exclusiveMinimum": 0},
+        "z_min_m": {"type": "number"},
+        "z_max_m": {"type": "number"},
+        "ampere_turns_a": {"type": "number", "minimum": 0},
+        "polarity": {"enum": [-1, 1]}
+      },
+      "additionalProperties": false
+    },
+    "sourceDiscretization": {
+      "type": "object",
+      "required": [
+        "name",
+        "requested_area_m2",
+        "represented_overlap_area_m2",
+        "area_error_m2",
+        "requested_centroid_r_m",
+        "represented_centroid_r_m",
+        "centroid_r_error_m",
+        "requested_centroid_z_m",
+        "represented_centroid_z_m",
+        "centroid_z_error_m",
+        "requested_signed_ampere_turns_a",
+        "represented_signed_ampere_turns_a",
+        "ampere_turn_error_a",
+        "radial_nodes_touched",
+        "axial_nodes_touched",
+        "dual_cells_touched"
+      ],
+      "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "requested_area_m2": {"type": "number", "exclusiveMinimum": 0},
+        "represented_overlap_area_m2": {"type": "number", "exclusiveMinimum": 0},
+        "area_error_m2": {"type": "number"},
+        "requested_centroid_r_m": {"type": "number"},
+        "represented_centroid_r_m": {"type": "number"},
+        "centroid_r_error_m": {"type": "number"},
+        "requested_centroid_z_m": {"type": "number"},
+        "represented_centroid_z_m": {"type": "number"},
+        "centroid_z_error_m": {"type": "number"},
+        "requested_signed_ampere_turns_a": {"type": "number"},
+        "represented_signed_ampere_turns_a": {"type": "number"},
+        "ampere_turn_error_a": {"type": "number"},
+        "radial_nodes_touched": {"type": "integer", "minimum": 1},
+        "axial_nodes_touched": {"type": "integer", "minimum": 1},
+        "dual_cells_touched": {"type": "integer", "minimum": 1}
+      },
+      "additionalProperties": false
+    },
+    "topology": {
+      "type": "object",
+      "required": [
+        "status",
+        "field_scale_t",
+        "null_tolerance_t",
+        "axis_nulls",
+        "axis_plateaus"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "degenerate_near_zero_field",
+            "resolved_axis_nulls",
+            "near_zero_axis_plateau",
+            "no_resolved_axis_null"
+          ]
+        },
+        "field_scale_t": {"type": "number", "minimum": 0},
+        "null_tolerance_t": {"type": "number", "minimum": 0},
+        "axis_nulls": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/axisNull"}
+        },
+        "axis_plateaus": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/axisPlateau"}
+        }
+      },
+      "additionalProperties": false
+    },
+    "axisNull": {
+      "type": "object",
+      "required": ["kind", "r_m", "z_m", "b_magnitude_t"],
+      "properties": {
+        "kind": {
+          "enum": [
+            "sign_changing_sample",
+            "sign_changing_interpolated",
+            "isolated_sample"
+          ]
+        },
+        "r_m": {"const": 0},
+        "z_m": {"type": "number"},
+        "b_magnitude_t": {"type": "number", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "axisPlateau": {
+      "type": "object",
+      "required": ["z_start_m", "z_end_m", "sample_count"],
+      "properties": {
+        "z_start_m": {"type": "number"},
+        "z_end_m": {"type": "number"},
+        "sample_count": {"type": "integer", "minimum": 1}
+      },
+      "additionalProperties": false
+    },
+    "centrelineProfile": {
+      "type": "object",
+      "required": ["r_m", "z_m", "b_r_t", "b_z_t"],
+      "properties": {
+        "r_m": {"const": 0},
+        "z_m": {"$ref": "#/$defs/numericVector"},
+        "b_r_t": {"$ref": "#/$defs/numericVector"},
+        "b_z_t": {"$ref": "#/$defs/numericVector"}
+      },
+      "additionalProperties": false
+    },
+    "wallProfile": {
+      "type": "object",
+      "required": ["requested_r_m", "sampled_r_m", "z_m", "b_r_t", "b_z_t"],
+      "properties": {
+        "requested_r_m": {"type": "number", "minimum": 0},
+        "sampled_r_m": {"type": "number", "minimum": 0},
+        "z_m": {"$ref": "#/$defs/numericVector"},
+        "b_r_t": {"$ref": "#/$defs/numericVector"},
+        "b_z_t": {"$ref": "#/$defs/numericVector"}
+      },
+      "additionalProperties": false
+    }
+  },
+  "x-runtime-invariants": [
+    "all numbers finite; coordinates strictly increasing",
+    "matrix/profile shapes match coordinates and configured grid",
+    "derived spacings and residual ratios are exact-consistent",
+    "converged true, non-stagnant, and true residual within configured tolerance",
+    "b_magnitude_t agrees with hypot(b_r_t,b_z_t) to eight binary64 ULPs",
+    "canonical payload SHA-256 and external file SHA-256 sidecar both verify",
+    "all failures raise FieldArtifactValidationError; huge JSON integer conversion never leaks OverflowError",
+    "source widths use a summed half-ULP endpoint/target envelope at the two-spacing boundary"
+  ]
+}

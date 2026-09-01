@@ -45,6 +45,9 @@ outputs/
 Outputs/
 results/
 Results/
+!modern/examples/axisymmetric/results/
+!modern/examples/axisymmetric/results/*.json
+!modern/examples/axisymmetric/results/*.json.sha256
 modern/outputs/
 FYP/FEMM Analysis Files/
 FYP/FEMM data/

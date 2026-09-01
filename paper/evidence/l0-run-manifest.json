@@ -1,0 +1,197 @@
+{
+  "document_type": "paper-L0-run-evidence-manifest",
+  "schema_version": "1.0",
+  "manifest_id": "L0-SWEEP-20260901-8192-V1",
+  "level": "L0",
+  "status": "verified-report-and-accepted-html",
+  "integration_status": "paper-workstream-source-awaiting-integration-commit",
+  "evidence_revision": "41bf909127dc021abe8078fd77a98aa3a6e4cf33",
+  "run_revision": {
+    "value": null,
+    "reason": "FIRST_RESULTS.md and the accepted HTML state that the run revision was not recorded; no revision is inferred."
+  },
+  "model_fidelity": "L0-conservation-reduced-performance",
+  "hypothetical_inputs": true,
+  "source_files": [
+    {
+      "role": "sweep-config",
+      "path": "modern/config/l0-deterministic-sweep.json",
+      "git_blob": "ec05abee04faf89c2aadd73dd4e9b58ded7dad69",
+      "git_blob_sha256": "2d727b1af7d9be9f35f227cc318beae29af6cbd2fbead28842a4c17d67551b6b"
+    },
+    {
+      "role": "first-results-report",
+      "path": "modern/docs/FIRST_RESULTS.md",
+      "git_blob": "5098fd99249414c4e9d398407ca623995d0748fd",
+      "git_blob_sha256": "e677c923397514af61c10a305e2f02413937edae70ede815c83b7654d436b054"
+    },
+    {
+      "role": "equation-ledger",
+      "path": "modern/spec/physics/equation-ledger.json",
+      "git_blob": "92b5808bad3eee8fa7ac8dacb92fba8304723b31",
+      "git_blob_sha256": "27f303c893da216b60fe448eec1d0d8c2519056c5d9af54edbc395dc1aa15c6f"
+    },
+    {
+      "role": "model-code",
+      "path": "modern/src/cft_revival/physics/models.py",
+      "git_blob": "d639e02e77dcbb23e6b511feaf44c0a5b5d05b13",
+      "git_blob_sha256": "7e132c7227ca12823e9905f85fc22aa06ee313ca3bf2cfc5da0989b181ee8e95"
+    },
+    {
+      "role": "model-code",
+      "path": "modern/src/cft_revival/physics/numerics.py",
+      "git_blob": "7ea8c8795d1baeb63e3f8e99faca50513865f059",
+      "git_blob_sha256": "a123492cf106b45484de41409a0cb35e4499cfb5400a97b9b003bea5c9a5a171"
+    },
+    {
+      "role": "reference-code",
+      "path": "modern/src/cft_revival/physics/reference.py",
+      "git_blob": "ca03f13b028ed778c9f6ac973e7e1fae60787017",
+      "git_blob_sha256": "27169763ec2d23787bb955513ace11c4e62cc425a109c05d9879738115e7f0bb"
+    },
+    {
+      "role": "cuda-code",
+      "path": "modern/src/cft_revival/physics/warp_backend.py",
+      "git_blob": "a8953f4182d55f0e7647e5d731dc88fa4eee5f4a",
+      "git_blob_sha256": "5550be4828d0d844898c05650f31b1adee3868376cf8fbf25764a19c6382e707"
+    },
+    {
+      "role": "workflow-code",
+      "path": "modern/src/cft_revival/physics/workflows.py",
+      "git_blob": "d527acb53bdb9bafc0572bd4cb21b629f39e9b9e",
+      "git_blob_sha256": "049e511799ccb0dc7bef952ff73949a842031111ffef0b9e83ffd996bb8165d4"
+    },
+    {
+      "role": "cli-code",
+      "path": "modern/src/cft_revival/cli.py",
+      "git_blob": "5e728a343264e8690c25073b4527423be876227b",
+      "git_blob_sha256": "51b87fea30053168ee792755413004abc60119f46281d9f3124186c2dc6e25f1"
+    },
+    {
+      "role": "dashboard-generator",
+      "path": "modern/visualization/generate_first_results.py",
+      "git_blob": "4905428cf5af7aeb931aa5a806e3b85a3a39b6d1",
+      "git_blob_sha256": "cba58aec720c986ce9f94fb5c0af879447b75461fe4407d61c7cdb0b161f2945"
+    },
+    {
+      "role": "gallery-generator",
+      "path": "modern/visualization/build_design_gallery.py",
+      "git_blob": "7d44d6c1129e188281f2d94858e99dd052025e24",
+      "git_blob_sha256": "8b809568806d1a15c74169d76a07d087f88f1f581813b2c80f8693f56ba2d1f1"
+    },
+    {
+      "role": "gallery-data",
+      "path": "modern/visualization/design-gallery.json",
+      "git_blob": "ff43fed174cee503e3c4088d0e2b6a8bb9f3a8fa",
+      "git_blob_sha256": "fc81179577f282092305443aea56c93a752dcd1dbb292c7dfae2d4acc3672f1c"
+    },
+    {
+      "role": "accepted-html",
+      "path": "modern/visualization/first-results.html",
+      "git_blob": "a776efe880bb4375d26ecf8535f441ef12b0121d",
+      "git_blob_sha256": "383190a60490c6dd8737aef4146b6dafa7a91fc8714dee794aed9682047903bc"
+    }
+  ],
+  "accepted_html": {
+    "path": "modern/visualization/first-results.html",
+    "artifact_commit": "41bf909127dc021abe8078fd77a98aa3a6e4cf33",
+    "embedded_document_type": "cft-revival-l0-first-results-visualization",
+    "embedded_schema_version": "1.0",
+    "raw_per_point_output": {
+      "embedded": true,
+      "storage": "application/json script element with complete column arrays",
+      "sample_count": 8192,
+      "column_count": 40,
+      "all_column_lengths": 8192,
+      "dataset_sha256": "c0a36ed83655d8bef0e8419a27dfbc330926716dadb6c893b6ef6f9b2ddbae84",
+      "semantics": "Complete reconstructed per-point L0 input/result columns generated through the dependency-free reference API; not raw CUDA device buffers."
+    },
+    "embedded_config_sha256": "a4703ac1541539829f47f909d24d01d4996ed1da97a9d86e9e2323e54039fbbf",
+    "embedded_config_hash_scope": "Exact Windows checkout bytes recorded by the committed HTML; the portable committed-content binding is the Git blob and git_blob_sha256 in source_files."
+  },
+  "metrics": {
+    "sample_count": 8192,
+    "sampling_method": "deterministic-prime-base-radical-inverse",
+    "seed": 20260901,
+    "published_numeric_fields": 26,
+    "parity_mismatch_count": 0,
+    "failed_or_rejected_points": 0,
+    "raw_ranges": {
+      "axial_thrust_n": {
+        "minimum": 0.0018838422466581556,
+        "maximum": 0.051318329094827544,
+        "display_minimum": "0.00188384225",
+        "display_maximum": "0.0513183291"
+      },
+      "specific_impulse_s": {
+        "minimum": 799.2686696681739,
+        "maximum": 2726.816167358433,
+        "display_minimum": "799.268670",
+        "display_maximum": "2726.81617"
+      },
+      "beam_current_a": {
+        "minimum": 0.10057825132469873,
+        "maximum": 1.6462484815926473,
+        "display_minimum": "0.100578251",
+        "display_maximum": "1.64624848"
+      },
+      "anode_input_w": {
+        "minimum": 21.573921271712248,
+        "maximum": 910.3144509276646,
+        "display_minimum": "21.5739213",
+        "display_maximum": "910.314451"
+      },
+      "beam_kinetic_power_w": {
+        "minimum": 17.26885692384579,
+        "maximum": 786.0155918127086,
+        "display_minimum": "17.2688569",
+        "display_maximum": "786.015592"
+      },
+      "ppu_input_to_beam_efficiency": {
+        "minimum": 0.379828909891973,
+        "maximum": 0.9089919826465566,
+        "display_minimum": "0.379828910",
+        "display_maximum": "0.908991983"
+      }
+    },
+    "maximum_cuda_absolute_residuals": {
+      "particle_per_s": 2048.0,
+      "mass_kg_per_s": 3.41407e-22,
+      "charge_current_a": 4.44089e-16,
+      "beam_power_w": 2.27374e-13
+    },
+    "maximum_cuda_relative_residuals": {
+      "particle": 2.36837e-16,
+      "mass": 3.24198e-16,
+      "charge_current": 4.10551e-16,
+      "beam_power": 4.43207e-16
+    },
+    "html_reconstructed_reference_maximum_absolute_residuals": {
+      "particle_per_s": 1024.0,
+      "mass_kg_per_s": 4.235164736271502e-22,
+      "charge_current_a": 4.440892098500626e-16,
+      "beam_power_w": 2.2737367544323206e-13
+    },
+    "timing_controlled": false,
+    "cuda_end_to_end_seconds": 0.634302,
+    "cuda_throughput_points_per_second": 12914.99,
+    "python_reference_construction_seconds": 0.141245,
+    "timing_caveat": "Single uncontrolled diagnostic with preprocessing, allocations, transfers, synchronization, and Python record construction; it validates neither GPU speedup nor slowdown."
+  },
+  "permitted_claim_scope": [
+    "deterministic hypothetical sweep identity",
+    "reported numeric ranges",
+    "binary64 cross-backend parity within documented tolerances",
+    "reported conservation residuals",
+    "presence of complete reconstructed per-point columns in committed accepted HTML"
+  ],
+  "prohibited_inferences": [
+    "one-dimensional L0 physics",
+    "geometric prediction",
+    "physical calibration",
+    "experimental predictive accuracy",
+    "independent implementations without shared preprocessing",
+    "GPU speedup or slowdown",
+    "optimization superiority"
+  ]
+}

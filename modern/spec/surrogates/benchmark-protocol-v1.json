@@ -1,0 +1,80 @@
+{
+  "document_type": "cft-revival-surrogate-benchmark-protocol",
+  "schema_version": "2.0",
+  "data_source": {
+    "name": "deterministic hypothetical L0 conservation-reduced model",
+    "physical_truth": false,
+    "base_config": "modern/config/l0-deterministic-sweep.json",
+    "overrides": {
+      "batch_size": 48,
+      "seed": 31
+    },
+    "source_config_hash": "194b21ec5d40e87a6ac9a934025bd0dcc848c29d367aad4fac920c9d3677def2",
+    "dataset_hash": "2647de548f3fe3ca3cc070eeca9fac187b877904bc729061ccc42c6c5ab77006"
+  },
+  "model": {
+    "runtime": "cft-surrogate-exact-gp/2.0.0",
+    "outputs": ["axial_thrust_n", "specific_impulse_s"],
+    "length_scale_mode": "ard",
+    "calibration_fit_sample_count": 0,
+    "uncertainty_status": "uncalibrated-held-out-assessment"
+  },
+  "split": {
+    "policy": "grouped-spatial-coordinate-closure-v2",
+    "validation_fraction": 0.25,
+    "seed": 9,
+    "coordinate_tolerance": 0.0,
+    "validation_indices": [0, 2, 12, 13, 14, 18, 20, 24, 26, 28, 36, 38],
+    "split_hash": "f44fdd4b2498ebc73157c91cc9bbbc4ed33e77fc8753825217b92f1ba43c4360"
+  },
+  "coverage_policy": {
+    "nominal_probability": 0.9,
+    "target": 0.9,
+    "absolute_tolerance": 0.05,
+    "minimum_assessment_sample_count": 30,
+    "assessment_sample_count": 12,
+    "assessment_limited": true,
+    "role": "held-out-assessment",
+    "rule": "accepted only when n>=30 and abs(observed-target)<=0.05",
+    "calibration": "none; calibration-fit and held-out assessment remain separate"
+  },
+  "rmse_quality_policy": {
+    "scale": "range of each output over the complete hashed 48-row dataset",
+    "threshold": 0.05,
+    "rule": "range_normalized_rmse<=0.05",
+    "threshold_predeclared_for_all_outputs": true
+  },
+  "config_hash": "100834899102d9d6a19c410f82096e72b70c36612db5fe718f9ad70185e6fc7f",
+  "statuses": {
+    "software_reproducibility_passed": true,
+    "model_quality_passed": false,
+    "assessment_limited": true,
+    "surrogate_improvement_required": true
+  },
+  "results": {
+    "axial_thrust_n": {
+      "rmse": 0.007894429684864392,
+      "output_range": 0.034796449298740074,
+      "range_normalized_rmse": 0.22687457611228848,
+      "rmse_accepted": false,
+      "mae": 0.006534945269753859,
+      "worst_case_absolute_error": 0.01590895031552436,
+      "interval_coverage": 0.75,
+      "coverage_accepted": false,
+      "model_quality_passed": false
+    },
+    "specific_impulse_s": {
+      "rmse": 337.7674123910935,
+      "output_range": 1634.9201412627206,
+      "range_normalized_rmse": 0.20659566413453131,
+      "rmse_accepted": false,
+      "mae": 270.7299834538546,
+      "worst_case_absolute_error": 782.2225334223967,
+      "interval_coverage": 0.9166666666666666,
+      "coverage_accepted": false,
+      "model_quality_passed": false
+    }
+  },
+  "benchmark_hash": "ccf730a32bbb0bd82399e8728e36ffe24b9e2d8a051c2040703713d436c8a566",
+  "claim_policy": "authoritative means immutable and reproducible only; current surrogate quality fails and requires improvement"
+}

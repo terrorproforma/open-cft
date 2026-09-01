@@ -18,11 +18,19 @@ The modern foundation provides:
 - immutable multi-fidelity optimization records, constrained Pareto ranking,
   pending-aware replayable campaigns, guardrails, budgets/retries, and
   dependency-free shifted-Halton initial designs;
+- accepted, independent foundations for L1a axisymmetric FDM fields, corrected
+  global plasma numerics, magnetic materials/sources, topology-aware coupling,
+  prescribed-field hybrid kernels, reduced electrostatic PIC kernels,
+  surrogates, active learning, and validation/evidence records;
+- deterministic L1a artifacts and a self-contained axisymmetric result viewer;
 - a small CLI, audit, traceability map, migration plan, and correctness gates.
 
-It does **not** claim to reproduce a calibrated optimizer or plasma solver. The
-legacy nonlinear equation system has confirmed state/constraint defects and is
-quarantined until equations are checked against the cited source.
+These foundations retain separate meanings and claim boundaries. L1a is
+constant-permeability equivalent-current finite-box FDM, not FEM. The plasma,
+hybrid, and PIC slices are not accepted predictive L2/L3 CFT models; the
+surrogate held-out quality benchmark did not pass; and material-aware field
+results remain screening-only. The legacy nonlinear equation system still has
+confirmed state/constraint defects and is not a reconstruction oracle.
 
 ## Quick start
 
@@ -38,6 +46,7 @@ python -m cft_revival cusp-probability --low-t 0.02 --high-t 0.2
 python -m cft_revival l0-evaluate config/l0-representative-point.json
 python -m cft_revival validate-campaign-spec spec/optimization/campaign-v1.json
 python -m cft_revival generate-initial-design spec/optimization/campaign-v1.json --count 32 --seed 7
+python -m cft_revival validate-axisymmetric-results examples/axisymmetric/results/manifest-l1a-v1.json
 ```
 
 The `PYTHONPATH` assignment is required for a fresh checkout because this
@@ -81,11 +90,19 @@ and integration instructions remain under `docs/workstreams/`.
 Optional packages are metadata-only and imported lazily:
 
 - `.[gpu]`: NVIDIA Warp;
+- `.[numerics]`: NumPy acceleration for supported numerical helpers;
 - `.[optimization]`: PyTorch, BoTorch, GPyTorch, and pymoo.
 
 The accepted core requires none of these packages. The optimization model
 adapter remains runtime-unverified until those versions are tested deliberately
 in an isolated environment.
+
+Open `visualization/first-results.html`,
+`visualization/geometry-designs.html`, or
+`visualization/axisymmetric-results.html` directly in a browser. Their
+generators, JavaScript checks, and offline scans are deterministic test gates.
+The manuscript under `../paper/` has separate policy, generated-table, and
+two-clean-build checks; its L1--L3 evidence gates remain closed.
 
 The L0 point/sweep schemas and optimization campaign v1.4 schema are closed and
 versioned: unknown fields, duplicate JSON keys, non-finite numbers, malformed

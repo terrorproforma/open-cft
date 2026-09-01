@@ -13,8 +13,25 @@ claims. `FYP/` remains an unchanged historical snapshot throughout.
 - Establish immutable multi-fidelity campaign records, constrained Pareto
   semantics, replayable asynchronous scheduling, bounded retry/cost policy,
   guardrails, and deterministic shifted-Halton initial designs.
+- Accept independently verified foundations for L1a linear-vacuum
+  axisymmetric FDM fields, source-ledgered global plasma numerics, magnetics
+  contracts, topology-aware coupling, prescribed-field hybrid kernels,
+  reduced electrostatic PIC kernels, surrogate/active-learning tooling, and
+  evidence/validation records.
+- Publish browser-tested offline viewers for L0 results, geometry v1.1, and
+  L1a axisymmetric results, plus an evidence-gated manuscript source whose
+  L1--L3 result gates remain closed.
 
-## Evidence reconstruction — next
+## Accepted versus screening
+
+“Accepted” means the stated numerical or contract gate passed within that
+workstream. It does not combine the workstreams into a predictive thruster
+model. L1a is FDM, not FEM; the global plasma/hybrid/PIC slices are not
+predictively validated L2/L3 CFT models; and the surrogate held-out quality
+benchmark did not pass. Material-aware field results remain screening work and
+are outside this integration.
+
+## Evidence reconstruction — active
 
 - Source and sign-check the complete plasma/current/energy balance; do not
   translate disputed Kornfeld residuals by inference.
@@ -27,13 +44,14 @@ claims. `FYP/` remains an unchanged historical snapshot throughout.
 
 ## Field and plasma solvers
 
-- Implement manufactured axisymmetric magnetostatic problems with convergence,
-  regularity, interface, energy, and boundary checks.
+- Extend the accepted manufactured-solution L1a FDM solver beyond
+  constant-permeability equivalent-current finite-box problems.
 - Reproduce linear-material FEMM profiles on identical meshes and domains
   before selecting MFEM/CUDA or Warp FEM.
 - Add nonlinear material and open-boundary models only after linear parity.
-- Implement a normalized CPU reference plasma residual/Jacobian after equation
-  review, then classify every failed solve without fake objective penalties.
+- Preserve the accepted corrected global plasma residual/Jacobian foundation,
+  while withholding predictive CFT claims until equation authority, closures,
+  calibration, and independent validation are complete.
 
 ## Calibrated multi-fidelity campaign
 

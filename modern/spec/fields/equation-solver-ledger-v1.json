@@ -1,0 +1,103 @@
+{
+  "schema_version": "1.1.0",
+  "workstream": "axisymmetric-magnetostatics-l1a",
+  "classification": "linear constant-permeability equivalent-current structured-grid FDM",
+  "coordinates": {
+    "system": "right-handed cylindrical (r, phi, z)",
+    "symmetry": "partial_phi = 0",
+    "potential": "A = A_phi e_phi",
+    "flux": "psi = r A_phi",
+    "si_units": {
+      "r,z": "m",
+      "A_phi": "T m",
+      "psi": "Wb",
+      "J_phi": "A m^-2",
+      "mu": "H m^-1",
+      "B_r,B_z": "T"
+    }
+  },
+  "equations": [
+    {
+      "id": "AXI-L1A-001",
+      "expression": "B_r = -(1/r) partial_z psi; B_z = (1/r) partial_r psi",
+      "derivation": "B=curl(A_phi e_phi), psi=r A_phi",
+      "axis_limit": "psi=a(z) r^2+O(r^4), hence B_r(0,z)=0 and B_z(0,z)=2a(z)"
+    },
+    {
+      "id": "AXI-L1A-002",
+      "expression": "partial_rr psi - r^-1 partial_r psi + partial_zz psi = -mu r J_phi",
+      "derivation": "curl B = mu J with (curl B)_phi=partial_z B_r-partial_r B_z=mu J_phi",
+      "sign_check": "substitution of B_r and B_z gives -(1/r)(psi_rr-r^-1 psi_r+psi_zz)=mu J_phi"
+    },
+    {
+      "id": "AXI-L1A-003",
+      "expression": "-div((1/r) grad psi) = mu J_phi",
+      "derivation": "divide AXI-L1A-002 by -r",
+      "weak_energy": "integral (1/r)|grad psi|^2 dr dz is positive for zero Dirichlet boundary"
+    },
+    {
+      "id": "AXI-L1A-MMS-001",
+      "expression": "psi=C[(r/R)^2-(r/R)^4] sin(pi(z-z0)/L)",
+      "source": "J_phi=(C/mu)[8r/R^4+(pi/L)^2(r/R^2-r^3/R^4)] sin(pi(z-z0)/L)",
+      "fields": {
+        "B_r": "-C(pi/L)(r/R^2-r^3/R^4) cos(pi(z-z0)/L)",
+        "B_z": "C(2/R^2-4r^2/R^4) sin(pi(z-z0)/L)"
+      },
+      "boundary": "psi=0 on r=0, r=R, z=z0, z=z0+L"
+    }
+  ],
+  "source_convention": {
+    "band": "rectangular meridional cross-section carrying azimuthal J_phi",
+    "current_density": "J_phi=polarity*ampere_turns/[(r_outer-r_inner)(z_max-z_min)]",
+    "support_domain": "every band must lie within r=[dr/2,R-dr/2], z=[z_min+dz/2,z_max-dz/2] and span at least two grid spacings in each direction",
+    "minimum_width_comparison": "width >= 2*spacing minus the summed half-ULP uncertainty of lower endpoint, upper endpoint, and represented target; an exact decimal-looking two-cell span passes while the next meaningfully narrower binary64 endpoint fails",
+    "grid_transfer": "nodal J_phi is the interior dual-cell overlap average using physical band area; sum(J_phi dr dz) preserves signed requested ampere-turns without compressing omitted boundary volume",
+    "reported_transfer_error": "requested/represented area and ampere-turns, their errors, requested/represented centroids, centroid errors, and touched radial/axial/dual-cell counts (the represented resolution) are published per band",
+    "interpretation": "smeared equivalent coil/current-sheet source; not a permanent magnet",
+    "polarity": "+1 means positive e_phi current in the selected cylindrical convention"
+  },
+  "boundary_conditions": {
+    "axis": "essential psi(0,z)=0 plus recovered even regular expansion",
+    "outer_box": "psi=0 at r=R and both axial truncation planes",
+    "warning": "finite-box homogeneous Dirichlet is a truncation approximation, not an exact open boundary"
+  },
+  "discretization": {
+    "method": "node-centred conservative second-order finite difference",
+    "operator": "face-centred 1/r radial flux and node-centred 1/r axial flux",
+    "linear_solver": "matrix-free Jacobi-preconditioned conjugate gradient",
+    "status_contract": "publish converged only when a separately recomputed true algebraic residual meets max(atol,rtol*initial); a false recursive crossing restarts PCG from the true residual within remaining iterations, with bounded restart/stagnation diagnostics",
+    "precision": "IEEE-754 binary64",
+    "field_recovery": "centred second-order differences; regularized fourth-order-compatible axis coefficient from psi(dr),psi(2dr)",
+    "flux_reconstruction_identity": "reported cylindrical mixed-derivative identity of Br/Bz reconstructed from the same psi; useful for reconstruction consistency but not independent solution validation"
+  },
+  "artifact_contract": {
+    "field_schema": "cft-axisymmetric-field-map/1.1.0",
+    "manifest_schema": "cft-axisymmetric-design-manifest/1.1.0",
+    "canonicalization": "compact UTF-8 JSON with sorted keys and no nonfinite numbers",
+    "payload_integrity": "top-level integrity is excluded from its own SHA-256 payload, avoiding recursion",
+    "file_integrity": "raw file SHA-256 is stored in a filename-bound .sha256 sidecar; manifest entries anchor both artifact file and payload hashes",
+    "topology_policy": "fields with |B|max <= 1e-14 T are degenerate and publish no isolated nulls; nondegenerate axis candidates are classified as sign-changing, isolated, or near-zero plateaus",
+    "validation_error": "all strict parser failures use FieldArtifactValidationError, a FieldValidationError and ValueError subclass; huge JSON integer/binary64 conversion overflow is wrapped and never escapes as OverflowError"
+  },
+  "warp_fem_decision": {
+    "inspected_version": "NVIDIA Warp 1.14.0",
+    "inspected_examples": [
+      "warp/examples/fem/example_diffusion.py",
+      "warp/examples/fem/example_magnetostatics.py"
+    ],
+    "finding": "Warp FEM provides scalar diffusion forms and a 3D H(curl) magnetostatics example, but no inspected example verifies the singular axisymmetric 1/r weighted form and axis trace.",
+    "decision": "Use the auditable structured-grid matrix-free FDM for L1a and do not label it FEM. Retain Warp for real CPU/CUDA matrix-free kernels."
+  },
+  "publication_gates": {
+    "required_before_l1_production": [
+      "derive and validate equivalent magnetization/surface-current mapping for each physical magnet",
+      "represent material interfaces and measured or sourced permeability",
+      "solve nonlinear iron B-H curves with continuation and convergence checks",
+      "replace finite-box truncation with verified open/infinite boundary treatment",
+      "perform geometry-aware mesh refinement and quantity-of-interest convergence",
+      "obtain FEMM full-profile parity across benchmark geometries",
+      "preferably obtain independent MFEM axisymmetric or revolved-3D comparison",
+      "validate against measured field maps with uncertainty"
+    ]
+  }
+}

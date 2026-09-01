@@ -1,0 +1,185 @@
+{
+  "document_type": "paper-claim-evidence-matrix",
+  "schema_version": "2.0",
+  "evidence_revision": "41bf909127dc021abe8078fd77a98aa3a6e4cf33",
+  "policy": {
+    "claim_macro": "EvidenceClaim",
+    "authorization_rule": "The complete macro body, claim ID, and manuscript section must exactly match authorized_tex and allowed_locations.",
+    "artifact_rule": "Quantitative table or figure claims require an authorized artifact ID, generated output, provenance sidecar, and manuscript binding.",
+    "prose_rule": "Claim-bearing quantitative, accuracy, validation, parity, and performance prose outside a registered macro or artifact is prohibited.",
+    "working_tree_rule": "Uncommitted scientific inputs are never evidence; paper-owned generated sources are hash-bound pending integration."
+  },
+  "sources": {
+    "SRC-FIRST-RESULTS": {
+      "path": "modern/docs/FIRST_RESULTS.md",
+      "revision": "41bf909127dc021abe8078fd77a98aa3a6e4cf33",
+      "git_blob": "5098fd99249414c4e9d398407ca623995d0748fd",
+      "git_blob_sha256": "e677c923397514af61c10a305e2f02413937edae70ede815c83b7654d436b054"
+    },
+    "SRC-AUDIT": {
+      "path": "modern/docs/AUDIT.md",
+      "revision": "41bf909127dc021abe8078fd77a98aa3a6e4cf33",
+      "git_blob": "ce30e2141557fda277351715b754f9432c865715",
+      "git_blob_sha256": "3c813ef8fd3ebbce5745c33ea655dc161864e43ea321741445733b919c38235e"
+    },
+    "SRC-PROVENANCE": {
+      "path": "modern/docs/REFERENCES.md",
+      "revision": "41bf909127dc021abe8078fd77a98aa3a6e4cf33",
+      "git_blob": "5ba6d14dc51def1a1588756a2726dde8f1ff738b",
+      "git_blob_sha256": "8ec5635ffedf4418f9ede9de074478270b3fd3a17d0fcfaf86dfa2bea630254a"
+    },
+    "SRC-PHYSICS-REPORT": {
+      "path": "modern/docs/workstreams/physics-foundation.md",
+      "revision": "41bf909127dc021abe8078fd77a98aa3a6e4cf33",
+      "git_blob": "24e4491af92ec29badaa46626a150fea33df1511",
+      "git_blob_sha256": "b26e3c9f589e43c54a173cd0fef471526c91c7906e95365d21859c008a4ac740"
+    },
+    "SRC-OPTIMIZATION-REPORT": {
+      "path": "modern/docs/workstreams/optimization-architecture.md",
+      "revision": "41bf909127dc021abe8078fd77a98aa3a6e4cf33",
+      "git_blob": "100350f79b9fe2a9e1a0ce704680d47ae95935f8",
+      "git_blob_sha256": "8c0b056be631ba85ff3db8a972634de2511e74e4d29d3761ca3956a5147002b8"
+    },
+    "SRC-CAMPAIGN-SPEC": {
+      "path": "modern/spec/optimization/campaign-v1.json",
+      "revision": "41bf909127dc021abe8078fd77a98aa3a6e4cf33",
+      "git_blob": "dc85a3e1ad9cc2f381656682bf9790451875a97a",
+      "git_blob_sha256": "c02bbd9b39e63fabb2c120700ac7bbd126220cefcaf19b1ce19fe9f161cf39b5"
+    }
+  },
+  "manifests": {
+    "L0-SWEEP-20260901-8192-V1": {
+      "path": "paper/evidence/l0-run-manifest.json",
+      "document_type": "paper-L0-run-evidence-manifest",
+      "schema_version": "1.0"
+    }
+  },
+  "claims": [
+    {
+      "id": "CLM-001",
+      "status": "verified",
+      "claim_class": "legacy-inventory",
+      "authorized_tex": "The preserved snapshot contains 16 MATLAB files but no archived datasets, finite-element model files, optimizer framework, dependency manifest, or test suite.",
+      "allowed_locations": ["Legacy audit"],
+      "evidence": ["SRC-AUDIT"],
+      "permitted_scope": ["repository inventory at the evidence revision"],
+      "prohibited_inferences": ["the missing artifacts never existed elsewhere"]
+    },
+    {
+      "id": "CLM-002",
+      "status": "verified",
+      "claim_class": "legacy-audit",
+      "authorized_tex": "Confirmed implementation defects include a local/global break affecting anode voltage and current, logical comparisons appended to a least-squares residual with reversed optimization meaning, a hard-coded 1000~V condition, internally contradictory energy-balance signs, unsafe parallel FEMM automation, stale or undefined cusp state, result acceptance without residual quality, and non-finite objectives that can pass success checks.",
+      "allowed_locations": ["Legacy audit"],
+      "evidence": ["SRC-AUDIT", "SRC-PROVENANCE"],
+      "permitted_scope": ["confirmed source-level defects documented by the audit"],
+      "prohibited_inferences": ["a corrected plasma formulation", "publication-run numerical impact"]
+    },
+    {
+      "id": "CLM-003",
+      "status": "verified",
+      "claim_class": "model-scope",
+      "authorized_tex": "L0 is an algebraic conservation-reduced operating-point baseline with externally supplied charge-state, beam-current, axial-momentum, cathode, and PPU inputs; it has no spatial mesh or geometric decision variables.",
+      "allowed_locations": ["Legacy, model, and campaign layers"],
+      "manifest_ids": ["L0-SWEEP-20260901-8192-V1"],
+      "permitted_scope": ["L0 accounting architecture and supplied closures"],
+      "prohibited_inferences": ["one-dimensional physics", "geometry resolution", "physical calibration"]
+    },
+    {
+      "id": "CLM-004",
+      "status": "verified",
+      "claim_class": "implementation-relationship",
+      "authorized_tex": "Python and Warp share canonical preprocessing and then evaluate the same ledgered relations through cross-backend implementations.",
+      "allowed_locations": ["Verified L0 equations and implementation"],
+      "manifest_ids": ["L0-SWEEP-20260901-8192-V1"],
+      "permitted_scope": ["cross-backend consistency after shared preprocessing"],
+      "prohibited_inferences": ["fully independent implementations", "independent physical validation"]
+    },
+    {
+      "id": "CLM-005",
+      "status": "verified",
+      "claim_class": "quantitative-run-identity",
+      "authorized_tex": "The committed configuration specifies 8,192 deterministic prime-base radical-inverse points with seed 20260901 over hypothetical input bounds.",
+      "allowed_locations": ["Result identity"],
+      "manifest_ids": ["L0-SWEEP-20260901-8192-V1"],
+      "permitted_scope": ["sample count", "sampling method", "seed", "hypothetical status"],
+      "prohibited_inferences": ["calibration intervals", "probability distributions"]
+    },
+    {
+      "id": "CLM-006",
+      "status": "verified",
+      "claim_class": "quantitative-generated-table",
+      "authorized_artifact_ids": ["TAB-L0-RANGES"],
+      "allowed_locations": ["Observed numerical range"],
+      "manifest_ids": ["L0-SWEEP-20260901-8192-V1"],
+      "permitted_scope": ["six registered raw and display ranges"],
+      "prohibited_inferences": ["geometric prediction", "experimental prediction"]
+    },
+    {
+      "id": "CLM-007",
+      "status": "verified",
+      "claim_class": "quantitative-verification",
+      "authorized_tex": "All 8,192 records and 26 published numeric fields passed the documented Python/CUDA binary64 comparison; no point failed or was rejected. Maximum relative particle, mass, current, and beam-power conservation residuals were $2.36837\\times10^{-16}$, $3.24198\\times10^{-16}$, $4.10551\\times10^{-16}$, and $4.43207\\times10^{-16}$, respectively.",
+      "allowed_locations": ["Observed numerical range"],
+      "manifest_ids": ["L0-SWEEP-20260901-8192-V1"],
+      "permitted_scope": ["reported binary64 comparison", "reported conservation residuals", "failure count"],
+      "prohibited_inferences": ["experimental accuracy", "independent implementations", "model validation"]
+    },
+    {
+      "id": "CLM-008",
+      "status": "verified",
+      "claim_class": "diagnostic-timing",
+      "authorized_tex": "The recorded end-to-end CUDA diagnostic was 0.634302~s (12,914.99 points/s), and separate Python reference construction was 0.141245~s. The observation includes preprocessing, allocations, transfers, synchronization, and Python record construction. It was a single shared-GPU diagnostic without controlled clocks, warm-up protocol, repetitions, or a kernel-only interval. The two timings are not a comparative benchmark and establish neither acceleration nor regression.",
+      "allowed_locations": ["Timing status"],
+      "manifest_ids": ["L0-SWEEP-20260901-8192-V1"],
+      "permitted_scope": ["verbatim diagnostic timings with mandatory caveat"],
+      "prohibited_inferences": ["GPU speedup", "GPU slowdown", "comparative performance"]
+    },
+    {
+      "id": "CLM-009",
+      "status": "verified",
+      "claim_class": "optimization-status",
+      "authorized_tex": "The committed campaign policy defines an eight-variable, four-objective constrained record, asynchronous pending-aware ask/tell, typed failures, immutable identities, bounded retries, equivalent-F3 planning cost, and same-context Pareto comparisons; its benchmark results field remains null.",
+      "allowed_locations": ["Multi-fidelity optimization protocol"],
+      "evidence": ["SRC-OPTIMIZATION-REPORT", "SRC-CAMPAIGN-SPEC"],
+      "permitted_scope": ["implemented campaign semantics and unevaluated benchmark status"],
+      "prohibited_inferences": ["optimization superiority", "verified hypervolume", "surrogate runtime"]
+    },
+    {
+      "id": "CLM-010",
+      "status": "verified",
+      "claim_class": "accuracy-limitation",
+      "authorized_tex": "Current conservation and cross-backend parity establish implementation consistency, not physical predictive accuracy or experimental validation.",
+      "allowed_locations": ["Abstract"],
+      "manifest_ids": ["L0-SWEEP-20260901-8192-V1"],
+      "bibliography": ["Oberkampf2002"],
+      "permitted_scope": ["verification-versus-validation boundary"],
+      "prohibited_inferences": ["physical calibration", "measured-thruster accuracy"]
+    },
+    {
+      "id": "CLM-011",
+      "status": "verified",
+      "claim_class": "data-availability",
+      "authorized_tex": "The accepted committed HTML embeds complete per-point columns for all 8,192 reconstructed reference-sweep records; it does not preserve raw CUDA device buffers.",
+      "allowed_locations": ["Reproducibility and data availability"],
+      "manifest_ids": ["L0-SWEEP-20260901-8192-V1"],
+      "permitted_scope": ["presence and semantics of embedded per-point HTML data"],
+      "prohibited_inferences": ["recorded run revision", "raw CUDA buffer retention"]
+    },
+    {
+      "id": "GATE-L1",
+      "status": "evidence-gate",
+      "gate_registry_id": "GATE-L1"
+    },
+    {
+      "id": "GATE-L2",
+      "status": "evidence-gate",
+      "gate_registry_id": "GATE-L2"
+    },
+    {
+      "id": "GATE-L3",
+      "status": "evidence-gate",
+      "gate_registry_id": "GATE-L3"
+    }
+  ]
+}

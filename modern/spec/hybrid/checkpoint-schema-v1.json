@@ -1,0 +1,182 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cft-revival/hybrid/checkpoint-schema-v1",
+  "title": "Hybrid leapfrog checkpoint integrity envelope",
+  "description": "JSON is parsed with recursive duplicate-key rejection. Every number token must parse as a finite JSON integer or float; strings and booleans are not coerced.",
+  "type": "object",
+  "required": ["sha256", "payload"],
+  "additionalProperties": false,
+  "properties": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Accidental-corruption/integrity detection only; not authenticity."
+    },
+    "payload": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "step",
+        "time_s",
+        "dt_s",
+        "rng",
+        "time_levels",
+        "particles",
+        "provenance"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {"const": "hybrid-checkpoint-v1"},
+        "step": {"type": "integer", "minimum": 0},
+        "time_s": {"type": "number", "minimum": 0},
+        "dt_s": {"type": "number", "minimum": 0},
+        "rng": {
+          "type": "object",
+          "required": ["algorithm", "seed"],
+          "additionalProperties": false,
+          "properties": {
+            "algorithm": {"const": "splitmix64-counter-v1"},
+            "seed": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 18446744073709551615
+            }
+          }
+        },
+        "time_levels": {
+          "type": "object",
+          "required": ["position", "velocity", "fields"],
+          "additionalProperties": false,
+          "properties": {
+            "position": {"const": "n"},
+            "velocity": {"const": "n_minus_one_half"},
+            "fields": {"const": "n"}
+          }
+        },
+        "particles": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "particle_id",
+              "species",
+              "position_m",
+              "velocity_m_per_s",
+              "velocity_time_level",
+              "weight",
+              "alive"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "particle_id": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 18446744073709551615
+              },
+              "species": {
+                "type": "object",
+                "required": [
+                  "identifier",
+                  "symbol",
+                  "charge_state",
+                  "mass_kg",
+                  "charge_c"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "identifier": {"type": "string", "minLength": 1},
+                  "symbol": {"enum": ["Xe", "Xe+", "Xe2+"]},
+                  "charge_state": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 2
+                  },
+                  "mass_kg": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  },
+                  "charge_c": {"type": "number", "minimum": 0}
+                },
+                "oneOf": [
+                  {
+                    "properties": {
+                      "symbol": {"const": "Xe"},
+                      "charge_state": {"const": 0},
+                      "charge_c": {"const": 0.0}
+                    }
+                  },
+                  {
+                    "properties": {
+                      "symbol": {"const": "Xe+"},
+                      "charge_state": {"const": 1},
+                      "charge_c": {"const": 1.602176634e-19}
+                    }
+                  },
+                  {
+                    "properties": {
+                      "symbol": {"const": "Xe2+"},
+                      "charge_state": {"const": 2},
+                      "charge_c": {"const": 3.204353268e-19}
+                    }
+                  }
+                ]
+              },
+              "position_m": {
+                "type": "array",
+                "minItems": 3,
+                "maxItems": 3,
+                "items": {"type": "number"}
+              },
+              "velocity_m_per_s": {
+                "type": "array",
+                "minItems": 3,
+                "maxItems": 3,
+                "items": {"type": "number"}
+              },
+              "velocity_time_level": {
+                "const": "leapfrog_n_minus_one_half"
+              },
+              "weight": {"type": "number", "exclusiveMinimum": 0},
+              "alive": {"type": "boolean"}
+            }
+          }
+        },
+        "provenance": {
+          "type": "object",
+          "required": [
+            "model_scope",
+            "created_utc",
+            "code_revision",
+            "cross_section_provenance",
+            "notes",
+            "time_integration_contract"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "model_scope": {"type": "string", "minLength": 1},
+            "created_utc": {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "Z$"
+            },
+            "code_revision": {
+              "type": ["string", "null"],
+              "minLength": 1
+            },
+            "cross_section_provenance": {
+              "type": "string",
+              "minLength": 1
+            },
+            "notes": {
+              "type": "array",
+              "items": {"type": "string", "minLength": 1}
+            },
+            "time_integration_contract": {
+              "const": "x^n,v^(n-1/2);E^n,B^n"
+            }
+          }
+        }
+      }
+    }
+  }
+}

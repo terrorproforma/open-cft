@@ -1,0 +1,114 @@
+{
+  "schema": "cft.pic.foundation.v1",
+  "model_level": "L3-foundation",
+  "status": "reduced-kernel-correctness-verified-not-predictive-cft",
+  "coordinates": {
+    "verified": "periodic Cartesian 1D3V electrostatic",
+    "units": "SI",
+    "charge_and_potential_location": "nodes",
+    "electric_field_location": "faces",
+    "particle_force_reconstruction": "symmetric face-to-node then nodal CIC",
+    "particle_shape": "first-order cloud-in-cell",
+    "transverse_area": "explicit positive Grid1D.transverse_area_m2; default 1 m2",
+    "future": [
+      "axisymmetric r-z finite-volume Poisson",
+      "WarpX/PICMI"
+    ]
+  },
+  "equations": [
+    {
+      "id": "deposit-cic",
+      "relation": "rho_i = sum_p(q_s W_s S_i(x_p))/(area*dx)",
+      "verification": "global integrated charge and deposition/gather adjoint identity",
+      "exclusion": "no current deposition or local discrete continuity claim"
+    },
+    {
+      "id": "poisson-periodic",
+      "relation": "-D_face_to_node D_node_to_face(phi) = (rho - mean(rho))/epsilon_0; E_face = -D_node_to_face(phi)",
+      "verification": "low/Nyquist modes, Poisson energy identity, scaled true residual"
+    },
+    {
+      "id": "leapfrog-electrostatic",
+      "relation": "v^(n+1/2)=v^(n-1/2)+(q/m)E^n dt; x^(n+1)=wrap(x^n+v^(n+1/2)dt)",
+      "verification": "single-particle constant-field acceleration"
+    },
+    {
+      "id": "boris-3v",
+      "relation": "standard electric half-kick, magnetic rotation, electric half-kick",
+      "verification": "magnetic-only speed conservation"
+    },
+    {
+      "id": "mcc-elastic",
+      "relation": "P=1-exp(-n_target sigma(E) |v| dt)",
+      "verification": "transactional seed/counter replay, binomial rate, elastic speed conservation"
+    }
+  ],
+  "stability_gates": {
+    "particle_courant": "|vx|max dt/dx <= configured limit",
+    "plasma_frequency": "omega_p dt <= configured limit",
+    "mcc_probability": "1-exp(-nu dt) <= configured limit",
+    "poisson": "finite overflow-safe true residual <= finite max(atol, rtol*r0)",
+    "enforcement": "PICStepper rejects pre-step, post-push, and post-collision violations before publishing particle state",
+    "state_validation": "all position/3V arrays, dimensions, bounds, grid, species, and config validate before zero-density handling; metrics must be finite",
+    "cyclotron": "not applicable to the electrostatic integrated step; standalone Boris is not integrated"
+  },
+  "charge_representability": {
+    "method": "mantissa/exponent product-ratio with one final binary64 scaling",
+    "acceptance": "nonzero represented charge requires finite nonzero volumetric density and conserved integrated charge",
+    "rejection": "unrepresentable volumetric density raises typed PIC error before CPU mutation or Warp launch"
+  },
+  "energy_refinement_contract": {
+    "fixture": "cold periodic mode over 4 s; dt_fine=0.02 s; dt_coarse=0.1 s",
+    "acceptance": "coarse envelope > 1.5 * fine envelope",
+    "observed_current_fixture_ratio": 1.93,
+    "claim_exclusions": [
+      "no general convergence order",
+      "no universal numerical-heating bound",
+      "no exact energy-conservation claim"
+    ]
+  },
+  "verification_cases": [
+    "manufactured periodic Poisson",
+    "CIC global charge conservation and adjointness",
+    "single-particle acceleration",
+    "Boris magnetic speed conservation",
+    "cold-plasma quarter period",
+    "timestep-refined numerical energy envelope",
+    "MCC collision-rate statistics",
+    "Python/Warp CPU/CUDA CIC and push parity",
+    "explicit Poisson nonconvergence",
+    "extreme and near-binary64-limit Poisson sources",
+    "Nyquist face-field preservation and Poisson energy identity",
+    "periodic single-particle zero self-force",
+    "late-particle MCC rollback of particles, RNG, and counters",
+    "rehashed malformed checkpoint rejection",
+    "zero-density full-state stability validation",
+    "extreme-area CPU/Warp charge preservation or typed rejection"
+  ],
+  "integration_gate": {
+    "cpu_reference_step": "small correctness smoke verified for the reduced periodic electrostatic model only",
+    "warp_kernels": "small correctness parity verified individually for CIC deposition and face-gather/push",
+    "warp_integrated_poisson": "not implemented",
+    "warpx_picmi": "adapter protocol only; package unavailable during verification",
+    "amrex": "package unavailable during verification",
+    "cft_predictive_outputs": "prohibited until geometry, boundaries, chemistry, data, and external validation gates pass"
+  },
+  "checkpoint_policy": {
+    "schema": "cft.pic.checkpoint.v2",
+    "closed": true,
+    "hash": "canonical finite JSON SHA-256",
+    "identity": "grid, species, config, code revision, backend, device, runtime",
+    "staggering": "positions integer; velocities half-step behind; field is not stored and is recomputed on faces at position step"
+  },
+  "external_data_policy": {
+    "lxcat": "hash exact downloaded bytes with SHA-256 before parsing",
+    "required_metadata": [
+      "source URL or export identity",
+      "exact source SHA-256",
+      "process identity",
+      "energy units",
+      "cross-section units"
+    ],
+    "current_tables": "synthetic verification only"
+  }
+}

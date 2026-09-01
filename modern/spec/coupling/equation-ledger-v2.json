@@ -1,0 +1,89 @@
+{
+  "schema_version": "cft-coupling-equation-ledger/2.0.0",
+  "record_schema": "cft-field-plasma-coupling/2.0.0",
+  "model_scope": "accepted axisymmetric artifact evidence to topology-aware global-solver boundary",
+  "coordinate_convention": {
+    "system": "right-handed cylindrical axisymmetric (r,z)",
+    "coordinate_unit": "m",
+    "field_component_unit": "T",
+    "covariance_unit": "T^2",
+    "layout": "radial-major values[r_index][z_index]"
+  },
+  "relations": [
+    {
+      "id": "CPL-002-001",
+      "name": "canonical map content hash",
+      "equation": "H_map = SHA256(label || shape || binary64(r,z,Br,Bz))",
+      "validity": "finite, shape-valid radial-major SI map"
+    },
+    {
+      "id": "CPL-002-002",
+      "name": "source/map/artifact binding",
+      "equation": "H_binding = SHA256(domain_label || H_map || H_source || H_artifact)",
+      "validity": "all inputs are exact 32-byte SHA-256 digests"
+    },
+    {
+      "id": "CPL-002-003",
+      "name": "overflow-safe signed root fraction",
+      "equation": "f=a/(a+b), evaluated as (a/b)/(1+a/b) when a<=b and 1/(1+b/a) otherwise",
+      "validity": "a=|Bz_i|, b=|Bz_(i+1)|, opposite strict signs"
+    },
+    {
+      "id": "CPL-002-004",
+      "name": "magnetic mirror ratio",
+      "equation": "R_m = B_high/B_low",
+      "validity": "0<B_low<=B_high; null represents an ideal unbounded ratio only when B_low=0"
+    },
+    {
+      "id": "CPL-002-005",
+      "name": "stable isotropic loss cone",
+      "equation": "p = 0.5*x/(1+sqrt(1-x)), x=B_low/B_high",
+      "validity": "0<=x<=1; p in [0,0.5]"
+    },
+    {
+      "id": "CPL-002-006",
+      "name": "stable covariance-aware ratio variance",
+      "equation": "var(x)=x^2*((r_L-r_H)^2+2*r_L*r_H*(1-rho))+((1-x)*sigma_common/H)^2, r_L=sigma_Li/L, r_H=sigma_Hi/H",
+      "validity": "independent/residual sigmas and shared additive common-mode sigma in T; rho in [-1,1]; covariance matrix PSD"
+    },
+    {
+      "id": "CPL-002-007",
+      "name": "loss probability delta uncertainty",
+      "equation": "sigma_p=sigma_x/(4*sqrt(1-x))",
+      "validity": "x<1; clipped to conservative interval; endpoint x=1 uses interval only"
+    },
+    {
+      "id": "CPL-002-008",
+      "name": "conservative correlated interval",
+      "equation": "evaluate independent low/high errors adversely and the additive common-mode shift with the same sign in numerator and denominator; take enclosing ratio bounds",
+      "validity": "coverage-scaled bounds remain finite or fail typed"
+    },
+    {
+      "id": "CPL-002-009",
+      "name": "topology segment boundary",
+      "equation": "z_boundary_i=lerp(z_cusp_i,z_cusp_(i+1),0.5)",
+      "validity": "interior candidates pass prominence-sigma, candidate-confidence, and segment-confidence gates"
+    },
+    {
+      "id": "CPL-002-010",
+      "name": "canonical coupling record hash",
+      "equation": "H_record=SHA256(domain_label || canonical_JSON(record_without_record_hash))",
+      "validity": "record includes evidence, radii/roles, diagnostics, freshness, uncertainty, topology, and all identities"
+    },
+    {
+      "id": "CPL-002-011",
+      "name": "build-time evidence reverification",
+      "equation": "recompute the domain-separated snapshot invariant digest, H_artifact, H_map, H_binding and all schema/model/adapter/identity/diagnostic/freshness predicates for every build",
+      "validity": "immutable retained bytes/map; current direct adapter contract is L1a 1.1 to 1.1; legacy input requires an allowlisted migration adapter"
+    }
+  ],
+  "prohibited_shortcuts": [
+    "building records from structural maps or caller-declared provenance strings",
+    "accepting an artifact without exact-byte, canonical-map, and source-map binding verification",
+    "fixed axial windows or implicit boundary cusps",
+    "filesystem-order or tolerance-chained candidate replacement",
+    "max(field_scale,1 tesla) tie tolerance",
+    "overflow-prone sign products, root sums, coordinate differences, or mirror arithmetic",
+    "treating confidence or isotropic loss-cone geometry as a calibrated plasma closure"
+  ]
+}

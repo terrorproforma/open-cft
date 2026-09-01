@@ -34,6 +34,9 @@ def test_public_exports_keep_legacy_l0_and_optimization_domains_distinct() -> No
     assert cft_revival.OptimizationDesign is OptimizationDesign
     assert cft_revival.DesignPoint is not cft_revival.OptimizationDesign
     assert cft_revival.calculate_performance is not cft_revival.evaluate_l0_performance
+    assert cft_revival.fields.__name__ == "cft_revival.fields"
+    assert cft_revival.plasma.__name__ == "cft_revival.plasma"
+    assert cft_revival.surrogates.__name__ == "cft_revival.surrogates"
 
 
 def test_checked_point_artifact_has_complete_named_boundaries() -> None:
@@ -130,6 +133,16 @@ def test_cli_failure_names_typed_configuration_error(capsys: pytest.CaptureFixtu
         main(["l0-evaluate", str(ROOT / "config" / "default.json")])
     assert caught.value.code == 2
     assert "PhysicsConfigurationError" in capsys.readouterr().err
+
+
+def test_cli_validates_complete_axisymmetric_result_bundle(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    manifest = ROOT / "examples" / "axisymmetric" / "results" / "manifest-l1a-v1.json"
+    assert main(["validate-axisymmetric-results", str(manifest)]) == 0
+    result = json.loads(capsys.readouterr().out)
+    assert result["model_level"] == "L1a"
+    assert result["design_count"] == 3
 
 
 @pytest.mark.parametrize(

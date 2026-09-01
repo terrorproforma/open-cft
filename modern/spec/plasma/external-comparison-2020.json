@@ -1,0 +1,37 @@
+{
+  "schema_version": "1.0.0",
+  "role": "external_cross_model_comparison_only",
+  "prohibited_uses": [
+    "solver acceptance tolerance",
+    "parameter fitting target",
+    "experimental validation claim"
+  ],
+  "source": {
+    "citation": "Yeo, Ogawa, Matthias, Kahnfeld, and Schneider (2020), Multiobjective Optimization and Particle-In-Cell Simulation of Cusped Field Thrusters for Microsatellite Platforms",
+    "doi": "https://doi.org/10.2514/1.A34584"
+  },
+  "cases": [
+    {
+      "id": "YEO2020-S1-MDO-ORIGINAL",
+      "source_model_label": "MDO (original)",
+      "editorial_interpretation": "postprocessed/corrected low-fidelity interpretation",
+      "thrust_n": 0.1027,
+      "reported_efficiency_fraction": 0.365,
+      "specific_impulse_s": 2131.0
+    },
+    {
+      "id": "YEO2020-S1-PIC",
+      "model": "published 2D3V PIC-MCC",
+      "thrust_n": 0.0628,
+      "reported_efficiency_fraction": 0.152,
+      "specific_impulse_s": 1333.0
+    },
+    {
+      "id": "YEO2020-S1-PIC-INFORMED",
+      "model": "published PIC-informed reduced model",
+      "thrust_n": 0.0617,
+      "reported_efficiency_fraction": 0.146,
+      "specific_impulse_s": 1280.0
+    }
+  ]
+}

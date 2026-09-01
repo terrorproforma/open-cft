@@ -1,0 +1,146 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cft-axisymmetric-design-manifest/1.1.0",
+  "title": "CFT L1a closed design-manifest contract",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "model_level",
+    "runtime_policy",
+    "designs",
+    "integrity"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "cft-axisymmetric-design-manifest/1.1.0"
+    },
+    "model_level": {
+      "const": "L1a"
+    },
+    "runtime_policy": {
+      "type": "string",
+      "minLength": 1
+    },
+    "designs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "artifact",
+          "artifact_file_sha256",
+          "artifact_payload_sha256",
+          "backend",
+          "iterations",
+          "relative_residual_l2",
+          "b_magnitude_min_t",
+          "b_magnitude_max_t",
+          "topology"
+        ],
+        "properties": {
+          "name": {"type": "string", "minLength": 1},
+          "artifact": {
+            "type": "string",
+            "pattern": "^[^/\\\\]+\\.json$"
+          },
+          "artifact_file_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "artifact_payload_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "backend": {"type": "string", "minLength": 1},
+          "iterations": {"type": "integer", "minimum": 0},
+          "relative_residual_l2": {"type": "number", "minimum": 0},
+          "b_magnitude_min_t": {"type": "number", "minimum": 0},
+          "b_magnitude_max_t": {"type": "number", "minimum": 0},
+          "topology": {
+            "type": "object",
+            "required": [
+              "status",
+              "field_scale_t",
+              "null_tolerance_t",
+              "axis_nulls",
+              "axis_plateaus"
+            ],
+            "properties": {
+              "status": {
+                "enum": [
+                  "degenerate_near_zero_field",
+                  "resolved_axis_nulls",
+                  "near_zero_axis_plateau",
+                  "no_resolved_axis_null"
+                ]
+              },
+              "field_scale_t": {"type": "number", "minimum": 0},
+              "null_tolerance_t": {"type": "number", "minimum": 0},
+              "axis_nulls": {
+                "type": "array",
+                "items": {"$ref": "#/$defs/axisNull"}
+              },
+              "axis_plateaus": {
+                "type": "array",
+                "items": {"$ref": "#/$defs/axisPlateau"}
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "integrity": {
+      "type": "object",
+      "required": ["algorithm", "canonicalization", "payload_sha256"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "canonicalization": {"const": "json-sort-keys-compact-utf8-v1"},
+        "payload_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "axisNull": {
+      "type": "object",
+      "required": ["kind", "r_m", "z_m", "b_magnitude_t"],
+      "properties": {
+        "kind": {
+          "enum": [
+            "sign_changing_sample",
+            "sign_changing_interpolated",
+            "isolated_sample"
+          ]
+        },
+        "r_m": {"const": 0},
+        "z_m": {"type": "number"},
+        "b_magnitude_t": {"type": "number", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "axisPlateau": {
+      "type": "object",
+      "required": ["z_start_m", "z_end_m", "sample_count"],
+      "properties": {
+        "z_start_m": {"type": "number"},
+        "z_end_m": {"type": "number"},
+        "sample_count": {"type": "integer", "minimum": 1}
+      },
+      "additionalProperties": false
+    }
+  },
+  "x-integrity-semantics": {
+    "manifest_payload_sha256": "SHA-256 over compact UTF-8 sorted-key JSON after removing only the top-level integrity object",
+    "manifest_file_sha256": "raw-byte SHA-256 stored in manifest filename plus .sha256 sidecar",
+    "artifact_anchors": "each entry binds a plain artifact filename to both its raw file SHA-256 and its canonical payload SHA-256",
+    "path_policy": "artifact must be a unique plain filename in the manifest directory; traversal and path substitution are rejected",
+    "validation_error": "all failures raise FieldArtifactValidationError; huge JSON integer or binary64 conversion overflow is wrapped"
+  }
+}

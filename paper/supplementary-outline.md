@@ -1,0 +1,100 @@
+# Supplementary material and reviewer-response outline
+
+## S1. Artifact identity and evidence map
+
+- Repository revision and clean/dirty status at submission.
+- Claim-to-evidence matrix export.
+- Git blob and SHA-256 inventory for source data, manifests, generated figures,
+  tables, and logs.
+- Build-tool versions and full build/check transcript.
+- Explanation of why working-tree and closed-gate material was excluded.
+
+## S2. Legacy snapshot audit
+
+- File inventory and reconstructed call graph.
+- Confirmed defects with file/line evidence.
+- Suspicious physics items kept separate from confirmed implementation defects.
+- Publication/snapshot reconciliation for objectives, generations, variables,
+  sensitivity claims, and reported power.
+- Missing dependency and data inventory.
+
+## S3. L0 equation and numerical contract
+
+- Complete equation-ledger rendering.
+- Constants, units, domains, supplied closures, and omitted phenomena.
+- Binary64 fraction admission, finite-output, PPU-boundary, tiny-state, and
+  nonrelativistic policies.
+- Analytic and manufactured cases.
+- Python/Warp CPU/CUDA parity tolerances and full residual definitions.
+
+## S4. First deterministic batch
+
+- Committed result manifest when one becomes available.
+- Input-generation algorithm, seed, bounds, and rationale.
+- Environment and device identity.
+- Per-field aggregate summary and deterministic selected cases.
+- Full-batch parity and conservation summary.
+- Rejected/failed-point accounting.
+- Explicit statement that the bounds are hypothetical.
+
+## S5. Controlled performance benchmark
+
+This supplement remains closed until a benchmark manifest records kernel
+warm-up, synchronized kernel-only and end-to-end regions, controlled device
+state, deterministic batch sizes, repeated trials, dispersion, and parity for
+every timed configuration. The current diagnostic timing is excluded from any
+speedup argument.
+
+## S6. L1 field-resolved evidence
+
+Opened only by `GATE-L1`. Include governing equations, geometry and materials,
+boundary conditions, solver identity, manufactured solutions, mesh/domain
+convergence, numerical uncertainty, artifact hashes, and failed cases.
+
+## S7. L2 coupled-model evidence
+
+Opened only by `GATE-L2`. Include closure provenance, coupling algorithm,
+interface conservation, spatial/temporal convergence, discrepancy model,
+uncertainty calibration, code comparison, and failure taxonomy.
+
+## S8. L3 PIC/experimental evidence
+
+Opened only by `GATE-L3`. Include collision and boundary data, scaling,
+convergence, diagnostics, facility conditions, measurement uncertainty,
+preregistered and withheld cases, discrepancy assessment, and applicability
+limits.
+
+## S9. Optimization and UQ
+
+- Campaign schema and objective-direction transform.
+- Initial designs, grouped splits, seeds, pending jobs, and failed evaluations.
+- Surrogate diagnostics, calibration, and out-of-domain guardrails.
+- Equivalent-F3 accounting and retry ledger.
+- Frozen objective normalization and reference point.
+- Per-seed F3-verified hypervolume with confidence intervals.
+- Same-cost baselines and sensitivity-estimator convergence.
+
+## S10. Reproduction instructions
+
+- No-install core check path.
+- Optional environment lock files, if later committed.
+- Commands to regenerate every display item.
+- Expected output hashes or declared normalized comparisons.
+- Platform deviations and known nondeterminism.
+
+## Reviewer-response evidence template
+
+Use one block per substantive reviewer point:
+
+1. **Reviewer point:** quote the point exactly.
+2. **Response:** state whether the manuscript changed and why.
+3. **Claim impact:** list added, narrowed, removed, or unchanged claim IDs.
+4. **New evidence:** list manifest IDs, committed paths, revisions, checks, and
+   uncertainty changes.
+5. **Manuscript locations:** section and line range in the response revision.
+6. **Artifact impact:** figures, tables, supplement items, and data package.
+7. **Gate status:** identify any gate opened or explicitly left closed.
+8. **Residual limitation:** state what the new evidence still cannot support.
+
+No response should answer a request for stronger conclusions by converting a
+planned result into prose without first satisfying its evidence gate.

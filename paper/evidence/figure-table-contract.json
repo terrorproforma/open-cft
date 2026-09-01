@@ -1,0 +1,95 @@
+{
+  "document_type": "paper-figure-table-generation-contract",
+  "schema_version": "2.0",
+  "global_requirements": {
+    "verified_item_rule": "Every verified item requires a generator, output, deterministic provenance sidecar, authorized claim IDs, accepted evidence manifest, and manuscript binding.",
+    "source_control": "Scientific inputs must be committed; generated paper sources and sidecars remain trackable for the later integration commit.",
+    "identity": "Sidecars bind generator, manifest, committed inputs, output SHA-256, evidence revision, and SOURCE_DATE_EPOCH.",
+    "determinism": "No wall-clock timestamp or machine-dependent path is permitted in generated source or sidecars.",
+    "uncertainty": "Intervals must identify estimator, level, sample count, seeds, and included uncertainty components.",
+    "failure_accounting": "Excluded, failed, censored, and out-of-domain evaluations must be counted.",
+    "gate_rule": "Planned items cannot become verified until every required result gate and evidence manifest passes."
+  },
+  "items": [
+    {
+      "id": "TAB-L0-RANGES",
+      "kind": "table",
+      "status": "verified",
+      "manuscript_label": "tab:l0-ranges",
+      "manuscript_binding": "\\input{generated/l0-ranges.tex}",
+      "claim_ids": ["CLM-006"],
+      "manifest_id": "L0-SWEEP-20260901-8192-V1",
+      "generator_path": "paper/scripts/generate_tables.py",
+      "generator_command": "python paper/scripts/generate_tables.py",
+      "output_path": "paper/generated/l0-ranges.tex",
+      "sidecar_path": "paper/generated/l0-ranges.provenance.json",
+      "required_gate": null
+    },
+    {
+      "id": "FIG-ARCHITECTURE",
+      "kind": "figure",
+      "status": "planned-nonresult",
+      "title": "Evidence flow from legacy snapshot through L0--L3 and F0--F3",
+      "required_content": [
+        "separate physics-level and information-source labels",
+        "manifest boundary before every result section",
+        "typed failures and provenance",
+        "no implied completion of L1, L2, or L3"
+      ],
+      "required_gate": null
+    },
+    {
+      "id": "FIG-L0-CLOSURE",
+      "kind": "figure",
+      "status": "planned",
+      "title": "L0 conservation residual and cross-backend difference distributions",
+      "required_content": [
+        "all accepted per-point values",
+        "absolute and relative residual definitions",
+        "binary64 comparison tolerances",
+        "failed and rejected point count"
+      ],
+      "required_gate": "A committed figure-specific manifest with source arrays"
+    },
+    {
+      "id": "FIG-L1-CONVERGENCE",
+      "kind": "figure",
+      "status": "planned",
+      "title": "L1 field and output convergence",
+      "required_content": [
+        "mesh and domain sequence",
+        "norm and quantity definitions",
+        "observed convergence and numerical uncertainty",
+        "geometry and solver identity"
+      ],
+      "required_gate": "GATE-L1"
+    },
+    {
+      "id": "FIG-MULTIFIDELITY-PARETO",
+      "kind": "figure",
+      "status": "planned",
+      "title": "F3-verified Pareto comparison at common equivalent cost",
+      "required_content": [
+        "F3-verified observations only for the principal frontier",
+        "frozen reference point and normalization",
+        "same-cost strategy checkpoints",
+        "seed-wise uncertainty intervals",
+        "failures and infeasible points"
+      ],
+      "required_gate": "GATE-L3 and an accepted fair-benchmark manifest"
+    },
+    {
+      "id": "TAB-VV-UQ",
+      "kind": "table",
+      "status": "planned",
+      "title": "Verification, validation, and uncertainty evidence by fidelity",
+      "required_content": [
+        "code and solution verification status",
+        "validation dataset identity",
+        "numerical, input, measurement, emulator, and discrepancy uncertainty",
+        "applicability limits"
+      ],
+      "required_gate": "At least one accepted L1, L2, or L3 manifest"
+    }
+  ]
+}
