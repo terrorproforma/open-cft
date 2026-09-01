@@ -1,0 +1,88 @@
+{
+  "document_type": "cft-revival-l0-surrogate-v6-predeclaration",
+  "schema_version": "6.0",
+  "predeclaration_hash": "73ce8bf4d9be4aea71d845585bcf7ca448ae2e80bef796813c71b266a3414936",
+  "development_evidence": {
+    "v5_preregistration_commit": "4fbe801320d0bd7d5d0871d2f6257c8c61a8856e",
+    "v5_results_commit": "8f2d283b257d7b67d482480a6411de521e46fec6",
+    "v5_run_manifest_hash": "1be0864030e7387dde438769a3a316ec2ce01e127249ca7774ad59b21cdcdb82",
+    "disclosure": "v5 outcomes informed this changed protocol; v6 is prospective validation, not an ahistorical independent confirmation"
+  },
+  "design": {
+    "rows": 24576,
+    "dimensions": 8,
+    "bases": [2, 3, 5, 7, 11, 13, 17, 19],
+    "skip": 4099,
+    "scramble": "position-specific SHA-256 digit permutation followed by base-specific digital digit shift",
+    "scramble_seed": 202609020601,
+    "digits_per_coordinate": 20,
+    "source_config_hash": "1434eac84d954a4dfbf8e7a9621b16c5c645f1490d56ad23d8e1d979a2bbf2e4"
+  },
+  "partition": {
+    "seed": 2026090601,
+    "grouping_dimensions": [0, 1, 2],
+    "bins_per_dimension": 16,
+    "minimum_groups_per_stage_stratum": 16,
+    "minimum_rows": {
+      "method-selection": 240,
+      "final-calibration": 192,
+      "assessment": 192
+    },
+    "strata": {
+      "interpolation": {"all_dimensions_between": [4, 11]},
+      "boundary": {"any_dimension_in": [0, 15]},
+      "ood": {"dimension_bins": {"0": [12, 13, 14, 15], "2": [12, 13, 14, 15]}}
+    },
+    "global_roles": ["candidate", "method-selection", "final-calibration", "assessment"],
+    "domain_disclosure": "all strata remain in the same declared L0 domain; exact coordinates and groups are untouched, but coarse spatial regions intentionally overlap prior same-domain work"
+  },
+  "model_selection": {
+    "training_budgets": [96, 128, 160],
+    "model_family": "accepted ExactGP ARD Matern-5/2 with native input/output normalization",
+    "unavailable_candidates": "accepted runtime exposes no composite-kernel or transformed-output public fitting API",
+    "selection": "smallest budget passing all method-group point and interval stability gates; stop before final calibration and assessment if none passes"
+  },
+  "campaign": {
+    "initial_rows": 32,
+    "acquisition_batch_rows": 16,
+    "final_rows": 160,
+    "active_score": {
+      "uncertainty_weight": 1.0,
+      "posterior_change_weight": 0.35,
+      "input_ood_weight": 0.2,
+      "pending_repulsion_length_scale": 0.15
+    }
+  },
+  "features": {
+    "names": ["discharge_voltage", "propellant_mass_flow", "ionized_number_fraction", "xe_double_plus_fraction_of_ions", "axial_momentum_fraction_of_ion_momentum"]
+  },
+  "intervals": {
+    "nominal_probability_rational": [9, 10],
+    "candidate_families": ["symmetric-absolute", "asymmetric-signed-absolute", "symmetric-raw-gp-sd", "asymmetric-signed-raw-gp-sd", "symmetric-input-distance", "asymmetric-signed-input-distance"],
+    "method_selection": "equal-group-weight leave-one-group-out coverage stability then normalized width",
+    "final_method": "cluster-weighted grouped split-conformal with exact rational finite-sample rank; each calibration group has equal mass and groups, not pooled rows, are the exchangeability unit",
+    "quantile_regression_case": {"n": 99, "probability": [9, 10], "expected_rank": 90}
+  },
+  "gates": {
+    "scopes": ["interpolation", "boundary", "ood", "overall"],
+    "quality_scales": {"axial_thrust_n": 0.04943448684816939, "specific_impulse_s": 1927.5474976902592},
+    "range_normalized_rmse_maximum": 0.05,
+    "worst_case_range_normalized_error_maximum": 0.15,
+    "coverage_interval": [0.85, 0.95],
+    "method_equal_group_coverage_interval": [0.85, 0.95],
+    "method_group_coverage_standard_deviation_maximum": 0.20,
+    "acceptance": "selected model passes method gates before calibration; final assessment passes every point and coverage gate in every stratum and overall"
+  },
+  "identity": {
+    "commit_subject": "preregister L0 surrogate v6 experiment",
+    "remote_ref": "origin/feat/sota-foundation",
+    "execution": "clean detached worktree at exact pushed preregistration commit",
+    "runtime_closure": "actual imported repository modules matched to HEAD Git blob IDs including package initializers",
+    "exclusive_lock": "retained atomic O_CREAT|O_EXCL lock in Git common directory",
+    "no_post_assessment_tuning_or_rerun": true
+  },
+  "claims": {
+    "allowed": "prospective same-domain deterministic L0 software-emulation validation",
+    "forbidden": "ahistorical independence, untouched coarse regions, physical accuracy, or higher-fidelity accuracy"
+  }
+}

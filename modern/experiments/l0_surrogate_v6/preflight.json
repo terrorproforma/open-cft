@@ -1,0 +1,32 @@
+{
+  "assessment_label_access_count": 0,
+  "document_type": "cft-revival-l0-surrogate-v6-synthetic-preflight",
+  "exact_rank_n99_p90": 90,
+  "final_calibration_label_access_count": 0,
+  "partitions_hash": "9ec0f77cbce74eae81060563c70f3ec1783ef3b087b57f65efddc425ddc92231",
+  "passed": true,
+  "predeclaration_hash": "73ce8bf4d9be4aea71d845585bcf7ca448ae2e80bef796813c71b266a3414936",
+  "preflight_hash": "6e5f62f455735206a6547f6eda5a5ea7c0730f0632e7d3e445029858a5cf71f5",
+  "schema_version": "6.0",
+  "serialization_files": [
+    "development/budget-128/axial_thrust_n.model.json",
+    "development/budget-128/method-diagnostics.json",
+    "development/budget-128/specific_impulse_s.model.json",
+    "development/budget-160/axial_thrust_n.model.json",
+    "development/budget-160/method-diagnostics.json",
+    "development/budget-160/specific_impulse_s.model.json",
+    "development/budget-96/axial_thrust_n.model.json",
+    "development/budget-96/method-diagnostics.json",
+    "development/budget-96/specific_impulse_s.model.json",
+    "failure-manifest.json",
+    "final-assessment.json",
+    "frozen-before-assessment.json",
+    "frozen-method-selection.json",
+    "grouped-final-calibration.json",
+    "run-manifest.json",
+    "runtime-diagnostics.json",
+    "training-selection.json"
+  ],
+  "temporary_file_count": 0,
+  "v6_physics_evaluation_count": 0
+}
