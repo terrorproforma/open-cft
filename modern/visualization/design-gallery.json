@@ -1,0 +1,686 @@
+{
+  "concepts": [
+    {
+      "caveats": [
+        "This is a hypothetical L0 operating concept from a 0D/global conservation-reduced performance model, not validated hardware or geometry.",
+        "Charge-state, utilization, beam-current, divergence, cathode-power, and PPU-boundary factors are supplied inputs rather than plasma closures.",
+        "Numerical conservation closure does not establish experimental calibration, predictive accuracy, feasibility, lifetime, or manufacturability.",
+        "Maximum thrust is only relative to this sampled L0 domain and does not imply a feasible physical thruster."
+      ],
+      "concept_id": "maximum-axial-thrust",
+      "entry_type": "representative operating point",
+      "index": 6352,
+      "input": {
+        "axial_momentum_fraction_of_ion_momentum": 0.9496329861465577,
+        "beam_current_fraction_of_anode_current": 0.9640984479863449,
+        "cathode_input_power_w": 6.922880528903288,
+        "charge_state_number_fractions": {
+          "xe_double_plus": 0.13208504017387604,
+          "xe_neutral": 0.026757573659234146,
+          "xe_plus": 0.8411573861668898
+        },
+        "discharge_voltage_v": 497.9714742310762,
+        "mass_utilization_fraction_of_inlet_mass": 0.9732424263407659,
+        "ppu_input_power_w": 929.3697813595583,
+        "propellant_mass_flow_kg_per_s": 1.9431933218348807e-06,
+        "xenon_atom_mass_kg": 2.180171556711138e-25
+      },
+      "label": "Maximum axial thrust L0 operating concept",
+      "normalized_score_components": null,
+      "result": {
+        "applicability_warnings": [
+          {
+            "code": "no_internal_plasma_losses",
+            "message": "L0 excludes ionization, excitation, wall, thermal, and cathode-plasma losses."
+          },
+          {
+            "code": "multiply_charged_ions_present",
+            "message": "Xe2+ uses the same xenon ion mass and twice the elementary charge."
+          },
+          {
+            "code": "empirical_factors_required",
+            "message": "Beam-current and divergence factors are external inputs, not L0 closures."
+          }
+        ],
+        "axial_thrust_n": 0.051318329094827544,
+        "diagnostics": {
+          "beam_current_residual_a": 0.0,
+          "beam_power_residual_w": 1.1368683772161603e-13,
+          "mass_flow_residual_kg_per_s": 4.235164736271502e-22,
+          "particle_rate_residual_particles_per_s": 1024.0,
+          "ppu_power_margin_w": 107.16129026421049
+        },
+        "neutral_particle_rate_per_s": 2.3849104114340944e+17,
+        "power_budget": {
+          "anode_current_a": 1.6372134806021508,
+          "anode_input_power_w": 815.2856105664445,
+          "anode_to_beam_efficiency": 0.9640984479863448,
+          "beam_current_a": 1.5784349756708553,
+          "beam_kinetic_power_w": 786.0155918127086,
+          "cathode_input_power_w": 6.922880528903288,
+          "ppu_boundary_adjustment_w": 0.0,
+          "ppu_conversion_loss_w": 107.16129026421049,
+          "ppu_input_power_w": 929.3697813595583,
+          "ppu_input_to_beam_efficiency": 0.8457511827669506,
+          "requested_ppu_input_power_w": 929.3697813595583,
+          "thruster_electrical_input_power_w": 822.2084910953478,
+          "thruster_electrical_to_beam_efficiency": 0.9559808738603236
+        },
+        "specific_impulse_s": 2692.996708712404,
+        "total_xenon_particle_rate_per_s": 8.913029416667801e+18,
+        "undiverged_ion_thrust_n": 0.05404017114345219,
+        "xe_double_plus_particle_rate_per_s": 1.1772778485715054e+18,
+        "xe_double_plus_speed_m_per_s": 38259.74670759909,
+        "xe_plus_particle_rate_per_s": 7.497260526952886e+18,
+        "xe_plus_speed_m_per_s": 27053.726343423
+      },
+      "sampled_inputs": {
+        "axial_momentum_fraction_of_ion_momentum": 0.9496329861465577,
+        "beam_current_fraction_of_anode_current": 0.9640984479863449,
+        "cathode_input_power_w": 6.922880528903288,
+        "discharge_voltage_v": 497.9714742310762,
+        "ionized_number_fraction": 0.9732424263407659,
+        "ppu_efficiency_fraction": 0.8846946689966116,
+        "propellant_mass_flow_kg_per_s": 1.9431933218348807e-06,
+        "xe_double_plus_fraction_of_ions": 0.13571648399103853
+      },
+      "selection": {
+        "constraint": null,
+        "direction": "maximize",
+        "eligible_count": 8192,
+        "exact_tie_count_at_rank_1": 1,
+        "finite_candidate_count": 8192,
+        "objective_path": "result.axial_thrust_n",
+        "objective_value": 0.051318329094827544,
+        "rank": 1,
+        "rank_definition": "Competition rank among eligible finite candidates in the stated objective direction.",
+        "rule": "Maximize axial thrust over all sweep points.",
+        "tie_break": "Select the lowest zero-based deterministic sweep index.",
+        "tie_definition": "Exact binary64 equality of the ranking value."
+      }
+    },
+    {
+      "caveats": [
+        "This is a hypothetical L0 operating concept from a 0D/global conservation-reduced performance model, not validated hardware or geometry.",
+        "Charge-state, utilization, beam-current, divergence, cathode-power, and PPU-boundary factors are supplied inputs rather than plasma closures.",
+        "Numerical conservation closure does not establish experimental calibration, predictive accuracy, feasibility, lifetime, or manufacturability.",
+        "Maximum specific impulse is relative to the sampled L0 domain and does not account for discharge, wall, or lifetime constraints."
+      ],
+      "concept_id": "maximum-specific-impulse",
+      "entry_type": "representative operating point",
+      "index": 2752,
+      "input": {
+        "axial_momentum_fraction_of_ion_momentum": 0.9799764615150672,
+        "beam_current_fraction_of_anode_current": 0.9075449338821171,
+        "cathode_input_power_w": 11.026279674028466,
+        "charge_state_number_fractions": {
+          "xe_double_plus": 0.10407134384933533,
+          "xe_neutral": 0.023590587419234144,
+          "xe_plus": 0.8723380687314305
+        },
+        "discharge_voltage_v": 487.3971334107637,
+        "mass_utilization_fraction_of_inlet_mass": 0.9764094125807659,
+        "ppu_input_power_w": 1007.3947496687891,
+        "propellant_mass_flow_kg_per_s": 1.9190506606551822e-06,
+        "xenon_atom_mass_kg": 2.180171556711138e-25
+      },
+      "label": "Maximum specific impulse L0 operating concept",
+      "normalized_score_components": null,
+      "result": {
+        "applicability_warnings": [
+          {
+            "code": "no_internal_plasma_losses",
+            "message": "L0 excludes ionization, excitation, wall, thermal, and cathode-plasma losses."
+          },
+          {
+            "code": "multiply_charged_ions_present",
+            "message": "Xe2+ uses the same xenon ion mass and twice the elementary charge."
+          },
+          {
+            "code": "empirical_factors_required",
+            "message": "Beam-current and divergence factors are external inputs, not L0 closures."
+          }
+        ],
+        "axial_thrust_n": 0.05131720277519702,
+        "diagnostics": {
+          "beam_current_residual_a": 0.0,
+          "beam_power_residual_w": 0.0,
+          "mass_flow_residual_kg_per_s": 0.0,
+          "particle_rate_residual_particles_per_s": -1024.0,
+          "ppu_power_margin_w": 178.0204531416024
+        },
+        "neutral_particle_rate_per_s": 2.0765123842097424e+17,
+        "power_budget": {
+          "anode_current_a": 1.6790168853198386,
+          "anode_input_power_w": 818.3480168531582,
+          "anode_to_beam_efficiency": 0.9075449338821171,
+          "beam_current_a": 1.5237832681745511,
+          "beam_kinetic_power_w": 742.6875968475612,
+          "cathode_input_power_w": 11.026279674028466,
+          "ppu_boundary_adjustment_w": 0.0,
+          "ppu_conversion_loss_w": 178.0204531416024,
+          "ppu_input_power_w": 1007.3947496687891,
+          "ppu_input_to_beam_efficiency": 0.7372359217593121,
+          "requested_ppu_input_power_w": 1007.3947496687891,
+          "thruster_electrical_input_power_w": 829.3742965271867,
+          "thruster_electrical_to_beam_efficiency": 0.8954793992982347
+        },
+        "specific_impulse_s": 2726.816167358433,
+        "total_xenon_particle_rate_per_s": 8.802291979031845e+18,
+        "undiverged_ion_thrust_n": 0.05236575039349352,
+        "xe_double_plus_particle_rate_per_s": 9.160663552120695e+17,
+        "xe_double_plus_speed_m_per_s": 37851.34734561404,
+        "xe_plus_particle_rate_per_s": 7.6785743853988e+18,
+        "xe_plus_speed_m_per_s": 26764.944385131115
+      },
+      "sampled_inputs": {
+        "axial_momentum_fraction_of_ion_momentum": 0.9799764615150672,
+        "beam_current_fraction_of_anode_current": 0.9075449338821171,
+        "cathode_input_power_w": 11.026279674028466,
+        "discharge_voltage_v": 487.3971334107637,
+        "ionized_number_fraction": 0.9764094125807659,
+        "ppu_efficiency_fraction": 0.8232863004297651,
+        "propellant_mass_flow_kg_per_s": 1.9190506606551822e-06,
+        "xe_double_plus_fraction_of_ions": 0.10658576464790771
+      },
+      "selection": {
+        "constraint": null,
+        "direction": "maximize",
+        "eligible_count": 8192,
+        "exact_tie_count_at_rank_1": 1,
+        "finite_candidate_count": 8192,
+        "objective_path": "result.specific_impulse_s",
+        "objective_value": 2726.816167358433,
+        "rank": 1,
+        "rank_definition": "Competition rank among eligible finite candidates in the stated objective direction.",
+        "rule": "Maximize specific impulse over all sweep points.",
+        "tie_break": "Select the lowest zero-based deterministic sweep index.",
+        "tie_definition": "Exact binary64 equality of the ranking value."
+      }
+    },
+    {
+      "caveats": [
+        "This is a hypothetical L0 operating concept from a 0D/global conservation-reduced performance model, not validated hardware or geometry.",
+        "Charge-state, utilization, beam-current, divergence, cathode-power, and PPU-boundary factors are supplied inputs rather than plasma closures.",
+        "Numerical conservation closure does not establish experimental calibration, predictive accuracy, feasibility, lifetime, or manufacturability.",
+        "The ranking minimizes anode input power; beam kinetic power is reported in the complete power budget but is not a second ranking key."
+      ],
+      "concept_id": "minimum-anode-power-useful-thrust",
+      "entry_type": "representative operating point",
+      "index": 1633,
+      "input": {
+        "axial_momentum_fraction_of_ion_momentum": 0.95076845059108,
+        "beam_current_fraction_of_anode_current": 0.9630145056326805,
+        "cathode_input_power_w": 14.746781104806354,
+        "charge_state_number_fractions": {
+          "xe_double_plus": 0.07372881379289624,
+          "xe_neutral": 0.32372690741923416,
+          "xe_plus": 0.6025442787878696
+        },
+        "discharge_voltage_v": 162.22013145763867,
+        "mass_utilization_fraction_of_inlet_mass": 0.6762730925807658,
+        "ppu_input_power_w": 195.87063450727945,
+        "propellant_mass_flow_kg_per_s": 1.6060191105865953e-06,
+        "xenon_atom_mass_kg": 2.180171556711138e-25
+      },
+      "label": "Minimum anode-input power useful-thrust L0 operating concept",
+      "normalized_score_components": null,
+      "result": {
+        "applicability_warnings": [
+          {
+            "code": "no_internal_plasma_losses",
+            "message": "L0 excludes ionization, excitation, wall, thermal, and cathode-plasma losses."
+          },
+          {
+            "code": "multiply_charged_ions_present",
+            "message": "Xe2+ uses the same xenon ion mass and twice the elementary charge."
+          },
+          {
+            "code": "empirical_factors_required",
+            "message": "Beam-current and divergence factors are external inputs, not L0 closures."
+          }
+        ],
+        "axial_thrust_n": 0.016665063317977905,
+        "diagnostics": {
+          "beam_current_residual_a": 0.0,
+          "beam_power_residual_w": 0.0,
+          "mass_flow_residual_kg_per_s": 0.0,
+          "particle_rate_residual_particles_per_s": 0.0,
+          "ppu_power_margin_w": 32.01455710817865
+        },
+        "neutral_particle_rate_per_s": 2.384727928065861e+18,
+        "power_budget": {
+          "anode_current_a": 0.9191787415930683,
+          "anode_input_power_w": 149.10929629429444,
+          "anode_to_beam_efficiency": 0.9630145056326805,
+          "beam_current_a": 0.8851824614233181,
+          "beam_kinetic_power_w": 143.59441525608685,
+          "cathode_input_power_w": 14.746781104806354,
+          "ppu_boundary_adjustment_w": 0.0,
+          "ppu_conversion_loss_w": 32.01455710817865,
+          "ppu_input_power_w": 195.87063450727945,
+          "ppu_input_to_beam_efficiency": 0.7331084397480226,
+          "requested_ppu_input_power_w": 195.87063450727945,
+          "thruster_electrical_input_power_w": 163.8560773991008,
+          "thruster_electrical_to_beam_efficiency": 0.8763447626439693
+        },
+        "specific_impulse_s": 1058.12160911578,
+        "total_xenon_particle_rate_per_s": 7.366480429683841e+18,
+        "undiverged_ion_thrust_n": 0.017527993600983983,
+        "xe_double_plus_particle_rate_per_s": 5.431218639091742e+17,
+        "xe_double_plus_speed_m_per_s": 21836.96270321241,
+        "xe_plus_particle_rate_per_s": 4.438630637708806e+18,
+        "xe_plus_speed_m_per_s": 15441.064407959217
+      },
+      "sampled_inputs": {
+        "axial_momentum_fraction_of_ion_momentum": 0.95076845059108,
+        "beam_current_fraction_of_anode_current": 0.9630145056326805,
+        "cathode_input_power_w": 14.746781104806354,
+        "discharge_voltage_v": 162.22013145763867,
+        "ionized_number_fraction": 0.6762730925807658,
+        "ppu_efficiency_fraction": 0.8365525430153807,
+        "propellant_mass_flow_kg_per_s": 1.6060191105865953e-06,
+        "xe_double_plus_fraction_of_ions": 0.10902224944590852
+      },
+      "selection": {
+        "constraint": {
+          "derivation": "Median of all 8,192 finite axial-thrust values; for this even-sized dataset, the arithmetic mean of sorted positions 4,095 and 4,096.",
+          "operator": ">=",
+          "path": "result.axial_thrust_n",
+          "rationale": "A dataset-relative, visible threshold retains the upper half of the sampled thrust range before comparing power or efficiency.",
+          "threshold": 0.016422927461904484,
+          "unit": "N"
+        },
+        "direction": "minimize",
+        "eligible_count": 4096,
+        "exact_tie_count_at_rank_1": 1,
+        "finite_candidate_count": 4096,
+        "objective_path": "result.power_budget.anode_input_power_w",
+        "objective_value": 149.10929629429444,
+        "rank": 1,
+        "rank_definition": "Competition rank among eligible finite candidates in the stated objective direction.",
+        "rule": "Among points at or above the dataset-median axial-thrust threshold, minimize anode input power.",
+        "tie_break": "Select the lowest zero-based deterministic sweep index.",
+        "tie_definition": "Exact binary64 equality of the ranking value."
+      }
+    },
+    {
+      "caveats": [
+        "This is a hypothetical L0 operating concept from a 0D/global conservation-reduced performance model, not validated hardware or geometry.",
+        "Charge-state, utilization, beam-current, divergence, cathode-power, and PPU-boundary factors are supplied inputs rather than plasma closures.",
+        "Numerical conservation closure does not establish experimental calibration, predictive accuracy, feasibility, lifetime, or manufacturability.",
+        "This efficiency uses the reported L0 PPU input boundary and is not hardware-qualified PPU efficiency."
+      ],
+      "concept_id": "best-ppu-efficiency-useful-thrust",
+      "entry_type": "representative operating point",
+      "index": 148,
+      "input": {
+        "axial_momentum_fraction_of_ion_momentum": 0.9021850676563087,
+        "beam_current_fraction_of_anode_current": 0.979744920221848,
+        "cathode_input_power_w": 7.529195108470104,
+        "charge_state_number_fractions": {
+          "xe_double_plus": 0.07276656236813085,
+          "xe_neutral": 0.2853941074192341,
+          "xe_plus": 0.6418393302126351
+        },
+        "discharge_voltage_v": 416.0043111451387,
+        "mass_utilization_fraction_of_inlet_mass": 0.7146058925807659,
+        "ppu_input_power_w": 440.67093579299546,
+        "propellant_mass_flow_kg_per_s": 1.6640895266817027e-06,
+        "xenon_atom_mass_kg": 2.180171556711138e-25
+      },
+      "label": "Best PPU-input-to-beam efficiency useful-thrust L0 operating concept",
+      "normalized_score_components": null,
+      "result": {
+        "applicability_warnings": [
+          {
+            "code": "no_internal_plasma_losses",
+            "message": "L0 excludes ionization, excitation, wall, thermal, and cathode-plasma losses."
+          },
+          {
+            "code": "multiply_charged_ions_present",
+            "message": "Xe2+ uses the same xenon ion mass and twice the elementary charge."
+          },
+          {
+            "code": "empirical_factors_required",
+            "message": "Beam-current and divergence factors are external inputs, not L0 closures."
+          }
+        ],
+        "axial_thrust_n": 0.027647428105982436,
+        "diagnostics": {
+          "beam_current_residual_a": 2.220446049250313e-16,
+          "beam_power_residual_w": 5.684341886080802e-14,
+          "mass_flow_residual_kg_per_s": 0.0,
+          "particle_rate_residual_particles_per_s": 0.0,
+          "ppu_power_margin_w": 24.29415254853751
+        },
+        "neutral_particle_rate_per_s": 2.1783668522373307e+18,
+        "power_budget": {
+          "anode_current_a": 0.982796517205674,
+          "anode_input_power_w": 408.84758813598785,
+          "anode_to_beam_efficiency": 0.9797449202218479,
+          "beam_current_a": 0.9628898953439831,
+          "beam_kinetic_power_w": 400.56634762118836,
+          "cathode_input_power_w": 7.529195108470104,
+          "ppu_boundary_adjustment_w": 0.0,
+          "ppu_conversion_loss_w": 24.29415254853751,
+          "ppu_input_power_w": 440.67093579299546,
+          "ppu_input_to_beam_efficiency": 0.9089919826465566,
+          "requested_ppu_input_power_w": 440.67093579299546,
+          "thruster_electrical_input_power_w": 416.37678324445795,
+          "thruster_electrical_to_beam_efficiency": 0.9620285369898082
+        },
+        "specific_impulse_s": 1694.1715114949131,
+        "total_xenon_particle_rate_per_s": 7.632837523997596e+18,
+        "undiverged_ion_thrust_n": 0.030644963098097788,
+        "xe_double_plus_particle_rate_per_s": 5.5541534773578054e+17,
+        "xe_double_plus_speed_m_per_s": 34969.447724164515,
+        "xe_plus_particle_rate_per_s": 4.899055324024485e+18,
+        "xe_plus_speed_m_per_s": 24727.133620105207
+      },
+      "sampled_inputs": {
+        "axial_momentum_fraction_of_ion_momentum": 0.9021850676563087,
+        "beam_current_fraction_of_anode_current": 0.979744920221848,
+        "cathode_input_power_w": 7.529195108470104,
+        "discharge_voltage_v": 416.0043111451387,
+        "ionized_number_fraction": 0.7146058925807659,
+        "ppu_efficiency_fraction": 0.9448700820152349,
+        "propellant_mass_flow_kg_per_s": 1.6640895266817027e-06,
+        "xe_double_plus_fraction_of_ions": 0.10182754315856227
+      },
+      "selection": {
+        "constraint": {
+          "derivation": "Median of all 8,192 finite axial-thrust values; for this even-sized dataset, the arithmetic mean of sorted positions 4,095 and 4,096.",
+          "operator": ">=",
+          "path": "result.axial_thrust_n",
+          "rationale": "A dataset-relative, visible threshold retains the upper half of the sampled thrust range before comparing power or efficiency.",
+          "threshold": 0.016422927461904484,
+          "unit": "N"
+        },
+        "direction": "maximize",
+        "eligible_count": 4096,
+        "exact_tie_count_at_rank_1": 1,
+        "finite_candidate_count": 4096,
+        "objective_path": "result.power_budget.ppu_input_to_beam_efficiency",
+        "objective_value": 0.9089919826465566,
+        "rank": 1,
+        "rank_definition": "Competition rank among eligible finite candidates in the stated objective direction.",
+        "rule": "Among points at or above the dataset-median axial-thrust threshold, maximize PPU-input-to-beam efficiency.",
+        "tie_break": "Select the lowest zero-based deterministic sweep index.",
+        "tie_definition": "Exact binary64 equality of the ranking value."
+      }
+    },
+    {
+      "caveats": [
+        "This is a hypothetical L0 operating concept from a 0D/global conservation-reduced performance model, not validated hardware or geometry.",
+        "Charge-state, utilization, beam-current, divergence, cathode-power, and PPU-boundary factors are supplied inputs rather than plasma closures.",
+        "Numerical conservation closure does not establish experimental calibration, predictive accuracy, feasibility, lifetime, or manufacturability.",
+        "This is an explicitly weighted visualization heuristic, not a Pareto set, knee point, campaign-objective result, or physical optimum."
+      ],
+      "concept_id": "normalized-equal-weight-compromise",
+      "entry_type": "representative operating point",
+      "index": 1192,
+      "input": {
+        "axial_momentum_fraction_of_ion_momentum": 0.974951427377607,
+        "beam_current_fraction_of_anode_current": 0.9509026280286917,
+        "cathode_input_power_w": 16.468743246064246,
+        "charge_state_number_fractions": {
+          "xe_double_plus": 0.1020290314406237,
+          "xe_neutral": 0.05603090741923411,
+          "xe_plus": 0.8419400611401422
+        },
+        "discharge_voltage_v": 470.8627095826387,
+        "mass_utilization_fraction_of_inlet_mass": 0.9439690925807659,
+        "ppu_input_power_w": 730.8855835554974,
+        "propellant_mass_flow_kg_per_s": 1.7566363945372124e-06,
+        "xenon_atom_mass_kg": 2.180171556711138e-25
+      },
+      "label": "Normalized equal-weight compromise representative operating point",
+      "normalized_score_components": {
+        "result.axial_thrust_n": 0.8607384558021587,
+        "result.power_budget.anode_input_power_w": 0.27193191112192894,
+        "result.power_budget.ppu_input_to_beam_efficiency": 0.9261554602123382,
+        "result.specific_impulse_s": 0.923503582580554
+      },
+      "result": {
+        "applicability_warnings": [
+          {
+            "code": "no_internal_plasma_losses",
+            "message": "L0 excludes ionization, excitation, wall, thermal, and cathode-plasma losses."
+          },
+          {
+            "code": "multiply_charged_ions_present",
+            "message": "Xe2+ uses the same xenon ion mass and twice the elementary charge."
+          },
+          {
+            "code": "empirical_factors_required",
+            "message": "Beam-current and divergence factors are external inputs, not L0 closures."
+          }
+        ],
+        "axial_thrust_n": 0.0444340061197236,
+        "diagnostics": {
+          "beam_current_residual_a": 0.0,
+          "beam_power_residual_w": 0.0,
+          "mass_flow_residual_kg_per_s": 0.0,
+          "particle_rate_residual_particles_per_s": 0.0,
+          "ppu_power_margin_w": 45.779300102627076
+        },
+        "neutral_particle_rate_per_s": 4.5145956926458835e+17,
+        "power_budget": {
+          "anode_current_a": 1.4200265312992617,
+          "anode_input_power_w": 668.6375402068061,
+          "anode_to_beam_efficiency": 0.9509026280286916,
+          "beam_current_a": 1.3503069604829352,
+          "beam_kinetic_power_w": 635.8091941812919,
+          "cathode_input_power_w": 16.468743246064246,
+          "ppu_boundary_adjustment_w": 0.0,
+          "ppu_conversion_loss_w": 45.779300102627076,
+          "ppu_input_power_w": 730.8855835554974,
+          "ppu_input_to_beam_efficiency": 0.8699161790663693,
+          "requested_ppu_input_power_w": 730.8855835554974,
+          "thruster_electrical_input_power_w": 685.1062834528703,
+          "thruster_electrical_to_beam_efficiency": 0.9280446107965529
+        },
+        "specific_impulse_s": 2579.3656893793104,
+        "total_xenon_particle_rate_per_s": 8.057331034935421e+18,
+        "undiverged_ion_thrust_n": 0.04557561009910079,
+        "xe_double_plus_particle_rate_per_s": 8.220816814909391e+17,
+        "xe_double_plus_speed_m_per_s": 37203.77477419453,
+        "xe_plus_particle_rate_per_s": 6.783789784179893e+18,
+        "xe_plus_speed_m_per_s": 26307.041428569963
+      },
+      "sampled_inputs": {
+        "axial_momentum_fraction_of_ion_momentum": 0.974951427377607,
+        "beam_current_fraction_of_anode_current": 0.9509026280286917,
+        "cathode_input_power_w": 16.468743246064246,
+        "discharge_voltage_v": 470.8627095826387,
+        "ionized_number_fraction": 0.9439690925807659,
+        "ppu_efficiency_fraction": 0.9373646147459537,
+        "propellant_mass_flow_kg_per_s": 1.7566363945372124e-06,
+        "xe_double_plus_fraction_of_ions": 0.1080851399082159
+      },
+      "selection": {
+        "constraint": null,
+        "direction": "maximize",
+        "eligible_count": 8192,
+        "exact_tie_count_at_rank_1": 1,
+        "finite_candidate_count": 8192,
+        "objective_path": "selection.normalized_equal_weight_score",
+        "objective_value": 0.745582352429245,
+        "rank": 1,
+        "rank_definition": "Competition rank among eligible finite candidates in the stated objective direction.",
+        "rule": "Maximize the arithmetic sum of four equal-weight min-max desirabilities over complete finite sweep points.",
+        "tie_break": "Select the lowest zero-based deterministic sweep index.",
+        "tie_definition": "Exact binary64 equality of the ranking value."
+      }
+    }
+  ],
+  "conservation": {
+    "all_sweep_point_maximum_absolute_residuals": {
+      "maximum_absolute_beam_current_residual_a": 4.440892098500626e-16,
+      "maximum_absolute_beam_power_residual_w": 2.2737367544323206e-13,
+      "maximum_absolute_mass_flow_residual_kg_per_s": 4.235164736271502e-22,
+      "maximum_absolute_particle_rate_residual_particles_per_s": 1024.0
+    },
+    "selected_point_test_bounds": {
+      "beam_current": "abs(residual) <= 2e-13 A",
+      "beam_power": "abs(residual) <= 5e-14 * max(1, beam kinetic power)",
+      "fractions_and_efficiencies": "charge-state sum within 2e-15; utilization and efficiencies in [0, 1]",
+      "mass_flow": "abs(residual) <= 3e-21 kg/s",
+      "particle_rate": "abs(residual) <= 4e-16 * max(1, total particle rate)"
+    }
+  },
+  "document_type": "cft-revival-l0-representative-operating-point-gallery",
+  "model": {
+    "claim": "Conservation-based reduced-performance calculation with externally supplied charge-state, beam-current, divergence, cathode, and PPU factors; not a calibrated or predictive plasma model.",
+    "dimensionality": "0D/global reduced performance",
+    "fidelity": "L0-conservation-reduced-performance",
+    "future_l1_candidate_fields": {
+      "fields": [
+        "inner and outer magnet radii and complete magnet/coil geometry",
+        "channel, shield, enclosure, and electrode geometry",
+        "spatial magnetic-field magnitude, direction, gradients, and topology",
+        "spatial plasma/discharge state and transport closure",
+        "wall interaction, thermal, erosion, lifetime, and material fields",
+        "facility and electrical boundary conditions",
+        "calibration, uncertainty, and experimental validation evidence"
+      ],
+      "status": "Required future evidence before an L0 operating point can become a physical design candidate."
+    },
+    "hypothetical_inputs": true,
+    "interpretation": "Entries are L0 operating concepts or representative operating points, never validated physical thruster geometries.",
+    "not_solved_at_l0": [
+      "No spatially resolved 1D, 2D, or 3D field solution exists.",
+      "No magnet radii, channel dimensions, or validated geometry are evaluated.",
+      "No magnetic-field topology or plasma-discharge solution exists."
+    ]
+  },
+  "schema_version": "1.0",
+  "selection_policy": {
+    "normalized_compromise": {
+      "aggregation": "Sum weight * normalized desirability; all four weights are 0.25.",
+      "classification": "Visualization heuristic only; not Pareto, knee, or campaign semantics.",
+      "name": "equal-weight min-max desirability",
+      "objectives": {
+        "result.axial_thrust_n": {
+          "direction": "maximize",
+          "formula": "(value - minimum) / (maximum - minimum)",
+          "maximum": 0.051318329094827544,
+          "minimum": 0.0018838422466581556,
+          "unit": "N",
+          "weight": 0.25
+        },
+        "result.power_budget.anode_input_power_w": {
+          "direction": "minimize",
+          "formula": "(maximum - value) / (maximum - minimum)",
+          "maximum": 910.3144509276646,
+          "minimum": 21.573921271712248,
+          "unit": "W",
+          "weight": 0.25
+        },
+        "result.power_budget.ppu_input_to_beam_efficiency": {
+          "direction": "maximize",
+          "formula": "(value - minimum) / (maximum - minimum)",
+          "maximum": 0.9089919826465566,
+          "minimum": 0.379828909891973,
+          "unit": "1",
+          "weight": 0.25
+        },
+        "result.specific_impulse_s": {
+          "direction": "maximize",
+          "formula": "(value - minimum) / (maximum - minimum)",
+          "maximum": 2726.816167358433,
+          "minimum": 799.2686696681739,
+          "unit": "s",
+          "weight": 0.25
+        }
+      }
+    },
+    "null_policy": "Null objective values are excluded from that rule; non-finite values are rejected. Selected records retain documented nullable result fields as JSON null.",
+    "observed_axial_thrust_range_n": {
+      "maximum": 0.051318329094827544,
+      "minimum": 0.0018838422466581556
+    },
+    "rank_and_tie_policy": "Rank only eligible finite values in the stated direction; exact binary64 ties share competition rank and the lowest sweep index is the deterministic representative.",
+    "useful_thrust_eligible_count": 4096,
+    "useful_thrust_threshold": {
+      "derivation": "Median of all 8,192 finite axial-thrust values; for this even-sized dataset, the arithmetic mean of sorted positions 4,095 and 4,096.",
+      "operator": ">=",
+      "path": "result.axial_thrust_n",
+      "rationale": "A dataset-relative, visible threshold retains the upper half of the sampled thrust range before comparing power or efficiency.",
+      "threshold": 0.016422927461904484,
+      "unit": "N"
+    }
+  },
+  "source": {
+    "config": {
+      "batch_size": 8192,
+      "description": "Deterministic hypothetical L0 domain sweep; bounds are exploratory inputs, not calibration intervals.",
+      "document_type": "cft-revival-l0-sweep",
+      "hypothetical_inputs": true,
+      "model_fidelity": "L0-conservation-reduced-performance",
+      "ranges": {
+        "axial_momentum_fraction_of_ion_momentum": [
+          0.75,
+          0.98
+        ],
+        "beam_current_fraction_of_anode_current": [
+          0.75,
+          0.98
+        ],
+        "cathode_input_power_w": [
+          5.0,
+          25.0
+        ],
+        "discharge_voltage_v": [
+          150.0,
+          500.0
+        ],
+        "ionized_number_fraction": [
+          0.65,
+          0.98
+        ],
+        "ppu_efficiency_fraction": [
+          0.82,
+          0.95
+        ],
+        "propellant_mass_flow_kg_per_s": [
+          2e-07,
+          2e-06
+        ],
+        "xe_double_plus_fraction_of_ions": [
+          0.0,
+          0.15
+        ]
+      },
+      "schema_version": "1.0",
+      "seed": 20260901
+    },
+    "config_hash_scope": "Exact source-file bytes.",
+    "config_path": "config/l0-deterministic-sweep.json",
+    "config_sha256": "a4703ac1541539829f47f909d24d01d4996ed1da97a9d86e9e2323e54039fbbf",
+    "dataset_identity": {
+      "algorithm": "sha256",
+      "serialization": "UTF-8 canonical JSON (sorted keys, compact separators, ASCII escapes, no NaN/Infinity) of the ordered complete indexed input/result record list.",
+      "sha256": "c0a36ed83655d8bef0e8419a27dfbc330926716dadb6c893b6ef6f9b2ddbae84"
+    },
+    "evaluation_api": "cft_revival.physics.reference.evaluate_batch over cft_revival.physics.workflows.sweep_points_from_config",
+    "sample_count": 8192,
+    "sampling": {
+      "batch_size": 8192,
+      "dimensions": [
+        "discharge_voltage_v",
+        "propellant_mass_flow_kg_per_s",
+        "ionized_number_fraction",
+        "xe_double_plus_fraction_of_ions",
+        "beam_current_fraction_of_anode_current",
+        "axial_momentum_fraction_of_ion_momentum",
+        "cathode_input_power_w",
+        "ppu_efficiency_fraction"
+      ],
+      "method": "deterministic-prime-base-radical-inverse",
+      "seed": 20260901
+    }
+  },
+  "title": "Representative L0 operating-point gallery"
+}
