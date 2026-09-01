@@ -1,0 +1,20 @@
+{
+  "analytic_reference_identity": {
+    "deterministic_random_points": 32,
+    "extreme_points": 4,
+    "maximum_relative_error": 5.858425719557977e-16,
+    "passed": true,
+    "points": 36
+  },
+  "assessment_label_access_count": 0,
+  "document_type": "cft-revival-l0-surrogate-v9-synthetic-preflight",
+  "exact_group_rank_n99": 90,
+  "model_reload_hash_valid": true,
+  "partitions_hash": "47bcb6831e51ad3b026ede9b59a9e7b32754178ba03202f1475d6bb496c0c421",
+  "passed": true,
+  "physics_label_access_count": 0,
+  "predeclaration_hash": "45f6457ba7735c96e1f8b79c9a5bf8343bebc48190de009150139ca5240a92af",
+  "preflight_hash": "fffa14e564767d6e6246e518fb19f7ed1c645f0ae9a793e45e85643ab097d7f3",
+  "schema_version": "9.0",
+  "temporary_file_count": 0
+}

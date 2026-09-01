@@ -1,0 +1,23 @@
+{
+  "dependency_manifest_hash": "c02f8fa3270ee929de6b9717cc10f68cd9a0416c19f3785a69ae8b7740639e8e",
+  "document_type": "cft-revival-l0-surrogate-v9-runtime-dependency-closure",
+  "schema_version": "9.0",
+  "direct_external_imported_modules": [
+    {"blob":"224dce364a87d52ace2771a4a46ce0f49e53c24e","module":"experiments.l0_surrogate_v8","path":"modern/experiments/l0_surrogate_v8/__init__.py"},
+    {"blob":"151a7ba08b9dd04cfebb99d163dcaecb02a71457","module":"experiments.l0_surrogate_v8.efficiency","path":"modern/experiments/l0_surrogate_v8/efficiency.py"},
+    {"blob":"ca4c3ae2392a6e4e7ffba16daf4ae0d2a152a1b9","module":"experiments.l0_surrogate_v8.identity","path":"modern/experiments/l0_surrogate_v8/identity.py"},
+    {"blob":"9aaa7727d7b9638b02349b0cef9e78798d0af5e1","module":"experiments.l0_surrogate_v8.models","path":"modern/experiments/l0_surrogate_v8/models.py"},
+    {"blob":"01cbd4d92d4d6f1414e4616010725d59684f1ade","module":"experiments.l0_surrogate_v8.protocol","path":"modern/experiments/l0_surrogate_v8/protocol.py"}
+  ],
+  "inherited_closures": [
+    {
+      "path": "modern/experiments/l0_surrogate_v8/dependency-manifest.json",
+      "blob": "61d9f4cc8938af065e29736d09e8e11317690782",
+      "manifest_hash": "ee01d22bb09a7fb99a80d0453442166fafa9548ef3da71e251096e51598a0071"
+    }
+  ],
+  "non_module_artifacts": [
+    {"blob":"ec05abee04faf89c2aadd73dd4e9b58ded7dad69","path":"modern/config/l0-deterministic-sweep.json"},
+    {"blob":"61d9f4cc8938af065e29736d09e8e11317690782","path":"modern/experiments/l0_surrogate_v8/dependency-manifest.json"}
+  ]
+}

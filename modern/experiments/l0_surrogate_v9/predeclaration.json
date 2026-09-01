@@ -1,0 +1,88 @@
+{
+  "document_type": "cft-revival-l0-surrogate-v9-predeclaration",
+  "schema_version": "9.0",
+  "predeclaration_hash": "45f6457ba7735c96e1f8b79c9a5bf8343bebc48190de009150139ca5240a92af",
+  "development_evidence": {
+    "v8_preregistration_commit": "2e16e124e53c0d8644cf76648dff0cff28680eb0",
+    "v8_results_commit": "41e0c1cd0db16c83f6fb1dfde4d2ef4cf117a187",
+    "v8_run_manifest_hash": "f9d7691106cdf2b90d098494394397e466ae9d730545929ca30a3afae6ac4504",
+    "prospective_defect_correction": "v8 used heuristic charge and structure proxies rather than the accepted L0 momentum identity; v9 uses the exact documented leading equations"
+  },
+  "design": {
+    "rows": 32768,
+    "dimensions": 8,
+    "bases": [2, 3, 5, 7, 11, 13, 17, 19],
+    "skip": 16381,
+    "scramble_seed": 202609020901,
+    "digits_per_coordinate": 21,
+    "source_config_hash": "1434eac84d954a4dfbf8e7a9621b16c5c645f1490d56ad23d8e1d979a2bbf2e4"
+  },
+  "partition": {
+    "seed": 2026090901,
+    "grouping_dimensions": [0, 1, 2],
+    "bins_per_dimension": 18,
+    "minimum_groups_per_stage_stratum": 40,
+    "minimum_rows_per_stage_stratum": 240,
+    "global_roles": ["candidate", "method-selection", "final-calibration", "assessment"],
+    "strata": {
+      "interpolation": {"all_dimensions_between": [4, 13]},
+      "boundary": {"any_dimension_in": [0, 17]},
+      "ood": {"dimension_bins": {"0": [14, 15, 16, 17], "2": [14, 15, 16, 17]}}
+    },
+    "domain_disclosure": "fresh exact coordinates in the same declared L0 domain; coarse spatial overlap is intentional"
+  },
+  "leading_physics": {
+    "plus_speed_m_per_s": "sqrt(2*elementary_charge_c*discharge_voltage_v/xenon_atom_mass_kg)",
+    "charge_mixture_momentum_factor": "1 + (sqrt(2)-1)*xe_double_plus_fraction_of_ions",
+    "axial_thrust_n": "mass_flow*ionized_fraction*charge_mixture_momentum_factor*plus_speed*axial_momentum_fraction",
+    "specific_impulse_s": "ionized_fraction*charge_mixture_momentum_factor*plus_speed*axial_momentum_fraction/standard_gravity",
+    "beam_current_a": "(mass_flow/xenon_mass)*elementary_charge*ionized_fraction*(1+double_share)",
+    "anode_input_power_w": "voltage*beam_current/beam_current_fraction_of_anode_current",
+    "thruster_input_power_w": "anode_input_power_w+cathode_input_power_w",
+    "ppu_input_power_w": "thruster_input_power_w/ppu_efficiency_fraction"
+  },
+  "model_selection": {
+    "families": ["raw-ard-matern52", "exact-leading-residual-ard-matern52", "exact-leading-ratio-ard-matern52"],
+    "disabled_input_only_regime_candidate": "local/trust-region mixture not enabled because preregistration identity tests show the exact leading equations remove the targeted global structure without regime discontinuity",
+    "budgets": [64, 96, 128, 160, 224],
+    "training_selection": "first budget rows of frozen scrambled candidate sequence",
+    "family_tie_break": "within smallest passing budget, lowest method OOD worst error, overall NRMSE, then family name",
+    "selection": "smallest candidate passing all point, group-stability and width-efficiency gates on method labels only"
+  },
+  "conformal": {
+    "implementation": "v7 exact Fraction/integer group-max rank semantics",
+    "exchangeability_unit": "independent spatial group",
+    "target": "simultaneous coverage of every row in a future exchangeable group",
+    "symmetric_rank": "min(G,ceil((G+1)*9/10))",
+    "asymmetric_rank": "two min(G,ceil((G+1)*19/20)) one-sided ranks"
+  },
+  "gates": {
+    "quality_scales": {"axial_thrust_n": 0.04943448684816939, "specific_impulse_s": 1927.5474976902592},
+    "range_normalized_rmse_maximum": 0.05,
+    "worst_case_range_normalized_error_maximum": 0.15,
+    "row_coverage_minimum": 0.85,
+    "simultaneous_group_coverage_minimum": 0.85,
+    "equal_group_row_coverage_standard_deviation_maximum": 0.20,
+    "normalized_median_full_interval_width_maximum": 0.25,
+    "normalized_p90_full_interval_width_maximum": 0.40,
+    "row_coverage_upper": "diagnostic-only",
+    "acceptance": "every point, row-lower, simultaneous-group, stability and width gate passes for every stratum and overall"
+  },
+  "information_barriers": {
+    "method_and_model_freeze_before_final_calibration": true,
+    "calibration_freeze_before_single_use_assessment": true,
+    "stop_before_assessment_if_no_candidate_passes": true
+  },
+  "identity": {
+    "commit_subject": "preregister L0 surrogate v9 experiment",
+    "remote_ref": "origin/feat/sota-foundation",
+    "execution": "clean detached exact preregistration commit",
+    "runtime_closure": "actual imported repository module paths and Git blob IDs",
+    "exclusive_lock": "retained atomic O_CREAT|O_EXCL lock",
+    "no_patch_rerun_or_post_assessment_tuning": true
+  },
+  "claims": {
+    "allowed": "same-domain prospective deterministic L0 software-emulation validation",
+    "forbidden": "physical accuracy, higher-fidelity accuracy, or untouched coarse regions"
+  }
+}
