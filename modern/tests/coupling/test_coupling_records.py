@@ -7,22 +7,29 @@ from datetime import timedelta
 import pytest
 
 from cft_revival.coupling import (
-    COUPLING_SCHEMA_VERSION,
     MapValidationPolicy,
     ProfileRole,
     TopologyStatus,
     TopologyPolicy,
     UncertaintyModel,
-    build_coupling_record,
+    build_screening_proxy,
+    source_map_binding_hash,
+)
+from cft_revival.coupling.records import (
+    COUPLING_SCHEMA_VERSION,
     coupling_record_dict,
     global_solver_inputs,
-    source_map_binding_hash,
 )
 from tests.coupling.evidence_helpers import (
     AnalyticMap,
     accepted_evidence,
     claims_for,
     two_cusp_map,
+)
+
+build_coupling_record = build_screening_proxy
+pytestmark = pytest.mark.filterwarnings(
+    "ignore:.*deprecated screening_proxy.*:DeprecationWarning"
 )
 
 

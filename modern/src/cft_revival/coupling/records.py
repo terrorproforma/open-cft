@@ -149,7 +149,7 @@ def _record_without_hash(record: CouplingRecord) -> dict[str, Any]:
     return payload
 
 
-def build_coupling_record(
+def _build_screening_proxy_record(
     evidence: AcceptedFieldEvidence,
     *,
     wall_radius_m: float,
@@ -157,7 +157,7 @@ def build_coupling_record(
     uncertainty_model: UncertaintyModel = UncertaintyModel(),
     reference_time_utc: datetime | None = None,
 ) -> CouplingRecord:
-    """Reverify immutable evidence, then build a coupling record."""
+    """Internal v2 same-z implementation; use screening_proxy publicly."""
 
     accepted = reverify_accepted_evidence(
         evidence, reference_time_utc=reference_time_utc

@@ -1,0 +1,123 @@
+{
+  "schema_version": "cft-coupling-equation-ledger/3.0.0",
+  "record_schema": "cft-field-plasma-coupling/3.0.0",
+  "model_scope": "verified axisymmetric psi/Br/Bz evidence to connected-flux-surface mirror distributions",
+  "coordinate_convention": {
+    "system": "right-handed cylindrical axisymmetric (r,z)",
+    "coordinate_unit": "m",
+    "flux_unit": "Wb",
+    "field_component_unit": "T",
+    "layout": "radial-major values[r_index][z_index]"
+  },
+  "relations": [
+    {
+      "id": "CPL-003-001",
+      "name": "axisymmetric field-line label",
+      "equation": "B_p=(1/r) grad(psi) cross e_phi, hence B dot grad(psi)=0",
+      "validity": "axisymmetric divergence-free poloidal field with gauge-constant psi on r=0"
+    },
+    {
+      "id": "CPL-003-002",
+      "name": "full psi map hash",
+      "equation": "H_map=SHA256(label||shape||binary64(r,z,psi,Br,Bz))",
+      "validity": "finite shape-valid SI radial-major arrays"
+    },
+    {
+      "id": "CPL-003-003",
+      "name": "complete evidence binding",
+      "equation": "H_binding=SHA256(label||H_map||H_source||H_geometry||H_material||H_mesh||H_domain||H_artifact)",
+      "validity": "all operands are verified SHA-256 digests"
+    },
+    {
+      "id": "CPL-003-004",
+      "name": "same-surface constraint",
+      "equation": "max_i(psi_i)-min_i(psi_i) <= eps_psi_abs + eps_psi_rel max_i|psi_i|",
+      "validity": "all mirror samples belong to one marching-squares connected component"
+    },
+    {
+      "id": "CPL-003-005",
+      "name": "mirror extrema",
+      "equation": "B_low=min_s hypot(Br(s),Bz(s)); B_high=max_s hypot(Br(s),Bz(s))",
+      "validity": "s traverses one connected preregistered constant-psi contour; B_low is regular and positive"
+    },
+    {
+      "id": "CPL-003-006",
+      "name": "bounded loss probability",
+      "equation": "p=x/(1+sqrt(1-x)), x=B_low/B_high; evaluate outward-rounded low/high field bounds",
+      "validity": "0<=x<=1 and contour, adiabatic, and uncertainty gates pass"
+    },
+    {
+      "id": "CPL-003-007",
+      "name": "field scale length",
+      "equation": "L_B=B/|dB/ds|",
+      "validity": "finite connected-contour local difference; zero gradient is represented as unbounded L_B"
+    },
+    {
+      "id": "CPL-003-008",
+      "name": "electron gyroradius",
+      "equation": "rho_e=sqrt(2*m_e*E_perp)/(e*B_low)",
+      "validity": "nonrelativistic declared electron energy, B_low>0"
+    },
+    {
+      "id": "CPL-003-009",
+      "name": "adiabatic gate",
+      "equation": "epsilon=rho_e/L_B <= epsilon_max",
+      "validity": "preregistered epsilon_max; exact nulls and unavailable energy inputs invalidate mirror publication"
+    },
+    {
+      "id": "CPL-003-010",
+      "name": "topology stability",
+      "equation": "N_cells(full)=N_cells(downsampled)=N_cells(enlarged) and max|delta z_cusp|<=delta_z_max",
+      "validity": "three content-identified studies supplied before the search is evaluated"
+    },
+    {
+      "id": "CPL-003-011",
+      "name": "canonical v3 record hash",
+      "equation": "H_record=SHA256(label||canonical_JSON(record_without_record_hash))",
+      "validity": "record includes full evidence, stability cases, preregistration, contours, validity and bounded uncertainty"
+    },
+    {
+      "id": "CPL-003-012",
+      "name": "bilinear asymptotic decider",
+      "equation": "Q=(q00*q11)-(q10*q01), evaluated after common scaling; Q>0 pairs edges (0,1),(2,3), Q<0 pairs (0,3),(1,2)",
+      "validity": "four-edge alternating-sign cell; Q=0 follows explicit reject/pair tie policy"
+    },
+    {
+      "id": "CPL-003-013",
+      "name": "certified segment field bound",
+      "equation": "B(t)>=max(0,|B(t_mid)|-h*sup|dB/dt|-ULP_margin) on recursively bisected t intervals",
+      "validity": "Br and Bz are quadratic along a straight segment under bilinear interpolation; unresolved lower bound invalidates the surface"
+    },
+    {
+      "id": "CPL-003-014",
+      "name": "coverage-scaled uncertainty",
+      "equation": "Delta_B=k*(sigma_abs+sigma_common+(sigma_rel+epsilon_interp+epsilon_surface)*B)",
+      "validity": "finite k=coverage_factor>0; overflow produces numerically_invalid without nominal publication"
+    },
+    {
+      "id": "CPL-003-015",
+      "name": "atomic quantile acceptance",
+      "equation": "cell_valid=AND_q(components(q)!=empty AND AND_c surface_valid(q,c))",
+      "validity": "every preregistered quantile has a retained outcome, including no-contour and failed-component outcomes"
+    },
+    {
+      "id": "CPL-003-016",
+      "name": "scaled opposite-sign root",
+      "equation": "f=(|L|/|R|)/(1+|L|/|R|) if |L|<=|R|, else 1/(1+|R|/|L|)",
+      "validity": "strict opposite finite signs, including binary64 extrema and subnormals"
+    }
+  ],
+  "prohibited_shortcuts": [
+    "same-z axis-to-wall mirror ratios in accepted records",
+    "comparing axis psi=0 to wall psi!=0 as one field line",
+    "using axial or finite-domain endpoint zeros to segment cells",
+    "feeding exact-null roundoff into mirror or delta-method formulas",
+    "certifying contour regularity from vertices without segment bounds",
+    "accepting retraced, repeated, branched, boundary-contacting, or self-intersecting loops",
+    "projecting a subset of successful preregistered quantiles",
+    "ignoring coverage_factor when constructing uncertainty intervals",
+    "publishing nominal probabilities when contour, adiabatic, stability, or uncertainty gates fail",
+    "fixed axial windows or post-hoc flux quantile selection",
+    "creating accepted records through the deprecated screening_proxy API"
+  ]
+}

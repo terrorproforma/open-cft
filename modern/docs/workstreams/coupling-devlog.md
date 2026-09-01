@@ -126,3 +126,84 @@
 - `python -m compileall -q src tests`: passed.
 - `git diff --exit-code -- FYP` and coupling-only scope check: passed.
 - No dependencies installed; no commit or push performed.
+
+## 2026-09-02 — Physically meaningful flux-surface v3
+
+### Changed
+
+- Added private-factory v3 evidence over exact `r,z,ψ,Br,Bz` bytes and bound
+  artifact/source/geometry/material/mesh/domain/model/code/config/backend
+  identity with build-time diagnostics and freshness reverification.
+- Added dependency-free marching squares, saddle disambiguation, metric
+  connectivity, closure/boundary diagnostics, bilinear ψ residual checks, and
+  explicit rejection of same-z/different-ψ sample pairs.
+- Separated finite-box endpoint zeros from geometry-identified interior
+  cusps. Added mandatory caller evidence for full/downsampled/enlarged-domain
+  cell-count and cusp-position stability.
+- Added preregistered per-cell flux quantiles and preserved every local
+  connected contour component as a surface distribution.
+- Added bounded field/interpolation/surface propagation and nominal-value
+  suppression for uncertainty-dominated surfaces.
+- Added electron gyroradius/field-scale-length gating. Exact/unresolved nulls,
+  missing energy inputs, and nonadiabatic surfaces cannot publish mirror
+  probabilities.
+- Moved v2 same-z behavior behind deprecated `screening_proxy`; the package
+  root accepted builder and solver projection now use only v3 types.
+- Added v3 schema/equation ledger and manufactured island, dipole, X-point,
+  endpoint, stability, closure, evidence-forgery, nonadiabatic, uncertainty,
+  and extreme-binary64 tests.
+
+### Validation
+
+- Coupling default mode from `modern`: 88 passed.
+- Coupling importlib mode: 88 passed.
+- Compatible non-experiment importlib suite: 956 passed, one expected optional
+  pybind11 skip.
+- Full importlib probe: 1049 passed, one skip, with four legacy
+  `l1a_plasma_coupling` failures/errors caused by the intentional root-API
+  removal, plus ten unrelated existing experiment-result/manifest failures.
+  A second probe excluding those consumers reached 1012 passes and only ten
+  four-cell visualization setup errors from an existing dataset hash mismatch.
+- `python -m compileall -q modern/src/cft_revival/coupling
+  modern/tests/coupling`, `git diff --check`, and
+  `git diff --exit-code -- FYP`: passed.
+- The root-invoked default suite initially had three `tests` package import
+  errors; rerunning from the correct `modern` project root passed.
+- No package installation, commit, push, FYP edit, or non-coupling source edit
+  was performed.
+
+## 2026-09-02 — V3 coupling audit closure
+
+### Corrected
+
+- Replaced vertex-only field checks with adaptive quadratic-on-segment
+  certificates carrying outward ULP margins, extrema bounds, gradient bounds,
+  refinement diagnostics, and fail-closed interior-null detection.
+- Corrected alternating-sign marching-squares cells with the scaled bilinear
+  asymptotic determinant and explicit exact-saddle policy.
+- Replaced greedy contour chaining with deterministic edge graphs and simple
+  cycle validation against retraces, duplicate edges/vertices, branches,
+  self-intersections, and boundary contact.
+- Added one hash-visible outcome per preregistered quantile. Cell and record
+  acceptance are now atomic; no successful subset can reach solver inputs.
+- Applied positive finite `coverage_factor` to complete uncertainty bounds and
+  added scaled overflow-safe arithmetic plus nonrelativistic energy validity.
+- Expanded primary and all stability-case identities with artifact/binding,
+  schema/model, source/geometry/material/mesh/domain, implementation/backend,
+  timestamp, and freshness fields.
+- Added stable extreme/subnormal root interpolation and kept v2 behavior only
+  through the warning-emitting, non-projectable screening proxy.
+
+### Validation
+
+- Coupling default mode: 100 passed.
+- Coupling importlib mode: 100 passed.
+- Compatible suite excluding separately owned experiments/material-fields:
+  948 passed with one expected optional-pybind11 skip.
+- Broader non-experiment probe: 968 passed and one skip; its only two failures
+  were concurrent `material_fields` schema/publication-identity defects outside
+  coupling ownership.
+- Coupling compileall, JSON schema/ledger parsing, `git diff --check`, and
+  `git diff --exit-code -- FYP` passed.
+- No installs, commits, pushes, FYP edits, or out-of-scope source edits were
+  made.

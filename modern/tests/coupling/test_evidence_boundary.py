@@ -11,7 +11,7 @@ from cft_revival.coupling import (
     AdapterVersionContract,
     MapValidationPolicy,
     SolverDiagnosticsEvidence,
-    build_coupling_record,
+    build_screening_proxy,
     verify_accepted_field_artifact,
 )
 from cft_revival.coupling.models import _EVIDENCE_FACTORY_KEY
@@ -21,6 +21,11 @@ from tests.coupling.evidence_helpers import (
     accepted_evidence,
     claims_for,
     two_cusp_map,
+)
+
+build_coupling_record = build_screening_proxy
+pytestmark = pytest.mark.filterwarnings(
+    "ignore:.*deprecated screening_proxy.*:DeprecationWarning"
 )
 
 

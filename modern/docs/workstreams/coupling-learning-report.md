@@ -112,3 +112,50 @@ coupling paths.
 - [self] Python private names do not provide hostile-code security. State the
   limitation and distinguish API misuse resistance from signatures, process
   isolation, or native-memory integrity.
+
+## 2026-09-02 — Flux-surface acceptance corrections
+
+- [user] Same axial coordinate is not a magnetic field-line identity. Accepted
+  mirror extrema must be sampled on one connected constant-ψ component; axis
+  `ψ=0` and wall `ψ!=0` are a prohibited physical comparison.
+- [user] Exact magnetic nulls invalidate the first-adiabatic-invariant mirror
+  model. Keep nulls as separatrix geometry, never as a roundoff `B_low`, and
+  require particle-energy/gyroradius scale evidence before publication.
+- [self] A topology count from one finite mesh is not acceptance evidence.
+  Bind full, downsampled, and enlarged-domain cases and fail closed on count or
+  cusp-location instability.
+- [self] Marching-squares output needs physics-facing diagnostics beyond a list
+  of points: ψ residual, connectivity gap, closure, finite-box contact, and
+  component identity must survive into the record.
+- [self] Flux-surface choice is an analysis degree of freedom. Quantiles and
+  cell IDs must be preregistered, strictly interior, and hashed into the record;
+  preserve component distributions instead of selecting a favorable line.
+- [self] Near nonlinear limits, monotone bounded propagation is identifiable
+  and fail-closed. If uncertainty overwhelms the nominal estimate, omit the
+  nominal probability rather than presenting false precision.
+- [tool] Windows PowerShell in this environment does not accept `&&`; use
+  sequential commands guarded by `$LASTEXITCODE`.
+
+## 2026-09-02 — V3 contour audit corrections
+
+- [user] Nonzero contour vertices do not prove a regular field line. Under
+  bilinear interpolation, both field components can cross zero inside an edge;
+  certify the full segment with adaptive derivative bounds before publishing.
+- [self] The arithmetic cell-centre sign is not the marching-squares
+  asymptotic decider. Use the scaled bilinear determinant and test rotations,
+  global sign inversion, and exact ties against analytically known pairings.
+- [user] Quantile preregistration is atomic. Recording only traced surfaces
+  loses absent quantiles and permits successful-subset bias; every requested
+  quantile needs a retained outcome and one failure blocks the entire cell.
+- [self] Endpoint chaining can disguise retraces and figure-eight paths as
+  closure. Build an edge graph, then independently revalidate retained points
+  for repeated vertices/edges, branching, intersections, and boundary contact.
+- [self] A coverage factor carried only in metadata is ineffective. Multiply
+  the complete uncertainty bound by it before ratio propagation and test that
+  changing it widens intervals and can change acceptance.
+- [self] Complete stability identity means all three artifacts, not only three
+  map hashes. Carry each artifact/binding/provenance/implementation/freshness
+  identity into the record hash.
+- [self] Opposite extreme signed values must never use `right-left`; a
+  ratio-scaled absolute-magnitude interpolation locates both ±1e308 and
+  subnormal midpoint roots.

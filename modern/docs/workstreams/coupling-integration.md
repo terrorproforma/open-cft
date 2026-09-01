@@ -1,4 +1,103 @@
-# Coupling v2 Integration and Later L1a Adapter
+# Coupling v3 Integration and Four-Cell Preregistration
+
+## Accepted v3 workflow
+
+```python
+evidence = verify_v3_field_artifact(artifact_bytes, psi_capable_l1a_adapter)
+stability = verify_v3_topology_stability(
+    evidence,
+    downsampled_evidence,
+    enlarged_domain_evidence,
+    maximum_cusp_shift_m=preregistered_shift_m,
+)
+record = build_coupling_record(
+    evidence,
+    stability_evidence=stability,
+    cell_registrations=(
+        CellRegistration("cell-1", (0.25, 0.50, 0.75)),
+        CellRegistration("cell-2", (0.25, 0.50, 0.75)),
+        CellRegistration("cell-3", (0.25, 0.50, 0.75)),
+        CellRegistration("cell-4", (0.25, 0.50, 0.75)),
+    ),
+    electron_inputs=ElectronAdiabaticInputs(
+        kinetic_energy_ev=electron_energy_ev,
+        perpendicular_energy_fraction=perpendicular_fraction,
+        maximum_gyroradius_to_scale_length=epsilon_max,
+    ),
+)
+```
+
+The v3 adapter must expose exact radial-major `psi_wb`, `b_r_t`, and `b_z_t`
+arrays and direct current-schema `L1a` claims. Canonical identity includes all
+five map arrays plus artifact, source, geometry, material, mesh, domain,
+field-model, code, config, backend, and adapter hashes/identities. A migration
+adapter is not accepted on the v3 physical path.
+
+The stability study is evidence, not a request to downsample internally. The
+caller supplies separately generated, content-identified full-resolution,
+downsampled, and enlarged-domain cases. Each case declares mesh dimensions,
+domain bounds, interior cusp coordinates, and cell count. The full case hash
+must equal the accepted map. Downsample dimensions must actually be smaller;
+the enlarged case must actually extend at least one domain bound. All cell
+counts must equal the observed interior-cusp count and every cusp must remain
+within the preregistered shift tolerance.
+
+## Requirements for preregistered four-cell search v2
+
+Before evaluating any design candidate, freeze:
+
+1. the exact L1a 1.1 ψ/Br/Bz adapter and all geometry, material, source, model,
+   code, config, backend, mesh, and domain identities;
+2. a four-cell hypothesis requiring exactly four stable geometry-identified
+   interior cusps after finite-box endpoint zeros are excluded;
+3. full, independently generated downsampled, and enlarged-domain evidence,
+   including a numerical cusp-shift tolerance and a no-count-change rule;
+4. cell IDs/order and strictly interior flux quantiles for every cell;
+5. marching-squares ψ/connectivity/closure tolerances and minimum contour
+   resolution;
+6. field, interpolation, and surface uncertainty bounds plus the threshold at
+   which nominal probability is suppressed;
+7. electron energy/perpendicular-energy assumptions and a justified
+   `rho_e/L_B` acceptance threshold; and
+8. acceptance logic requiring every reported mirror pair to be extrema along
+   one connected constant-ψ component, with no same-z axis/wall fallback.
+
+A candidate with three/five cells on any study, a moved cusp beyond tolerance,
+an open contour, a null-reaching surface, missing electron inputs, or
+uncertainty-dominated probability is retained as diagnostics but is not an
+accepted four-cell plasma-coupling result.
+
+### Four-cell-v2 audit readiness
+
+The coupling package is ready for a preregistered search only when the search
+adapter supplies three independently accepted current-schema artifacts and
+uses `verify_v3_topology_stability`. The frozen registration must additionally
+declare:
+
+- every per-cell quantile as one atomic set (no successful-subset projection);
+- `segment_bound_absolute_tolerance_t`,
+  `segment_bound_relative_tolerance`, and `segment_max_depth`;
+- the exact-saddle policy, normally `reject`;
+- graph closure/connectivity tolerance and a prohibition on retraced or
+  self-intersecting cycles;
+- `coverage_factor` and the uncertainty-dominance threshold; and
+- nonrelativistic electron-energy applicability plus the `rho_e/L_B` gate.
+
+Readiness fails if any quantile outcome is absent, any contour certificate is
+nonregular, any stability case omits its artifact/binding/implementation/
+freshness identity, or any arithmetic bound is not finitely representable.
+The deprecated screening proxy remains available for diagnostics, but its
+legacy record is rejected by the root v3 `global_solver_inputs`.
+
+## Deprecated v2 compatibility
+
+Legacy calls move to
+`cft_revival.coupling.screening_proxy.build_screening_proxy`. This explicit
+namespace emits a deprecation warning. Its same-z outputs are not
+`V3CouplingRecord` objects and `global_solver_inputs` rejects them by schema and
+topology type. No accepted search should use the proxy as fallback.
+
+## Historical v2 evidence workflow
 
 ## Current accepted-evidence workflow
 

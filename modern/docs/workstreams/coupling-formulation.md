@@ -1,4 +1,115 @@
-# Verified Field-to-Plasma Coupling v2
+# Verified Field-to-Plasma Coupling v3
+
+## Accepted physical contract
+
+The accepted path is now `verify_v3_field_artifact(...)` followed by
+`build_coupling_record(...)`. Its field input is a radial-major axisymmetric
+`psi_wb, b_r_t, b_z_t` map. A mirror sample is admissible only when every point
+belongs to one connected marching-squares component of one constant-ψ level.
+Equal axial coordinate is not a field-line identity: in particular, axis
+`ψ=0` and wall `ψ!=0` are never compared as a physical mirror pair.
+
+Marching squares linearly intersects cell edges, resolves four-edge saddle
+cases with a cell-centre asymptotic decider, joins endpoints under an explicit
+metric tolerance, and re-evaluates ψ by bilinear interpolation. Each contour
+records closure, finite-box contact, endpoint connectivity gap, and maximum ψ
+residual. Open/truncated, disconnected, or ψ-inconsistent contours cannot
+publish solver inputs.
+
+Magnetic zeros on `z_min`, `z_max`, or the outer radial truncation are
+`BoundaryNullDiagnostic` values only. They are excluded before segmentation.
+The symmetry axis itself is not treated as a finite-box boundary. Interior
+axis or off-axis zeros identify separatrix/cusp geometry, but are not inserted
+as `B_low`. Cell count and cusp locations must agree across caller-supplied
+full-resolution, downsampled, and enlarged-domain studies. A count change or
+cusp drift over the preregistered tolerance is typed as ambiguous and rejected.
+
+Each stable cusp defines a cell bounded by midplanes to adjacent interior
+cusps. The caller supplies increasing, strictly interior flux quantiles before
+evaluation. The implementation traces all local connected components at every
+quantile and preserves their mirror distributions; it does not collapse them
+to one wall proxy.
+
+For a connected surface, `B_low=min_s |B|` and `B_high=max_s |B|`. Field,
+interpolation, and surface errors produce conservative extrema bounds, which
+are transformed monotonically through
+`x=B_low/B_high` and `p=x/(1+sqrt(1-x))`. Delta-method uncertainty is not used
+near a null or nonlinear endpoint. If bounds include an invalid high field, or
+the probability interval dominates the nominal value by the declared factor,
+status is `uncertainty_dominated` and the nominal probability is omitted.
+
+Exact/unresolved nulls are nonregular points. Mirror publication requires
+electron energy and perpendicular-energy fraction, then evaluates
+`rho_e=sqrt(2 m_e E_perp)/(e B_low)`, `L_B=B/|dB/ds|`, and the preregistered
+gate `rho_e/L_B <= epsilon_max`. Missing inputs, a null, nonfinite arithmetic,
+or a failed gate omits the nominal mirror probability. This is the standard
+guiding-centre ordering `rho/L << 1`, not a claim that `0.1` is universal.
+Sources: Cary and Brizard, *Rev. Mod. Phys.* 81, 693 (2009),
+https://doi.org/10.1103/RevModPhys.81.693; Brizard, *Phys. Plasmas* 24,
+042115 (2017), https://doi.org/10.1063/1.4981217; Brizard and Markowski,
+*Phys. Plasmas* 29, 022101 (2022), https://doi.org/10.1063/5.0078786.
+
+V3 identity hashes exact artifact bytes and canonical binary64
+`r,z,ψ,Br,Bz`, then binds source, geometry, material, mesh, domain, model,
+code, config, backend, and adapter identities. Build-time reverification also
+rechecks diagnostics and freshness. Python object privacy remains an API
+integrity measure, not hostile-process security.
+
+## V3 audit hardening: segment certificates and atomic cells
+
+Contour vertices are not sufficient evidence that `|B|>0`. Along each
+marching-squares edge, bilinear `Br` and `Bz` become quadratic functions of the
+edge parameter. The implementation reconstructs those quadratics from
+endpoint/midpoint samples and recursively bounds each interval with
+`|B(mid)| - h sup|dB/dt|`, including an explicit ULP margin. Refinement stops
+only after a positive null-floor lower bound and declared extrema tolerance
+are both certified. A zero crossing between nonzero vertices, a near-null
+interval, nonconverged bound, or nonrepresentable derivative invalidates the
+surface and suppresses mirror publication.
+
+`L_B` now uses the certified lower field bound and the contour-wide upper
+gradient bound. This is deliberately conservative. The nonrelativistic
+electron gyroradius model rejects energies at or above the electron rest
+energy rather than silently applying the wrong kinematics.
+
+Ambiguous marching-squares cells use the bilinear asymptotic decider
+`Q=q00*q11-q10*q01` after common scaling. `Q>0` pairs edges `(0,1)` and
+`(2,3)`; `Q<0` pairs `(0,3)` and `(1,2)`. An exact saddle is rejected by
+default. The only alternatives are explicit `pair_01_23` or `pair_03_12`
+policies, which are record-hashed.
+
+Segments are assembled as an undirected edge graph. Before physics use, every
+closed contour is revalidated from retained points: exactly one traversal per
+edge, degree two, one terminal closure, no repeated nonterminal vertex,
+duplicate/reversed edge, retrace, branch, self-intersection, or finite-domain
+contact. Thus a 13-point path that disguises an 8-unique-vertex retrace is not
+a valid flux surface.
+
+Cell acceptance is atomic over the full preregistration. Every requested
+quantile gets a `FluxQuantileOutcome`, including no-contour and trace-error
+cases. A cell is valid only when every quantile has at least one local
+component and every component passes topology, segment-null, adiabatic, and
+uncertainty gates. One failure makes the cell and complete record ambiguous;
+solver projection emits no rows.
+
+Uncertainty bounds now multiply the complete declared field/interpolation/
+surface error by finite positive `coverage_factor`. Overflow-safe scaled sums
+and products either produce finite bounds or `numerically_invalid`; no
+overflow path publishes a nominal value. Coverage, registrations, every
+quantile outcome/certificate, validation/freshness policy, `field_model_id`,
+and complete artifact/map/source/geometry/material/mesh/domain/model/code/
+config/backend/adapter identities for all three stability maps are included
+in canonical record identity.
+
+## Deprecated v2 screening proxy
+
+The old same-z axis/wall algorithm remains only as
+`cft_revival.coupling.screening_proxy.build_screening_proxy`. It emits a
+`DeprecationWarning`, returns the legacy diagnostic type, and cannot pass the
+v3 schema/type checks in `global_solver_inputs`. It is suitable only for rough
+sensitivity screening.
+
+## V2 audit history
 
 ## Claim boundary
 

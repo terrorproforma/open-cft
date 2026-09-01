@@ -1,0 +1,315 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cft-field-plasma-coupling/3.0.0",
+  "title": "Accepted same-flux-surface field-to-plasma coupling record",
+  "type": "object",
+  "required": ["schema_version", "record_hash", "topology_status", "topology_reason", "identity", "stability_study", "surface_policy", "uncertainty_model", "electron_inputs", "cell_registrations", "boundary_nulls", "interior_cusp_z_m", "cells"],
+  "properties": {
+    "schema_version": {"const": "cft-field-plasma-coupling/3.0.0"},
+    "record_hash": {"$ref": "#/$defs/hash"},
+    "topology_status": {"enum": ["resolved", "ambiguous", "no_topology", "degenerate"]},
+    "topology_reason": {"$ref": "#/$defs/nonempty"},
+    "identity": {"$ref": "#/$defs/identity"},
+    "stability_study": {"$ref": "#/$defs/stabilityStudy"},
+    "surface_policy": {"$ref": "#/$defs/surfacePolicy"},
+    "uncertainty_model": {"$ref": "#/$defs/uncertaintyModel"},
+    "electron_inputs": {"anyOf": [{"$ref": "#/$defs/electronInputs"}, {"type": "null"}]},
+    "cell_registrations": {"type": "array", "items": {"$ref": "#/$defs/cellRegistration"}},
+    "boundary_nulls": {"type": "array", "items": {"$ref": "#/$defs/boundaryNull"}},
+    "interior_cusp_z_m": {"type": "array", "items": {"type": "number"}},
+    "cells": {"type": "array", "items": {"$ref": "#/$defs/cell"}}
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "nonempty": {"type": "string", "minLength": 1},
+    "adapterContract": {
+      "type": "object",
+      "required": ["contract_id", "contract_version", "input_schema_version", "normalized_schema_version", "model_level", "is_migration"],
+      "properties": {
+        "contract_id": {"$ref": "#/$defs/nonempty"},
+        "contract_version": {"$ref": "#/$defs/nonempty"},
+        "input_schema_version": {"const": "cft-axisymmetric-field-map/1.1.0"},
+        "normalized_schema_version": {"const": "cft-axisymmetric-field-map/1.1.0"},
+        "model_level": {"const": "L1a"},
+        "is_migration": {"const": false}
+      },
+      "additionalProperties": false
+    },
+    "diagnostics": {
+      "type": "object",
+      "required": ["converged", "residual_norm", "residual_tolerance", "relative_residual", "relative_tolerance", "iterations"],
+      "properties": {
+        "converged": {"const": true},
+        "residual_norm": {"type": "number", "minimum": 0},
+        "residual_tolerance": {"type": "number", "minimum": 0},
+        "relative_residual": {"type": "number", "minimum": 0},
+        "relative_tolerance": {"type": "number", "minimum": 0},
+        "iterations": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "validationPolicy": {
+      "type": "object",
+      "required": ["minimum_radial_samples", "minimum_axial_samples", "maximum_age_s", "maximum_future_skew_s", "require_axis", "axis_coordinate_tolerance_m", "axis_br_absolute_tolerance_t", "axis_br_relative_tolerance", "current_artifact_schema", "accepted_model_levels", "validated_migration_adapter_ids"],
+      "properties": {
+        "minimum_radial_samples": {"type": "integer", "minimum": 2},
+        "minimum_axial_samples": {"type": "integer", "minimum": 3},
+        "maximum_age_s": {"type": ["number", "null"], "minimum": 0},
+        "maximum_future_skew_s": {"type": "number", "minimum": 0},
+        "require_axis": {"type": "boolean"},
+        "axis_coordinate_tolerance_m": {"type": "number", "minimum": 0},
+        "axis_br_absolute_tolerance_t": {"type": "number", "minimum": 0},
+        "axis_br_relative_tolerance": {"type": "number", "minimum": 0},
+        "current_artifact_schema": {"const": "cft-axisymmetric-field-map/1.1.0"},
+        "accepted_model_levels": {"type": "array", "items": {"type": "string"}},
+        "validated_migration_adapter_ids": {"type": "array", "items": {"type": "string"}}
+      },
+      "additionalProperties": false
+    },
+    "identity": {
+      "type": "object",
+      "required": ["artifact_hash", "full_map_hash", "source_hash", "geometry_hash", "material_hash", "mesh_hash", "domain_hash", "evidence_binding_hash", "artifact_schema_version", "model_level", "field_model_id", "field_model_hash", "code_hash", "config_hash", "backend_id", "backend_version", "adapter_id", "adapter_code_hash", "adapter_contract", "generated_at_utc", "diagnostics", "validation_policy"],
+      "properties": {
+        "artifact_hash": {"$ref": "#/$defs/hash"},
+        "full_map_hash": {"$ref": "#/$defs/hash"},
+        "source_hash": {"$ref": "#/$defs/hash"},
+        "geometry_hash": {"$ref": "#/$defs/hash"},
+        "material_hash": {"$ref": "#/$defs/hash"},
+        "mesh_hash": {"$ref": "#/$defs/hash"},
+        "domain_hash": {"$ref": "#/$defs/hash"},
+        "evidence_binding_hash": {"$ref": "#/$defs/hash"},
+        "artifact_schema_version": {"const": "cft-axisymmetric-field-map/1.1.0"},
+        "model_level": {"const": "L1a"},
+        "field_model_id": {"$ref": "#/$defs/nonempty"},
+        "field_model_hash": {"$ref": "#/$defs/hash"},
+        "code_hash": {"$ref": "#/$defs/hash"},
+        "config_hash": {"$ref": "#/$defs/hash"},
+        "backend_id": {"$ref": "#/$defs/nonempty"},
+        "backend_version": {"$ref": "#/$defs/nonempty"},
+        "adapter_id": {"$ref": "#/$defs/nonempty"},
+        "adapter_code_hash": {"$ref": "#/$defs/hash"},
+        "adapter_contract": {"$ref": "#/$defs/adapterContract"},
+        "generated_at_utc": {"type": "string", "format": "date-time"},
+        "diagnostics": {"$ref": "#/$defs/diagnostics"},
+        "validation_policy": {"$ref": "#/$defs/validationPolicy"}
+      },
+      "additionalProperties": false
+    },
+    "stabilityCase": {
+      "type": "object",
+      "required": ["role", "artifact_hash", "full_map_hash", "source_hash", "geometry_hash", "material_hash", "mesh_hash", "domain_hash", "evidence_binding_hash", "artifact_schema_version", "model_level", "field_model_id", "field_model_hash", "code_hash", "config_hash", "backend_id", "backend_version", "adapter_id", "adapter_code_hash", "adapter_contract", "generated_at_utc", "diagnostics", "maximum_age_s", "maximum_future_skew_s", "validation_policy", "cell_count", "interior_cusp_z_m", "radial_samples", "axial_samples", "radius_m", "z_min_m", "z_max_m"],
+      "properties": {
+        "role": {"enum": ["full_resolution", "downsampled", "enlarged_domain"]},
+        "artifact_hash": {"$ref": "#/$defs/hash"},
+        "full_map_hash": {"$ref": "#/$defs/hash"},
+        "source_hash": {"$ref": "#/$defs/hash"},
+        "geometry_hash": {"$ref": "#/$defs/hash"},
+        "material_hash": {"$ref": "#/$defs/hash"},
+        "mesh_hash": {"$ref": "#/$defs/hash"},
+        "domain_hash": {"$ref": "#/$defs/hash"},
+        "evidence_binding_hash": {"$ref": "#/$defs/hash"},
+        "artifact_schema_version": {"const": "cft-axisymmetric-field-map/1.1.0"},
+        "model_level": {"const": "L1a"},
+        "field_model_id": {"$ref": "#/$defs/nonempty"},
+        "field_model_hash": {"$ref": "#/$defs/hash"},
+        "code_hash": {"$ref": "#/$defs/hash"},
+        "config_hash": {"$ref": "#/$defs/hash"},
+        "backend_id": {"$ref": "#/$defs/nonempty"},
+        "backend_version": {"$ref": "#/$defs/nonempty"},
+        "adapter_id": {"$ref": "#/$defs/nonempty"},
+        "adapter_code_hash": {"$ref": "#/$defs/hash"},
+        "adapter_contract": {"$ref": "#/$defs/adapterContract"},
+        "generated_at_utc": {"type": "string", "format": "date-time"},
+        "diagnostics": {"$ref": "#/$defs/diagnostics"},
+        "maximum_age_s": {"type": ["number", "null"], "minimum": 0},
+        "maximum_future_skew_s": {"type": "number", "minimum": 0},
+        "validation_policy": {"$ref": "#/$defs/validationPolicy"},
+        "cell_count": {"type": "integer", "minimum": 0},
+        "interior_cusp_z_m": {"type": "array", "items": {"type": "number"}},
+        "radial_samples": {"type": "integer", "minimum": 2},
+        "axial_samples": {"type": "integer", "minimum": 3},
+        "radius_m": {"type": "number", "exclusiveMinimum": 0},
+        "z_min_m": {"type": "number"},
+        "z_max_m": {"type": "number"}
+      },
+      "additionalProperties": false
+    },
+    "stabilityStudy": {
+      "type": "object",
+      "required": ["full_resolution", "downsampled", "enlarged_domain", "maximum_cusp_shift_m"],
+      "properties": {
+        "full_resolution": {"$ref": "#/$defs/stabilityCase"},
+        "downsampled": {"$ref": "#/$defs/stabilityCase"},
+        "enlarged_domain": {"$ref": "#/$defs/stabilityCase"},
+        "maximum_cusp_shift_m": {"type": "number", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "surfacePolicy": {
+      "type": "object",
+      "required": ["psi_absolute_tolerance_wb", "psi_relative_tolerance", "connectivity_tolerance_m", "boundary_exclusion_cells", "minimum_contour_points", "interpolation_relative_error", "surface_relative_error", "uncertainty_dominance_factor", "null_field_absolute_floor_t", "null_field_relative_floor", "segment_bound_absolute_tolerance_t", "segment_bound_relative_tolerance", "segment_max_depth", "saddle_tie_policy"],
+      "properties": {
+        "psi_absolute_tolerance_wb": {"type": "number", "minimum": 0},
+        "psi_relative_tolerance": {"type": "number", "minimum": 0},
+        "connectivity_tolerance_m": {"type": "number", "exclusiveMinimum": 0},
+        "boundary_exclusion_cells": {"type": "integer", "minimum": 1},
+        "minimum_contour_points": {"type": "integer", "minimum": 2},
+        "interpolation_relative_error": {"type": "number", "minimum": 0},
+        "surface_relative_error": {"type": "number", "minimum": 0},
+        "uncertainty_dominance_factor": {"type": "number", "exclusiveMinimum": 0},
+        "null_field_absolute_floor_t": {"type": "number", "minimum": 0},
+        "null_field_relative_floor": {"type": "number", "minimum": 0},
+        "segment_bound_absolute_tolerance_t": {"type": "number", "minimum": 0},
+        "segment_bound_relative_tolerance": {"type": "number", "minimum": 0},
+        "segment_max_depth": {"type": "integer", "minimum": 1},
+        "saddle_tie_policy": {"enum": ["reject", "pair_01_23", "pair_03_12"]}
+      },
+      "additionalProperties": false
+    },
+    "uncertaintyModel": {
+      "type": "object",
+      "required": ["absolute_independent_sigma_t", "relative_independent_sigma", "common_mode_sigma_t", "residual_correlation", "coverage_factor"],
+      "properties": {
+        "absolute_independent_sigma_t": {"type": "number", "minimum": 0},
+        "relative_independent_sigma": {"type": "number", "minimum": 0},
+        "common_mode_sigma_t": {"type": "number", "minimum": 0},
+        "residual_correlation": {"type": "number", "minimum": -1, "maximum": 1},
+        "coverage_factor": {"type": "number", "exclusiveMinimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "electronInputs": {
+      "type": "object",
+      "required": ["kinetic_energy_ev", "perpendicular_energy_fraction", "maximum_gyroradius_to_scale_length"],
+      "properties": {
+        "kinetic_energy_ev": {"type": "number", "exclusiveMinimum": 0},
+        "perpendicular_energy_fraction": {"type": "number", "minimum": 0, "maximum": 1},
+        "maximum_gyroradius_to_scale_length": {"type": "number", "exclusiveMinimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "boundaryNull": {
+      "type": "object",
+      "required": ["z_m", "boundary", "b_magnitude_t"],
+      "properties": {
+        "z_m": {"type": "number"},
+        "boundary": {"$ref": "#/$defs/nonempty"},
+        "b_magnitude_t": {"type": "number", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "cellRegistration": {
+      "type": "object",
+      "required": ["cell_id", "flux_quantiles"],
+      "properties": {
+        "cell_id": {"$ref": "#/$defs/nonempty"},
+        "flux_quantiles": {"type": "array", "minItems": 1, "items": {"type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 1}}
+      },
+      "additionalProperties": false
+    },
+    "contour": {
+      "type": "object",
+      "required": ["psi_wb", "points_rz_m", "closed", "touches_boundary", "maximum_psi_residual_wb", "connectivity_gap_m", "simple", "topology_reason", "unique_vertex_count", "edge_count"],
+      "properties": {
+        "psi_wb": {"type": "number"},
+        "points_rz_m": {"type": "array", "items": {"type": "array", "prefixItems": [{"type": "number"}, {"type": "number"}], "items": false}},
+        "closed": {"type": "boolean"},
+        "touches_boundary": {"type": "boolean"},
+        "maximum_psi_residual_wb": {"type": "number", "minimum": 0},
+        "connectivity_gap_m": {"type": "number", "minimum": 0},
+        "simple": {"type": "boolean"},
+        "topology_reason": {"$ref": "#/$defs/nonempty"},
+        "unique_vertex_count": {"type": "integer", "minimum": 0},
+        "edge_count": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "certificate": {
+      "type": "object",
+      "required": ["certified_b_low_lower_t", "sampled_b_low_upper_t", "sampled_b_high_lower_t", "certified_b_high_upper_t", "maximum_gradient_t_per_m", "sampled_points_rz_m", "sampled_b_t", "subdivisions", "maximum_depth_reached", "regular", "reason"],
+      "properties": {
+        "certified_b_low_lower_t": {"type": "number", "minimum": 0},
+        "sampled_b_low_upper_t": {"type": "number", "minimum": 0},
+        "sampled_b_high_lower_t": {"type": "number", "minimum": 0},
+        "certified_b_high_upper_t": {"type": "number", "minimum": 0},
+        "maximum_gradient_t_per_m": {"type": "number", "minimum": 0},
+        "sampled_points_rz_m": {"type": "array", "items": {"type": "array", "prefixItems": [{"type": "number"}, {"type": "number"}], "items": false}},
+        "sampled_b_t": {"type": "array", "items": {"type": "number", "minimum": 0}},
+        "subdivisions": {"type": "integer", "minimum": 0},
+        "maximum_depth_reached": {"type": "integer", "minimum": 0},
+        "regular": {"type": "boolean"},
+        "reason": {"$ref": "#/$defs/nonempty"}
+      },
+      "additionalProperties": false
+    },
+    "probability": {
+      "type": "object",
+      "required": ["status", "reason", "nominal_probability", "probability_lower", "probability_upper", "field_ratio_lower", "field_ratio_upper", "mirror_ratio_lower", "mirror_ratio_upper", "uncertainty_method"],
+      "properties": {
+        "status": {"enum": ["valid", "open_boundary", "disconnected", "exact_null", "missing_adiabatic_inputs", "nonadiabatic", "uncertainty_dominated", "numerically_invalid", "physically_invalid"]},
+        "reason": {"$ref": "#/$defs/nonempty"},
+        "nominal_probability": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "probability_lower": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "probability_upper": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "field_ratio_lower": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "field_ratio_upper": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "mirror_ratio_lower": {"type": ["number", "null"], "minimum": 1},
+        "mirror_ratio_upper": {"type": ["number", "null"], "minimum": 1},
+        "uncertainty_method": {"const": "bounded-extrema-v3"}
+      },
+      "additionalProperties": false
+    },
+    "surface": {
+      "type": "object",
+      "required": ["cell_id", "flux_quantile", "psi_wb", "contour_component", "contour", "certificate", "b_low_t", "b_high_t", "b_low_location_rz_m", "b_high_location_rz_m", "field_scale_length_m", "electron_gyroradius_m", "gyroradius_to_scale_length", "adiabatic_valid", "probability"],
+      "properties": {
+        "cell_id": {"$ref": "#/$defs/nonempty"},
+        "flux_quantile": {"type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 1},
+        "psi_wb": {"type": "number"},
+        "contour_component": {"type": "integer", "minimum": 0},
+        "contour": {"$ref": "#/$defs/contour"},
+        "certificate": {"$ref": "#/$defs/certificate"},
+        "b_low_t": {"type": "number", "minimum": 0},
+        "b_high_t": {"type": "number", "minimum": 0},
+        "b_low_location_rz_m": {"type": "array", "prefixItems": [{"type": "number"}, {"type": "number"}], "items": false},
+        "b_high_location_rz_m": {"type": "array", "prefixItems": [{"type": "number"}, {"type": "number"}], "items": false},
+        "field_scale_length_m": {"type": ["number", "null"], "exclusiveMinimum": 0},
+        "electron_gyroradius_m": {"type": ["number", "null"], "minimum": 0},
+        "gyroradius_to_scale_length": {"type": ["number", "null"], "minimum": 0},
+        "adiabatic_valid": {"type": "boolean"},
+        "probability": {"$ref": "#/$defs/probability"}
+      },
+      "additionalProperties": false
+    },
+    "quantileOutcome": {
+      "type": "object",
+      "required": ["flux_quantile", "requested_psi_wb", "status", "reason", "contour_components", "accepted_components"],
+      "properties": {
+        "flux_quantile": {"type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 1},
+        "requested_psi_wb": {"type": "number"},
+        "status": {"enum": ["valid", "open_boundary", "disconnected", "exact_null", "missing_adiabatic_inputs", "nonadiabatic", "uncertainty_dominated", "numerically_invalid", "physically_invalid"]},
+        "reason": {"$ref": "#/$defs/nonempty"},
+        "contour_components": {"type": "array", "items": {"type": "integer", "minimum": 0}},
+        "accepted_components": {"type": "array", "items": {"type": "integer", "minimum": 0}}
+      },
+      "additionalProperties": false
+    },
+    "cell": {
+      "type": "object",
+      "required": ["cell_id", "z_start_m", "z_end_m", "separatrix_z_m", "separatrix_psi_wb", "surfaces", "quantile_outcomes", "status", "reason"],
+      "properties": {
+        "cell_id": {"$ref": "#/$defs/nonempty"},
+        "z_start_m": {"type": "number"},
+        "z_end_m": {"type": "number"},
+        "separatrix_z_m": {"type": "number"},
+        "separatrix_psi_wb": {"type": "number"},
+        "surfaces": {"type": "array", "items": {"$ref": "#/$defs/surface"}},
+        "quantile_outcomes": {"type": "array", "items": {"$ref": "#/$defs/quantileOutcome"}},
+        "status": {"enum": ["valid", "open_boundary", "disconnected", "exact_null", "missing_adiabatic_inputs", "nonadiabatic", "uncertainty_dominated", "numerically_invalid", "physically_invalid"]},
+        "reason": {"$ref": "#/$defs/nonempty"}
+      },
+      "additionalProperties": false
+    }
+  }
+}

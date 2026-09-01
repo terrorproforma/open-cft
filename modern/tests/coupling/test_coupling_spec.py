@@ -9,7 +9,7 @@ SPEC = Path(__file__).parents[2] / "spec" / "coupling"
 
 
 def test_record_schema_is_closed_and_matches_runtime_version() -> None:
-    schema = json.loads((SPEC / "coupling-record-v2.schema.json").read_text())
+    schema = json.loads((SPEC / "coupling-record-v3.schema.json").read_text())
     assert schema["$id"] == COUPLING_SCHEMA_VERSION
     assert schema["additionalProperties"] is False
     assert set(schema["required"]) == set(schema["properties"])
@@ -21,16 +21,20 @@ def test_record_schema_is_closed_and_matches_runtime_version() -> None:
 
 
 def test_equation_ledger_has_unique_traceable_relations_and_prohibitions() -> None:
-    ledger = json.loads((SPEC / "equation-ledger-v2.json").read_text())
+    ledger = json.loads((SPEC / "equation-ledger-v3.json").read_text())
     identifiers = [relation["id"] for relation in ledger["relations"]]
     assert len(identifiers) == len(set(identifiers))
     assert {
-        "CPL-002-002",
-        "CPL-002-005",
-        "CPL-002-006",
-        "CPL-002-010",
+        "CPL-003-003",
+        "CPL-003-004",
+        "CPL-003-009",
+        "CPL-003-010",
+        "CPL-003-012",
+        "CPL-003-013",
+        "CPL-003-015",
+        "CPL-003-016",
     } <= set(identifiers)
     assert any("fixed axial windows" in item for item in ledger["prohibited_shortcuts"])
     assert ledger["coordinate_convention"]["coordinate_unit"] == "m"
     assert ledger["coordinate_convention"]["field_component_unit"] == "T"
-    assert ledger["coordinate_convention"]["covariance_unit"] == "T^2"
+    assert ledger["coordinate_convention"]["flux_unit"] == "Wb"
