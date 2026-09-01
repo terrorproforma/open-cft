@@ -1,0 +1,164 @@
+{
+  "schema_version": "cft-coupling-equation-ledger/4.0.0",
+  "record_schema": "cft-field-plasma-coupling/4.1.0",
+  "model_scope": "accepted axisymmetric maps to HEMP/CFT wall cusps, inter-cusp cells, wall-connected mirror paths, and orbit-gated uncertainty",
+  "coordinate_convention": {
+    "system": "right-handed cylindrical axisymmetric (r,z)",
+    "coordinate_unit": "m",
+    "flux_unit": "Wb",
+    "field_component_unit": "T"
+  },
+  "relations": [
+    {
+      "id": "CPL-004-001",
+      "name": "wall-cusp candidate",
+      "equation": "z_c is a quadratically interpolated local maximum of |B_r(r_wall,z)|; prominence=peak-max(left_support_min,right_support_min)",
+      "validity": "preregistered physical support half-width and cusp separation, independent of axial sample spacing"
+    },
+    {
+      "id": "CPL-004-002",
+      "name": "converging wall bundle",
+      "equation": "N_end(z_c)=count{|z_wall-z_c|<=delta_z_c} >= N_min",
+      "validity": "endpoints arise from connected preregistered field-line traces, not hardware or finite-box roots"
+    },
+    {
+      "id": "CPL-004-003",
+      "name": "HEMP cell",
+      "equation": "cell_i={r<r_wall, z_c,i<z<z_c,i+1}",
+      "validity": "consecutive stable wall cusp planes; no O-point or closed-island requirement"
+    },
+    {
+      "id": "CPL-004-004",
+      "name": "axial dominance",
+      "equation": "a=|B_z|/sqrt(B_r^2+B_z^2); mean(a)>=a_mean,min and fraction(a>=a_point)>=f_min",
+      "validity": "predeclared core radius and cell interior samples"
+    },
+    {
+      "id": "CPL-004-005",
+      "name": "field-line trace",
+      "equation": "d(r,z)/ds=+/- (B_r,B_z)/|B|",
+      "validity": "wall-event-aware adaptive RK stages never sample outside the physical wall and endpoint arclength error is bounded by wall tolerance"
+    },
+    {
+      "id": "CPL-004-006",
+      "name": "same-line identity check",
+      "equation": "max_s |psi(s)-psi(seed)| <= delta_psi",
+      "validity": "axisymmetric poloidal flux map and declared interpolation tolerance"
+    },
+    {
+      "id": "CPL-004-007",
+      "name": "wall-connected extrema",
+      "equation": "B_low=min_path |B|; B_high=max_path |B|",
+      "validity": "one connected seed-to-channel-wall path with certified segment bounds"
+    },
+    {
+      "id": "CPL-004-008",
+      "name": "mirror loss probability",
+      "equation": "x=B_low/B_high; p=x/(1+sqrt(1-x))",
+      "validity": "0<B_low<=B_high, isotropic pitch distribution, adiabatic and orbit gates passed"
+    },
+    {
+      "id": "CPL-004-009",
+      "name": "field scale",
+      "equation": "L_B=B/|dB/ds|",
+      "validity": "certified positive field lower bound and finite gradient bound"
+    },
+    {
+      "id": "CPL-004-010",
+      "name": "electron gyroradius ordering",
+      "equation": "rho_e=sqrt(2 m_e E sin^2(alpha))/(e B); rho_e/L_B<=epsilon_max",
+      "validity": "prescribed energy/pitch samples and nonrelativistic magnetized guiding-centre regime"
+    },
+    {
+      "id": "CPL-004-011",
+      "name": "adiabatic invariant gate",
+      "equation": "max_orbit |mu/mu_0-1| <= delta_mu,max",
+      "validity": "converged claims match preregistered adapter/model/convergence IDs, versions, code hashes, and configuration hashes"
+    },
+    {
+      "id": "CPL-004-012",
+      "name": "coverage-scaled uncertainty",
+      "equation": "Delta_B=k_cov(sigma_abs+sigma_common+(sigma_rel+epsilon_interp+epsilon_path)B)",
+      "validity": "finite positive coverage factor and overflow-safe bounds"
+    },
+    {
+      "id": "CPL-004-013",
+      "name": "cross-map cusp assignment",
+      "equation": "sorted physical cusp i maps to i across primary/refined/enlarged maps and satisfies position/strength tolerances",
+      "validity": "same source, geometry, material, model, code, config, and backend identity"
+    },
+    {
+      "id": "CPL-004-014",
+      "name": "cross-map path stability",
+      "equation": "same (cell_id,seed_id,direction) path mapping satisfies endpoint, cell-bound, and axial-metric tolerances",
+      "validity": "full preregistration evaluated atomically on all three accepted maps"
+    },
+    {
+      "id": "CPL-004-015",
+      "name": "canonical record identity",
+      "equation": "H=SHA256(domain || canonical(record with H empty))",
+      "validity": "all maps, identities, policies, registrations, outcomes, orbit claims, and coverage factor included"
+    },
+    {
+      "id": "CPL-004-016",
+      "name": "held-out promotion",
+      "equation": "projectable = resolved AND accepted_projection_rebuilt(raw_map_artifacts,held_out_artifact,orbit_adapter,t_eval) AND manifest hashes recomputed AND development_case/family sets disjoint from held_out sets AND every held_out outcome passed AND evaluated (case,family,three-map hashes,three evidence fingerprints) is a manifest member",
+      "validity": "fresh adapter-verified maps and validation artifact/code/config under their preregistered maximum ages and future skews"
+    },
+    {
+      "id": "CPL-004-017",
+      "name": "complete preregistration",
+      "equation": "H_pre=SHA256(criterion + development/held-out manifests + evaluated membership + three map hashes + three complete evidence fingerprints + geometry + ordered cells/seeds/directions/samples + all policies + orbit identity + required outcome count/case-family registrations + freshness policy)",
+      "validity": "frozen before held-out artifact evaluation; any orbit or validation implementation/configuration swap changes identity"
+    },
+    {
+      "id": "CPL-004-018",
+      "name": "projection authority",
+      "equation": "rows(t_eval)=project(rebuild(private accepted raw map artifacts + private accepted held-out bytes + orbit adapter,t_eval))",
+      "validity": "explicit timezone-aware evaluation time; all map/held-out diagnostics, freshness, cusp/cell/path/orbit statuses, wall events, same-line extrema, probabilities, and coverage are rechecked atomically"
+    }
+  ],
+  "source_basis": [
+    {
+      "citation": "Kornfeld et al., Physics and Evolution of HEMP-Thrusters, IEPC-2007-108",
+      "url": "https://electricrocket.org/IEPC/IEPC-2007-108.pdf",
+      "supports": "field mainly parallel to channel walls between cusps; radial wall crossing and mirror loss at cusp regions"
+    },
+    {
+      "citation": "Koch et al., The HEMPT Concept, IEPC-2011-236",
+      "url": "https://electricrocket.org/IEPC/IEPC-2011-236.pdf",
+      "supports": "linear magnetic multi-cusp structure alternating predominant axial and radial field"
+    },
+    {
+      "citation": "Dannenmayer et al., Simplified Optimization of the Magnetic Configuration of HEMP-Thrusters, Applied Sciences 13 (2023) 3491",
+      "url": "https://doi.org/10.3390/app13063491",
+      "supports": "field-line start-to-wall endpoint mirror ratio and cusp-localized plasma-wall interaction"
+    },
+    {
+      "citation": "Cary and Brizard, Hamiltonian theory of guiding-center motion, Rev. Mod. Phys. 81 (2009) 693",
+      "url": "https://doi.org/10.1103/RevModPhys.81.693",
+      "supports": "guiding-centre ordering and magnetic-moment adiabatic invariant"
+    }
+  ],
+  "criterion_status": {
+    "version": "4.0.0",
+    "assessed_56_case_role": "development_non_validation",
+    "validation": "requires a new preregistered held-out geometry family before search-v3 projection"
+  },
+  "prohibited_shortcuts": [
+    "requiring an X-point, O-point, null, or closed island to define a wall cusp",
+    "defining a HEMP cell from a closed constant-psi contour",
+    "using hardware, axial endpoint, or computational-box roots as cusp evidence",
+    "comparing magnetic fields from different connected field lines",
+    "treating a computational boundary as the dielectric channel wall",
+    "publishing a mirror probability after null, rho/L_B, orbit, invariant, uncertainty, or map-stability failure",
+    "accepting only a successful subset of preregistered seeds, directions, energies, or pitch samples",
+    "using the assessed 56-case characterization as validation evidence",
+    "trusting caller-declared disjoint or all-passed booleans instead of recomputing manifest membership and outcomes",
+    "sampling an RK stage outside the dielectric channel wall before resolving the wall event",
+    "treating a caller-rehashed summary record or copyable canonical seal as projection authority",
+    "binding held-out membership only to field-value hashes while ignoring schema/model/code/config/backend/provenance/diagnostic identity",
+    "projecting deprecated v2 screening proxies or v3 closed-contour records as v4 CFT cells",
+    "using fixed axial windows instead of consecutive stable wall-cusp planes"
+  ]
+}

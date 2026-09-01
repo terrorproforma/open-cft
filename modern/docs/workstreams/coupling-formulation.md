@@ -1,9 +1,89 @@
-# Verified Field-to-Plasma Coupling v3
+# Verified Field-to-Plasma Coupling v4
 
-## Accepted physical contract
+## Source-backed HEMP/CFT contract
+
+Version 4 models HEMP topology from the magnetic field at the dielectric
+channel wall, not from the v3 closed-contour topology. A cusp candidate is a
+quadratically interpolated local maximum of wall-normal `|B_r(r_wall,z)|`.
+Topographic prominence uses minima reached on both sides within a
+preregistered physical support window, and nearby ripple candidates are
+suppressed under a physical separation distance. These definitions do not
+shrink with mesh spacing. A physical cusp must also
+receive the preregistered minimum number of field-line endpoints within its
+axial plane tolerance on every primary, refined, and enlarged map.
+
+Consecutive stable wall-cusp planes define a cell. The cell core must pass
+pointwise, passing-fraction, and mean `|B_z|/|B|` thresholds, representing the
+predominantly wall-parallel/axial field between cusps. X-points, O-points,
+magnetic nulls, and closed constant-ψ islands may be retained as diagnostics,
+but none is required to define a wall cusp or cell. This follows the HEMP
+descriptions in:
+
+- Kornfeld et al., *Physics and Evolution of HEMP-Thrusters*,
+  IEPC-2007-108, https://electricrocket.org/IEPC/IEPC-2007-108.pdf;
+- Koch et al., *The HEMPT Concept*, IEPC-2011-236,
+  https://electricrocket.org/IEPC/IEPC-2011-236.pdf; and
+- Dannenmayer et al., *Applied Sciences* 13 (2023) 3491,
+  https://doi.org/10.3390/app13063491.
+
+Each preregistered seed is integrated in both directions along
+`d(r,z)/ds=±B/|B|` until the declared dielectric wall is intersected. Hardware
+coordinates, plasma axial limits, and computational-box boundaries are not
+wall intersections. RK stages are clipped/adapted before they sample beyond
+the wall; the final wall event is interpolated only when its remaining
+arclength estimate is within the preregistered wall tolerance. The path hash
+binds map content, seed, direction, ψ label,
+and all retained trajectory points. `B_low` and `B_high`, their locations, the
+field-scale bound, and every orbit claim therefore refer to that one exact
+connected trajectory; equal-z values from different field lines cannot be
+combined.
+
+Publication is atomic over every cell, seed, direction, energy, and pitch
+sample on all three maps. A near-null segment, ψ drift, non-wall termination,
+weak cusp bundle, non-axial core, unstable cusp/path/cell metric, missing or
+nonconverged orbit evidence, an adapter/model/code/config/convergence identity
+different from preregistration, excessive `rho_e/L_B`, excessive
+magnetic-moment variation, or uncertainty removing the positive field bound suppresses the
+mirror probability and solver projection. The guiding-centre basis is Cary
+and Brizard, *Rev. Mod. Phys.* 81 (2009) 693,
+https://doi.org/10.1103/RevModPhys.81.693.
+
+The assessed 56-case characterization is frozen as an immutable development
+manifest of its exact case IDs, geometry-family ID, and recomputed manifest
+hash. It remains `development_non_validation`: its IDs or hash cannot promote
+a v4 record. Held-out evidence similarly carries exact case/family IDs and a
+recomputed manifest hash. Coupling computes case and family disjointness,
+requires one passing outcome for every held-out case, and verifies that the
+evaluated case/family and exact primary/refined/enlarged map hashes are one of
+those outcomes. Membership also requires role-ordered fingerprints over exact
+artifact bytes and canonical field values plus schema/model/code/config/
+backend/geometry/material/source/mesh/domain/timestamp, finite convergence
+diagnostics, adapter contract, and map-validation policy. No caller-supplied
+disjoint/all-passed boolean is accepted.
+
+The preregistration hash covers both manifests, evaluated membership, all
+three map hashes and complete fingerprints, geometry, ordered cells/seeds,
+both directions,
+energy/pitch samples, every numerical policy, required outcome IDs,
+freshness/future skew, and complete orbit adapter/model/code/config/
+convergence identity and versions, plus validation adapter/code/config
+identity. The canonical record is an integrity digest, not projection
+authority. Projection requires a privately constructed
+`AcceptedCFTProjection` retaining the accepted raw map and held-out evidence;
+each call rebuilds at an explicit evaluation time and rechecks freshness,
+diagnostics, membership, cusp/cell/path/orbit status, wall termination,
+same-line extrema, complete atomic registrations, ordered finite probability
+bounds, and positive finite uncertainty coverage before any row is emitted.
+
+The package root now names v4 as the current contract. Historical APIs remain
+explicit: v2 is `build_screening_proxy`, and v3 is
+`build_closed_contour_record`/`closed_contour_solver_inputs`. Their distinct
+types and schema versions are rejected by `cft_solver_inputs`.
+
+## Historical v3 accepted physical contract
 
 The accepted path is now `verify_v3_field_artifact(...)` followed by
-`build_coupling_record(...)`. Its field input is a radial-major axisymmetric
+`build_closed_contour_record(...)`. Its field input is a radial-major axisymmetric
 `psi_wb, b_r_t, b_z_t` map. A mirror sample is admissible only when every point
 belongs to one connected marching-squares component of one constant-ψ level.
 Equal axial coordinate is not a field-line identity: in particular, axis

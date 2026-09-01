@@ -207,3 +207,121 @@
   `git diff --exit-code -- FYP` passed.
 - No installs, commits, pushes, FYP edits, or out-of-scope source edits were
   made.
+
+## 2026-09-02 — Source-backed HEMP wall-cusp v4
+
+### Recovered and corrected
+
+- Preserved the timed-out worker's v4 map-set, wall-cusp, field-line, orbit,
+  record, schema, ledger, and manufactured-test foundations.
+- Made strict wall-normal `|Br|` maxima and converging wall-intersection
+  bundles define cusp planes. Consecutive planes define cells whose declared
+  core must remain predominantly axial; X/O/null/island diagnostics never
+  substitute for that definition.
+- Bound each path hash to the exact map, ψ label, seed, direction, and
+  trajectory, and retained low/high field locations on the same path.
+- Hardened primary/refined/enlarged role checks, shared provenance/adapter
+  identity, map-set fingerprints, unique preregistration identifiers,
+  nonrelativistic gyroradius ordering, orbit model/code binding, positive
+  conservative field bounds, and explicit uncertainty-dominance policy.
+- Added a public preregistration hash and immutable held-out evidence boundary.
+  The 56-case characterization remains development-only; only a fresh,
+  disjoint, all-cases-passed new-family artifact can change validation status.
+- Added projection-time canonical hash and atomic-gate reverification. V2
+  screening proxies and v3 closed-contour records remain explicit historical
+  APIs and cannot enter the v4 solver projection. Accepted output is one row
+  per seed/direction path with field extrema, probability/orbit gates, complete
+  map provenance, and held-out validation identity.
+- Completed the closed v4 schema, equation ledger, formulation, integration
+  contract, held-out prerequisites, and source citations.
+
+### Validation
+
+- Recovery baseline from `modern`: 100 passed, seven v4/spec failures.
+- Corrected focused suite: 121 passed in default and importlib modes.
+- Compatible non-experiment importlib suite excluding concurrently owned
+  experiment/material-fields/FEM-reference paths: 969 passed and one expected
+  optional-pybind11 skip.
+- Coupling source/tests compileall: passed.
+- All coupling JSON schemas/ledgers parse: passed.
+- Coupling diff check and `git diff --exit-code -- FYP`: passed.
+- No dependency installation, commit, experiment execution, FYP edit, or
+  non-coupling write was performed.
+
+## 2026-09-02 — V4 held-out and numerical audit closure
+
+### Corrected
+
+- Replaced trusted held-out booleans with immutable development and held-out
+  manifests. Manifest hashes are recomputed from exact case/family IDs,
+  disjointness is computed for both ID sets, every held-out case needs one
+  passing outcome, and the evaluated case/family/three-map hashes must match
+  that outcome.
+- Froze the actual 56 characterization case IDs under one development-family
+  manifest. Reuse of any development case/family ID or its manifest cannot
+  project.
+- Expanded preregistration over manifests, exact three-map hashes, evaluated
+  membership, required outcome IDs, ordered cells/seeds/directions/samples,
+  all policies, freshness/future skew, and complete orbit adapter/model/
+  convergence IDs, versions, code hashes, and configuration hashes.
+- Replaced grid-adjacent prominence with quadratically interpolated,
+  physical-window topographic prominence and physical cusp separation.
+- Added wall-event-aware RK integration that adaptively shortens steps before
+  any stage crosses the dielectric wall and records a bounded endpoint error.
+- Made cusp-count and per-map classification failures reachable
+  `V4MapAssessment`/`V4StabilityAssessment` diagnostics with retained counts,
+  assignments, and role-specific reasons instead of preprocessing exceptions.
+- Bound validation artifact/code/config, explicit outcomes, orbit identity,
+  and canonical projection record hash through records and solver rows.
+
+### Validation
+
+- Manufactured 81/161/321-grid cusp persistence, noisy-ripple rejection,
+  near-wall event integration, typed cross-map count change, set overlap,
+  incomplete/failed outcomes, evaluated map membership, orbit swap, stale
+  validation, and record tampering tests were added.
+- Coupling default and importlib modes: 127 passed each.
+- Compatible non-experiment importlib suite: 975 passed with one expected
+  optional-pybind11 skip.
+- Coupling compileall, all coupling JSON parsing, coupling diff check, and
+  `git diff --exit-code -- FYP`: passed.
+- No installs, commits, experiment execution, or out-of-scope writes were
+  performed.
+
+## 2026-09-02 — V4 projection authority closure
+
+### Corrected
+
+- Replaced direct `cft_solver_inputs(record)` projection with an opaque
+  `AcceptedCFTProjection` created only by rebuilding the record from retained
+  accepted three-map artifacts, held-out artifact bytes, and the orbit
+  adapter at an explicit timezone-aware evaluation time.
+- Added role-ordered evidence fingerprints covering exact artifact bytes,
+  canonical field values, every schema/model/code/config/backend/adapter/
+  geometry/material/source/mesh/domain identity, provenance timestamp,
+  convergence diagnostics, and validation policy. Preregistration and each
+  evaluated held-out outcome now bind both map hashes and these fingerprints.
+- Every solver projection rebuilds from raw evidence and rechecks map and
+  held-out freshness/future skew, diagnostics, manifest membership and
+  disjointness, complete cusp/cell/seed/direction/orbit results, wall
+  termination and endpoint error, same-line extrema/path identity, positive
+  field bounds, ordered finite probabilities, and finite positive coverage.
+- Canonical record hashes remain serialization integrity only. A caller who
+  changes status, probability, diagnostics, provenance, or timestamps and
+  correctly rehashes the summary still cannot construct projection authority.
+- Advanced the coupling record schema from `4.0.0` to `4.1.0` because the
+  required fingerprints and accepted-projection API are incompatible schema
+  changes. The underlying HEMP criterion remains version `4.0.0`.
+
+### Validation
+
+- Added fixed-clock attacks for invalid path plus removed nominal probability,
+  nonconverged diagnostics, stale maps under a fresh held-out wrapper, and
+  identical field arrays carrying substituted model/code/config provenance.
+- Coupling default and importlib modes: 137 passed each.
+- Compatible non-experiment importlib suite: 985 passed with one expected
+  optional-pybind11 skip.
+- Coupling compileall, all coupling JSON parsing, coupling diff check, and
+  `git diff --exit-code -- FYP`: passed.
+- No installs, commits, experiment execution, or out-of-scope writes were
+  performed.

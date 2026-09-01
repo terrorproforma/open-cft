@@ -1,6 +1,137 @@
-# Coupling v3 Integration and Four-Cell Preregistration
+# Coupling v4 Integration and Held-Out Promotion
 
-## Accepted v3 workflow
+## Current v4 workflow
+
+All three maps must first pass `verify_v3_field_artifact`: exact non-empty
+artifact bytes, current direct schema `cft-axisymmetric-field-map/1.1.0`,
+model level `L1a`, SI `m/Wb/T`, canonical ψ/Br/Bz hash, complete
+source/geometry/material/mesh/domain/model/code/config/backend/adapter
+identity, fresh timestamp, and converged residual diagnostics.
+
+```python
+maps = verify_v4_map_set(primary, refined, enlarged)
+development = build_cft_coupling_record(
+    maps,
+    geometry=geometry,
+    registrations=registrations,
+    validation_registration=validation_registration,
+    orbit_adapter=orbit_adapter,
+    cusp_policy=cusp_policy,
+    trace_policy=trace_policy,
+    axial_policy=axial_policy,
+    stability_policy=stability_policy,
+    uncertainty_model=uncertainty_model,
+)
+preregistration_hash = cft_preregistration_hash(
+    geometry=development.geometry,
+    registrations=development.registrations,
+    validation_registration=development.validation_registration,
+    three_map_hashes=(
+        development.stability.primary.identity.full_map_hash,
+        development.stability.refined.identity.full_map_hash,
+        development.stability.enlarged.identity.full_map_hash,
+    ),
+    three_map_evidence_fingerprints=development.evidence_fingerprints,
+    orbit_identity=development.orbit_identity,
+    cusp_policy=development.cusp_policy,
+    trace_policy=development.trace_policy,
+    axial_policy=development.axial_policy,
+    stability_policy=development.stability_policy,
+    uncertainty_model=development.uncertainty_model,
+)
+held_out = verify_held_out_validation(
+    exact_validation_artifact_bytes,
+    held_out_adapter,
+    reference_time_utc=evaluation_time,
+    policy=validation_registration.policy,
+)
+record = build_cft_coupling_record(
+    maps,
+    geometry=geometry,
+    registrations=registrations,
+    validation_registration=validation_registration,
+    orbit_adapter=orbit_adapter,
+    cusp_policy=cusp_policy,
+    trace_policy=trace_policy,
+    axial_policy=axial_policy,
+    stability_policy=stability_policy,
+    uncertainty_model=uncertainty_model,
+    held_out_validation_evidence=held_out,
+    reference_time_utc=evaluation_time,
+)
+accepted_projection = accept_cft_projection(
+    record,
+    maps,
+    held_out_validation_evidence=held_out,
+    orbit_adapter=orbit_adapter,
+    reference_time_utc=evaluation_time,
+)
+rows = cft_solver_inputs(
+    accepted_projection,
+    reference_time_utc=evaluation_time,
+)
+```
+
+The refined map must contain at least as many samples in each coordinate,
+strictly increase at least one count, and preserve the primary domain exactly.
+The enlarged map must contain the complete primary domain and strictly extend
+at least one bound. All maps must share artifact schema, model level, source,
+geometry, material, field model, implementation, configuration, backend,
+adapter contract/code, and validation policy. Mesh, domain, artifact, binding,
+and full-map hashes remain map-specific and are all retained.
+
+Freeze both development and held-out manifests, evaluated case/family, exact
+three-map hashes and complete role-ordered evidence fingerprints, required
+outcome count and case-to-family registrations,
+cell order, seed coordinates, both
+integration directions, electron energy/pitch samples, physical prominence
+support/separation, wall-event tolerance, ψ drift, interpolation/path errors,
+uncertainty coverage/dominance, axial-core thresholds, cross-map tolerances,
+freshness/future skew, and complete orbit adapter/model/convergence
+IDs/versions/code/config hashes plus validation adapter/code/config hashes
+before generating validation artifacts.
+
+## Held-out validation prerequisites
+
+The adapter-verified validation artifact must provide:
+
+1. criterion ID `cft-hemp-wall-cusp-v4` and version `4.0.0`;
+2. the exact frozen 56-case development manifest;
+3. explicit held-out case and geometry-family IDs plus recomputable manifest
+   hash;
+4. one explicit `(case, family, three-map hashes, three complete evidence
+   fingerprints, passed)` outcome for every held-out case;
+5. evaluated case/family membership, map hashes, and fingerprints matching one
+   outcome;
+6. the exact `cft_preregistration_hash` generated before evaluation;
+7. exact validation artifact, code, and configuration SHA-256 identities;
+8. finite converged diagnostics; and
+9. a timezone-aware timestamp under the preregistered maximum age and future
+   skew.
+
+Coupling recomputes both manifest hashes and case/family set disjointness;
+there are no trusted `disjoint` or `all_passed` booleans. The 56 characterized
+cases are development evidence only. Relabeling the criterion status,
+providing a successful subset, reusing stale evidence, changing one
+preregistered choice, swapping orbit implementation/configuration, or
+evaluating map hashes outside the held-out manifest rejects promotion.
+Development records and caller-rehashed summary records are never projection
+authority. `cft_solver_inputs` accepts only the opaque result of
+`accept_cft_projection` and requires an explicit timezone-aware evaluation
+clock. At every call it reopens the retained map artifacts and held-out bytes,
+rechecks both freshness policies and diagnostics, reruns all cusp/cell/path/
+orbit/uncertainty gates, and requires the rebuilt record to equal the accepted
+record. A missing nominal probability, non-wall termination, invalid path, or
+failed atomic seed/direction/sample blocks every row. After promotion it emits
+one row per primary-map
+seed/direction path, carrying same-line field extrema and locations, bounded
+mirror probability, orbit ordering/invariant results, all three map hashes,
+field provenance, and held-out manifest/artifact/code/config/preregistration
+identity plus the canonical projection record hash.
+
+## Historical v3 integration
+
+### Accepted v3 workflow
 
 ```python
 evidence = verify_v3_field_artifact(artifact_bytes, psi_capable_l1a_adapter)

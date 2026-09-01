@@ -1,0 +1,519 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cft-field-plasma-coupling/4.1.0",
+  "title": "Frozen HEMP/CFT wall-cusp and inter-cusp-cell coupling record",
+  "type": "object",
+  "required": ["schema_version", "record_hash", "status", "reason", "criterion", "geometry", "cusp_policy", "trace_policy", "axial_policy", "stability_policy", "uncertainty_model", "registrations", "validation_registration", "evidence_fingerprints", "stability", "orbit_identity", "held_out_validation"],
+  "properties": {
+    "schema_version": {"const": "cft-field-plasma-coupling/4.1.0"},
+    "record_hash": {"$ref": "#/$defs/hash"},
+    "status": {"$ref": "#/$defs/status"},
+    "reason": {"$ref": "#/$defs/nonempty"},
+    "criterion": {"$ref": "#/$defs/criterion"},
+    "geometry": {"$ref": "#/$defs/geometry"},
+    "cusp_policy": {"$ref": "#/$defs/cuspPolicy"},
+    "trace_policy": {"$ref": "#/$defs/tracePolicy"},
+    "axial_policy": {"$ref": "#/$defs/axialPolicy"},
+    "stability_policy": {"$ref": "#/$defs/stabilityPolicy"},
+    "uncertainty_model": {"$ref": "#/$defs/uncertainty"},
+    "registrations": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/registration"}},
+    "validation_registration": {"$ref": "#/$defs/validationRegistration"},
+    "evidence_fingerprints": {
+      "type": "array",
+      "prefixItems": [{"$ref": "#/$defs/hash"}, {"$ref": "#/$defs/hash"}, {"$ref": "#/$defs/hash"}],
+      "items": false,
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "stability": {"$ref": "#/$defs/stability"},
+    "orbit_identity": {"anyOf": [{"$ref": "#/$defs/orbitIdentity"}, {"type": "null"}]},
+    "held_out_validation": {"anyOf": [{"$ref": "#/$defs/heldOutValidation"}, {"type": "null"}]}
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "nonempty": {"type": "string", "minLength": 1},
+    "nullableNonempty": {"anyOf": [{"$ref": "#/$defs/nonempty"}, {"type": "null"}]},
+    "finite": {"type": "number"},
+    "nullableFinite": {"anyOf": [{"$ref": "#/$defs/finite"}, {"type": "null"}]},
+    "status": {"enum": ["resolved", "ambiguous", "invalid", "nonadiabatic", "orbit_unverified", "uncertainty_dominated"]},
+    "point": {
+      "type": "array",
+      "prefixItems": [{"type": "number"}, {"type": "number"}],
+      "items": false,
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "criterion": {
+      "type": "object",
+      "required": ["criterion_id", "criterion_version", "development_evidence_id", "development_evidence_role", "held_out_validation_status"],
+      "properties": {
+        "criterion_id": {"const": "cft-hemp-wall-cusp-v4"},
+        "criterion_version": {"const": "4.0.0"},
+        "development_evidence_id": {"const": "assessed-56-case-characterization"},
+        "development_evidence_role": {"const": "development_non_validation"},
+        "held_out_validation_status": {"enum": ["awaiting_new_geometry_family", "validated_new_geometry_family"]}
+      },
+      "additionalProperties": false
+    },
+    "geometry": {
+      "type": "object",
+      "required": ["channel_wall_radius_m", "plasma_z_min_m", "plasma_z_max_m", "core_radius_m", "geometry_id"],
+      "properties": {
+        "channel_wall_radius_m": {"type": "number", "exclusiveMinimum": 0},
+        "plasma_z_min_m": {"type": "number"},
+        "plasma_z_max_m": {"type": "number"},
+        "core_radius_m": {"type": "number", "exclusiveMinimum": 0},
+        "geometry_id": {"$ref": "#/$defs/nonempty"}
+      },
+      "additionalProperties": false
+    },
+    "cuspPolicy": {
+      "type": "object",
+      "required": ["minimum_prominence_t", "prominence_support_half_width_m", "minimum_cusp_separation_m", "minimum_wall_radial_fraction", "minimum_bundle_paths", "endpoint_plane_tolerance_m", "axial_boundary_margin_m", "minimum_endpoint_high_field_fraction"],
+      "properties": {
+        "minimum_prominence_t": {"type": "number", "minimum": 0},
+        "prominence_support_half_width_m": {"type": "number", "exclusiveMinimum": 0},
+        "minimum_cusp_separation_m": {"type": "number", "exclusiveMinimum": 0},
+        "minimum_wall_radial_fraction": {"type": "number", "minimum": 0, "maximum": 1},
+        "minimum_bundle_paths": {"type": "integer", "minimum": 1},
+        "endpoint_plane_tolerance_m": {"type": "number", "minimum": 0},
+        "axial_boundary_margin_m": {"type": "number", "minimum": 0},
+        "minimum_endpoint_high_field_fraction": {"type": "number", "minimum": 0, "maximum": 1}
+      },
+      "additionalProperties": false
+    },
+    "tracePolicy": {
+      "type": "object",
+      "required": ["step_m", "maximum_steps", "wall_tolerance_m", "maximum_psi_drift_wb", "minimum_b_t", "interpolation_relative_error", "path_relative_error", "uncertainty_dominance_factor"],
+      "properties": {
+        "step_m": {"type": "number", "exclusiveMinimum": 0},
+        "maximum_steps": {"type": "integer", "minimum": 1},
+        "wall_tolerance_m": {"type": "number", "minimum": 0},
+        "maximum_psi_drift_wb": {"type": "number", "minimum": 0},
+        "minimum_b_t": {"type": "number", "minimum": 0},
+        "interpolation_relative_error": {"type": "number", "minimum": 0},
+        "path_relative_error": {"type": "number", "minimum": 0},
+        "uncertainty_dominance_factor": {"type": "number", "exclusiveMinimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "axialPolicy": {
+      "type": "object",
+      "required": ["pointwise_axial_fraction_threshold", "minimum_passing_fraction", "minimum_mean_axial_fraction"],
+      "properties": {
+        "pointwise_axial_fraction_threshold": {"type": "number", "minimum": 0, "maximum": 1},
+        "minimum_passing_fraction": {"type": "number", "minimum": 0, "maximum": 1},
+        "minimum_mean_axial_fraction": {"type": "number", "minimum": 0, "maximum": 1}
+      },
+      "additionalProperties": false
+    },
+    "stabilityPolicy": {
+      "type": "object",
+      "required": ["maximum_cusp_shift_m", "maximum_cusp_strength_relative_change", "maximum_endpoint_shift_m", "maximum_cell_bound_shift_m", "maximum_axial_metric_change"],
+      "properties": {
+        "maximum_cusp_shift_m": {"type": "number", "minimum": 0},
+        "maximum_cusp_strength_relative_change": {"type": "number", "minimum": 0},
+        "maximum_endpoint_shift_m": {"type": "number", "minimum": 0},
+        "maximum_cell_bound_shift_m": {"type": "number", "minimum": 0},
+        "maximum_axial_metric_change": {"type": "number", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "uncertainty": {
+      "type": "object",
+      "required": ["absolute_independent_sigma_t", "relative_independent_sigma", "common_mode_sigma_t", "residual_correlation", "coverage_factor"],
+      "properties": {
+        "absolute_independent_sigma_t": {"type": "number", "minimum": 0},
+        "relative_independent_sigma": {"type": "number", "minimum": 0},
+        "common_mode_sigma_t": {"type": "number", "minimum": 0},
+        "residual_correlation": {"type": "number", "minimum": -1, "maximum": 1},
+        "coverage_factor": {"type": "number", "exclusiveMinimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "electronSample": {
+      "type": "object",
+      "required": ["sample_id", "kinetic_energy_ev", "pitch_angle_rad", "maximum_rho_over_scale", "maximum_mu_relative_variation"],
+      "properties": {
+        "sample_id": {"$ref": "#/$defs/nonempty"},
+        "kinetic_energy_ev": {"type": "number", "exclusiveMinimum": 0},
+        "pitch_angle_rad": {"type": "number", "minimum": 0, "maximum": 1.5707963267948966},
+        "maximum_rho_over_scale": {"type": "number", "exclusiveMinimum": 0},
+        "maximum_mu_relative_variation": {"type": "number", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "seed": {
+      "type": "object",
+      "required": ["seed_id", "r_m", "z_m", "electron_samples"],
+      "properties": {
+        "seed_id": {"$ref": "#/$defs/nonempty"},
+        "r_m": {"type": "number", "minimum": 0},
+        "z_m": {"type": "number"},
+        "electron_samples": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/electronSample"}}
+      },
+      "additionalProperties": false
+    },
+    "registration": {
+      "type": "object",
+      "required": ["cell_id", "seeds"],
+      "properties": {
+        "cell_id": {"$ref": "#/$defs/nonempty"},
+        "seeds": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/seed"}}
+      },
+      "additionalProperties": false
+    },
+    "cusp": {
+      "type": "object",
+      "required": ["cusp_id", "z_m", "wall_br_t", "wall_b_t", "prominence_t", "radial_fraction", "bundle_endpoint_count", "stable"],
+      "properties": {
+        "cusp_id": {"$ref": "#/$defs/nonempty"},
+        "z_m": {"type": "number"},
+        "wall_br_t": {"type": "number"},
+        "wall_b_t": {"type": "number", "minimum": 0},
+        "prominence_t": {"type": "number", "minimum": 0},
+        "radial_fraction": {"type": "number", "minimum": 0, "maximum": 1},
+        "bundle_endpoint_count": {"type": "integer", "minimum": 0},
+        "stable": {"type": "boolean"}
+      },
+      "additionalProperties": false
+    },
+    "axialMetrics": {
+      "type": "object",
+      "required": ["mean_axial_fraction", "passing_fraction", "sample_count", "passed"],
+      "properties": {
+        "mean_axial_fraction": {"type": "number", "minimum": 0, "maximum": 1},
+        "passing_fraction": {"type": "number", "minimum": 0, "maximum": 1},
+        "sample_count": {"type": "integer", "minimum": 0},
+        "passed": {"type": "boolean"}
+      },
+      "additionalProperties": false
+    },
+    "orbitAssessment": {
+      "type": "object",
+      "required": ["sample", "path_hash", "rho_over_scale", "maximum_mu_relative_variation", "adapter_id", "adapter_version", "adapter_code_hash", "orbit_model_id", "orbit_model_version", "orbit_code_hash", "orbit_config_hash", "convergence_id", "convergence_version", "convergence_config_hash", "status", "reason"],
+      "properties": {
+        "sample": {"$ref": "#/$defs/electronSample"},
+        "path_hash": {"$ref": "#/$defs/hash"},
+        "rho_over_scale": {"$ref": "#/$defs/nullableFinite"},
+        "maximum_mu_relative_variation": {"$ref": "#/$defs/nullableFinite"},
+        "adapter_id": {"$ref": "#/$defs/nullableNonempty"},
+        "adapter_version": {"$ref": "#/$defs/nullableNonempty"},
+        "adapter_code_hash": {"anyOf": [{"$ref": "#/$defs/hash"}, {"type": "null"}]},
+        "orbit_model_id": {"$ref": "#/$defs/nullableNonempty"},
+        "orbit_model_version": {"$ref": "#/$defs/nullableNonempty"},
+        "orbit_code_hash": {"anyOf": [{"$ref": "#/$defs/hash"}, {"type": "null"}]},
+        "orbit_config_hash": {"anyOf": [{"$ref": "#/$defs/hash"}, {"type": "null"}]},
+        "convergence_id": {"$ref": "#/$defs/nullableNonempty"},
+        "convergence_version": {"$ref": "#/$defs/nullableNonempty"},
+        "convergence_config_hash": {"anyOf": [{"$ref": "#/$defs/hash"}, {"type": "null"}]},
+        "status": {"$ref": "#/$defs/status"},
+        "reason": {"$ref": "#/$defs/nonempty"}
+      },
+      "additionalProperties": false
+    },
+    "path": {
+      "type": "object",
+      "required": ["seed_id", "direction", "points_rz_m", "wall_endpoint_rz_m", "wall_endpoint_error_m", "termination", "path_length_m", "psi_start_wb", "maximum_psi_drift_wb", "b_low_t", "b_high_t", "b_low_location_rz_m", "b_high_location_rz_m", "b_low_lower_t", "b_high_upper_t", "field_scale_length_m", "interpolation_error_t", "mirror_probability", "probability_lower", "probability_upper", "path_hash", "orbit_assessments", "status", "reason"],
+      "properties": {
+        "seed_id": {"$ref": "#/$defs/nonempty"},
+        "direction": {"enum": [-1, 1]},
+        "points_rz_m": {"type": "array", "minItems": 2, "items": {"$ref": "#/$defs/point"}},
+        "wall_endpoint_rz_m": {"anyOf": [{"$ref": "#/$defs/point"}, {"type": "null"}]},
+        "wall_endpoint_error_m": {"$ref": "#/$defs/nullableFinite"},
+        "termination": {"enum": ["channel_wall", "plasma_axial_boundary", "computational_boundary", "magnetic_null", "maximum_steps", "wall_event_unresolved"]},
+        "path_length_m": {"type": "number", "minimum": 0},
+        "psi_start_wb": {"type": "number"},
+        "maximum_psi_drift_wb": {"type": "number", "minimum": 0},
+        "b_low_t": {"type": "number", "minimum": 0},
+        "b_high_t": {"type": "number", "minimum": 0},
+        "b_low_location_rz_m": {"$ref": "#/$defs/point"},
+        "b_high_location_rz_m": {"$ref": "#/$defs/point"},
+        "b_low_lower_t": {"type": "number", "minimum": 0},
+        "b_high_upper_t": {"type": "number", "minimum": 0},
+        "field_scale_length_m": {"$ref": "#/$defs/nullableFinite"},
+        "interpolation_error_t": {"type": "number", "minimum": 0},
+        "mirror_probability": {"$ref": "#/$defs/nullableFinite"},
+        "probability_lower": {"$ref": "#/$defs/nullableFinite"},
+        "probability_upper": {"$ref": "#/$defs/nullableFinite"},
+        "path_hash": {"$ref": "#/$defs/hash"},
+        "orbit_assessments": {"type": "array", "items": {"$ref": "#/$defs/orbitAssessment"}},
+        "status": {"$ref": "#/$defs/status"},
+        "reason": {"$ref": "#/$defs/nonempty"}
+      },
+      "additionalProperties": false
+    },
+    "seedOutcome": {
+      "type": "object",
+      "required": ["seed", "negative_path", "positive_path", "status", "reason"],
+      "properties": {
+        "seed": {"$ref": "#/$defs/seed"},
+        "negative_path": {"$ref": "#/$defs/path"},
+        "positive_path": {"$ref": "#/$defs/path"},
+        "status": {"$ref": "#/$defs/status"},
+        "reason": {"$ref": "#/$defs/nonempty"}
+      },
+      "additionalProperties": false
+    },
+    "island": {
+      "type": "object",
+      "required": ["psi_wb", "component_count", "cell_id"],
+      "properties": {
+        "psi_wb": {"type": "number"},
+        "component_count": {"type": "integer", "minimum": 1},
+        "cell_id": {"$ref": "#/$defs/nonempty"}
+      },
+      "additionalProperties": false
+    },
+    "cell": {
+      "type": "object",
+      "required": ["cell_id", "z_start_m", "z_end_m", "upstream_cusp_id", "downstream_cusp_id", "axial_metrics", "seed_outcomes", "closed_islands", "status", "reason"],
+      "properties": {
+        "cell_id": {"$ref": "#/$defs/nonempty"},
+        "z_start_m": {"type": "number"},
+        "z_end_m": {"type": "number"},
+        "upstream_cusp_id": {"$ref": "#/$defs/nonempty"},
+        "downstream_cusp_id": {"$ref": "#/$defs/nonempty"},
+        "axial_metrics": {"$ref": "#/$defs/axialMetrics"},
+        "seed_outcomes": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/seedOutcome"}},
+        "closed_islands": {"type": "array", "items": {"$ref": "#/$defs/island"}},
+        "status": {"$ref": "#/$defs/status"},
+        "reason": {"$ref": "#/$defs/nonempty"}
+      },
+      "additionalProperties": false
+    },
+    "diagnostics": {
+      "type": "object",
+      "required": ["converged", "residual_norm", "residual_tolerance", "relative_residual", "relative_tolerance", "iterations"],
+      "properties": {
+        "converged": {"const": true},
+        "residual_norm": {"type": "number", "minimum": 0},
+        "residual_tolerance": {"type": "number", "minimum": 0},
+        "relative_residual": {"type": "number", "minimum": 0},
+        "relative_tolerance": {"type": "number", "minimum": 0},
+        "iterations": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "validationSetManifest": {
+      "type": "object",
+      "required": ["manifest_id", "case_ids", "geometry_family_ids", "manifest_hash"],
+      "properties": {
+        "manifest_id": {"$ref": "#/$defs/nonempty"},
+        "case_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/nonempty"}},
+        "geometry_family_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/nonempty"}},
+        "manifest_hash": {"$ref": "#/$defs/hash"}
+      },
+      "additionalProperties": false
+    },
+    "heldOutPolicy": {
+      "type": "object",
+      "required": ["maximum_age_s", "maximum_future_skew_s"],
+      "properties": {
+        "maximum_age_s": {"type": "number", "exclusiveMinimum": 0},
+        "maximum_future_skew_s": {"type": "number", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "validationRegistration": {
+      "type": "object",
+      "required": ["development_manifest", "held_out_manifest", "evaluated_case_id", "evaluated_geometry_family_id", "required_case_count", "required_outcomes", "validation_adapter_id", "validation_adapter_code_hash", "validation_code_hash", "validation_config_hash", "policy"],
+      "properties": {
+        "development_manifest": {"$ref": "#/$defs/validationSetManifest"},
+        "held_out_manifest": {"$ref": "#/$defs/validationSetManifest"},
+        "evaluated_case_id": {"$ref": "#/$defs/nonempty"},
+        "evaluated_geometry_family_id": {"$ref": "#/$defs/nonempty"},
+        "required_case_count": {"type": "integer", "minimum": 1},
+        "required_outcomes": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/heldOutCaseRegistration"}},
+        "validation_adapter_id": {"$ref": "#/$defs/nonempty"},
+        "validation_adapter_code_hash": {"$ref": "#/$defs/hash"},
+        "validation_code_hash": {"$ref": "#/$defs/hash"},
+        "validation_config_hash": {"$ref": "#/$defs/hash"},
+        "policy": {"$ref": "#/$defs/heldOutPolicy"}
+      },
+      "additionalProperties": false
+    },
+    "heldOutCaseRegistration": {
+      "type": "object",
+      "required": ["case_id", "geometry_family_id"],
+      "properties": {
+        "case_id": {"$ref": "#/$defs/nonempty"},
+        "geometry_family_id": {"$ref": "#/$defs/nonempty"}
+      },
+      "additionalProperties": false
+    },
+    "heldOutOutcome": {
+      "type": "object",
+      "required": ["case_id", "geometry_family_id", "three_map_hashes", "three_map_evidence_fingerprints", "passed"],
+      "properties": {
+        "case_id": {"$ref": "#/$defs/nonempty"},
+        "geometry_family_id": {"$ref": "#/$defs/nonempty"},
+        "three_map_hashes": {
+          "type": "array",
+          "prefixItems": [{"$ref": "#/$defs/hash"}, {"$ref": "#/$defs/hash"}, {"$ref": "#/$defs/hash"}],
+          "items": false,
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "three_map_evidence_fingerprints": {
+          "type": "array",
+          "prefixItems": [{"$ref": "#/$defs/hash"}, {"$ref": "#/$defs/hash"}, {"$ref": "#/$defs/hash"}],
+          "items": false,
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "passed": {"const": true}
+      },
+      "additionalProperties": false
+    },
+    "orbitIdentity": {
+      "type": "object",
+      "required": ["adapter_id", "adapter_version", "adapter_code_hash", "orbit_model_id", "orbit_model_version", "orbit_code_hash", "orbit_config_hash", "convergence_id", "convergence_version", "convergence_config_hash"],
+      "properties": {
+        "adapter_id": {"$ref": "#/$defs/nonempty"},
+        "adapter_version": {"$ref": "#/$defs/nonempty"},
+        "adapter_code_hash": {"$ref": "#/$defs/hash"},
+        "orbit_model_id": {"$ref": "#/$defs/nonempty"},
+        "orbit_model_version": {"$ref": "#/$defs/nonempty"},
+        "orbit_code_hash": {"$ref": "#/$defs/hash"},
+        "orbit_config_hash": {"$ref": "#/$defs/hash"},
+        "convergence_id": {"$ref": "#/$defs/nonempty"},
+        "convergence_version": {"$ref": "#/$defs/nonempty"},
+        "convergence_config_hash": {"$ref": "#/$defs/hash"}
+      },
+      "additionalProperties": false
+    },
+    "heldOutValidation": {
+      "type": "object",
+      "required": ["criterion_id", "criterion_version", "development_manifest", "held_out_manifest", "evaluated_case_id", "evaluated_geometry_family_id", "outcomes", "preregistration_hash", "validation_artifact_hash", "validation_code_hash", "validation_config_hash", "generated_at_utc", "diagnostics", "adapter_id", "adapter_code_hash", "policy"],
+      "properties": {
+        "criterion_id": {"const": "cft-hemp-wall-cusp-v4"},
+        "criterion_version": {"const": "4.0.0"},
+        "development_manifest": {"$ref": "#/$defs/validationSetManifest"},
+        "held_out_manifest": {"$ref": "#/$defs/validationSetManifest"},
+        "evaluated_case_id": {"$ref": "#/$defs/nonempty"},
+        "evaluated_geometry_family_id": {"$ref": "#/$defs/nonempty"},
+        "outcomes": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/heldOutOutcome"}},
+        "preregistration_hash": {"$ref": "#/$defs/hash"},
+        "validation_artifact_hash": {"$ref": "#/$defs/hash"},
+        "validation_code_hash": {"$ref": "#/$defs/hash"},
+        "validation_config_hash": {"$ref": "#/$defs/hash"},
+        "generated_at_utc": {"type": "string", "format": "date-time"},
+        "diagnostics": {"$ref": "#/$defs/diagnostics"},
+        "adapter_id": {"$ref": "#/$defs/nonempty"},
+        "adapter_code_hash": {"$ref": "#/$defs/hash"},
+        "policy": {"$ref": "#/$defs/heldOutPolicy"}
+      },
+      "additionalProperties": false
+    },
+    "adapterContract": {
+      "type": "object",
+      "required": ["contract_id", "contract_version", "input_schema_version", "normalized_schema_version", "model_level", "is_migration"],
+      "properties": {
+        "contract_id": {"$ref": "#/$defs/nonempty"},
+        "contract_version": {"$ref": "#/$defs/nonempty"},
+        "input_schema_version": {"$ref": "#/$defs/nonempty"},
+        "normalized_schema_version": {"$ref": "#/$defs/nonempty"},
+        "model_level": {"$ref": "#/$defs/nonempty"},
+        "is_migration": {"type": "boolean"}
+      },
+      "additionalProperties": false
+    },
+    "validationPolicy": {
+      "type": "object",
+      "required": ["minimum_radial_samples", "minimum_axial_samples", "maximum_age_s", "maximum_future_skew_s", "require_axis", "axis_coordinate_tolerance_m", "axis_br_absolute_tolerance_t", "axis_br_relative_tolerance", "current_artifact_schema", "accepted_model_levels", "validated_migration_adapter_ids"],
+      "properties": {
+        "minimum_radial_samples": {"type": "integer", "minimum": 2},
+        "minimum_axial_samples": {"type": "integer", "minimum": 3},
+        "maximum_age_s": {"$ref": "#/$defs/nullableFinite"},
+        "maximum_future_skew_s": {"type": "number", "minimum": 0},
+        "require_axis": {"type": "boolean"},
+        "axis_coordinate_tolerance_m": {"type": "number", "minimum": 0},
+        "axis_br_absolute_tolerance_t": {"type": "number", "minimum": 0},
+        "axis_br_relative_tolerance": {"type": "number", "minimum": 0},
+        "current_artifact_schema": {"$ref": "#/$defs/nonempty"},
+        "accepted_model_levels": {"type": "array", "items": {"$ref": "#/$defs/nonempty"}},
+        "validated_migration_adapter_ids": {"type": "array", "items": {"$ref": "#/$defs/nonempty"}}
+      },
+      "additionalProperties": false
+    },
+    "identity": {
+      "type": "object",
+      "required": ["artifact_hash", "full_map_hash", "source_hash", "geometry_hash", "material_hash", "mesh_hash", "domain_hash", "evidence_binding_hash", "artifact_schema_version", "model_level", "field_model_id", "field_model_hash", "code_hash", "config_hash", "backend_id", "backend_version", "adapter_id", "adapter_code_hash", "adapter_contract", "generated_at_utc", "diagnostics", "validation_policy"],
+      "properties": {
+        "artifact_hash": {"$ref": "#/$defs/hash"},
+        "full_map_hash": {"$ref": "#/$defs/hash"},
+        "source_hash": {"$ref": "#/$defs/hash"},
+        "geometry_hash": {"$ref": "#/$defs/hash"},
+        "material_hash": {"$ref": "#/$defs/hash"},
+        "mesh_hash": {"$ref": "#/$defs/hash"},
+        "domain_hash": {"$ref": "#/$defs/hash"},
+        "evidence_binding_hash": {"$ref": "#/$defs/hash"},
+        "artifact_schema_version": {"$ref": "#/$defs/nonempty"},
+        "model_level": {"$ref": "#/$defs/nonempty"},
+        "field_model_id": {"$ref": "#/$defs/nonempty"},
+        "field_model_hash": {"$ref": "#/$defs/hash"},
+        "code_hash": {"$ref": "#/$defs/hash"},
+        "config_hash": {"$ref": "#/$defs/hash"},
+        "backend_id": {"$ref": "#/$defs/nonempty"},
+        "backend_version": {"$ref": "#/$defs/nonempty"},
+        "adapter_id": {"$ref": "#/$defs/nonempty"},
+        "adapter_code_hash": {"$ref": "#/$defs/hash"},
+        "adapter_contract": {"$ref": "#/$defs/adapterContract"},
+        "generated_at_utc": {"type": "string", "format": "date-time"},
+        "diagnostics": {"$ref": "#/$defs/diagnostics"},
+        "validation_policy": {"$ref": "#/$defs/validationPolicy"}
+      },
+      "additionalProperties": false
+    },
+    "mapAssessment": {
+      "type": "object",
+      "required": ["role", "identity", "validation_policy", "cusps", "cells", "status", "reason", "detected_cusp_count", "expected_cusp_count"],
+      "properties": {
+        "role": {"enum": ["primary", "refined", "enlarged"]},
+        "identity": {"$ref": "#/$defs/identity"},
+        "validation_policy": {"$ref": "#/$defs/validationPolicy"},
+        "cusps": {"type": "array", "items": {"$ref": "#/$defs/cusp"}},
+        "cells": {"type": "array", "items": {"$ref": "#/$defs/cell"}},
+        "status": {"$ref": "#/$defs/status"},
+        "reason": {"$ref": "#/$defs/nonempty"},
+        "detected_cusp_count": {"type": "integer", "minimum": 0},
+        "expected_cusp_count": {"type": "integer", "minimum": 2}
+      },
+      "additionalProperties": false
+    },
+    "assignment": {
+      "type": "array",
+      "prefixItems": [{"type": "integer"}, {"type": "integer"}, {"type": "integer"}],
+      "items": false,
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "stability": {
+      "type": "object",
+      "required": ["primary", "refined", "enlarged", "cusp_assignment", "cusp_counts", "maximum_cusp_shift_m", "maximum_cusp_strength_relative_change", "maximum_endpoint_shift_m", "maximum_cell_bound_shift_m", "maximum_axial_metric_change", "passed", "reason"],
+      "properties": {
+        "primary": {"$ref": "#/$defs/mapAssessment"},
+        "refined": {"$ref": "#/$defs/mapAssessment"},
+        "enlarged": {"$ref": "#/$defs/mapAssessment"},
+        "cusp_assignment": {"type": "array", "items": {"$ref": "#/$defs/assignment"}},
+        "cusp_counts": {
+          "type": "array",
+          "prefixItems": [{"type": "integer", "minimum": 0}, {"type": "integer", "minimum": 0}, {"type": "integer", "minimum": 0}],
+          "items": false,
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "maximum_cusp_shift_m": {"$ref": "#/$defs/nullableFinite"},
+        "maximum_cusp_strength_relative_change": {"$ref": "#/$defs/nullableFinite"},
+        "maximum_endpoint_shift_m": {"$ref": "#/$defs/nullableFinite"},
+        "maximum_cell_bound_shift_m": {"$ref": "#/$defs/nullableFinite"},
+        "maximum_axial_metric_change": {"$ref": "#/$defs/nullableFinite"},
+        "passed": {"type": "boolean"},
+        "reason": {"$ref": "#/$defs/nonempty"}
+      },
+      "additionalProperties": false
+    }
+  }
+}
