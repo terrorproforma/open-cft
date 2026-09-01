@@ -1,0 +1,52 @@
+{
+  "assessment_label_access_count": 0,
+  "document_type": "cft-revival-l0-surrogate-v8-synthetic-preflight",
+  "exact_group_rank_regressions": {
+    "n239": 216,
+    "n99": 90
+  },
+  "partitions_hash": "1cda65d772797ffbec42ca23c70f99213f52506cb345f1b291b958819cf4647c",
+  "passed": true,
+  "physics_feature_fixture": [
+    0.25560063293944696,
+    0.5682017240669949,
+    0.4,
+    0.508728907245862,
+    0.6,
+    0.17670629180543038,
+    0.6107219596510346
+  ],
+  "physics_label_access_count": 0,
+  "predeclaration_hash": "5f3e672b20091c488cd395afb60d5ee2b6f87652450eca0e0903d223c9c40646",
+  "preflight_hash": "b5b254fd2e1927fe6bb8f1868009d3190303d9dc5fd1a990aea8c801e618b394",
+  "schema_version": "8.0",
+  "serialization_files": [
+    "cluster-calibration.json",
+    "development/physics-informed-v1-ard-matern52/budget-128/axial_thrust_n.model.json",
+    "development/physics-informed-v1-ard-matern52/budget-128/method-metrics.json",
+    "development/physics-informed-v1-ard-matern52/budget-128/specific_impulse_s.model.json",
+    "development/physics-informed-v1-ard-matern52/budget-160/axial_thrust_n.model.json",
+    "development/physics-informed-v1-ard-matern52/budget-160/method-metrics.json",
+    "development/physics-informed-v1-ard-matern52/budget-160/specific_impulse_s.model.json",
+    "development/physics-informed-v1-ard-matern52/budget-224/axial_thrust_n.model.json",
+    "development/physics-informed-v1-ard-matern52/budget-224/method-metrics.json",
+    "development/physics-informed-v1-ard-matern52/budget-224/specific_impulse_s.model.json",
+    "development/raw-ard-matern52/budget-128/axial_thrust_n.model.json",
+    "development/raw-ard-matern52/budget-128/method-metrics.json",
+    "development/raw-ard-matern52/budget-128/specific_impulse_s.model.json",
+    "development/raw-ard-matern52/budget-160/axial_thrust_n.model.json",
+    "development/raw-ard-matern52/budget-160/method-metrics.json",
+    "development/raw-ard-matern52/budget-160/specific_impulse_s.model.json",
+    "development/raw-ard-matern52/budget-224/axial_thrust_n.model.json",
+    "development/raw-ard-matern52/budget-224/method-metrics.json",
+    "development/raw-ard-matern52/budget-224/specific_impulse_s.model.json",
+    "failure-manifest.json",
+    "final-assessment.json",
+    "frozen-before-assessment.json",
+    "frozen-method-selection.json",
+    "run-manifest.json",
+    "runtime-diagnostics.json",
+    "training-selection.json"
+  ],
+  "temporary_file_count": 0
+}
