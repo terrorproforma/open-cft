@@ -1,0 +1,12 @@
+{
+  "commit": "6e8b74f2cefc2f4ed4e4745e6e9bc91580a09af7",
+  "failures": [
+    {
+      "index": 69,
+      "message": "divergent wall slopes are not continuous",
+      "type": "GeometryValidationError"
+    }
+  ],
+  "rerun_performed": false,
+  "schema_version": "cft-revival.l1a-field-surrogate-v1.failure/1.0.0"
+}
