@@ -1,0 +1,64 @@
+{
+  "document_type": "cft-revival-l0-surrogate-v4-predeclaration",
+  "schema_version": "4.0",
+  "predeclaration_hash": "419889126694c4a24c0ae7b4e8c201ddfb80f0b13f97392276d88b1b442d6800",
+  "provenance": {
+    "v3_predeclaration_hash": "eaa17e6c26e1c7ff5a3f78dd5dc77161067ad6ca4519e66f77bea4fbd5e84895",
+    "v3_preregistration_commit_sha": "658fe5c34dd6b669d1e426d8aa162782d7809ca4",
+    "v3_result_commit_sha": "4af90a3488e05c74a9a98530f6f93b1880c98cc2",
+    "v3_provenance_failure_hash": "ec6d262bf4b1c54a198501b53d2cc7742fed21c377e01518d1f6024d47672af0",
+    "v3_partitions_hash": "97332e2ed553d6281ff0b030357fbe47e4f292beebea6d101e211465a506e09f",
+    "v2_v3_status": "immutable-failure-evidence"
+  },
+  "scientific_protocol": {
+    "inheritance": "bit-identical v3 scientific protocol, which inherits the hash-pinned v2 source/features/partition/campaign/model/interval/gate policy",
+    "scientific_change": false,
+    "source_rows": 8192,
+    "replicate_seeds": [2026090201, 2026090202, 2026090203],
+    "calibration_minimum_rows_and_groups_per_stratum": [96, 6],
+    "assessment_minimum_rows_and_groups_per_stratum": [96, 6],
+    "active_and_fixed_rows": 96,
+    "assessment_based_stopping": false,
+    "acquisition_is_calibration_and_assessment_blind": true,
+    "split_conformal_rules": "unchanged from v2/v3",
+    "quality_gates": {
+      "range_normalized_rmse_maximum": 0.05,
+      "worst_case_range_normalized_absolute_error_maximum": 0.15,
+      "coverage_interval": [0.85, 0.95],
+      "scopes": ["interpolation", "boundary", "ood", "overall"],
+      "acceptance": "every output/scope/replicate passes"
+    }
+  },
+  "versioned_delta": {
+    "change_scope": "pre-execution Git identity validation only",
+    "execution_observes_head_with": "git rev-parse HEAD",
+    "commit_existence": "git cat-file -e <sha>^{commit}",
+    "remote_requirement": "observed HEAD must be an ancestor of origin/feat/sota-foundation",
+    "protocol_commit": "exactly one ancestor with subject preregister L0 surrogate v4 experiment",
+    "protocol_commit_path_policy": "commit introduces every tracked v4 protocol file and no path outside v4 source/tests",
+    "working_tree_policy": "all v4 protocol paths byte-identical to observed HEAD with no untracked files",
+    "intervening_commit_policy": "unrelated pushed commits allowed; any intervening v4 protocol change rejected",
+    "caller_expected_head_policy": "optional expected SHA must exist and exactly equal observed HEAD",
+    "recording": "record observed HEAD, protocol content commit, protocol tree hash and remote ref before real-data access"
+  },
+  "preflight": {
+    "real_assessment_labels_accessed": false,
+    "synthetic_identity_tests": [
+      "nonexistent SHA rejected",
+      "wrong ancestor rejected",
+      "changed working v4 file rejected",
+      "intervening unrelated pushed commit allowed",
+      "valid actual HEAD binding accepted"
+    ],
+    "serialization": "inherit v3 atomic output pipeline and complete synthetic dry run"
+  },
+  "execution": {
+    "single_execution_only": true,
+    "no_patch_or_rerun_after_execution": true,
+    "results_path": "modern/experiments/l0_surrogate_v4/results"
+  },
+  "claims": {
+    "allowed": "deterministic L0 software-emulation metrics only when Git identity is valid",
+    "forbidden": "physical, experimental, L1, L1b, L2 or L3 accuracy"
+  }
+}

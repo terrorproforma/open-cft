@@ -1,0 +1,31 @@
+{
+  "document_type": "cft-revival-l0-surrogate-v4-preflight",
+  "free_bytes_at_check": 206016421888,
+  "identity_tests": [
+    "nonexistent-sha",
+    "wrong-ancestor",
+    "dirty-v4-file",
+    "unrelated-intervening-commit",
+    "valid-head"
+  ],
+  "partitions_hash": "0f50aba12a44f1b7a6101c0c773aa6133ce0002721a85bb55c669fac1870165b",
+  "passed": true,
+  "predeclaration_hash": "419889126694c4a24c0ae7b4e8c201ddfb80f0b13f97392276d88b1b442d6800",
+  "preflight_hash": "060e02afdb8a03eec81b5e69bca1c2e7bb6980d66be64e21eb157f7ec2704623",
+  "real_assessment_labels_accessed": false,
+  "schema_version": "4.0",
+  "source_config_hash": "1434eac84d954a4dfbf8e7a9621b16c5c645f1490d56ad23d8e1d979a2bbf2e4",
+  "synthetic_pipeline": {
+    "frozen_hashes": [
+      "f7dc2ca820732c2c43afcbb03d6d909a1327e5f37e18e751e242753d5c9c7484",
+      "2e5621f92ab08420631e3c630e9004de94c103e1b87ada5115b81bf59d59accc",
+      "d80d869758d71a6d37dfb31012c7acb2b59872b75c1a62ac3791b8ab0bafafc0"
+    ],
+    "model_hashes": [
+      "83bb78971a547a731db2f8e1d73676ffa8f5e5d1dde7d7a7e5e63dab6fd697fe",
+      "83bb78971a547a731db2f8e1d73676ffa8f5e5d1dde7d7a7e5e63dab6fd697fe",
+      "83bb78971a547a731db2f8e1d73676ffa8f5e5d1dde7d7a7e5e63dab6fd697fe"
+    ],
+    "replicate_count": 3
+  }
+}

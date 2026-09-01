@@ -1,0 +1,9 @@
+{
+  "document_type": "cft-revival-l0-surrogate-v4-empty-results-placeholder",
+  "schema_version": "4.0",
+  "status": "not-executed",
+  "observed_head_sha": null,
+  "protocol_commit_sha": null,
+  "run_manifest_hash": null,
+  "results": []
+}
