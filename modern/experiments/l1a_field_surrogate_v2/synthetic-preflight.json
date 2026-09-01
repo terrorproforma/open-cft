@@ -1,0 +1,14 @@
+{
+  "field_solver_access_count": 0,
+  "frozen_geometry_hash_failures": 0,
+  "frozen_geometry_rebuild_count": 112,
+  "geometry_preflight_hash": "8349ba7a308748337e90ae25445912ae8f289dbafaf0f5e840920ae96b2de88f",
+  "model_serialization_synthetic_only": true,
+  "partition_hash": "0387adefb700a05669a69c142d5e65c9099ae5a6b25c4492f28d6d7382d42a72",
+  "passed": true,
+  "protocol_hash": "6c98a02eb219c87d9245d3b4f62d2ae8bf29a7ae095ba312c1dd93b2917ca4b7",
+  "qoi_label_access_count": 0,
+  "role_disjoint": true,
+  "schema_version": "cft-revival.l1a-field-surrogate-v2.synthetic-preflight/2.0.0",
+  "synthetic_preflight_hash": "cdf77596f17b24d857cb8e606b52593cf11a6209d8cae578969360a29faebfe2"
+}
