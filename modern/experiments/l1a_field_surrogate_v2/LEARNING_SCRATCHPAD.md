@@ -16,4 +16,17 @@
 
 ## After execution
 
-- Pending exactly-once results.
+- The corrected geometry protocol worked: 254/256 raw rows were valid, 25
+  required constructor-confirmed endpoint correction, two were transparently
+  rejected, and all 112 frozen geometries rebuilt identically.
+- Full coarse/fine numerical generation passed. The scientific rejection moved
+  from geometry preparation to surrogate adequacy, as intended.
+- At budget 32, the best scalar family by worst NRMSE was AR1 (35.99%), far
+  above 5%; the discrepancy POD field reached 41.93% worst relative L2 and
+  51.19% worst energy error, also far above 5%.
+- Coarse-grid source smearing and a rank-six global discrepancy basis do not
+  provide a sufficiently smooth low-to-high map in this 11-dimensional domain.
+  That is development evidence only; changing representation or budget belongs
+  in a separately preregistered future experiment.
+- Calibration, assessment, coverage and latency were correctly withheld because
+  no development candidate passed.

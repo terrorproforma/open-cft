@@ -1,0 +1,33 @@
+{
+  "assessment_labels_accessed": false,
+  "counters": {
+    "assessment_accesses": 0,
+    "calibration_accesses": 0,
+    "coarse_completed": 112,
+    "fine_completed": 80,
+    "method_label_accesses": 2,
+    "model_fits": 10,
+    "solver_accesses": 192
+  },
+  "numerical": {
+    "checks": {
+      "boundary": true,
+      "flux_identity": true,
+      "residual": true,
+      "source": true,
+      "topology_confidence": true,
+      "zero_frozen_execution_failures": true
+    },
+    "observed": {
+      "max_boundary": 0.010315404041820618,
+      "max_flux_identity": 3.126388037344441e-13,
+      "max_residual": 9.985482509993905e-11,
+      "max_source_error": 0.028025678257944515,
+      "min_topology_confidence": 0.9020225142985352
+    },
+    "passed": true
+  },
+  "status": "failed-development-selection-gates",
+  "terminal_hash": "c9b852c01e2137fe2211a79da2ee76c92f97ab69c5abc8868b65453450256445",
+  "valid_prospective_result": true
+}

@@ -1,0 +1,848 @@
+{
+  "commit": "373ffae8d8d08affc9d33401378a81c35dbdf964",
+  "environment": {
+    "gpu": "NVIDIA GeForce RTX 5090, 595.97, 32607",
+    "numpy": "2.5.2",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]"
+  },
+  "field_solver_access_count_at_write": 0,
+  "geometry_preflight_hash": "8349ba7a308748337e90ae25445912ae8f289dbafaf0f5e840920ae96b2de88f",
+  "git_blob_closure": [
+    {
+      "blob": "4cdc2cfbb725ceee14f230e5e93e0fb0e40f292d",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_field_surrogate_v1/DEVLOG.md",
+      "type": "blob"
+    },
+    {
+      "blob": "9bf3a1664ff99319ddc2727f5830e395af7611e1",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_field_surrogate_v1/LEARNING_SCRATCHPAD.md",
+      "type": "blob"
+    },
+    {
+      "blob": "095c08a74f3129ba05a5cb53230a0ce47973cc9d",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_field_surrogate_v1/README.md",
+      "type": "blob"
+    },
+    {
+      "blob": "b51186ff9c994d359b1cf2a6da14fb7570db2a71",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_field_surrogate_v1/RESULTS_REPORT.md",
+      "type": "blob"
+    },
+    {
+      "blob": "22a7306d217be53291306260c8f72fb90c4ba92f",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_field_surrogate_v1/__init__.py",
+      "type": "blob"
+    },
+    {
+      "blob": "5202e1c800ed732d6a6477b8b8516307cc4d2bf9",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_field_surrogate_v1/__pycache__/__init__.cpython-312.pyc",
+      "type": "blob"
+    },
+    {
+      "blob": "16fc494aef62b4aaff66899213d537aaab0e8a9e",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_field_surrogate_v1/__pycache__/experiment.cpython-312.pyc",
+      "type": "blob"
+    },
+    {
+      "blob": "01e25c8fea50dab515b73d31f6b8d2547dc53a0c",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_field_surrogate_v1/__pycache__/protocol.cpython-312.pyc",
+      "type": "blob"
+    },
+    {
+      "blob": "5bb8cc822d2105dd3790224d836cd1c03360fdc9",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_field_surrogate_v1/__pycache__/run.cpython-312.pyc",
+      "type": "blob"
+    },
+    {
+      "blob": "06ef8e7ecce71eb138ce883fc20b26661c1bd498",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_field_surrogate_v1/__pycache__/validate.cpython-312.pyc",
+      "type": "blob"
+    },
+    {
+      "blob": "8d647bc6162ff213dfb88f07cfbdcd36eb8ce453",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_field_surrogate_v1/experiment.py",
+      "type": "blob"
+    },
+    {
+      "blob": "57b90ce312be6255d7aa815077a6dafc9bd3d08c",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_field_surrogate_v1/partitions.json",
+      "type": "blob"
+    },
+    {
+      "blob": "945e324de6fbcc9e3d0918c83b6147bf3cc43f6a",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_field_surrogate_v1/partitions.json.sha256",
+      "type": "blob"
+    },
+    {
+      "blob": "9a97bf5c1400b5ca3a10b70e217f78507fc6bc27",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_field_surrogate_v1/predeclaration.json",
+      "type": "blob"
+    },
+    {
+      "blob": "81a43a5e402ac63f55b8ff9b629127e0d3f6f91c",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_field_surrogate_v1/preflight.json",
+      "type": "blob"
+    },
+    {
+      "blob": "035f4f8d01d66d4598ad348512445348caed45e4",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_field_surrogate_v1/preflight.json.sha256",
+      "type": "blob"
+    },
+    {
+      "blob": "b3cc6db03ca8d8f32a6d4f03013cc7fc77590dc1",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_field_surrogate_v1/protocol.py",
+      "type": "blob"
+    },
+    {
+      "blob": "a5addc052be6ebfc9274cffdbfe72037fba1e052",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_field_surrogate_v1/results/README.md",
+      "type": "blob"
+    },
+    {
+      "blob": "5a1a0f046212f49540fb5242cfc636e8178b405c",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_field_surrogate_v1/results/execution-lock.json",
+      "type": "blob"
+    },
+    {
+      "blob": "e3223c6b1502d765319f1667c067aa47bb7486f8",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_field_surrogate_v1/results/execution-lock.json.sha256",
+      "type": "blob"
+    },
+    {
+      "blob": "15cb306f6b8b5fc192979a511d0c96324c32a415",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_field_surrogate_v1/results/failure-manifest.json",
+      "type": "blob"
+    },
+    {
+      "blob": "2ca37d778887deebf2f8754e67539acd86ce24cc",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_field_surrogate_v1/results/failure-manifest.json.sha256",
+      "type": "blob"
+    },
+    {
+      "blob": "cf229825a071e7bf3b16245e40d8ed34f8f4cc98",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_field_surrogate_v1/run.py",
+      "type": "blob"
+    },
+    {
+      "blob": "09a3da24247b6f96093eadf1697c69b96dc79c07",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_field_surrogate_v1/validate.py",
+      "type": "blob"
+    },
+    {
+      "blob": "359bffa08e57bd90c858a725824db9d7454bac4f",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_field_surrogate_v2/DEVLOG.md",
+      "type": "blob"
+    },
+    {
+      "blob": "341d250bb6c9bf8786d85a498c81d8818e0a92cf",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_field_surrogate_v2/LEARNING_SCRATCHPAD.md",
+      "type": "blob"
+    },
+    {
+      "blob": "236211bd42f95f0e086227a8d6fd80f9e9506958",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_field_surrogate_v2/README.md",
+      "type": "blob"
+    },
+    {
+      "blob": "d580a432761f6cece278cdf40fa2761d3d1379f2",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_field_surrogate_v2/__init__.py",
+      "type": "blob"
+    },
+    {
+      "blob": "1d56cb0ffb067a47d8822cd72f25aed8729209d3",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_field_surrogate_v2/experiment.py",
+      "type": "blob"
+    },
+    {
+      "blob": "b89be62c80a281a0ffb94da4f4e30ca2755208bd",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_field_surrogate_v2/geometry-preflight.json",
+      "type": "blob"
+    },
+    {
+      "blob": "140bd3a27dfb7021c3002efb21db8c487f2120f5",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_field_surrogate_v2/geometry-preflight.json.sha256",
+      "type": "blob"
+    },
+    {
+      "blob": "3ee72626cd37df273a780df54842d0d1a73fac36",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_field_surrogate_v2/partitions.json",
+      "type": "blob"
+    },
+    {
+      "blob": "88723f502952ab56071eaaf7cb962fdced3fa45a",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_field_surrogate_v2/partitions.json.sha256",
+      "type": "blob"
+    },
+    {
+      "blob": "4576e8bd2706f12c9b6063e2263538c74cb36910",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_field_surrogate_v2/predeclaration.json",
+      "type": "blob"
+    },
+    {
+      "blob": "e698683dbe0e8580424e12c0d742249a62f745a9",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_field_surrogate_v2/protocol.py",
+      "type": "blob"
+    },
+    {
+      "blob": "3b7787ed50e9695b7450d0f28f03542f7f5c52ee",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_field_surrogate_v2/results/README.md",
+      "type": "blob"
+    },
+    {
+      "blob": "b7fda811f491ccdad5a758d00c0a2725af06974b",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_field_surrogate_v2/run.py",
+      "type": "blob"
+    },
+    {
+      "blob": "e546d0a72a1f9690da0c6a11a8adb3df7723fc10",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_field_surrogate_v2/synthetic-preflight.json",
+      "type": "blob"
+    },
+    {
+      "blob": "d08d420b11782fb645a21c0e23924a5a7c3d6788",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_field_surrogate_v2/synthetic-preflight.json.sha256",
+      "type": "blob"
+    },
+    {
+      "blob": "99536248274a6fc800faa60665d5b28fa888ccd1",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_field_surrogate_v2/validate.py",
+      "type": "blob"
+    },
+    {
+      "blob": "1b87d5cffeb2622375c292df3fbdf3bdde50310c",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/DEVLOG.md",
+      "type": "blob"
+    },
+    {
+      "blob": "7b3a4af320bb683743487b0ce53d39d9af53a829",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/LEARNING_SCRATCHPAD.md",
+      "type": "blob"
+    },
+    {
+      "blob": "8bfa2f433d519aa9c22aee85ff34460b91dfd7c1",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/README.md",
+      "type": "blob"
+    },
+    {
+      "blob": "061cd76a09591109bda882893361431974043523",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/__init__.py",
+      "type": "blob"
+    },
+    {
+      "blob": "3ef990766bd093c764f032a1e60b2e4f31f6126a",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/experiment.py",
+      "type": "blob"
+    },
+    {
+      "blob": "37d455a952306d9a6fe36456a1c0a3c6fd4c747a",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/protocol.json",
+      "type": "blob"
+    },
+    {
+      "blob": "270da0c4c0939ed727b0ceb1c4ad9cc9cfb762c1",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/protocol.json.sha256",
+      "type": "blob"
+    },
+    {
+      "blob": "f37856ed197539808ba096a619a1820349bf34b8",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/protocol.py",
+      "type": "blob"
+    },
+    {
+      "blob": "669c0efcc12ec25ef2584d14a62f3b6a2327f3f5",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/README.md",
+      "type": "blob"
+    },
+    {
+      "blob": "77aa373a4b2541e06e33b121dcd17517ec5f0874",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/REPORT.md",
+      "type": "blob"
+    },
+    {
+      "blob": "883c441ed41300f87c71aa30bd3b08393658ffcb",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/REPORT.md.sha256",
+      "type": "blob"
+    },
+    {
+      "blob": "d8493c33ee57d23ef392262f2be2e1340bc6b369",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/execution-lock.json",
+      "type": "blob"
+    },
+    {
+      "blob": "6ac429fd03d1ead91e2402ad0f208c7ed3a96a39",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/execution-lock.json.sha256",
+      "type": "blob"
+    },
+    {
+      "blob": "cc2e29ba5bd1a6cd245bf6cc4a4f41a85ac83e82",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/manifest.json",
+      "type": "blob"
+    },
+    {
+      "blob": "f316e90a5589be8582487ea486885f09c01de218",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/manifest.json.sha256",
+      "type": "blob"
+    },
+    {
+      "blob": "e7e02e225a7d8e88fdd1a90e1393dea6e00e1c51",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/raw-results.json",
+      "type": "blob"
+    },
+    {
+      "blob": "b8fa045a03881a26372f738ea1b281f3363a067a",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/raw-results.json.sha256",
+      "type": "blob"
+    },
+    {
+      "blob": "ad3a028fb2d25035912820b381d066f802d72e6d",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/representatives/l1a-gs-v2-000-48d2ccedd5.field-downsampled.json",
+      "type": "blob"
+    },
+    {
+      "blob": "17ac0910aeaf6d2112ee3bb9c727186126fbc051",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/representatives/l1a-gs-v2-000-48d2ccedd5.field-downsampled.json.sha256",
+      "type": "blob"
+    },
+    {
+      "blob": "e6245d3a5f3bb0746655abe2826d796277d695ab",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/representatives/l1a-gs-v2-000-48d2ccedd5.field-full.json",
+      "type": "blob"
+    },
+    {
+      "blob": "c937e0407a2fb7aafe1f5a9c445041154cd01719",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/representatives/l1a-gs-v2-000-48d2ccedd5.field-full.json.sha256",
+      "type": "blob"
+    },
+    {
+      "blob": "7313b12c7919be8fa2b7dd4341fd385c99011960",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/representatives/l1a-gs-v2-000-48d2ccedd5.geometry.json",
+      "type": "blob"
+    },
+    {
+      "blob": "c55828455e318702c71eaf9af29c77e22881975a",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/representatives/l1a-gs-v2-000-48d2ccedd5.geometry.json.sha256",
+      "type": "blob"
+    },
+    {
+      "blob": "609835dd08fcbae09fdd795db5ad2fc1789ec8c7",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/representatives/l1a-gs-v2-032-570ad83ba6.field-downsampled.json",
+      "type": "blob"
+    },
+    {
+      "blob": "abc3f8f377a85eac9e3982d25c299e48a503ed38",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/representatives/l1a-gs-v2-032-570ad83ba6.field-downsampled.json.sha256",
+      "type": "blob"
+    },
+    {
+      "blob": "2f1c1c855158f5a36b0055f311f1d35ddbf51c35",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/representatives/l1a-gs-v2-032-570ad83ba6.field-full.json",
+      "type": "blob"
+    },
+    {
+      "blob": "d156f8226231b0bcb31a1123e9dfc423a4fb57b2",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/representatives/l1a-gs-v2-032-570ad83ba6.field-full.json.sha256",
+      "type": "blob"
+    },
+    {
+      "blob": "ac44043a87c88b6a7a22c199826614153dbf5c06",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/representatives/l1a-gs-v2-032-570ad83ba6.geometry.json",
+      "type": "blob"
+    },
+    {
+      "blob": "ec7b987b101abdca41ef2aa0ac7fc7b0e4859821",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/representatives/l1a-gs-v2-032-570ad83ba6.geometry.json.sha256",
+      "type": "blob"
+    },
+    {
+      "blob": "2eba93ed2ef1d87a55fe20ee1e4aaafeb4b695b8",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/representatives/l1a-gs-v2-065-9e98f08f3b.field-downsampled.json",
+      "type": "blob"
+    },
+    {
+      "blob": "c91ac77345ad4a53946e5267266314aad0b42b3a",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/representatives/l1a-gs-v2-065-9e98f08f3b.field-downsampled.json.sha256",
+      "type": "blob"
+    },
+    {
+      "blob": "56b388f10fd37547f7256243cc8d075c5ab09f08",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/representatives/l1a-gs-v2-065-9e98f08f3b.field-full.json",
+      "type": "blob"
+    },
+    {
+      "blob": "f55195bb6c126669227f67d630551c1b55705139",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/representatives/l1a-gs-v2-065-9e98f08f3b.field-full.json.sha256",
+      "type": "blob"
+    },
+    {
+      "blob": "2dea2d2fcd1d849de48f90d6e02b94a2e59e5330",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/representatives/l1a-gs-v2-065-9e98f08f3b.geometry.json",
+      "type": "blob"
+    },
+    {
+      "blob": "0afa4450a1535aeb3c3a9a1c2cc6f358538d44d3",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/representatives/l1a-gs-v2-065-9e98f08f3b.geometry.json.sha256",
+      "type": "blob"
+    },
+    {
+      "blob": "1101fd163c3faf3bf787775d098b03f379a0a494",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/representatives/l1a-gs-v2-068-375d1b1b13.field-downsampled.json",
+      "type": "blob"
+    },
+    {
+      "blob": "0ba9532609711af5bb81511294d39c76989cd752",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/representatives/l1a-gs-v2-068-375d1b1b13.field-downsampled.json.sha256",
+      "type": "blob"
+    },
+    {
+      "blob": "0e1d13d1e17cd4e873546feee6f46982c55d7b55",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/representatives/l1a-gs-v2-068-375d1b1b13.field-full.json",
+      "type": "blob"
+    },
+    {
+      "blob": "570e8adf01ef04794abdef7406bea9fede05eabc",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/representatives/l1a-gs-v2-068-375d1b1b13.field-full.json.sha256",
+      "type": "blob"
+    },
+    {
+      "blob": "900f86325e5e68d0f31a1708e2aea5e76e602654",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/representatives/l1a-gs-v2-068-375d1b1b13.geometry.json",
+      "type": "blob"
+    },
+    {
+      "blob": "81493cdbc540a2f51d54d58daadf1886dc805108",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/representatives/l1a-gs-v2-068-375d1b1b13.geometry.json.sha256",
+      "type": "blob"
+    },
+    {
+      "blob": "e657679da4aa357301ee6e242890d696a9df6704",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/summary.json",
+      "type": "blob"
+    },
+    {
+      "blob": "e5214089e8bef123b744ec14976689408d629af7",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/summary.json.sha256",
+      "type": "blob"
+    },
+    {
+      "blob": "16e4c46590d5fa605dec54f950294772161a5bc7",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/run.py",
+      "type": "blob"
+    },
+    {
+      "blob": "8cace4561f280b4ea2f8e733fb2821d48add1136",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/validate.py",
+      "type": "blob"
+    },
+    {
+      "blob": "9beecec3f6b288131888e9fbb25471bffa2403be",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/visualization/DEVLOG.md",
+      "type": "blob"
+    },
+    {
+      "blob": "8b2a377f5acc494cd933a46d2c2e3880cd511b90",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/visualization/LEARNING_SCRATCHPAD.md",
+      "type": "blob"
+    },
+    {
+      "blob": "777166eb74d12cfc55654fab167908e07d096d3a",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/visualization/README.md",
+      "type": "blob"
+    },
+    {
+      "blob": "cadf654fefbc9bf44203bbefa344a9f97e6d100b",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/visualization/dashboard.template.html",
+      "type": "blob"
+    },
+    {
+      "blob": "3f6bbaaa219099582327edeb97788e715d286bee",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/visualization/generate_dashboard.py",
+      "type": "blob"
+    },
+    {
+      "blob": "1e275ad6ea42a5e56e6be3dd6c3400dd6523830e",
+      "mode": "100644",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/visualization/l1a-geometry-sweep-v2.html",
+      "type": "blob"
+    },
+    {
+      "blob": "ad197d32bd8a58e9da42bcf271da4453768a65bd",
+      "mode": "100644",
+      "path": "modern/src/cft_revival/active_learning/__init__.py",
+      "type": "blob"
+    },
+    {
+      "blob": "e3d15951def96b6e18db28ae1bea669bdf79fe87",
+      "mode": "100644",
+      "path": "modern/src/cft_revival/active_learning/acquisition.py",
+      "type": "blob"
+    },
+    {
+      "blob": "da5758359e6cb64c1a9e91f679ed3a0c5e35cffd",
+      "mode": "100644",
+      "path": "modern/src/cft_revival/active_learning/calibration.py",
+      "type": "blob"
+    },
+    {
+      "blob": "d776c8c576f1a829440cb628209e8b90475b1ffc",
+      "mode": "100644",
+      "path": "modern/src/cft_revival/active_learning/contracts.py",
+      "type": "blob"
+    },
+    {
+      "blob": "b90222f37b7c0ee4615a31229c72404550c0f453",
+      "mode": "100644",
+      "path": "modern/src/cft_revival/active_learning/robustness.py",
+      "type": "blob"
+    },
+    {
+      "blob": "dc20a95bacf5cace147a9306613212169d6f318a",
+      "mode": "100644",
+      "path": "modern/src/cft_revival/active_learning/stopping.py",
+      "type": "blob"
+    },
+    {
+      "blob": "81b6dd84073a6cc253ce5ff1db6f4653ef4de477",
+      "mode": "100644",
+      "path": "modern/src/cft_revival/active_learning/synthetic.py",
+      "type": "blob"
+    },
+    {
+      "blob": "de6146c61b18b01adbcf2d7988e9f18b811eccc5",
+      "mode": "100644",
+      "path": "modern/src/cft_revival/active_learning/uncertainty.py",
+      "type": "blob"
+    },
+    {
+      "blob": "20c40e7ca0599f0adf934d7942950be4bc10a9b9",
+      "mode": "100644",
+      "path": "modern/src/cft_revival/fields/__init__.py",
+      "type": "blob"
+    },
+    {
+      "blob": "64db4ecc7b02e1a4c242a93bcd901ac4d988b6c8",
+      "mode": "100644",
+      "path": "modern/src/cft_revival/fields/artifacts.py",
+      "type": "blob"
+    },
+    {
+      "blob": "43ae6898d2cc3c7812c9894fccf34cb2ca209020",
+      "mode": "100644",
+      "path": "modern/src/cft_revival/fields/models.py",
+      "type": "blob"
+    },
+    {
+      "blob": "0f895d5c33cd81d8c450a85b101f36e85b67cdcc",
+      "mode": "100644",
+      "path": "modern/src/cft_revival/fields/numerics.py",
+      "type": "blob"
+    },
+    {
+      "blob": "1a7a13326f827279c1d39e2626bcefa6c9fbcb76",
+      "mode": "100644",
+      "path": "modern/src/cft_revival/fields/verification.py",
+      "type": "blob"
+    },
+    {
+      "blob": "a3a05ca72f3a515587477ef55bf2e0014c180bd9",
+      "mode": "100644",
+      "path": "modern/src/cft_revival/fields/warp_solver.py",
+      "type": "blob"
+    },
+    {
+      "blob": "174ceb84e8f74f1657699fcd8fa315e354ce3092",
+      "mode": "100644",
+      "path": "modern/src/cft_revival/geometry/__init__.py",
+      "type": "blob"
+    },
+    {
+      "blob": "5ab205bb77ce4422dab0185d720d29dac084df0a",
+      "mode": "100644",
+      "path": "modern/src/cft_revival/geometry/adapters.py",
+      "type": "blob"
+    },
+    {
+      "blob": "eee9c726f9ec305624e21f93675911a1570bbed9",
+      "mode": "100644",
+      "path": "modern/src/cft_revival/geometry/descriptors.py",
+      "type": "blob"
+    },
+    {
+      "blob": "70ec8390225886c7a8dc38229d7cf35dfd5c70fa",
+      "mode": "100644",
+      "path": "modern/src/cft_revival/geometry/export.py",
+      "type": "blob"
+    },
+    {
+      "blob": "78664982b88d2e8133144556754f556ebaa6b1fd",
+      "mode": "100644",
+      "path": "modern/src/cft_revival/geometry/generators.py",
+      "type": "blob"
+    },
+    {
+      "blob": "0712e5f29a52344152d4ad78ee682a543718adca",
+      "mode": "100644",
+      "path": "modern/src/cft_revival/geometry/model.py",
+      "type": "blob"
+    },
+    {
+      "blob": "5442f392720df198a2e6a8cc0842757c66a6156a",
+      "mode": "100644",
+      "path": "modern/src/cft_revival/geometry/topology.py",
+      "type": "blob"
+    },
+    {
+      "blob": "cce92b70512977faded86eec246111fa28f62dd5",
+      "mode": "100644",
+      "path": "modern/src/cft_revival/magnetics/__init__.py",
+      "type": "blob"
+    },
+    {
+      "blob": "35bcbd600cfa178ef4a4861901483b62d877ff9d",
+      "mode": "100644",
+      "path": "modern/src/cft_revival/magnetics/common.py",
+      "type": "blob"
+    },
+    {
+      "blob": "eb00fbc7af1829f9054826e6ac1790e98ea6f4e2",
+      "mode": "100644",
+      "path": "modern/src/cft_revival/magnetics/contracts.py",
+      "type": "blob"
+    },
+    {
+      "blob": "0c9f86598423c00b8e031191ef5278c81c40328a",
+      "mode": "100644",
+      "path": "modern/src/cft_revival/magnetics/materials.py",
+      "type": "blob"
+    },
+    {
+      "blob": "0f65a7477fafaf037010eb5dd8246b772b2d5d1d",
+      "mode": "100644",
+      "path": "modern/src/cft_revival/magnetics/serialization.py",
+      "type": "blob"
+    },
+    {
+      "blob": "17a1890a8d1cc28f95944b994a5028d3add7385c",
+      "mode": "100644",
+      "path": "modern/src/cft_revival/magnetics/sources.py",
+      "type": "blob"
+    },
+    {
+      "blob": "ccda5863dd46d0644e7af9a570364d3773dccc77",
+      "mode": "100644",
+      "path": "modern/src/cft_revival/optimization/__init__.py",
+      "type": "blob"
+    },
+    {
+      "blob": "e1b0916503c335cd09a568bf5cb3905dffaae476",
+      "mode": "100644",
+      "path": "modern/src/cft_revival/optimization/botorch_adapter.py",
+      "type": "blob"
+    },
+    {
+      "blob": "1b877b60a7a102651bbc6f294e797b00e1cbbedc",
+      "mode": "100644",
+      "path": "modern/src/cft_revival/optimization/campaign.py",
+      "type": "blob"
+    },
+    {
+      "blob": "7e7b8aa144de5c5c7287bb44d6d576f8153841c9",
+      "mode": "100644",
+      "path": "modern/src/cft_revival/optimization/domain.py",
+      "type": "blob"
+    },
+    {
+      "blob": "b987a37456e34ab1ef1d6a16ac858ccbdbb23940",
+      "mode": "100644",
+      "path": "modern/src/cft_revival/optimization/guardrails.py",
+      "type": "blob"
+    },
+    {
+      "blob": "8b2bc61b0bd0803c8fa5e0da1ff5b172dfbe6987",
+      "mode": "100644",
+      "path": "modern/src/cft_revival/optimization/pareto.py",
+      "type": "blob"
+    },
+    {
+      "blob": "2c6d918455ef15d969c670cb4804e1a9a1227fc2",
+      "mode": "100644",
+      "path": "modern/src/cft_revival/optimization/sampling.py",
+      "type": "blob"
+    },
+    {
+      "blob": "f788c916c2ca794bbfe69be4d70e451164b038ca",
+      "mode": "100644",
+      "path": "modern/src/cft_revival/optimization/spec.py",
+      "type": "blob"
+    },
+    {
+      "blob": "cf022757d7b05dd2e9acfb8718d8dfea933b6122",
+      "mode": "100644",
+      "path": "modern/src/cft_revival/surrogates/__init__.py",
+      "type": "blob"
+    },
+    {
+      "blob": "6c35abf992a0d3c15b651426ad4c57694d45c00c",
+      "mode": "100644",
+      "path": "modern/src/cft_revival/surrogates/_linalg.py",
+      "type": "blob"
+    },
+    {
+      "blob": "b5f742e330152ddc8149174f6c18992f667c7859",
+      "mode": "100644",
+      "path": "modern/src/cft_revival/surrogates/benchmark.py",
+      "type": "blob"
+    },
+    {
+      "blob": "e71a8acbf161c72d746cc18ffc6de581954d7da7",
+      "mode": "100644",
+      "path": "modern/src/cft_revival/surrogates/gp.py",
+      "type": "blob"
+    },
+    {
+      "blob": "d33359277ef5162688a2da608abfa0ac06bb1d52",
+      "mode": "100644",
+      "path": "modern/src/cft_revival/surrogates/identity.py",
+      "type": "blob"
+    },
+    {
+      "blob": "2cea64eaa5869cf9cd24f3544db3a453309c776a",
+      "mode": "100644",
+      "path": "modern/src/cft_revival/surrogates/interop.py",
+      "type": "blob"
+    },
+    {
+      "blob": "16ae1fff697b9140169bfc2c9e3b72be14cfd42d",
+      "mode": "100644",
+      "path": "modern/src/cft_revival/surrogates/multifidelity.py",
+      "type": "blob"
+    },
+    {
+      "blob": "514cd65f0f1db4b81c6b480cc9c0837077583aea",
+      "mode": "100644",
+      "path": "modern/src/cft_revival/surrogates/normalization.py",
+      "type": "blob"
+    },
+    {
+      "blob": "e80fcd74eb9cc71b8240cfdb82b6a9c25681b339",
+      "mode": "100644",
+      "path": "modern/src/cft_revival/surrogates/pod.py",
+      "type": "blob"
+    },
+    {
+      "blob": "bb4f5f00410016650c8bf17f6ff59cc2c8b6bcbe",
+      "mode": "100644",
+      "path": "modern/src/cft_revival/surrogates/validation.py",
+      "type": "blob"
+    },
+    {
+      "blob": "f50b4f2e9c88a904133907f734c6b6def91f580c",
+      "mode": "100644",
+      "path": "modern/tests/experiments/l1a_field_surrogate_v2/test_protocol.py",
+      "type": "blob"
+    },
+    {
+      "blob": "599ed72aa6d0d3a2a66ffc7c1b5770abcb40d1a3",
+      "mode": "100644",
+      "path": "modern/tests/experiments/l1a_field_surrogate_v2/test_results.py",
+      "type": "blob"
+    }
+  ],
+  "git_blob_closure_hash": "1690e3b281a9b4a58ef7116e7479d269650ca09fce1b0f3d65d897e30f1f6e23",
+  "partition_hash": "0387adefb700a05669a69c142d5e65c9099ae5a6b25c4492f28d6d7382d42a72",
+  "protocol_hash": "6c98a02eb219c87d9245d3b4f62d2ae8bf29a7ae095ba312c1dd93b2917ca4b7",
+  "provenance_hash": "e968d788a5350560e89aed38e840d9b89d7c6474ba5869960f6f365241d4c941",
+  "qoi_label_access_count_at_write": 0,
+  "schema_version": "cft-revival.l1a-field-surrogate-v2.provenance-closure/2.0.0",
+  "synthetic_preflight_hash": "cdf77596f17b24d857cb8e606b52593cf11a6209d8cae578969360a29faebfe2"
+}
