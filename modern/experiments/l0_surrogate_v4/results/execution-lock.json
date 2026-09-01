@@ -1,0 +1,30 @@
+{
+  "commit_binding": {
+    "intervening_protocol_changes": 0,
+    "intervening_unrelated_commits_allowed": true,
+    "observed_head_sha": "e29762ec1f06b4bd29b09c411e552396710d0aed",
+    "protocol_commit_sha": "e29762ec1f06b4bd29b09c411e552396710d0aed",
+    "protocol_paths": [
+      "modern/experiments/l0_surrogate_v4/DEVLOG.md",
+      "modern/experiments/l0_surrogate_v4/LEARNING_SCRATCHPAD.md",
+      "modern/experiments/l0_surrogate_v4/README.md",
+      "modern/experiments/l0_surrogate_v4/__init__.py",
+      "modern/experiments/l0_surrogate_v4/identity.py",
+      "modern/experiments/l0_surrogate_v4/partitions.json",
+      "modern/experiments/l0_surrogate_v4/predeclaration.json",
+      "modern/experiments/l0_surrogate_v4/preflight-record.json",
+      "modern/experiments/l0_surrogate_v4/protocol.py",
+      "modern/experiments/l0_surrogate_v4/results-placeholder.json",
+      "modern/tests/experiments/l0_surrogate_v4/test_commit_binding.py",
+      "modern/tests/experiments/l0_surrogate_v4/test_protocol.py"
+    ],
+    "protocol_tree_hash": "29e64569ed7073493089c6eca4b44cde7c4035f926fc7f0d64b49876863a7ce5",
+    "remote_ref": "origin/feat/sota-foundation"
+  },
+  "document_type": "cft-revival-l0-surrogate-v4-execution-lock",
+  "partitions_hash": "0f50aba12a44f1b7a6101c0c773aa6133ce0002721a85bb55c669fac1870165b",
+  "predeclaration_hash": "419889126694c4a24c0ae7b4e8c201ddfb80f0b13f97392276d88b1b442d6800",
+  "preflight_hash": "060e02afdb8a03eec81b5e69bca1c2e7bb6980d66be64e21eb157f7ec2704623",
+  "schema_version": "4.0",
+  "single_execution": true
+}

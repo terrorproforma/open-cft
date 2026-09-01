@@ -1,0 +1,6599 @@
+{
+  "assessment_hash": "f04be94345e7a0fcf72b43cdacf0c51426c2668d577e8f4545e4dbdeac7c80bf",
+  "campaign": "fixed-baseline",
+  "document_type": "cft-revival-l0-surrogate-v4-final-assessment",
+  "frozen_hash": "f6fb99d540bd91544cb9729f63b1a072440224c2ea7275f9fde7c30bc5ca7787",
+  "metrics": {
+    "all_scopes_outputs_passed": false,
+    "boundary": {
+      "axial_thrust_n": {
+        "all_gates_passed": true,
+        "coverage_passed": true,
+        "interval_coverage": 0.94,
+        "mae": 0.0013051525465369407,
+        "range_normalized_rmse": 0.035412817279524486,
+        "rmse": 0.0017506144500612788,
+        "rmse_passed": true,
+        "sample_count": 100,
+        "worst_case_absolute_error": 0.006643003336227195,
+        "worst_case_range_normalized_absolute_error": 0.13437993918355384,
+        "worst_error_passed": true
+      },
+      "specific_impulse_s": {
+        "all_gates_passed": false,
+        "coverage_passed": false,
+        "interval_coverage": 0.81,
+        "mae": 55.448800259428445,
+        "range_normalized_rmse": 0.04113320410055137,
+        "rmse": 79.2862046360005,
+        "rmse_passed": true,
+        "sample_count": 100,
+        "worst_case_absolute_error": 281.45355053987055,
+        "worst_case_range_normalized_absolute_error": 0.14601640212608538,
+        "worst_error_passed": true
+      }
+    },
+    "interpolation": {
+      "axial_thrust_n": {
+        "all_gates_passed": false,
+        "coverage_passed": false,
+        "interval_coverage": 0.9818181818181818,
+        "mae": 0.0005576654600847466,
+        "range_normalized_rmse": 0.014367187374278648,
+        "rmse": 0.0007102345352989632,
+        "rmse_passed": true,
+        "sample_count": 110,
+        "worst_case_absolute_error": 0.002040376056111279,
+        "worst_case_range_normalized_absolute_error": 0.04127434481878992,
+        "worst_error_passed": true
+      },
+      "specific_impulse_s": {
+        "all_gates_passed": true,
+        "coverage_passed": true,
+        "interval_coverage": 0.9363636363636364,
+        "mae": 29.79410641363213,
+        "range_normalized_rmse": 0.02011383111970217,
+        "rmse": 38.770364843746385,
+        "rmse_passed": true,
+        "sample_count": 110,
+        "worst_case_absolute_error": 170.41512528913768,
+        "worst_case_range_normalized_absolute_error": 0.08841033774438381,
+        "worst_error_passed": true
+      }
+    },
+    "ood": {
+      "axial_thrust_n": {
+        "all_gates_passed": false,
+        "coverage_passed": false,
+        "interval_coverage": 0.9897959183673469,
+        "mae": 0.0032263628663119193,
+        "range_normalized_rmse": 0.10297348924788316,
+        "rmse": 0.005090441599934592,
+        "rmse_passed": false,
+        "sample_count": 98,
+        "worst_case_absolute_error": 0.015155320720821559,
+        "worst_case_range_normalized_absolute_error": 0.3065738452463126,
+        "worst_error_passed": false
+      },
+      "specific_impulse_s": {
+        "all_gates_passed": false,
+        "coverage_passed": true,
+        "interval_coverage": 0.9183673469387755,
+        "mae": 125.92011599977621,
+        "range_normalized_rmse": 0.0843734626489517,
+        "rmse": 162.6338568004494,
+        "rmse_passed": false,
+        "sample_count": 98,
+        "worst_case_absolute_error": 397.29036097672065,
+        "worst_case_range_normalized_absolute_error": 0.2061118397615548,
+        "worst_error_passed": false
+      }
+    },
+    "overall": {
+      "axial_thrust_n": {
+        "all_gates_passed": false,
+        "coverage_passed": false,
+        "interval_coverage": 0.9707792207792207,
+        "mae": 0.0016494870654596891,
+        "range_normalized_rmse": 0.06208653890889384,
+        "rmse": 0.0030692161911400695,
+        "rmse_passed": false,
+        "sample_count": 308,
+        "worst_case_absolute_error": 0.015155320720821559,
+        "worst_case_range_normalized_absolute_error": 0.3065738452463126,
+        "worst_error_passed": false
+      },
+      "specific_impulse_s": {
+        "all_gates_passed": false,
+        "coverage_passed": true,
+        "interval_coverage": 0.8896103896103896,
+        "mae": 68.70910097214431,
+        "range_normalized_rmse": 0.054395935669611296,
+        "rmse": 104.85074968447957,
+        "rmse_passed": false,
+        "sample_count": 308,
+        "worst_case_absolute_error": 397.29036097672065,
+        "worst_case_range_normalized_absolute_error": 0.2061118397615548,
+        "worst_error_passed": false
+      }
+    }
+  },
+  "raw": {
+    "boundary": [
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.004551779955036932,
+            0.010010890226880788
+          ],
+          "mean": 0.00795474284979355,
+          "raw_epistemic_variance": 1.6291369189105648e-05,
+          "truth": 0.004579615490426677
+        },
+        "index": 584,
+        "specific_impulse_s": {
+          "interval": [
+            1572.0444921080853,
+            1759.2027375867683
+          ],
+          "mean": 1665.6236148474268,
+          "raw_epistemic_variance": 17859.576784891557,
+          "truth": 1657.5282809079476
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.005834720686032588,
+            0.011293830957876444
+          ],
+          "mean": 0.009237683580789207,
+          "raw_epistemic_variance": 1.9083214309872962e-05,
+          "truth": 0.007132405877168923
+        },
+        "index": 944,
+        "specific_impulse_s": {
+          "interval": [
+            1791.626294896672,
+            1996.1876247713556
+          ],
+          "mean": 1893.9069598340138,
+          "raw_epistemic_variance": 21335.376426859028,
+          "truth": 2016.0768489007403
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.00527577794943992,
+            0.010734888221283776
+          ],
+          "mean": 0.008678740844196538,
+          "raw_epistemic_variance": 2.0656102197164726e-05,
+          "truth": 0.006530549019258048
+        },
+        "index": 1064,
+        "specific_impulse_s": {
+          "interval": [
+            1510.3257058053375,
+            1695.8683395221485
+          ],
+          "mean": 1603.097022663743,
+          "raw_epistemic_variance": 17552.56810353556,
+          "truth": 1585.5081450416765
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.005764221857525256,
+            0.011223332129369112
+          ],
+          "mean": 0.009167184752281874,
+          "raw_epistemic_variance": 2.66810986391242e-05,
+          "truth": 0.0048329262670335936
+        },
+        "index": 1664,
+        "specific_impulse_s": {
+          "interval": [
+            1538.0401387124455,
+            1733.557496346982
+          ],
+          "mean": 1635.7988175297137,
+          "raw_epistemic_variance": 19490.53997899286,
+          "truth": 1671.1019298853357
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.007421123147498083,
+            0.01288023341934194
+          ],
+          "mean": 0.010824086042254702,
+          "raw_epistemic_variance": 3.0397798948891038e-05,
+          "truth": 0.0041810827060275065
+        },
+        "index": 2384,
+        "specific_impulse_s": {
+          "interval": [
+            1604.7156446499623,
+            1848.5488112824207
+          ],
+          "mean": 1726.6322279661915,
+          "raw_epistemic_variance": 30313.68898409116,
+          "truth": 1861.2749214622927
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.003484350478695213,
+            0.008943460750539069
+          ],
+          "mean": 0.006887313373451831,
+          "raw_epistemic_variance": 1.68380746213071e-05,
+          "truth": 0.005536415577074962
+        },
+        "index": 2744,
+        "specific_impulse_s": {
+          "interval": [
+            1689.1149567032062,
+            1839.917093136512
+          ],
+          "mean": 1764.516024919859,
+          "raw_epistemic_variance": 11594.932410571286,
+          "truth": 1769.490999997774
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.004014443742029153,
+            0.009473554013873009
+          ],
+          "mean": 0.007417406636785771,
+          "raw_epistemic_variance": 2.040422972164601e-05,
+          "truth": 0.004673393819488727
+        },
+        "index": 3464,
+        "specific_impulse_s": {
+          "interval": [
+            1718.1277831657712,
+            1913.9489225782718
+          ],
+          "mean": 1816.0383528720215,
+          "raw_epistemic_variance": 19551.153222608064,
+          "truth": 1882.0706807227807
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.0032304157265182075,
+            0.008689525998362063
+          ],
+          "mean": 0.0066333786212748255,
+          "raw_epistemic_variance": 6.3360580519681804e-06,
+          "truth": 0.005037867946977996
+        },
+        "index": 3824,
+        "specific_impulse_s": {
+          "interval": [
+            1849.5977035921217,
+            1938.6409484643775
+          ],
+          "mean": 1894.1193260282496,
+          "raw_epistemic_variance": 4042.5480322768526,
+          "truth": 1882.0315281059104
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.002362466444537748,
+            0.007821576716381604
+          ],
+          "mean": 0.005765429339294366,
+          "raw_epistemic_variance": 1.1898578783657532e-05,
+          "truth": 0.004090335349552702
+        },
+        "index": 4544,
+        "specific_impulse_s": {
+          "interval": [
+            1839.2213454397827,
+            2001.0393949961951
+          ],
+          "mean": 1920.130370217989,
+          "raw_epistemic_variance": 13350.795915072082,
+          "truth": 2013.8333673716986
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.005361395269426533,
+            0.010820505541270389
+          ],
+          "mean": 0.008764358164183151,
+          "raw_epistemic_variance": 1.9257825606768622e-05,
+          "truth": 0.006640152909170694
+        },
+        "index": 5264,
+        "specific_impulse_s": {
+          "interval": [
+            1609.6816651804484,
+            1767.8251753626973
+          ],
+          "mean": 1688.7534202715728,
+          "raw_epistemic_variance": 12751.344563950983,
+          "truth": 1710.4357596629684
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.004151763156811357,
+            0.009610873428655213
+          ],
+          "mean": 0.007554726051567975,
+          "raw_epistemic_variance": 1.9019263444081893e-05,
+          "truth": 0.005809944340282837
+        },
+        "index": 5984,
+        "specific_impulse_s": {
+          "interval": [
+            1671.9295802883798,
+            1850.8349562585263
+          ],
+          "mean": 1761.382268273453,
+          "raw_epistemic_variance": 16319.243206406614,
+          "truth": 1795.1675372614031
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.0033461023240879567,
+            0.008805212595931812
+          ],
+          "mean": 0.006749065218844575,
+          "raw_epistemic_variance": 1.2651111440856126e-05,
+          "truth": 0.005848087997504041
+        },
+        "index": 6344,
+        "specific_impulse_s": {
+          "interval": [
+            1676.426461083312,
+            1836.4832487852336
+          ],
+          "mean": 1756.4548549342728,
+          "raw_epistemic_variance": 13061.751761888283,
+          "truth": 1737.618352855258
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.0016865847316744867,
+            0.007145695003518342
+          ],
+          "mean": 0.005089547626431105,
+          "raw_epistemic_variance": 4.777340706866523e-06,
+          "truth": 0.005000667152299688
+        },
+        "index": 7064,
+        "specific_impulse_s": {
+          "interval": [
+            1817.9005711543336,
+            1919.1724644956894
+          ],
+          "mean": 1868.5365178250115,
+          "raw_epistemic_variance": 5229.149901781889,
+          "truth": 1860.3777947177846
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.007083033183973152,
+            0.012542143455817008
+          ],
+          "mean": 0.01048599607872977,
+          "raw_epistemic_variance": 2.677133590408075e-05,
+          "truth": 0.006398912559455034
+        },
+        "index": 7424,
+        "specific_impulse_s": {
+          "interval": [
+            1554.3023401734458,
+            1788.6429898971
+          ],
+          "mean": 1671.472665035273,
+          "raw_epistemic_variance": 27999.38499600893,
+          "truth": 1749.9897973379718
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.005329987656166452,
+            0.010789097928010308
+          ],
+          "mean": 0.00873295055092307,
+          "raw_epistemic_variance": 1.538354519052636e-05,
+          "truth": 0.0072723346162554565
+        },
+        "index": 7544,
+        "specific_impulse_s": {
+          "interval": [
+            1673.2050792459302,
+            1838.5497003797548
+          ],
+          "mean": 1755.8773898128425,
+          "raw_epistemic_variance": 13939.056405328485,
+          "truth": 1798.3174521026847
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.005003538410401544,
+            0.0104626486822454
+          ],
+          "mean": 0.008406501305158163,
+          "raw_epistemic_variance": 1.3483195055156812e-05,
+          "truth": 0.006250167157894139
+        },
+        "index": 8144,
+        "specific_impulse_s": {
+          "interval": [
+            1827.9318541544606,
+            2014.1316862312617
+          ],
+          "mean": 1921.0317701928611,
+          "raw_epistemic_variance": 17677.13191230878,
+          "truth": 2075.8899481230005
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.010611893783190343,
+            0.0160710040550342
+          ],
+          "mean": 0.014014856677946962,
+          "raw_epistemic_variance": 2.4747307388734152e-05,
+          "truth": 0.010873288639650402
+        },
+        "index": 81,
+        "specific_impulse_s": {
+          "interval": [
+            1160.6489144495633,
+            1388.8758998466794
+          ],
+          "mean": 1274.7624071481214,
+          "raw_epistemic_variance": 26557.501849621003,
+          "truth": 1119.949055849192
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.011501237351430778,
+            0.016960347623274634
+          ],
+          "mean": 0.014904200246187396,
+          "raw_epistemic_variance": 1.2115401693019535e-05,
+          "truth": 0.014210099288753603
+        },
+        "index": 345,
+        "specific_impulse_s": {
+          "interval": [
+            1305.5148451872058,
+            1450.8749604792858
+          ],
+          "mean": 1378.1949028332458,
+          "raw_epistemic_variance": 10773.175886358673,
+          "truth": 1330.8709618534212
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.009904167926793538,
+            0.015363278198637394
+          ],
+          "mean": 0.013307130821550156,
+          "raw_epistemic_variance": 1.2863429831122642e-05,
+          "truth": 0.01203705650666861
+        },
+        "index": 945,
+        "specific_impulse_s": {
+          "interval": [
+            1268.7556291018334,
+            1437.9891443436543
+          ],
+          "mean": 1353.3723867227438,
+          "raw_epistemic_variance": 14602.458606772625,
+          "truth": 1277.5811572617429
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.010825097264395777,
+            0.016284207536239634
+          ],
+          "mean": 0.014228060159152395,
+          "raw_epistemic_variance": 8.61190645911083e-06,
+          "truth": 0.013576504085880401
+        },
+        "index": 1281,
+        "specific_impulse_s": {
+          "interval": [
+            1278.9600665831283,
+            1416.1007899333015
+          ],
+          "mean": 1347.530428258215,
+          "raw_epistemic_variance": 9589.28230897916,
+          "truth": 1314.8211136814627
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.011689574772777192,
+            0.01714868504462105
+          ],
+          "mean": 0.01509253766753381,
+          "raw_epistemic_variance": 2.1763410130920492e-05,
+          "truth": 0.013103398749283469
+        },
+        "index": 1425,
+        "specific_impulse_s": {
+          "interval": [
+            1248.5296710944924,
+            1467.12132934313
+          ],
+          "mean": 1357.8255002188112,
+          "raw_epistemic_variance": 24362.41866147616,
+          "truth": 1223.111754266411
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.00936331173864556,
+            0.014822422010489417
+          ],
+          "mean": 0.012766274633402179,
+          "raw_epistemic_variance": 2.297032795202263e-05,
+          "truth": 0.010974509269213315
+        },
+        "index": 2025,
+        "specific_impulse_s": {
+          "interval": [
+            1072.127431290073,
+            1255.2222663381574
+          ],
+          "mean": 1163.6748488141152,
+          "raw_epistemic_variance": 17092.493349704295,
+          "truth": 1133.7259602830472
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.009624681009501049,
+            0.015083791281344905
+          ],
+          "mean": 0.013027643904257667,
+          "raw_epistemic_variance": 2.1720296320453593e-05,
+          "truth": 0.011317261084549644
+        },
+        "index": 2145,
+        "specific_impulse_s": {
+          "interval": [
+            1106.3196823335613,
+            1307.625964866231
+          ],
+          "mean": 1206.9728235998962,
+          "raw_epistemic_variance": 20661.787500404782,
+          "truth": 1124.1426162134028
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.00803565497948967,
+            0.013494765251333526
+          ],
+          "mean": 0.011438617874246288,
+          "raw_epistemic_variance": 1.4868481578102937e-05,
+          "truth": 0.011129233024120916
+        },
+        "index": 2745,
+        "specific_impulse_s": {
+          "interval": [
+            1143.3161839372663,
+            1298.574674672809
+          ],
+          "mean": 1220.9454293050376,
+          "raw_epistemic_variance": 12290.341573481886,
+          "truth": 1234.824133047805
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.010488928916352579,
+            0.015948039188196435
+          ],
+          "mean": 0.013891891811109197,
+          "raw_epistemic_variance": 1.8711790216488294e-05,
+          "truth": 0.012093989139615721
+        },
+        "index": 3225,
+        "specific_impulse_s": {
+          "interval": [
+            1112.633848382737,
+            1290.6576241764658
+          ],
+          "mean": 1201.6457362796014,
+          "raw_epistemic_variance": 16158.805324016765,
+          "truth": 1166.383912129495
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.0086073366710174,
+            0.014066446942861256
+          ],
+          "mean": 0.012010299565774018,
+          "raw_epistemic_variance": 2.0574227257593193e-05,
+          "truth": 0.010429953863249608
+        },
+        "index": 5265,
+        "specific_impulse_s": {
+          "interval": [
+            995.9586963280636,
+            1174.219694278504
+          ],
+          "mean": 1085.0891953032838,
+          "raw_epistemic_variance": 16201.898226388374,
+          "truth": 1067.9719316814844
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.010430280905440997,
+            0.015889391177284853
+          ],
+          "mean": 0.013833243800197615,
+          "raw_epistemic_variance": 6.6649753503333535e-06,
+          "truth": 0.013408949393766198
+        },
+        "index": 5481,
+        "specific_impulse_s": {
+          "interval": [
+            1366.0655521070655,
+            1478.5597070789315
+          ],
+          "mean": 1422.3126295929985,
+          "raw_epistemic_variance": 6452.279149315367,
+          "truth": 1400.7899929100952
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.00856052214576352,
+            0.014019632417607376
+          ],
+          "mean": 0.011963485040520139,
+          "raw_epistemic_variance": 1.7613942631716344e-05,
+          "truth": 0.01142121721810491
+        },
+        "index": 6345,
+        "specific_impulse_s": {
+          "interval": [
+            1150.0002951525337,
+            1325.5322248258778
+          ],
+          "mean": 1237.7662599892058,
+          "raw_epistemic_variance": 15709.613024513763,
+          "truth": 1234.7840150720574
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.010748118528100113,
+            0.01620722879994397
+          ],
+          "mean": 0.014151081422856732,
+          "raw_epistemic_variance": 1.744330522230857e-05,
+          "truth": 0.012324572417624656
+        },
+        "index": 6465,
+        "specific_impulse_s": {
+          "interval": [
+            1176.2938232349732,
+            1360.1803541004222
+          ],
+          "mean": 1268.2370886676977,
+          "raw_epistemic_variance": 17240.627638285107,
+          "truth": 1183.7078418650049
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.009988458309347076,
+            0.015447568581190932
+          ],
+          "mean": 0.013391421204103695,
+          "raw_epistemic_variance": 2.0179350855412155e-05,
+          "truth": 0.011890168782768858
+        },
+        "index": 6681,
+        "specific_impulse_s": {
+          "interval": [
+            1118.1413872220126,
+            1294.8650299674903
+          ],
+          "mean": 1206.5032085947514,
+          "raw_epistemic_variance": 15923.647044311047,
+          "truth": 1163.635109073191
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.010181962092445868,
+            0.015641072364289726
+          ],
+          "mean": 0.013584924987202486,
+          "raw_epistemic_variance": 1.8969414946775552e-05,
+          "truth": 0.012428627465017817
+        },
+        "index": 6825,
+        "specific_impulse_s": {
+          "interval": [
+            1064.6123399074424,
+            1234.8987563296635
+          ],
+          "mean": 1149.755548118553,
+          "raw_epistemic_variance": 14784.72479878559,
+          "truth": 1171.8986549990877
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.007919675534900122,
+            0.013378785806743978
+          ],
+          "mean": 0.01132263842965674,
+          "raw_epistemic_variance": 1.825068204381263e-05,
+          "truth": 0.010177011447050835
+        },
+        "index": 7281,
+        "specific_impulse_s": {
+          "interval": [
+            1070.7634536851917,
+            1232.1187991126342
+          ],
+          "mean": 1151.441126398913,
+          "raw_epistemic_variance": 13274.554278804877,
+          "truth": 1135.9034932923576
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.009504953150595526,
+            0.014964063422439382
+          ],
+          "mean": 0.012907916045352144,
+          "raw_epistemic_variance": 1.772103361213428e-05,
+          "truth": 0.01100408079154257
+        },
+        "index": 7425,
+        "specific_impulse_s": {
+          "interval": [
+            1121.8092415574465,
+            1297.5832719389364
+          ],
+          "mean": 1209.6962567481914,
+          "raw_epistemic_variance": 15752.97757115906,
+          "truth": 1153.4031740869689
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.009694399309181891,
+            0.015153509581025747
+          ],
+          "mean": 0.01309736220393851,
+          "raw_epistemic_variance": 1.0427626642212467e-05,
+          "truth": 0.01239023353692326
+        },
+        "index": 7545,
+        "specific_impulse_s": {
+          "interval": [
+            1206.6321165501415,
+            1333.7812603842333
+          ],
+          "mean": 1270.2066884671874,
+          "raw_epistemic_variance": 8242.90155637494,
+          "truth": 1248.0145509204174
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.010357591015793201,
+            0.01581670128763706
+          ],
+          "mean": 0.01376055391054982,
+          "raw_epistemic_variance": 2.5844058918987567e-05,
+          "truth": 0.01063356725244212
+        },
+        "index": 8145,
+        "specific_impulse_s": {
+          "interval": [
+            1266.7538854390907,
+            1518.3480932693735
+          ],
+          "mean": 1392.5509893542321,
+          "raw_epistemic_variance": 32274.127476602735,
+          "truth": 1195.4776340797534
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.009980895861964002,
+            0.015440006133807858
+          ],
+          "mean": 0.01338385875672062,
+          "raw_epistemic_variance": 1.4873451125886792e-05,
+          "truth": 0.01322892106740157
+        },
+        "index": 1136,
+        "specific_impulse_s": {
+          "interval": [
+            2117.40531315342,
+            2289.195505809421
+          ],
+          "mean": 2203.3004094814205,
+          "raw_epistemic_variance": 15047.001569703389,
+          "truth": 2256.607768330608
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.01111169634579031,
+            0.016570806617634166
+          ],
+          "mean": 0.014514659240546929,
+          "raw_epistemic_variance": 1.9521307385918248e-05,
+          "truth": 0.014237511513770612
+        },
+        "index": 1256,
+        "specific_impulse_s": {
+          "interval": [
+            2042.9852551042336,
+            2240.9186315496004
+          ],
+          "mean": 2141.951943326917,
+          "raw_epistemic_variance": 19975.20748518347,
+          "truth": 2301.883676517751
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.006775677833463719,
+            0.012234788105307575
+          ],
+          "mean": 0.010178640728220337,
+          "raw_epistemic_variance": 1.787151602481909e-05,
+          "truth": 0.009705924730824052
+        },
+        "index": 1856,
+        "specific_impulse_s": {
+          "interval": [
+            1724.6613454611756,
+            1898.9781065190791
+          ],
+          "mean": 1811.8197259901274,
+          "raw_epistemic_variance": 15492.85757245967,
+          "truth": 1860.584859453192
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.0100268007309248,
+            0.015485911002768657
+          ],
+          "mean": 0.013429763625681419,
+          "raw_epistemic_variance": 2.472172753662394e-05,
+          "truth": 0.011691958739468935
+        },
+        "index": 2216,
+        "specific_impulse_s": {
+          "interval": [
+            1851.8711465946267,
+            2089.720534023489
+          ],
+          "mean": 1970.795840309058,
+          "raw_epistemic_variance": 28844.120905338317,
+          "truth": 2187.1544520863667
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.006740469498224936,
+            0.012199579770068792
+          ],
+          "mean": 0.010143432392981554,
+          "raw_epistemic_variance": 2.1323099551203326e-05,
+          "truth": 0.008748633919450287
+        },
+        "index": 2936,
+        "specific_impulse_s": {
+          "interval": [
+            1685.588605352237,
+            1905.086308573362
+          ],
+          "mean": 1795.3374569627995,
+          "raw_epistemic_variance": 24564.79777750259,
+          "truth": 1869.961173098947
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.010340804689807498,
+            0.015799914961651354
+          ],
+          "mean": 0.013743767584564116,
+          "raw_epistemic_variance": 1.4704424554990536e-05,
+          "truth": 0.012888454634044354
+        },
+        "index": 3296,
+        "specific_impulse_s": {
+          "interval": [
+            2067.39463544615,
+            2239.447742692412
+          ],
+          "mean": 2153.421189069281,
+          "raw_epistemic_variance": 15093.093881026954,
+          "truth": 2282.326384858833
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.007133247309225436,
+            0.012592357581069292
+          ],
+          "mean": 0.010536210203982054,
+          "raw_epistemic_variance": 1.374699297235456e-05,
+          "truth": 0.01093577882434409
+        },
+        "index": 3416,
+        "specific_impulse_s": {
+          "interval": [
+            1758.231216345114,
+            1896.7753893270863
+          ],
+          "mean": 1827.5033028361001,
+          "raw_epistemic_variance": 9786.553214111187,
+          "truth": 1831.8127729539997
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.006980375984967211,
+            0.012439486256811067
+          ],
+          "mean": 0.01038333887972383,
+          "raw_epistemic_variance": 2.149981202953918e-05,
+          "truth": 0.009813805379991936
+        },
+        "index": 4016,
+        "specific_impulse_s": {
+          "interval": [
+            1793.5642288693791,
+            1987.984928818881
+          ],
+          "mean": 1890.77457884413,
+          "raw_epistemic_variance": 19272.508127295732,
+          "truth": 1962.2259080338054
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.009127546052243595,
+            0.014586656324087451
+          ],
+          "mean": 0.012530508947000214,
+          "raw_epistemic_variance": 1.735045941435371e-05,
+          "truth": 0.012614129178998817
+        },
+        "index": 4496,
+        "specific_impulse_s": {
+          "interval": [
+            1806.7930711237443,
+            1996.0119854813836
+          ],
+          "mean": 1901.402528302564,
+          "raw_epistemic_variance": 18255.020525695956,
+          "truth": 2004.5417850192039
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.008677927359863707,
+            0.014137037631707563
+          ],
+          "mean": 0.012080890254620325,
+          "raw_epistemic_variance": 2.4367904930948002e-05,
+          "truth": 0.009212080574530039
+        },
+        "index": 4736,
+        "specific_impulse_s": {
+          "interval": [
+            1815.7150111978358,
+            2052.439452832867
+          ],
+          "mean": 1934.0772320153515,
+          "raw_epistemic_variance": 28571.92059632768,
+          "truth": 2114.9685960680827
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.006325244404017574,
+            0.01178435467586143
+          ],
+          "mean": 0.009728207298774192,
+          "raw_epistemic_variance": 8.393665809244022e-06,
+          "truth": 0.010215856664651283
+        },
+        "index": 5096,
+        "specific_impulse_s": {
+          "interval": [
+            1960.7752342604376,
+            2084.7787657531835
+          ],
+          "mean": 2022.7770000068103,
+          "raw_epistemic_variance": 7840.095268290942,
+          "truth": 2025.1833710925696
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.0073916697622640765,
+            0.012850780034107933
+          ],
+          "mean": 0.010794632657020695,
+          "raw_epistemic_variance": 1.0495539174509231e-05,
+          "truth": 0.009420580743721617
+        },
+        "index": 5816,
+        "specific_impulse_s": {
+          "interval": [
+            2003.1741254777169,
+            2152.872052808009
+          ],
+          "mean": 2078.023089142863,
+          "raw_epistemic_variance": 11425.752370138247,
+          "truth": 2141.6712409125703
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.007184956635787054,
+            0.01264406690763091
+          ],
+          "mean": 0.010587919530543673,
+          "raw_epistemic_variance": 2.3733675075045236e-05,
+          "truth": 0.00977913923692157
+        },
+        "index": 6536,
+        "specific_impulse_s": {
+          "interval": [
+            1657.3169045922173,
+            1868.5986350085159
+          ],
+          "mean": 1762.9577698003666,
+          "raw_epistemic_variance": 22760.254978582554,
+          "truth": 1779.1884379591172
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.007365530346427401,
+            0.012824640618271257
+          ],
+          "mean": 0.01076849324118402,
+          "raw_epistemic_variance": 1.9039798417834568e-05,
+          "truth": 0.009395124087611992
+        },
+        "index": 7256,
+        "specific_impulse_s": {
+          "interval": [
+            1792.8189904094122,
+            1993.9536731086694
+          ],
+          "mean": 1893.3863317590408,
+          "raw_epistemic_variance": 20626.57699355796,
+          "truth": 1949.676245501184
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.00755766630996604,
+            0.013016776581809896
+          ],
+          "mean": 0.010960629204722658,
+          "raw_epistemic_variance": 1.678588655654686e-05,
+          "truth": 0.011208442885271275
+        },
+        "index": 7616,
+        "specific_impulse_s": {
+          "interval": [
+            1813.592492121064,
+            1980.3381996192588
+          ],
+          "mean": 1896.9653458701614,
+          "raw_epistemic_variance": 14176.28900456914,
+          "truth": 1936.7073546524066
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.008249732359371431,
+            0.013708842631215287
+          ],
+          "mean": 0.01165269525412805,
+          "raw_epistemic_variance": 7.203718685277649e-06,
+          "truth": 0.012266706360334034
+        },
+        "index": 7736,
+        "specific_impulse_s": {
+          "interval": [
+            1974.86556147932,
+            2081.090365822334
+          ],
+          "mean": 2027.977963650827,
+          "raw_epistemic_variance": 5753.142251542335,
+          "truth": 2007.5709413567308
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.018671909092860994,
+            0.02413101936470485
+          ],
+          "mean": 0.022074871987617612,
+          "raw_epistemic_variance": 8.242974298052111e-06,
+          "truth": 0.02197205841949444
+        },
+        "index": 121,
+        "specific_impulse_s": {
+          "interval": [
+            1310.3380918342123,
+            1437.1316233208086
+          ],
+          "mean": 1373.7348575775104,
+          "raw_epistemic_variance": 8196.858329230527,
+          "truth": 1364.620888789348
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.02326848969886338,
+            0.028727599970707236
+          ],
+          "mean": 0.02667145259362,
+          "raw_epistemic_variance": 1.624280991017506e-05,
+          "truth": 0.026433591661568487
+        },
+        "index": 841,
+        "specific_impulse_s": {
+          "interval": [
+            1484.8546503398647,
+            1673.3036086662892
+          ],
+          "mean": 1579.079129503077,
+          "raw_epistemic_variance": 18106.758749047156,
+          "truth": 1539.5022939323721
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.01687464197137619,
+            0.022333752243220047
+          ],
+          "mean": 0.02027760486613281,
+          "raw_epistemic_variance": 9.387286852805535e-06,
+          "truth": 0.020333537728281458
+        },
+        "index": 1561,
+        "specific_impulse_s": {
+          "interval": [
+            1134.9135972223908,
+            1273.2040669360672
+          ],
+          "mean": 1204.058832079229,
+          "raw_epistemic_variance": 9750.743592581839,
+          "truth": 1230.5074787552617
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.015100815217071975,
+            0.02055992548891583
+          ],
+          "mean": 0.018503778111828594,
+          "raw_epistemic_variance": 2.7639167094840752e-05,
+          "truth": 0.019514304390163068
+        },
+        "index": 1921,
+        "specific_impulse_s": {
+          "interval": [
+            1220.2775352820138,
+            1461.424276233691
+          ],
+          "mean": 1340.8509057578524,
+          "raw_epistemic_variance": 29649.408016363475,
+          "truth": 1132.26240793625
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.016432922155301212,
+            0.021892032427145068
+          ],
+          "mean": 0.01983588505005783,
+          "raw_epistemic_variance": 1.826227183492521e-05,
+          "truth": 0.017960605788116393
+        },
+        "index": 2161,
+        "specific_impulse_s": {
+          "interval": [
+            1124.6391959160444,
+            1313.193623836142
+          ],
+          "mean": 1218.9164098760932,
+          "raw_epistemic_variance": 18127.03211018653,
+          "truth": 1174.0743264427258
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.016310604869803336,
+            0.021769715141647192
+          ],
+          "mean": 0.019713567764559955,
+          "raw_epistemic_variance": 9.171968767379431e-06,
+          "truth": 0.019800079867546217
+        },
+        "index": 2641,
+        "specific_impulse_s": {
+          "interval": [
+            1202.5919013815758,
+            1338.532135794125
+          ],
+          "mean": 1270.5620185878504,
+          "raw_epistemic_variance": 9422.133682336927,
+          "truth": 1195.1113481130426
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.018660387274384946,
+            0.024119497546228802
+          ],
+          "mean": 0.022063350169141564,
+          "raw_epistemic_variance": 9.873537190493496e-06,
+          "truth": 0.02139842817401033
+        },
+        "index": 3241,
+        "specific_impulse_s": {
+          "interval": [
+            1283.3349429906132,
+            1415.7687120332046
+          ],
+          "mean": 1349.5518275119089,
+          "raw_epistemic_variance": 8942.330381109878,
+          "truth": 1371.7818084571013
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.01915928181721797,
+            0.024618392089061827
+          ],
+          "mean": 0.02256224471197459,
+          "raw_epistemic_variance": 1.3129182679254889e-05,
+          "truth": 0.021490004060989994
+        },
+        "index": 3361,
+        "specific_impulse_s": {
+          "interval": [
+            1318.541815361044,
+            1461.9600825206294
+          ],
+          "mean": 1390.2509489408367,
+          "raw_epistemic_variance": 10487.263365959352,
+          "truth": 1349.7173234872669
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.020665331308144373,
+            0.02612444157998823
+          ],
+          "mean": 0.02406829420290099,
+          "raw_epistemic_variance": 1.2304996944324153e-05,
+          "truth": 0.022484089601611957
+        },
+        "index": 3721,
+        "specific_impulse_s": {
+          "interval": [
+            1265.2812714730492,
+            1433.0043519843796
+          ],
+          "mean": 1349.1428117287144,
+          "raw_epistemic_variance": 14342.96350901244,
+          "truth": 1331.174615493366
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.01946378156424036,
+            0.024922891836084215
+          ],
+          "mean": 0.022866744458996977,
+          "raw_epistemic_variance": 2.1233272349501897e-05,
+          "truth": 0.02354602430317295
+        },
+        "index": 4441,
+        "specific_impulse_s": {
+          "interval": [
+            1434.4500242476481,
+            1652.9541182675996
+          ],
+          "mean": 1543.7020712576239,
+          "raw_epistemic_variance": 24342.904201149853,
+          "truth": 1449.458136683763
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.016788119134780396,
+            0.022247229406624252
+          ],
+          "mean": 0.020191082029537014,
+          "raw_epistemic_variance": 1.3945305513336627e-05,
+          "truth": 0.021352351203922752
+        },
+        "index": 5161,
+        "specific_impulse_s": {
+          "interval": [
+            1150.5792550853625,
+            1300.3235322113055
+          ],
+          "mean": 1225.451393648334,
+          "raw_epistemic_variance": 11432.828797741708,
+          "truth": 1232.7518399518674
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.019238821527890762,
+            0.024697931799734618
+          ],
+          "mean": 0.02264178442264738,
+          "raw_epistemic_variance": 8.295050429462709e-06,
+          "truth": 0.022340094929807725
+        },
+        "index": 5881,
+        "specific_impulse_s": {
+          "interval": [
+            1285.5407495454408,
+            1416.842575871278
+          ],
+          "mean": 1351.1916627083594,
+          "raw_epistemic_variance": 8790.119243777926,
+          "truth": 1339.7215017158398
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.017943986034843262,
+            0.02340309630668712
+          ],
+          "mean": 0.02134694892959988,
+          "raw_epistemic_variance": 1.9752094608909753e-05,
+          "truth": 0.019224044456173567
+        },
+        "index": 6481,
+        "specific_impulse_s": {
+          "interval": [
+            1215.3479950903234,
+            1398.0199593875514
+          ],
+          "mean": 1306.6839772389374,
+          "raw_epistemic_variance": 17013.631826402914,
+          "truth": 1228.997782279657
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.018305467880802326,
+            0.023764578152646182
+          ],
+          "mean": 0.021708430775558944,
+          "raw_epistemic_variance": 2.1406821123511824e-05,
+          "truth": 0.022663819677409148
+        },
+        "index": 6961,
+        "specific_impulse_s": {
+          "interval": [
+            1347.2029373653277,
+            1573.0426642250095
+          ],
+          "mean": 1460.1228007951686,
+          "raw_epistemic_variance": 26004.82362629721,
+          "truth": 1333.320294250853
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.01859558768365774,
+            0.024054697955501594
+          ],
+          "mean": 0.021998550578414357,
+          "raw_epistemic_variance": 1.3310619835811375e-05,
+          "truth": 0.021311845778108497
+        },
+        "index": 7321,
+        "specific_impulse_s": {
+          "interval": [
+            1147.2862946631308,
+            1318.8175910587966
+          ],
+          "mean": 1233.0519428609637,
+          "raw_epistemic_variance": 15001.682603168814,
+          "truth": 1246.6504836249683
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.021512287032009587,
+            0.026971397303853444
+          ],
+          "mean": 0.024915249926766206,
+          "raw_epistemic_variance": 1.5193218429203356e-05,
+          "truth": 0.022800947674540908
+        },
+        "index": 8041,
+        "specific_impulse_s": {
+          "interval": [
+            1330.0441490702258,
+            1483.2185376566047
+          ],
+          "mean": 1406.6313433634152,
+          "raw_epistemic_variance": 11962.598967624539,
+          "truth": 1386.11123458514
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.029064381014097584,
+            0.03452349128594144
+          ],
+          "mean": 0.0324673439088542,
+          "raw_epistemic_variance": 1.4660465326898286e-05,
+          "truth": 0.03315793758117671
+        },
+        "index": 295,
+        "specific_impulse_s": {
+          "interval": [
+            1675.8923068791407,
+            1858.8360270817504
+          ],
+          "mean": 1767.3641669804456,
+          "raw_epistemic_variance": 17064.29087640481,
+          "truth": 1776.201036225304
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.02107850368891256,
+            0.026537613960756417
+          ],
+          "mean": 0.02448146658366918,
+          "raw_epistemic_variance": 2.01191096929701e-05,
+          "truth": 0.02494904654448506
+        },
+        "index": 895,
+        "specific_impulse_s": {
+          "interval": [
+            1295.192670114499,
+            1506.8157326533878
+          ],
+          "mean": 1401.0042013839434,
+          "raw_epistemic_variance": 22833.85416294781,
+          "truth": 1417.0707189694629
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.022977635316847392,
+            0.028436745588691248
+          ],
+          "mean": 0.02638059821160401,
+          "raw_epistemic_variance": 1.3617370200248196e-05,
+          "truth": 0.02666364568805938
+        },
+        "index": 1015,
+        "specific_impulse_s": {
+          "interval": [
+            1383.703095301319,
+            1524.5442727755099
+          ],
+          "mean": 1454.1236840384145,
+          "raw_epistemic_variance": 10113.757291977503,
+          "truth": 1481.8493048176354
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.019554632998627947,
+            0.025013743270471803
+          ],
+          "mean": 0.022957595893384565,
+          "raw_epistemic_variance": 2.8550830157911678e-05,
+          "truth": 0.027901815484930013
+        },
+        "index": 1375,
+        "specific_impulse_s": {
+          "interval": [
+            1389.4364936996026,
+            1613.7305576113968
+          ],
+          "mean": 1501.5835256554997,
+          "raw_epistemic_variance": 25650.084048330336,
+          "truth": 1476.4833284260046
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.02567197507000612,
+            0.031131085341849975
+          ],
+          "mean": 0.029074937964762737,
+          "raw_epistemic_variance": 1.2988892876367306e-05,
+          "truth": 0.029440204562316177
+        },
+        "index": 2095,
+        "specific_impulse_s": {
+          "interval": [
+            1524.7480807477077,
+            1688.9605140251892
+          ],
+          "mean": 1606.8542973864485,
+          "raw_epistemic_variance": 13748.816186125046,
+          "truth": 1613.0049646797656
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.02510798174835375,
+            0.030567092020197605
+          ],
+          "mean": 0.028510944643110367,
+          "raw_epistemic_variance": 1.7429398526538097e-05,
+          "truth": 0.029618531148425706
+        },
+        "index": 3031,
+        "specific_impulse_s": {
+          "interval": [
+            1429.9931951390536,
+            1601.6659319760888
+          ],
+          "mean": 1515.8295635575712,
+          "raw_epistemic_variance": 15026.43283200083,
+          "truth": 1547.9335417794096
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.023731129516935692,
+            0.02919023978877955
+          ],
+          "mean": 0.02713409241169231,
+          "raw_epistemic_variance": 1.5866556755350028e-05,
+          "truth": 0.027337308684991863
+        },
+        "index": 3175,
+        "specific_impulse_s": {
+          "interval": [
+            1438.157751451303,
+            1622.9186223081217
+          ],
+          "mean": 1530.5381868797124,
+          "raw_epistemic_variance": 17404.96819472033,
+          "truth": 1537.682052263203
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.02614015001971142,
+            0.03159926029155528
+          ],
+          "mean": 0.02954311291446804,
+          "raw_epistemic_variance": 1.8978280598158604e-05,
+          "truth": 0.03460758868127016
+        },
+        "index": 3895,
+        "specific_impulse_s": {
+          "interval": [
+            1652.5381995512373,
+            1836.1441734153243
+          ],
+          "mean": 1744.3411864832808,
+          "raw_epistemic_variance": 17188.059471792385,
+          "truth": 1778.6619056840593
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.022233399857863767,
+            0.027692510129707623
+          ],
+          "mean": 0.025636362752620385,
+          "raw_epistemic_variance": 1.784111725931954e-05,
+          "truth": 0.02787430662559578
+        },
+        "index": 4615,
+        "specific_impulse_s": {
+          "interval": [
+            1383.2007834204333,
+            1571.533988191019
+          ],
+          "mean": 1477.3673858057261,
+          "raw_epistemic_variance": 18084.52166134625,
+          "truth": 1481.7783960373943
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.03211552889297866,
+            0.03757463916482252
+          ],
+          "mean": 0.03551849178773528,
+          "raw_epistemic_variance": 8.876623897745139e-06,
+          "truth": 0.03376326647163495
+        },
+        "index": 4831,
+        "specific_impulse_s": {
+          "interval": [
+            1777.8546479044091,
+            1919.012953022362
+          ],
+          "mean": 1848.4338004633855,
+          "raw_epistemic_variance": 10159.354226395955,
+          "truth": 1821.93122757576
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.02923617207759064,
+            0.034695282349434496
+          ],
+          "mean": 0.03263913497234726,
+          "raw_epistemic_variance": 1.1675549569057999e-05,
+          "truth": 0.034365391316286006
+        },
+        "index": 4975,
+        "specific_impulse_s": {
+          "interval": [
+            1667.9437880397595,
+            1836.6990644094753
+          ],
+          "mean": 1752.3214262246174,
+          "raw_epistemic_variance": 14520.044718474383,
+          "truth": 1798.0380863964506
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.020465432988080064,
+            0.02592454325992392
+          ],
+          "mean": 0.023868395882836683,
+          "raw_epistemic_variance": 2.0320157035651747e-05,
+          "truth": 0.02471671258886162
+        },
+        "index": 5431,
+        "specific_impulse_s": {
+          "interval": [
+            1288.8673930440095,
+            1491.1918654582323
+          ],
+          "mean": 1390.029629251121,
+          "raw_epistemic_variance": 20871.32717246186,
+          "truth": 1407.3153780069288
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.022306777485894796,
+            0.027765887757738653
+          ],
+          "mean": 0.025709740380651415,
+          "raw_epistemic_variance": 2.081897302927115e-05,
+          "truth": 0.027633408744627115
+        },
+        "index": 5695,
+        "specific_impulse_s": {
+          "interval": [
+            1368.4739680799476,
+            1587.0993623324966
+          ],
+          "mean": 1477.786665206222,
+          "raw_epistemic_variance": 24369.93911381592,
+          "truth": 1496.366101506991
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.024640244638180618,
+            0.030099354910024474
+          ],
+          "mean": 0.028043207532937237,
+          "raw_epistemic_variance": 1.564616348413604e-05,
+          "truth": 0.02865792109625665
+        },
+        "index": 6775,
+        "specific_impulse_s": {
+          "interval": [
+            1431.7628474943174,
+            1592.3727947632226
+          ],
+          "mean": 1512.06782112877,
+          "raw_epistemic_variance": 13152.1911406836,
+          "truth": 1541.0672872359785
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.02481364514159265,
+            0.030272755413436506
+          ],
+          "mean": 0.028216608036349268,
+          "raw_epistemic_variance": 1.630176764817129e-05,
+          "truth": 0.02897074307813206
+        },
+        "index": 7375,
+        "specific_impulse_s": {
+          "interval": [
+            1560.6390065261821,
+            1748.552554039124
+          ],
+          "mean": 1654.595780282653,
+          "raw_epistemic_variance": 18004.017054957058,
+          "truth": 1652.530804502521
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.028441708249534285,
+            0.03390081852137814
+          ],
+          "mean": 0.031844671144290904,
+          "raw_epistemic_variance": 1.102367527375101e-05,
+          "truth": 0.030144352628242586
+        },
+        "index": 7495,
+        "specific_impulse_s": {
+          "interval": [
+            1607.4289088620137,
+            1760.4402938635624
+          ],
+          "mean": 1683.934601362788,
+          "raw_epistemic_variance": 11937.1520375427,
+          "truth": 1682.2977484151863
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.007450140360698174,
+            0.01290925063254203
+          ],
+          "mean": 0.010853103255454792,
+          "raw_epistemic_variance": 2.1004461330516005e-05,
+          "truth": 0.011428061893901505
+        },
+        "index": 2,
+        "specific_impulse_s": {
+          "interval": [
+            1797.8725670655624,
+            2003.8504497123597
+          ],
+          "mean": 1900.861508388961,
+          "raw_epistemic_variance": 21631.887308447647,
+          "truth": 2000.2092473889145
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.009875700397447182,
+            0.015334810669291038
+          ],
+          "mean": 0.0132786632922038,
+          "raw_epistemic_variance": 2.1418369086066208e-05,
+          "truth": 0.013357513459481371
+        },
+        "index": 122,
+        "specific_impulse_s": {
+          "interval": [
+            1914.269296916164,
+            2123.503245787418
+          ],
+          "mean": 2018.886271351791,
+          "raw_epistemic_variance": 22321.199853492424,
+          "truth": 2122.0699270816194
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.007351967392994601,
+            0.012811077664838457
+          ],
+          "mean": 0.01075493028775122,
+          "raw_epistemic_variance": 1.6396561219164562e-05,
+          "truth": 0.010625708497868168
+        },
+        "index": 722,
+        "specific_impulse_s": {
+          "interval": [
+            1943.2012807303338,
+            2124.1575134715513
+          ],
+          "mean": 2033.6793971009424,
+          "raw_epistemic_variance": 16695.53442273464,
+          "truth": 2108.6814079425344
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.009222432284299533,
+            0.014681542556143389
+          ],
+          "mean": 0.012625395179056151,
+          "raw_epistemic_variance": 1.3033312827838322e-05,
+          "truth": 0.012967313777608458
+        },
+        "index": 1202,
+        "specific_impulse_s": {
+          "interval": [
+            1957.909088491845,
+            2113.5911442630063
+          ],
+          "mean": 2035.7501163774255,
+          "raw_epistemic_variance": 12357.492296512,
+          "truth": 2048.406226262578
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.0028883916723664396,
+            0.008347501944210295
+          ],
+          "mean": 0.006291354567123058,
+          "raw_epistemic_variance": 1.3605180281472645e-05,
+          "truth": 0.0076780823933411705
+        },
+        "index": 1442,
+        "specific_impulse_s": {
+          "interval": [
+            1688.7779405610454,
+            1854.4944544870855
+          ],
+          "mean": 1771.6361975240654,
+          "raw_epistemic_variance": 14001.830317259484,
+          "truth": 1747.6702309266284
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.009465499415018744,
+            0.0149246096868626
+          ],
+          "mean": 0.012868462309775362,
+          "raw_epistemic_variance": 2.6830913176441527e-05,
+          "truth": 0.010999066837665838
+        },
+        "index": 1802,
+        "specific_impulse_s": {
+          "interval": [
+            1900.9990593903965,
+            2137.494110415886
+          ],
+          "mean": 2019.2465849031412,
+          "raw_epistemic_variance": 28516.57392662201,
+          "truth": 2300.7001354430117
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.00871194269572403,
+            0.014171052967567887
+          ],
+          "mean": 0.01211490559048065,
+          "raw_epistemic_variance": 1.5525132928301336e-05,
+          "truth": 0.012230351208672935
+        },
+        "index": 3242,
+        "specific_impulse_s": {
+          "interval": [
+            2028.2451290012139,
+            2190.571087738325
+          ],
+          "mean": 2109.4081083697693,
+          "raw_epistemic_variance": 13434.737524932532,
+          "truth": 2111.465199103929
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.006038989801548666,
+            0.011498100073392522
+          ],
+          "mean": 0.009441952696305284,
+          "raw_epistemic_variance": 1.5756510675279746e-05,
+          "truth": 0.007512298089968653
+        },
+        "index": 3602,
+        "specific_impulse_s": {
+          "interval": [
+            1652.7165615150714,
+            1838.9776801923392
+          ],
+          "mean": 1745.8471208537053,
+          "raw_epistemic_variance": 17688.7704793422,
+          "truth": 1798.022361935462
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.008460498907313395,
+            0.013919609179157251
+          ],
+          "mean": 0.011863461802070013,
+          "raw_epistemic_variance": 2.5708950229796793e-05,
+          "truth": 0.011139759168174815
+        },
+        "index": 4322,
+        "specific_impulse_s": {
+          "interval": [
+            1789.3221620420716,
+            2026.3792619063172
+          ],
+          "mean": 1907.8507119741944,
+          "raw_epistemic_variance": 28652.2786928413,
+          "truth": 2111.4870838848674
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.004293579506269978,
+            0.009752689778113834
+          ],
+          "mean": 0.007696542401026596,
+          "raw_epistemic_variance": 1.7049983310275878e-05,
+          "truth": 0.008000254903132737
+        },
+        "index": 5042,
+        "specific_impulse_s": {
+          "interval": [
+            1581.8604505846029,
+            1780.0893906197489
+          ],
+          "mean": 1680.9749206021759,
+          "raw_epistemic_variance": 20034.907897139186,
+          "truth": 1735.9556170419855
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.008849014086983718,
+            0.014308124358827574
+          ],
+          "mean": 0.012251976981740336,
+          "raw_epistemic_variance": 1.1183440178205932e-05,
+          "truth": 0.012007780293357466
+        },
+        "index": 5402,
+        "specific_impulse_s": {
+          "interval": [
+            1978.9406865101655,
+            2139.8163069453763
+          ],
+          "mean": 2059.3784967277707,
+          "raw_epistemic_variance": 13195.738558244322,
+          "truth": 2153.044121965774
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.00606916356376894,
+            0.011528273835612796
+          ],
+          "mean": 0.009472126458525559,
+          "raw_epistemic_variance": 2.135620556352207e-05,
+          "truth": 0.009869644416396142
+        },
+        "index": 5522,
+        "specific_impulse_s": {
+          "interval": [
+            1609.3712823893713,
+            1798.1786533450752
+          ],
+          "mean": 1703.7749678672233,
+          "raw_epistemic_variance": 18175.699033643174,
+          "truth": 1672.8295119184565
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.005797910040938197,
+            0.011257020312782053
+          ],
+          "mean": 0.009200872935694816,
+          "raw_epistemic_variance": 1.4493964639389809e-05,
+          "truth": 0.00897918916020281
+        },
+        "index": 6122,
+        "specific_impulse_s": {
+          "interval": [
+            1725.0688349493864,
+            1868.2328468949866
+          ],
+          "mean": 1796.6508409221865,
+          "raw_epistemic_variance": 10450.112201333286,
+          "truth": 1820.8149474533163
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.007481206327666433,
+            0.012940316599510289
+          ],
+          "mean": 0.010884169222423051,
+          "raw_epistemic_variance": 1.830075322066709e-05,
+          "truth": 0.011666114582061465
+        },
+        "index": 6602,
+        "specific_impulse_s": {
+          "interval": [
+            1749.7022388556682,
+            1941.6024067187357
+          ],
+          "mean": 1845.652322787202,
+          "raw_epistemic_variance": 18776.037417966112,
+          "truth": 1874.73027153909
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.006165999123040302,
+            0.011625109394884158
+          ],
+          "mean": 0.00956896201779692,
+          "raw_epistemic_variance": 2.113384255979145e-05,
+          "truth": 0.008778146094644989
+        },
+        "index": 6842,
+        "specific_impulse_s": {
+          "interval": [
+            1817.6325991504186,
+            2035.4220266807465
+          ],
+          "mean": 1926.5273129155826,
+          "raw_epistemic_variance": 24183.926791715403,
+          "truth": 2048.2376123198874
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.005213092099354997,
+            0.010672202371198853
+          ],
+          "mean": 0.008616054994111616,
+          "raw_epistemic_variance": 1.6188435870150975e-05,
+          "truth": 0.009472846071172986
+        },
+        "index": 7202,
+        "specific_impulse_s": {
+          "interval": [
+            1758.7560066151264,
+            1923.3906615726419
+          ],
+          "mean": 1841.0733340938841,
+          "raw_epistemic_variance": 13819.608769842956,
+          "truth": 1836.6031825196387
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.006319777295382124,
+            0.01177888756722598
+          ],
+          "mean": 0.009722740190138742,
+          "raw_epistemic_variance": 1.095103212105066e-05,
+          "truth": 0.008877014899997468
+        },
+        "index": 7922,
+        "specific_impulse_s": {
+          "interval": [
+            1897.5073169775196,
+            2058.360281754683
+          ],
+          "mean": 1977.9337993661013,
+          "raw_epistemic_variance": 13192.022182960965,
+          "truth": 1967.3788788513068
+        }
+      }
+    ],
+    "interpolation": [
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.01852717815112757,
+            0.021586499713701142
+          ],
+          "mean": 0.02077585812023037,
+          "raw_epistemic_variance": 1.188206116837951e-05,
+          "truth": 0.020580589226371283
+        },
+        "index": 246,
+        "specific_impulse_s": {
+          "interval": [
+            1720.4610962149407,
+            1854.2701908790489
+          ],
+          "mean": 1787.3656435469948,
+          "raw_epistemic_variance": 10633.054330122646,
+          "truth": 1770.885545953486
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.02253500335575059,
+            0.02559432491832416
+          ],
+          "mean": 0.024783683324853388,
+          "raw_epistemic_variance": 9.956573066235286e-06,
+          "truth": 0.02393978483795432
+        },
+        "index": 366,
+        "specific_impulse_s": {
+          "interval": [
+            1965.3697362764954,
+            2086.2412456940783
+          ],
+          "mean": 2025.8054909852867,
+          "raw_epistemic_variance": 8676.301980492062,
+          "truth": 1961.8316995784667
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.020048504232944284,
+            0.023107825795517855
+          ],
+          "mean": 0.02229718420204708,
+          "raw_epistemic_variance": 7.53429615656319e-06,
+          "truth": 0.02136443404835302
+        },
+        "index": 966,
+        "specific_impulse_s": {
+          "interval": [
+            1969.4318852419947,
+            2079.7390503688966
+          ],
+          "mean": 2024.5854678054454,
+          "raw_epistemic_variance": 7225.937738059492,
+          "truth": 1951.5828832947689
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.020882515787027756,
+            0.023941837349601328
+          ],
+          "mean": 0.023131195756130554,
+          "raw_epistemic_variance": 1.7398473151998266e-05,
+          "truth": 0.022801823929829032
+        },
+        "index": 1446,
+        "specific_impulse_s": {
+          "interval": [
+            1826.503177783489,
+            1990.9510294457034
+          ],
+          "mean": 1908.7271036145962,
+          "raw_epistemic_variance": 16059.912575020935,
+          "truth": 1863.1004424753169
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.02149321745229294,
+            0.024552539014866512
+          ],
+          "mean": 0.02374189742139574,
+          "raw_epistemic_variance": 1.1055460750018181e-05,
+          "truth": 0.02318837318301895
+        },
+        "index": 2886,
+        "specific_impulse_s": {
+          "interval": [
+            1795.4006550132717,
+            1912.737458942759
+          ],
+          "mean": 1854.0690569780154,
+          "raw_epistemic_variance": 8176.270995716661,
+          "truth": 1830.3073043247923
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.020358730200046114,
+            0.023418051762619685
+          ],
+          "mean": 0.02260741016914891,
+          "raw_epistemic_variance": 6.822272363029696e-06,
+          "truth": 0.021751105045010165
+        },
+        "index": 3486,
+        "specific_impulse_s": {
+          "interval": [
+            1864.3988966068162,
+            1975.3371154746803
+          ],
+          "mean": 1919.8680060407482,
+          "raw_epistemic_variance": 7308.851635948483,
+          "truth": 1869.2962310402013
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.021848279368727946,
+            0.024907600931301517
+          ],
+          "mean": 0.024096959337830744,
+          "raw_epistemic_variance": 1.6617009219520953e-05,
+          "truth": 0.023389934441065054
+        },
+        "index": 3966,
+        "specific_impulse_s": {
+          "interval": [
+            1791.960700553808,
+            1946.0196369345765
+          ],
+          "mean": 1868.9901687441923,
+          "raw_epistemic_variance": 14094.853253285624,
+          "truth": 1800.3381441762206
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.01956237606229605,
+            0.02262169762486962
+          ],
+          "mean": 0.021811056031398848,
+          "raw_epistemic_variance": 7.187214861955305e-06,
+          "truth": 0.021404406546340675
+        },
+        "index": 4566,
+        "specific_impulse_s": {
+          "interval": [
+            1900.230769259664,
+            2011.1922886015502
+          ],
+          "mean": 1955.711528930607,
+          "raw_epistemic_variance": 7311.922130382704,
+          "truth": 1913.8430875852432
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.024034193737209147,
+            0.027093515299782718
+          ],
+          "mean": 0.026282873706311945,
+          "raw_epistemic_variance": 1.3081683850200179e-05,
+          "truth": 0.02599751210233643
+        },
+        "index": 4686,
+        "specific_impulse_s": {
+          "interval": [
+            2087.0576813284556,
+            2227.032189213916
+          ],
+          "mean": 2157.0449352711858,
+          "raw_epistemic_variance": 11635.489722181028,
+          "truth": 2105.699039915975
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.021790659035497758,
+            0.02484998059807133
+          ],
+          "mean": 0.024039339004600556,
+          "raw_epistemic_variance": 8.093232375594697e-06,
+          "truth": 0.023109102677765343
+        },
+        "index": 5046,
+        "specific_impulse_s": {
+          "interval": [
+            1852.6330710984494,
+            1971.188716884475
+          ],
+          "mean": 1911.9108939914622,
+          "raw_epistemic_variance": 8347.016064084522,
+          "truth": 1855.574603448845
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.022221526095555808,
+            0.02528084765812938
+          ],
+          "mean": 0.024470206064658606,
+          "raw_epistemic_variance": 1.6172123099957725e-05,
+          "truth": 0.024248914473279246
+        },
+        "index": 5766,
+        "specific_impulse_s": {
+          "interval": [
+            2030.7620899142005,
+            2194.4760426403363
+          ],
+          "mean": 2112.6190662772683,
+          "raw_epistemic_variance": 15916.88787110656,
+          "truth": 2053.5701781036664
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.025039662021166215,
+            0.028098983583739787
+          ],
+          "mean": 0.027288341990269013,
+          "raw_epistemic_variance": 1.5166755871225347e-05,
+          "truth": 0.026219931885122116
+        },
+        "index": 6846,
+        "specific_impulse_s": {
+          "interval": [
+            2204.7411736181966,
+            2360.4717851504565
+          ],
+          "mean": 2282.6064793843266,
+          "raw_epistemic_variance": 14402.395948528621,
+          "truth": 2161.3942556636894
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.016988264708056686,
+            0.020047586270630257
+          ],
+          "mean": 0.019236944677159484,
+          "raw_epistemic_variance": 1.3765076292071372e-05,
+          "truth": 0.01828414052982855
+        },
+        "index": 7446,
+        "specific_impulse_s": {
+          "interval": [
+            1655.455097750118,
+            1803.3294449024575
+          ],
+          "mean": 1729.3922713262878,
+          "raw_epistemic_variance": 12985.911800358272,
+          "truth": 1652.2791657954997
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.02981010464370348,
+            0.03286942620627705
+          ],
+          "mean": 0.03205878461280628,
+          "raw_epistemic_variance": 9.291562125409462e-06,
+          "truth": 0.030310313134765416
+        },
+        "index": 190,
+        "specific_impulse_s": {
+          "interval": [
+            1985.504377487712,
+            2109.9613328790806
+          ],
+          "mean": 2047.7328551833962,
+          "raw_epistemic_variance": 9198.671577653138,
+          "truth": 2006.1833680755121
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.023042976332382066,
+            0.026102297894955637
+          ],
+          "mean": 0.025291656301484864,
+          "raw_epistemic_variance": 1.1107704326223643e-05,
+          "truth": 0.023801073517548565
+        },
+        "index": 910,
+        "specific_impulse_s": {
+          "interval": [
+            1602.4021056971621,
+            1742.5054646037354
+          ],
+          "mean": 1672.4537851504488,
+          "raw_epistemic_variance": 11656.921264337212,
+          "truth": 1648.9540787121775
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.02247467755565633,
+            0.0255339991182299
+          ],
+          "mean": 0.024723357524759126,
+          "raw_epistemic_variance": 1.3854751719856355e-05,
+          "truth": 0.025427130071131208
+        },
+        "index": 1374,
+        "specific_impulse_s": {
+          "interval": [
+            1828.7021957656277,
+            1978.814677724765
+          ],
+          "mean": 1903.7584367451964,
+          "raw_epistemic_variance": 13381.980095026609,
+          "truth": 1953.9053958656234
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.02378329876586123,
+            0.0268426203284348
+          ],
+          "mean": 0.026031978734964028,
+          "raw_epistemic_variance": 1.1216383117364914e-05,
+          "truth": 0.02453105103460718
+        },
+        "index": 1630,
+        "specific_impulse_s": {
+          "interval": [
+            1774.205557003867,
+            1901.780625172742
+          ],
+          "mean": 1837.9930910883045,
+          "raw_epistemic_variance": 9665.367830158131,
+          "truth": 1779.1159645718978
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.02476947165336748,
+            0.02782879321594105
+          ],
+          "mean": 0.027018151622470277,
+          "raw_epistemic_variance": 1.0281419668170409e-05,
+          "truth": 0.028091464611916
+        },
+        "index": 1774,
+        "specific_impulse_s": {
+          "interval": [
+            1771.7912600227232,
+            1909.1122178730002
+          ],
+          "mean": 1840.4517389478617,
+          "raw_epistemic_variance": 11198.514494305306,
+          "truth": 1878.9514515217932
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.02532556070177951,
+            0.02838488226435308
+          ],
+          "mean": 0.027574240670882308,
+          "raw_epistemic_variance": 1.1696356909574692e-05,
+          "truth": 0.025678663701974195
+        },
+        "index": 2710,
+        "specific_impulse_s": {
+          "interval": [
+            1810.075939724726,
+            1932.4702173905578
+          ],
+          "mean": 1871.2730785576418,
+          "raw_epistemic_variance": 8896.29130942129,
+          "truth": 1830.9082385953932
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.01931164744783562,
+            0.022370969010409192
+          ],
+          "mean": 0.02156032741693842,
+          "raw_epistemic_variance": 1.0912359567381422e-05,
+          "truth": 0.021011705131229855
+        },
+        "index": 3030,
+        "specific_impulse_s": {
+          "interval": [
+            1545.5318067310757,
+            1663.7967412004039
+          ],
+          "mean": 1604.6642739657398,
+          "raw_epistemic_variance": 8306.130673846656,
+          "truth": 1585.759204048431
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.021676572799393407,
+            0.02473589436196698
+          ],
+          "mean": 0.023925252768496205,
+          "raw_epistemic_variance": 1.5510050416914708e-05,
+          "truth": 0.02278589311371257
+        },
+        "index": 3430,
+        "specific_impulse_s": {
+          "interval": [
+            1429.2594800846223,
+            1601.4194705624896
+          ],
+          "mean": 1515.339475323556,
+          "raw_epistemic_variance": 17601.562748556888,
+          "truth": 1506.7249845595645
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.027011577691285007,
+            0.030070899253858578
+          ],
+          "mean": 0.029260257660387805,
+          "raw_epistemic_variance": 6.752574031638324e-06,
+          "truth": 0.028522802824565124
+        },
+        "index": 3790,
+        "specific_impulse_s": {
+          "interval": [
+            1953.4021362321841,
+            2057.749282539396
+          ],
+          "mean": 2005.5757093857899,
+          "raw_epistemic_variance": 6466.181953620824,
+          "truth": 1987.9359476347583
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.022392237226344033,
+            0.025451558788917604
+          ],
+          "mean": 0.02464091719544683,
+          "raw_epistemic_variance": 9.902551002268007e-06,
+          "truth": 0.023430440272196113
+        },
+        "index": 4110,
+        "specific_impulse_s": {
+          "interval": [
+            1727.0171825034056,
+            1847.9064457864995
+          ],
+          "mean": 1787.4618141449525,
+          "raw_epistemic_variance": 8678.85095521646,
+          "truth": 1759.7263933429695
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.02295701936194963,
+            0.0260163409245232
+          ],
+          "mean": 0.025205699331052427,
+          "raw_epistemic_variance": 6.097987402236652e-06,
+          "truth": 0.02411454616037845
+        },
+        "index": 4974,
+        "specific_impulse_s": {
+          "interval": [
+            1824.9331921430014,
+            1929.944756681816
+          ],
+          "mean": 1877.4389744124087,
+          "raw_epistemic_variance": 6548.789428057475,
+          "truth": 1822.892555668657
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.02257900779989695,
+            0.02563832936247052
+          ],
+          "mean": 0.024827687768999747,
+          "raw_epistemic_variance": 1.0592028862084278e-05,
+          "truth": 0.024707518814724667
+        },
+        "index": 5190,
+        "specific_impulse_s": {
+          "interval": [
+            1768.261645425729,
+            1876.0480928149223
+          ],
+          "mean": 1822.1548691203257,
+          "raw_epistemic_variance": 6899.4597300576925,
+          "truth": 1814.5746216462414
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.02649751302050205,
+            0.02955683458307562
+          ],
+          "mean": 0.028746192989604846,
+          "raw_epistemic_variance": 1.1095150716024855e-05,
+          "truth": 0.026705816933493567
+        },
+        "index": 5230,
+        "specific_impulse_s": {
+          "interval": [
+            1776.5230535287342,
+            1887.460074269297
+          ],
+          "mean": 1831.9915638990155,
+          "raw_epistemic_variance": 7308.693766325374,
+          "truth": 1807.0821519976166
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.02582574362083252,
+            0.02888506518340609
+          ],
+          "mean": 0.028074423589935317,
+          "raw_epistemic_variance": 1.0653944296524402e-05,
+          "truth": 0.026602020306403268
+        },
+        "index": 5374,
+        "specific_impulse_s": {
+          "interval": [
+            1741.0319399312218,
+            1861.4062403137443
+          ],
+          "mean": 1801.219090122483,
+          "raw_epistemic_variance": 8605.068271304455,
+          "truth": 1754.0747296663587
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.02550175209165693,
+            0.028561073654230502
+          ],
+          "mean": 0.02775043206075973,
+          "raw_epistemic_variance": 6.895586331722829e-06,
+          "truth": 0.02707945310849614
+        },
+        "index": 6310,
+        "specific_impulse_s": {
+          "interval": [
+            1786.4869803073639,
+            1878.8361880269526
+          ],
+          "mean": 1832.6615841671583,
+          "raw_epistemic_variance": 5064.692891068239,
+          "truth": 1824.3934837705185
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.019561848259099488,
+            0.02262116982167306
+          ],
+          "mean": 0.021810528228202286,
+          "raw_epistemic_variance": 1.2406216312603844e-05,
+          "truth": 0.021026805665056107
+        },
+        "index": 7030,
+        "specific_impulse_s": {
+          "interval": [
+            1419.927919783194,
+            1574.9324925031804
+          ],
+          "mean": 1497.4302061431872,
+          "raw_epistemic_variance": 14268.416854508743,
+          "truth": 1484.3781044650104
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.020320677374063317,
+            0.02337999893663689
+          ],
+          "mean": 0.022569357343166115,
+          "raw_epistemic_variance": 2.3962184011906978e-05,
+          "truth": 0.021763992114896283
+        },
+        "index": 8110,
+        "specific_impulse_s": {
+          "interval": [
+            1503.7926541506165,
+            1702.6152676404333
+          ],
+          "mean": 1603.203960895525,
+          "raw_epistemic_variance": 23475.687771628604,
+          "truth": 1564.9537512693526
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.008738667114520024,
+            0.011797988677093594
+          ],
+          "mean": 0.010987347083622822,
+          "raw_epistemic_variance": 1.234246258727513e-05,
+          "truth": 0.012039698176968828
+        },
+        "index": 230,
+        "specific_impulse_s": {
+          "interval": [
+            1846.1891565207745,
+            1975.065301029879
+          ],
+          "mean": 1910.6272287753268,
+          "raw_epistemic_variance": 9863.517934209262,
+          "truth": 1883.7270922186492
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.008286390299761607,
+            0.011345711862335177
+          ],
+          "mean": 0.010535070268864405,
+          "raw_epistemic_variance": 1.4467764286417778e-05,
+          "truth": 0.010545212556619216
+        },
+        "index": 374,
+        "specific_impulse_s": {
+          "interval": [
+            1423.3650728181867,
+            1578.2645716513268
+          ],
+          "mean": 1500.8148222347568,
+          "raw_epistemic_variance": 14249.078975077451,
+          "truth": 1512.3877952846476
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.00991718566466162,
+            0.012976507227235189
+          ],
+          "mean": 0.012165865633764417,
+          "raw_epistemic_variance": 1.2830688116023837e-05,
+          "truth": 0.012842279798639854
+        },
+        "index": 590,
+        "specific_impulse_s": {
+          "interval": [
+            1878.6264623891634,
+            1998.7516854759797
+          ],
+          "mean": 1938.6890739325715,
+          "raw_epistemic_variance": 8569.494072292333,
+          "truth": 1920.8928396436866
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.01304637709547284,
+            0.01610569865804641
+          ],
+          "mean": 0.015295057064575637,
+          "raw_epistemic_variance": 1.2471548178025643e-05,
+          "truth": 0.015151438596496916
+        },
+        "index": 630,
+        "specific_impulse_s": {
+          "interval": [
+            1767.3250576521718,
+            1888.9478657653394
+          ],
+          "mean": 1828.1364617087556,
+          "raw_epistemic_variance": 8784.49543040267,
+          "truth": 1797.5405529580717
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.013145467709541024,
+            0.016204789272114595
+          ],
+          "mean": 0.015394147678643822,
+          "raw_epistemic_variance": 1.0431992127535624e-05,
+          "truth": 0.015727772942013447
+        },
+        "index": 1710,
+        "specific_impulse_s": {
+          "interval": [
+            1895.0331794832407,
+            2014.9911727711194
+          ],
+          "mean": 1955.01217612718,
+          "raw_epistemic_variance": 8545.65099884821,
+          "truth": 1971.642761605287
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.011149321836133798,
+            0.014208643398707367
+          ],
+          "mean": 0.013398001805236596,
+          "raw_epistemic_variance": 6.818571073811692e-06,
+          "truth": 0.01316039230899666
+        },
+        "index": 2030,
+        "specific_impulse_s": {
+          "interval": [
+            1674.869474944593,
+            1757.369363479951
+          ],
+          "mean": 1716.119419212272,
+          "raw_epistemic_variance": 4041.9737789501114,
+          "truth": 1704.999589980149
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.012742721152011426,
+            0.015802042714584998
+          ],
+          "mean": 0.014991401121114224,
+          "raw_epistemic_variance": 1.730183050501407e-05,
+          "truth": 0.015359575208939567
+        },
+        "index": 2790,
+        "specific_impulse_s": {
+          "interval": [
+            1858.6181551379252,
+            1987.7609084581852
+          ],
+          "mean": 1923.1895317980552,
+          "raw_epistemic_variance": 9904.369883329155,
+          "truth": 1869.9837881404835
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.00983777238077757,
+            0.01289709394335114
+          ],
+          "mean": 0.012086452349880369,
+          "raw_epistemic_variance": 1.2828954110560954e-05,
+          "truth": 0.012670573847853561
+        },
+        "index": 3110,
+        "specific_impulse_s": {
+          "interval": [
+            1695.729726023479,
+            1820.262829864224
+          ],
+          "mean": 1757.9962779438515,
+          "raw_epistemic_variance": 9209.931355989642,
+          "truth": 1748.825670084199
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.009385604692050048,
+            0.012444926254623618
+          ],
+          "mean": 0.011634284661152846,
+          "raw_epistemic_variance": 1.2024970674920869e-05,
+          "truth": 0.012400669544746683
+        },
+        "index": 3830,
+        "specific_impulse_s": {
+          "interval": [
+            1800.2010465660542,
+            1930.389474734769
+          ],
+          "mean": 1865.2952606504116,
+          "raw_epistemic_variance": 10065.411517541257,
+          "truth": 1879.036112854691
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.011517703134975677,
+            0.014577024697549247
+          ],
+          "mean": 0.013766383104078475,
+          "raw_epistemic_variance": 1.6837309299873272e-05,
+          "truth": 0.01435477785711325
+        },
+        "index": 3974,
+        "specific_impulse_s": {
+          "interval": [
+            1816.8244570173858,
+            1959.8150718514687
+          ],
+          "mean": 1888.3197644344273,
+          "raw_epistemic_variance": 12142.324508379485,
+          "truth": 1849.4244692472
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.011242760725417024,
+            0.014302082287990594
+          ],
+          "mean": 0.013491440694519822,
+          "raw_epistemic_variance": 1.3706334981819017e-05,
+          "truth": 0.013183558806175987
+        },
+        "index": 4190,
+        "specific_impulse_s": {
+          "interval": [
+            1707.0801515303544,
+            1858.3507255951229
+          ],
+          "mean": 1782.7154385627387,
+          "raw_epistemic_variance": 13589.255943582479,
+          "truth": 1756.994491488019
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.011512555517514815,
+            0.014571877080088384
+          ],
+          "mean": 0.013761235486617613,
+          "raw_epistemic_variance": 2.087151757638963e-05,
+          "truth": 0.014053865631591337
+        },
+        "index": 4910,
+        "specific_impulse_s": {
+          "interval": [
+            1785.6656362144565,
+            1985.0798836017955
+          ],
+          "mean": 1885.372759908126,
+          "raw_epistemic_variance": 23615.608247347882,
+          "truth": 2055.7878851972637
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.009121127500610438,
+            0.012180449063184008
+          ],
+          "mean": 0.011369807469713236,
+          "raw_epistemic_variance": 4.017295567940476e-06,
+          "truth": 0.011209488713069937
+        },
+        "index": 5774,
+        "specific_impulse_s": {
+          "interval": [
+            1673.4885951373872,
+            1756.4006139785406
+          ],
+          "mean": 1714.9446045579639,
+          "raw_epistemic_variance": 4082.458214557011,
+          "truth": 1704.0978010211415
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.010824189947549408,
+            0.013883511510122978
+          ],
+          "mean": 0.013072869916652206,
+          "raw_epistemic_variance": 1.9203842447702987e-05,
+          "truth": 0.013028385701085292
+        },
+        "index": 6030,
+        "specific_impulse_s": {
+          "interval": [
+            1511.1595796094282,
+            1666.7938373621153
+          ],
+          "mean": 1588.9767084857717,
+          "raw_epistemic_variance": 14384.579336064364,
+          "truth": 1602.9700711862806
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.008543123825694394,
+            0.011602445388267964
+          ],
+          "mean": 0.010791803794797192,
+          "raw_epistemic_variance": 9.787527519116544e-06,
+          "truth": 0.010691413796783298
+        },
+        "index": 6710,
+        "specific_impulse_s": {
+          "interval": [
+            1576.8153133476505,
+            1715.4098948177086
+          ],
+          "mean": 1646.1126040826796,
+          "raw_epistemic_variance": 11407.205644726617,
+          "truth": 1641.45140852052
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.011351655687810068,
+            0.014410977250383638
+          ],
+          "mean": 0.013600335656912866,
+          "raw_epistemic_variance": 4.794068649262478e-06,
+          "truth": 0.013331349642242234
+        },
+        "index": 7110,
+        "specific_impulse_s": {
+          "interval": [
+            1572.2727951239972,
+            1670.3265620243014
+          ],
+          "mean": 1621.2996785741493,
+          "raw_epistemic_variance": 5709.726861612551,
+          "truth": 1595.7949639310925
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.011555994615153161,
+            0.01461531617772673
+          ],
+          "mean": 0.013804674584255959,
+          "raw_epistemic_variance": 1.287255642165287e-05,
+          "truth": 0.01435387134610857
+        },
+        "index": 7430,
+        "specific_impulse_s": {
+          "interval": [
+            1783.6444878568911,
+            1924.8240741342854
+          ],
+          "mean": 1854.2342809955883,
+          "raw_epistemic_variance": 11836.698294544007,
+          "truth": 1893.8497572573592
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.011932964959497085,
+            0.014992286522070655
+          ],
+          "mean": 0.014181644928599883,
+          "raw_epistemic_variance": 1.2309815935802662e-05,
+          "truth": 0.014336499033201838
+        },
+        "index": 7974,
+        "specific_impulse_s": {
+          "interval": [
+            1721.8277101837677,
+            1832.0829414675038
+          ],
+          "mean": 1776.9553258256358,
+          "raw_epistemic_variance": 7219.135235684199,
+          "truth": 1770.8635792390364
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.0110237155111071,
+            0.014083037073680669
+          ],
+          "mean": 0.013272395480209897,
+          "raw_epistemic_variance": 5.677845684403655e-06,
+          "truth": 0.013209276457878137
+        },
+        "index": 8190,
+        "specific_impulse_s": {
+          "interval": [
+            1632.3408465745329,
+            1729.4414836362816
+          ],
+          "mean": 1680.8911651054073,
+          "raw_epistemic_variance": 5599.263770946326,
+          "truth": 1671.6253805594606
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.01819533165327316,
+            0.02125465321584673
+          ],
+          "mean": 0.020444011622375958,
+          "raw_epistemic_variance": 1.629647376692692e-05,
+          "truth": 0.01997228105022108
+        },
+        "index": 19,
+        "specific_impulse_s": {
+          "interval": [
+            1292.9378113767725,
+            1448.8584306883226
+          ],
+          "mean": 1370.8981210325476,
+          "raw_epistemic_variance": 14437.562274456715,
+          "truth": 1377.104537840065
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.014541751560623178,
+            0.01760107312319675
+          ],
+          "mean": 0.016790431529725976,
+          "raw_epistemic_variance": 2.0907259892496146e-05,
+          "truth": 0.015797058001280503
+        },
+        "index": 739,
+        "specific_impulse_s": {
+          "interval": [
+            1057.9326697976237,
+            1231.789897521218
+          ],
+          "mean": 1144.861283659421,
+          "raw_epistemic_variance": 17950.32304034315,
+          "truth": 1142.339119008781
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.015024675607456149,
+            0.01808399717002972
+          ],
+          "mean": 0.017273355576558947,
+          "raw_epistemic_variance": 1.1775761079863999e-05,
+          "truth": 0.01760606909925501
+        },
+        "index": 1819,
+        "specific_impulse_s": {
+          "interval": [
+            1108.4200675421012,
+            1245.1395566666943
+          ],
+          "mean": 1176.7798121043977,
+          "raw_epistemic_variance": 11100.629868278538,
+          "truth": 1244.1091870808114
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.01648871823171995,
+            0.019548039794293523
+          ],
+          "mean": 0.01873739820082275,
+          "raw_epistemic_variance": 1.9395089323954913e-05,
+          "truth": 0.018505109266529842
+        },
+        "index": 2139,
+        "specific_impulse_s": {
+          "interval": [
+            1325.0496580249987,
+            1505.1546273398521
+          ],
+          "mean": 1415.1021426824254,
+          "raw_epistemic_variance": 19263.631401035873,
+          "truth": 1410.6204918784897
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.016710581554388596,
+            0.019769903116962168
+          ],
+          "mean": 0.018959261523491394,
+          "raw_epistemic_variance": 1.7346815463240156e-05,
+          "truth": 0.019201823251103405
+        },
+        "index": 3219,
+        "specific_impulse_s": {
+          "interval": [
+            1312.8864171535351,
+            1477.7167524603556
+          ],
+          "mean": 1395.3015848069454,
+          "raw_epistemic_variance": 16134.705858436815,
+          "truth": 1430.863264606996
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.018941997229346166,
+            0.022001318791919737
+          ],
+          "mean": 0.021190677198448964,
+          "raw_epistemic_variance": 2.571294678532445e-05,
+          "truth": 0.021489345338727112
+        },
+        "index": 3259,
+        "specific_impulse_s": {
+          "interval": [
+            1370.5074984627238,
+            1583.171324491908
+          ],
+          "mean": 1476.839411477316,
+          "raw_epistemic_variance": 26858.021321595366,
+          "truth": 1473.6881481222458
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.01977124920189913,
+            0.022830570764472702
+          ],
+          "mean": 0.02201992917100193,
+          "raw_epistemic_variance": 1.8667476185606557e-05,
+          "truth": 0.021820153055589465
+        },
+        "index": 4299,
+        "specific_impulse_s": {
+          "interval": [
+            1490.4100503141494,
+            1644.861605953878
+          ],
+          "mean": 1567.6358281340138,
+          "raw_epistemic_variance": 14166.78627523925,
+          "truth": 1595.270236329268
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.014400367258285352,
+            0.017459688820858923
+          ],
+          "mean": 0.01664904722738815,
+          "raw_epistemic_variance": 1.674263643691444e-05,
+          "truth": 0.016420544024360804
+        },
+        "index": 4339,
+        "specific_impulse_s": {
+          "interval": [
+            985.8527507380695,
+            1154.0022740927081
+          ],
+          "mean": 1069.9275124153887,
+          "raw_epistemic_variance": 16791.05752281001,
+          "truth": 1121.1174074288895
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.014213007157804599,
+            0.01727232872037817
+          ],
+          "mean": 0.016461687126907397,
+          "raw_epistemic_variance": 8.259113646088979e-06,
+          "truth": 0.01701802159703722
+        },
+        "index": 5019,
+        "specific_impulse_s": {
+          "interval": [
+            1213.9177083851619,
+            1324.000340679052
+          ],
+          "mean": 1268.959024532107,
+          "raw_epistemic_variance": 7196.550544732996,
+          "truth": 1307.9918994730058
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.015441875349495322,
+            0.018501196912068894
+          ],
+          "mean": 0.01769055531859812,
+          "raw_epistemic_variance": 1.1355422013380671e-05,
+          "truth": 0.017426353171551612
+        },
+        "index": 5059,
+        "specific_impulse_s": {
+          "interval": [
+            1190.0648817951362,
+            1308.4598730215605
+          ],
+          "mean": 1249.2623774083484,
+          "raw_epistemic_variance": 8324.409336302107,
+          "truth": 1246.5774592198725
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.016332892401877155,
+            0.019392213964450726
+          ],
+          "mean": 0.018581572370979953,
+          "raw_epistemic_variance": 1.489484148583928e-05,
+          "truth": 0.018816163380286542
+        },
+        "index": 5419,
+        "specific_impulse_s": {
+          "interval": [
+            1116.0119503411743,
+            1271.162213425067
+          ],
+          "mean": 1193.5870818831206,
+          "raw_epistemic_variance": 14295.251517980487,
+          "truth": 1258.7816755860645
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.016271258683631804,
+            0.019330580246205376
+          ],
+          "mean": 0.018519938652734602,
+          "raw_epistemic_variance": 4.394637248479634e-06,
+          "truth": 0.019131784643765266
+        },
+        "index": 6139,
+        "specific_impulse_s": {
+          "interval": [
+            1281.6991825881692,
+            1355.5473798593803
+          ],
+          "mean": 1318.6232812237747,
+          "raw_epistemic_variance": 3238.6690012014483,
+          "truth": 1337.6801978955
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.014102213607853069,
+            0.01716153517042664
+          ],
+          "mean": 0.016350893576955867,
+          "raw_epistemic_variance": 1.604203921406372e-05,
+          "truth": 0.016025726287483083
+        },
+        "index": 6459,
+        "specific_impulse_s": {
+          "interval": [
+            1087.1264885787684,
+            1223.0074452984484
+          ],
+          "mean": 1155.0669669386084,
+          "raw_epistemic_variance": 10964.881949298546,
+          "truth": 1190.3714825469644
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.016042468372076357,
+            0.019101789934649928
+          ],
+          "mean": 0.018291148341179155,
+          "raw_epistemic_variance": 1.3253886152651612e-05,
+          "truth": 0.018789182643925078
+        },
+        "index": 7219,
+        "specific_impulse_s": {
+          "interval": [
+            1248.990710682775,
+            1381.9098970751534
+          ],
+          "mean": 1315.4503038789642,
+          "raw_epistemic_variance": 10492.092646580217,
+          "truth": 1366.1124221437071
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.013402311706521956,
+            0.016461633269095527
+          ],
+          "mean": 0.015650991675624754,
+          "raw_epistemic_variance": 1.519874522952933e-05,
+          "truth": 0.01589460904033015
+        },
+        "index": 7539,
+        "specific_impulse_s": {
+          "interval": [
+            1019.9910646133728,
+            1165.7337211288218
+          ],
+          "mean": 1092.8623928710972,
+          "raw_epistemic_variance": 12614.212153630844,
+          "truth": 1172.1646086327073
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.016121100194543384,
+            0.019180421757116956
+          ],
+          "mean": 0.018369780163646182,
+          "raw_epistemic_variance": 1.6245971560254792e-05,
+          "truth": 0.017765479995474044
+        },
+        "index": 114,
+        "specific_impulse_s": {
+          "interval": [
+            1247.3810604574414,
+            1414.1373805454573
+          ],
+          "mean": 1330.7592205014494,
+          "raw_epistemic_variance": 16513.965529059336,
+          "truth": 1338.953214200389
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.023586213404117057,
+            0.02664553496669063
+          ],
+          "mean": 0.025834893373219855,
+          "raw_epistemic_variance": 1.276630585245646e-05,
+          "truth": 0.025869178734495287
+        },
+        "index": 514,
+        "specific_impulse_s": {
+          "interval": [
+            1594.625693434182,
+            1742.1168529880708
+          ],
+          "mean": 1668.3712732111264,
+          "raw_epistemic_variance": 12918.698071513812,
+          "truth": 1711.82648018025
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.0172218170548366,
+            0.020281138617410172
+          ],
+          "mean": 0.0194704970239394,
+          "raw_epistemic_variance": 2.3948259563601388e-05,
+          "truth": 0.018587956478235586
+        },
+        "index": 1194,
+        "specific_impulse_s": {
+          "interval": [
+            1340.5260424709588,
+            1527.58064593954
+          ],
+          "mean": 1434.0533442052495,
+          "raw_epistemic_variance": 20778.948650348717,
+          "truth": 1397.1643885796564
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.017899422223188934,
+            0.020958743785762506
+          ],
+          "mean": 0.020148102192291732,
+          "raw_epistemic_variance": 1.3353402583552282e-05,
+          "truth": 0.019749526944117364
+        },
+        "index": 1234,
+        "specific_impulse_s": {
+          "interval": [
+            1281.031819921096,
+            1424.3324664256693
+          ],
+          "mean": 1352.6821431733827,
+          "raw_epistemic_variance": 12195.035467734886,
+          "truth": 1365.2066400161234
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.019717827085938885,
+            0.022777148648512456
+          ],
+          "mean": 0.021966507055041683,
+          "raw_epistemic_variance": 2.2009053301832287e-05,
+          "truth": 0.02113710885263073
+        },
+        "index": 2314,
+        "specific_impulse_s": {
+          "interval": [
+            1360.0934928953968,
+            1539.5541100448506
+          ],
+          "mean": 1449.8238014701237,
+          "raw_epistemic_variance": 19126.040986239692,
+          "truth": 1429.227853794784
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.020595032347154527,
+            0.023654353909728098
+          ],
+          "mean": 0.022843712316257325,
+          "raw_epistemic_variance": 9.312591622411341e-06,
+          "truth": 0.022286549306785537
+        },
+        "index": 3394,
+        "specific_impulse_s": {
+          "interval": [
+            1447.7440156508862,
+            1567.7788646339825
+          ],
+          "mean": 1507.7614401424344,
+          "raw_epistemic_variance": 8556.604705673117,
+          "truth": 1502.5760032980895
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.02077641332127349,
+            0.023835734883847062
+          ],
+          "mean": 0.02302509329037629,
+          "raw_epistemic_variance": 1.3700006661256812e-05,
+          "truth": 0.022154762653362598
+        },
+        "index": 4114,
+        "specific_impulse_s": {
+          "interval": [
+            1513.4978734502088,
+            1655.2300419266167
+          ],
+          "mean": 1584.3639576884127,
+          "raw_epistemic_variance": 11929.538191777616,
+          "truth": 1561.676795869752
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.01693417891066641,
+            0.019993500473239983
+          ],
+          "mean": 0.01918285887976921,
+          "raw_epistemic_variance": 1.1896122927292727e-05,
+          "truth": 0.01940491991716332
+        },
+        "index": 4434,
+        "specific_impulse_s": {
+          "interval": [
+            1333.1475965266143,
+            1466.849887824823
+          ],
+          "mean": 1399.9987421757187,
+          "raw_epistemic_variance": 10616.086981651495,
+          "truth": 1446.8676490822627
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.02290243221566809,
+            0.025961753778241663
+          ],
+          "mean": 0.02515111218477089,
+          "raw_epistemic_variance": 1.2771383449599601e-05,
+          "truth": 0.02420998993177326
+        },
+        "index": 5194,
+        "specific_impulse_s": {
+          "interval": [
+            1686.1850471982036,
+            1807.5584432471799
+          ],
+          "mean": 1746.8717452226917,
+          "raw_epistemic_variance": 8748.5036181656,
+          "truth": 1740.8846807387729
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.019277622673813877,
+            0.02233694423638745
+          ],
+          "mean": 0.021526302642916675,
+          "raw_epistemic_variance": 1.4455509859674613e-05,
+          "truth": 0.02082010688675268
+        },
+        "index": 5514,
+        "specific_impulse_s": {
+          "interval": [
+            1478.0549174040755,
+            1602.0718400947642
+          ],
+          "mean": 1540.0633787494198,
+          "raw_epistemic_variance": 9133.740522772796,
+          "truth": 1518.2745763127539
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.0193931335767711,
+            0.02245245513934467
+          ],
+          "mean": 0.021641813545873897,
+          "raw_epistemic_variance": 1.791667458759319e-05,
+          "truth": 0.020826948523444678
+        },
+        "index": 6234,
+        "specific_impulse_s": {
+          "interval": [
+            1555.4516604661467,
+            1717.3729881657814
+          ],
+          "mean": 1636.412324315964,
+          "raw_epistemic_variance": 15570.224724112624,
+          "truth": 1593.8219103440333
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.018453265977669105,
+            0.021512587540242677
+          ],
+          "mean": 0.020701945946771903,
+          "raw_epistemic_variance": 6.8729080621588785e-06,
+          "truth": 0.020677642165378998
+        },
+        "index": 6594,
+        "specific_impulse_s": {
+          "interval": [
+            1515.1122547191083,
+            1609.2346112902617
+          ],
+          "mean": 1562.173433004685,
+          "raw_epistemic_variance": 5261.049072388058,
+          "truth": 1566.9105459933553
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.02251110211763459,
+            0.025570423680208162
+          ],
+          "mean": 0.02475978208673739,
+          "raw_epistemic_variance": 1.3673353175758498e-05,
+          "truth": 0.02339911877337339
+        },
+        "index": 6634,
+        "specific_impulse_s": {
+          "interval": [
+            1531.697380720216,
+            1665.508081751567
+          ],
+          "mean": 1598.6027312358915,
+          "raw_epistemic_variance": 10633.309629551088,
+          "truth": 1566.2223058000857
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.01954360561405988,
+            0.022602927176633453
+          ],
+          "mean": 0.02179228558316268,
+          "raw_epistemic_variance": 1.2177895816007008e-05,
+          "truth": 0.021476813747854363
+        },
+        "index": 6994,
+        "specific_impulse_s": {
+          "interval": [
+            1323.015482147642,
+            1458.7051581787857
+          ],
+          "mean": 1390.8603201632138,
+          "raw_epistemic_variance": 10934.032977119392,
+          "truth": 1428.2550731904826
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.020323917047942206,
+            0.023383238610515777
+          ],
+          "mean": 0.022572597017045004,
+          "raw_epistemic_variance": 8.575114424845043e-06,
+          "truth": 0.02217654678263108
+        },
+        "index": 7674,
+        "specific_impulse_s": {
+          "interval": [
+            1575.7828141123234,
+            1669.4598546547484
+          ],
+          "mean": 1622.621334383536,
+          "raw_epistemic_variance": 5211.384203941621,
+          "truth": 1644.240974168858
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.021014861566522092,
+            0.024074183129095664
+          ],
+          "mean": 0.02326354153562489,
+          "raw_epistemic_variance": 9.65764674639525e-06,
+          "truth": 0.022711198243202297
+        },
+        "index": 7714,
+        "specific_impulse_s": {
+          "interval": [
+            1516.3548410319218,
+            1627.3569068693787
+          ],
+          "mean": 1571.8558739506502,
+          "raw_epistemic_variance": 7317.266811803073,
+          "truth": 1578.1096601666443
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.013689135693549744,
+            0.016748457256123315
+          ],
+          "mean": 0.01593781566265254,
+          "raw_epistemic_variance": 2.0711890178705493e-05,
+          "truth": 0.014573640222758087
+        },
+        "index": 75,
+        "specific_impulse_s": {
+          "interval": [
+            1264.718400905201,
+            1451.6035241500515
+          ],
+          "mean": 1358.1609625276262,
+          "raw_epistemic_variance": 20741.312308615015,
+          "truth": 1322.9174592293289
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.016797714313127037,
+            0.019857035875700608
+          ],
+          "mean": 0.019046394282229834,
+          "raw_epistemic_variance": 1.3378199925231958e-05,
+          "truth": 0.01903036763717172
+        },
+        "index": 1515,
+        "specific_impulse_s": {
+          "interval": [
+            1594.5655692890853,
+            1709.0376204835768
+          ],
+          "mean": 1651.801594886331,
+          "raw_epistemic_variance": 7781.900938872578,
+          "truth": 1663.5541527754394
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.018883754939437107,
+            0.02194307650201068
+          ],
+          "mean": 0.021132434908539905,
+          "raw_epistemic_variance": 1.2158038756107867e-05,
+          "truth": 0.02067376126965217
+        },
+        "index": 1995,
+        "specific_impulse_s": {
+          "interval": [
+            1574.2137183787593,
+            1711.3684925983769
+          ],
+          "mean": 1642.791105488568,
+          "raw_epistemic_variance": 11171.426368157576,
+          "truth": 1623.8920519208425
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.016236241249943547,
+            0.01929556281251712
+          ],
+          "mean": 0.018484921219046345,
+          "raw_epistemic_variance": 1.6535987925026376e-05,
+          "truth": 0.018398740399924972
+        },
+        "index": 2595,
+        "specific_impulse_s": {
+          "interval": [
+            1500.0034253503554,
+            1662.646923747673
+          ],
+          "mean": 1581.3251745490143,
+          "raw_epistemic_variance": 15709.42114980695,
+          "truth": 1564.1946265499218
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.014042901420327453,
+            0.017102222982901025
+          ],
+          "mean": 0.01629158138943025,
+          "raw_epistemic_variance": 1.557868082904943e-05,
+          "truth": 0.01574899142903982
+        },
+        "index": 2715,
+        "specific_impulse_s": {
+          "interval": [
+            1206.8992642847538,
+            1356.3223688192884
+          ],
+          "mean": 1281.610816552021,
+          "raw_epistemic_variance": 13259.351358990554,
+          "truth": 1305.478861953558
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.016051164534939783,
+            0.019110486097513354
+          ],
+          "mean": 0.01829984450404258,
+          "raw_epistemic_variance": 1.4691076749709194e-05,
+          "truth": 0.017963137991873934
+        },
+        "index": 2931,
+        "specific_impulse_s": {
+          "interval": [
+            1464.3311929667304,
+            1613.2966151126118
+          ],
+          "mean": 1538.8139040396711,
+          "raw_epistemic_variance": 13178.249074103192,
+          "truth": 1513.3155658932985
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.01691369884721887,
+            0.01997302040979244
+          ],
+          "mean": 0.019162378816321667,
+          "raw_epistemic_variance": 1.2849463513024215e-05,
+          "truth": 0.01920542068747906
+        },
+        "index": 3531,
+        "specific_impulse_s": {
+          "interval": [
+            1691.845967620893,
+            1814.9452728295603
+          ],
+          "mean": 1753.3956202252266,
+          "raw_epistemic_variance": 8999.077080015546,
+          "truth": 1772.2203775448054
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.016631891113357687,
+            0.01969121267593126
+          ],
+          "mean": 0.018880571082460485,
+          "raw_epistemic_variance": 1.2541568949359528e-05,
+          "truth": 0.018761339056225346
+        },
+        "index": 3675,
+        "specific_impulse_s": {
+          "interval": [
+            1612.0824877307175,
+            1750.4600058290146
+          ],
+          "mean": 1681.271246779866,
+          "raw_epistemic_variance": 11371.502264393193,
+          "truth": 1671.4857211200724
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.013882395740761139,
+            0.01694171730333471
+          ],
+          "mean": 0.016131075709863937,
+          "raw_epistemic_variance": 1.132259517653065e-05,
+          "truth": 0.01598734818998964
+        },
+        "index": 3795,
+        "specific_impulse_s": {
+          "interval": [
+            1181.237772695786,
+            1311.9835967881388
+          ],
+          "mean": 1246.6106847419624,
+          "raw_epistemic_variance": 10151.785242276612,
+          "truth": 1290.6951193228838
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.01542722087563508,
+            0.01848654243820865
+          ],
+          "mean": 0.017675900844737878,
+          "raw_epistemic_variance": 7.066819627501524e-06,
+          "truth": 0.017688546259842414
+        },
+        "index": 4875,
+        "specific_impulse_s": {
+          "interval": [
+            1423.2998603357091,
+            1535.3031441954613
+          ],
+          "mean": 1479.3015022655852,
+          "raw_epistemic_variance": 7449.862898899926,
+          "truth": 1492.8894159824097
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.013039415728274334,
+            0.016098737290847903
+          ],
+          "mean": 0.015288095697377132,
+          "raw_epistemic_variance": 8.442108211731229e-06,
+          "truth": 0.015588769813268333
+        },
+        "index": 5475,
+        "specific_impulse_s": {
+          "interval": [
+            1342.4043347918869,
+            1457.5169862325638
+          ],
+          "mean": 1399.9606605122253,
+          "raw_epistemic_variance": 7869.241668758611,
+          "truth": 1432.7949254079865
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.017513305966542287,
+            0.02057262752911586
+          ],
+          "mean": 0.019761985935645085,
+          "raw_epistemic_variance": 1.036972710313905e-05,
+          "truth": 0.01962724172585335
+        },
+        "index": 6531,
+        "specific_impulse_s": {
+          "interval": [
+            1484.8238009900458,
+            1617.1795605492673
+          ],
+          "mean": 1551.0016807696566,
+          "raw_epistemic_variance": 10403.331985249026,
+          "truth": 1546.920122187322
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.015127179250125404,
+            0.018186500812698975
+          ],
+          "mean": 0.017375859219228202,
+          "raw_epistemic_variance": 1.0610568186766247e-05,
+          "truth": 0.016857083506374583
+        },
+        "index": 7395,
+        "specific_impulse_s": {
+          "interval": [
+            1290.007362874807,
+            1432.9493543030255
+          ],
+          "mean": 1361.4783585889163,
+          "raw_epistemic_variance": 12134.068011383815,
+          "truth": 1338.767910623111
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.01379237420805058,
+            0.01685169577062415
+          ],
+          "mean": 0.016041054177153378,
+          "raw_epistemic_variance": 8.66993582529916e-06,
+          "truth": 0.01606569542565108
+        },
+        "index": 7995,
+        "specific_impulse_s": {
+          "interval": [
+            1329.7238413350774,
+            1444.1191906428612
+          ],
+          "mean": 1386.9215159889693,
+          "raw_epistemic_variance": 7771.475922349226,
+          "truth": 1413.6550504501888
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.014643756460581435,
+            0.017703078023155006
+          ],
+          "mean": 0.016892436429684233,
+          "raw_epistemic_variance": 1.0097760057818997e-05,
+          "truth": 0.01722311198360943
+        },
+        "index": 8115,
+        "specific_impulse_s": {
+          "interval": [
+            1347.060386129269,
+            1477.899423671113
+          ],
+          "mean": 1412.479904900191,
+          "raw_epistemic_variance": 10166.265555468059,
+          "truth": 1441.7731177132434
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.015045375606270443,
+            0.018104697168844015
+          ],
+          "mean": 0.01729405557537324,
+          "raw_epistemic_variance": 9.776666410668277e-06,
+          "truth": 0.017298709864477124
+        },
+        "index": 891,
+        "specific_impulse_s": {
+          "interval": [
+            1715.582857092479,
+            1831.7430068788888
+          ],
+          "mean": 1773.6629319856838,
+          "raw_epistemic_variance": 8013.109823958921,
+          "truth": 1772.272573839128
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.012389891867144669,
+            0.015449213429718238
+          ],
+          "mean": 0.014638571836247467,
+          "raw_epistemic_variance": 1.603118623258775e-05,
+          "truth": 0.013820464359540518
+        },
+        "index": 1011,
+        "specific_impulse_s": {
+          "interval": [
+            1313.3667911967907,
+            1435.6907413137462
+          ],
+          "mean": 1374.5287662552685,
+          "raw_epistemic_variance": 8886.070658197523,
+          "truth": 1361.8671866284928
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.011385927421658715,
+            0.014445248984232285
+          ],
+          "mean": 0.013634607390761513,
+          "raw_epistemic_variance": 1.1684779991644883e-05,
+          "truth": 0.013533071228414881
+        },
+        "index": 1611,
+        "specific_impulse_s": {
+          "interval": [
+            1417.704433496379,
+            1531.1840724497201
+          ],
+          "mean": 1474.4442529730495,
+          "raw_epistemic_variance": 7647.555880165387,
+          "truth": 1484.696067155444
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.013329351687908785,
+            0.016388673250482357
+          ],
+          "mean": 0.015578031657011583,
+          "raw_epistemic_variance": 2.6028984442591903e-05,
+          "truth": 0.015250666890732116
+        },
+        "index": 1971,
+        "specific_impulse_s": {
+          "interval": [
+            1584.7191122297645,
+            1800.7796149595215
+          ],
+          "mean": 1692.749363594643,
+          "raw_epistemic_variance": 27722.828148910292,
+          "truth": 1649.757700296871
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.013636243452788438,
+            0.01669556501536201
+          ],
+          "mean": 0.015884923421891236,
+          "raw_epistemic_variance": 1.7448731287952858e-05,
+          "truth": 0.014672582629523982
+        },
+        "index": 2091,
+        "specific_impulse_s": {
+          "interval": [
+            1366.3908459587321,
+            1536.0652044835113
+          ],
+          "mean": 1451.2280252211217,
+          "raw_epistemic_variance": 17096.97199049435,
+          "truth": 1409.950061412532
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.012284340434575443,
+            0.015343661997149012
+          ],
+          "mean": 0.01453302040367824,
+          "raw_epistemic_variance": 1.4445576473068948e-05,
+          "truth": 0.014098421940423466
+        },
+        "index": 3171,
+        "specific_impulse_s": {
+          "interval": [
+            1355.5751562674902,
+            1485.8409860163958
+          ],
+          "mean": 1420.708071141943,
+          "raw_epistemic_variance": 10077.383554726013,
+          "truth": 1419.3606701492351
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.01146875347989389,
+            0.01452807504246746
+          ],
+          "mean": 0.013717433448996688,
+          "raw_epistemic_variance": 1.9039653132285115e-05,
+          "truth": 0.012702947138854384
+        },
+        "index": 4131,
+        "specific_impulse_s": {
+          "interval": [
+            1250.619629856569,
+            1410.8345610491103
+          ],
+          "mean": 1330.7270954528396,
+          "raw_epistemic_variance": 15243.782496735354,
+          "truth": 1321.8349611581848
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.011297036967830416,
+            0.014356358530403986
+          ],
+          "mean": 0.013545716936933214,
+          "raw_epistemic_variance": 1.4096290106480907e-05,
+          "truth": 0.013239058427018344
+        },
+        "index": 5211,
+        "specific_impulse_s": {
+          "interval": [
+            1348.7233200856908,
+            1457.6936377508764
+          ],
+          "mean": 1403.2084789182836,
+          "raw_epistemic_variance": 7051.852213234522,
+          "truth": 1418.93474645918
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.013417103528279226,
+            0.016476425090852797
+          ],
+          "mean": 0.015665783497382024,
+          "raw_epistemic_variance": 1.76515533418626e-05,
+          "truth": 0.014833559964835244
+        },
+        "index": 5691,
+        "specific_impulse_s": {
+          "interval": [
+            1342.6579924219207,
+            1495.6182503787052
+          ],
+          "mean": 1419.138121400313,
+          "raw_epistemic_variance": 13894.533908121539,
+          "truth": 1396.5347365698196
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.011687092576336563,
+            0.014746414138910133
+          ],
+          "mean": 0.013935772545439361,
+          "raw_epistemic_variance": 1.7001372276062467e-05,
+          "truth": 0.01279950868159096
+        },
+        "index": 6291,
+        "specific_impulse_s": {
+          "interval": [
+            1301.2540845877302,
+            1463.8444009478917
+          ],
+          "mean": 1382.549242767811,
+          "raw_epistemic_variance": 15699.149329093461,
+          "truth": 1362.3962074491844
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.013219547402419037,
+            0.01627886896499261
+          ],
+          "mean": 0.015468227371521835,
+          "raw_epistemic_variance": 1.0968456731199323e-05,
+          "truth": 0.01543638972634969
+        },
+        "index": 6411,
+        "specific_impulse_s": {
+          "interval": [
+            1495.528067267875,
+            1619.9790951840396
+          ],
+          "mean": 1557.7535812259573,
+          "raw_epistemic_variance": 9197.795393608732,
+          "truth": 1547.3548977493724
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.011492455332683147,
+            0.014551776895256717
+          ],
+          "mean": 0.013741135301785945,
+          "raw_epistemic_variance": 1.4235214936926715e-05,
+          "truth": 0.013126947091889293
+        },
+        "index": 7011,
+        "specific_impulse_s": {
+          "interval": [
+            1469.1483937425692,
+            1612.3374016543594
+          ],
+          "mean": 1540.7428976984643,
+          "raw_epistemic_variance": 12176.041746253508,
+          "truth": 1505.8572775850016
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.012815193314343625,
+            0.015874514876917194
+          ],
+          "mean": 0.015063873283446423,
+          "raw_epistemic_variance": 1.088777640153928e-05,
+          "truth": 0.014910284605255402
+        },
+        "index": 7371,
+        "specific_impulse_s": {
+          "interval": [
+            1491.4100781447626,
+            1611.383643295719
+          ],
+          "mean": 1551.3968607202407,
+          "raw_epistemic_variance": 8547.86978128523,
+          "truth": 1539.3936721316113
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.013158329535635612,
+            0.016217651098209183
+          ],
+          "mean": 0.01540700950473841,
+          "raw_epistemic_variance": 9.62556783023802e-06,
+          "truth": 0.015781972237625636
+        },
+        "index": 7491,
+        "specific_impulse_s": {
+          "interval": [
+            1477.9756955501118,
+            1599.8474266888904
+          ],
+          "mean": 1538.9115611195011,
+          "raw_epistemic_variance": 8820.490338189651,
+          "truth": 1566.7225953985085
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.012203122963607852,
+            0.015262444526181421
+          ],
+          "mean": 0.01445180293271065,
+          "raw_epistemic_variance": 1.155631812282677e-05,
+          "truth": 0.014738283246308123
+        },
+        "index": 8091,
+        "specific_impulse_s": {
+          "interval": [
+            1581.0990111345418,
+            1715.2280178713554
+          ],
+          "mean": 1648.1635145029486,
+          "raw_epistemic_variance": 10683.95832582281,
+          "truth": 1630.3210245018856
+        }
+      }
+    ],
+    "ood": [
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.010876158350517317,
+            0.029842093185977837
+          ],
+          "mean": 0.015325052870770448,
+          "raw_epistemic_variance": 1.5671176882369313e-05,
+          "truth": 0.014402414510489583
+        },
+        "index": 176,
+        "specific_impulse_s": {
+          "interval": [
+            2095.4302656399273,
+            2523.581923403192
+          ],
+          "mean": 2309.5060945215596,
+          "raw_epistemic_variance": 14682.046486188028,
+          "truth": 2418.3089106273537
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.009012393882601732,
+            0.027978328718062252
+          ],
+          "mean": 0.013461288402854862,
+          "raw_epistemic_variance": 2.4547572383278013e-05,
+          "truth": 0.011084215733782215
+        },
+        "index": 632,
+        "specific_impulse_s": {
+          "interval": [
+            1971.9808028860248,
+            2477.3550306855495
+          ],
+          "mean": 2224.667916785787,
+          "raw_epistemic_variance": 20455.849344032224,
+          "truth": 2459.702946549058
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.00893707507514854,
+            0.02790300991060906
+          ],
+          "mean": 0.01338596959540167,
+          "raw_epistemic_variance": 1.859198827864884e-05,
+          "truth": 0.011899418173227122
+        },
+        "index": 776,
+        "specific_impulse_s": {
+          "interval": [
+            1908.3936770874468,
+            2440.791059722688
+          ],
+          "mean": 2174.592368405067,
+          "raw_epistemic_variance": 22701.949771283536,
+          "truth": 2431.556089694419
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.005209097456974724,
+            0.024175032292435242
+          ],
+          "mean": 0.009657991977227855,
+          "raw_epistemic_variance": 1.766299646451414e-05,
+          "truth": 0.00848092114710586
+        },
+        "index": 1496,
+        "specific_impulse_s": {
+          "interval": [
+            1694.129480817862,
+            2163.8061748015903
+          ],
+          "mean": 1928.967827809726,
+          "raw_epistemic_variance": 17668.079949689418,
+          "truth": 1996.4312046489763
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.00801934738703184,
+            0.026985282222492357
+          ],
+          "mean": 0.01246824190728497,
+          "raw_epistemic_variance": 1.906291050346669e-05,
+          "truth": 0.012447167859903076
+        },
+        "index": 2432,
+        "specific_impulse_s": {
+          "interval": [
+            1791.7167271388005,
+            2307.7616425436095
+          ],
+          "mean": 2049.739184841205,
+          "raw_epistemic_variance": 21328.796056438885,
+          "truth": 2171.082123996393
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.006495659836968219,
+            0.02546159467242874
+          ],
+          "mean": 0.01094455435722135,
+          "raw_epistemic_variance": 1.108952143838831e-05,
+          "truth": 0.010037078147097825
+        },
+        "index": 2576,
+        "specific_impulse_s": {
+          "interval": [
+            1910.0115191048228,
+            2300.1030490329204
+          ],
+          "mean": 2105.0572840688715,
+          "raw_epistemic_variance": 12187.773541901188,
+          "truth": 2195.867891761973
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.010951250530593253,
+            0.02991718536605377
+          ],
+          "mean": 0.015400145050846383,
+          "raw_epistemic_variance": 1.6036924137285953e-05,
+          "truth": 0.014825485083131675
+        },
+        "index": 3632,
+        "specific_impulse_s": {
+          "interval": [
+            2012.0399270573541,
+            2456.426869747867
+          ],
+          "mean": 2234.2333984026104,
+          "raw_epistemic_variance": 15816.628510969742,
+          "truth": 2332.024656888761
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.009162494385760313,
+            0.02812842922122083
+          ],
+          "mean": 0.013611388906013443,
+          "raw_epistemic_variance": 2.735426694589484e-05,
+          "truth": 0.01108003063300923
+        },
+        "index": 4232,
+        "specific_impulse_s": {
+          "interval": [
+            1660.7791145406693,
+            2309.613754942564
+          ],
+          "mean": 1985.1964347416165,
+          "raw_epistemic_variance": 33717.81251028671,
+          "truth": 2336.040514880376
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.010064475288340032,
+            0.029030410123800553
+          ],
+          "mean": 0.014513369808593163,
+          "raw_epistemic_variance": 1.6368369371087868e-05,
+          "truth": 0.013653674096527903
+        },
+        "index": 4376,
+        "specific_impulse_s": {
+          "interval": [
+            2068.6251228517035,
+            2516.1160010090675
+          ],
+          "mean": 2292.3705619303855,
+          "raw_epistemic_variance": 16038.350814737874,
+          "truth": 2390.4999522333187
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.011181192200615971,
+            0.030147127036076492
+          ],
+          "mean": 0.015630086720869102,
+          "raw_epistemic_variance": 1.3768700627751924e-05,
+          "truth": 0.014650641596406676
+        },
+        "index": 4712,
+        "specific_impulse_s": {
+          "interval": [
+            2216.1256381772746,
+            2540.123178243206
+          ],
+          "mean": 2378.1244082102403,
+          "raw_epistemic_variance": 8407.652641482206,
+          "truth": 2402.113594827548
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.009287002036486181,
+            0.0282529368719467
+          ],
+          "mean": 0.013735896556739312,
+          "raw_epistemic_variance": 2.1510343796418342e-05,
+          "truth": 0.01190907716399049
+        },
+        "index": 5312,
+        "specific_impulse_s": {
+          "interval": [
+            1880.6213742866594,
+            2446.5254882511304
+          ],
+          "mean": 2163.5734312688946,
+          "raw_epistemic_variance": 25649.38977546019,
+          "truth": 2455.1259381310065
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.00870473151034815,
+            0.02767066634580867
+          ],
+          "mean": 0.01315362603060128,
+          "raw_epistemic_variance": 2.2914061569065636e-05,
+          "truth": 0.012391023958161775
+        },
+        "index": 5576,
+        "specific_impulse_s": {
+          "interval": [
+            1658.4347572374002,
+            2115.6391304624913
+          ],
+          "mean": 1887.0369438499456,
+          "raw_epistemic_variance": 16742.183076343674,
+          "truth": 1955.7091620117071
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.005385471856052502,
+            0.02435140669151302
+          ],
+          "mean": 0.009834366376305633,
+          "raw_epistemic_variance": 2.0730303701704735e-05,
+          "truth": 0.00871071391693524
+        },
+        "index": 6032,
+        "specific_impulse_s": {
+          "interval": [
+            1696.0079673999533,
+            2202.436447228636
+          ],
+          "mean": 1949.2222073142946,
+          "raw_epistemic_variance": 20541.283516639596,
+          "truth": 2071.516498385634
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.005910463926423815,
+            0.024876398761884334
+          ],
+          "mean": 0.010359358446676946,
+          "raw_epistemic_variance": 1.1679684937835434e-05,
+          "truth": 0.01017060989081017
+        },
+        "index": 6176,
+        "specific_impulse_s": {
+          "interval": [
+            1856.9906896588855,
+            2276.4542301953556
+          ],
+          "mean": 2066.7224599271203,
+          "raw_epistemic_variance": 14092.231582352444,
+          "truth": 2125.0181154100787
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.005526960946447955,
+            0.024492895781908476
+          ],
+          "mean": 0.009975855466701086,
+          "raw_epistemic_variance": 6.2717970856779975e-06,
+          "truth": 0.009681009426793641
+        },
+        "index": 7112,
+        "specific_impulse_s": {
+          "interval": [
+            1983.8499650042534,
+            2286.618523800974
+          ],
+          "mean": 2135.2342444026135,
+          "raw_epistemic_variance": 7341.974674639635,
+          "truth": 2184.644360774732
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.008917671125067313,
+            0.02788360596052783
+          ],
+          "mean": 0.013366565645320443,
+          "raw_epistemic_variance": 1.4232867434508156e-05,
+          "truth": 0.012585764108179194
+        },
+        "index": 7832,
+        "specific_impulse_s": {
+          "interval": [
+            1997.2389161312874,
+            2434.9293057424243
+          ],
+          "mean": 2216.0841109368557,
+          "raw_epistemic_variance": 15343.532471643422,
+          "truth": 2276.281990236152
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.008440967589841829,
+            0.027406902425302346
+          ],
+          "mean": 0.01288986211009496,
+          "raw_epistemic_variance": 2.6294954929509147e-05,
+          "truth": 0.010126000908317811
+        },
+        "index": 7976,
+        "specific_impulse_s": {
+          "interval": [
+            1857.382401930322,
+            2426.7593379748173
+          ],
+          "mean": 2142.0708699525694,
+          "raw_epistemic_variance": 25965.164422052392,
+          "truth": 2426.489606387995
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.02286390738486987,
+            0.04182984222033039
+          ],
+          "mean": 0.027312801905123002,
+          "raw_epistemic_variance": 1.948222878106414e-05,
+          "truth": 0.027796120984497682
+        },
+        "index": 276,
+        "specific_impulse_s": {
+          "interval": [
+            1881.7368477758318,
+            2343.6216868118036
+          ],
+          "mean": 2112.6792672938177,
+          "raw_epistemic_variance": 17086.721831971954,
+          "truth": 2102.619521582324
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.02502667980864004,
+            0.04399261464410056
+          ],
+          "mean": 0.02947557432889317,
+          "raw_epistemic_variance": 1.5865319247183083e-05,
+          "truth": 0.02804934753700553
+        },
+        "index": 532,
+        "specific_impulse_s": {
+          "interval": [
+            1730.153483095618,
+            2141.758624602667
+          ],
+          "mean": 1935.9560538491426,
+          "raw_epistemic_variance": 13569.158551175673,
+          "truth": 1911.2155476276218
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.023280707463496367,
+            0.04224664229895689
+          ],
+          "mean": 0.027729601983749498,
+          "raw_epistemic_variance": 1.5536873394447173e-05,
+          "truth": 0.02849118932803379
+        },
+        "index": 676,
+        "specific_impulse_s": {
+          "interval": [
+            1689.2717892375495,
+            2116.6563183843027
+          ],
+          "mean": 1902.964053810926,
+          "raw_epistemic_variance": 14629.481336865018,
+          "truth": 1891.3924399629786
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.027745218151527123,
+            0.04671115298698764
+          ],
+          "mean": 0.03219411267178025,
+          "raw_epistemic_variance": 1.5189092923650836e-05,
+          "truth": 0.03145754554689631
+        },
+        "index": 1396,
+        "specific_impulse_s": {
+          "interval": [
+            2023.1810888793516,
+            2453.0699488671007
+          ],
+          "mean": 2238.125518873226,
+          "raw_epistemic_variance": 14801.43141589494,
+          "truth": 2181.8396221530875
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.02526983711534005,
+            0.04423577195080057
+          ],
+          "mean": 0.02971873163559318,
+          "raw_epistemic_variance": 2.398159002725435e-05,
+          "truth": 0.03147651494713438
+        },
+        "index": 1612,
+        "specific_impulse_s": {
+          "interval": [
+            1734.2673103371483,
+            2283.9865224544515
+          ],
+          "mean": 2009.1269163957998,
+          "raw_epistemic_variance": 24203.220964135464,
+          "truth": 2098.5693599182628
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.02957368655912074,
+            0.04853962139458126
+          ],
+          "mean": 0.03402258107937387,
+          "raw_epistemic_variance": 1.469694127529978e-05,
+          "truth": 0.031995778101542895
+        },
+        "index": 2332,
+        "specific_impulse_s": {
+          "interval": [
+            2159.1774120298774,
+            2521.304402976127
+          ],
+          "mean": 2340.2409075030023,
+          "raw_epistemic_variance": 10502.994228894966,
+          "truth": 2229.1537388304323
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.025572910554520687,
+            0.04453884538998121
+          ],
+          "mean": 0.030021805074773818,
+          "raw_epistemic_variance": 1.430741396847078e-05,
+          "truth": 0.032417417329789325
+        },
+        "index": 2476,
+        "specific_impulse_s": {
+          "interval": [
+            1957.4271821442314,
+            2327.880075078159
+          ],
+          "mean": 2142.653628611195,
+          "raw_epistemic_variance": 10991.508908010544,
+          "truth": 2199.169742931351
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.02634646227276577,
+            0.045312397108226286
+          ],
+          "mean": 0.0307953567930189,
+          "raw_epistemic_variance": 1.709173679326529e-05,
+          "truth": 0.03152365825907534
+        },
+        "index": 3412,
+        "specific_impulse_s": {
+          "interval": [
+            2062.676327583809,
+            2528.4490702292946
+          ],
+          "mean": 2295.5626989065518,
+          "raw_epistemic_variance": 17375.586564796726,
+          "truth": 2281.8028770457595
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.023843885111665526,
+            0.04280981994712604
+          ],
+          "mean": 0.028292779631918657,
+          "raw_epistemic_variance": 1.669713041604084e-05,
+          "truth": 0.027640302441313762
+        },
+        "index": 3732,
+        "specific_impulse_s": {
+          "interval": [
+            1847.4095012489138,
+            2257.264211610916
+          ],
+          "mean": 2052.336856429915,
+          "raw_epistemic_variance": 13453.99296841879,
+          "truth": 2029.1628214736909
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.023119303749088483,
+            0.042085238584549
+          ],
+          "mean": 0.027568198269341614,
+          "raw_epistemic_variance": 1.423970265308921e-05,
+          "truth": 0.026557526903125045
+        },
+        "index": 4276,
+        "specific_impulse_s": {
+          "interval": [
+            1756.1510367533845,
+            2054.2523551111904
+          ],
+          "mean": 1905.2016959322873,
+          "raw_epistemic_variance": 7117.363198429269,
+          "truth": 1853.0481740914943
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.021070171192371482,
+            0.040036106027832
+          ],
+          "mean": 0.025519065712624613,
+          "raw_epistemic_variance": 2.5683421158187112e-05,
+          "truth": 0.028707075385732212
+        },
+        "index": 4812,
+        "specific_impulse_s": {
+          "interval": [
+            1775.1098483774495,
+            2354.5532374746513
+          ],
+          "mean": 2064.83154292605,
+          "raw_epistemic_variance": 26891.396713876427,
+          "truth": 2194.153092035247
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.026077947973370482,
+            0.045043882808831
+          ],
+          "mean": 0.030526842493623613,
+          "raw_epistemic_variance": 1.581095128890041e-05,
+          "truth": 0.03124187559985415
+        },
+        "index": 5676,
+        "specific_impulse_s": {
+          "interval": [
+            2077.9369059839664,
+            2524.893323743111
+          ],
+          "mean": 2301.4151148635387,
+          "raw_epistemic_variance": 16000.062908181291,
+          "truth": 2297.1956232024254
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.026568258826350888,
+            0.045534193661811405
+          ],
+          "mean": 0.03101715334660402,
+          "raw_epistemic_variance": 2.201297807259615e-05,
+          "truth": 0.03305883420349142
+        },
+        "index": 5932,
+        "specific_impulse_s": {
+          "interval": [
+            1956.4085341696848,
+            2473.8942124528285
+          ],
+          "mean": 2215.1513733112565,
+          "raw_epistemic_variance": 21448.059455281847,
+          "truth": 2269.1895249720487
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.019865051188277753,
+            0.03883098602373827
+          ],
+          "mean": 0.024313945708530883,
+          "raw_epistemic_variance": 2.0940873499572247e-05,
+          "truth": 0.024990564827780854
+        },
+        "index": 7732,
+        "specific_impulse_s": {
+          "interval": [
+            1592.191748591447,
+            2026.1430166726607
+          ],
+          "mean": 1809.167382632054,
+          "raw_epistemic_variance": 15082.497380445255,
+          "truth": 1790.726783705537
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.023152257898626228,
+            0.04211819273408675
+          ],
+          "mean": 0.02760115241887936,
+          "raw_epistemic_variance": 2.0618597470210213e-05,
+          "truth": 0.027416723855635348
+        },
+        "index": 7876,
+        "specific_impulse_s": {
+          "interval": [
+            1624.8743780087657,
+            2117.0485329303847
+          ],
+          "mean": 1870.961455469575,
+          "raw_epistemic_variance": 19401.21567307099,
+          "truth": 1886.037786481546
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.012236011071956966,
+            0.031201945907417483
+          ],
+          "mean": 0.016684905592210097,
+          "raw_epistemic_variance": 2.6843697336004083e-05,
+          "truth": 0.016894034250421786
+        },
+        "index": 32,
+        "specific_impulse_s": {
+          "interval": [
+            1802.0863113283506,
+            2357.1623717783577
+          ],
+          "mean": 2079.624341553354,
+          "raw_epistemic_variance": 24677.22549465235,
+          "truth": 2310.5942209583604
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.01370947720419877,
+            0.03267541203965929
+          ],
+          "mean": 0.0181583717244519,
+          "raw_epistemic_variance": 1.3044246020817968e-05,
+          "truth": 0.018124618542982817
+        },
+        "index": 576,
+        "specific_impulse_s": {
+          "interval": [
+            2085.2166080566753,
+            2487.406759583115
+          ],
+          "mean": 2286.3116838198953,
+          "raw_epistemic_variance": 12955.500592953795,
+          "truth": 2267.5240449652283
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.010652898253591673,
+            0.029618833089052193
+          ],
+          "mean": 0.015101792773844804,
+          "raw_epistemic_variance": 1.2126165171779176e-05,
+          "truth": 0.015405320637896406
+        },
+        "index": 896,
+        "specific_impulse_s": {
+          "interval": [
+            1762.9349330862767,
+            2134.956477139065
+          ],
+          "mean": 1948.9457051126708,
+          "raw_epistemic_variance": 11084.791199124822,
+          "truth": 1975.1879318799079
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.013299661689881972,
+            0.03226559652534249
+          ],
+          "mean": 0.017748556210135102,
+          "raw_epistemic_variance": 1.9885994016090176e-05,
+          "truth": 0.017896045057811717
+        },
+        "index": 1112,
+        "specific_impulse_s": {
+          "interval": [
+            2059.8388036997962,
+            2515.471352327932
+          ],
+          "mean": 2287.655078013864,
+          "raw_epistemic_variance": 16627.26492964842,
+          "truth": 2352.9753808145315
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.009615685380222977,
+            0.028581620215683497
+          ],
+          "mean": 0.01406457990047611,
+          "raw_epistemic_variance": 1.827285558313466e-05,
+          "truth": 0.01384020125222002
+        },
+        "index": 1832,
+        "specific_impulse_s": {
+          "interval": [
+            1775.7757364909623,
+            2116.1836221368158
+          ],
+          "mean": 1945.979679313889,
+          "raw_epistemic_variance": 9280.909956233418,
+          "truth": 1988.5337379042578
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.009840805904566145,
+            0.028806740740026666
+          ],
+          "mean": 0.014289700424819278,
+          "raw_epistemic_variance": 1.146687746452954e-05,
+          "truth": 0.014925159076773473
+        },
+        "index": 1976,
+        "specific_impulse_s": {
+          "interval": [
+            1877.4733765985463,
+            2210.490835725447
+          ],
+          "mean": 2043.9821061619966,
+          "raw_epistemic_variance": 8882.29802342731,
+          "truth": 2049.3552608783566
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.009943089906670047,
+            0.028909024742130564
+          ],
+          "mean": 0.014391984426923177,
+          "raw_epistemic_variance": 1.4615967768149015e-05,
+          "truth": 0.014799537188709164
+        },
+        "index": 2912,
+        "specific_impulse_s": {
+          "interval": [
+            1896.926606718868,
+            2276.5120950919413
+          ],
+          "mean": 2086.7193509054046,
+          "raw_epistemic_variance": 11540.125631797091,
+          "truth": 2113.2987254243976
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.012299381270704682,
+            0.0312653161061652
+          ],
+          "mean": 0.016748275790957813,
+          "raw_epistemic_variance": 2.140619503265321e-05,
+          "truth": 0.016673216270281253
+        },
+        "index": 3776,
+        "specific_impulse_s": {
+          "interval": [
+            1953.797809747731,
+            2493.32270889385
+          ],
+          "mean": 2223.5602593207905,
+          "raw_epistemic_variance": 23313.86726000074,
+          "truth": 2403.0071328111558
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.014096851885710152,
+            0.03306278672117067
+          ],
+          "mean": 0.018545746405963282,
+          "raw_epistemic_variance": 1.2475308601790081e-05,
+          "truth": 0.018496680153070766
+        },
+        "index": 4032,
+        "specific_impulse_s": {
+          "interval": [
+            1985.435389614724,
+            2351.670410321798
+          ],
+          "mean": 2168.552899968261,
+          "raw_epistemic_variance": 10742.641342684221,
+          "truth": 2179.112171941173
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.014925317089012406,
+            0.033891251924472926
+          ],
+          "mean": 0.019374211609265536,
+          "raw_epistemic_variance": 1.7965957509222506e-05,
+          "truth": 0.020146688501074365
+        },
+        "index": 4896,
+        "specific_impulse_s": {
+          "interval": [
+            1987.0258046224578,
+            2502.717932439927
+          ],
+          "mean": 2244.8718685311924,
+          "raw_epistemic_variance": 21299.643700701676,
+          "truth": 2473.869380548032
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.013853684244087765,
+            0.032819619079548286
+          ],
+          "mean": 0.018302578764340896,
+          "raw_epistemic_variance": 1.1669942711420932e-05,
+          "truth": 0.018077872829286117
+        },
+        "index": 5112,
+        "specific_impulse_s": {
+          "interval": [
+            2143.917335243993,
+            2496.794371728801
+          ],
+          "mean": 2320.355853486397,
+          "raw_epistemic_variance": 9973.282709161902,
+          "truth": 2273.922020357484
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.010376941174052582,
+            0.029342876009513102
+          ],
+          "mean": 0.014825835694305713,
+          "raw_epistemic_variance": 1.092799599513861e-05,
+          "truth": 0.015353244587892084
+        },
+        "index": 5432,
+        "specific_impulse_s": {
+          "interval": [
+            1782.1026082863343,
+            2135.2566674661275
+          ],
+          "mean": 1958.6796378762308,
+          "raw_epistemic_variance": 9988.9477133017,
+          "truth": 1979.4360398867718
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.014389420248567417,
+            0.033355355084027934
+          ],
+          "mean": 0.018838314768820547,
+          "raw_epistemic_variance": 2.4011996773133106e-05,
+          "truth": 0.01985629114394934
+        },
+        "index": 5976,
+        "specific_impulse_s": {
+          "interval": [
+            1970.147279869566,
+            2465.348053904617
+          ],
+          "mean": 2217.7476668870913,
+          "raw_epistemic_variance": 19640.56444357879,
+          "truth": 2345.2361164112576
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.01113184914452986,
+            0.030097783979990377
+          ],
+          "mean": 0.01558074366478299,
+          "raw_epistemic_variance": 1.0291078258089076e-05,
+          "truth": 0.015180725812051894
+        },
+        "index": 7232,
+        "specific_impulse_s": {
+          "interval": [
+            2140.730773000571,
+            2473.167277164795
+          ],
+          "mean": 2306.949025082683,
+          "raw_epistemic_variance": 8851.334397159546,
+          "truth": 2313.3532689344247
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.013179778393303528,
+            0.03214571322876405
+          ],
+          "mean": 0.01762867291355666,
+          "raw_epistemic_variance": 2.2576729259967584e-05,
+          "truth": 0.017587771116817842
+        },
+        "index": 7376,
+        "specific_impulse_s": {
+          "interval": [
+            1906.5126242347237,
+            2358.890625977592
+          ],
+          "mean": 2132.7016251061577,
+          "raw_epistemic_variance": 16390.57882502738,
+          "truth": 2276.8854800534464
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.022991084799776976,
+            0.04195701963523749
+          ],
+          "mean": 0.027439979320030106,
+          "raw_epistemic_variance": 3.173132140075854e-05,
+          "truth": 0.039108281979245214
+        },
+        "index": 52,
+        "specific_impulse_s": {
+          "interval": [
+            1487.8217231674066,
+            2190.21719430439
+          ],
+          "mean": 1839.019458735898,
+          "raw_epistemic_variance": 39514.34072384376,
+          "truth": 2097.6693481123125
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.03058261527092727,
+            0.04954855010638779
+          ],
+          "mean": 0.0350315097911804,
+          "raw_epistemic_variance": 2.0338026590541374e-05,
+          "truth": 0.03973240902480245
+        },
+        "index": 652,
+        "specific_impulse_s": {
+          "interval": [
+            1817.9557687794425,
+            2369.736191391725
+          ],
+          "mean": 2093.8459800855835,
+          "raw_epistemic_variance": 24385.064571208528,
+          "truth": 2259.85291202817
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.03296782837905396,
+            0.05193376321451448
+          ],
+          "mean": 0.037416722899307094,
+          "raw_epistemic_variance": 1.7405053983380707e-05,
+          "truth": 0.04182903495531257
+        },
+        "index": 772,
+        "specific_impulse_s": {
+          "interval": [
+            1960.278696059776,
+            2478.012785902943
+          ],
+          "mean": 2219.1457409813593,
+          "raw_epistemic_variance": 21468.65606281834,
+          "truth": 2327.8081388824244
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.023685049949488984,
+            0.042650984784949504
+          ],
+          "mean": 0.028133944469742114,
+          "raw_epistemic_variance": 2.6583746254324458e-05,
+          "truth": 0.03594710948857265
+        },
+        "index": 1492,
+        "specific_impulse_s": {
+          "interval": [
+            1483.3727238840702,
+            2088.247416668239
+          ],
+          "mean": 1785.8100702761544,
+          "raw_epistemic_variance": 29303.680062559153,
+          "truth": 1885.3070717510936
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.023385182975207287,
+            0.042351117810667804
+          ],
+          "mean": 0.027834077495460418,
+          "raw_epistemic_variance": 3.1199738734211746e-05,
+          "truth": 0.04298939821628198
+        },
+        "index": 1852,
+        "specific_impulse_s": {
+          "interval": [
+            1618.3164350911948,
+            2287.418576625704
+          ],
+          "mean": 1952.8675058584492,
+          "raw_epistemic_variance": 35857.183585263374,
+          "truth": 2350.15786683517
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.023022159606624244,
+            0.04198809444208476
+          ],
+          "mean": 0.027471054126877375,
+          "raw_epistemic_variance": 3.1706751340847744e-05,
+          "truth": 0.04044539656526987
+        },
+        "index": 2572,
+        "specific_impulse_s": {
+          "interval": [
+            1492.132356872965,
+            2188.164526554924
+          ],
+          "mean": 1840.1484417139445,
+          "raw_epistemic_variance": 38801.6291155087,
+          "truth": 2085.907613415836
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.0308093223493168,
+            0.04977525718477732
+          ],
+          "mean": 0.03525821686956993,
+          "raw_epistemic_variance": 1.7849021367699874e-05,
+          "truth": 0.04120691036963264
+        },
+        "index": 3292,
+        "specific_impulse_s": {
+          "interval": [
+            1828.8249632671962,
+            2343.1771484181936
+          ],
+          "mean": 2086.0010558426948,
+          "raw_epistemic_variance": 21189.100137374,
+          "truth": 2200.917884161841
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.022560057403874338,
+            0.041525992239334855
+          ],
+          "mean": 0.02700895192412747,
+          "raw_epistemic_variance": 2.685717198346611e-05,
+          "truth": 0.039170289340112206
+        },
+        "index": 3652,
+        "specific_impulse_s": {
+          "interval": [
+            1532.953035206922,
+            2109.638661747817
+          ],
+          "mean": 1821.2958484773694,
+          "raw_epistemic_variance": 26636.035751418276,
+          "truth": 2015.671011213939
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.03260299565051977,
+            0.0515689304859803
+          ],
+          "mean": 0.03705189017077291,
+          "raw_epistemic_variance": 1.6270797794836397e-05,
+          "truth": 0.039410846864639165
+        },
+        "index": 3892,
+        "specific_impulse_s": {
+          "interval": [
+            1947.6234964178639,
+            2419.5563845493984
+          ],
+          "mean": 2183.589940483631,
+          "raw_epistemic_variance": 17838.232582239772,
+          "truth": 2252.5938811412984
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.03390136879869054,
+            0.05286730363415106
+          ],
+          "mean": 0.03835026331894367,
+          "raw_epistemic_variance": 1.5313733483026975e-05,
+          "truth": 0.04407530660512644
+        },
+        "index": 4012,
+        "specific_impulse_s": {
+          "interval": [
+            2112.7469549924062,
+            2561.9648566408096
+          ],
+          "mean": 2337.355905816608,
+          "raw_epistemic_variance": 16162.38488679824,
+          "truth": 2438.211966526044
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.022514683983141524,
+            0.041480618818602044
+          ],
+          "mean": 0.026963578503394654,
+          "raw_epistemic_variance": 3.0237368932308544e-05,
+          "truth": 0.04042389046668039
+        },
+        "index": 4372,
+        "specific_impulse_s": {
+          "interval": [
+            1545.1918026151304,
+            2189.3157476271845
+          ],
+          "mean": 1867.2537751211573,
+          "raw_epistemic_variance": 33229.99097197005,
+          "truth": 2151.675012261595
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.02787546172692312,
+            0.04684139656238364
+          ],
+          "mean": 0.03232435624717625,
+          "raw_epistemic_variance": 2.559099689818871e-05,
+          "truth": 0.045228181582734735
+        },
+        "index": 5092,
+        "specific_impulse_s": {
+          "interval": [
+            1864.78074356393,
+            2461.7136596731434
+          ],
+          "mean": 2163.2472016185366,
+          "raw_epistemic_variance": 28539.239092928306,
+          "truth": 2496.044220773355
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.027680088317572873,
+            0.04664602315303339
+          ],
+          "mean": 0.032128982837826,
+          "raw_epistemic_variance": 2.6575337789849723e-05,
+          "truth": 0.04381835926326083
+        },
+        "index": 5452,
+        "specific_impulse_s": {
+          "interval": [
+            1776.875335940256,
+            2386.5870019002164
+          ],
+          "mean": 2081.731168920236,
+          "raw_epistemic_variance": 29774.21666587094,
+          "truth": 2367.6171056484086
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.024176757190622105,
+            0.043142692026082625
+          ],
+          "mean": 0.028625651710875236,
+          "raw_epistemic_variance": 1.22312064658926e-05,
+          "truth": 0.03384722505756372
+        },
+        "index": 6172,
+        "specific_impulse_s": {
+          "interval": [
+            1615.3731423593858,
+            2016.8536372217459
+          ],
+          "mean": 1816.1133897905659,
+          "raw_epistemic_variance": 12909.821473172391,
+          "truth": 1894.9650520406285
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.022612946705007003,
+            0.04157888154046752
+          ],
+          "mean": 0.027061841225260133,
+          "raw_epistemic_variance": 3.077809926566622e-05,
+          "truth": 0.0414510543270006
+        },
+        "index": 6892,
+        "specific_impulse_s": {
+          "interval": [
+            1543.1279448360417,
+            2186.2857821026223
+          ],
+          "mean": 1864.706863469332,
+          "raw_epistemic_variance": 33130.38382013909,
+          "truth": 2121.28979464956
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.02519062302742698,
+            0.0441565578628875
+          ],
+          "mean": 0.02963951754768011,
+          "raw_epistemic_variance": 2.2660327186149437e-05,
+          "truth": 0.03538360648264751
+        },
+        "index": 7252,
+        "specific_impulse_s": {
+          "interval": [
+            1550.95574195916,
+            2137.286457402281
+          ],
+          "mean": 1844.1210996807204,
+          "raw_epistemic_variance": 27534.46397637814,
+          "truth": 1977.3624020602633
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.02836432350403791,
+            0.04733025833949843
+          ],
+          "mean": 0.03281321802429104,
+          "raw_epistemic_variance": 2.354133997833009e-05,
+          "truth": 0.04152359905572253
+        },
+        "index": 7972,
+        "specific_impulse_s": {
+          "interval": [
+            1731.480088768694,
+            2293.3516230432588
+          ],
+          "mean": 2012.4158559059763,
+          "raw_epistemic_variance": 25285.141917745004,
+          "truth": 2186.3679982647463
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.022255871976352256,
+            0.041221806811812776
+          ],
+          "mean": 0.026704766496605387,
+          "raw_epistemic_variance": 1.007891572865804e-05,
+          "truth": 0.026373702367105328
+        },
+        "index": 132,
+        "specific_impulse_s": {
+          "interval": [
+            1918.7162961146355,
+            2261.910642502665
+          ],
+          "mean": 2090.31346930865,
+          "raw_epistemic_variance": 9433.472434820522,
+          "truth": 2055.2536268390863
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.019476689158491357,
+            0.038442623993951874
+          ],
+          "mean": 0.023925583678744488,
+          "raw_epistemic_variance": 9.785265583459547e-06,
+          "truth": 0.02432249757816685
+        },
+        "index": 732,
+        "specific_impulse_s": {
+          "interval": [
+            1908.6301074916653,
+            2270.294096938113
+          ],
+          "mean": 2089.462102214889,
+          "raw_epistemic_variance": 10476.153957702414,
+          "truth": 2100.969607941392
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.02482463122973182,
+            0.04379056606519234
+          ],
+          "mean": 0.02927352574998495,
+          "raw_epistemic_variance": 1.298615147942409e-05,
+          "truth": 0.028644130790986596
+        },
+        "index": 996,
+        "specific_impulse_s": {
+          "interval": [
+            2233.765502811327,
+            2553.8463038144223
+          ],
+          "mean": 2393.8059033128748,
+          "raw_epistemic_variance": 8205.604588673246,
+          "truth": 2283.2460224612546
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.024239682743193724,
+            0.043205617578654244
+          ],
+          "mean": 0.028688577263446854,
+          "raw_epistemic_variance": 1.3178991657965142e-05,
+          "truth": 0.028335755270984024
+        },
+        "index": 1212,
+        "specific_impulse_s": {
+          "interval": [
+            2089.625338647619,
+            2451.345566077326
+          ],
+          "mean": 2270.4854523624726,
+          "raw_epistemic_variance": 10479.4122504519,
+          "truth": 2201.9971281453486
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.02033446932855426,
+            0.03930040416401478
+          ],
+          "mean": 0.02478336384880739,
+          "raw_epistemic_variance": 7.502097339472238e-06,
+          "truth": 0.024520042743770447
+        },
+        "index": 1812,
+        "specific_impulse_s": {
+          "interval": [
+            2066.6774576969906,
+            2384.276023949868
+          ],
+          "mean": 2225.4767408234293,
+          "raw_epistemic_variance": 8078.828732729287,
+          "truth": 2166.3658312526222
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.023753968475341575,
+            0.042719903310802096
+          ],
+          "mean": 0.028202862995594706,
+          "raw_epistemic_variance": 1.5041089351625691e-05,
+          "truth": 0.028689370466457823
+        },
+        "index": 1932,
+        "specific_impulse_s": {
+          "interval": [
+            2174.309867995462,
+            2608.0009833077274
+          ],
+          "mean": 2391.1554256515947,
+          "raw_epistemic_variance": 15064.418957340185,
+          "truth": 2347.2584293864284
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.020426537903157908,
+            0.03939247273861843
+          ],
+          "mean": 0.02487543242341104,
+          "raw_epistemic_variance": 2.1936770171852825e-05,
+          "truth": 0.029472812573997562
+        },
+        "index": 2076,
+        "specific_impulse_s": {
+          "interval": [
+            1757.1837735598156,
+            2338.445635501086
+          ],
+          "mean": 2047.8147045304506,
+          "raw_epistemic_variance": 27060.448632523323,
+          "truth": 2301.9094788571647
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.016738462804323614,
+            0.035704397639784134
+          ],
+          "mean": 0.021187357324576744,
+          "raw_epistemic_variance": 1.5162636904136537e-05,
+          "truth": 0.021528311943935383
+        },
+        "index": 2676,
+        "specific_impulse_s": {
+          "interval": [
+            1638.053146061686,
+            2044.8750973231697
+          ],
+          "mean": 1841.4641216924279,
+          "raw_epistemic_variance": 13255.621414920408,
+          "truth": 1863.0725547037152
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.02325173479738709,
+            0.04221766963284761
+          ],
+          "mean": 0.02770062931764022,
+          "raw_epistemic_variance": 1.7436234280545614e-05,
+          "truth": 0.02923392311553241
+        },
+        "index": 3012,
+        "specific_impulse_s": {
+          "interval": [
+            2263.7445554553815,
+            2637.396113765889
+          ],
+          "mean": 2450.570334610635,
+          "raw_epistemic_variance": 11182.140136624017,
+          "truth": 2447.849519088397
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.0191766399852204,
+            0.03814257482068092
+          ],
+          "mean": 0.02362553450547353,
+          "raw_epistemic_variance": 8.441139050254425e-06,
+          "truth": 0.02280166930930758
+        },
+        "index": 3396,
+        "specific_impulse_s": {
+          "interval": [
+            2021.2202327710993,
+            2342.258119943085
+          ],
+          "mean": 2181.739176357092,
+          "raw_epistemic_variance": 8254.74975526882,
+          "truth": 2090.0616862456022
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.020815892570473084,
+            0.039781827405933605
+          ],
+          "mean": 0.025264787090726215,
+          "raw_epistemic_variance": 8.769054187491396e-06,
+          "truth": 0.024692867680074546
+        },
+        "index": 3876,
+        "specific_impulse_s": {
+          "interval": [
+            1912.0397212350078,
+            2229.9050310534244
+          ],
+          "mean": 2070.972376144216,
+          "raw_epistemic_variance": 8092.404867934402,
+          "truth": 2013.1889701882765
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.024293623097019563,
+            0.04325955793248008
+          ],
+          "mean": 0.028742517617272693,
+          "raw_epistemic_variance": 1.4904908397205613e-05,
+          "truth": 0.028876655115720084
+        },
+        "index": 5532,
+        "specific_impulse_s": {
+          "interval": [
+            2235.0570467861157,
+            2593.0477990134827
+          ],
+          "mean": 2414.0524228997992,
+          "raw_epistemic_variance": 10264.432681881537,
+          "truth": 2321.696882808964
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.021729757135485205,
+            0.040695691970945726
+          ],
+          "mean": 0.026178651655738336,
+          "raw_epistemic_variance": 2.0315092689500296e-05,
+          "truth": 0.02721430021664231
+        },
+        "index": 6132,
+        "specific_impulse_s": {
+          "interval": [
+            2164.5286242536235,
+            2618.982932172334
+          ],
+          "mean": 2391.755778212979,
+          "raw_epistemic_variance": 16541.38173291854,
+          "truth": 2372.820267601588
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.020854011056473727,
+            0.039819945891934244
+          ],
+          "mean": 0.025302905576726858,
+          "raw_epistemic_variance": 1.4537985190789448e-05,
+          "truth": 0.024926973365264546
+        },
+        "index": 6396,
+        "specific_impulse_s": {
+          "interval": [
+            1820.865452083303,
+            2135.494106888665
+          ],
+          "mean": 1978.179779485984,
+          "raw_epistemic_variance": 7928.442518690606,
+          "truth": 1924.2236933482163
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.020876069593738472,
+            0.03984200442919899
+          ],
+          "mean": 0.025324964113991603,
+          "raw_epistemic_variance": 2.211267637726085e-05,
+          "truth": 0.029054500201717584
+        },
+        "index": 6612,
+        "specific_impulse_s": {
+          "interval": [
+            1815.613828839618,
+            2382.349705805176
+          ],
+          "mean": 2098.981767322397,
+          "raw_epistemic_variance": 25724.843872181813,
+          "truth": 2276.8932350515856
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.016312021367915753,
+            0.03527795620337627
+          ],
+          "mean": 0.020760915888168884,
+          "raw_epistemic_variance": 2.47331834139325e-05,
+          "truth": 0.02283908358040933
+        },
+        "index": 7212,
+        "specific_impulse_s": {
+          "interval": [
+            1528.3673925848734,
+            2115.140785590183
+          ],
+          "mean": 1821.754089087528,
+          "raw_epistemic_variance": 27576.056512302668,
+          "truth": 1952.797086117412
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.018294659052754108,
+            0.03726059388821463
+          ],
+          "mean": 0.02274355357300724,
+          "raw_epistemic_variance": 1.8123239745835983e-05,
+          "truth": 0.024119876883848777
+        },
+        "index": 7332,
+        "specific_impulse_s": {
+          "interval": [
+            1689.4700202808542,
+            2174.593173793543
+          ],
+          "mean": 1932.0315970371985,
+          "raw_epistemic_variance": 18849.304941014747,
+          "truth": 1996.183206487104
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.02120143384921645,
+            0.04016736868467697
+          ],
+          "mean": 0.02565032836946958,
+          "raw_epistemic_variance": 1.0268581729166549e-05,
+          "truth": 0.024795986925669176
+        },
+        "index": 7476,
+        "specific_impulse_s": {
+          "interval": [
+            1867.9129171472448,
+            2212.2660933401835
+          ],
+          "mean": 2040.089505243714,
+          "raw_epistemic_variance": 9497.286103503153,
+          "truth": 1988.384138191207
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.01900838299083279,
+            0.03797431782629331
+          ],
+          "mean": 0.023457277511085922,
+          "raw_epistemic_variance": 1.097626788497428e-05,
+          "truth": 0.02332810459191925
+        },
+        "index": 7932,
+        "specific_impulse_s": {
+          "interval": [
+            1988.288533254282,
+            2356.1382112499223
+          ],
+          "mean": 2172.213372252102,
+          "raw_epistemic_variance": 10837.574486667989,
+          "truth": 2111.165708535387
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.01987542477244837,
+            0.03884135960790889
+          ],
+          "mean": 0.0243243192927015,
+          "raw_epistemic_variance": 5.21806995882752e-06,
+          "truth": 0.023819515389231966
+        },
+        "index": 8076,
+        "specific_impulse_s": {
+          "interval": [
+            1995.1681246268208,
+            2254.799454918413
+          ],
+          "mean": 2124.983789772617,
+          "raw_epistemic_variance": 5398.903091843733,
+          "truth": 2082.6184098339477
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.025729753474120546,
+            0.044695688309581066
+          ],
+          "mean": 0.030178647994373677,
+          "raw_epistemic_variance": 2.674179082471973e-05,
+          "truth": 0.035368971122452436
+        },
+        "index": 352,
+        "specific_impulse_s": {
+          "interval": [
+            1799.0542390271837,
+            2397.445484363922
+          ],
+          "mean": 2098.2498616955527,
+          "raw_epistemic_variance": 28678.854264068046,
+          "truth": 2318.709702431021
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.02952762440435434,
+            0.04849355923981486
+          ],
+          "mean": 0.03397651892460747,
+          "raw_epistemic_variance": 2.1479797298372742e-05,
+          "truth": 0.038187343660547185
+        },
+        "index": 472,
+        "specific_impulse_s": {
+          "interval": [
+            1945.799979039293,
+            2489.267972361435
+          ],
+          "mean": 2217.533975700364,
+          "raw_epistemic_variance": 23655.88929856245,
+          "truth": 2367.617223213419
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.03132239230093486,
+            0.05028832713639538
+          ],
+          "mean": 0.03577128682118799,
+          "raw_epistemic_variance": 1.7867941104006807e-05,
+          "truth": 0.0444340061197236
+        },
+        "index": 1192,
+        "specific_impulse_s": {
+          "interval": [
+            2080.3612753543935,
+            2583.639153276967
+          ],
+          "mean": 2332.0002143156803,
+          "raw_epistemic_variance": 20286.49493729677,
+          "truth": 2579.3656893793104
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.024739042551270022,
+            0.04370497738673054
+          ],
+          "mean": 0.029187937071523153,
+          "raw_epistemic_variance": 2.6697669310947664e-05,
+          "truth": 0.03894360743958766
+        },
+        "index": 1552,
+        "specific_impulse_s": {
+          "interval": [
+            1810.8733677591442,
+            2394.544969546238
+          ],
+          "mean": 2102.709168652691,
+          "raw_epistemic_variance": 27285.282957528965,
+          "truth": 2453.799548359959
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.027179753488589583,
+            0.0461456883240501
+          ],
+          "mean": 0.031628648008842714,
+          "raw_epistemic_variance": 2.2885590043738463e-05,
+          "truth": 0.039363764366476914
+        },
+        "index": 2992,
+        "specific_impulse_s": {
+          "interval": [
+            1761.560065199643,
+            2360.368332615374
+          ],
+          "mean": 2060.9641989075085,
+          "raw_epistemic_variance": 28718.841088462927,
+          "truth": 2331.653043487193
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.025354866002263526,
+            0.04432080083772404
+          ],
+          "mean": 0.029803760522516657,
+          "raw_epistemic_variance": 1.214521530504329e-05,
+          "truth": 0.034880296535450064
+        },
+        "index": 3352,
+        "specific_impulse_s": {
+          "interval": [
+            1684.6965198284256,
+            2120.9635886322617
+          ],
+          "mean": 1902.8300542303434,
+          "raw_epistemic_variance": 15243.90378017824,
+          "truth": 2050.3971442409083
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.02721287530365676,
+            0.04617881013911728
+          ],
+          "mean": 0.03166176982390989,
+          "raw_epistemic_variance": 2.11159575499153e-05,
+          "truth": 0.037187351199268213
+        },
+        "index": 4072,
+        "specific_impulse_s": {
+          "interval": [
+            1835.3346983719325,
+            2359.739978935937
+          ],
+          "mean": 2097.5373386539345,
+          "raw_epistemic_variance": 22025.48333114894,
+          "truth": 2272.262985651533
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.02894794924924089,
+            0.04791388408470141
+          ],
+          "mean": 0.03339684376949402,
+          "raw_epistemic_variance": 2.2331461519947408e-05,
+          "truth": 0.03806592707384528
+        },
+        "index": 4672,
+        "specific_impulse_s": {
+          "interval": [
+            2058.177475704701,
+            2566.810467867333
+          ],
+          "mean": 2312.493971786017,
+          "raw_epistemic_variance": 20720.507535606474,
+          "truth": 2472.2597683212252
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.02374366686704026,
+            0.04270960170250078
+          ],
+          "mean": 0.02819256138729339,
+          "raw_epistemic_variance": 2.6199976880641237e-05,
+          "truth": 0.03750064625051518
+        },
+        "index": 4792,
+        "specific_impulse_s": {
+          "interval": [
+            1762.0916881534963,
+            2358.9639396314647
+          ],
+          "mean": 2060.5278138924805,
+          "raw_epistemic_variance": 28533.4386607721,
+          "truth": 2388.7969722963253
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.030837329691428366,
+            0.04980326452688889
+          ],
+          "mean": 0.0352862242116815,
+          "raw_epistemic_variance": 2.0655092142082926e-05,
+          "truth": 0.04021841927564976
+        },
+        "index": 5152,
+        "specific_impulse_s": {
+          "interval": [
+            1952.823431368235,
+            2492.6964457248223
+          ],
+          "mean": 2222.7599385465287,
+          "raw_epistemic_variance": 23343.962368187298,
+          "truth": 2413.0414046607243
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.024440190512610264,
+            0.043406125348070784
+          ],
+          "mean": 0.028889085032863394,
+          "raw_epistemic_variance": 2.539259728880893e-05,
+          "truth": 0.03782360099720436
+        },
+        "index": 5752,
+        "specific_impulse_s": {
+          "interval": [
+            1798.45977962553,
+            2387.4647775787757
+          ],
+          "mean": 2092.9622786021528,
+          "raw_epistemic_variance": 27786.208801370718,
+          "truth": 2419.3202742895683
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.027072239195788866,
+            0.046038174031249386
+          ],
+          "mean": 0.031521133716041996,
+          "raw_epistemic_variance": 2.5343361873512216e-05,
+          "truth": 0.04200210840926077
+        },
+        "index": 5872,
+        "specific_impulse_s": {
+          "interval": [
+            1922.0344286059735,
+            2533.327680126321
+          ],
+          "mean": 2227.6810543661472,
+          "raw_epistemic_variance": 29928.885011166138,
+          "truth": 2621.625082406916
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.025530138847704584,
+            0.044496073683165105
+          ],
+          "mean": 0.029979033367957715,
+          "raw_epistemic_variance": 2.054879773559751e-05,
+          "truth": 0.03733666185832306
+        },
+        "index": 6592,
+        "specific_impulse_s": {
+          "interval": [
+            1711.5818367987615,
+            2254.3295135332805
+          ],
+          "mean": 1982.955675166021,
+          "raw_epistemic_variance": 23593.223465899497,
+          "truth": 2180.994342224437
+        }
+      },
+      {
+        "axial_thrust_n": {
+          "interval": [
+            0.024212358257733088,
+            0.043178293093193605
+          ],
+          "mean": 0.02866125277798622,
+          "raw_epistemic_variance": 2.498641455329362e-05,
+          "truth": 0.03399052026536377
+        },
+        "index": 6952,
+        "specific_impulse_s": {
+          "interval": [
+            1570.8579111180916,
+            2198.8537988889775
+          ],
+          "mean": 1884.8558550035345,
+          "raw_epistemic_variance": 31586.749395840096,
+          "truth": 2079.6617330448244
+        }
+      }
+    ]
+  },
+  "replicate_id": "group-split-2026090202",
+  "schema_version": "4.0"
+}
