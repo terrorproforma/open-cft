@@ -17,4 +17,16 @@
 
 ## After execution
 
-- Pending exactly-once evidence.
+- Geometry preprocessing succeeded: 506/512 raw rows were valid, 64 required
+  constructor-confirmed correction, six were rejected with complete traces,
+  and all 240 frozen rows rebuilt hash-identically.
+- Staged access worked through method data generation: only candidate and
+  method fields existed when model fitting began.
+- The run exposed a preregistration implementation defect, not a scientific
+  model result: `_build_snapshots` referenced `math.sqrt` without importing
+  `math`.
+- Because the lock was already claimed, adding the import and resuming would
+  violate the protocol. No model/rank/budget was selected and no predictive,
+  topology, coverage, or latency gate can be reported.
+- The failure bundle preserves 144/144 low and 144/144 fine completions, one
+  model-fit access, and zero calibration/assessment accesses.

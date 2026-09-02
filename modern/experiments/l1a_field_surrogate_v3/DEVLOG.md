@@ -15,4 +15,15 @@
 
 ## Execution
 
-- Pending pushed preregistration and one detached lock-claimed execution.
+- Initial pushed preregistration `1f53e7b` was amended before lock creation
+  because dependency-lock reconstruction compared runtime tuples with sealed
+  JSON lists. Final pushed preregistration is
+  `98bba6344b8422c918ab091eb593d09bd693b143`.
+- The single lock-claimed execution completed all 144 candidate+method coarse
+  solves and all 144 corresponding fine solves.
+- Method selection then failed during the first model fit with
+  `NameError: name 'math' is not defined` in the preregistered runner.
+- No calibration or assessment fields were materialized; both future-label
+  access counters remained zero.
+- The exclusive lock is retained. No code patch or lock-claimed rerun was
+  performed.

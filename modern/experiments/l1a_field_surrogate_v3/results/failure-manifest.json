@@ -1,0 +1,24 @@
+{
+  "exception_message": "name 'math' is not defined",
+  "exception_type": "NameError",
+  "exclusive_lock_retained": true,
+  "failure_hash": "4b7d9732eccf0d5c0f75c3c15540cd80045be54d6a5e18aa783a3e6c08a7a4b3",
+  "preregistration_commit_sha": "98bba6344b8422c918ab091eb593d09bd693b143",
+  "protocol_hash": "0df8883caa0fc1b9ae5d5db484adf1a924c0e51ffd5fdcdccff2e0a799019e24",
+  "provenance_hash": "2991325aff6fcf17f7be489c533134a591a85f3952e1dc8dcf3ca74b3d017a64",
+  "rerun_performed": false,
+  "schema_version": "cft-revival.l1a-field-surrogate-v3.failure/3.0.0",
+  "stage": "method-selection",
+  "stage_access_counters": {
+    "assessment_label_accesses": 0,
+    "calibration_label_accesses": 0,
+    "fine_completed": 144,
+    "fine_solver_accesses": 144,
+    "low_completed": 144,
+    "low_solver_accesses": 144,
+    "method_label_accesses": 0,
+    "model_fit_accesses": 1
+  },
+  "status": "failed-execution",
+  "valid_prospective_result": true
+}
