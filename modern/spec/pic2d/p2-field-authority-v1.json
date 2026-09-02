@@ -1,0 +1,55 @@
+{
+  "schema": "cft.pic2d.p2-field-authority.v1",
+  "design_id": "divergent-exit-stack",
+  "required_qualification": "NUMERICAL_P2_QUALIFIED",
+  "source_of_declaration": "modern/experiments/cft_orbit_wall_loss_v3/protocol.json (branch exp/cft-orbit-wall-loss-v3) field_adapter.maps.primary and .refined; hashes re-verified against the committed artifacts at load time",
+  "sampling_regions": [
+    "injector-zone",
+    "channel-straight",
+    "channel-divergent-exit",
+    "dielectric-straight",
+    "dielectric-divergent-exit"
+  ],
+  "sampling_region_justification": "All five regions carry reluctivity 1/mu_0 and no source in the P2 problem, so A_phi is smooth across their geometric interfaces; the PIC samples psi over the whole channel bounding box r in [0, 3 mm], z in [0, 24 mm]. Ferromagnetic, magnet and anode regions are never sampled.",
+  "bounding_box": {
+    "r_min_m": 0.0,
+    "r_max_m": 0.003,
+    "z_min_m": 0.0,
+    "z_max_m": 0.024
+  },
+  "psi_grids": {
+    "primary": {
+      "radial_intervals": 24,
+      "axial_intervals": 96,
+      "spacing_note": "dr = 0.125 mm, dz = 0.25 mm: identical spacing to the orbit campaign primary map"
+    },
+    "refined": {
+      "radial_intervals": 48,
+      "axial_intervals": 192,
+      "spacing_note": "dr = 0.0625 mm, dz = 0.125 mm: identical spacing to the orbit campaign refined map"
+    }
+  },
+  "maps": {
+    "primary": {
+      "checkpoint_path": "modern/examples/fem_reference/artifacts/third-level/divergent-exit-stack/checkpoints/divergent-exit-stack.level-1.json",
+      "checkpoint_file_sha256": "bbdb0757191c28df9b455452ddb77f810a975a4a4493e5ba3d40c618db58ebd6",
+      "checkpoint_payload_sha256": "7630287a840aff41a7ee7d1896323a6fdf316dfc97ac375f3d1ae7de6baf8f88",
+      "mesh_sha256": "df005a93500db61857cfd671837b926f60fff00af35161c614a9f314b7128271",
+      "run_sha256": "e6eadc929d8c7af2846882a8a0e9b0abcd1336ddf5ca2040c5b1bd9067a18abe",
+      "sidecar_file_sha256": "f9f5fe6e4904289434ad40795af30b6c4f7bb1844b3457eca64be693f330a371"
+    },
+    "refined": {
+      "checkpoint_path": "modern/examples/fem_reference/artifacts/third-level/divergent-exit-stack/checkpoints/divergent-exit-stack.level-2.json",
+      "checkpoint_file_sha256": "c8f12bfdf8401302d101efc9aad3d332a06d5baf33859d5525c951b9457b5172",
+      "checkpoint_payload_sha256": "21174169539b3f8816291d504fade95e8a1126f2a6295cab8eb926b4ecb4a75e",
+      "mesh_sha256": "45029830a0c4083767e089baed5fac1ca10b6a13212f29a1f579d17bfd2f73e2",
+      "run_sha256": "bee12cf66a9d63f0d36747a630ebd6390584db5551fa30167abf27f5f1f5e2cf",
+      "sidecar_file_sha256": "5b73398b8eccc110e6fbedefe54420024ff58c3d122ecb3347c330d45c5e5f51"
+    }
+  },
+  "field_convention": "B_r = -r dg/dz, B_z = 2 g + r dg/dr with g = (psi - psi_axis)/r^2 (cft_revival.orbit_mc.fields.PsiBicubicField); equivalently B_r = -(1/r) dpsi/dz, B_z = (1/r) dpsi/dr",
+  "plasma_material_id": "qualified-divergent-exit-mu0-box",
+  "withheld_midcell_stride": 2,
+  "maximum_b_relative_rms": 0.05,
+  "maximum_b_component_absolute_error_t": 0.02
+}
