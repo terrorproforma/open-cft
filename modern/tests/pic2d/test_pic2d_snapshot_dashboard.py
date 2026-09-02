@@ -15,7 +15,8 @@ import pytest
 MODERN = Path(__file__).resolve().parents[2]
 GENERATOR_PATH = MODERN / "visualization" / "generate_pic2d_cft_snapshot.py"
 CHECKED_HTML = MODERN / "visualization" / "pic2d-cft-snapshot.html"
-RESULTS = MODERN / "experiments" / "pic2d_cft_snapshot_v1" / "results"
+RESULTS = MODERN / "experiments" / "pic2d_cft_snapshot_v2" / "results"
+HISTORY_RESULTS = MODERN / "experiments" / "pic2d_cft_snapshot_v1" / "results"
 
 
 def _load_generator():
@@ -45,10 +46,25 @@ def test_payload_is_hash_bound_and_claim_bounded(payload) -> None:
     assert [case["id"] for case in payload["cases"]] == list(manifest["cases"])
     for case in payload["cases"]:
         assert case["summary_sha256"] == manifest["cases"][case["id"]]["summary_sha256"]
-        assert case["stop_reason"] in {"target_steps_reached", "wall_clock_budget_reached", "runtime_stability_gate_stopped_run"}
+        assert case["stop_reason"] in GENERATOR.STOP_REASONS
         assert len(case["maps"]["n_e_per_m3"]) == len(case["grid_r_m"])
         assert case["series"]["time_s"] and case["series"]["electrons"]
+        assert case["plateau"] is not None and case["ledger"] is not None
+        assert case["series"]["interval_electrode_work_j"]
+    assert payload["budget"]["n_max_per_m3"] > 0
     GENERATOR.validate_payload(payload)
+
+
+@pytest.mark.skipif(not (HISTORY_RESULTS / "manifest.json").is_file(), reason="v1 history results are not materialised")
+def test_history_panel_keeps_v1_fail_closed_cases(payload) -> None:
+    history = payload["history"]
+    assert history is not None
+    v1 = json.loads((HISTORY_RESULTS / "manifest.json").read_text(encoding="utf-8"))
+    assert [case["id"] for case in history["cases"]] == list(v1["cases"])
+    assert all(case["stop_reason"] == "runtime_stability_gate_stopped_run" for case in history["cases"])
+    assert "fail-closed" in history["lesson"]
+    html = GENERATOR.render_html(payload)
+    assert 'id="history"' in html and 'id="budget"' in html
 
 
 def test_generation_is_byte_deterministic_and_checked_html_is_current(payload, tmp_path: Path) -> None:
@@ -121,6 +137,11 @@ def test_tampered_payload_is_rejected(payload) -> None:
     changed["cases"][0]["maps"]["phi_v"].pop()
     with pytest.raises(ValueError):
         GENERATOR.validate_payload(changed)
+    if payload["history"] is not None:
+        changed = deepcopy(payload)
+        changed["history"]["cases"][0]["stop_reason"] = "converged"
+        with pytest.raises(ValueError):
+            GENERATOR.validate_payload(changed)
 
 
 def test_manifest_tampering_is_detected(tmp_path: Path) -> None:

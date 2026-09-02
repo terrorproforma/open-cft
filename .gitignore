@@ -94,3 +94,9 @@ CFTOpt-sensitivity_*.csv
 !modern/experiments/pic2d_cft_snapshot_v1/results/**/series.npz
 modern/experiments/pic2d_cft_snapshot_v1/results/**/checkpoint-*.npz
 modern/experiments/pic2d_cft_snapshot_v1/results/**/checkpoint-latest.*
+!modern/experiments/pic2d_cft_snapshot_v2/results/
+!modern/experiments/pic2d_cft_snapshot_v2/results/**
+!modern/experiments/pic2d_cft_snapshot_v2/results/**/maps.npz
+!modern/experiments/pic2d_cft_snapshot_v2/results/**/series.npz
+modern/experiments/pic2d_cft_snapshot_v2/results/**/checkpoint-*.npz
+modern/experiments/pic2d_cft_snapshot_v2/results/**/checkpoint-latest.*

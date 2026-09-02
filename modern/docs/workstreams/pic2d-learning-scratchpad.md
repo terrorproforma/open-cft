@@ -74,3 +74,72 @@ File policy: `COMMITTED` workstream evidence (`modern/docs/workstreams/pic2d-*`)
   approximations near the exit; effects are unquantified.
 - Ledger residual includes untracked electrode work; energy closure is not
   demonstrated for the open system.
+
+## 2026-09-03 phase 2 (v1.1 step, snapshot v2)
+
+### Learnings
+
+- [self] The runtime `ω_pe Δt` gate reads the instantaneous peak *node*
+  density. Axis nodes hold a handful of macro-particles, so the gate sees
+  2–3× shot noise above the window-averaged peak (v1: 3.2e18 node vs 1.5e18
+  window; v2 attempt 1: 1.4e18 vs 4.7e17). Budget Δt against the node peak,
+  not the physical peak, or the gate fires on noise. Halving Δt (1.5 ps) put
+  the trip density 14× above the design ceiling.
+- [self] With static neutrals there is no saturation channel until ions reach
+  the boundaries (~1 µs): the 0-D particle balance at the *observed* T_e tells
+  you whether the avalanche can saturate at all (v1: source/loss = 12 at
+  n_g = 5e20, 2.4 at 1e20, 1.2 at 5e19). Pick n_g from that ratio, then the
+  injection current from the power balance.
+- [tool] Warp compiles one block width per module: a `wp.tile_*` kernel with
+  `block_dim=64` and another launched at the default 256 in the same module
+  fails at compile time (“last dimension 64 does not match block width 256”).
+  Use one block constant for every tiled kernel in the module.
+- [tool] `wp.tile_broadcast`/`wp.untile` assume block_dim > 1 and break on the
+  Warp CPU device; `wp.tile_extract(wp.tile_sum(wp.tile(x)), 0)` works on both.
+- [tool] Millions of same-address float64 `wp.atomic_add` calls serialise; one
+  block reduction plus one atomic per 256 threads made the push/MCC kernels
+  cheap and the tallies stay exact integers. On this WDDM host a kernel launch
+  costs ~0.5 ms under GPU sharing, so fusing launches beats vectorising.
+- [tool] `Set-Content -NoNewline` on a line array joins lines with *nothing*
+  and destroyed a 450-line untracked file; indentation survived so a regex
+  splitter on runs of ≥4 spaces recovered it, but the fix is to commit WIP
+  before any shell-side rewrite and to never edit tracked text from
+  PowerShell one-liners.
+- [self] CPU/GPU parity of tallies must be tested without injection: the numpy
+  and Philox streams sample different injected particles, so only absorbed
+  counts of the common seed population are comparable.
+- [self] Ion subcycling k vs 2k: positions and φ agree to 1e-6/1e-3 but the
+  ion kinetic energy of a cold population accelerating from rest differs by
+  the half-step stagger (~2 %); test the observable that is supposed to agree.
+- [self] A 0-D balance with unmagnetised Bohm loss to every surface is a
+  *lower bound* on n_eq, and in a cusped field it is a loose one: after one
+  transit time the kinetic ion loss was only 10–35 % of the ionisation rate,
+  so the density ran 3.7–5.9× past the ceiling that bound was used to set. The
+  next operating point must be set from the measured kinetic loss fraction
+  (or from a lower injection current), not from the 0-D bound.
+- [self] Grid heating shows up as three consistent signals: hotter electrons on
+  the coarse grid (1.5–1.7×), a higher ionisation rate at equal density
+  (3.5×), and a positive ledger residual (+41 % of the electrode work vs −13 to
+  −18 % fine). Report all three together; one alone is ambiguous.
+- [tool] `Get-Item ... | Select-Object Length` prints nothing for a single
+  file in this shell; use `(Get-Item f).Length` or `Test-Path` when scripting
+  checks.
+
+### What worked
+
+- Diagnosing from the artifacts (checkpoint peak node, series, ledger) before
+  touching the code gave the operating point and the Δt budget in one pass.
+- Direct device block-Thomas beat warm-started PCG on these grids; keeping PCG
+  as a cross-check rather than the default avoided a tolerance argument.
+- Fail-closed gates stopped the first v2 attempt in 3–5 minutes, cheaply.
+
+### Open risks
+
+- No ion–neutral collisions or neutral depletion: at 1e20 m⁻³ depletion is
+  ~1 % over 1.6 µs (locally a few %), acceptable for a screening snapshot only.
+- The runtime gate is a device-side running maximum of the per-step peak node
+  density, enforced at the host sync: a violation is always caught, but the
+  run advances up to `device_sync_steps` (200) steps past it before stopping,
+  and those steps are in the checkpoint.
+- The ledger residual after electrode work is the scheme's grid heating and is
+  reported per case; it is not bounded analytically.

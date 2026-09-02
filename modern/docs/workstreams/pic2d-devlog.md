@@ -106,3 +106,130 @@
 - Did not merge into `feat/sota-foundation`; did not preregister anything;
   did not install packages; did not modify `cft_revival.pic` or other
   workstreams' code.
+
+## 2026-09-03 — phase 2: review-gate merge, v1 diagnosis, model v1.1, snapshot v2
+
+### Step 1 — merge of phase 1
+
+- `feat/pic-2d-axisymmetric` rebased onto `origin/feat/sota-foundation`
+  (6f3e6dd5); `.gitignore` conflict resolved keeping the LF-era rules and the
+  pic2d negations; `git ls-files --eol` shows no `i/lf w/crlf` entries.
+  `tests/pic2d` (58), `tests/pic`, `tests/orbit_mc`, `tests/visualization` and
+  the dashboard tests green; fast-forward push into `feat/sota-foundation` at
+  `62de2ca3`.
+
+### Step 2 — why v1 over-densified (`pic2d_cft_snapshot_v1/results/diagnosis.json`)
+
+- Trip cell: every case tripped on an **axis node** in the straight bore
+  (coarse-w1e5: node (i=0, j=106), r = 0, z = 10.6 mm, n_e = 3.35e18 m⁻³,
+  `ω_pe Δt` = 0.207 at Δt = 2 ps; gate density 3.14e18). The top-5 nodes are all
+  on the axis in every case; 21–29 % of the "hot" nodes are axis nodes. The
+  window-averaged map peak was 1.5–1.6e18 and the last series sample implied
+  2.7–3.0e18: the gate sees ~2.2× the window peak (shot noise on the
+  smallest-volume nodes).
+- Source vs loss over the run (coarse-w1e5, 55.6 ns): 5.77e10 ions created,
+  1.50e9 lost (1.44e9 wall, 4.0e7 anode, 1.8e7 exit) → loss/source = 2.6 %;
+  final rates 2.5e18 s⁻¹ created vs 4.2e16 s⁻¹ lost (1.7 %). Electron count
+  e-folding time 26.7–27.3 ns in all four cases. Ion transit: 1.14 µs axially at
+  300 V, 0.55 µs radially at the Bohm speed for 18 eV — the run ended at 5 % of
+  a transit time, so the avalanche had no loss channel yet.
+- 0-D equilibrium at the observed T_e = 18 eV (unmagnetised Bohm loss to all
+  surfaces, A_loss = 3.6e-4 m², V = 3.5e-7 m³; upper bound on loss, so n_eq is a
+  lower bound):
+
+| n_g (m⁻³) | source/loss at 18 eV | T_e for balance (eV) | n_eq (power balance at I_d = 64 mA) | λ_D (µm) | ω_pe (s⁻¹) |
+|---|---|---|---|---|---|
+| 5e20 | 12.1 | 3.9 | 6.3e17 | 39.7 | 4.5e10 |
+| 1e20 | 2.4 | 7.9 | 6.3e17 | 39.7 | 4.5e10 |
+| 5e19 | 1.2 | 14.0 | 6.3e17 | 39.7 | 4.5e10 |
+
+  (n_eq from the power balance scales with I_d, not n_g; at 3 mA it is ~1–2e17.)
+- Per-step cost, fine-w2.5e4 at 5.4 M macro-particles, before: 40.7 ms/step of
+  which host block-Thomas 18 ms, host↔device source/φ copies and per-step
+  count/statistics reads the rest of the non-kernel time; push+MCC dominated
+  the kernel time through same-address float64 atomics.
+
+### Step 3 — model v1.1 (`modern/spec/pic2d/pic2d-model-v1.1.json`)
+
+- Device block-Thomas solve (`method="device-direct"`) with the true-residual
+  contract enforced at each host sync; host reads only every
+  `device_sync_steps` (200) steps; per-block tile reductions replace the
+  per-particle atomics in push and MCC; ion subcycling `k = 8`; electrode-work
+  term `Σ_k V_k (ΔQ_induced,k − q_absorbed,k)` in the ledger.
+- After: the same fine case runs at 5.46 ms/step (Poisson 2.3 ms), 1.0 ns per
+  particle-step; the v2 coarse cases (0.13–0.27 M particles) at 1.2–2.0 ms/step
+  while four cases share the GPU. Single-process numbers per case are in the v2
+  manifest (`ms_per_step`).
+- Tests (`tests/pic2d/test_pic2d_v11_step.py`): device-direct parity (φ to
+  1e-10, positions to 1e-15 m), residual contract, exact integer tallies from
+  the tiled kernels, k vs 2k insensitivity, ledger closure (< 15 % of the
+  electrode work), provenance of `ion_subcycle`.
+- Operating point 300 V, n_g = 1e20 m⁻³, 3 mA at 2 eV; budget n_max = 4e17,
+  T_e = 8 eV → λ_D,min 33.2 µm, Δt = 1.5 ps (`ω_pe Δt` 0.054, `Ω_ce Δt` 0.077),
+  fine 60×480 cell/λ_D = 1.50, coarse 30×240 3.01 (gate 3.1 by design).
+- Not done, stated: neutral depletion (≈1 % over 1.6 µs), ion–neutral
+  elastic/CEX (no hash-bound Xe⁺–Xe source in the extract).
+
+### Step 4 — snapshot v2 (`modern/experiments/pic2d_cft_snapshot_v2`)
+
+- Attempt 1 at Δt = 3 ps: both coarse cases stopped fail-closed by the runtime
+  gate after 90 200 / 146 800 steps (0.27 / 0.44 µs): instantaneous node peak
+  1.4e18 vs window peak 4.7–5.4e17 and mean 1.1e17; I_d 3.5 mA still rising
+  (electron count +0.2 % per 200 steps). Protocol changed to Δt = 1.5 ps
+  (trip density 5.6e18), min 666 667 steps (1 µs), target 1 066 667 (1.6 µs),
+  180 ns averaging windows; the reasoning is recorded in `protocol.json`.
+- Attempt 2 (Δt = 1.5 ps, four cases sharing the RTX 5090, wall budget 7200 s
+  each; window = last complete or ≥ half-full 180 ns segment):
+
+| case | grid | W | steps | t (µs) / τ_i | wall (s) | ms/step (shared) | stop | I_d (mA) | I_beam,i (mA) | I_wall,i (mA) | peak / mean n_e (m⁻³) | ⟨T_e⟩_n (eV) | φ range (V) | ledger residual / electrode work | plateau (drift I_d, N_e) |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| coarse-w2.4e5 | 30×240 | 2.4e5 | 621 200 | 0.93 | 2 579 | 4.15 | ω_pe Δt gate | 4.36 | 1.35 | 6.09 | 2.36e18 / 5.71e17 | 11.1 | 0 … 353 | +41 % | no (14 %, 69 %) |
+| coarse-w1.2e5 | 30×240 | 1.2e5 | 757 000 | 1.14 | 3 896 | 5.15 | ω_pe Δt gate | 4.70 | 1.68 | 5.79 | 2.32e18 / 5.02e17 | 9.5 | 0 … 332 | +42 % | no (22 %, 64 %) |
+| fine-w6e4 | 60×480 | 6e4 | 1 022 000 | 1.53 | 7 212 | 7.06 | wall budget | 5.19 | 2.20 | 5.14 | 2.18e18 / 4.62e17 | 6.4 | −1 … 322 | −13 % | no (12 %, 24 %) |
+| fine-w3e4 | 60×480 | 3e4 | 802 000 | 1.20 | 7 219 | 9.00 | wall budget | 4.43 | 1.57 | 3.53 | 1.46e18 / 3.21e17 | 6.4 | −10 … 317 | −18 % | no (9 %, 19 %) |
+
+- Peak macro-particle counts 0.76 / 1.8 / 1.9 / 2.6 M (e⁻); the ms/step above
+  are with four processes on one GPU. Single-process from the final
+  checkpoints, GPU otherwise idle: 2.04 ms/step at 1.53 M particles (coarse
+  grid), 4.34 ms/step at 3.8 M and 5.45 ms/step at 5.3 M (fine grid), i.e.
+  1.0–1.3 ns per particle-step over a ~1.2 ms launch-bound floor (~40 launches
+  per step on WDDM). The ≤ 1.5 ms/step target at 1–2 M was not met (2.0 ms).
+- No plateau: after one ion transit time the ion loss (walls + exit + anode)
+  is 10 % (coarse) to 35 % (fine) of the ionisation rate; cumulative ions lost /
+  created 0.16 (coarse) and 0.33–0.35 (fine); the electron count still grows
+  19–69 % over the trailing 20 % of each run. The window peak density is
+  3.7–5.9× the a-priori ceiling n_max = 4e17 and the cells are 3–6 λ_D at the
+  end, so the v1.1 resolvability budget is exceeded by the kinetic discharge:
+  the 0-D estimate used an unmagnetised Bohm loss to all surfaces (an upper
+  bound on the loss), and the magnetised channel loses ions much more slowly.
+- Grid heating is visible: the coarse grid runs 1.5–1.7× hotter (9.5–11 vs
+  6.4 eV), ionises 3.5× faster at similar density, and its ledger residual is
+  +41 % of the electrode work (energy appearing), while the fine grid's is
+  −13 to −18 %. The electrode-work term is therefore necessary but not
+  sufficient for closure at these resolutions; the residual is reported per
+  case.
+- Convergence statement: not converged. Relative spread across the four cases
+  (window averages): φ_max 11 %, I_d 18 %, peak n_e 43 %, mean n_e 54 %,
+  ⟨T_e⟩ 57 %, exit and wall ion currents 50 %. The two fine cases agree better
+  with each other (I_d 4.4 vs 5.2 mA, ⟨T_e⟩ 6.4 vs 6.4 eV) than with the coarse
+  pair.
+- Dashboard `modern/visualization/pic2d-cft-snapshot.html` regenerated (v2
+  cases; v1 kept in a "fail-closed development history" panel with the 0-D
+  table; a-priori budget panel); 9 dashboard tests. Headless Chrome
+  screenshots: `%TEMP%\pic2d-cft-snapshot-v2-desktop.png` (1440×4800) and
+  `%TEMP%\pic2d-cft-snapshot-v2-narrow.png` (430×10400).
+
+### Step 5 — commits
+
+- `feat(pic2d): all-GPU step with warm-start PCG and ion subcycling`,
+  `feat(pic2d): v1.1 operating-point budget and optional neutral depletion`
+  (budget + spec + docs; depletion deferred and stated),
+  `chore(pic2d): snapshot v2 results and dashboard`; fast-forward into
+  `feat/sota-foundation` after the suites pass (SHAs in the session report).
+
+### Deliberate exclusions (phase 2)
+
+- No neutral depletion, no ion–neutral collisions, no change to the 300 V
+  anode; protocol v2 not edited after the runs (its hash is bound into every
+  summary); no preregistration; nothing outside `pic2d`, its experiments,
+  tests, spec and dashboard touched.
