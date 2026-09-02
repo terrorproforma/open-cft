@@ -1,0 +1,1 @@
+{"__cft_type__":"dataclass","class":"cft_revival.experiment_runtime.lifecycle.Decision","fields":{"accepted":true,"payload":{"field_adapter_passed":true,"manufactured_passed":true,"map_adapter_convergence_passed":true}}}
