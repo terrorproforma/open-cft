@@ -1,0 +1,36 @@
+{
+  "cuda_driver_runtime": [
+    13,
+    2
+  ],
+  "cuda_toolkit": [
+    12,
+    9
+  ],
+  "dependency_lock_hash": "9e242b70749cd8e645c26db0178e50850f1a79f545eede63ec39ff01d38a51bc",
+  "numpy": {
+    "distribution": "2.5.2",
+    "module_sha256": "a6958cb364663b7acce81ccfd58eeb65a2b34d5376157f924777b97211a73be4",
+    "version": "2.5.2"
+  },
+  "nvidia_smi": "NVIDIA GeForce RTX 5090, 595.97, 32607",
+  "protocol_hash": "a8b83ec80965da3ca91a746852af02e4a02d5a30dfeaf6901c486ada734ebc5a",
+  "pyproject": {
+    "git_blob": "a01feb138b297e58a8fd8f1c5900490afb65bedb",
+    "sha256": "1071951910ec4b6458f2787a44d7181d56cd339befde33cfa0a1d33d2259862c"
+  },
+  "python": {
+    "executable_sha256": "4d6f5f81a4bca11191c4c7c6b43632694d0a4ce74e068619d8fdc161d469859a",
+    "version": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]"
+  },
+  "schema_version": "cft-revival.l1a-field-surrogate-v4.dependency-lock/4.0.0",
+  "v3_coordinate_evidence": {
+    "commit": "0b957caa21dcfb49b42026f30fc586ea8778ea76",
+    "partitions_blob": "25887c38bbc5bae8affc0774c079e91b07675d92"
+  },
+  "warp": {
+    "distribution": "1.14.0",
+    "module_sha256": "f29f6368f025003a48a17a0dd6ed4eb1ef3d825c041026c07a6e1d00a31abc52",
+    "version": "1.14.0"
+  }
+}
