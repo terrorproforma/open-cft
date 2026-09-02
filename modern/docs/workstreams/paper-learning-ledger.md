@@ -135,3 +135,38 @@
 - [user] Draft results stay outside `manuscript.tex` until a claim record and
   gate admit them; `manuscript_integration.status` in the evidence file
   records that boundary explicitly.
+
+## 2026-09-03 — Admitting the wall-loss v4 campaign
+
+- [self] A numerical campaign that is neither L0 nor an L1--L3 level needs its
+  own gate kind, not a forced fit into `GATE-L1`: the L1 manifest schema
+  demands an L0 mapping and would license topology and geometry-response
+  claims that the campaign cannot support. `numerical-campaign` gates reuse
+  the typed-manifest machinery verbatim and add `opens_level: null`.
+- [self] `\input{sections/...}` is a bypass of the claim matrix unless the
+  checker flattens it first: `extract_macros` and `find_unregistered_claims`
+  only saw `manuscript.tex`, so a section could carry unregistered
+  quantitative prose. Flatten before every prose check and let
+  `_heading_at` resolve the section's own `\subsection` as the claim location.
+- [self] Exact-text claims that contain macros work unchanged
+  (`_normalize_tex` compares the TeX source), so a registered claim can be
+  fully macro-bound and still be verified character for character.
+- [self] Build `authorized_tex` by extracting the `\EvidenceClaim` bodies from
+  the flattened manuscript and normalising them, never by retyping; the first
+  attempt to hand-copy a body would have failed on a `{}` after a macro.
+- [tool] `_parse_group` keeps `%` comments inside a macro body; a `%` used to
+  suppress a newline in `\newcommand{\WallLossEvidenceRevision}` reached the
+  comparison until the checker stripped comments first. A trailing newline
+  inside a `\newcommand` body renders as a space (the existing
+  `\EvidenceRevision` does this), so the checker also strips whitespace.
+- [self] Claim IDs in TeX comments trip the detached-ID rule
+  (`\bCLM-\d+\b` on masked text) because comments are not stripped there.
+  Keep IDs out of comments rather than loosening the rule.
+- [self] `Overfull \hbox` is fatal for `build.py`; a one-word rewording of the
+  sentence that precedes a 40-hex `\texttt` hash moved a 2.9 pt overflow to
+  zero. Test both the manuscript and the standalone driver, and give the
+  standalone driver the same `microtype` as the manuscript so the two agree.
+- [self] `require_committed=True` means the repository check can only pass
+  after the manifest is committed; run the checker before the commit to see
+  every other error, commit, rerun, and amend locally if anything remains
+  (never force-push).

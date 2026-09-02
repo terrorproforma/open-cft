@@ -84,12 +84,15 @@ class WallLossEvidenceTests(unittest.TestCase):
             self.evidence["bundle"]["tolerated_crlf_sidecars"],
             sorted(f"artifacts/orbits/{case}.json.sha256" for case in wl4.CASES),
         )
-        self.assertEqual(
-            self.evidence["manuscript_integration"]["status"],
-            "draft-section-not-wired-into-manuscript",
-        )
+        integration = self.evidence["manuscript_integration"]
+        self.assertEqual(integration["status"], "admitted")
+        self.assertEqual(integration["gate_id"], wl4.GATE_ID)
+        self.assertEqual(integration["manifest_id"], wl4.MANIFEST_ID)
+        self.assertEqual(integration["manifest_path"], wl4.MANIFEST_PATH.as_posix())
         manuscript = (REPO / "paper/manuscript.tex").read_text(encoding="utf-8")
-        self.assertNotIn("wall-loss-v4", manuscript)
+        self.assertEqual(manuscript.count(wl4.SECTION_BINDING), 1)
+        self.assertEqual(manuscript.count(wl4.GENERATED_BINDING), 1)
+        self.assertLess(manuscript.find(wl4.GENERATED_BINDING), manuscript.find("\\begin{document}"))
 
     def test_every_macro_value_traces_to_a_hashed_artifact(self) -> None:
         macros = self.evidence["macros"]
@@ -170,12 +173,12 @@ class WallLossEvidenceTests(unittest.TestCase):
         self.assertEqual(used - defined, set(), "section uses undefined macros")
         self.assertIn("WlfCaseTable", used)
         self.assertIn("WlfCellTable", used)
-        body = re.sub(r"(?m)^%.*$", "", self.section)
-        body = re.sub(r"\\(?:label|ref)\{[^}]*\}", "", body)
-        body = re.sub(r"\\Wlf[A-Za-z]+", "", body)
-        body = re.sub(r"\bP2\b", "", body)
-        body = re.sub(r"\\begin\{minipage\}\{[^}]*\}", "", body)  # layout width, not a result
-        self.assertEqual(re.findall(r"\d", body), [], "hand-typed digits in the section")
+        self.assertEqual(
+            check_paper.section_literal_digits(self.section, "Wlf"), [], "hand-typed digits in the section"
+        )
+        # The helper must still see digits typed outside macros, claim IDs and layout syntax.
+        self.assertEqual(check_paper.section_literal_digits(self.section + "\n512 orbits\n", "Wlf"), ["5", "1", "2"])
+        self.assertEqual(check_paper.section_literal_digits("\\EvidenceClaim{CLM-013}{\\WlfCaseCount{} cases}", "Wlf"), [])
         self.assertIn("Collisionless full-orbit electron wall loss in the divergent-exit field", self.section)
         for heading in ("Method.", "Results.", "Numerical convergence.", "Interpretation."):
             self.assertIn(f"\\paragraph{{{heading}}}", self.section)
@@ -204,7 +207,11 @@ class WallLossEvidenceTests(unittest.TestCase):
         self.assertEqual(sidecar["output"]["sha256"], hashlib.sha256(self.tex_bytes).hexdigest())
         self.assertEqual(sidecar["manifest"]["sha256"], hashlib.sha256(self.evidence_bytes).hexdigest())
         self.assertEqual(sidecar["evidence_revision"], wl4.RESULTS_COMMIT_SHA)
-        self.assertEqual(sidecar["claim_ids"], [])
+        self.assertEqual(sidecar["claim_ids"], [wl4.ARTIFACT_CLAIM_ID])
+        artifact_macros = check_paper.extract_macros(self.tex, "ArtifactClaim", 3)
+        self.assertEqual(len(artifact_macros), 2)
+        for macro in artifact_macros:
+            self.assertEqual(macro.arguments[:2], (wl4.ARTIFACT_CLAIM_ID, wl4.ARTIFACT_ID))
 
     def test_tampered_bundle_or_macro_is_rejected(self) -> None:
         changed = self.tex.replace("\\newcommand{\\WlfPooledWall}{2962}", "\\newcommand{\\WlfPooledWall}{2963}")

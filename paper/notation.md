@@ -33,6 +33,17 @@
   no admitted result while `GATE-L2` is closed.
 - **L3** — reserved paper level for PIC and/or experimental comparison. It has
   no admitted result while `GATE-L3` is closed.
+- **Numerical campaign** — an accepted, preregistered numerical result about a
+  declared component model that is not a physics level of the ladder. It is
+  admitted by a `numerical-campaign` gate whose typed manifest is committed
+  and cross-checked against the sealed results bundle; it opens no L gate. The
+  only current one is `GATE-WALL-LOSS-V4`, classified
+  `collisionless_prescribed_field_test_particle_wall_loss_not_pic`.
+- **Test-particle wall-hit probability** — the fraction of collisionless
+  electron orbits, launched by a preregistered protocol in one prescribed
+  magnetostatic field, that first intersect the dielectric wall rather than
+  leave the domain. A pooled equal-weight value over launch strata is a design
+  average of the protocol, not a plasma loss rate.
 - **F0--F3** — optimization information-source labels from the campaign spec:
   corrected-analytical, fields/reduced, hybrid, and PIC/experiment.
 - **Physics level versus information source** — L-labels describe the paper's
@@ -66,3 +77,8 @@
   applicability checks.
 - Working-tree output is not publication evidence until its manifest and
   artifacts are committed and accepted.
+- A collisionless test-particle wall-hit fraction is not a plasma loss rate,
+  a PIC result, a self-consistent result, or thruster performance.
+- The launch cells of the wall-loss protocol are protocol positions in one
+  qualified field; they are not demonstrated confinement cells, and the
+  campaign does not open `GATE-L1`.

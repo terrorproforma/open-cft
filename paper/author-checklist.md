@@ -29,6 +29,14 @@
 - [ ] Label hypothetical bounds as neither calibration nor uncertainty
   intervals.
 - [ ] Report failed, rejected, censored, and out-of-domain cases.
+- [ ] Describe the wall-loss campaign only as
+  `collisionless_prescribed_field_test_particle_wall_loss_not_pic`: not PIC,
+  not self-consistent, not thruster performance, not validated; the pooled
+  fraction is an equal-weight design average of a bimodal per-cell result.
+- [ ] Keep every number of the wall-loss section a `\Wlf...` macro; never
+  type a digit into `paper/sections/wall-loss-v4.tex`.
+- [ ] Keep the mirror-picture and multi-cell-topology statements in the
+  Discussion labelled as interpretation; cite no unadmitted topology result.
 
 ## Methods and uncertainty
 
@@ -47,6 +55,8 @@
 ## Reproducibility
 
 - [ ] Run `python paper/scripts/generate_tables.py`.
+- [ ] Run `python paper/scripts/generate_wall_loss_v4_evidence.py` and confirm
+  `git status` shows no change to the three generated wall-loss files.
 - [ ] Run `python paper/scripts/check_paper.py`.
 - [ ] Run `python -m unittest discover -s paper/tests -v`.
 - [ ] Run `python paper/scripts/verify_reproducible_build.py` and require two

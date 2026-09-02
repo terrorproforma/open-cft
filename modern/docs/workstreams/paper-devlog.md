@@ -180,3 +180,99 @@
   (pdflatex/bibtex, MiKTeX installer disabled).
 - Standalone section: two pdflatex passes, no errors, no undefined references,
   no overfull boxes; three pages.
+
+## 2026-09-03 — Wall-loss v4 admitted to the claim matrix and manuscript
+
+### Scope
+
+- Worktree `uni-project-paper-v4`, branch `paper/wall-loss-v4-claim` from
+  `origin/feat/sota-foundation` (`5b85d2ad`). Paper-owned paths and
+  `modern/docs/workstreams/paper-*` only; nothing under
+  `modern/experiments/**/results/` or `FYP/` touched.
+
+### Evidence level decision
+
+- The campaign is numerical evidence about a collisionless, prescribed-field,
+  test-particle model (`collisionless_prescribed_field_test_particle_wall_loss_not_pic`).
+  It is not L1 (no reduced performance model, no L0 mapping, coupling export
+  is export-only), not L2 (not coupled), not L3 (not PIC, not experimental).
+  The framework's mechanism for accepted numerical evidence is the L0 pattern:
+  typed committed manifest, artifacts bound by Git blob and SHA-256 at a
+  resolvable revision, exact registered claim text, generated artifacts with
+  sidecars. That mechanism is applied through a new gate kind,
+  `numerical-campaign` (`GATE-WALL-LOSS-V4`, `opens_level: null`), at the
+  verification tier of the V&V protocol; L1--L3 stay closed.
+
+### Added
+
+- `paper/evidence/manifests/wall-loss-v4.json`
+  (`paper-test-particle-campaign-manifest` 1.0, level `numerical-campaign`):
+  29 source files bound at `6922a3cf` (results manifest, campaign result,
+  gates, convergence, protocol, authorities, P2 authority, field-map
+  convergence, manufactured gates, coupling export, terminal record, lock,
+  shakedown, nine case summaries, two field-evidence records, two transitions,
+  and the frozen preregistration protocol/authorities/shakedown), the post-hoc
+  audit bound at `258f69b2`, 35 metrics copied from the raw artifact values.
+- Gate `GATE-WALL-LOSS-V4` in `result-gates.json` with 20 metric constraints,
+  the section binding, heading, revision macro and prohibited inferences;
+  L1--L3 gates now declare `kind: physics-level`.
+- Claim records CLM-012 (abstract summary), CLM-013 (campaign result, with
+  `evidence_level`, `evidence_level_justification`, `bindings`, `non_claims`),
+  CLM-014 (generated tables `TAB-WALL-LOSS-V4`), CLM-015 (numerical
+  verification), CLM-016 (model-bounded scope limitation), CLM-017 (labelled
+  Discussion interpretation: zero reflections, mirror picture unsupported);
+  manifest `WALL-LOSS-V4-20260902-4608-V1` registered in `claims.json`.
+- `check_paper.py`: flattens `\input{sections/...}` before every prose,
+  claim and citation check; recognises `numerical-campaign` gates; validates
+  the campaign manifest as a typed gate manifest (committed blob, roles,
+  metric constraints) and then runs `_check_wall_loss_campaign` (byte-identical
+  regeneration of evidence/TeX/sidecar from the bundle, artifact hashes on
+  disk, metric == raw macro value, results tree unchanged, preregistration and
+  audit revision chains, section macro-only rule with no literal digits,
+  classification macro rendering, registered non-claims present, section and
+  macro-file bindings exactly once, `\WallLossEvidenceRevision` spells the
+  revision, claim records bound and located); artifact contract now dispatches
+  by `generator_module` and accepts a declared `artifact_claim_count`;
+  `claims.json` manifest entries are checked against their files.
+- `manuscript.tex`: `\input{generated/wall-loss-v4.tex}` in the preamble;
+  new `\section{Accepted numerical campaign: collisionless electron wall loss}`
+  after the L0 timing status and before the L1 gate, containing
+  `\input{sections/wall-loss-v4.tex}`; abstract sentence CLM-012 (macro-bound);
+  evidence-boundary text and date line name both revisions; a sentence after
+  the L1 gate box stating the campaign leaves it closed; new
+  `\section{Discussion}` (interpretation only) with CLM-017 and the open
+  question on the multi-cell wall-cusp topology (topology experiments are not
+  admitted, so they are not cited as evidence); Limitations, data availability
+  and Conclusion updated without new numbers.
+- Section: result, verification and interpretation sentences are now exact
+  `\EvidenceClaim` bodies; new derived macro `\WlfToleratedSidecars` replaces
+  the one number that had been typed as a word; the standalone driver defines
+  the claim macros and loads `microtype` like the manuscript.
+- Tests: `test_wall_loss_v4_admission.py` (14 adversarial tests: tampered
+  metric, wrong level, wrong classification, missing non-claim, unbound or
+  relocated claim, revision-macro mismatch, duplicated or misplaced binding,
+  evidence-file substitution, heading resolution through flattening, contract
+  item); two existing wall-loss tests updated for the admitted state.
+
+### Validation
+
+- Before the commit `python paper/scripts/check_paper.py` reported exactly one
+  error, the fail-closed "accepted manifest is not committed at HEAD"; after
+  the commit it passed.
+- `python -m unittest discover -s paper/tests`: 33 tests OK (19 existing plus
+  14 in `test_wall_loss_v4_admission.py`; two wall-loss tests updated).
+- `python paper/scripts/build.py`: clean; `paper/build/manuscript.pdf`
+  303,672 bytes, SHA-256
+  `bdfdba4cc65e9b0a15723dfcaae5116394824a3f0dd3c5d77f65b13062736fde`, 11
+  pages, no LaTeX errors, undefined references or overfull boxes.
+- `python paper/scripts/verify_reproducible_build.py`: two clean builds
+  byte-identical.
+- Pages rendered with MiKTeX `pdftoppm` and inspected: the campaign section
+  opens on page 5 (Section 7, subsection 7.1), the per-case and per-cell tables
+  (Tables 2 and 3) render on page 7, the boxed model-bounded interpretation on
+  page 8 ahead of the closed L1 gate, and the Discussion on page 9; the
+  abstract sentence and the two-revision date line render on page 1.
+- Standalone section driver: two pdflatex passes, no errors, no undefined
+  references, no overfull boxes (with `microtype`, as in the manuscript).
+- One overfull box appeared while integrating (2.9 pt, the sentence before the
+  40-hex L0 revision); fixed by rewording the sentence, not the hash.

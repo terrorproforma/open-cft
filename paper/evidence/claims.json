@@ -7,7 +7,9 @@
     "authorization_rule": "The complete macro body, claim ID, and manuscript section must exactly match authorized_tex and allowed_locations.",
     "artifact_rule": "Quantitative table or figure claims require an authorized artifact ID, generated output, provenance sidecar, and manuscript binding.",
     "prose_rule": "Claim-bearing quantitative, accuracy, validation, parity, and performance prose outside a registered macro or artifact is prohibited.",
-    "working_tree_rule": "Uncommitted scientific inputs are never evidence; paper-owned generated sources are hash-bound pending integration."
+    "working_tree_rule": "Uncommitted scientific inputs are never evidence; paper-owned generated sources are hash-bound pending integration.",
+    "campaign_macro_rule": "A section admitted by a numerical-campaign gate may render numbers only through evidence macros whose value, artifact path, JSON pointer and SHA-256 are recorded in the campaign's evidence file and regenerated from the sealed bundle by the checker; the section may type no literal digit, and its claim-bearing sentences remain exact EvidenceClaim bodies bound to the campaign manifest.",
+    "section_input_rule": "Files bound through \\input{sections/...} are flattened into the manuscript before every claim, citation and prose check; a section is not a way around the matrix."
   },
   "sources": {
     "SRC-FIRST-RESULTS": {
@@ -52,6 +54,16 @@
       "path": "paper/evidence/l0-run-manifest.json",
       "document_type": "paper-L0-run-evidence-manifest",
       "schema_version": "1.0"
+    },
+    "WALL-LOSS-V4-20260902-4608-V1": {
+      "path": "paper/evidence/manifests/wall-loss-v4.json",
+      "document_type": "paper-test-particle-campaign-manifest",
+      "schema_version": "1.0",
+      "gate_id": "GATE-WALL-LOSS-V4",
+      "evidence_revision": "6922a3cf97d261735266aa1a5a0c0c9683e021ca",
+      "preregistration_revision": "757e365f9f667620c7610663574294c3b71e1f51",
+      "evidence_file": "paper/evidence/wall-loss-v4.json",
+      "posthoc_audit": "modern/experiments/cft_orbit_wall_loss_v4/POSTHOC_AUDIT.md"
     }
   },
   "claims": [
@@ -167,6 +179,147 @@
       "prohibited_inferences": ["recorded run revision", "raw CUDA buffer retention"]
     },
     {
+      "id": "CLM-012",
+      "status": "verified",
+      "claim_class": "campaign-summary",
+      "authorized_tex": "A preregistered one-shot collisionless test-particle campaign of \\WlfPooledTrials{} electron orbits in a qualified finite-element magnetostatic field is admitted as numerical evidence: it recorded \\WlfPooledReflected{} reflections and a per-cell bimodal wall-hit pattern, and it is neither a self-consistent plasma calculation nor a thruster-performance result.",
+      "allowed_locations": ["Abstract"],
+      "manifest_ids": ["WALL-LOSS-V4-20260902-4608-V1"],
+      "classification": "collisionless_prescribed_field_test_particle_wall_loss_not_pic",
+      "permitted_scope": [
+        "existence and preregistered one-shot status of the admitted campaign",
+        "macro-bound orbit count and reflection count",
+        "qualitative per-cell bimodality as detailed by CLM-013",
+        "the not-self-consistent and not-performance boundary"
+      ],
+      "prohibited_inferences": [
+        "plasma or thruster performance",
+        "self-consistent or particle-in-cell behaviour",
+        "experimental validation",
+        "a physical loss rate"
+      ]
+    },
+    {
+      "id": "CLM-013",
+      "status": "verified",
+      "claim_class": "quantitative-campaign-result",
+      "authorized_tex": "The run terminated in state \\texttt{\\WlfTerminalState} with \\WlfGatesTrue{} of \\WlfGateCount{} binding gates true and \\WlfValidatorsPassed{} validator calls with \\WlfValidatorsFailed{} failures; every case was re-integrated by the exact authority replay (\\WlfReplayCount{} replays). Within the collisionless prescribed-field test-particle model classified as \\texttt{\\WlfClassification}, the wall-hit probability lies between \\WlfWallPMin{} and \\WlfWallPMax{} across the \\WlfCaseCount{} preregistered cases with \\texttt{\\WlfIntervalMethod} intervals; pooled with equal weights over all \\WlfPooledTrials{} orbits it is \\WlfPooledWallP{} (interval [\\WlfPooledWallLo, \\WlfPooledWallHi]), with \\WlfPooledEscape{} domain escapes (\\WlfPooledEscapeP), exactly \\WlfPooledReflected{} reflections and \\WlfPooledIncomplete{} timeouts or numerical failures. The pooled value averages a bimodal per-cell result: the two interior cells lose every launch to the wall (\\WlfCellTwoThreeWall{} of \\WlfCellTwoThreeTrials), the exit cell beyond the dielectric end escapes entirely (\\WlfCellFourEscape{} of \\WlfCellFourTrials), and the injector-side cell depends on the launch direction (\\WlfCellOneMinusWallP{} wall loss for launches toward the injector plane against \\WlfCellOnePlusWallP, that is \\WlfCellOnePlusWall{} of \\WlfCellOnePlusTrials, toward the exit).",
+      "allowed_locations": ["Collisionless full-orbit electron wall loss in the divergent-exit field"],
+      "manifest_ids": ["WALL-LOSS-V4-20260902-4608-V1"],
+      "gate_id": "GATE-WALL-LOSS-V4",
+      "classification": "collisionless_prescribed_field_test_particle_wall_loss_not_pic",
+      "evidence_level": "numerical-campaign",
+      "evidence_level_justification": "The campaign is numerical evidence about a collisionless, prescribed-field, test-particle model of electron orbits in one qualified P2 magnetostatic field, verified at the code level (manufactured helix orders, CPU/CUDA parity, exact authority replay) and at the solution level (timestep refinement, field-map refinement and enlargement, exact energy gate, Wilson intervals). The framework's only mechanism for accepted numerical evidence is the one used for L0: a typed committed manifest, artifacts bound by Git blob and SHA-256 at a resolvable revision, exact registered claim text, and generated artifacts with provenance sidecars. That mechanism is applied here through the numerical-campaign gate GATE-WALL-LOSS-V4. The campaign is not a field-resolved reduced performance model (no L0 mapping; the coupling export is export-only), not a coupled hybrid plasma model, and neither particle-in-cell nor experimental, so it is recorded outside the L1--L3 ladder and opens none of those gates; its tier in the V&V protocol is verification, never validation.",
+      "bindings": {
+        "evidence_file": "paper/evidence/wall-loss-v4.json",
+        "evidence_macros": "every \\Wlf... macro in the authorized text is defined in paper/generated/wall-loss-v4.tex and bound in the evidence file to an artifact path, JSON pointer, formatter and SHA-256",
+        "results_commit": "6922a3cf97d261735266aa1a5a0c0c9683e021ca",
+        "preregistration_commit": "757e365f9f667620c7610663574294c3b71e1f51",
+        "posthoc_audit": "modern/experiments/cft_orbit_wall_loss_v4/POSTHOC_AUDIT.md at 258f69b2f4bc081c6f571251ce2ad76d49ddab0a"
+      },
+      "non_claims": [
+        "not a particle-in-cell or self-consistent plasma calculation",
+        "not thruster performance",
+        "carries no hardware or experimental validation",
+        "equal-weight design average of a bimodal per-cell result",
+        "not a physical loss rate",
+        "a mirror or loss-cone description does not apply to this field and design"
+      ],
+      "permitted_scope": [
+        "terminal state, binding-gate and validator counts of the single execution",
+        "per-case wall-hit and domain-escape probabilities with Wilson intervals",
+        "exact zero reflection and zero incomplete counts",
+        "pooled equal-weight design average, labelled as such",
+        "per-cell bimodality including the direction dependence of the injector-side cell"
+      ],
+      "prohibited_inferences": [
+        "particle-in-cell or self-consistent plasma behaviour",
+        "thruster or plasma performance",
+        "hardware or experimental validation",
+        "a physical electron loss rate from the pooled value",
+        "mirror or loss-cone wall-loss formulas for this field",
+        "existence or stability of confinement cells",
+        "generalization to other designs, fields, collisional regimes or energies"
+      ]
+    },
+    {
+      "id": "CLM-014",
+      "status": "verified",
+      "claim_class": "quantitative-generated-table",
+      "authorized_artifact_ids": ["TAB-WALL-LOSS-V4"],
+      "allowed_locations": ["Collisionless full-orbit electron wall loss in the divergent-exit field"],
+      "manifest_ids": ["WALL-LOSS-V4-20260902-4608-V1"],
+      "permitted_scope": [
+        "per-case termination counts, probabilities and Wilson intervals as sealed by orbit_mc",
+        "per-cell wall-hit fraction pooled with equal weights over the nine cases"
+      ],
+      "prohibited_inferences": [
+        "physical loss rates",
+        "plasma performance",
+        "cell structure of a plasma"
+      ]
+    },
+    {
+      "id": "CLM-015",
+      "status": "verified",
+      "claim_class": "quantitative-verification",
+      "authorized_tex": "Halving the maximum gyro-rotation per step twice (\\WlfPolicyList) and changing the field map (\\WlfMapRoleList) moved the wall-hit probability by at most \\WlfMaxSuccessiveChange{} against a preregistered gate of \\WlfGateThreshold, and every adjacent pair of intervals overlaps (timestep gate \\WlfTimestepPassed, cross-map gate \\WlfCrossMapPassed). The maximum relative kinetic-energy drift over all orbits is \\WlfEnergyErrorMax{} against a gate of \\WlfEnergyGate{} (\\WlfEnergyExceed{} orbits above the gate, \\WlfVelocityMismatch{} final-velocity/event-velocity mismatches); the maximum wall-endpoint error is \\WlfWallEndpointErr{} m against \\WlfWallEndpointGate{} m; the manufactured helix orders are \\WlfHelixOrders{} and the CPU/CUDA relative velocity difference is \\WlfCudaParity.",
+      "allowed_locations": ["Collisionless full-orbit electron wall loss in the divergent-exit field"],
+      "manifest_ids": ["WALL-LOSS-V4-20260902-4608-V1"],
+      "permitted_scope": [
+        "timestep and cross-map convergence of the wall-hit probability against the preregistered gate",
+        "reported energy, wall-endpoint, manufactured-order and CPU/CUDA parity verification facts"
+      ],
+      "prohibited_inferences": [
+        "physical accuracy of the field or of the orbit model",
+        "GPU speedup or slowdown",
+        "independent implementations",
+        "validation against measurement"
+      ]
+    },
+    {
+      "id": "CLM-016",
+      "status": "verified",
+      "claim_class": "campaign-scope-limitation",
+      "authorized_tex": "Within a collisionless, prescribed-field, test-particle model (\\texttt{\\WlfClassification}), electrons launched in the two interior cells of the straight channel reach the dielectric on their first pass regardless of energy, pitch or direction, electrons launched beyond the dielectric end leave the domain, and only launches nearest the injector plane show any direction dependence. No orbit reflected (\\WlfPooledReflected{} of \\WlfPooledTrials), so a mirror or loss-cone description does not apply to this field and design (mirror-formula publication forbidden: \\WlfForbidMirror). The pooled fraction \\WlfPooledWallP{} is an equal-weight design average of a bimodal per-cell result and is not a physical loss rate. The result is not a particle-in-cell or self-consistent plasma calculation (forbidden: \\WlfForbidPic), not thruster performance (forbidden: \\WlfForbidPerformance), and carries no hardware or experimental validation (claimed: \\WlfHardwareValidation). The coupling export (\\texttt{\\WlfCouplingQuantity} $= \\WlfCouplingP \\pm \\WlfCouplingU$) has status \\texttt{\\WlfCouplingStatus}; no consumer model has ingested it.",
+      "allowed_locations": ["Collisionless full-orbit electron wall loss in the divergent-exit field"],
+      "manifest_ids": ["WALL-LOSS-V4-20260902-4608-V1"],
+      "classification": "collisionless_prescribed_field_test_particle_wall_loss_not_pic",
+      "permitted_scope": [
+        "model-bounded restatement of the per-cell outcome",
+        "absence of reflections and the sealed publication boundary flags",
+        "design-average status of the pooled fraction",
+        "unconsumed coupling export"
+      ],
+      "prohibited_inferences": [
+        "particle-in-cell or self-consistent plasma behaviour",
+        "thruster performance",
+        "hardware or experimental validation",
+        "a physical loss rate",
+        "mirror or loss-cone formulas for this field"
+      ]
+    },
+    {
+      "id": "CLM-017",
+      "status": "verified",
+      "claim_class": "interpretation",
+      "authorized_tex": "Because \\WlfPooledReflected{} of the \\WlfPooledTrials{} integrated electrons reflected before reaching a boundary, the magnetic-mirror picture of wall loss used by the original design study is not supported for this field and design within the collisionless prescribed-field test-particle model: the outcome is a split between wall capture and axial escape that is decided almost entirely by the launch cell.",
+      "allowed_locations": ["Discussion"],
+      "manifest_ids": ["WALL-LOSS-V4-20260902-4608-V1"],
+      "evidence": ["SRC-AUDIT", "SRC-PROVENANCE"],
+      "bibliography": ["Muffatti2017"],
+      "permitted_scope": [
+        "model-bounded inference from the exact zero reflection count",
+        "identification of the legacy mirror-ratio acceptance-angle closure documented by the audit and provenance records"
+      ],
+      "prohibited_inferences": [
+        "loss rates of a real electron population",
+        "mirror behaviour in other fields, designs or collisional regimes",
+        "existence or stability of a multi-cell wall-cusp topology",
+        "numerical impact on the legacy publication run"
+      ]
+    },
+    {
       "id": "GATE-L1",
       "status": "evidence-gate",
       "gate_registry_id": "GATE-L1"
@@ -180,6 +333,14 @@
       "id": "GATE-L3",
       "status": "evidence-gate",
       "gate_registry_id": "GATE-L3"
+    },
+    {
+      "id": "GATE-WALL-LOSS-V4",
+      "status": "evidence-gate",
+      "gate_registry_id": "GATE-WALL-LOSS-V4",
+      "kind": "numerical-campaign",
+      "gate_status": "accepted",
+      "manifest_id": "WALL-LOSS-V4-20260902-4608-V1"
     }
   ]
 }

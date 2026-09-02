@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any
 
 import generate_tables
+import generate_wall_loss_v4_evidence as wall_loss_v4
 
 
 REQUIRED_SECTIONS = (
@@ -21,12 +22,65 @@ REQUIRED_SECTIONS = (
     "Legacy audit",
     "Verification, validation, and uncertainty protocol",
     "Accepted L0 result",
+    "Accepted numerical campaign: collisionless electron wall loss",
     "Planned L1 result: field-resolved reduction",
     "Planned L2 result: coupled hybrid model",
     "Planned L3 result: PIC and experimental comparison",
+    "Discussion",
     "Limitations",
     "Reproducibility and data availability",
 )
+
+# Gate kinds.  Physics-level gates (L1--L3) open a paper level and stay closed
+# until their manifest is accepted; numerical-campaign gates admit one accepted,
+# preregistered numerical campaign that opens no paper level.
+PHYSICS_GATE_KIND = "physics-level"
+CAMPAIGN_GATE_KIND = "numerical-campaign"
+PHYSICS_GATE_IDS = frozenset({"GATE-L1", "GATE-L2", "GATE-L3"})
+
+# Campaign manifest metric -> evidence macro whose raw artifact value it must equal.
+WALL_LOSS_METRIC_MACROS = {
+    "attempt_count": "WlfAttemptCount",
+    "binding_gate_count": "WlfGateCount",
+    "binding_gates_true": "WlfGatesTrue",
+    "case_count": "WlfCaseCount",
+    "classification": "WlfClassification",
+    "coupling_integration_status": "WlfCouplingStatus",
+    "cross_map_convergence_passed": "WlfCrossMapPassed",
+    "exact_authority_replays": "WlfReplayCount",
+    "hardware_or_experimental_validation": "WlfHardwareValidation",
+    "incomplete_or_numerical_failure_count": "WlfPooledIncomplete",
+    "interval_method": "WlfIntervalMethod",
+    "launches_per_case": "WlfLaunchesPerCase",
+    "maximum_relative_energy_error": "WlfEnergyErrorMax",
+    "maximum_successive_probability_change": "WlfMaxSuccessiveChange",
+    "mirror_formula_publication_forbidden": "WlfForbidMirror",
+    "orbit_count": "WlfOrbitCount",
+    "orbits_exceeding_energy_gate": "WlfEnergyExceed",
+    "pic_or_self_consistent_claim_forbidden": "WlfForbidPic",
+    "plasma_performance_publication_forbidden": "WlfForbidPerformance",
+    "pooled_domain_escape_count": "WlfPooledEscape",
+    "pooled_wall_hit_count": "WlfPooledWall",
+    "reflected_count": "WlfPooledReflected",
+    "relative_energy_gate": "WlfEnergyGate",
+    "successive_probability_change_gate": "WlfGateThreshold",
+    "terminal_state": "WlfTerminalState",
+    "timestep_convergence_passed": "WlfTimestepPassed",
+    "tolerated_crlf_sidecar_count": "WlfToleratedSidecars",
+    "validator_calls_passed": "WlfValidatorsPassed",
+    "validator_failures": "WlfValidatorsFailed",
+    "wall_hit_probability_maximum": "WlfWallPMax",
+    "wall_hit_probability_minimum": "WlfWallPMin",
+}
+WALL_LOSS_CELL_MACROS = {
+    "exit_cell_escapes": "WlfCellFourEscape",
+    "exit_cell_launches": "WlfCellFourTrials",
+    "injector_cell_minus_direction_wall_fraction": "WlfCellOneMinusWallP",
+    "injector_cell_plus_direction_launches": "WlfCellOnePlusTrials",
+    "injector_cell_plus_direction_wall_hits": "WlfCellOnePlusWall",
+    "interior_cells_launches": "WlfCellTwoThreeTrials",
+    "interior_cells_wall_hits": "WlfCellTwoThreeWall",
+}
 
 EXPECTED_MANIFEST_TYPES = {
     "paper-L0-run-evidence-manifest": {
@@ -125,6 +179,40 @@ EXPECTED_MANIFEST_TYPES = {
             "applicability_domain_defined",
             "failed_cases_count",
         ],
+    },
+    "paper-test-particle-campaign-manifest": {
+        "supported_versions": ["1.0"],
+        "level": "numerical-campaign",
+        "required_file_roles": [
+            "authorities",
+            "binding-gates",
+            "campaign-result",
+            "case-summary",
+            "coupling-export",
+            "execution-lock",
+            "field-evidence",
+            "field-map-convergence",
+            "manufactured-gates",
+            "p2-input-authority",
+            "preregistered-authorities",
+            "preregistered-protocol",
+            "preregistered-shakedown",
+            "probability-convergence",
+            "protocol",
+            "results-manifest",
+            "shakedown",
+            "terminal-record",
+            "transition",
+        ],
+        "required_metrics": sorted(
+            [
+                *WALL_LOSS_METRIC_MACROS,
+                "failed_cases_count",
+                "per_cell_bimodality",
+                "pooled_wall_hit_fraction_is_design_average",
+                "preregistered_one_shot",
+            ]
+        ),
     },
 }
 
@@ -301,6 +389,53 @@ def _heading_at(manuscript: str, position: int) -> str:
         re.finditer(r"\\(?:sub)*section\{([^{}]+)\}", manuscript[:position])
     )
     return matches[-1].group(1) if matches else "Preamble"
+
+
+SECTION_INPUT = re.compile(r"\\input\{(sections/[^}]+)\}")
+
+
+def flatten_sections(repo: Path, manuscript: str, errors: list[str]) -> str:
+    """Inline every ``\\input{sections/...}`` so section prose faces the same checks."""
+
+    def replace(match: re.Match[str]) -> str:
+        relative = match.group(1)
+        path = repo / "paper" / relative
+        if path.suffix != ".tex":
+            path = path.with_suffix(".tex")
+        try:
+            return path.read_text(encoding="utf-8")
+        except OSError as exc:
+            errors.append(f"manuscript.tex: cannot read input section {relative!r}: {exc}")
+            return ""
+
+    return SECTION_INPUT.sub(replace, manuscript)
+
+
+def section_literal_digits(section: str, macro_prefix: str) -> list[str]:
+    """Return every digit typed into a macro-only section outside structural syntax."""
+
+    body = re.sub(r"(?m)(?<!\\)%.*$", "", section)
+    body = re.sub(r"\\(?:label|ref)\{[^}]*\}", "", body)
+    body = re.sub(r"\\EvidenceClaim\{CLM-\d+\}", "", body)
+    body = re.sub(rf"\\{re.escape(macro_prefix)}[A-Za-z]+", "", body)
+    body = re.sub(r"\bP2\b", "", body)  # the P2 field-reference level is a name, not a value
+    body = re.sub(r"\\begin\{minipage\}\{[^}]*\}", "", body)  # layout width, not a result
+    return re.findall(r"\d", body)
+
+
+def tex_unescape(value: str) -> str:
+    """Undo the generator's identifier escaping (``\\_\\allowbreak{}`` and friends)."""
+
+    return (
+        value.replace("\\allowbreak{}", "")
+        .replace("\\textbackslash{}", "\\")
+        .replace("\\_", "_")
+        .replace("\\%", "%")
+        .replace("\\&", "&")
+        .replace("\\#", "#")
+        .replace("\\{", "{")
+        .replace("\\}", "}")
+    )
 
 
 def find_unregistered_claims(text: str) -> list[str]:
@@ -672,7 +807,286 @@ def _check_l0_manifest(repo: Path, errors: list[str]) -> dict[str, Any]:
     return manifest
 
 
-def _check_gates(repo: Path, manuscript: str, errors: list[str]) -> None:
+def _check_wall_loss_campaign(
+    repo: Path,
+    gate: dict[str, Any],
+    payload: dict[str, Any],
+    manuscript: str,
+    flattened: str,
+    matrix: dict[str, Any],
+    errors: list[str],
+) -> None:
+    """Verify the admitted collisionless test-particle wall-loss campaign end to end.
+
+    The typed manifest has already passed ``_validate_manifest_payload``.  This
+    check binds it to the sealed results bundle, the hash-bound evidence file,
+    the generated macros, the section prose and the claim matrix:
+
+    * the evidence file, generated TeX and sidecar regenerate byte-identically
+      from the bundle, and every artifact hash recorded in the evidence file
+      matches the bundle on disk;
+    * every manifest metric equals the raw artifact value behind its macro;
+    * preregistration, results and post-hoc audit revisions resolve, chain, and
+      bind the frozen files;
+    * the section is bound exactly once, uses only generated macros, types no
+      literal digit, names the classification string, and carries the
+      registered non-claims of its claim records;
+    * the manuscript's full-revision macro equals the manifest revision.
+    """
+
+    gate_id = str(gate.get("id"))
+    label = f"{gate_id} campaign"
+    try:
+        evidence_bytes, tex_bytes, sidecar_bytes = wall_loss_v4.render(repo)
+    except (OSError, ValueError, KeyError, TypeError, json.JSONDecodeError) as exc:
+        errors.append(f"{label}: evidence regeneration from the sealed bundle failed: {exc}")
+        return
+    evidence = json.loads(evidence_bytes)
+    evidence_meta = payload.get("paper_evidence_file")
+    if not isinstance(evidence_meta, dict) or not isinstance(evidence_meta.get("path"), str):
+        errors.append(f"{label}: manifest lacks paper_evidence_file.path")
+        return
+    evidence_path = repo / evidence_meta["path"]
+    generated_path = repo / wall_loss_v4.OUTPUT_PATH
+    sidecar_path = repo / wall_loss_v4.SIDECAR_PATH
+    for path, expected, name in (
+        (evidence_path, evidence_bytes, "evidence file"),
+        (generated_path, tex_bytes, "generated TeX"),
+        (sidecar_path, sidecar_bytes, "provenance sidecar"),
+    ):
+        if not path.is_file() or path.read_bytes() != expected:
+            errors.append(f"{label}: committed {name} differs from regeneration")
+    if evidence_meta.get("document_type") != evidence.get("document_type"):
+        errors.append(f"{label}: evidence document_type differs from the manifest")
+    if evidence_meta.get("macro_count") != len(evidence.get("macros", [])):
+        errors.append(f"{label}: evidence macro count differs from the manifest")
+
+    # Evidence-file artifact hashes against the bundle on disk (independent of the generator).
+    results_root = repo / wall_loss_v4.RESULTS
+    for relative, meta in evidence.get("artifacts", {}).items():
+        artifact = results_root / relative
+        if not artifact.is_file():
+            errors.append(f"{label}: evidence artifact missing on disk: {relative}")
+            continue
+        raw = artifact.read_bytes()
+        if sha256_bytes(raw) != meta.get("sha256") or len(raw) != meta.get("bytes"):
+            errors.append(f"{label}: evidence artifact hash mismatch: {relative}")
+    bundle = payload.get("results_bundle", {})
+    bundle_manifest = results_root / "manifest.json"
+    if not bundle_manifest.is_file():
+        errors.append(f"{label}: results manifest is missing on disk")
+    else:
+        digest = sha256_bytes(bundle_manifest.read_bytes())
+        if digest != evidence["bundle"]["manifest_sha256"] or digest != bundle.get("manifest_sha256"):
+            errors.append(f"{label}: results manifest SHA-256 differs from the evidence bindings")
+    if evidence["bundle"]["tolerated_crlf_sidecars"] != bundle.get("tolerated_crlf_sidecars"):
+        errors.append(f"{label}: tolerated sidecar list differs from the evidence file")
+
+    # Revisions.
+    revision = str(payload.get("evidence_revision"))
+    if evidence.get("evidence_revision") != revision:
+        errors.append(f"{label}: evidence file revision differs from the manifest")
+    try:
+        committed_blob = _run_git(repo, "rev-parse", f"{revision}:{evidence['bundle']['manifest_path']}")
+    except RuntimeError as exc:
+        errors.append(f"{label}: results manifest is not committed at the evidence revision: {exc}")
+        committed_blob = None
+    if committed_blob is not None and (
+        committed_blob != evidence["binding"]["manifest_git_blob"]
+        or committed_blob != bundle.get("manifest_git_blob")
+    ):
+        errors.append(f"{label}: results manifest Git blob differs from the evidence bindings")
+    try:
+        results_tree = _run_git(repo, "rev-parse", f"{revision}:{wall_loss_v4.RESULTS.as_posix()}")
+        head_tree = _run_git(repo, "rev-parse", f"HEAD:{wall_loss_v4.RESULTS.as_posix()}")
+    except RuntimeError as exc:
+        errors.append(f"{label}: results tree cannot be resolved: {exc}")
+    else:
+        if results_tree != bundle.get("results_tree"):
+            errors.append(f"{label}: results tree differs from the manifest binding")
+        if head_tree != results_tree:
+            errors.append(f"{label}: results tree changed after the evidence revision")
+    prereg = payload.get("preregistration_revision")
+    if not _resolves_to_commit(repo, prereg):
+        errors.append(f"{label}: preregistration_revision is not resolvable")
+    else:
+        prereg = str(prereg)
+        if evidence["binding"].get("preregistration_commit") != prereg:
+            errors.append(f"{label}: evidence preregistration commit differs from the manifest")
+        if not _is_ancestor(repo, prereg, revision) or prereg == revision:
+            errors.append(f"{label}: preregistration must strictly precede the results revision")
+        for source in payload.get("source_files", []):
+            if isinstance(source, dict) and str(source.get("role", "")).startswith("preregistered-"):
+                try:
+                    frozen = _run_git(repo, "rev-parse", f"{prereg}:{source['path']}")
+                except RuntimeError as exc:
+                    errors.append(f"{label}: frozen file missing at preregistration: {exc}")
+                    continue
+                if frozen != source.get("git_blob"):
+                    errors.append(f"{label}: {source['path']} changed after preregistration")
+    audit = payload.get("posthoc_audit")
+    if not isinstance(audit, dict) or not _resolves_to_commit(repo, audit.get("revision")):
+        errors.append(f"{label}: posthoc_audit must bind a resolvable revision")
+    else:
+        audit_revision = str(audit["revision"])
+        head = _run_git(repo, "rev-parse", "HEAD")
+        if not _is_ancestor(repo, revision, audit_revision) or not _is_ancestor(repo, audit_revision, head):
+            errors.append(f"{label}: posthoc audit revision does not chain results -> audit -> HEAD")
+        _validate_source_files(
+            repo, audit_revision, [audit], {"posthoc-audit"}, errors, f"{label} posthoc audit"
+        )
+
+    # Metrics against the raw artifact values behind the macros.
+    raw = {item["name"]: item["raw"] for item in evidence.get("macros", [])}
+    values = {item["name"]: item["value"] for item in evidence.get("macros", [])}
+    metrics = payload.get("metrics")
+    if not isinstance(metrics, dict):
+        errors.append(f"{label}: metrics must be an object")
+        return
+    for metric, macro in WALL_LOSS_METRIC_MACROS.items():
+        if macro not in raw:
+            errors.append(f"{label}: evidence lacks macro {macro}")
+        elif metrics.get(metric) != raw[macro]:
+            errors.append(f"{label}: metric {metric!r} differs from artifact value")
+    cells = metrics.get("per_cell_bimodality")
+    if not isinstance(cells, dict):
+        errors.append(f"{label}: per_cell_bimodality must be an object")
+    else:
+        for metric, macro in WALL_LOSS_CELL_MACROS.items():
+            if cells.get(metric) != raw.get(macro):
+                errors.append(f"{label}: per-cell metric {metric!r} differs from artifact value")
+    if metrics.get("preregistered_one_shot") is not True or raw.get("WlfAttemptCount") != 1:
+        errors.append(f"{label}: campaign must be a single preregistered attempt")
+    if metrics.get("pooled_wall_hit_fraction_is_design_average") is not True:
+        errors.append(f"{label}: pooled fraction must be declared a design average")
+    try:
+        campaign = json.loads((results_root / "artifacts/campaign-result.json").read_bytes())
+        failed = sum(
+            1
+            for case in wall_loss_v4.CASES
+            if campaign["campaigns"][case]["incomplete"]["successes"] != 0
+        )
+    except (OSError, KeyError, TypeError, json.JSONDecodeError) as exc:
+        errors.append(f"{label}: cannot derive failed_cases_count: {exc}")
+    else:
+        if metrics.get("failed_cases_count") != failed:
+            errors.append(f"{label}: failed_cases_count differs from the campaign result")
+    classification = payload.get("classification")
+    expected = gate.get("metric_constraints", {}).get("classification", {}).get("equals")
+    if classification != wall_loss_v4.CLASSIFICATION or expected != classification:
+        errors.append(f"{label}: classification differs between gate, manifest and generator")
+    if evidence.get("classification") != classification:
+        errors.append(f"{label}: evidence classification differs from the manifest")
+    if tex_unescape(values.get("WlfClassification", "")) != classification:
+        errors.append(f"{label}: WlfClassification macro does not render the classification string")
+
+    # Manuscript bindings.
+    binding = gate.get("accepted_manuscript_binding")
+    if not isinstance(binding, str) or manuscript.count(binding) != 1:
+        errors.append(f"{label}: section binding must occur exactly once in manuscript.tex")
+    generated_binding = wall_loss_v4.GENERATED_BINDING
+    document_start = manuscript.find("\\begin{document}")
+    if manuscript.count(generated_binding) != 1 or manuscript.find(generated_binding) > document_start:
+        errors.append(f"{label}: generated macro file must be input exactly once in the preamble")
+    macro_name = gate.get("manuscript_revision_macro")
+    if not isinstance(macro_name, str):
+        errors.append(f"{label}: gate lacks manuscript_revision_macro")
+    else:
+        definitions = [
+            macro
+            for macro in extract_macros(manuscript, "newcommand", 2)
+            if macro.arguments[0] == f"\\{macro_name}"
+        ]
+        rendered = ""
+        if len(definitions) == 1:
+            body = re.sub(r"(?m)(?<!\\)%.*$", "", definitions[0].arguments[1])
+            rendered = re.sub(r"\\texttt\{|\}|\s", "", tex_unescape(body))
+        if rendered != revision:
+            errors.append(f"{label}: \\{macro_name} does not spell the manifest revision")
+
+    # Section content.
+    section_path = repo / wall_loss_v4.SECTION_PATH
+    try:
+        section = section_path.read_text(encoding="utf-8")
+    except OSError as exc:
+        errors.append(f"{label}: section unreadable: {exc}")
+        return
+    heading = gate.get("section_heading")
+    if not isinstance(heading, str) or f"\\subsection{{{heading}}}" not in section:
+        errors.append(f"{label}: section heading differs from the gate registration")
+    prefix = str(evidence_meta.get("macro_prefix", "Wlf"))
+    defined = set(re.findall(rf"\\newcommand\{{\\({re.escape(prefix)}[A-Za-z]+)\}}", tex_bytes.decode("utf-8")))
+    used = set(re.findall(rf"\\({re.escape(prefix)}[A-Za-z]+)", section))
+    if not used:
+        errors.append(f"{label}: section uses no evidence macro")
+    for name in sorted(used - defined):
+        errors.append(f"{label}: section uses undefined macro \\{name}")
+    for required in ("WlfCaseTable", "WlfCellTable", "WlfClassification"):
+        if required not in used:
+            errors.append(f"{label}: section must use \\{required}")
+    digits = section_literal_digits(section, prefix)
+    if digits:
+        errors.append(f"{label}: section types {len(digits)} literal digit(s); every number must be a macro")
+    if "\\input{" in re.sub(r"(?m)(?<!\\)%.*$", "", section):
+        errors.append(f"{label}: section must not input further files")
+    for finding in find_unregistered_claims(section):
+        errors.append(f"{label}: {finding}")
+
+    # Claim-matrix cross-references.
+    integration = evidence.get("manuscript_integration", {})
+    if integration.get("status") != "admitted":
+        errors.append(f"{label}: evidence file does not record admission")
+    if integration.get("gate_id") != gate_id or integration.get("manifest_id") != payload.get("manifest_id"):
+        errors.append(f"{label}: evidence file names a different gate or manifest")
+    if integration.get("manifest_path") != gate.get("manifest_path"):
+        errors.append(f"{label}: evidence file names a different manifest path")
+    if integration.get("section_binding") != binding:
+        errors.append(f"{label}: evidence file names a different section binding")
+    records = {
+        claim.get("id"): claim
+        for claim in matrix.get("claims", [])
+        if isinstance(claim, dict) and isinstance(claim.get("id"), str)
+    }
+    manifest_id = payload.get("manifest_id")
+    section_claims = set(re.findall(r"\\EvidenceClaim\{(CLM-\d+)\}", section))
+    prose_ids = integration.get("prose_claim_ids", [])
+    if not section_claims or not section_claims <= set(prose_ids):
+        errors.append(f"{label}: section claims are not all registered as campaign prose claims")
+    normalized_section = _normalize_tex(section)
+    for claim_id in prose_ids:
+        record = records.get(claim_id)
+        if record is None or record.get("status") != "verified":
+            errors.append(f"{label}: prose claim {claim_id} is not a verified claim record")
+            continue
+        if manifest_id not in record.get("manifest_ids", []):
+            errors.append(f"{label}: claim {claim_id} is not bound to manifest {manifest_id}")
+        if not isinstance(record.get("authorized_tex"), str):
+            errors.append(f"{label}: claim {claim_id} must be a prose claim")
+        if "classification" in record and record["classification"] != classification:
+            errors.append(f"{label}: claim {claim_id} names a different classification")
+        for phrase in record.get("non_claims", []):
+            if _normalize_tex(str(phrase)) not in normalized_section:
+                errors.append(f"{label}: non-claim of {claim_id} is absent from the section: {phrase!r}")
+        if claim_id in section_claims and heading not in record.get("allowed_locations", []):
+            errors.append(f"{label}: claim {claim_id} does not allow the section heading")
+    if not any(records.get(claim_id, {}).get("non_claims") for claim_id in prose_ids):
+        errors.append(f"{label}: no campaign claim registers non_claims")
+    artifact_claim = integration.get("artifact_claim_id")
+    record = records.get(artifact_claim, {})
+    if integration.get("artifact_id") not in record.get("authorized_artifact_ids", []):
+        errors.append(f"{label}: artifact claim {artifact_claim} does not authorize the generated tables")
+    if manifest_id not in record.get("manifest_ids", []):
+        errors.append(f"{label}: artifact claim {artifact_claim} is not bound to manifest {manifest_id}")
+    if flattened.count(f"\\subsection{{{heading}}}") != 1:
+        errors.append(f"{label}: section heading must appear exactly once in the flattened manuscript")
+
+
+CAMPAIGN_CHECKERS = {
+    "paper-test-particle-campaign-manifest": _check_wall_loss_campaign,
+}
+
+
+def _check_gates(repo: Path, manuscript: str, flattened: str, errors: list[str]) -> None:
     registry = _load_json(repo / "paper/evidence/result-gates.json", errors)
     matrix = _load_json(repo / "paper/evidence/claims.json", errors)
     if not registry or not matrix:
@@ -692,10 +1106,20 @@ def _check_gates(repo: Path, manuscript: str, errors: list[str]) -> None:
         for gate in gate_list
         if isinstance(gate, dict) and isinstance(gate.get("id"), str)
     }
-    required_ids = {"GATE-L1", "GATE-L2", "GATE-L3"}
-    if set(gates) != required_ids:
-        errors.append("result-gates.json: gate IDs must be exactly L1/L2/L3")
-    visible = {macro.arguments[0] for macro in extract_macros(manuscript, "EvidenceGate", 2)}
+    required_ids = set(PHYSICS_GATE_IDS)
+    if not required_ids <= set(gates):
+        errors.append("result-gates.json: gate IDs must include the L1/L2/L3 physics-level gates")
+    campaign_ids: list[str] = []
+    for gate_id, gate in gates.items():
+        kind = gate.get("kind")
+        if gate_id in required_ids:
+            if kind != PHYSICS_GATE_KIND:
+                errors.append(f"{gate_id}: physics-level gate must declare kind {PHYSICS_GATE_KIND!r}")
+        elif kind == CAMPAIGN_GATE_KIND:
+            campaign_ids.append(gate_id)
+        else:
+            errors.append(f"{gate_id}: unrecognized gate kind {kind!r}")
+    visible = {macro.arguments[0] for macro in extract_macros(flattened, "EvidenceGate", 2)}
     claim_gate_ids = {
         claim.get("id")
         for claim in matrix.get("claims", [])
@@ -735,6 +1159,37 @@ def _check_gates(repo: Path, manuscript: str, errors: list[str]) -> None:
                 errors.append(f"{gate_id}: accepted gate still has a closed block")
         else:
             errors.append(f"{gate_id}: invalid status {status!r}")
+
+    for gate_id in sorted(campaign_ids):
+        gate = gates[gate_id]
+        if gate.get("status") != "accepted":
+            errors.append(f"{gate_id}: a numerical-campaign gate must be accepted or absent")
+            continue
+        if gate.get("opens_level") is not None:
+            errors.append(f"{gate_id}: a numerical-campaign gate cannot open a physics level")
+        if gate_id in visible:
+            errors.append(f"{gate_id}: accepted gate still has a closed block")
+        path = gate.get("manifest_path")
+        if not isinstance(path, str):
+            errors.append(f"{gate_id}: accepted gate lacks manifest_path")
+            continue
+        payload = _load_json(repo / path, errors)
+        _validate_manifest_payload(
+            repo,
+            str(base_revision),
+            gate,
+            payload,
+            Path(path),
+            errors,
+            require_committed=True,
+        )
+        if payload.get("gate_id") != gate_id:
+            errors.append(f"{gate_id}: manifest names a different gate")
+        checker = CAMPAIGN_CHECKERS.get(str(gate.get("required_manifest_document_type")))
+        if checker is None:
+            errors.append(f"{gate_id}: no campaign checker for its manifest type")
+        elif payload:
+            checker(repo, gate, payload, manuscript, flattened, matrix, errors)
 
 
 def _check_claims(
@@ -791,7 +1246,22 @@ def _check_claims(
         for claim_id, claim in records.items()
         if claim.get("status") == "verified"
     }
-    manifest_ids = set(matrix.get("manifests", {}))
+    manifests = matrix.get("manifests", {})
+    if not isinstance(manifests, dict):
+        errors.append("claims.json: manifests must be an object")
+        manifests = {}
+    for manifest_id, entry in manifests.items():
+        if not isinstance(entry, dict) or not isinstance(entry.get("path"), str):
+            errors.append(f"claims.json: manifest {manifest_id} lacks a path")
+            continue
+        payload = _load_json(repo / entry["path"], errors)
+        if payload.get("document_type") != entry.get("document_type"):
+            errors.append(f"claims.json: manifest {manifest_id} document_type differs from its file")
+        if payload.get("schema_version") != entry.get("schema_version"):
+            errors.append(f"claims.json: manifest {manifest_id} schema_version differs from its file")
+        if payload.get("manifest_id") != manifest_id:
+            errors.append(f"claims.json: manifest {manifest_id} file carries a different manifest_id")
+    manifest_ids = set(manifests)
     macros = extract_macros(manuscript, "EvidenceClaim", 2)
     counts: dict[str, int] = {}
     for macro in macros:
@@ -849,11 +1319,29 @@ def _check_claims(
         errors.append(f"manuscript.tex: {finding}")
 
 
+def _render_l0_table(repo: Path) -> tuple[bytes, bytes]:
+    output, sidecar = generate_tables.render(repo)
+    return output, generate_tables.canonical_json(sidecar)
+
+
+def _render_wall_loss_tables(repo: Path) -> tuple[bytes, bytes]:
+    _evidence, output, sidecar = wall_loss_v4.render(repo)
+    return output, sidecar
+
+
+# Contract ``generator_module`` -> renderer returning (output bytes, canonical sidecar bytes).
+ARTIFACT_RENDERERS = {
+    "generate_tables": _render_l0_table,
+    "generate_wall_loss_v4_evidence": _render_wall_loss_tables,
+}
+
+
 def _check_artifacts(repo: Path, manuscript: str, errors: list[str]) -> None:
     contract = _load_json(
         repo / "paper/evidence/figure-table-contract.json", errors
     )
     matrix = _load_json(repo / "paper/evidence/claims.json", errors)
+    registry = _load_json(repo / "paper/evidence/result-gates.json", errors)
     if contract.get("schema_version") != "2.0":
         errors.append("figure-table-contract.json: unsupported schema_version")
     claims = {
@@ -861,6 +1349,12 @@ def _check_artifacts(repo: Path, manuscript: str, errors: list[str]) -> None:
         for claim in matrix.get("claims", [])
         if isinstance(claim, dict)
     }
+    gates = {
+        gate.get("id"): gate
+        for gate in registry.get("gates", [])
+        if isinstance(gate, dict)
+    }
+    manifest_ids = set(matrix.get("manifests", {}))
     for item in contract.get("items", []):
         if not isinstance(item, dict) or item.get("status") != "verified":
             continue
@@ -868,8 +1362,17 @@ def _check_artifacts(repo: Path, manuscript: str, errors: list[str]) -> None:
         binding = item.get("manuscript_binding")
         if not isinstance(binding, str) or manuscript.count(binding) != 1:
             errors.append(f"{artifact_id}: manuscript binding must occur exactly once")
+        if item.get("manifest_id") not in manifest_ids:
+            errors.append(f"{artifact_id}: manifest_id is not registered in claims.json")
+        required_gate = item.get("required_gate")
+        if required_gate is not None and gates.get(required_gate, {}).get("status") != "accepted":
+            errors.append(f"{artifact_id}: required gate {required_gate!r} is not accepted")
+        renderer = ARTIFACT_RENDERERS.get(str(item.get("generator_module", "generate_tables")))
+        if renderer is None:
+            errors.append(f"{artifact_id}: unrecognized generator_module")
+            continue
         try:
-            expected_output, expected_sidecar = generate_tables.render(repo)
+            expected_output, expected_sidecar_bytes = renderer(repo)
         except (OSError, ValueError, KeyError, TypeError, json.JSONDecodeError) as exc:
             errors.append(f"{artifact_id}: generator validation failed: {exc}")
             continue
@@ -878,7 +1381,6 @@ def _check_artifacts(repo: Path, manuscript: str, errors: list[str]) -> None:
         if not output_path.is_file() or output_path.read_bytes() != expected_output:
             errors.append(f"{artifact_id}: generated output is missing or stale")
             continue
-        expected_sidecar_bytes = generate_tables.canonical_json(expected_sidecar)
         if not sidecar_path.is_file() or sidecar_path.read_bytes() != expected_sidecar_bytes:
             errors.append(f"{artifact_id}: provenance sidecar is missing or stale")
         sidecar = _load_json(sidecar_path, errors)
@@ -886,13 +1388,18 @@ def _check_artifacts(repo: Path, manuscript: str, errors: list[str]) -> None:
             errors.append(f"{artifact_id}: sidecar artifact ID mismatch")
         if sidecar.get("output", {}).get("sha256") != sha256_bytes(expected_output):
             errors.append(f"{artifact_id}: sidecar output hash mismatch")
+        if sorted(sidecar.get("claim_ids", [])) != sorted(item.get("claim_ids", [])):
+            errors.append(f"{artifact_id}: sidecar claim IDs differ from the contract")
         artifact_macros = extract_macros(
             output_path.read_text(encoding="utf-8"), "ArtifactClaim", 3
         )
-        if len(artifact_macros) != 1:
-            errors.append(f"{artifact_id}: output requires exactly one ArtifactClaim")
-        else:
-            claim_id, macro_artifact, _ = artifact_macros[0].arguments
+        expected_count = item.get("artifact_claim_count", 1)
+        if len(artifact_macros) != expected_count:
+            errors.append(
+                f"{artifact_id}: output requires exactly {expected_count} ArtifactClaim macro(s)"
+            )
+        for macro in artifact_macros:
+            claim_id, macro_artifact, _ = macro.arguments
             if macro_artifact != artifact_id or claim_id not in item.get("claim_ids", []):
                 errors.append(f"{artifact_id}: output claim binding mismatch")
         for claim_id in item.get("claim_ids", []):
@@ -944,6 +1451,11 @@ def _check_submission_and_build_config(repo: Path, manuscript: str, errors: list
         "paper/evidence/l0-run-manifest.json",
         "paper/generated/l0-ranges.tex",
         "paper/generated/l0-ranges.provenance.json",
+        "paper/evidence/wall-loss-v4.json",
+        "paper/evidence/manifests/wall-loss-v4.json",
+        "paper/generated/wall-loss-v4.tex",
+        "paper/generated/wall-loss-v4.provenance.json",
+        "paper/sections/wall-loss-v4.tex",
     ):
         ignored = subprocess.run(
             ["git", "check-ignore", "-q", trackable],
@@ -960,17 +1472,19 @@ def collect_errors(repo: Path) -> list[str]:
     if not manuscript_path.is_file():
         return ["paper/manuscript.tex is missing"]
     manuscript = manuscript_path.read_text(encoding="utf-8")
+    # Section files bound through \input{sections/...} face every prose check.
+    flattened = flatten_sections(repo, manuscript, errors)
     for section in REQUIRED_SECTIONS:
         if f"\\section{{{section}}}" not in manuscript:
             errors.append(f"manuscript.tex: required section is missing: {section}")
 
     _check_text_policy(repo, errors)
-    citation_keys = _check_bibliography(repo, manuscript, errors)
+    citation_keys = _check_bibliography(repo, flattened, errors)
     _check_schema_registry(repo, errors)
     _check_l0_manifest(repo, errors)
-    _check_claims(repo, manuscript, citation_keys, errors)
-    _check_gates(repo, manuscript, errors)
-    _check_artifacts(repo, manuscript, errors)
+    _check_claims(repo, flattened, citation_keys, errors)
+    _check_gates(repo, manuscript, flattened, errors)
+    _check_artifacts(repo, flattened, errors)
     _check_submission_and_build_config(repo, manuscript, errors)
     for path in sorted((repo / "paper/evidence").glob("*.json")):
         _load_json(path, errors)

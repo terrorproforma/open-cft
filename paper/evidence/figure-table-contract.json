@@ -26,6 +26,25 @@
       "required_gate": null
     },
     {
+      "id": "TAB-WALL-LOSS-V4",
+      "kind": "table",
+      "status": "verified",
+      "manuscript_label": "tab:wall-loss-v4-cases",
+      "manuscript_labels": ["tab:wall-loss-v4-cases", "tab:wall-loss-v4-cells"],
+      "manuscript_binding": "\\input{generated/wall-loss-v4.tex}",
+      "claim_ids": ["CLM-014"],
+      "manifest_id": "WALL-LOSS-V4-20260902-4608-V1",
+      "generator_path": "paper/scripts/generate_wall_loss_v4_evidence.py",
+      "generator_module": "generate_wall_loss_v4_evidence",
+      "generator_command": "python paper/scripts/generate_wall_loss_v4_evidence.py",
+      "output_path": "paper/generated/wall-loss-v4.tex",
+      "sidecar_path": "paper/generated/wall-loss-v4.provenance.json",
+      "artifact_claim_count": 2,
+      "artifact_claim_note": "The generated file defines the evidence macros and two table macros (\\WlfCaseTable, \\WlfCellTable); each table body is wrapped in its own ArtifactClaim bound to CLM-014, so exactly two ArtifactClaim macros are required.",
+      "evidence_file": "paper/evidence/wall-loss-v4.json",
+      "required_gate": "GATE-WALL-LOSS-V4"
+    },
+    {
       "id": "FIG-ARCHITECTURE",
       "kind": "figure",
       "status": "planned-nonresult",
