@@ -1,0 +1,1 @@
+{"counts":{"assessment_access_count":0,"attempt_count":1,"development_access_count":1,"expensive_operation_count":650,"label_access_count":2,"prebundle_access_count":1},"reason":"before-label-checkpoint-001","recorded_at_utc":{"__cft_type__":"aware-utc-datetime","value":"2026-09-02T09:44:04.581334Z"},"schema_version":"cft-revival.experiment-counter/1.0.0","sequence":653}
