@@ -33,3 +33,24 @@
 - End-to-end experiment process wall time was about 48.8 seconds, but all
   timings are uncontrolled diagnostics under concurrent GPU load and provide
   no benchmark evidence.
+
+## 2026-09-03 — results tracked for the committed dashboard
+
+- Defect: the committed dashboard (`visualization/l1a-geometry-sweep.html`),
+  its generator and `tests/experiments/l1a_geometry_sweep_visualization`
+  render and verify `results/manifest.json`, `dataset.json` and the five
+  representative artifacts, but `results/` was masked by the root
+  `.gitignore` `Results/` rule (case-insensitive on this filesystem) and had
+  never been committed; only the producing checkout held a copy, so a fresh
+  clone collected the dashboard tests with an error.
+- Resolution: the 38 result files (9.6 MB, 19 artifacts plus 19 SHA-256
+  sidecars) were copied byte-for-byte from the producing checkout and
+  force-added (`git add -f`), exactly as the v2 bundle (7.9 MB) and the
+  four-cell topology and orbit wall-loss bundles were. Every artifact is
+  byte-exact against its sidecar and against the digests pinned in the
+  generator (`manifest.json` `eb73fc69…`, `dataset.json` `2fb0c19d…`);
+  no artifact contains a CR byte. Ten sidecars had been written CRLF; Git's
+  `eol=lf` pin stores them LF, which changes no attested digest (the sidecars
+  name the artifacts' bytes, not their own).
+- No artifact byte was edited; the copy in the producing checkout is
+  untouched. Recorded in `docs/workstreams/test-health-devlog.md`.

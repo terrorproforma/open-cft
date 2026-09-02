@@ -1,0 +1,551 @@
+{
+  "host": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.10",
+    "requested_device": "cuda:0"
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "canonicalization": "json-sort-keys-compact-utf8-v1",
+    "payload_sha256": "e39d8131ae8ccceabdc2ab8cc1a7477fa4a146d02908118168f3a07c9f19d458"
+  },
+  "records": [
+    {
+      "case_id": "l1a-gs-000-48d2ccedd5",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.4375897999852896
+    },
+    {
+      "case_id": "l1a-gs-000-48d2ccedd5",
+      "phase": "cpu-parity-solve",
+      "wall_time_seconds": 2.292058799881488
+    },
+    {
+      "case_id": "l1a-gs-001-0830ddda40",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.2107962998561561
+    },
+    {
+      "case_id": "l1a-gs-002-48c4d2e317",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.20488329976797104
+    },
+    {
+      "case_id": "l1a-gs-003-b98d8da7bf",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.20553849963471293
+    },
+    {
+      "case_id": "l1a-gs-004-72b1c5ba70",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.21092090010643005
+    },
+    {
+      "case_id": "l1a-gs-005-942c2d458e",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.20551270013675094
+    },
+    {
+      "case_id": "l1a-gs-006-110b30a28a",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.22203199984505773
+    },
+    {
+      "case_id": "l1a-gs-007-9ea145255a",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.20215020002797246
+    },
+    {
+      "case_id": "l1a-gs-008-b45d1d67d2",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.21483349986374378
+    },
+    {
+      "case_id": "l1a-gs-009-4d592518ca",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.21957239974290133
+    },
+    {
+      "case_id": "l1a-gs-010-7aa8cd8bce",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.2572719999589026
+    },
+    {
+      "case_id": "l1a-gs-011-eabda2c05f",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.22953590005636215
+    },
+    {
+      "case_id": "l1a-gs-012-861e265ea9",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.2636274001561105
+    },
+    {
+      "case_id": "l1a-gs-013-1a5f2faf5b",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.23197670001536608
+    },
+    {
+      "case_id": "l1a-gs-014-454d5ec089",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.2655559997074306
+    },
+    {
+      "case_id": "l1a-gs-015-691452be4d",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.23705170024186373
+    },
+    {
+      "case_id": "l1a-gs-016-9e4e222280",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.2593068997375667
+    },
+    {
+      "case_id": "l1a-gs-017-55712611a0",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.2424241998232901
+    },
+    {
+      "case_id": "l1a-gs-018-99a8ddb38f",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.26814049994572997
+    },
+    {
+      "case_id": "l1a-gs-019-9166fdf853",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.23555959993973374
+    },
+    {
+      "case_id": "l1a-gs-019-9166fdf853",
+      "phase": "cpu-parity-solve",
+      "wall_time_seconds": 4.285076300147921
+    },
+    {
+      "case_id": "l1a-gs-020-b517ae2748",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.32391340006142855
+    },
+    {
+      "case_id": "l1a-gs-021-5e0b38a851",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.2577178003266454
+    },
+    {
+      "case_id": "l1a-gs-022-4a12458d8a",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.25439839996397495
+    },
+    {
+      "case_id": "l1a-gs-023-09c1438b40",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.24741860013455153
+    },
+    {
+      "case_id": "l1a-gs-024-8ebc8e6892",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.2732710000127554
+    },
+    {
+      "case_id": "l1a-gs-025-7bfbfbb365",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.25296750012785196
+    },
+    {
+      "case_id": "l1a-gs-026-c5d09bfafa",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.2540406002663076
+    },
+    {
+      "case_id": "l1a-gs-027-56d238c396",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.270289100240916
+    },
+    {
+      "case_id": "l1a-gs-028-8c0a501d9c",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.28895979980006814
+    },
+    {
+      "case_id": "l1a-gs-029-3940e2552f",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.43347560008987784
+    },
+    {
+      "case_id": "l1a-gs-030-5f0cd58497",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.23032830003648996
+    },
+    {
+      "case_id": "l1a-gs-031-3e7a3b3509",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.21666689962148666
+    },
+    {
+      "case_id": "l1a-gs-032-570ad83ba6",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.20724250003695488
+    },
+    {
+      "case_id": "l1a-gs-033-1f293d6cb7",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.259525700006634
+    },
+    {
+      "case_id": "l1a-gs-034-13a1a432e0",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.238506100140512
+    },
+    {
+      "case_id": "l1a-gs-035-6ca4a7f3c2",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.237907400354743
+    },
+    {
+      "case_id": "l1a-gs-036-b84b580964",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.24171980004757643
+    },
+    {
+      "case_id": "l1a-gs-037-4de0233d45",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.23465839959681034
+    },
+    {
+      "case_id": "l1a-gs-038-474b968ed6",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.26152499997988343
+    },
+    {
+      "case_id": "l1a-gs-038-474b968ed6",
+      "phase": "cpu-parity-solve",
+      "wall_time_seconds": 3.013335600029677
+    },
+    {
+      "case_id": "l1a-gs-039-df1626ab7e",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.22870639991015196
+    },
+    {
+      "case_id": "l1a-gs-040-827cdb9c2a",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.215658999979496
+    },
+    {
+      "case_id": "l1a-gs-041-b62c5d7163",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.22859380021691322
+    },
+    {
+      "case_id": "l1a-gs-042-ae9a80d120",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.20690800016745925
+    },
+    {
+      "case_id": "l1a-gs-043-b585cd28ea",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.21048879995942116
+    },
+    {
+      "case_id": "l1a-gs-044-2f03fc2fb5",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.2024460998363793
+    },
+    {
+      "case_id": "l1a-gs-045-d52f4d6a1a",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.2059495998546481
+    },
+    {
+      "case_id": "l1a-gs-046-1d0bed7f4c",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.20696270000189543
+    },
+    {
+      "case_id": "l1a-gs-047-e3196a8aa5",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.19376009982079268
+    },
+    {
+      "case_id": "l1a-gs-048-9e4abaf530",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.18254469987004995
+    },
+    {
+      "case_id": "l1a-gs-049-cf0a7d1028",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.187109200283885
+    },
+    {
+      "case_id": "l1a-gs-050-012aa2a74e",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.1912047998048365
+    },
+    {
+      "case_id": "l1a-gs-051-d243e11351",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.1917602000758052
+    },
+    {
+      "case_id": "l1a-gs-052-e117399e75",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.18843810027465224
+    },
+    {
+      "case_id": "l1a-gs-053-e22999f79a",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.19861710024997592
+    },
+    {
+      "case_id": "l1a-gs-054-58f94d4676",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.21162320021539927
+    },
+    {
+      "case_id": "l1a-gs-055-a7ac306811",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.2273373999632895
+    },
+    {
+      "case_id": "l1a-gs-056-87997ee6f2",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.23734590038657188
+    },
+    {
+      "case_id": "l1a-gs-057-68965a0576",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.25700860004872084
+    },
+    {
+      "case_id": "l1a-gs-057-68965a0576",
+      "phase": "cpu-parity-solve",
+      "wall_time_seconds": 3.1108486000448465
+    },
+    {
+      "case_id": "l1a-gs-058-132b3d1a44",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.25597660010680556
+    },
+    {
+      "case_id": "l1a-gs-059-06306f4e8d",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.26351070031523705
+    },
+    {
+      "case_id": "l1a-gs-060-c3bf7e5c98",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.24817050015553832
+    },
+    {
+      "case_id": "l1a-gs-061-d8ebe65ef1",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.20384550001472235
+    },
+    {
+      "case_id": "l1a-gs-062-70a6b2f959",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.20768409967422485
+    },
+    {
+      "case_id": "l1a-gs-063-eaf6bef4a4",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.24059269996359944
+    },
+    {
+      "case_id": "l1a-gs-064-9f6ecd1a94",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.19907370023429394
+    },
+    {
+      "case_id": "l1a-gs-065-9e98f08f3b",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.2055830000899732
+    },
+    {
+      "case_id": "l1a-gs-066-d58df2fb43",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.22141310013830662
+    },
+    {
+      "case_id": "l1a-gs-067-dd5a30270f",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.2260324996896088
+    },
+    {
+      "case_id": "l1a-gs-068-375d1b1b13",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.21621380001306534
+    },
+    {
+      "case_id": "l1a-gs-069-9ae4602904",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.20926650008186698
+    },
+    {
+      "case_id": "l1a-gs-070-5b284f066b",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.19385139970108867
+    },
+    {
+      "case_id": "l1a-gs-071-f0c9ebbd40",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.20707299979403615
+    },
+    {
+      "case_id": "l1a-gs-072-79cfa36e3a",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.20051039988175035
+    },
+    {
+      "case_id": "l1a-gs-073-274491a725",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.204211900010705
+    },
+    {
+      "case_id": "l1a-gs-074-e2365d7a87",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.2025322997942567
+    },
+    {
+      "case_id": "l1a-gs-075-a6696084a4",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.20230619981884956
+    },
+    {
+      "case_id": "l1a-gs-076-900f037a8c",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.21211569989100099
+    },
+    {
+      "case_id": "l1a-gs-076-900f037a8c",
+      "phase": "cpu-parity-solve",
+      "wall_time_seconds": 2.9596076998859644
+    },
+    {
+      "case_id": "l1a-gs-077-44d74d05d4",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.2656288999132812
+    },
+    {
+      "case_id": "l1a-gs-078-28bf64f2bb",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.2438429002650082
+    },
+    {
+      "case_id": "l1a-gs-079-62792322e0",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.24725189991295338
+    },
+    {
+      "case_id": "l1a-gs-080-b666fbf97d",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.23686400009319186
+    },
+    {
+      "case_id": "l1a-gs-081-601159d2a0",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.2704311995767057
+    },
+    {
+      "case_id": "l1a-gs-082-ec510a5bdb",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.24775970028713346
+    },
+    {
+      "case_id": "l1a-gs-083-4c9976a050",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.24853899981826544
+    },
+    {
+      "case_id": "l1a-gs-084-7fbadd6e3c",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.20622120006009936
+    },
+    {
+      "case_id": "l1a-gs-085-3164dd7be8",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.21273860009387136
+    },
+    {
+      "case_id": "l1a-gs-086-fbb26d4705",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.2064717998728156
+    },
+    {
+      "case_id": "l1a-gs-087-8428d611f2",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.22788929985836148
+    },
+    {
+      "case_id": "l1a-gs-088-54d047707b",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.22885219985619187
+    },
+    {
+      "case_id": "l1a-gs-089-8275bc9272",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.23285889998078346
+    },
+    {
+      "case_id": "l1a-gs-090-7ab4ba4fd8",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.23394860001280904
+    },
+    {
+      "case_id": "l1a-gs-091-1aab0b78cb",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.2078792001120746
+    },
+    {
+      "case_id": "l1a-gs-092-d532fb20ca",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.1992099997587502
+    },
+    {
+      "case_id": "l1a-gs-093-27025a655c",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.20364229986444116
+    },
+    {
+      "case_id": "l1a-gs-094-ba60c4fe8b",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.21107919979840517
+    },
+    {
+      "case_id": "l1a-gs-095-27f6ceb96c",
+      "phase": "primary-cuda-solve",
+      "wall_time_seconds": 0.203012699726969
+    },
+    {
+      "case_id": "l1a-gs-095-27f6ceb96c",
+      "phase": "cpu-parity-solve",
+      "wall_time_seconds": 3.1540492000058293
+    },
+    {
+      "case_id": "l1a-gs-065-9e98f08f3b",
+      "phase": "representative-artifact-rerun",
+      "wall_time_seconds": 0.24453159980475903
+    },
+    {
+      "case_id": "l1a-gs-032-570ad83ba6",
+      "phase": "representative-artifact-rerun",
+      "wall_time_seconds": 0.2308128997683525
+    },
+    {
+      "case_id": "l1a-gs-068-375d1b1b13",
+      "phase": "representative-artifact-rerun",
+      "wall_time_seconds": 0.24231960019096732
+    },
+    {
+      "case_id": "l1a-gs-000-48d2ccedd5",
+      "phase": "representative-artifact-rerun",
+      "wall_time_seconds": 0.22938719997182488
+    },
+    {
+      "case_id": "l1a-gs-005-942c2d458e",
+      "phase": "representative-artifact-rerun",
+      "wall_time_seconds": 0.24604390002787113
+    }
+  ],
+  "runtime_policy": "wall times are uncontrolled diagnostics under concurrent GPU load; they are not benchmark evidence",
+  "schema_version": "cft-revival.experiment.l1a-geometry-sweep/1.0.0.runtime-diagnostics"
+}
