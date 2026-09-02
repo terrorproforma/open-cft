@@ -1,0 +1,37 @@
+{
+  "attempt": 1,
+  "events": [
+    {
+      "payload": {
+        "closure_semantic_sha256": "34e2565a7282b15685da3a10cd46346c9112eb77c489338d657d80b04ee255d8"
+      },
+      "phase": "dependency_closure",
+      "sequence": 1,
+      "status": "completed_in_memory_then_reconstructed"
+    },
+    {
+      "payload": {
+        "exception_type": "TypeError",
+        "message": "Object of type datetime is not JSON serializable",
+        "original_lock_byte_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "phase": "exclusive_lock",
+      "sequence": 2,
+      "status": "failed_during_payload_serialization"
+    },
+    {
+      "payload": {
+        "access_count": 0
+      },
+      "phase": "held_out_access",
+      "sequence": 3,
+      "status": "not_started"
+    }
+  ],
+  "schema_version": "cft-revival.cft-wall-cusp-validation-v2.phases/1.0.0",
+  "semantic_integrity": {
+    "algorithm": "sha256",
+    "canonicalization": "json-sort-keys-compact-utf8-v1",
+    "payload_sha256": "6c83b35f2059f0549cc71fb8047a56a2d11408043e82dfcb1b7c4c66011b558e"
+  }
+}

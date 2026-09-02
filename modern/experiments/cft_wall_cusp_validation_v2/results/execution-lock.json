@@ -1,0 +1,31 @@
+{
+  "attempt": 1,
+  "authority": "post_failure_finalization_preserving_original_acquisition_bytes",
+  "clean_worktree_attested_before_attempt": true,
+  "command": "python -m experiments.cft_wall_cusp_validation_v2.worker",
+  "declared_device": "cuda:0",
+  "detached_head_attested_before_attempt": true,
+  "exclusive_create_succeeded": true,
+  "exit_code": 1,
+  "experiment_id": "cft-wall-cusp-validation-v2",
+  "finalized_at_utc": "2026-09-02T00:01:52.707030Z",
+  "host": "DESKTOP-31AD96J",
+  "launcher_command": "python -m experiments.cft_wall_cusp_validation_v2.run",
+  "launcher_exit_code": 1,
+  "lock_payload_persistence_succeeded": false,
+  "lock_semantic_sha256": "c0c10bc8e8716a5fe7b847e4d4042d0f4159310c01363d406f8489887954b888",
+  "original_lock_byte_count": 0,
+  "original_lock_byte_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "preregistration_commit_sha": "82b2219cab595ebecceb838381d4f58a8ff4e6c7",
+  "protocol_semantic_sha256": "f64909bbd9d6a26debe58da14722f3d22e39bbd69f18d94773330df93a352f68",
+  "schema_version": "cft-revival.exclusive-execution-lock/1.0.0",
+  "semantic_integrity": {
+    "algorithm": "sha256",
+    "canonicalization": "json-sort-keys-compact-utf8-v1",
+    "payload_sha256": "8a12435cbfefc3f23b98634fd69570912d2c697b3f761d5ecb133c08270c6db5"
+  },
+  "status": "single_execution_failed_immutable",
+  "stderr_sha256": "8ed45d298f1ec2662165a17fc7347b7c786d27cd60a6cc21b974373a90ad97a7",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "worker_exit_code": 1
+}

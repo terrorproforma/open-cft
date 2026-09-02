@@ -1,0 +1,1924 @@
+---
+pid: 26648
+cwd: "C:\\Users\\Angus\\AppData\\Local\\Temp\\cft-wall-cusp-validation-v2-run\\modern"
+command: "$env:PYTHONPATH='src'; python -m pytest -q --import-mode=importlib"
+title: "Run post-failure full Python suite"
+status: failed   
+started_at: 2026-09-01T23:51:19.772Z
+running_for_ms: 565334   
+---
+........................................................................ [  6%]
+........................................................................ [ 12%]
+........................................................................ [ 19%]
+..............................F...F.......F..F.......................... [ 25%]
+..........................s...FFs.....FFFFFFEEEEEEEEEEE................. [ 31%]
+..........F............................................................. [ 38%]
+........................................................................ [ 44%]
+.............................................................F...F...... [ 50%]
+........................................................................ [ 57%]
+........................................................................ [ 63%]
+........................................................................ [ 70%]
+........................................................................ [ 76%]
+........................................................................ [ 82%]
+.................F................................s..................... [ 89%]
+..............................................................EEEEEEEEEE [ 95%]
+E............E......................EEEEEEEEEEEEFE                       [100%]
+=================================== ERRORS ====================================
+_ ERROR at setup of test_temporal_commits_and_all_pinned_evidence_hashes_are_exact _
+
+    @pytest.fixture(scope="module")
+    def payload():
+>       return GENERATOR.build_payload()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\experiments\l1a_geometry_sweep_v2_visualization\test_dashboard.py:41: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+experiments\l1a_geometry_sweep_v2\visualization\generate_dashboard.py:465: in build_payload
+    _verify_file(path, name, file_hash)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+path = WindowsPath('C:/Users/Angus/AppData/Local/Temp/cft-wall-cusp-validation-v2-run/modern/experiments/l1a_geometry_sweep_v2/results/manifest.json')
+label = 'manifest.json'
+expected = '768b345e946a45e623f83aaa18e01f8ec5bc7f823e81858a0a8c3a3e2e448754'
+
+    def _verify_file(path: Path, label: str, expected: str | None = None) -> str:
+        try:
+            digest = sha256(path.read_bytes()).hexdigest()
+        except OSError as error:
+            raise ValueError(f"{label} file is not readable") from error
+        if expected is not None and digest != expected:
+>           raise ValueError(f"{label} file SHA-256 mismatch")
+E           ValueError: manifest.json file SHA-256 mismatch
+
+experiments\l1a_geometry_sweep_v2\visualization\generate_dashboard.py:159: ValueError
+_ ERROR at setup of test_exact_counts_seven_gates_front_and_role_coalescence __
+
+    @pytest.fixture(scope="module")
+    def payload():
+>       return GENERATOR.build_payload()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\experiments\l1a_geometry_sweep_v2_visualization\test_dashboard.py:41: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+experiments\l1a_geometry_sweep_v2\visualization\generate_dashboard.py:465: in build_payload
+    _verify_file(path, name, file_hash)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+path = WindowsPath('C:/Users/Angus/AppData/Local/Temp/cft-wall-cusp-validation-v2-run/modern/experiments/l1a_geometry_sweep_v2/results/manifest.json')
+label = 'manifest.json'
+expected = '768b345e946a45e623f83aaa18e01f8ec5bc7f823e81858a0a8c3a3e2e448754'
+
+    def _verify_file(path: Path, label: str, expected: str | None = None) -> str:
+        try:
+            digest = sha256(path.read_bytes()).hexdigest()
+        except OSError as error:
+            raise ValueError(f"{label} file is not readable") from error
+        if expected is not None and digest != expected:
+>           raise ValueError(f"{label} file SHA-256 mismatch")
+E           ValueError: manifest.json file SHA-256 mismatch
+
+experiments\l1a_geometry_sweep_v2\visualization\generate_dashboard.py:159: ValueError
+_ ERROR at setup of test_bitwise_identity_and_tolerance_replay_semantics_are_distinct _
+
+    @pytest.fixture(scope="module")
+    def payload():
+>       return GENERATOR.build_payload()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\experiments\l1a_geometry_sweep_v2_visualization\test_dashboard.py:41: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+experiments\l1a_geometry_sweep_v2\visualization\generate_dashboard.py:465: in build_payload
+    _verify_file(path, name, file_hash)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+path = WindowsPath('C:/Users/Angus/AppData/Local/Temp/cft-wall-cusp-validation-v2-run/modern/experiments/l1a_geometry_sweep_v2/results/manifest.json')
+label = 'manifest.json'
+expected = '768b345e946a45e623f83aaa18e01f8ec5bc7f823e81858a0a8c3a3e2e448754'
+
+    def _verify_file(path: Path, label: str, expected: str | None = None) -> str:
+        try:
+            digest = sha256(path.read_bytes()).hexdigest()
+        except OSError as error:
+            raise ValueError(f"{label} file is not readable") from error
+        if expected is not None and digest != expected:
+>           raise ValueError(f"{label} file SHA-256 mismatch")
+E           ValueError: manifest.json file SHA-256 mismatch
+
+experiments\l1a_geometry_sweep_v2\visualization\generate_dashboard.py:159: ValueError
+_ ERROR at setup of test_all_linked_metrics_objective_directions_and_case_inputs_are_embedded _
+
+    @pytest.fixture(scope="module")
+    def payload():
+>       return GENERATOR.build_payload()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\experiments\l1a_geometry_sweep_v2_visualization\test_dashboard.py:41: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+experiments\l1a_geometry_sweep_v2\visualization\generate_dashboard.py:465: in build_payload
+    _verify_file(path, name, file_hash)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+path = WindowsPath('C:/Users/Angus/AppData/Local/Temp/cft-wall-cusp-validation-v2-run/modern/experiments/l1a_geometry_sweep_v2/results/manifest.json')
+label = 'manifest.json'
+expected = '768b345e946a45e623f83aaa18e01f8ec5bc7f823e81858a0a8c3a3e2e448754'
+
+    def _verify_file(path: Path, label: str, expected: str | None = None) -> str:
+        try:
+            digest = sha256(path.read_bytes()).hexdigest()
+        except OSError as error:
+            raise ValueError(f"{label} file is not readable") from error
+        if expected is not None and digest != expected:
+>           raise ValueError(f"{label} file SHA-256 mismatch")
+E           ValueError: manifest.json file SHA-256 mismatch
+
+experiments\l1a_geometry_sweep_v2\visualization\generate_dashboard.py:159: ValueError
+_ ERROR at setup of test_representative_fields_profiles_geometry_sources_and_hashes_are_embedded _
+
+    @pytest.fixture(scope="module")
+    def payload():
+>       return GENERATOR.build_payload()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\experiments\l1a_geometry_sweep_v2_visualization\test_dashboard.py:41: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+experiments\l1a_geometry_sweep_v2\visualization\generate_dashboard.py:465: in build_payload
+    _verify_file(path, name, file_hash)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+path = WindowsPath('C:/Users/Angus/AppData/Local/Temp/cft-wall-cusp-validation-v2-run/modern/experiments/l1a_geometry_sweep_v2/results/manifest.json')
+label = 'manifest.json'
+expected = '768b345e946a45e623f83aaa18e01f8ec5bc7f823e81858a0a8c3a3e2e448754'
+
+    def _verify_file(path: Path, label: str, expected: str | None = None) -> str:
+        try:
+            digest = sha256(path.read_bytes()).hexdigest()
+        except OSError as error:
+            raise ValueError(f"{label} file is not readable") from error
+        if expected is not None and digest != expected:
+>           raise ValueError(f"{label} file SHA-256 mismatch")
+E           ValueError: manifest.json file SHA-256 mismatch
+
+experiments\l1a_geometry_sweep_v2\visualization\generate_dashboard.py:159: ValueError
+_ ERROR at setup of test_generation_is_byte_deterministic_and_checked_html_is_current _
+
+    @pytest.fixture(scope="module")
+    def payload():
+>       return GENERATOR.build_payload()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\experiments\l1a_geometry_sweep_v2_visualization\test_dashboard.py:41: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+experiments\l1a_geometry_sweep_v2\visualization\generate_dashboard.py:465: in build_payload
+    _verify_file(path, name, file_hash)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+path = WindowsPath('C:/Users/Angus/AppData/Local/Temp/cft-wall-cusp-validation-v2-run/modern/experiments/l1a_geometry_sweep_v2/results/manifest.json')
+label = 'manifest.json'
+expected = '768b345e946a45e623f83aaa18e01f8ec5bc7f823e81858a0a8c3a3e2e448754'
+
+    def _verify_file(path: Path, label: str, expected: str | None = None) -> str:
+        try:
+            digest = sha256(path.read_bytes()).hexdigest()
+        except OSError as error:
+            raise ValueError(f"{label} file is not readable") from error
+        if expected is not None and digest != expected:
+>           raise ValueError(f"{label} file SHA-256 mismatch")
+E           ValueError: manifest.json file SHA-256 mismatch
+
+experiments\l1a_geometry_sweep_v2\visualization\generate_dashboard.py:159: ValueError
+_ ERROR at setup of test_html_is_self_contained_offline_path_free_and_secret_free _
+
+    @pytest.fixture(scope="module")
+    def payload():
+>       return GENERATOR.build_payload()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\experiments\l1a_geometry_sweep_v2_visualization\test_dashboard.py:41: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+experiments\l1a_geometry_sweep_v2\visualization\generate_dashboard.py:465: in build_payload
+    _verify_file(path, name, file_hash)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+path = WindowsPath('C:/Users/Angus/AppData/Local/Temp/cft-wall-cusp-validation-v2-run/modern/experiments/l1a_geometry_sweep_v2/results/manifest.json')
+label = 'manifest.json'
+expected = '768b345e946a45e623f83aaa18e01f8ec5bc7f823e81858a0a8c3a3e2e448754'
+
+    def _verify_file(path: Path, label: str, expected: str | None = None) -> str:
+        try:
+            digest = sha256(path.read_bytes()).hexdigest()
+        except OSError as error:
+            raise ValueError(f"{label} file is not readable") from error
+        if expected is not None and digest != expected:
+>           raise ValueError(f"{label} file SHA-256 mismatch")
+E           ValueError: manifest.json file SHA-256 mismatch
+
+experiments\l1a_geometry_sweep_v2\visualization\generate_dashboard.py:159: ValueError
+_ ERROR at setup of test_html_has_required_evidence_interaction_accessibility_and_redraw _
+
+    @pytest.fixture(scope="module")
+    def payload():
+>       return GENERATOR.build_payload()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\experiments\l1a_geometry_sweep_v2_visualization\test_dashboard.py:41: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+experiments\l1a_geometry_sweep_v2\visualization\generate_dashboard.py:465: in build_payload
+    _verify_file(path, name, file_hash)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+path = WindowsPath('C:/Users/Angus/AppData/Local/Temp/cft-wall-cusp-validation-v2-run/modern/experiments/l1a_geometry_sweep_v2/results/manifest.json')
+label = 'manifest.json'
+expected = '768b345e946a45e623f83aaa18e01f8ec5bc7f823e81858a0a8c3a3e2e448754'
+
+    def _verify_file(path: Path, label: str, expected: str | None = None) -> str:
+        try:
+            digest = sha256(path.read_bytes()).hexdigest()
+        except OSError as error:
+            raise ValueError(f"{label} file is not readable") from error
+        if expected is not None and digest != expected:
+>           raise ValueError(f"{label} file SHA-256 mismatch")
+E           ValueError: manifest.json file SHA-256 mismatch
+
+experiments\l1a_geometry_sweep_v2\visualization\generate_dashboard.py:159: ValueError
+_ ERROR at setup of test_controls_cannot_expand_mobile_document_and_keep_full_labels_accessible _
+
+    @pytest.fixture(scope="module")
+    def payload():
+>       return GENERATOR.build_payload()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\experiments\l1a_geometry_sweep_v2_visualization\test_dashboard.py:41: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+experiments\l1a_geometry_sweep_v2\visualization\generate_dashboard.py:465: in build_payload
+    _verify_file(path, name, file_hash)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+path = WindowsPath('C:/Users/Angus/AppData/Local/Temp/cft-wall-cusp-validation-v2-run/modern/experiments/l1a_geometry_sweep_v2/results/manifest.json')
+label = 'manifest.json'
+expected = '768b345e946a45e623f83aaa18e01f8ec5bc7f823e81858a0a8c3a3e2e448754'
+
+    def _verify_file(path: Path, label: str, expected: str | None = None) -> str:
+        try:
+            digest = sha256(path.read_bytes()).hexdigest()
+        except OSError as error:
+            raise ValueError(f"{label} file is not readable") from error
+        if expected is not None and digest != expected:
+>           raise ValueError(f"{label} file SHA-256 mismatch")
+E           ValueError: manifest.json file SHA-256 mismatch
+
+experiments\l1a_geometry_sweep_v2\visualization\generate_dashboard.py:159: ValueError
+___ ERROR at setup of test_embedded_json_round_trips_and_javascript_parses ____
+
+    @pytest.fixture(scope="module")
+    def payload():
+>       return GENERATOR.build_payload()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\experiments\l1a_geometry_sweep_v2_visualization\test_dashboard.py:41: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+experiments\l1a_geometry_sweep_v2\visualization\generate_dashboard.py:465: in build_payload
+    _verify_file(path, name, file_hash)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+path = WindowsPath('C:/Users/Angus/AppData/Local/Temp/cft-wall-cusp-validation-v2-run/modern/experiments/l1a_geometry_sweep_v2/results/manifest.json')
+label = 'manifest.json'
+expected = '768b345e946a45e623f83aaa18e01f8ec5bc7f823e81858a0a8c3a3e2e448754'
+
+    def _verify_file(path: Path, label: str, expected: str | None = None) -> str:
+        try:
+            digest = sha256(path.read_bytes()).hexdigest()
+        except OSError as error:
+            raise ValueError(f"{label} file is not readable") from error
+        if expected is not None and digest != expected:
+>           raise ValueError(f"{label} file SHA-256 mismatch")
+E           ValueError: manifest.json file SHA-256 mismatch
+
+experiments\l1a_geometry_sweep_v2\visualization\generate_dashboard.py:159: ValueError
+_ ERROR at setup of test_payload_file_payload_and_field_tampering_are_rejected _
+
+    @pytest.fixture(scope="module")
+    def payload():
+>       return GENERATOR.build_payload()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\experiments\l1a_geometry_sweep_v2_visualization\test_dashboard.py:41: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+experiments\l1a_geometry_sweep_v2\visualization\generate_dashboard.py:465: in build_payload
+    _verify_file(path, name, file_hash)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+path = WindowsPath('C:/Users/Angus/AppData/Local/Temp/cft-wall-cusp-validation-v2-run/modern/experiments/l1a_geometry_sweep_v2/results/manifest.json')
+label = 'manifest.json'
+expected = '768b345e946a45e623f83aaa18e01f8ec5bc7f823e81858a0a8c3a3e2e448754'
+
+    def _verify_file(path: Path, label: str, expected: str | None = None) -> str:
+        try:
+            digest = sha256(path.read_bytes()).hexdigest()
+        except OSError as error:
+            raise ValueError(f"{label} file is not readable") from error
+        if expected is not None and digest != expected:
+>           raise ValueError(f"{label} file SHA-256 mismatch")
+E           ValueError: manifest.json file SHA-256 mismatch
+
+experiments\l1a_geometry_sweep_v2\visualization\generate_dashboard.py:159: ValueError
+______ ERROR at setup of test_manifest_and_artifact_identities_are_exact ______
+
+    @pytest.fixture(scope="module")
+    def payload():
+>       return GENERATOR.build_payload()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\visualization\test_axisymmetric_results_visualization.py:37: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+visualization\generate_axisymmetric_results.py:680: in build_payload
+    manifest_digest = _verify_file(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+path = WindowsPath('C:/Users/Angus/AppData/Local/Temp/cft-wall-cusp-validation-v2-run/modern/examples/axisymmetric/results/manifest-l1a-v1.json')
+label = 'manifest'
+expected_digest = '8444389efc87f89495e34d46ccf2deedcc44ee65614dfdd660beecf84cedc3b4'
+
+    def _verify_file(path: Path, label: str, expected_digest: str | None = None) -> str:
+        try:
+            digest = sha256(path.read_bytes()).hexdigest()
+        except OSError as exc:
+            raise ValueError(f"{label} file is not readable: {path.name}") from exc
+        if expected_digest is not None and digest != expected_digest:
+>           raise ValueError(f"{label} file SHA-256 mismatch")
+E           ValueError: manifest file SHA-256 mismatch
+
+visualization\generate_axisymmetric_results.py:127: ValueError
+_ ERROR at setup of test_embedded_field_arrays_are_finite_radial_major_and_physical _
+
+    @pytest.fixture(scope="module")
+    def payload():
+>       return GENERATOR.build_payload()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\visualization\test_axisymmetric_results_visualization.py:37: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+visualization\generate_axisymmetric_results.py:680: in build_payload
+    manifest_digest = _verify_file(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+path = WindowsPath('C:/Users/Angus/AppData/Local/Temp/cft-wall-cusp-validation-v2-run/modern/examples/axisymmetric/results/manifest-l1a-v1.json')
+label = 'manifest'
+expected_digest = '8444389efc87f89495e34d46ccf2deedcc44ee65614dfdd660beecf84cedc3b4'
+
+    def _verify_file(path: Path, label: str, expected_digest: str | None = None) -> str:
+        try:
+            digest = sha256(path.read_bytes()).hexdigest()
+        except OSError as exc:
+            raise ValueError(f"{label} file is not readable: {path.name}") from exc
+        if expected_digest is not None and digest != expected_digest:
+>           raise ValueError(f"{label} file SHA-256 mismatch")
+E           ValueError: manifest file SHA-256 mismatch
+
+visualization\generate_axisymmetric_results.py:127: ValueError
+__ ERROR at setup of test_source_geometry_polarity_and_dimensions_are_actual __
+
+    @pytest.fixture(scope="module")
+    def payload():
+>       return GENERATOR.build_payload()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\visualization\test_axisymmetric_results_visualization.py:37: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+visualization\generate_axisymmetric_results.py:680: in build_payload
+    manifest_digest = _verify_file(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+path = WindowsPath('C:/Users/Angus/AppData/Local/Temp/cft-wall-cusp-validation-v2-run/modern/examples/axisymmetric/results/manifest-l1a-v1.json')
+label = 'manifest'
+expected_digest = '8444389efc87f89495e34d46ccf2deedcc44ee65614dfdd660beecf84cedc3b4'
+
+    def _verify_file(path: Path, label: str, expected_digest: str | None = None) -> str:
+        try:
+            digest = sha256(path.read_bytes()).hexdigest()
+        except OSError as exc:
+            raise ValueError(f"{label} file is not readable: {path.name}") from exc
+        if expected_digest is not None and digest != expected_digest:
+>           raise ValueError(f"{label} file SHA-256 mismatch")
+E           ValueError: manifest file SHA-256 mismatch
+
+visualization\generate_axisymmetric_results.py:127: ValueError
+_ ERROR at setup of test_nulls_maxima_convergence_and_parity_claims_are_evidence_bounded _
+
+    @pytest.fixture(scope="module")
+    def payload():
+>       return GENERATOR.build_payload()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\visualization\test_axisymmetric_results_visualization.py:37: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+visualization\generate_axisymmetric_results.py:680: in build_payload
+    manifest_digest = _verify_file(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+path = WindowsPath('C:/Users/Angus/AppData/Local/Temp/cft-wall-cusp-validation-v2-run/modern/examples/axisymmetric/results/manifest-l1a-v1.json')
+label = 'manifest'
+expected_digest = '8444389efc87f89495e34d46ccf2deedcc44ee65614dfdd660beecf84cedc3b4'
+
+    def _verify_file(path: Path, label: str, expected_digest: str | None = None) -> str:
+        try:
+            digest = sha256(path.read_bytes()).hexdigest()
+        except OSError as exc:
+            raise ValueError(f"{label} file is not readable: {path.name}") from exc
+        if expected_digest is not None and digest != expected_digest:
+>           raise ValueError(f"{label} file SHA-256 mismatch")
+E           ValueError: manifest file SHA-256 mismatch
+
+visualization\generate_axisymmetric_results.py:127: ValueError
+_ ERROR at setup of test_generation_is_byte_deterministic_and_checked_html_is_current _
+
+    @pytest.fixture(scope="module")
+    def payload():
+>       return GENERATOR.build_payload()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\visualization\test_axisymmetric_results_visualization.py:37: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+visualization\generate_axisymmetric_results.py:680: in build_payload
+    manifest_digest = _verify_file(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+path = WindowsPath('C:/Users/Angus/AppData/Local/Temp/cft-wall-cusp-validation-v2-run/modern/examples/axisymmetric/results/manifest-l1a-v1.json')
+label = 'manifest'
+expected_digest = '8444389efc87f89495e34d46ccf2deedcc44ee65614dfdd660beecf84cedc3b4'
+
+    def _verify_file(path: Path, label: str, expected_digest: str | None = None) -> str:
+        try:
+            digest = sha256(path.read_bytes()).hexdigest()
+        except OSError as exc:
+            raise ValueError(f"{label} file is not readable: {path.name}") from exc
+        if expected_digest is not None and digest != expected_digest:
+>           raise ValueError(f"{label} file SHA-256 mismatch")
+E           ValueError: manifest file SHA-256 mismatch
+
+visualization\generate_axisymmetric_results.py:127: ValueError
+_ ERROR at setup of test_html_is_self_contained_offline_and_has_no_secret_or_absolute_path _
+
+    @pytest.fixture(scope="module")
+    def payload():
+>       return GENERATOR.build_payload()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\visualization\test_axisymmetric_results_visualization.py:37: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+visualization\generate_axisymmetric_results.py:680: in build_payload
+    manifest_digest = _verify_file(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+path = WindowsPath('C:/Users/Angus/AppData/Local/Temp/cft-wall-cusp-validation-v2-run/modern/examples/axisymmetric/results/manifest-l1a-v1.json')
+label = 'manifest'
+expected_digest = '8444389efc87f89495e34d46ccf2deedcc44ee65614dfdd660beecf84cedc3b4'
+
+    def _verify_file(path: Path, label: str, expected_digest: str | None = None) -> str:
+        try:
+            digest = sha256(path.read_bytes()).hexdigest()
+        except OSError as exc:
+            raise ValueError(f"{label} file is not readable: {path.name}") from exc
+        if expected_digest is not None and digest != expected_digest:
+>           raise ValueError(f"{label} file SHA-256 mismatch")
+E           ValueError: manifest file SHA-256 mismatch
+
+visualization\generate_axisymmetric_results.py:127: ValueError
+______ ERROR at setup of test_javascript_is_valid_when_node_is_available ______
+
+    @pytest.fixture(scope="module")
+    def payload():
+>       return GENERATOR.build_payload()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\visualization\test_axisymmetric_results_visualization.py:37: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+visualization\generate_axisymmetric_results.py:680: in build_payload
+    manifest_digest = _verify_file(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+path = WindowsPath('C:/Users/Angus/AppData/Local/Temp/cft-wall-cusp-validation-v2-run/modern/examples/axisymmetric/results/manifest-l1a-v1.json')
+label = 'manifest'
+expected_digest = '8444389efc87f89495e34d46ccf2deedcc44ee65614dfdd660beecf84cedc3b4'
+
+    def _verify_file(path: Path, label: str, expected_digest: str | None = None) -> str:
+        try:
+            digest = sha256(path.read_bytes()).hexdigest()
+        except OSError as exc:
+            raise ValueError(f"{label} file is not readable: {path.name}") from exc
+        if expected_digest is not None and digest != expected_digest:
+>           raise ValueError(f"{label} file SHA-256 mismatch")
+E           ValueError: manifest file SHA-256 mismatch
+
+visualization\generate_axisymmetric_results.py:127: ValueError
+_ ERROR at setup of test_html_uses_canvas_dpr_and_real_psi_contours_without_cell_dom _
+
+    @pytest.fixture(scope="module")
+    def payload():
+>       return GENERATOR.build_payload()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\visualization\test_axisymmetric_results_visualization.py:37: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+visualization\generate_axisymmetric_results.py:680: in build_payload
+    manifest_digest = _verify_file(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+path = WindowsPath('C:/Users/Angus/AppData/Local/Temp/cft-wall-cusp-validation-v2-run/modern/examples/axisymmetric/results/manifest-l1a-v1.json')
+label = 'manifest'
+expected_digest = '8444389efc87f89495e34d46ccf2deedcc44ee65614dfdd660beecf84cedc3b4'
+
+    def _verify_file(path: Path, label: str, expected_digest: str | None = None) -> str:
+        try:
+            digest = sha256(path.read_bytes()).hexdigest()
+        except OSError as exc:
+            raise ValueError(f"{label} file is not readable: {path.name}") from exc
+        if expected_digest is not None and digest != expected_digest:
+>           raise ValueError(f"{label} file SHA-256 mismatch")
+E           ValueError: manifest file SHA-256 mismatch
+
+visualization\generate_axisymmetric_results.py:127: ValueError
+_ ERROR at setup of test_topology_boundary_and_limitations_have_explicit_display_semantics _
+
+    @pytest.fixture(scope="module")
+    def payload():
+>       return GENERATOR.build_payload()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\visualization\test_axisymmetric_results_visualization.py:37: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+visualization\generate_axisymmetric_results.py:680: in build_payload
+    manifest_digest = _verify_file(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+path = WindowsPath('C:/Users/Angus/AppData/Local/Temp/cft-wall-cusp-validation-v2-run/modern/examples/axisymmetric/results/manifest-l1a-v1.json')
+label = 'manifest'
+expected_digest = '8444389efc87f89495e34d46ccf2deedcc44ee65614dfdd660beecf84cedc3b4'
+
+    def _verify_file(path: Path, label: str, expected_digest: str | None = None) -> str:
+        try:
+            digest = sha256(path.read_bytes()).hexdigest()
+        except OSError as exc:
+            raise ValueError(f"{label} file is not readable: {path.name}") from exc
+        if expected_digest is not None and digest != expected_digest:
+>           raise ValueError(f"{label} file SHA-256 mismatch")
+E           ValueError: manifest file SHA-256 mismatch
+
+visualization\generate_axisymmetric_results.py:127: ValueError
+_ ERROR at setup of test_html_has_required_controls_accessibility_and_redraw_hooks _
+
+    @pytest.fixture(scope="module")
+    def payload():
+>       return GENERATOR.build_payload()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\visualization\test_axisymmetric_results_visualization.py:37: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+visualization\generate_axisymmetric_results.py:680: in build_payload
+    manifest_digest = _verify_file(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+path = WindowsPath('C:/Users/Angus/AppData/Local/Temp/cft-wall-cusp-validation-v2-run/modern/examples/axisymmetric/results/manifest-l1a-v1.json')
+label = 'manifest'
+expected_digest = '8444389efc87f89495e34d46ccf2deedcc44ee65614dfdd660beecf84cedc3b4'
+
+    def _verify_file(path: Path, label: str, expected_digest: str | None = None) -> str:
+        try:
+            digest = sha256(path.read_bytes()).hexdigest()
+        except OSError as exc:
+            raise ValueError(f"{label} file is not readable: {path.name}") from exc
+        if expected_digest is not None and digest != expected_digest:
+>           raise ValueError(f"{label} file SHA-256 mismatch")
+E           ValueError: manifest file SHA-256 mismatch
+
+visualization\generate_axisymmetric_results.py:127: ValueError
+__________ ERROR at setup of test_embedded_json_round_trips_strictly __________
+
+    @pytest.fixture(scope="module")
+    def payload():
+>       return GENERATOR.build_payload()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\visualization\test_axisymmetric_results_visualization.py:37: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+visualization\generate_axisymmetric_results.py:680: in build_payload
+    manifest_digest = _verify_file(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+path = WindowsPath('C:/Users/Angus/AppData/Local/Temp/cft-wall-cusp-validation-v2-run/modern/examples/axisymmetric/results/manifest-l1a-v1.json')
+label = 'manifest'
+expected_digest = '8444389efc87f89495e34d46ccf2deedcc44ee65614dfdd660beecf84cedc3b4'
+
+    def _verify_file(path: Path, label: str, expected_digest: str | None = None) -> str:
+        try:
+            digest = sha256(path.read_bytes()).hexdigest()
+        except OSError as exc:
+            raise ValueError(f"{label} file is not readable: {path.name}") from exc
+        if expected_digest is not None and digest != expected_digest:
+>           raise ValueError(f"{label} file SHA-256 mismatch")
+E           ValueError: manifest file SHA-256 mismatch
+
+visualization\generate_axisymmetric_results.py:127: ValueError
+_ ERROR at setup of test_tampered_embedded_identity_or_parity_claim_is_rejected _
+
+    @pytest.fixture(scope="module")
+    def payload():
+>       return GENERATOR.build_payload()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\visualization\test_axisymmetric_results_visualization.py:37: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+visualization\generate_axisymmetric_results.py:680: in build_payload
+    manifest_digest = _verify_file(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+path = WindowsPath('C:/Users/Angus/AppData/Local/Temp/cft-wall-cusp-validation-v2-run/modern/examples/axisymmetric/results/manifest-l1a-v1.json')
+label = 'manifest'
+expected_digest = '8444389efc87f89495e34d46ccf2deedcc44ee65614dfdd660beecf84cedc3b4'
+
+    def _verify_file(path: Path, label: str, expected_digest: str | None = None) -> str:
+        try:
+            digest = sha256(path.read_bytes()).hexdigest()
+        except OSError as exc:
+            raise ValueError(f"{label} file is not readable: {path.name}") from exc
+        if expected_digest is not None and digest != expected_digest:
+>           raise ValueError(f"{label} file SHA-256 mismatch")
+E           ValueError: manifest file SHA-256 mismatch
+
+visualization\generate_axisymmetric_results.py:127: ValueError
+__ ERROR at setup of test_accepted_bundle_and_reviewed_identities_are_exact ___
+
+    @pytest.fixture(scope="module")
+    def payload():
+>       return GENERATOR.build_payload()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\visualization\test_geometry_designs_visualization.py:44: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+visualization\generate_geometry_designs.py:177: in build_payload
+    bundle = load_artifact_bundle(directory)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\cft_revival\geometry\export.py:459: in load_artifact_bundle
+    svg_bytes = _verified_file(directory, svg_filename, hashes[svg_filename])
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+directory = WindowsPath('C:/Users/Angus/AppData/Local/Temp/cft-wall-cusp-validation-v2-run/modern/examples/geometry/artifacts')
+filename = 'historical-envelope-baseline.svg'
+expected_digest = '0ad22750a836d410e92f9634565fbc302811bae915d258625b633dff8cbb4347'
+
+    def _verified_file(
+        directory: Path,
+        filename: str,
+        expected_digest: object,
+    ) -> bytes:
+        safe_name = _safe_artifact_name(filename)
+        if (
+            not isinstance(expected_digest, str)
+            or not re.fullmatch(r"[0-9a-f]{64}", expected_digest)
+        ):
+            raise GeometryValidationError("artifact digest must be lowercase SHA-256")
+        path = directory / safe_name
+        sidecar_path = directory / f"{safe_name}.sha256"
+        resolved_directory = directory.resolve()
+        if (
+            path.is_symlink()
+            or sidecar_path.is_symlink()
+            or path.resolve().parent != resolved_directory
+            or sidecar_path.resolve().parent != resolved_directory
+        ):
+            raise GeometryValidationError("artifact paths must be direct non-symlink files")
+        try:
+            content = path.read_bytes()
+            sidecar = sidecar_path.read_text(encoding="ascii")
+        except (OSError, UnicodeError) as error:
+            raise GeometryValidationError(
+                f"artifact or sidecar is missing for {safe_name!r}"
+            ) from error
+        actual = sha256(content).hexdigest()
+        if not compare_digest(actual, expected_digest):
+>           raise GeometryValidationError(f"file SHA-256 mismatch for {safe_name!r}")
+E           cft_revival.geometry.model.GeometryValidationError: file SHA-256 mismatch for 'historical-envelope-baseline.svg'
+
+src\cft_revival\geometry\export.py:327: GeometryValidationError
+____ ERROR at setup of test_display_geometry_is_exact_accepted_projection _____
+
+    @pytest.fixture(scope="module")
+    def payload():
+>       return GENERATOR.build_payload()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\visualization\test_geometry_designs_visualization.py:44: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+visualization\generate_geometry_designs.py:177: in build_payload
+    bundle = load_artifact_bundle(directory)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\cft_revival\geometry\export.py:459: in load_artifact_bundle
+    svg_bytes = _verified_file(directory, svg_filename, hashes[svg_filename])
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+directory = WindowsPath('C:/Users/Angus/AppData/Local/Temp/cft-wall-cusp-validation-v2-run/modern/examples/geometry/artifacts')
+filename = 'historical-envelope-baseline.svg'
+expected_digest = '0ad22750a836d410e92f9634565fbc302811bae915d258625b633dff8cbb4347'
+
+    def _verified_file(
+        directory: Path,
+        filename: str,
+        expected_digest: object,
+    ) -> bytes:
+        safe_name = _safe_artifact_name(filename)
+        if (
+            not isinstance(expected_digest, str)
+            or not re.fullmatch(r"[0-9a-f]{64}", expected_digest)
+        ):
+            raise GeometryValidationError("artifact digest must be lowercase SHA-256")
+        path = directory / safe_name
+        sidecar_path = directory / f"{safe_name}.sha256"
+        resolved_directory = directory.resolve()
+        if (
+            path.is_symlink()
+            or sidecar_path.is_symlink()
+            or path.resolve().parent != resolved_directory
+            or sidecar_path.resolve().parent != resolved_directory
+        ):
+            raise GeometryValidationError("artifact paths must be direct non-symlink files")
+        try:
+            content = path.read_bytes()
+            sidecar = sidecar_path.read_text(encoding="ascii")
+        except (OSError, UnicodeError) as error:
+            raise GeometryValidationError(
+                f"artifact or sidecar is missing for {safe_name!r}"
+            ) from error
+        actual = sha256(content).hexdigest()
+        if not compare_digest(actual, expected_digest):
+>           raise GeometryValidationError(f"file SHA-256 mismatch for {safe_name!r}")
+E           cft_revival.geometry.model.GeometryValidationError: file SHA-256 mismatch for 'historical-envelope-baseline.svg'
+
+src\cft_revival\geometry\export.py:327: GeometryValidationError
+_ ERROR at setup of test_descriptors_volumes_clearances_and_polarity_are_artifact_derived _
+
+    @pytest.fixture(scope="module")
+    def payload():
+>       return GENERATOR.build_payload()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\visualization\test_geometry_designs_visualization.py:44: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+visualization\generate_geometry_designs.py:177: in build_payload
+    bundle = load_artifact_bundle(directory)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\cft_revival\geometry\export.py:459: in load_artifact_bundle
+    svg_bytes = _verified_file(directory, svg_filename, hashes[svg_filename])
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+directory = WindowsPath('C:/Users/Angus/AppData/Local/Temp/cft-wall-cusp-validation-v2-run/modern/examples/geometry/artifacts')
+filename = 'historical-envelope-baseline.svg'
+expected_digest = '0ad22750a836d410e92f9634565fbc302811bae915d258625b633dff8cbb4347'
+
+    def _verified_file(
+        directory: Path,
+        filename: str,
+        expected_digest: object,
+    ) -> bytes:
+        safe_name = _safe_artifact_name(filename)
+        if (
+            not isinstance(expected_digest, str)
+            or not re.fullmatch(r"[0-9a-f]{64}", expected_digest)
+        ):
+            raise GeometryValidationError("artifact digest must be lowercase SHA-256")
+        path = directory / safe_name
+        sidecar_path = directory / f"{safe_name}.sha256"
+        resolved_directory = directory.resolve()
+        if (
+            path.is_symlink()
+            or sidecar_path.is_symlink()
+            or path.resolve().parent != resolved_directory
+            or sidecar_path.resolve().parent != resolved_directory
+        ):
+            raise GeometryValidationError("artifact paths must be direct non-symlink files")
+        try:
+            content = path.read_bytes()
+            sidecar = sidecar_path.read_text(encoding="ascii")
+        except (OSError, UnicodeError) as error:
+            raise GeometryValidationError(
+                f"artifact or sidecar is missing for {safe_name!r}"
+            ) from error
+        actual = sha256(content).hexdigest()
+        if not compare_digest(actual, expected_digest):
+>           raise GeometryValidationError(f"file SHA-256 mismatch for {safe_name!r}")
+E           cft_revival.geometry.model.GeometryValidationError: file SHA-256 mismatch for 'historical-envelope-baseline.svg'
+
+src\cft_revival\geometry\export.py:327: GeometryValidationError
+_ ERROR at setup of test_divergent_exit_and_complete_selection_records_are_preserved _
+
+    @pytest.fixture(scope="module")
+    def payload():
+>       return GENERATOR.build_payload()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\visualization\test_geometry_designs_visualization.py:44: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+visualization\generate_geometry_designs.py:177: in build_payload
+    bundle = load_artifact_bundle(directory)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\cft_revival\geometry\export.py:459: in load_artifact_bundle
+    svg_bytes = _verified_file(directory, svg_filename, hashes[svg_filename])
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+directory = WindowsPath('C:/Users/Angus/AppData/Local/Temp/cft-wall-cusp-validation-v2-run/modern/examples/geometry/artifacts')
+filename = 'historical-envelope-baseline.svg'
+expected_digest = '0ad22750a836d410e92f9634565fbc302811bae915d258625b633dff8cbb4347'
+
+    def _verified_file(
+        directory: Path,
+        filename: str,
+        expected_digest: object,
+    ) -> bytes:
+        safe_name = _safe_artifact_name(filename)
+        if (
+            not isinstance(expected_digest, str)
+            or not re.fullmatch(r"[0-9a-f]{64}", expected_digest)
+        ):
+            raise GeometryValidationError("artifact digest must be lowercase SHA-256")
+        path = directory / safe_name
+        sidecar_path = directory / f"{safe_name}.sha256"
+        resolved_directory = directory.resolve()
+        if (
+            path.is_symlink()
+            or sidecar_path.is_symlink()
+            or path.resolve().parent != resolved_directory
+            or sidecar_path.resolve().parent != resolved_directory
+        ):
+            raise GeometryValidationError("artifact paths must be direct non-symlink files")
+        try:
+            content = path.read_bytes()
+            sidecar = sidecar_path.read_text(encoding="ascii")
+        except (OSError, UnicodeError) as error:
+            raise GeometryValidationError(
+                f"artifact or sidecar is missing for {safe_name!r}"
+            ) from error
+        actual = sha256(content).hexdigest()
+        if not compare_digest(actual, expected_digest):
+>           raise GeometryValidationError(f"file SHA-256 mismatch for {safe_name!r}")
+E           cft_revival.geometry.model.GeometryValidationError: file SHA-256 mismatch for 'historical-envelope-baseline.svg'
+
+src\cft_revival\geometry\export.py:327: GeometryValidationError
+_ ERROR at setup of test_generation_is_byte_deterministic_and_checked_html_is_current _
+
+    @pytest.fixture(scope="module")
+    def payload():
+>       return GENERATOR.build_payload()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\visualization\test_geometry_designs_visualization.py:44: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+visualization\generate_geometry_designs.py:177: in build_payload
+    bundle = load_artifact_bundle(directory)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\cft_revival\geometry\export.py:459: in load_artifact_bundle
+    svg_bytes = _verified_file(directory, svg_filename, hashes[svg_filename])
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+directory = WindowsPath('C:/Users/Angus/AppData/Local/Temp/cft-wall-cusp-validation-v2-run/modern/examples/geometry/artifacts')
+filename = 'historical-envelope-baseline.svg'
+expected_digest = '0ad22750a836d410e92f9634565fbc302811bae915d258625b633dff8cbb4347'
+
+    def _verified_file(
+        directory: Path,
+        filename: str,
+        expected_digest: object,
+    ) -> bytes:
+        safe_name = _safe_artifact_name(filename)
+        if (
+            not isinstance(expected_digest, str)
+            or not re.fullmatch(r"[0-9a-f]{64}", expected_digest)
+        ):
+            raise GeometryValidationError("artifact digest must be lowercase SHA-256")
+        path = directory / safe_name
+        sidecar_path = directory / f"{safe_name}.sha256"
+        resolved_directory = directory.resolve()
+        if (
+            path.is_symlink()
+            or sidecar_path.is_symlink()
+            or path.resolve().parent != resolved_directory
+            or sidecar_path.resolve().parent != resolved_directory
+        ):
+            raise GeometryValidationError("artifact paths must be direct non-symlink files")
+        try:
+            content = path.read_bytes()
+            sidecar = sidecar_path.read_text(encoding="ascii")
+        except (OSError, UnicodeError) as error:
+            raise GeometryValidationError(
+                f"artifact or sidecar is missing for {safe_name!r}"
+            ) from error
+        actual = sha256(content).hexdigest()
+        if not compare_digest(actual, expected_digest):
+>           raise GeometryValidationError(f"file SHA-256 mismatch for {safe_name!r}")
+E           cft_revival.geometry.model.GeometryValidationError: file SHA-256 mismatch for 'historical-envelope-baseline.svg'
+
+src\cft_revival\geometry\export.py:327: GeometryValidationError
+____ ERROR at setup of test_html_is_zero_network_path_free_and_secret_free ____
+
+    @pytest.fixture(scope="module")
+    def payload():
+>       return GENERATOR.build_payload()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\visualization\test_geometry_designs_visualization.py:44: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+visualization\generate_geometry_designs.py:177: in build_payload
+    bundle = load_artifact_bundle(directory)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\cft_revival\geometry\export.py:459: in load_artifact_bundle
+    svg_bytes = _verified_file(directory, svg_filename, hashes[svg_filename])
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+directory = WindowsPath('C:/Users/Angus/AppData/Local/Temp/cft-wall-cusp-validation-v2-run/modern/examples/geometry/artifacts')
+filename = 'historical-envelope-baseline.svg'
+expected_digest = '0ad22750a836d410e92f9634565fbc302811bae915d258625b633dff8cbb4347'
+
+    def _verified_file(
+        directory: Path,
+        filename: str,
+        expected_digest: object,
+    ) -> bytes:
+        safe_name = _safe_artifact_name(filename)
+        if (
+            not isinstance(expected_digest, str)
+            or not re.fullmatch(r"[0-9a-f]{64}", expected_digest)
+        ):
+            raise GeometryValidationError("artifact digest must be lowercase SHA-256")
+        path = directory / safe_name
+        sidecar_path = directory / f"{safe_name}.sha256"
+        resolved_directory = directory.resolve()
+        if (
+            path.is_symlink()
+            or sidecar_path.is_symlink()
+            or path.resolve().parent != resolved_directory
+            or sidecar_path.resolve().parent != resolved_directory
+        ):
+            raise GeometryValidationError("artifact paths must be direct non-symlink files")
+        try:
+            content = path.read_bytes()
+            sidecar = sidecar_path.read_text(encoding="ascii")
+        except (OSError, UnicodeError) as error:
+            raise GeometryValidationError(
+                f"artifact or sidecar is missing for {safe_name!r}"
+            ) from error
+        actual = sha256(content).hexdigest()
+        if not compare_digest(actual, expected_digest):
+>           raise GeometryValidationError(f"file SHA-256 mismatch for {safe_name!r}")
+E           cft_revival.geometry.model.GeometryValidationError: file SHA-256 mismatch for 'historical-envelope-baseline.svg'
+
+src\cft_revival\geometry\export.py:327: GeometryValidationError
+_ ERROR at setup of test_html_has_compare_dimensions_accessibility_and_redraw _
+
+    @pytest.fixture(scope="module")
+    def payload():
+>       return GENERATOR.build_payload()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\visualization\test_geometry_designs_visualization.py:44: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+visualization\generate_geometry_designs.py:177: in build_payload
+    bundle = load_artifact_bundle(directory)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\cft_revival\geometry\export.py:459: in load_artifact_bundle
+    svg_bytes = _verified_file(directory, svg_filename, hashes[svg_filename])
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+directory = WindowsPath('C:/Users/Angus/AppData/Local/Temp/cft-wall-cusp-validation-v2-run/modern/examples/geometry/artifacts')
+filename = 'historical-envelope-baseline.svg'
+expected_digest = '0ad22750a836d410e92f9634565fbc302811bae915d258625b633dff8cbb4347'
+
+    def _verified_file(
+        directory: Path,
+        filename: str,
+        expected_digest: object,
+    ) -> bytes:
+        safe_name = _safe_artifact_name(filename)
+        if (
+            not isinstance(expected_digest, str)
+            or not re.fullmatch(r"[0-9a-f]{64}", expected_digest)
+        ):
+            raise GeometryValidationError("artifact digest must be lowercase SHA-256")
+        path = directory / safe_name
+        sidecar_path = directory / f"{safe_name}.sha256"
+        resolved_directory = directory.resolve()
+        if (
+            path.is_symlink()
+            or sidecar_path.is_symlink()
+            or path.resolve().parent != resolved_directory
+            or sidecar_path.resolve().parent != resolved_directory
+        ):
+            raise GeometryValidationError("artifact paths must be direct non-symlink files")
+        try:
+            content = path.read_bytes()
+            sidecar = sidecar_path.read_text(encoding="ascii")
+        except (OSError, UnicodeError) as error:
+            raise GeometryValidationError(
+                f"artifact or sidecar is missing for {safe_name!r}"
+            ) from error
+        actual = sha256(content).hexdigest()
+        if not compare_digest(actual, expected_digest):
+>           raise GeometryValidationError(f"file SHA-256 mismatch for {safe_name!r}")
+E           cft_revival.geometry.model.GeometryValidationError: file SHA-256 mismatch for 'historical-envelope-baseline.svg'
+
+src\cft_revival\geometry\export.py:327: GeometryValidationError
+_ ERROR at setup of test_reset_restores_complete_initial_view_state_without_changing_theme _
+
+    @pytest.fixture(scope="module")
+    def payload():
+>       return GENERATOR.build_payload()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\visualization\test_geometry_designs_visualization.py:44: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+visualization\generate_geometry_designs.py:177: in build_payload
+    bundle = load_artifact_bundle(directory)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\cft_revival\geometry\export.py:459: in load_artifact_bundle
+    svg_bytes = _verified_file(directory, svg_filename, hashes[svg_filename])
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+directory = WindowsPath('C:/Users/Angus/AppData/Local/Temp/cft-wall-cusp-validation-v2-run/modern/examples/geometry/artifacts')
+filename = 'historical-envelope-baseline.svg'
+expected_digest = '0ad22750a836d410e92f9634565fbc302811bae915d258625b633dff8cbb4347'
+
+    def _verified_file(
+        directory: Path,
+        filename: str,
+        expected_digest: object,
+    ) -> bytes:
+        safe_name = _safe_artifact_name(filename)
+        if (
+            not isinstance(expected_digest, str)
+            or not re.fullmatch(r"[0-9a-f]{64}", expected_digest)
+        ):
+            raise GeometryValidationError("artifact digest must be lowercase SHA-256")
+        path = directory / safe_name
+        sidecar_path = directory / f"{safe_name}.sha256"
+        resolved_directory = directory.resolve()
+        if (
+            path.is_symlink()
+            or sidecar_path.is_symlink()
+            or path.resolve().parent != resolved_directory
+            or sidecar_path.resolve().parent != resolved_directory
+        ):
+            raise GeometryValidationError("artifact paths must be direct non-symlink files")
+        try:
+            content = path.read_bytes()
+            sidecar = sidecar_path.read_text(encoding="ascii")
+        except (OSError, UnicodeError) as error:
+            raise GeometryValidationError(
+                f"artifact or sidecar is missing for {safe_name!r}"
+            ) from error
+        actual = sha256(content).hexdigest()
+        if not compare_digest(actual, expected_digest):
+>           raise GeometryValidationError(f"file SHA-256 mismatch for {safe_name!r}")
+E           cft_revival.geometry.model.GeometryValidationError: file SHA-256 mismatch for 'historical-envelope-baseline.svg'
+
+src\cft_revival\geometry\export.py:327: GeometryValidationError
+_ ERROR at setup of test_theme_starts_from_and_tracks_os_preference_independently_of_reset _
+
+    @pytest.fixture(scope="module")
+    def payload():
+>       return GENERATOR.build_payload()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\visualization\test_geometry_designs_visualization.py:44: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+visualization\generate_geometry_designs.py:177: in build_payload
+    bundle = load_artifact_bundle(directory)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\cft_revival\geometry\export.py:459: in load_artifact_bundle
+    svg_bytes = _verified_file(directory, svg_filename, hashes[svg_filename])
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+directory = WindowsPath('C:/Users/Angus/AppData/Local/Temp/cft-wall-cusp-validation-v2-run/modern/examples/geometry/artifacts')
+filename = 'historical-envelope-baseline.svg'
+expected_digest = '0ad22750a836d410e92f9634565fbc302811bae915d258625b633dff8cbb4347'
+
+    def _verified_file(
+        directory: Path,
+        filename: str,
+        expected_digest: object,
+    ) -> bytes:
+        safe_name = _safe_artifact_name(filename)
+        if (
+            not isinstance(expected_digest, str)
+            or not re.fullmatch(r"[0-9a-f]{64}", expected_digest)
+        ):
+            raise GeometryValidationError("artifact digest must be lowercase SHA-256")
+        path = directory / safe_name
+        sidecar_path = directory / f"{safe_name}.sha256"
+        resolved_directory = directory.resolve()
+        if (
+            path.is_symlink()
+            or sidecar_path.is_symlink()
+            or path.resolve().parent != resolved_directory
+            or sidecar_path.resolve().parent != resolved_directory
+        ):
+            raise GeometryValidationError("artifact paths must be direct non-symlink files")
+        try:
+            content = path.read_bytes()
+            sidecar = sidecar_path.read_text(encoding="ascii")
+        except (OSError, UnicodeError) as error:
+            raise GeometryValidationError(
+                f"artifact or sidecar is missing for {safe_name!r}"
+            ) from error
+        actual = sha256(content).hexdigest()
+        if not compare_digest(actual, expected_digest):
+>           raise GeometryValidationError(f"file SHA-256 mismatch for {safe_name!r}")
+E           cft_revival.geometry.model.GeometryValidationError: file SHA-256 mismatch for 'historical-envelope-baseline.svg'
+
+src\cft_revival\geometry\export.py:327: GeometryValidationError
+_ ERROR at setup of test_html_exposes_materials_interfaces_warnings_and_numeric_sources _
+
+    @pytest.fixture(scope="module")
+    def payload():
+>       return GENERATOR.build_payload()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\visualization\test_geometry_designs_visualization.py:44: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+visualization\generate_geometry_designs.py:177: in build_payload
+    bundle = load_artifact_bundle(directory)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\cft_revival\geometry\export.py:459: in load_artifact_bundle
+    svg_bytes = _verified_file(directory, svg_filename, hashes[svg_filename])
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+directory = WindowsPath('C:/Users/Angus/AppData/Local/Temp/cft-wall-cusp-validation-v2-run/modern/examples/geometry/artifacts')
+filename = 'historical-envelope-baseline.svg'
+expected_digest = '0ad22750a836d410e92f9634565fbc302811bae915d258625b633dff8cbb4347'
+
+    def _verified_file(
+        directory: Path,
+        filename: str,
+        expected_digest: object,
+    ) -> bytes:
+        safe_name = _safe_artifact_name(filename)
+        if (
+            not isinstance(expected_digest, str)
+            or not re.fullmatch(r"[0-9a-f]{64}", expected_digest)
+        ):
+            raise GeometryValidationError("artifact digest must be lowercase SHA-256")
+        path = directory / safe_name
+        sidecar_path = directory / f"{safe_name}.sha256"
+        resolved_directory = directory.resolve()
+        if (
+            path.is_symlink()
+            or sidecar_path.is_symlink()
+            or path.resolve().parent != resolved_directory
+            or sidecar_path.resolve().parent != resolved_directory
+        ):
+            raise GeometryValidationError("artifact paths must be direct non-symlink files")
+        try:
+            content = path.read_bytes()
+            sidecar = sidecar_path.read_text(encoding="ascii")
+        except (OSError, UnicodeError) as error:
+            raise GeometryValidationError(
+                f"artifact or sidecar is missing for {safe_name!r}"
+            ) from error
+        actual = sha256(content).hexdigest()
+        if not compare_digest(actual, expected_digest):
+>           raise GeometryValidationError(f"file SHA-256 mismatch for {safe_name!r}")
+E           cft_revival.geometry.model.GeometryValidationError: file SHA-256 mismatch for 'historical-envelope-baseline.svg'
+
+src\cft_revival\geometry\export.py:327: GeometryValidationError
+_ ERROR at setup of test_embedded_json_round_trips_without_nonstandard_numbers _
+
+    @pytest.fixture(scope="module")
+    def payload():
+>       return GENERATOR.build_payload()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\visualization\test_geometry_designs_visualization.py:44: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+visualization\generate_geometry_designs.py:177: in build_payload
+    bundle = load_artifact_bundle(directory)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\cft_revival\geometry\export.py:459: in load_artifact_bundle
+    svg_bytes = _verified_file(directory, svg_filename, hashes[svg_filename])
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+directory = WindowsPath('C:/Users/Angus/AppData/Local/Temp/cft-wall-cusp-validation-v2-run/modern/examples/geometry/artifacts')
+filename = 'historical-envelope-baseline.svg'
+expected_digest = '0ad22750a836d410e92f9634565fbc302811bae915d258625b633dff8cbb4347'
+
+    def _verified_file(
+        directory: Path,
+        filename: str,
+        expected_digest: object,
+    ) -> bytes:
+        safe_name = _safe_artifact_name(filename)
+        if (
+            not isinstance(expected_digest, str)
+            or not re.fullmatch(r"[0-9a-f]{64}", expected_digest)
+        ):
+            raise GeometryValidationError("artifact digest must be lowercase SHA-256")
+        path = directory / safe_name
+        sidecar_path = directory / f"{safe_name}.sha256"
+        resolved_directory = directory.resolve()
+        if (
+            path.is_symlink()
+            or sidecar_path.is_symlink()
+            or path.resolve().parent != resolved_directory
+            or sidecar_path.resolve().parent != resolved_directory
+        ):
+            raise GeometryValidationError("artifact paths must be direct non-symlink files")
+        try:
+            content = path.read_bytes()
+            sidecar = sidecar_path.read_text(encoding="ascii")
+        except (OSError, UnicodeError) as error:
+            raise GeometryValidationError(
+                f"artifact or sidecar is missing for {safe_name!r}"
+            ) from error
+        actual = sha256(content).hexdigest()
+        if not compare_digest(actual, expected_digest):
+>           raise GeometryValidationError(f"file SHA-256 mismatch for {safe_name!r}")
+E           cft_revival.geometry.model.GeometryValidationError: file SHA-256 mismatch for 'historical-envelope-baseline.svg'
+
+src\cft_revival\geometry\export.py:327: GeometryValidationError
+______ ERROR at setup of test_javascript_is_valid_when_node_is_available ______
+
+    @pytest.fixture(scope="module")
+    def payload():
+>       return GENERATOR.build_payload()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\visualization\test_geometry_designs_visualization.py:44: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+visualization\generate_geometry_designs.py:177: in build_payload
+    bundle = load_artifact_bundle(directory)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\cft_revival\geometry\export.py:459: in load_artifact_bundle
+    svg_bytes = _verified_file(directory, svg_filename, hashes[svg_filename])
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+directory = WindowsPath('C:/Users/Angus/AppData/Local/Temp/cft-wall-cusp-validation-v2-run/modern/examples/geometry/artifacts')
+filename = 'historical-envelope-baseline.svg'
+expected_digest = '0ad22750a836d410e92f9634565fbc302811bae915d258625b633dff8cbb4347'
+
+    def _verified_file(
+        directory: Path,
+        filename: str,
+        expected_digest: object,
+    ) -> bytes:
+        safe_name = _safe_artifact_name(filename)
+        if (
+            not isinstance(expected_digest, str)
+            or not re.fullmatch(r"[0-9a-f]{64}", expected_digest)
+        ):
+            raise GeometryValidationError("artifact digest must be lowercase SHA-256")
+        path = directory / safe_name
+        sidecar_path = directory / f"{safe_name}.sha256"
+        resolved_directory = directory.resolve()
+        if (
+            path.is_symlink()
+            or sidecar_path.is_symlink()
+            or path.resolve().parent != resolved_directory
+            or sidecar_path.resolve().parent != resolved_directory
+        ):
+            raise GeometryValidationError("artifact paths must be direct non-symlink files")
+        try:
+            content = path.read_bytes()
+            sidecar = sidecar_path.read_text(encoding="ascii")
+        except (OSError, UnicodeError) as error:
+            raise GeometryValidationError(
+                f"artifact or sidecar is missing for {safe_name!r}"
+            ) from error
+        actual = sha256(content).hexdigest()
+        if not compare_digest(actual, expected_digest):
+>           raise GeometryValidationError(f"file SHA-256 mismatch for {safe_name!r}")
+E           cft_revival.geometry.model.GeometryValidationError: file SHA-256 mismatch for 'historical-envelope-baseline.svg'
+
+src\cft_revival\geometry\export.py:327: GeometryValidationError
+__ ERROR at setup of test_payload_rejects_identity_and_polarity_substitution __
+
+    @pytest.fixture(scope="module")
+    def payload():
+>       return GENERATOR.build_payload()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\visualization\test_geometry_designs_visualization.py:44: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+visualization\generate_geometry_designs.py:177: in build_payload
+    bundle = load_artifact_bundle(directory)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\cft_revival\geometry\export.py:459: in load_artifact_bundle
+    svg_bytes = _verified_file(directory, svg_filename, hashes[svg_filename])
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+directory = WindowsPath('C:/Users/Angus/AppData/Local/Temp/cft-wall-cusp-validation-v2-run/modern/examples/geometry/artifacts')
+filename = 'historical-envelope-baseline.svg'
+expected_digest = '0ad22750a836d410e92f9634565fbc302811bae915d258625b633dff8cbb4347'
+
+    def _verified_file(
+        directory: Path,
+        filename: str,
+        expected_digest: object,
+    ) -> bytes:
+        safe_name = _safe_artifact_name(filename)
+        if (
+            not isinstance(expected_digest, str)
+            or not re.fullmatch(r"[0-9a-f]{64}", expected_digest)
+        ):
+            raise GeometryValidationError("artifact digest must be lowercase SHA-256")
+        path = directory / safe_name
+        sidecar_path = directory / f"{safe_name}.sha256"
+        resolved_directory = directory.resolve()
+        if (
+            path.is_symlink()
+            or sidecar_path.is_symlink()
+            or path.resolve().parent != resolved_directory
+            or sidecar_path.resolve().parent != resolved_directory
+        ):
+            raise GeometryValidationError("artifact paths must be direct non-symlink files")
+        try:
+            content = path.read_bytes()
+            sidecar = sidecar_path.read_text(encoding="ascii")
+        except (OSError, UnicodeError) as error:
+            raise GeometryValidationError(
+                f"artifact or sidecar is missing for {safe_name!r}"
+            ) from error
+        actual = sha256(content).hexdigest()
+        if not compare_digest(actual, expected_digest):
+>           raise GeometryValidationError(f"file SHA-256 mismatch for {safe_name!r}")
+E           cft_revival.geometry.model.GeometryValidationError: file SHA-256 mismatch for 'historical-envelope-baseline.svg'
+
+src\cft_revival\geometry\export.py:327: GeometryValidationError
+================================== FAILURES ===================================
+____________ test_preflight_never_loads_real_v3_rows_or_assessment ____________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000023800DCEF30>
+
+    def test_preflight_never_loads_real_v3_rows_or_assessment(
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        def forbidden_real_rows(declaration: object) -> object:
+            raise AssertionError("real L0 rows must not be loaded by preflight")
+    
+        monkeypatch.setattr(v2, "load_l0_rows", forbidden_real_rows)
+>       result = v3.preflight(record=False)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\experiments\l0_surrogate_v3\test_atomic_pipeline.py:98: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+record = False
+
+    def preflight(*, record: bool = False) -> dict[str, object]:
+        v3 = load_predeclaration()
+        effective = inherited_protocol()
+        partitions = _load_object(PARTITIONS)
+        expected_partitions = build_partitions()
+        if partitions != expected_partitions:
+            raise ValueError("v3 input-only partitions differ from inherited protocol")
+        if RESULTS.exists():
+>           raise ValueError("real v3 results path already exists")
+E           ValueError: real v3 results path already exists
+
+experiments\l0_surrogate_v3\protocol.py:196: ValueError
+________ test_real_result_path_and_placeholder_are_empty_before_freeze ________
+
+    def test_real_result_path_and_placeholder_are_empty_before_freeze() -> None:
+        placeholder = json.loads(
+            (v3.ROOT / "results-placeholder.json").read_text(encoding="utf-8")
+        )
+        assert placeholder["status"] == "not-executed"
+        assert placeholder["results"] == []
+>       assert not v3.RESULTS.exists()
+E       AssertionError: assert not True
+E        +  where True = exists()
+E        +    where exists = WindowsPath('C:/Users/Angus/AppData/Local/Temp/cft-wall-cusp-validation-v2-run/modern/experiments/l0_surrogate_v3/results').exists
+E        +      where WindowsPath('C:/Users/Angus/AppData/Local/Temp/cft-wall-cusp-validation-v2-run/modern/experiments/l0_surrogate_v3/results') = v3.RESULTS
+
+tests\experiments\l0_surrogate_v3\test_atomic_pipeline.py:208: AssertionError
+___________________ test_preflight_does_not_load_real_rows ____________________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000023800DCFD70>
+
+    def test_preflight_does_not_load_real_rows(
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        monkeypatch.setattr(
+            science,
+            "load_l0_rows",
+            lambda declaration: (_ for _ in ()).throw(
+                AssertionError("preflight accessed real L0 rows")
+            ),
+        )
+>       result = v4.preflight(record=False)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\experiments\l0_surrogate_v4\test_commit_binding.py:124: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+record = False
+
+    def preflight(*, record: bool = False) -> dict[str, object]:
+        declaration = load_predeclaration()
+        effective = inherited_science()
+        partitions = _load(PARTITIONS)
+        if partitions != build_partitions():
+            raise ValueError("v4 partition artifact mismatch")
+        if RESULTS.exists():
+>           raise ValueError("v4 results path already exists")
+E           ValueError: v4 results path already exists
+
+experiments\l0_surrogate_v4\protocol.py:94: ValueError
+__________________ test_empty_result_state_before_execution ___________________
+
+    def test_empty_result_state_before_execution() -> None:
+        placeholder = json.loads(
+            (v4.ROOT / "results-placeholder.json").read_text(encoding="utf-8")
+        )
+        assert placeholder["status"] == "not-executed"
+        assert placeholder["results"] == []
+>       assert not v4.RESULTS.exists()
+E       AssertionError: assert not True
+E        +  where True = exists()
+E        +    where exists = WindowsPath('C:/Users/Angus/AppData/Local/Temp/cft-wall-cusp-validation-v2-run/modern/experiments/l0_surrogate_v4/results').exists
+E        +      where WindowsPath('C:/Users/Angus/AppData/Local/Temp/cft-wall-cusp-validation-v2-run/modern/experiments/l0_surrogate_v4/results') = v4.RESULTS
+
+tests\experiments\l0_surrogate_v4\test_protocol.py:44: AssertionError
+______ test_recorded_geometry_preflight_is_label_free_and_rebuild_exact _______
+
+    def test_recorded_geometry_preflight_is_label_free_and_rebuild_exact() -> None:
+>       geometry = verify_json(GEOMETRY_PREFLIGHT)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\experiments\l1a_field_surrogate_v2\test_protocol.py:39: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+path = WindowsPath('C:/Users/Angus/AppData/Local/Temp/cft-wall-cusp-validation-v2-run/modern/experiments/l1a_field_surrogate_v2/geometry-preflight.json')
+git_bytes = None, sidecar_bytes = None
+
+    def verify_json(path: Path, *, git_bytes: bytes | None = None, sidecar_bytes: bytes | None = None) -> dict[str, Any]:
+        data = path.read_bytes() if git_bytes is None else git_bytes
+        sidecar = (
+            path.with_name(path.name + ".sha256").read_bytes()
+            if sidecar_bytes is None
+            else sidecar_bytes
+        )
+        digest = hashlib.sha256(data).hexdigest()
+        expected = f"{digest}  {path.name}\n".encode("ascii")
+        if sidecar.replace(b"\r\n", b"\n") != expected:
+>           raise ValueError(f"invalid SHA-256 sidecar for {path.name}")
+E           ValueError: invalid SHA-256 sidecar for geometry-preflight.json
+
+experiments\l1a_field_surrogate_v2\protocol.py:97: ValueError
+_______ test_terminal_bundle_when_present_validates_success_or_failure ________
+
+    def test_terminal_bundle_when_present_validates_success_or_failure() -> None:
+        if not (RESULTS / "execution-lock.json").exists():
+            pytest.skip("prospective v2 bundle does not exist before execution")
+>       result = validate_bundle()
+                 ^^^^^^^^^^^^^^^^^
+
+tests\experiments\l1a_field_surrogate_v2\test_results.py:12: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+experiments\l1a_field_surrogate_v2\validate.py:32: in validate_bundle
+    lock = verify_json(RESULTS / "execution-lock.json")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+path = WindowsPath('C:/Users/Angus/AppData/Local/Temp/cft-wall-cusp-validation-v2-run/modern/experiments/l1a_field_surrogate_v2/results/execution-lock.json')
+git_bytes = None, sidecar_bytes = None
+
+    def verify_json(path: Path, *, git_bytes: bytes | None = None, sidecar_bytes: bytes | None = None) -> dict[str, Any]:
+        data = path.read_bytes() if git_bytes is None else git_bytes
+        sidecar = (
+            path.with_name(path.name + ".sha256").read_bytes()
+            if sidecar_bytes is None
+            else sidecar_bytes
+        )
+        digest = hashlib.sha256(data).hexdigest()
+        expected = f"{digest}  {path.name}\n".encode("ascii")
+        if sidecar.replace(b"\r\n", b"\n") != expected:
+>           raise ValueError(f"invalid SHA-256 sidecar for {path.name}")
+E           ValueError: invalid SHA-256 sidecar for execution-lock.json
+
+experiments\l1a_field_surrogate_v2\protocol.py:97: ValueError
+__ test_all_sampling_geometry_source_and_config_identities_recompute_exactly __
+
+    def test_all_sampling_geometry_source_and_config_identities_recompute_exactly() -> None:
+>       bundle = _bundle()
+                 ^^^^^^^^^
+
+tests\experiments\l1a_geometry_sweep_v2\test_results.py:132: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\experiments\l1a_geometry_sweep_v2\test_results.py:24: in _bundle
+    return validate_bundle(RESULTS)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+experiments\l1a_geometry_sweep_v2\validate.py:73: in validate_bundle
+    manifest = _sealed(results / "manifest.json", MANIFEST_KEYS)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+experiments\l1a_geometry_sweep_v2\validate.py:65: in _sealed
+    verify_sidecar(path)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+path = WindowsPath('C:/Users/Angus/AppData/Local/Temp/cft-wall-cusp-validation-v2-run/modern/experiments/l1a_geometry_sweep_v2/results/manifest.json')
+
+    def verify_sidecar(path: Path) -> str:
+        digest = hashlib.sha256(path.read_bytes()).hexdigest()
+        sidecar = path.with_name(path.name + ".sha256")
+        expected = f"{digest}  {path.name}\n"
+        if sidecar.read_text(encoding="ascii") != expected:
+>           raise ValueError(f"invalid SHA-256 sidecar for {path.name}")
+E           ValueError: invalid SHA-256 sidecar for manifest.json
+
+experiments\l1a_geometry_sweep_v2\protocol.py:73: ValueError
+___________ test_nondominated_set_and_roles_recompute_independently ___________
+
+    def test_nondominated_set_and_roles_recompute_independently() -> None:
+>       bundle = _bundle()
+                 ^^^^^^^^^
+
+tests\experiments\l1a_geometry_sweep_v2\test_results.py:153: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\experiments\l1a_geometry_sweep_v2\test_results.py:24: in _bundle
+    return validate_bundle(RESULTS)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+experiments\l1a_geometry_sweep_v2\validate.py:73: in validate_bundle
+    manifest = _sealed(results / "manifest.json", MANIFEST_KEYS)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+experiments\l1a_geometry_sweep_v2\validate.py:65: in _sealed
+    verify_sidecar(path)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+path = WindowsPath('C:/Users/Angus/AppData/Local/Temp/cft-wall-cusp-validation-v2-run/modern/experiments/l1a_geometry_sweep_v2/results/manifest.json')
+
+    def verify_sidecar(path: Path) -> str:
+        digest = hashlib.sha256(path.read_bytes()).hexdigest()
+        sidecar = path.with_name(path.name + ".sha256")
+        expected = f"{digest}  {path.name}\n"
+        if sidecar.read_text(encoding="ascii") != expected:
+>           raise ValueError(f"invalid SHA-256 sidecar for {path.name}")
+E           ValueError: invalid SHA-256 sidecar for manifest.json
+
+experiments\l1a_geometry_sweep_v2\protocol.py:73: ValueError
+___ test_zero_failure_condition_and_all_seven_gates_recompute_independently ___
+
+    def test_zero_failure_condition_and_all_seven_gates_recompute_independently() -> None:
+>       bundle = _bundle()
+                 ^^^^^^^^^
+
+tests\experiments\l1a_geometry_sweep_v2\test_results.py:168: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\experiments\l1a_geometry_sweep_v2\test_results.py:24: in _bundle
+    return validate_bundle(RESULTS)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+experiments\l1a_geometry_sweep_v2\validate.py:73: in validate_bundle
+    manifest = _sealed(results / "manifest.json", MANIFEST_KEYS)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+experiments\l1a_geometry_sweep_v2\validate.py:65: in _sealed
+    verify_sidecar(path)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+path = WindowsPath('C:/Users/Angus/AppData/Local/Temp/cft-wall-cusp-validation-v2-run/modern/experiments/l1a_geometry_sweep_v2/results/manifest.json')
+
+    def verify_sidecar(path: Path) -> str:
+        digest = hashlib.sha256(path.read_bytes()).hexdigest()
+        sidecar = path.with_name(path.name + ".sha256")
+        expected = f"{digest}  {path.name}\n"
+        if sidecar.read_text(encoding="ascii") != expected:
+>           raise ValueError(f"invalid SHA-256 sidecar for {path.name}")
+E           ValueError: invalid SHA-256 sidecar for manifest.json
+
+experiments\l1a_geometry_sweep_v2\protocol.py:73: ValueError
+_____ test_representative_artifacts_reload_and_role_coalescence_is_exact ______
+
+    def test_representative_artifacts_reload_and_role_coalescence_is_exact() -> None:
+>       bundle = _bundle()
+                 ^^^^^^^^^
+
+tests\experiments\l1a_geometry_sweep_v2\test_results.py:189: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\experiments\l1a_geometry_sweep_v2\test_results.py:24: in _bundle
+    return validate_bundle(RESULTS)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+experiments\l1a_geometry_sweep_v2\validate.py:73: in validate_bundle
+    manifest = _sealed(results / "manifest.json", MANIFEST_KEYS)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+experiments\l1a_geometry_sweep_v2\validate.py:65: in _sealed
+    verify_sidecar(path)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+path = WindowsPath('C:/Users/Angus/AppData/Local/Temp/cft-wall-cusp-validation-v2-run/modern/experiments/l1a_geometry_sweep_v2/results/manifest.json')
+
+    def verify_sidecar(path: Path) -> str:
+        digest = hashlib.sha256(path.read_bytes()).hexdigest()
+        sidecar = path.with_name(path.name + ".sha256")
+        expected = f"{digest}  {path.name}\n"
+        if sidecar.read_text(encoding="ascii") != expected:
+>           raise ValueError(f"invalid SHA-256 sidecar for {path.name}")
+E           ValueError: invalid SHA-256 sidecar for manifest.json
+
+experiments\l1a_geometry_sweep_v2\protocol.py:73: ValueError
+_ test_replay_contract_and_environment_are_recorded_without_bitwise_cuda_claim _
+
+    def test_replay_contract_and_environment_are_recorded_without_bitwise_cuda_claim() -> None:
+>       bundle = _bundle()
+                 ^^^^^^^^^
+
+tests\experiments\l1a_geometry_sweep_v2\test_results.py:207: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\experiments\l1a_geometry_sweep_v2\test_results.py:24: in _bundle
+    return validate_bundle(RESULTS)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+experiments\l1a_geometry_sweep_v2\validate.py:73: in validate_bundle
+    manifest = _sealed(results / "manifest.json", MANIFEST_KEYS)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+experiments\l1a_geometry_sweep_v2\validate.py:65: in _sealed
+    verify_sidecar(path)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+path = WindowsPath('C:/Users/Angus/AppData/Local/Temp/cft-wall-cusp-validation-v2-run/modern/experiments/l1a_geometry_sweep_v2/results/manifest.json')
+
+    def verify_sidecar(path: Path) -> str:
+        digest = hashlib.sha256(path.read_bytes()).hexdigest()
+        sidecar = path.with_name(path.name + ".sha256")
+        expected = f"{digest}  {path.name}\n"
+        if sidecar.read_text(encoding="ascii") != expected:
+>           raise ValueError(f"invalid SHA-256 sidecar for {path.name}")
+E           ValueError: invalid SHA-256 sidecar for manifest.json
+
+experiments\l1a_geometry_sweep_v2\protocol.py:73: ValueError
+________ test_no_physical_performance_claims_or_fake_failure_penalties ________
+
+    def test_no_physical_performance_claims_or_fake_failure_penalties() -> None:
+>       bundle = _bundle()
+                 ^^^^^^^^^
+
+tests\experiments\l1a_geometry_sweep_v2\test_results.py:230: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\experiments\l1a_geometry_sweep_v2\test_results.py:24: in _bundle
+    return validate_bundle(RESULTS)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+experiments\l1a_geometry_sweep_v2\validate.py:73: in validate_bundle
+    manifest = _sealed(results / "manifest.json", MANIFEST_KEYS)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+experiments\l1a_geometry_sweep_v2\validate.py:65: in _sealed
+    verify_sidecar(path)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+path = WindowsPath('C:/Users/Angus/AppData/Local/Temp/cft-wall-cusp-validation-v2-run/modern/experiments/l1a_geometry_sweep_v2/results/manifest.json')
+
+    def verify_sidecar(path: Path) -> str:
+        digest = hashlib.sha256(path.read_bytes()).hexdigest()
+        sidecar = path.with_name(path.name + ".sha256")
+        expected = f"{digest}  {path.name}\n"
+        if sidecar.read_text(encoding="ascii") != expected:
+>           raise ValueError(f"invalid SHA-256 sidecar for {path.name}")
+E           ValueError: invalid SHA-256 sidecar for manifest.json
+
+experiments\l1a_geometry_sweep_v2\protocol.py:73: ValueError
+_____ test_published_manifest_and_artifacts_pass_closed_runtime_contract ______
+
+    def test_published_manifest_and_artifacts_pass_closed_runtime_contract() -> None:
+        from cft_revival.fields import validate_design_manifest_file
+    
+        result_directory = ROOT / "examples/axisymmetric/results"
+>       manifest = validate_design_manifest_file(
+            result_directory / "manifest-l1a-v1.json"
+        )
+
+tests\fields\test_axisymmetric_contract_ledgers.py:35: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\cft_revival\fields\artifacts.py:1081: in validate_design_manifest_file
+    _validate_file_sidecar(manifest_path)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+path = WindowsPath('C:/Users/Angus/AppData/Local/Temp/cft-wall-cusp-validation-v2-run/modern/examples/axisymmetric/results/manifest-l1a-v1.json')
+expected_digest = None
+
+    def _validate_file_sidecar(path: Path, expected_digest: str | None = None) -> str:
+        data_digest = hashlib.sha256(path.read_bytes()).hexdigest()
+        if expected_digest is not None and data_digest != expected_digest:
+            raise ValueError(f"file SHA-256 mismatch for {path.name}")
+        sidecar = path.with_name(path.name + ".sha256")
+        if not sidecar.is_file():
+            raise ValueError(f"missing SHA-256 sidecar for {path.name}")
+        expected_line = f"{data_digest}  {path.name}\n"
+        if sidecar.read_text(encoding="ascii") != expected_line:
+>           raise ValueError(f"invalid SHA-256 sidecar for {path.name}")
+E           cft_revival.fields.models.FieldArtifactValidationError: invalid SHA-256 sidecar for manifest-l1a-v1.json
+
+src\cft_revival\fields\artifacts.py:918: FieldArtifactValidationError
+__________ test_generated_artifact_sidecar_hashes_match_exact_bytes ___________
+
+    def test_generated_artifact_sidecar_hashes_match_exact_bytes() -> None:
+        artifact_root = ROOT / "examples/material_fields/artifacts"
+        for path in sorted(artifact_root.glob("*.json")):
+            sidecar = path.with_name(path.name + ".sha256")
+            declared_hash, declared_name = sidecar.read_text(encoding="ascii").split()
+            assert declared_name == path.name
+>           assert declared_hash == hashlib.sha256(path.read_bytes()).hexdigest()
+E           AssertionError: assert '23d0d6f3b035...ff6439cb1cd90' == 'b7054a7d068d...9fb5c2f24833c'
+E             
+E             - b7054a7d068d76bea2b3d4a6e3348619f1528bfa17633148ebc9fb5c2f24833c
+E             + 23d0d6f3b0353a92a57db8417a190f06d6ee002d1f042c83610ff6439cb1cd90
+
+tests\material_fields\test_spec_ledgers.py:27: AssertionError
+_________ test_bundle_replay_passes_and_rejects_stale_version_mixing __________
+
+tmp_path = WindowsPath('C:/Users/Angus/AppData/Local/Temp/pytest-of-Angus/pytest-953/test_bundle_replay_passes_and_0')
+
+    def test_bundle_replay_passes_and_rejects_stale_version_mixing(tmp_path: Path) -> None:
+        artifact_root = ROOT / "examples/material_fields/artifacts"
+>       validate_artifact_bundle(artifact_root)
+
+tests\material_fields\test_spec_ledgers.py:73: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\cft_revival\material_fields\artifacts.py:842: in validate_artifact_bundle
+    artifact_file_sha = _validate_sidecar(artifact_path)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+path = WindowsPath('C:/Users/Angus/AppData/Local/Temp/cft-wall-cusp-validation-v2-run/modern/examples/material_fields/artifacts/historical-envelope-baseline.material-field.json')
+
+    def _validate_sidecar(path: Path) -> str:
+        sidecar = path.with_name(path.name + ".sha256")
+        try:
+            declared, name = sidecar.read_text(encoding="ascii").split()
+        except (OSError, ValueError) as error:
+            raise MaterialFieldValidationError(
+                f"invalid sidecar for {path.name}"
+            ) from error
+        digest = hashlib.sha256(path.read_bytes()).hexdigest()
+        if name != path.name or declared != digest:
+>           raise MaterialFieldValidationError(
+                f"sidecar hash mismatch for {path.name}"
+            )
+E           cft_revival.material_fields.models.MaterialFieldValidationError: sidecar hash mismatch for historical-envelope-baseline.material-field.json
+
+src\cft_revival\material_fields\artifacts.py:883: MaterialFieldValidationError
+___________ test_cli_validates_complete_axisymmetric_result_bundle ____________
+
+argv = ['validate-axisymmetric-results', 'C:\\Users\\Angus\\AppData\\Local\\Temp\\cft-wall-cusp-validation-v2-run\\modern\\examples\\axisymmetric\\results\\manifest-l1a-v1.json']
+
+    def main(argv: Sequence[str] | None = None) -> int:
+        parser = _parser()
+        arguments = parser.parse_args(argv)
+        try:
+>           return _run(arguments)
+                   ^^^^^^^^^^^^^^^
+
+src\cft_revival\cli.py:106: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\cft_revival\cli.py:179: in _run
+    manifest = validate_design_manifest_file(arguments.manifest)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\cft_revival\fields\artifacts.py:1081: in validate_design_manifest_file
+    _validate_file_sidecar(manifest_path)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+path = WindowsPath('C:/Users/Angus/AppData/Local/Temp/cft-wall-cusp-validation-v2-run/modern/examples/axisymmetric/results/manifest-l1a-v1.json')
+expected_digest = None
+
+    def _validate_file_sidecar(path: Path, expected_digest: str | None = None) -> str:
+        data_digest = hashlib.sha256(path.read_bytes()).hexdigest()
+        if expected_digest is not None and data_digest != expected_digest:
+            raise ValueError(f"file SHA-256 mismatch for {path.name}")
+        sidecar = path.with_name(path.name + ".sha256")
+        if not sidecar.is_file():
+            raise ValueError(f"missing SHA-256 sidecar for {path.name}")
+        expected_line = f"{data_digest}  {path.name}\n"
+        if sidecar.read_text(encoding="ascii") != expected_line:
+>           raise ValueError(f"invalid SHA-256 sidecar for {path.name}")
+E           cft_revival.fields.models.FieldArtifactValidationError: invalid SHA-256 sidecar for manifest-l1a-v1.json
+
+src\cft_revival\fields\artifacts.py:918: FieldArtifactValidationError
+
+During handling of the above exception, another exception occurred:
+
+capsys = <_pytest.capture.CaptureFixture object at 0x00000238007C08C0>
+
+    def test_cli_validates_complete_axisymmetric_result_bundle(
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        manifest = ROOT / "examples" / "axisymmetric" / "results" / "manifest-l1a-v1.json"
+>       assert main(["validate-axisymmetric-results", str(manifest)]) == 0
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_integration_workflows.py:142: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\cft_revival\cli.py:108: in main
+    parser.exit(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = ArgumentParser(prog='cft-revival', usage=None, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True)
+status = 2
+message = 'cft-revival: error [FieldArtifactValidationError]: invalid SHA-256 sidecar for manifest-l1a-v1.json\n'
+
+    def exit(self, status=0, message=None):
+        if message:
+            self._print_message(message, _sys.stderr)
+>       _sys.exit(status)
+E       SystemExit: 2
+
+..\..\..\Programs\Python\Python312\Lib\argparse.py:2637: SystemExit
+---------------------------- Captured stderr call -----------------------------
+cft-revival: error [FieldArtifactValidationError]: invalid SHA-256 sidecar for manifest-l1a-v1.json
+_____ test_accepted_loader_rejects_sidecar_tamper_and_unmanifested_files ______
+
+tmp_path = WindowsPath('C:/Users/Angus/AppData/Local/Temp/pytest-of-Angus/pytest-953/test_accepted_loader_rejects_s0')
+
+    def test_accepted_loader_rejects_sidecar_tamper_and_unmanifested_files(
+        tmp_path: Path,
+    ) -> None:
+        tampered = tmp_path / "tampered"
+        shutil.copytree(ARTIFACTS, tampered)
+        sidecar = tampered / "historical-envelope-baseline.viewer.json.sha256"
+        sidecar.write_text("0" * 64 + "  historical-envelope-baseline.viewer.json\n")
+        with pytest.raises(GeometryValidationError, match="sidecar|SHA-256"):
+            GENERATOR.build_payload(tampered)
+    
+        extra = tmp_path / "extra"
+        shutil.copytree(ARTIFACTS, extra)
+        (extra / "unmanifested.txt").write_text("not accepted", encoding="utf-8")
+>       with pytest.raises(GeometryValidationError, match="unmanifested"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'unmanifested'
+E         Actual message: "file SHA-256 mismatch for 'historical-envelope-baseline.svg'"
+
+tests\visualization\test_geometry_designs_visualization.py:369: AssertionError
+=========================== short test summary info ===========================
+SKIPPED [1] tests\experiments\l1a_field_surrogate_v1\test_results.py:13: prospective result bundle does not exist before execution
+SKIPPED [1] tests\experiments\l1a_field_surrogate_v2\test_results.py:20: no terminal execution failure
+SKIPPED [1] tests\test_kernels.py:71: optional pybind11 extension is not built
+ERROR tests/experiments/l1a_geometry_sweep_v2_visualization/test_dashboard.py::test_temporal_commits_and_all_pinned_evidence_hashes_are_exact
+ERROR tests/experiments/l1a_geometry_sweep_v2_visualization/test_dashboard.py::test_exact_counts_seven_gates_front_and_role_coalescence
+ERROR tests/experiments/l1a_geometry_sweep_v2_visualization/test_dashboard.py::test_bitwise_identity_and_tolerance_replay_semantics_are_distinct
+ERROR tests/experiments/l1a_geometry_sweep_v2_visualization/test_dashboard.py::test_all_linked_metrics_objective_directions_and_case_inputs_are_embedded
+ERROR tests/experiments/l1a_geometry_sweep_v2_visualization/test_dashboard.py::test_representative_fields_profiles_geometry_sources_and_hashes_are_embedded
+ERROR tests/experiments/l1a_geometry_sweep_v2_visualization/test_dashboard.py::test_generation_is_byte_deterministic_and_checked_html_is_current
+ERROR tests/experiments/l1a_geometry_sweep_v2_visualization/test_dashboard.py::test_html_is_self_contained_offline_path_free_and_secret_free
+ERROR tests/experiments/l1a_geometry_sweep_v2_visualization/test_dashboard.py::test_html_has_required_evidence_interaction_accessibility_and_redraw
+ERROR tests/experiments/l1a_geometry_sweep_v2_visualization/test_dashboard.py::test_controls_cannot_expand_mobile_document_and_keep_full_labels_accessible
+ERROR tests/experiments/l1a_geometry_sweep_v2_visualization/test_dashboard.py::test_embedded_json_round_trips_and_javascript_parses
+ERROR tests/experiments/l1a_geometry_sweep_v2_visualization/test_dashboard.py::test_payload_file_payload_and_field_tampering_are_rejected
+ERROR tests/visualization/test_axisymmetric_results_visualization.py::test_manifest_and_artifact_identities_are_exact
+ERROR tests/visualization/test_axisymmetric_results_visualization.py::test_embedded_field_arrays_are_finite_radial_major_and_physical
+ERROR tests/visualization/test_axisymmetric_results_visualization.py::test_source_geometry_polarity_and_dimensions_are_actual
+ERROR tests/visualization/test_axisymmetric_results_visualization.py::test_nulls_maxima_convergence_and_parity_claims_are_evidence_bounded
+ERROR tests/visualization/test_axisymmetric_results_visualization.py::test_generation_is_byte_deterministic_and_checked_html_is_current
+ERROR tests/visualization/test_axisymmetric_results_visualization.py::test_html_is_self_contained_offline_and_has_no_secret_or_absolute_path
+ERROR tests/visualization/test_axisymmetric_results_visualization.py::test_javascript_is_valid_when_node_is_available
+ERROR tests/visualization/test_axisymmetric_results_visualization.py::test_html_uses_canvas_dpr_and_real_psi_contours_without_cell_dom
+ERROR tests/visualization/test_axisymmetric_results_visualization.py::test_topology_boundary_and_limitations_have_explicit_display_semantics
+ERROR tests/visualization/test_axisymmetric_results_visualization.py::test_html_has_required_controls_accessibility_and_redraw_hooks
+ERROR tests/visualization/test_axisymmetric_results_visualization.py::test_embedded_json_round_trips_strictly
+ERROR tests/visualization/test_axisymmetric_results_visualization.py::test_tampered_embedded_identity_or_parity_claim_is_rejected
+ERROR tests/visualization/test_geometry_designs_visualization.py::test_accepted_bundle_and_reviewed_identities_are_exact
+ERROR tests/visualization/test_geometry_designs_visualization.py::test_display_geometry_is_exact_accepted_projection
+ERROR tests/visualization/test_geometry_designs_visualization.py::test_descriptors_volumes_clearances_and_polarity_are_artifact_derived
+ERROR tests/visualization/test_geometry_designs_visualization.py::test_divergent_exit_and_complete_selection_records_are_preserved
+ERROR tests/visualization/test_geometry_designs_visualization.py::test_generation_is_byte_deterministic_and_checked_html_is_current
+ERROR tests/visualization/test_geometry_designs_visualization.py::test_html_is_zero_network_path_free_and_secret_free
+ERROR tests/visualization/test_geometry_designs_visualization.py::test_html_has_compare_dimensions_accessibility_and_redraw
+ERROR tests/visualization/test_geometry_designs_visualization.py::test_reset_restores_complete_initial_view_state_without_changing_theme
+ERROR tests/visualization/test_geometry_designs_visualization.py::test_theme_starts_from_and_tracks_os_preference_independently_of_reset
+ERROR tests/visualization/test_geometry_designs_visualization.py::test_html_exposes_materials_interfaces_warnings_and_numeric_sources
+ERROR tests/visualization/test_geometry_designs_visualization.py::test_embedded_json_round_trips_without_nonstandard_numbers
+ERROR tests/visualization/test_geometry_designs_visualization.py::test_javascript_is_valid_when_node_is_available
+ERROR tests/visualization/test_geometry_designs_visualization.py::test_payload_rejects_identity_and_polarity_substitution
+FAILED tests/experiments/l0_surrogate_v3/test_atomic_pipeline.py::test_preflight_never_loads_real_v3_rows_or_assessment
+FAILED tests/experiments/l0_surrogate_v3/test_atomic_pipeline.py::test_real_result_path_and_placeholder_are_empty_before_freeze
+FAILED tests/experiments/l0_surrogate_v4/test_commit_binding.py::test_preflight_does_not_load_real_rows
+FAILED tests/experiments/l0_surrogate_v4/test_protocol.py::test_empty_result_state_before_execution
+FAILED tests/experiments/l1a_field_surrogate_v2/test_protocol.py::test_recorded_geometry_preflight_is_label_free_and_rebuild_exact
+FAILED tests/experiments/l1a_field_surrogate_v2/test_results.py::test_terminal_bundle_when_present_validates_success_or_failure
+FAILED tests/experiments/l1a_geometry_sweep_v2/test_results.py::test_all_sampling_geometry_source_and_config_identities_recompute_exactly
+FAILED tests/experiments/l1a_geometry_sweep_v2/test_results.py::test_nondominated_set_and_roles_recompute_independently
+FAILED tests/experiments/l1a_geometry_sweep_v2/test_results.py::test_zero_failure_condition_and_all_seven_gates_recompute_independently
+FAILED tests/experiments/l1a_geometry_sweep_v2/test_results.py::test_representative_artifacts_reload_and_role_coalescence_is_exact
+FAILED tests/experiments/l1a_geometry_sweep_v2/test_results.py::test_replay_contract_and_environment_are_recorded_without_bitwise_cuda_claim
+FAILED tests/experiments/l1a_geometry_sweep_v2/test_results.py::test_no_physical_performance_claims_or_fake_failure_penalties
+FAILED tests/fields/test_axisymmetric_contract_ledgers.py::test_published_manifest_and_artifacts_pass_closed_runtime_contract
+FAILED tests/material_fields/test_spec_ledgers.py::test_generated_artifact_sidecar_hashes_match_exact_bytes
+FAILED tests/material_fields/test_spec_ledgers.py::test_bundle_replay_passes_and_rejects_stale_version_mixing
+FAILED tests/test_integration_workflows.py::test_cli_validates_complete_axisymmetric_result_bundle
+FAILED tests/visualization/test_geometry_designs_visualization.py::test_accepted_loader_rejects_sidecar_tamper_and_unmanifested_files
+17 failed, 1074 passed, 3 skipped, 36 errors in 560.70s (0:09:20)
+
+---
+exit_code: 1
+elapsed_ms: 565334
+ended_at: 2026-09-02T00:00:45.106Z
+---

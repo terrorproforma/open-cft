@@ -1,0 +1,12 @@
+{
+  "declared_device": "cuda:0",
+  "host": "DESKTOP-31AD96J",
+  "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+  "schema_version": "cft-revival.cft-wall-cusp-validation-v2.runtime/1.0.0",
+  "semantic_integrity": {
+    "algorithm": "sha256",
+    "canonicalization": "json-sort-keys-compact-utf8-v1",
+    "payload_sha256": "1eb2d388159bd55d242c12a095354dd6186fa940f1fe1db083ca8bbd7cc4c216"
+  },
+  "status": "gpu_runtime_not_initialized_failure_preceded_runtime_phase"
+}

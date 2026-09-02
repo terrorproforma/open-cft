@@ -1,0 +1,46 @@
+{
+  "full_python_suite_importlib": {
+    "command": "python -m pytest -q --import-mode=importlib",
+    "elapsed_seconds": 560.7,
+    "errors": 36,
+    "failed": 17,
+    "passed": 1074,
+    "reason": "pre-existing prospective-result and visualization/artifact identity failures outside v2; exact output retained",
+    "skipped": 3,
+    "status": "failed"
+  },
+  "fyp": {
+    "execution_status": "not_run_runtime_unavailable",
+    "git_diff_against_preregistration_commit": "clean",
+    "matlab_available": false,
+    "octave_available": false
+  },
+  "native_build_and_test": {
+    "command": "cmake ... -DCFT_BUILD_PYTHON=OFF -DBUILD_TESTING=ON; cmake --build ...; ctest --test-dir ... --output-on-failure",
+    "status": "passed",
+    "tests_failed": 0,
+    "tests_passed": 1
+  },
+  "pre_run_manufactured_tests": {
+    "command": "python -m pytest -q experiments/cft_wall_cusp_validation_v2/tests/test_protocol.py --import-mode=importlib",
+    "failed": 0,
+    "passed": 9,
+    "status": "passed"
+  },
+  "pre_run_serialization_matrix": {
+    "held_out_access_count": 0,
+    "map_based_orbit_diagnostic_count": 6,
+    "serialized_dataclass_type_count": 29,
+    "status": "passed"
+  },
+  "python_compile": {
+    "command": "python -m compileall -q src tests experiments/cft_wall_cusp_validation_v2",
+    "status": "passed"
+  },
+  "schema_version": "cft-revival.cft-wall-cusp-validation-v2.verification/1.0.0",
+  "semantic_integrity": {
+    "algorithm": "sha256",
+    "canonicalization": "json-sort-keys-compact-utf8-v1",
+    "payload_sha256": "8449cca40e1aead62c68d50a25df42f6e1de5a3652ffce8b2b4c823f28623d09"
+  }
+}

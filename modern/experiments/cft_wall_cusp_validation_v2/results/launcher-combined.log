@@ -1,0 +1,38 @@
+---
+pid: 66076
+cwd: "C:\\Users\\Angus\\AppData\\Local\\Temp\\cft-wall-cusp-validation-v2-run\\modern"
+command: "$env:PYTHONPATH='src'; python -m experiments.cft_wall_cusp_validation_v2.run"
+title: "Run sole v2 held-out validation"
+status: failed   
+started_at: 2026-09-01T23:50:15.934Z
+running_for_ms: 11708    
+---
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "C:\Users\Angus\AppData\Local\Temp\cft-wall-cusp-validation-v2-run\modern\experiments\cft_wall_cusp_validation_v2\run.py", line 51, in <module>
+    main()
+  File "C:\Users\Angus\AppData\Local\Temp\cft-wall-cusp-validation-v2-run\modern\experiments\cft_wall_cusp_validation_v2\run.py", line 34, in main
+    finalized = finalize_attempt(
+                ^^^^^^^^^^^^^^^^^
+  File "C:\Users\Angus\AppData\Local\Temp\cft-wall-cusp-validation-v2-run\modern\experiments\cft_wall_cusp_validation_v2\experiment.py", line 2345, in finalize_attempt
+    lock = _strict_json(output / "execution-lock.json")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Angus\AppData\Local\Temp\cft-wall-cusp-validation-v2-run\modern\experiments\cft_wall_cusp_validation_v2\experiment.py", line 104, in _strict_json
+    value = json.loads(
+            ^^^^^^^^^^^
+  File "C:\Users\Angus\AppData\Local\Programs\Python\Python312\Lib\json\__init__.py", line 359, in loads
+    return cls(**kw).decode(s)
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Angus\AppData\Local\Programs\Python\Python312\Lib\json\decoder.py", line 338, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Angus\AppData\Local\Programs\Python\Python312\Lib\json\decoder.py", line 356, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+---
+exit_code: 1
+elapsed_ms: 11708
+ended_at: 2026-09-01T23:50:27.642Z
+---

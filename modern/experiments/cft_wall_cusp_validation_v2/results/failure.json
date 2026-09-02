@@ -1,0 +1,55 @@
+{
+  "attempt": 1,
+  "authority_note": "No held-out geometry, map, criterion, path, cell, orbit, replay, or projection was accessed or evaluated.",
+  "failure": {
+    "exception_type": "TypeError",
+    "message": "Object of type datetime is not JSON serializable",
+    "phase": "exclusive_lock_payload_serialization",
+    "source": "experiment.py:1904"
+  },
+  "last_phase": {
+    "payload": {
+      "access_count": 0
+    },
+    "phase": "held_out_access",
+    "sequence": 3,
+    "status": "not_started"
+  },
+  "launcher_finalization_failure": {
+    "exception_type": "JSONDecodeError",
+    "note": "The parent launcher also failed; this postmortem bundle preserves both exact logs without changing preregistered code.",
+    "phase": "parse_empty_lock",
+    "source": "experiment.py:2345"
+  },
+  "phase_event_count": 3,
+  "schema_version": "cft-revival.cft-wall-cusp-validation-v2.failure/1.0.0",
+  "semantic_integrity": {
+    "algorithm": "sha256",
+    "canonicalization": "json-sort-keys-compact-utf8-v1",
+    "payload_sha256": "09607428f39004c7ccf67a8860b0ba325a8cb797c79be8011fe3f38fef21d41b"
+  },
+  "status": "failed_immutable_no_patch_no_rerun",
+  "stderr_sha256": "8ed45d298f1ec2662165a17fc7347b7c786d27cd60a6cc21b974373a90ad97a7",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "summary": {
+    "access_event_count": 0,
+    "attempted_case_count": 0,
+    "candidate_cell_count": 0,
+    "candidate_orbit_count": 0,
+    "candidate_path_count": 0,
+    "criterion_numerically_promoted": false,
+    "declared_case_count": 24,
+    "declared_map_count": 72,
+    "gpu_replay_count": 0,
+    "held_out_outcome_count": 0,
+    "materialized_map_count": 0,
+    "opaque_projection_count": 0,
+    "plasma_coupling_ready": false,
+    "prerecord_count": 0,
+    "resolved_cell_count": 0,
+    "resolved_orbit_count": 0,
+    "resolved_path_count": 0,
+    "search_v3_ready": false
+  },
+  "v1_disclosure": "wcval-f1-s04-p0-r0-neg and its maps were accessed by v1 and are not held out for v2"
+}

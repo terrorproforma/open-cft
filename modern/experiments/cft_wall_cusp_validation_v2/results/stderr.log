@@ -1,0 +1,27 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "C:\Users\Angus\AppData\Local\Temp\cft-wall-cusp-validation-v2-run\modern\experiments\cft_wall_cusp_validation_v2\worker.py", line 14, in <module>
+    main()
+  File "C:\Users\Angus\AppData\Local\Temp\cft-wall-cusp-validation-v2-run\modern\experiments\cft_wall_cusp_validation_v2\worker.py", line 9, in main
+    result = run_experiment(Path(__file__).resolve().parent / "results")
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Angus\AppData\Local\Temp\cft-wall-cusp-validation-v2-run\modern\experiments\cft_wall_cusp_validation_v2\experiment.py", line 1904, in run_experiment
+    handle.write(json.dumps(lock_payload, indent=2, sort_keys=True) + "\n")
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Angus\AppData\Local\Programs\Python\Python312\Lib\json\__init__.py", line 238, in dumps
+    **kw).encode(obj)
+          ^^^^^^^^^^^
+  File "C:\Users\Angus\AppData\Local\Programs\Python\Python312\Lib\json\encoder.py", line 202, in encode
+    chunks = list(chunks)
+             ^^^^^^^^^^^^
+  File "C:\Users\Angus\AppData\Local\Programs\Python\Python312\Lib\json\encoder.py", line 432, in _iterencode
+    yield from _iterencode_dict(o, _current_indent_level)
+  File "C:\Users\Angus\AppData\Local\Programs\Python\Python312\Lib\json\encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "C:\Users\Angus\AppData\Local\Programs\Python\Python312\Lib\json\encoder.py", line 439, in _iterencode
+    o = _default(o)
+        ^^^^^^^^^^^
+  File "C:\Users\Angus\AppData\Local\Programs\Python\Python312\Lib\json\encoder.py", line 180, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type datetime is not JSON serializable
