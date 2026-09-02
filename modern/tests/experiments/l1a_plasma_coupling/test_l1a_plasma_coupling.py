@@ -10,7 +10,7 @@ import pytest
 from cft_revival.coupling import (
     EvidenceVerificationError,
     MapValidationPolicy,
-    build_coupling_record,
+    build_screening_proxy,
 )
 from cft_revival.plasma import (
     PlasmaMultiStartResult,
@@ -82,7 +82,8 @@ def test_adapter_rejects_stale_evidence() -> None:
 def test_real_topology_mismatch_is_not_forced_into_four_cells() -> None:
     opposed = ACCEPTED / "hypothetical-opposed-cusp-l1a-v1.json"
     evidence, _ = load_accepted_evidence(opposed, MANIFEST)
-    record = build_coupling_record(
+    # Same deprecated coupling v2 same-z projection the experiment uses.
+    record = build_screening_proxy(
         evidence,
         wall_radius_m=0.1,
         uncertainty_model=UNCERTAINTY,
