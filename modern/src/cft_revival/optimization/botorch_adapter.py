@@ -350,8 +350,11 @@ def load_api() -> dict[str, Any]:
                 "qLogNParEGO",
             ),
             "optimize_acqf": getattr(import_module("botorch.optim"), "optimize_acqf"),
+            # BoTorch 0.18.1 exports ``optimize_acqf`` lazily from ``botorch.optim``
+            # but keeps ``optimize_acqf_list`` only in ``botorch.optim.optimize``
+            # (verified against the installed 0.18.1 wheel on 2026-09-03).
             "optimize_acqf_list": getattr(
-                import_module("botorch.optim"), "optimize_acqf_list"
+                import_module("botorch.optim.optimize"), "optimize_acqf_list"
             ),
         }
     except (ImportError, AttributeError) as exc:
@@ -437,8 +440,14 @@ def build_qlognehvi(
     *,
     x_pending: Any | None = None,
     model_outputs_are_direction_transformed: bool = False,
+    sampler: Any | None = None,
 ) -> Any:
-    """Construct qLogNEHVI with all-maximize outputs and strict-negative constraints."""
+    """Construct qLogNEHVI with all-maximize outputs and strict-negative constraints.
+
+    ``sampler`` (an optional BoTorch MC sampler) must be supplied at construction:
+    qLogNEHVI caches Cholesky base samples sized to the baseline, so replacing the
+    sampler on a constructed instance breaks that bookkeeping.
+    """
     if not model_outputs_are_direction_transformed:
         raise ValueError(
             "model outputs must be fitted through the mixed-direction transform"
@@ -456,6 +465,7 @@ def build_qlognehvi(
         ref_point=transformed_reference,
         X_baseline=x_baseline,
         X_pending=x_pending,
+        sampler=sampler,
         objective=objective,
         constraints=list(constraint_output_callables(layout)) or None,
         prune_baseline=True,

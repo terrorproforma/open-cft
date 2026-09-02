@@ -104,3 +104,27 @@
   keys at top-level or arbitrary nesting before dictionary construction.
 - Added cross-context isolation, same-context dominance, canonical replay, and
   top-level/nested duplicate-key tests.
+
+## 2026-09-03 first in-repo BoTorch execution; MDO L0 campaign v1 preregistration
+
+- `botorch_adapter.load_api` resolved `optimize_acqf_list` from `botorch.optim`;
+  BoTorch 0.18.1 only exports it from `botorch.optim.optimize`. The adapter
+  had never been executed against an installed BoTorch ("execution remains
+  unverified"); the first call from the campaign runner failed with
+  `OptionalDependencyError`. Fixed the lookup.
+- `build_qlognehvi` gained an optional `sampler` argument: qLogNEHVI caches
+  Cholesky base samples at construction, so assigning `.sampler` afterwards
+  raises a shape error in `SobolQMCNormalSampler._update_base_samples`.
+- Campaign `modern/experiments/mdo_l0_campaign_v1` (protocol frozen, shakedown
+  passed on the `.venv-sota` runtime: torch 2.13.0+cu130, BoTorch 0.18.1,
+  GPyTorch 1.15.2, pymoo 0.6.2): three operating-point design variables, seven
+  uncertain inputs with the cusp probabilities as declared uncertain inputs
+  (mirror formula falsified by wall-loss v4), closure CL-1, CVaR robust
+  objectives, constrained qLogNEHVI vs NSGA-III vs LHS at 96 evaluations per
+  run, three seeds. Geometry radii excluded (no geometry-to-L0 map).
+- Measured under the concurrent PIC GPU run: GP fit + acquisition on `cuda:0`
+  20-40x slower than cpu for these tiny models; the campaign declares cpu.
+- `spec/optimization/campaign-v1.json#benchmark.results` stays null (no F3
+  verification); the instance index `spec/optimization/mdo-l0-campaign-v1.json`
+  points at the campaign and receives the recorded bundle pointer after the
+  single execution.

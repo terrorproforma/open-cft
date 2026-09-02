@@ -1,0 +1,19 @@
+{
+  "document_type": "cft-revival-optimization-campaign-instance",
+  "schema_version": "1.0",
+  "campaign_spec_id": "cft-l0-robust-3d-4objective-f0@1.0",
+  "parent_spec": "modern/spec/optimization/campaign-v1.json",
+  "parent_relation": "F0-only (corrected analytical L0) instance with a declared cusp-loss closure and a robust CVaR formulation; it does NOT satisfy the parent's F3-verified benchmark contract, so campaign-v1.json#benchmark.results stays null",
+  "protocol": "modern/experiments/mdo_l0_campaign_v1/protocol.json",
+  "experiment": "modern/experiments/mdo_l0_campaign_v1",
+  "claim_boundary": "Optimises the corrected L0 conservation model under declared input uncertainty (cusp probabilities, ionisation, Xe2+ share, divergence); no thruster-performance claim.",
+  "decision_space": {
+    "dimensions": 3,
+    "variables": ["discharge_voltage_v", "anode_current_a", "propellant_mass_flow_kg_per_s"],
+    "excluded_legacy_geometry_variables": 5
+  },
+  "objectives": ["axial_thrust_n max", "specific_impulse_s max", "thruster_electrical_to_beam_efficiency max", "anode_input_power_w min"],
+  "uncertain_inputs": 7,
+  "strategies": ["qlognehvi", "nsga3", "lhs"],
+  "results": null
+}
