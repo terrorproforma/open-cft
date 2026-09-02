@@ -27,6 +27,16 @@ RESULTS_COMMIT_TIME = "2026-09-02T03:06:19+10:00"
 EXPECTED_PROTOCOL_FILE_SHA256 = (
     "64b2c58c3cecb2ea1836d2bf48e23ff83dffb114866bf21e7135b411beaa2b2c"
 )
+# Known preregistration defect (tolerated exactly, nothing else): the frozen
+# ``protocol.json.sha256`` and the immutable bundle recorded the CRLF working
+# tree bytes of ``protocol.json`` (Windows ``core.autocrlf=true`` checkout),
+# while Git stores the LF form (repo-wide ``eol=lf`` pin). For ``protocol.json``
+# only, the generator accepts ``sha256(bytes.replace(b"\n", b"\r\n")) ==
+# EXPECTED_PROTOCOL_FILE_SHA256`` when the LF bytes hash to the audited digest
+# below. See ``../POSTHOC_AUDIT.md`` and ``../audit_sidecar_eol.py``.
+AUDITED_PROTOCOL_LF_SHA256 = (
+    "2a5ba9e46c777225384539a4c453a43aa3298c956b32b022cc5ddeac72ba874c"
+)
 EXPECTED_PROTOCOL_PAYLOAD_SHA256 = (
     "da319f2271d56b0d0c883b76d3106b094359a608b560d58ac7801de1293ecbc8"
 )
@@ -150,13 +160,31 @@ def _verify_integrity(value: dict[str, Any], label: str) -> str:
     return digest
 
 
+def _eol_audited_digest(path: Path, raw: bytes, expected: str | None) -> str | None:
+    """Recorded digest for the one audited CRLF-era file, else ``None``."""
+
+    if (
+        path.resolve() != PROTOCOL_PATH.resolve()
+        or expected != EXPECTED_PROTOCOL_FILE_SHA256
+        or b"\r" in raw
+        or sha256(raw).hexdigest() != AUDITED_PROTOCOL_LF_SHA256
+        or sha256(raw.replace(b"\n", b"\r\n")).hexdigest() != expected
+    ):
+        return None
+    return expected
+
+
 def _verify_file(path: Path, label: str, expected: str | None = None) -> str:
     try:
-        digest = sha256(path.read_bytes()).hexdigest()
+        raw = path.read_bytes()
     except OSError as error:
         raise ValueError(f"{label} file is not readable") from error
+    digest = sha256(raw).hexdigest()
     if expected is not None and digest != expected:
-        raise ValueError(f"{label} file SHA-256 mismatch")
+        audited = _eol_audited_digest(path, raw, expected)
+        if audited is None:
+            raise ValueError(f"{label} file SHA-256 mismatch")
+        digest = audited
     sidecar = path.with_name(path.name + ".sha256")
     try:
         sidecar_text = sidecar.read_text(encoding="ascii")
