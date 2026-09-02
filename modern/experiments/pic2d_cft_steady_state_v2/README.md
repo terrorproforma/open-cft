@@ -8,7 +8,8 @@ channel with the v1.3 quasi-steady 0-D neutral inventory
 ## What changed vs. `pic2d_cft_steady_state_v1`
 
 * The neutral density is a state `n_g(t)`, uniform in space, driven by a prescribed
-  feed `Q_in = 7.77e16 atoms/s` (0.017 mg/s, the effusion at `n_g0 = 5e19 m⁻³`), the
+  feed `Q_in = 8.55e16 atoms/s` (0.0186 mg/s, the effusion at `n_g0 = 5.5e19 m⁻³`;
+  attempt 1 used 7.77e16 / 5e19), the
   ionisation sink measured from the MCC tallies, and thermal effusion through the exit
   plane (`c n_g`, `c = v̄ A_exit / 4 = 1.55e-3 m³/s` at 300 K).
 * The transient toward the fixed point `n_g* = (Q_in − S)/c` is **artificial**
@@ -18,8 +19,19 @@ channel with the v1.3 quasi-steady 0-D neutral inventory
 * The MCC scales the real-collision frequency by `n_g / n_g0`; the null-collision
   ceiling stays at `n_g0`. `n_g > n_g0` or exhaustion fails closed.
 * The plateau rule also requires `n_g` drift < 5 % over the trailing 20 %.
-* Expected fixed point: `n_g ≈ 2.3–3.4e19`, `n_e ≈ 1.1–2.9e17` (0.28–0.73 of the
-  resolvability ceiling `n_max = 4e17`); `W = 6e4` keeps 1.3–3.2 M macro-particles.
+* Expected fixed point: `n_g ≈ 2.3–3.4e19`, `n_e ≈ 1.1–3.2e17` (0.28–0.8 of the
+  resolvability ceiling `n_max = 4e17`; 2.3e17 = 0.58 at the ν_iz τ = 1 point for
+  attempt 2); `W = 6e4` keeps 1.3–3.7 M macro-particles.
+
+## Attempts
+
+| attempt | n_g0 / Q_in | seed | outcome |
+| --- | --- | --- | --- |
+| 1 (`results-attempt1-ng0-5e19-seed1e16/`) | 5e19 / 7.77e16 s⁻¹ (0.0170 mg/s) | 1e16 m⁻³, 5 eV | **no ignition**: stopped at 1.14 µs; S fell 2.9e15 → 1.5e15 s⁻¹ as the seed cooled (7.9 → 5.0 eV), 91–96 % of the beam returned to the exit plane, I_d 0.2 mA, 0.12 ionisations per injected electron; n_g stayed at 4.9e19 (98 % of n_g0) |
+| 2 (`results/`) | 5.5e19 / 8.55e16 s⁻¹ (0.0186 mg/s) | 5e16 m⁻³, 5 eV (the v1/v2 snapshot seed) | launched; at 0.13 µs: S 1.6e16 s⁻¹ and T_e rising, 60 % beam return, I_d 1.2–1.6 mA, n_g tracking its fixed point (4.46e19) |
+
+The seed is an initial condition (not replenished); the diagnosis and both adjustments
+are recorded in `protocol.json` (`attempts`, `seed_justification`, `feed_justification`).
 
 ## Running (from `modern/`)
 

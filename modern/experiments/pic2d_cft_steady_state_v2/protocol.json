@@ -19,22 +19,37 @@
   "operating_point": {
     "anode_potential_v": 300.0,
     "exit_plane_potential_v": 0.0,
-    "neutral_density_per_m3": 5.0e19,
+    "neutral_density_per_m3": 5.5e19,
     "neutral_density_role": "initial density AND MCC null-collision ceiling n_g0 (= Q_in / c, the zero-ionisation fixed point); the instantaneous n_g(t) is the inventory state",
     "neutral_temperature_k": 300.0,
     "neutral_inventory": {
-      "feed_atoms_per_s": 7.773729094654555e16,
+      "feed_atoms_per_s": 8.551102004120011e16,
       "relaxation_time_s": 3.0e-8,
-      "feed_justification": "Q_in = c n_g0 with c = v_bar A_exit / 4 = 1.5547e-3 m^3/s (xenon at 300 K, v_bar = 220.0 m/s, A_exit = pi (3 mm)^2) and n_g0 = 5e19 m^-3: 7.77e16 atoms/s = 0.01695 mg/s. Expected fixed point where nu_iz tau = 1: n_g ~ 3.4e19 with S = 2.5e16 s^-1 (32 % utilisation) and n_eq ~ 1.1-1.7e17 (0.3-0.4 n_max); the linear v2 coefficients give the lower bound n_g* = 2.3e19 / upper bound n_e = 2.9e17 (0.73 n_max) - see the model spec",
+      "feed_justification": "ATTEMPT 2: Q_in = c n_g0 with c = v_bar A_exit / 4 = 1.5547e-3 m^3/s (xenon at 300 K, v_bar = 220.0 m/s, A_exit = pi (3 mm)^2) and n_g0 = 5.5e19 m^-3: 8.55e16 atoms/s = 0.01864 mg/s. Expected fixed point where nu_iz tau = 1: n_g ~ 3.4e19 with S = Q_in - c n_g = 3.3e16 s^-1 (38 % utilisation) and n_eq = S / (V nu_iz) ~ 2.3e17 (0.58 n_max) if the plasma electrons carry the ionisation; lower if the beam does. Attempt 1 used n_g0 = 5e19 (Q_in = 7.77e16 = 0.01695 mg/s; fixed point at 3.4e19 would have been S = 2.5e16, n_eq ~ 1.8e17) and did not ignite - see 'attempts'",
       "relaxation_justification": "tau_g = 30 ns is artificial: << ion transit 2.4 us (n_g quasi-steady on plasma time scales), << physical effusion time V/c = 221 us, = 100 series intervals (averages the interval shot noise of S). Only the fixed point is physical; the artificial term has its own ledger so the atom balance closes to round-off"
     },
     "electron_injection_current_a": 3.0e-3,
     "electron_injection_temperature_ev": 2.0,
-    "electron_injection_justification": "kept from v1.2: v2 ignited from this injection at 1e20 and the v1.2 reference did not at 1.5e19 (beam mirrored back); the v1.3 run starts at 5e19 (3.3x the reference collisionality, nu_iz tau = 1.45 > 1) so no seed change before the first attempt",
-    "seed_plasma_density_per_m3": 1.0e16,
+    "electron_injection_justification": "kept from v1.2: v2 ignited from this injection at 1e20 and the v1.2 reference did not at 1.5e19 (beam mirrored back); attempt 1 at 5e19 with the 1e16 seed also did not ignite (91-96 % of the beam returned), so attempt 2 changes the seed, not the injection",
+    "seed_plasma_density_per_m3": 5.0e16,
     "seed_electron_temperature_ev": 5.0,
-    "seed_ion_temperature_ev": 0.0
+    "seed_ion_temperature_ev": 0.0,
+    "seed_justification": "ATTEMPT 2: the seed used by the v1 and v2 snapshots (5e16 m^-3, 5 eV; 286 k macro-particles per species at W = 6e4), which ignited at 1e20 with the beam fully absorbed from the first 100 ns (exit return 0.9 -> 0.26 mA, anode 3.2-3.6 mA, nu_iz 2.8-4.2e6 s^-1, T_e rising 8 -> 10 eV). Attempt 1 used 1e16 and the seed cooled (T_e 7.9 -> 5.0 eV) with nu_iz falling 1.16e6 -> 5.6e5 s^-1 and 91-96 % of the beam mirroring back; a 5x denser seed builds the plasma potential structure that traps the beam electrons (the beam-transmission jump between 5e19 and 1e20 was 23x in ionisations per injected electron, far more than the 2x in collisionality, pointing at the potential structure rather than the collision rate). The seed is a documented initial condition, not a sustained source: it is not replenished"
   },
+  "attempts": [
+    {
+      "attempt": 1,
+      "results_dir": "results-attempt1-ng0-5e19-seed1e16",
+      "changes": "n_g0 = 5e19 (Q_in = 7.77e16 s^-1 = 0.01695 mg/s), seed 1e16 m^-3 @ 5 eV; everything else as attempt 2",
+      "outcome": "no ignition: stopped after the step-760000 checkpoint (t = 1.14 us) and finalized. S fell monotonically 2.9e15 -> 1.5e15 s^-1 (nu_iz = S/N_e 1.16e6 -> 5.6e5 s^-1 as the seed cooled from 7.9 to 5.0 eV), N_e flat at 42-44 k macro-particles (beam transit population), N_i decaying 57 k -> 45 k, 91.4 % of the injected electrons returned to the exit plane (96 % over the last 300 ns), anode 10 % cumulative (0.2 mA late), I_d 0.20-0.23 mA; 0.116 ionisations per injected electron vs 2.7 at 1e20 in v2. n_g relaxed 5.0e19 -> 4.83e19 and back to 4.90e19 (fixed point of the tiny S); atom ledger closure to round-off. 2.1-2.5 ms/step at 0.1 M particles",
+      "diagnosis": "the seed does not sustain itself at 5e19 (no heating; inelastic cooling and loss of the hot tail) and without a plasma potential structure the 300 V beam mirrors back in the cusps before colliding; Q_in was not the limiting factor (n_g stayed at 4.9e19, 98 % of n_g0)"
+    },
+    {
+      "attempt": 2,
+      "results_dir": "results",
+      "changes": "seed 5e16 m^-3 @ 5 eV (the v1/v2 snapshot seed) and n_g0 = 5.5e19 (Q_in = 8.55e16 s^-1 = 0.01864 mg/s); both are the documented adjustments allowed for the single relaunch"
+    }
+  ],
   "numerics": {
     "dt_s": 1.5e-12,
     "dt_justification": "as v1.1/v1.2: omega_pe dt = 0.054 at the design ceiling n_max = 4e17; the runtime gate (0.2 on the instantaneous peak node density) trips at 5.6e18 m^-3",
@@ -63,9 +78,10 @@
   },
   "budget_v1_3": {
     "n_max_per_m3": 4.0e17,
-    "n_eq_projected_per_m3": 1.5e17,
-    "n_eq_projected_range_per_m3": [1.1e17, 2.9e17],
-    "n_eq_projected_over_n_max": "0.28-0.73",
+    "n_eq_projected_per_m3": 2.3e17,
+    "n_eq_projected_range_per_m3": [1.1e17, 3.2e17],
+    "n_eq_projected_over_n_max": "0.28-0.8 (attempt 2, n_g0 = 5.5e19: 0.58 at the nu_iz tau = 1 fixed point)",
+    "particles_at_projected_n_eq": "2 x 2.3e17 x 3.432e-7 / 6e4 = 2.6 M (e- + Xe+)",
     "t_e_for_lambda_d_ev": 8.0,
     "lambda_d_min_m": 3.32e-5,
     "omega_pe_max_rad_per_s": 3.57e10,
@@ -87,7 +103,7 @@
     "neutral_artificial_relaxation_time_s": 3.0e-8
   },
   "case": {
-    "id": "fine-w6e4-ng0-5e19-inventory",
+    "id": "fine-w6e4-ng0-5.5e19-seed5e16-inventory",
     "radial_cells": 60,
     "axial_cells": 480,
     "macro_weight": 6.0e4,

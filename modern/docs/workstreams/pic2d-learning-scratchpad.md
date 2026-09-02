@@ -250,3 +250,26 @@ File policy: `COMMITTED` workstream evidence (`modern/docs/workstreams/pic2d-*`)
   reflects the checkpoint step, not the last status line.
 - Keep `series_interval_steps == device_sync_steps` when the inventory is on (the
   update uses the interval ionisation count); validated in `build_config`.
+
+### Learned (launch, attempt 1 → 2)
+
+- Ignition in this channel is a threshold in the *seed*, not only in n_g: the same
+  3 mA beam returns 91–96 % at 5e19 with a 1e16 seed and 60 % with a 5e16 seed at
+  5.5e19. A linear (per-electron) avalanche argument cannot see this; the seed builds
+  the plasma potential that traps and scatters the beam. When a linear projection
+  says "marginal", look at what the beam is doing (returned fraction, ionisations
+  per injected electron) before turning the density knob.
+- Compare against the closest run that worked *at the same time offset* (v2 fine at
+  0–100 ns) — the beam was fully absorbed from the first 100 ns there. That single
+  comparison produced the diagnosis in one script.
+- Config identity is the whole config, including backend-dependent choices (Poisson
+  method). Any command that reloads a checkpoint must rebuild the config the way the
+  run did; test it on a GPU-produced checkpoint, not only on the CPU test protocol.
+- `Get-Process`/`Get-Item` output can vanish when piped together with other objects in
+  one PowerShell statement list; print scalar properties explicitly (`(Get-Process
+  -Id $pid).Id`) when checking liveness.
+- The generic `results/` ignore rule only matches directories named `results`; an
+  archived `results-attempt1-…` directory is untracked-visible unless ignored
+  explicitly. Negating a directory (`!…/results/`) un-ignores *everything* inside;
+  re-ignore what must stay out (checkpoint arrays, series.jsonl, logs, pids) and
+  check `git status` before committing.

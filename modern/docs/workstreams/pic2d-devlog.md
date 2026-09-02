@@ -409,3 +409,58 @@ before a plateau is meaningful.
   v1.3 protocol run (status/series/summary neutral fields, closure < 1e-12, n_g in
   the checkpoint, series ≠ sync interval rejected).
 - Full run: `tests/pic2d tests/pic tests/orbit_mc tests/visualization` → 388 passed.
+
+### Reference run closed, v1.3 launched (two attempts)
+
+- Reference run `pic2d_cft_steady_state_v1` (v1.2, static n_g = 1.5e19): terminated
+  (PID 49664) right after the step-5 440 000 checkpoint landed (3.4 ion transit times,
+  8.16 µs, 4850 s wall), closed with `finalize` (instantaneous checkpoint maps).
+  No ignition: 99.8 % of the injected electrons returned to the exit plane, 0.66 %
+  reached the anode; N_e fell from the seed to 7.8 k macro-particles
+  (n_e mean 6.5e14, peak node 1.1e17 at the injector), I_d floor 0–0.08 mA, plateau
+  not declared (N_e drift −16 %, I_d drift −35 % on a ~0 mean). Committed as
+  `chore(pic2d): steady-state v1 no-ignition reference results` (summary, run_state,
+  status.jsonl, maps/series npz, checkpoint-final metadata; 42 MB series.jsonl,
+  particle arrays and logs not tracked).
+- `finalize` bug found on first use: it built the config with the CPU Poisson method,
+  which is part of the config identity → checkpoint rejected. Fixed: `finalize`
+  defaults to the run backend (`--backend`), nothing is stepped.
+- v1.3 attempt 1 (`results-attempt1-ng0-5e19-seed1e16/`, PID 49736): n_g0 = 5e19,
+  Q_in = 7.77e16 s⁻¹, seed 1e16 @ 5 eV. **No ignition** within 1 µs: S fell
+  monotonically 2.9e15 → 1.5e15 s⁻¹ (ν_iz = S/N_e 1.16e6 → 5.6e5 s⁻¹ as the seed
+  cooled 7.9 → 5.0 eV), N_e flat at 42–44 k (beam transit population), N_i decaying,
+  91 % of the beam returned (96 % late), I_d 0.2 mA, 0.116 ionisations per injected
+  electron (v2 at 1e20: 2.7). n_g 5.0 → 4.83 → 4.90e19 (fixed point of the tiny S;
+  Q_in was not limiting). Stopped after the 760 000-step checkpoint (1.14 µs),
+  finalized, archived.
+- Diagnosis: the seed does not sustain itself at 5e19 (no heating; inelastic
+  cooling and loss of the hot tail), and without a plasma potential structure the
+  300 V beam mirrors back in the cusps before colliding. Comparison with v2
+  fine-w6e4 (1e20, seed 5e16): the beam was absorbed from the first 100 ns
+  (return 0.9 → 0.26 mA, anode 3.2–3.6 mA, ν_iz 2.8–4.2e6 s⁻¹, T_e rising 8 → 10 eV).
+  A 23× jump in ionisations per injected electron for a 2× change in n_g points at
+  the seed-built potential structure, not the collision rate.
+- v1.3 attempt 2 (`results/`, PID 40636, launched 2026-09-02T23:02Z): seed 5e16 @ 5 eV
+  (the v1/v2 snapshot seed) and n_g0 = 5.5e19 (Q_in = 8.55e16 s⁻¹ = 0.0186 mg/s) —
+  both documented adjustments; protocol `attempts` block records both. After 3 min
+  (0.13 µs): S 1.6e16 s⁻¹ (10× attempt 1), 0.86 ionisations per injected electron,
+  beam return 60 %, anode 1.5–2.2 mA, I_d 1.2–1.6 mA, T_e rising 7.6 → 8.1 eV,
+  n_g 5.5 → 4.46e19 tracking its fixed point, ω_pe Δt 0.07–0.09, 2.2–2.3 ms/step at
+  0.51 M particles. At 0.48 µs: **igniting** — N_e 241 k → 289 k (+20 %, growth
+  ~4.5e5 s⁻¹), N_i rising again after the seed-ion dip, S 1.9e16 s⁻¹ (22 % of the
+  feed), T_e 8.0–8.6 eV, I_d 1.2 mA, n_g 4.27e19 (fixed point 4.34e19), 2.4 ms/step
+  at 0.59 M. Projection: 3 transits (4.8 M steps) ≈ 3 h from launch, 10 transits
+  (16 M) ≈ 11–12 h — the 12 h wall budget will likely stop it near 9–10 transits as
+  the particle count grows toward ~2.6 M.
+- Timing note: 2.1–2.5 ms/step at 0.1–0.6 M particles is the launch-bound floor of
+  the Windows WDDM path (the reference run at 8–60 k particles ran at 0.8–0.95).
+
+### Commits (phase 3b)
+
+- `520e6b41` feat(pic2d): v1.3 quasi-steady neutral inventory with conservation tests
+- `67b04f87` feat(pic2d): finalize command and steady-state v2 experiment
+- `3c9e606c` fix(pic2d): finalize uses the run backend for the config identity
+- `cb40f06d` chore(pic2d): steady-state v1 no-ignition reference results
+  (rebased over `cc7706b2` docs: final roadmap audit; fast-forwarded into
+  feat/sota-foundation)
+- attempt-2 protocol/README + this entry: see the commit that carries them.
