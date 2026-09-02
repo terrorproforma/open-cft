@@ -3,6 +3,79 @@
 Scope: the standalone dashboards under `modern/visualization/`. Experiment-local
 dashboards keep their own logs next to their generators.
 
+## 2026-09-03 02:40 AEST — regenerate stale design gallery and first-results
+
+- Break: `pytest tests/visualization` was 65 passed / 2 failed / 13 errors.
+  `test_design_gallery.py::test_checked_artifact_is_byte_deterministic_and_current`
+  and `::test_exact_sweep_config_sampling_and_dataset_identity` failed on
+  `source.config_sha256`; every `test_first_results_visualization.py` test
+  errored at fixture setup with `design gallery config SHA-256 does not match
+  the sweep config` (`generate_first_results.py:100` refuses a stale gallery).
+- Root cause: the gallery's `config_sha256` is the SHA-256 of the *exact bytes*
+  of `config/l0-deterministic-sweep.json`. The committed blob has been LF
+  (744 bytes, `2d727b1a…`) at `41bf9091` and at HEAD, but the gallery and both
+  test pins were produced on 2026-09-01 from a `core.autocrlf=true` checkout
+  whose working copy was CRLF (763 bytes, `a4703ac1…`). `fab0eccc` pinned
+  `eol=lf` repo-wide, so the working copy is now LF and the recorded hash is
+  no longer reproducible. Not an API change; not a physics change: the
+  dataset identity `c0a36ed8…` (canonical JSON of all 8192 records), the five
+  selected indices (6352/2752/1633/148/1192) and the median thrust threshold
+  are byte-identical before and after regeneration.
+- Regenerated (no hand edits): `design-gallery.json` via
+  `python visualization/build_design_gallery.py` — 1 line changed
+  (`config_sha256`). `first-results.html` via
+  `python visualization/generate_first_results.py` — 5,994,361 bytes before
+  and after; `old.replace(a4703ac1…, 2d727b1a…) == new` is True, i.e. the
+  embedded gallery hash is the only difference. Both files LF, no BOM.
+- Provenance pin changes (old → new, reason: CRLF-smudged bytes → committed
+  LF bytes of the same config file):
+  - `tests/visualization/test_design_gallery.py::EXPECTED_CONFIG_SHA256`
+    `a4703ac1541539829f47f909d24d01d4996ed1da97a9d86e9e2323e54039fbbf` →
+    `2d727b1af7d9be9f35f227cc318beae29af6cbd2fbead28842a4c17d67551b6b`
+  - `tests/visualization/test_first_results_visualization.py::test_gallery_identities_and_indices_map_to_embedded_sweep`
+    same old → new. `EXPECTED_DATASET_SHA256` and `EXPECTED_INDICES` untouched.
+- Currency sweep of the other shared dashboards: `geometry-designs.html`,
+  `axisymmetric-results.html` and `plasma-topology-results.html` regenerated to
+  `%TEMP%` are byte-identical to the checked files (so the report that
+  `geometry-designs.html` was stale was wrong; nothing to commit there).
+- Validation: `pytest tests/visualization -q` → 80 passed (17 of them
+  `test_plasma_topology_dashboard.py`); `tests/geometry` 41 passed;
+  `tests/fields` 62 passed.
+- Repo-wide per-directory sweep (`-x`, excluding `tests/pic`, `tests/orbit_mc`,
+  `tests/experiment_runtime`): green — active_learning 96, coupling 143,
+  fem_reference 37, fem_reference_visualization 10, hybrid 70, magnetics 52,
+  optimization 76, physics 86, plasma 36, plasma_network 64, surrogates 38,
+  validation 59, top-level `tests/test_*.py` 65 + 1 skipped,
+  experiments/{cft_orbit_wall_loss_v4 37+1s, four_cell_topology_search 9,
+  four_cell_topology_search_visualization 11, l0_surrogate 6, v2 5, v5 8,
+  v6 7, v7 10, v8 10, v9 13, l1a_geometry_sweep 5+1s, l1a_plasma_coupling 8}.
+  Red, NOT fixed here (outside `modern/visualization/`, see scratchpad):
+  - `tests/experiments/l1a_geometry_sweep_visualization` (1 error):
+    `experiments/l1a_geometry_sweep/results/manifest.json` does not exist in
+    any checkout — `results/` is untracked and matched by `.gitignore:48`
+    `Results/` (case-insensitive on Windows); only the main tree has a local
+    copy. Needs a decision (track the results or skip when absent).
+  - `tests/experiments/l1a_geometry_sweep_v2_visualization` (1 error,
+    `protocol file SHA-256 mismatch`): the frozen preregistration sidecar
+    `protocol.json.sha256` (commit `092f5fae`) and the immutable results
+    (`manifest.json`, `raw-results.json`, `execution-lock.json`
+    `protocol_file_sha256`) all record `64b2c58c…`, the CRLF-smudged hash;
+    the committed blob has always been LF (`2a5ba9e4…`). The dashboard
+    generator pins the recorded value and cross-checks it against the sidecar
+    and every results file, so no pin edit can fix it without either touching
+    frozen `results/` (forbidden) or changing evidence-verification semantics
+    (needs the user's call). Same class as the orbit v4 post-hoc finding.
+  - `tests/experiments/l1a_geometry_sweep_v2` (1 collection error) and
+    `tests/experiments/l1a_field_surrogate_v1`, `_v2` (1 collection error
+    each): `invalid SHA-256 sidecar for protocol.json` raised by
+    `experiments/l1a_geometry_sweep_v2/protocol.py:73` — identical root cause.
+  - `tests/material_fields` (4 failed in `test_spec_ledgers.py`: `raw run hash
+    binding failed`, `src/cft_revival/material_fields/acceptance.py:1081`).
+  - `tests/experiments/l0_surrogate_v3` (2 failed) and `l0_surrogate_v4`
+    (2 failed): pre-execution tests assert `results/` does not exist, but the
+    committed results now do (`real v3 results path already exists`,
+    `v4 results path already exists`) — lifecycle-unaware tests.
+
 ## 2026-09-03 — plasma / magnetic topology results dashboard
 
 - Added `generate_plasma_topology_dashboard.py`, its template

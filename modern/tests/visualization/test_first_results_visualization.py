@@ -222,8 +222,11 @@ def test_generated_interaction_and_theme_listener_structure(payload) -> None:
 def test_gallery_identities_and_indices_map_to_embedded_sweep(payload) -> None:
     gallery = payload["operatingConceptGallery"]
     source = gallery["source"]
+    # Provenance pin: SHA-256 of the committed LF bytes of
+    # config/l0-deterministic-sweep.json (was the CRLF-smudged hash
+    # a4703ac1... before .gitattributes pinned eol=lf in fab0eccc).
     assert source["config_sha256"] == (
-        "a4703ac1541539829f47f909d24d01d4996ed1da97a9d86e9e2323e54039fbbf"
+        "2d727b1af7d9be9f35f227cc318beae29af6cbd2fbead28842a4c17d67551b6b"
     )
     assert source["dataset_identity"]["sha256"] == (
         "c0a36ed83655d8bef0e8419a27dfbc330926716dadb6c893b6ef6f9b2ddbae84"

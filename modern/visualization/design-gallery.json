@@ -658,7 +658,7 @@
     },
     "config_hash_scope": "Exact source-file bytes.",
     "config_path": "config/l0-deterministic-sweep.json",
-    "config_sha256": "a4703ac1541539829f47f909d24d01d4996ed1da97a9d86e9e2323e54039fbbf",
+    "config_sha256": "2d727b1af7d9be9f35f227cc318beae29af6cbd2fbead28842a4c17d67551b6b",
     "dataset_identity": {
       "algorithm": "sha256",
       "serialization": "UTF-8 canonical JSON (sorted keys, compact separators, ASCII escapes, no NaN/Infinity) of the ordered complete indexed input/result record list.",

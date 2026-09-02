@@ -3,6 +3,43 @@
 Policy: committed with the shared `modern/visualization/` dashboards. Evidence
 directories, accepted packages and experiment-local dashboards stay read-only.
 
+## 2026-09-03 02:40 AEST — stale design gallery was an EOL artefact
+
+- [self] Before touching any pin, classify it: hash the committed blob
+  (`git show <rev>:<path>`) as-is and with `\n → \r\n`. If the recorded value
+  equals the CRLF variant, the pin is a Windows `autocrlf` artefact and the
+  data never changed; if neither matches, something real changed and the
+  generator/physics must be diffed before any edit. Here the config blob was LF
+  at every commit; only the 2026-09-01 working copy was CRLF.
+- [self] Prove "provenance-only" by regenerating and reducing the diff to a
+  substitution: `old.replace(OLD_HASH, NEW_HASH) == new` on the 6 MB HTML and a
+  one-line `git diff -U0` on the JSON. Do not eyeball a 6 MB diff, and do not
+  run `difflib.SequenceMatcher` on it (it did not finish in 3 minutes).
+- [self] A generator that *refuses* on a stale upstream artifact
+  (`generate_first_results.py` → "config SHA-256 does not match") turns one
+  stale file into 13 fixture errors downstream. Regenerate upstream first
+  (`build_design_gallery.py`), then the consumer, then rerun.
+- [self] "Dashboard X is stale" reports need a byte check before belief:
+  `geometry-designs.html`, `axisymmetric-results.html` and
+  `plasma-topology-results.html` regenerate byte-identical; only the L0 pair
+  was stale.
+- [audit] Experiment-local dashboards that pin a *recorded* evidence hash and
+  cross-check it against sidecars and `results/*.json` cannot be repaired by a
+  pin edit when the recorded value is a CRLF hash (L1a geometry sweep v2:
+  sidecar/manifest/raw/lock all say `64b2c58c…`, the LF blob is `2a5ba9e4…`).
+  Repair options are (a) edit frozen preregistration/results artifacts —
+  forbidden — or (b) make the verifier accept an EOL-normalised hash with an
+  explicit disclosure, as the orbit v4 post-hoc audit did. That is a user
+  decision, not a regeneration task; stop and report.
+- [tool] `.gitignore:48` `Results/` plus `core.ignorecase=true` ignores every
+  `results/` directory on Windows; tracked `results/` trees only exist where
+  someone used `git add -f`. `experiments/l1a_geometry_sweep/results` was never
+  added, so its dashboard test can only pass in the main tree.
+- [tool] Same-basename test modules clash across `tests/<pkg>` directories and
+  across `tests/experiments/<exp>` subdirectories; sweep each leaf directory in
+  its own pytest invocation. Full sweep here took ~11 minutes, dominated by
+  `l0_surrogate_v8`/`v9` (~160 s each), `coupling` and `fem_reference` (~65 s).
+
 ## 2026-09-03 — plasma / magnetic topology results dashboard
 
 - [user] The user wants to *see* the topology results. The honest picture is

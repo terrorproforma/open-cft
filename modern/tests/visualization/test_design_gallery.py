@@ -23,8 +23,14 @@ GENERATOR_PATH = MODERN / "visualization" / "build_design_gallery.py"
 GALLERY_PATH = MODERN / "visualization" / "design-gallery.json"
 CONFIG_PATH = MODERN / "config" / "l0-deterministic-sweep.json"
 
+# Provenance pin: SHA-256 of the exact committed (LF) bytes of
+# config/l0-deterministic-sweep.json.  The previous value
+# a4703ac1541539829f47f909d24d01d4996ed1da97a9d86e9e2323e54039fbbf was the
+# hash of the same file smudged to CRLF by core.autocrlf=true before
+# .gitattributes pinned eol=lf (fab0eccc); the dataset identity below is
+# EOL-independent and unchanged.
 EXPECTED_CONFIG_SHA256 = (
-    "a4703ac1541539829f47f909d24d01d4996ed1da97a9d86e9e2323e54039fbbf"
+    "2d727b1af7d9be9f35f227cc318beae29af6cbd2fbead28842a4c17d67551b6b"
 )
 EXPECTED_DATASET_SHA256 = (
     "c0a36ed83655d8bef0e8419a27dfbc330926716dadb6c893b6ef6f9b2ddbae84"
