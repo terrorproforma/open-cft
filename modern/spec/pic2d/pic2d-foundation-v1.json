@@ -1,0 +1,81 @@
+{
+  "schema": "cft.pic2d.foundation.v1",
+  "package": "cft_revival.pic2d",
+  "version": "0.1.0",
+  "model_level": "L3-development",
+  "status": "development-screening-verified-numerics-not-validated-physics",
+  "coordinates": {
+    "geometry": "axisymmetric (r,z); uniform node-centred mesh over the channel bounding box; plasma region = union of cells inside the wall at the cell's lower-z edge (exact straight bore, one-cell stair-step cone)",
+    "layout": "radial-major; values[r_index][z_index]",
+    "units": "SI",
+    "particle_velocity_frame": "meridional (v_r, v_theta, v_z) rotated back after a Cartesian advance"
+  },
+  "equations": [
+    {
+      "id": "gauss-fv",
+      "relation": "sum_e C_e (phi_n - phi_m) = Q_n * V_geom/V_shape + Q_surface_n, with C = eps0 * face_area / edge_length per plasma cell (B_r,z faces); axis regularity from the half-cell control volume (4 (phi_1-phi_0)/dr^2)",
+      "verification": "manufactured solution: observed order 1.999 over 8->16->32->64 radial cells; direct == dense == PCG; discrete Gauss law with electrode induced charge to 1e-9"
+    },
+    {
+      "id": "deposit-bilinear",
+      "relation": "Q_n = sum_p q W S_n(r_p,z_p) with bilinear S; fixed-point 2^-40 integer accumulation (order independent); rho_n = Q_n / V_shape (uniform density -> uniform rho, axis included)",
+      "verification": "global charge conservation, order independence, deposition/gather adjointness, uniform-density axis test"
+    },
+    {
+      "id": "efield-nodes",
+      "relation": "E = -grad(phi): central differences on plasma nodes, second-order one-sided at electrodes/walls, E_r = 0 on the axis",
+      "verification": "manufactured gradient converges at order > 1.8"
+    },
+    {
+      "id": "boris-relativistic-momentum",
+      "relation": "u=gamma v; u- = u + qE dt/2m; t = q dt B/(2 m gamma-); s = 2t/(1+t.t); u' = u- + u- x t; u+ = u- + u' x s; u_new = u+ + qE dt/2m; operation order identical to cft_revival.orbit_mc.integrator.relativistic_boris_push",
+      "verification": "8-ulp agreement with orbit_mc push; speed preserved in pure B to 1e-13; uniform-field orbit vs orbit_mc <= 1e-6 gyroradii over 3000-4000 steps; E x B drift to 6e-3"
+    },
+    {
+      "id": "leapfrog",
+      "relation": "x^n, v^(n-1/2): deposit(x^n) -> phi^n -> push v^(n+1/2) -> x^(n+1) -> boundaries -> MCC -> injection",
+      "verification": "single-electron kinetic energy conserved to < 1e-9 in pure B over 500 steps; open-system ledger residual reported"
+    },
+    {
+      "id": "wall-surface-charge",
+      "relation": "absorbed charge deposited on plasma-side wall nodes with renormalised bilinear weights; enters the Gauss law directly; zero field in the dielectric backing",
+      "verification": "surface deposit conserves charge and touches only wall nodes; Gauss law with surface charge"
+    },
+    {
+      "id": "mcc-null-collision",
+      "relation": "P_coll = 1 - exp(-nu_max dt) with nu_max = n_g max_E sum_k sigma_k v; process selection by cumulative nu_k/nu_max; elastic isotropic, excitation loses 8.32 eV, ionisation loses 12.13 eV with Vahedi-Surendra secondary energy (B = 8.7 eV)",
+      "verification": "per-process Bernoulli rates within 4 sigma of n_g sigma v dt at 40 eV on 4e5 electrons; kinematic energy bookkeeping; deterministic seed replay; CPU/GPU chi-square agreement"
+    }
+  ],
+  "prescribed_magnetic_field": {
+    "source": "qualified P2 divergent-exit A_phi checkpoint bound by file/payload/mesh/run/sidecar SHA-256 (modern/spec/pic2d/p2-field-authority-v1.json)",
+    "interpolation": "regular psi grid (dr 0.125 mm, dz 0.25 mm over the channel bounding box) -> orbit_mc PsiBicubicField (g = (psi - psi_axis)/r^2) -> node samples of (B_r, B_z) -> bilinear particle gather",
+    "verification": "node samples equal the bicubic field exactly; bilinear error second order; collisionless electron orbit converges to orbit_mc as O(dx^2) (error ratio > 2.5 per refinement); primary vs refined psi grid differ by 0.25% of max |B|",
+    "max_b_in_bore_t": 0.226,
+    "max_b_in_bounding_box_t": 0.291
+  },
+  "stability_gates": {
+    "omega_pe_dt": "<= 0.2 (reference and runtime peak density)",
+    "omega_ce_dt": "<= 0.2 from the node-map maximum |B|",
+    "cell_debye_ratio": "max(dr,dz)/lambda_D(reference) <= configured limit (1.0 default; 2.0 for the coarse screening case)",
+    "particle_courant": "v_max(max electron energy) dt / min(dr,dz) <= 1; any particle crossing more than one cell fails closed at runtime",
+    "collision_probability": "1 - exp(-nu_max dt) <= 0.1",
+    "poisson": "recomputed true residual <= relative_tolerance * |rhs| on every solve"
+  },
+  "backends": {
+    "cpu": "numpy reference; bitwise deterministic; checkpoint/resume bitwise",
+    "warp": "CPU or CUDA; bit-identical fixed-point deposition; roundoff-level push (FMA contraction); host block-Thomas field solve shared with the CPU backend (identical phi); counter-based RNG seeded by (seed, step, stream): deterministic and checkpoint-resumable bitwise; ledger energies via float64 atomics (roundoff-level run-to-run)",
+    "gpu_pcg": "device Jacobi-PCG with deterministic reductions and CUDA graphs available via PoissonConfig2D(method='pcg'); verified against the direct solve to 1e-8 relative"
+  },
+  "artifacts": {
+    "canonical_json": "sorted, compact, finite JSON + .sha256.json sidecar (byte and semantic SHA-256)",
+    "npz": "sorted-key uncompressed npz + sidecar",
+    "checkpoint": "cft.pic2d.checkpoint.v1: arrays npz bound by hash; config/field/cross-section/code identities required on reload"
+  },
+  "claim_boundary": [
+    "development/screening numerics; not a validated or preregistered CFT prediction",
+    "no experimental comparison; no performance metric is derivable from these outputs",
+    "static uniform neutral background, no ion-neutral collisions, no secondary emission, Dirichlet exit plane, prescribed B",
+    "momentum-conserving scheme: energy is not exactly conserved; the ledger residual is reported, not hidden"
+  ]
+}

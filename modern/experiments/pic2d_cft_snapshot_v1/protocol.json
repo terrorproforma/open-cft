@@ -1,0 +1,68 @@
+{
+  "schema_version": "cft-revival.pic2d-cft-snapshot-v1.protocol/0.1.0",
+  "experiment_id": "pic2d-cft-snapshot-v1",
+  "status": "development_screening_not_preregistered",
+  "classification": "axisymmetric_electrostatic_pic_mcc_development_snapshot_not_validated",
+  "design_id": "divergent-exit-stack",
+  "field_authority": "modern/spec/pic2d/p2-field-authority-v1.json (role primary)",
+  "cross_sections": "modern/spec/pic2d/xenon-cross-sections-v1.json",
+  "geometry": {
+    "bore_radius_m": 0.002,
+    "z_min_m": 0.0,
+    "z_max_m": 0.024,
+    "cone_start_z_m": 0.018,
+    "exit_radius_m": 0.003,
+    "source": "P2 mesh regions injector-zone/channel-straight/channel-divergent-exit of divergent-exit-stack.level-1"
+  },
+  "operating_point": {
+    "anode_potential_v": 300.0,
+    "exit_plane_potential_v": 0.0,
+    "neutral_density_per_m3": 5.0e20,
+    "neutral_temperature_k": 300.0,
+    "neutral_density_justification": "uniform static Xe background; corresponds to ~0.075 mg/s effusing through the 2 mm bore at 300 K (n = 4 mdot / (m_Xe v_bar A))",
+    "electron_injection_current_a": 0.1,
+    "electron_injection_temperature_ev": 2.0,
+    "seed_plasma_density_per_m3": 5.0e16,
+    "seed_electron_temperature_ev": 5.0,
+    "seed_ion_temperature_ev": 0.0
+  },
+  "numerics": {
+    "dt_s": 2.0e-12,
+    "poisson": "block-Thomas direct, relative true-residual tolerance 1e-10",
+    "deposition": "bilinear, fixed-point 2^-40 integer accumulation",
+    "stability_limits": {
+      "max_omega_pe_dt": 0.2,
+      "max_omega_ce_dt": 0.2,
+      "max_cell_debye_ratio": 2.0,
+      "max_particle_courant": 1.0,
+      "max_collision_probability": 0.1
+    },
+    "stability_reference": {
+      "density_per_m3": 1.0e17,
+      "electron_temperature_ev": 10.0,
+      "max_electron_energy_ev": 400.0
+    },
+    "series_interval_steps": 200,
+    "averaging_window_fraction": 0.1
+  },
+  "cases": {
+    "coarse-w1e5": {"radial_cells": 30, "axial_cells": 240, "macro_weight": 1.0e5, "target_steps": 150000},
+    "coarse-w5e4": {"radial_cells": 30, "axial_cells": 240, "macro_weight": 5.0e4, "target_steps": 150000},
+    "fine-w5e4": {"radial_cells": 60, "axial_cells": 480, "macro_weight": 5.0e4, "target_steps": 150000},
+    "fine-w2.5e4": {"radial_cells": 60, "axial_cells": 480, "macro_weight": 2.5e4, "target_steps": 150000}
+  },
+  "stopping_rule": "each case stops at target_steps or at its wall-clock budget, whichever comes first; the reason is recorded",
+  "simplifications": [
+    "static uniform neutral background (no depletion, no neutral flow)",
+    "no ion-neutral collisions (elastic or charge exchange)",
+    "electron-neutral: isotropic elastic without the 2 m_e/M energy loss, one lumped 8.32 eV excitation, single ionisation with Vahedi-Surendra secondary energy and isotropic emission",
+    "dielectric wall: perfectly absorbing with accumulated surface charge, zero field in the dielectric backing (perfect insulator), no secondary electron emission, no sputtering",
+    "exit plane: Dirichlet 0 V cathode/neutraliser reference; electrons injected there as a flux-weighted half-Maxwellian at fixed current",
+    "anode: perfectly absorbing conductor at fixed potential",
+    "cone wall represented as a one-cell stair-step of the plasma cell mask",
+    "prescribed static B from the P2 solution (no plasma-induced field); bilinear node interpolation of the C1 bicubic psi field",
+    "electrostatic only, azimuthally symmetric: no azimuthal instabilities/anomalous transport",
+    "momentum-conserving bilinear scheme: energy is not exactly conserved; ledger residual is reported",
+    "development/screening run: not preregistered, no experimental validation, not a performance prediction"
+  ]
+}

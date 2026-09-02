@@ -166,3 +166,21 @@ Detailed derivations and review history remain in
 - [self] Paper source integration does not reopen result gates. L1--L3 remain
   closed until committed manifests satisfy their evidence policies, and human
   authorship/approval fields remain human-controlled.
+
+## 2026-09-03 xenon cross-section provenance guardrails
+
+- [tool] LXCat exports live in open-source solver repositories
+  (`lanl/ThunderBoltz/lxcat/assortment.txt`) when the LXCat site itself cannot
+  be scripted; pin the commit URL and the sha256 of the exact bytes.
+- [self] When an upstream file exceeds the repository size policy, store a
+  line-range extract with its own hash and record the upstream hash, byte
+  count, line range, and normalisation in both the extract header and the JSON
+  provenance, so the chain stays verifiable.
+- [self] Momentum-transfer and integral elastic cross sections differ by up to
+  5x for Xe above 10 eV and their Ramsauer minima differ (2.75e-21 vs
+  ~1.6e-20 m²); sanity bands must state which quantity they describe.
+- [self] "Lumped 8.32 eV excitation" is a convention, not a dataset: database
+  totals span 0.9–3.7e-20 m² at peak, so record the spread as the dominant
+  uncertainty rather than presenting one set as authoritative.
+- [self] Round resampled tables to fixed significant figures before hashing so
+  the integrity hash survives numpy/platform differences.

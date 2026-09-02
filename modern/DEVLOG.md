@@ -320,3 +320,37 @@ and `docs/workstreams/optimization-devlog.md`.
   the PDF and build records remain ignored.
 - Staged diff/secret/home-path/build-artifact scans and both working/staged FYP
   diffs passed.
+
+## 2026-09-03 — PIC-2D xenon cross-section data file
+
+### Investigated
+
+- LXCat (`nl.lxcat.net`) serves data only through interactive sessions and the
+  NIST BEB ionisation database has no Xe entry; LoKI-B, EDIPIC-2D, and Starfish
+  ship no e–Xe tables. WarpX-data has Magboltz-7.1 Xe tables but they are
+  1.9–2.2 MB 0.01 eV resamples ending at 750 eV with a single excitation level.
+- `lanl/ThunderBoltz` commits a verbatim LXCat export (21 May 2023) containing
+  the complete Biagi-v7.1, Biagi, BSR, COP, Hayashi, Morgan, Puech, SIGLO, and
+  TRINITI e/Xe sets.
+
+### Implemented
+
+- Added `modern/spec/pic2d/xenon-cross-sections-v1.json` (schema
+  `cft.pic2d.xenon-cross-sections.v1`) with elastic momentum transfer, one
+  lumped 8.32 eV excitation channel (sum of the four Biagi-v7.1 levels), and
+  12.13 eV single ionisation, each on a log grid to exactly 1000 eV, plus the
+  `.sha256` sidecar and a canonical-JSON payload hash.
+- Added `build_xenon_cross_sections.py`, which rebuilds the JSON byte-identically
+  from `sources/lxcat_biagi-v7.1_xe_extract.txt` (35 kB LF-normalised extract of
+  the 1.97 MB upstream export, upstream sha256 pinned) and can re-fetch the
+  pinned commit with `--refresh-source`.
+
+### Verification record
+
+- Rebuild is byte-identical; independent re-interpolation from the raw CRLF
+  upstream agrees to < 5e-6 relative (6-significant-figure rounding).
+- Biagi-v7.1 agrees with Hayashi/SIGLO momentum transfer within ~10–25 %,
+  ionisation peaks 5.61e-20 m² vs 5.45–5.88e-20 m² across sets, summed
+  excitation peak 2.95e-20 m² vs 0.9–3.7e-20 m² across sets.
+- Only non-tabulated content is a one-point power-law tail from 965–977 eV to
+  1000 eV.
