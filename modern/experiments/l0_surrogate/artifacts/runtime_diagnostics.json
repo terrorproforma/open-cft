@@ -1,0 +1,13 @@
+{
+  "benchmark_hash": "fbf77634d8078df1c88f1dcf145fb0daf106933d39af841602acd1317c1a6157",
+  "campaign_hash": "d78723af909e1160031f3b5eaa8be01a4aedc64035b15543e1085e240f35dc47",
+  "campaign_wall_seconds": 50.249809299595654,
+  "document_type": "cft-revival-l0-surrogate-runtime-diagnostics",
+  "model_hashes": {
+    "axial_thrust_n": "33c50cb8b797561ef759f16c3cdba16236ec089ca4f12405127639b0069b884a",
+    "specific_impulse_s": "08a8933abc9990e227b6da50390042a166e574b43e8e1e819856ae95ab12e415"
+  },
+  "schema_version": "1.0",
+  "timing_role": "diagnostic-only-uncontrolled",
+  "truth_generation_wall_seconds": 0.7048255000263453
+}

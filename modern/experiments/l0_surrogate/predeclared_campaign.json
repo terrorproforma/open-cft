@@ -1,0 +1,73 @@
+{
+  "document_type": "cft-revival-l0-surrogate-campaign-predeclaration",
+  "schema_version": "1.0",
+  "predeclaration_hash": "456431bb8eda55d9f6e854ca7a1a5209545dbcb65b50f68b0223a6394fb1a620",
+  "source": {
+    "config_path": "config/l0-deterministic-sweep.json",
+    "config_hash": "1434eac84d954a4dfbf8e7a9621b16c5c645f1490d56ad23d8e1d979a2bbf2e4",
+    "required_batch_size": 8192,
+    "truth_role": "deterministic-software-emulation-only"
+  },
+  "features": {
+    "names": [
+      "normalized_discharge_voltage",
+      "normalized_propellant_mass_flow",
+      "normalized_ionized_fraction",
+      "normalized_xe_double_plus_share_of_ions",
+      "normalized_axial_momentum_fraction"
+    ],
+    "policy": "five L0 thrust/Isp dependency coordinates; omitted electrical-boundary coordinates do not enter these two accepted L0 outputs"
+  },
+  "split": {
+    "seed": 20260902,
+    "spatial_group_bins_per_dimension": 8,
+    "spatial_group_dimensions": [0, 1, 2],
+    "minimum_points_per_assessment_stratum": 48,
+    "calibration_fit_minimum_points": 48,
+    "strata": [
+      "interpolation",
+      "boundary",
+      "ood"
+    ],
+    "policy": "whole spatial groups are assigned once; assessment and calibration groups are unavailable to both campaigns"
+  },
+  "model": {
+    "runtime": "cft-surrogate-exact-gp/2.0.0",
+    "kernel": "ARD Matern-5/2",
+    "nominal_interval_probability": 0.9,
+    "hyperparameter_selection": "accepted deterministic bounded coordinate search",
+    "maximum_exact_gp_training_rows": 96,
+    "calibration": "accepted held-out VarianceCalibrator fitted separately per output"
+  },
+  "campaign": {
+    "initial_training_rows": 32,
+    "acquisition_batch_rows": 16,
+    "maximum_training_rows": 96,
+    "active_score": {
+      "accepted_api": "cft_revival.active_learning.score_candidate",
+      "predicted_improvement_weight": 0.0,
+      "feasibility_weight": 0.0,
+      "discrepancy_weight": 0.35,
+      "uncertainty_weight": 1.0,
+      "discrepancy_definition": "absolute change from the preceding accepted GP posterior",
+      "pending_repulsion_length_scale": 0.15
+    },
+    "baseline": "fixed eligible order from the accepted deterministic prime-base radical-inverse L0 sweep",
+    "stopping": "stop at first checkpoint passing every predeclared combined-assessment output gate, otherwise exhaust maximum budget"
+  },
+  "quality_gates": {
+    "assessment_scope": "combined fixed interpolation/boundary/OOD assessment set",
+    "range_normalized_rmse_maximum": 0.05,
+    "interval_coverage_target": 0.9,
+    "interval_coverage_absolute_tolerance": 0.05,
+    "minimum_coverage_sample_count": 30,
+    "worst_case_range_normalized_absolute_error_maximum": 0.15,
+    "stratum_metrics_required": true,
+    "ood_detection_report_required": true,
+    "thresholds_tunable_after_run": false
+  },
+  "claims": {
+    "allowed": "accuracy against the hashed deterministic L0 software sweep",
+    "forbidden": "physical, experimental, L1, L1b, L2, or L3 predictive accuracy"
+  }
+}
