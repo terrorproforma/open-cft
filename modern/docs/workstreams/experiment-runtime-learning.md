@@ -97,3 +97,16 @@ the new runtime source/spec/test trees.
   another process's probe can disappear between handle enumeration and open.
   Normalize that transient read failure to `FilesystemSafetyError`; never let
   it escape as an unclassified OS error or continue toward lock acquisition.
+
+## 2026-09-02 inventory ordering closure
+
+- [self] Recursive traversal order is not canonical lexical path order. In a
+  same-stem layout, `x.json` sorts before `x/nested.json` even though a
+  depth-first walk visits the `x/` subtree first.
+- [self] Normalize raw inventory exactly once before constructing entries:
+  reject duplicate paths, then globally sort by path. Candidate construction
+  and replay validation must call that same function so their ordering cannot
+  drift.
+- [self] A duplicate-path manifest and a unique-but-unsorted manifest are
+  different contract defects and need separate diagnostics. Filesystem
+  traversal itself may be unsorted and should be canonicalized, not rejected.

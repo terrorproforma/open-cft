@@ -89,6 +89,10 @@ reads held-out evidence.
   sidecar-of-sidecar regressions prove artifact/sidecar bijection before
   manifest publication; replay validation independently rejects a newly added
   orphan.
+- A full accepted lifecycle combines `x/...` with sibling `x.json` and proves
+  the candidate and replay inventory are globally path-sorted. Malformed
+  unsorted and duplicate-path manifests receive distinct contract diagnostics;
+  duplicate raw inventory paths leave no manifest.
 - Candidate validation observes no visible manifest, holds existing files
   deny-write, and is the sole semantic validation call; no post-publication
   rejection path exists.

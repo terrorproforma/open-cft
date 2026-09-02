@@ -114,12 +114,16 @@ No semantic validator runs after publication.
 Inventory walks every entry recursively and records both required directories
 and files. Links, junctions, special entries, stale temporaries, undeclared or
 empty directories, unknown files, and partial pairs fail before manifest
-publication. The artifact/sidecar graph is bijective: every ordinary artifact
-has exactly one valid `<artifact>.sha256.json`, and each sidecar's contract
-names that exact existing artifact. Orphans, duplicate references, contract
-mismatches, sidecar-of-sidecar names, and missing pairs are rejected both for
-private candidates and replayed bundles. The lock, completion manifest, and
-approved placeholders are explicit non-sidecar contracts.
+publication. Before candidate construction, raw inventory paths are checked
+for duplicates and globally sorted lexically, independent of filesystem
+traversal order. This also defines legal same-stem layouts such as `x.json`
+alongside `x/...`; candidate creation and replay validation use the same
+canonical ordering. The artifact/sidecar graph is bijective: every ordinary
+artifact has exactly one valid `<artifact>.sha256.json`, and each sidecar's
+contract names that exact existing artifact. Orphans, duplicate references,
+contract mismatches, sidecar-of-sidecar names, and missing pairs are rejected
+both for private candidates and replayed bundles. The lock, completion
+manifest, and approved placeholders are explicit non-sidecar contracts.
 
 ## State machine
 

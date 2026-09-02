@@ -126,3 +126,23 @@ Final QA:
 - Process subset: 3 passed; specs: 2 passed; compileall: passed.
 - LF attribute and FYP checks passed; no install, commit, push, real solver, or
   held-out access occurred.
+
+## 2026-09-02 — canonical inventory ordering
+
+- Fixed candidate inventory construction to reject duplicate raw paths and
+  globally sort all entries lexically before building manifest records.
+  Ordering no longer depends on depth-first handle traversal.
+- Preserved artifact/sidecar bijection validation and split malformed manifest
+  diagnostics between duplicate paths and unique-but-unsorted input.
+- Added an accepted full lifecycle regression for sibling `x.json` and
+  `x/...`, malformed unsorted/duplicate manifest replay tests, and a duplicate
+  raw inventory fail-closed test proving no manifest is published.
+
+Verification:
+
+- Default focused pytest: 132 passed, 1 privilege-dependent symlink skip.
+- Importlib focused pytest: 132 passed, 1 privilege-dependent symlink skip.
+- New ordering subset: 4 passed; process subset: 3 passed; specs: 2 passed;
+  LF contract: 1 passed; compileall: passed.
+- FYP remained unchanged. No experiment, shared export, dependency, commit, or
+  remote state was changed.

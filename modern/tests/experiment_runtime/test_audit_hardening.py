@@ -975,6 +975,74 @@ def test_manifest_binds_every_required_directory(tmp_path: Path) -> None:
     assert directory_entries == sorted(set(directory_entries))
 
 
+def test_inventory_is_globally_sorted_for_same_stem_directory_and_file(
+    tmp_path: Path,
+) -> None:
+    def development(context: Any) -> Decision:
+        context.write_json("x/nested/result.json", {"nested": True})
+        context.write_json("x.json", {"sibling": True})
+        return Decision(True)
+
+    callbacks = RuntimeCallbacks(
+        lambda _context: {"ready": True},
+        development,
+        lambda _context: Decision(True),
+    )
+    outcome = _runtime(tmp_path).run(callbacks)
+    paths = [entry["path"] for entry in outcome.manifest["artifacts"]]
+
+    assert paths == sorted(paths)
+    assert len(paths) == len(set(paths))
+    assert paths.index("x.json") < paths.index("x/nested/result.json")
+    assert validate_bundle(tmp_path / "results") == outcome.manifest
+
+
+@pytest.mark.parametrize(
+    ("defect", "message"),
+    [
+        ("unsorted", "globally path-sorted"),
+        ("duplicate", "duplicate paths"),
+    ],
+)
+def test_manifest_rejects_unsorted_and_duplicate_artifact_paths(
+    tmp_path: Path,
+    defect: str,
+    message: str,
+) -> None:
+    _runtime(tmp_path).run(_callbacks())
+    manifest_path = tmp_path / "results" / "manifest.json"
+    manifest = json.loads(manifest_path.read_bytes())
+    if defect == "unsorted":
+        manifest["artifacts"][0], manifest["artifacts"][1] = (
+            manifest["artifacts"][1],
+            manifest["artifacts"][0],
+        )
+    else:
+        manifest["artifacts"].append(dict(manifest["artifacts"][-1]))
+        manifest["artifact_count"] = len(manifest["artifacts"])
+    manifest_path.write_bytes(canonical_bytes(manifest))
+
+    with pytest.raises(LifecycleError, match=message):
+        validate_bundle(tmp_path / "results")
+
+
+def test_duplicate_raw_inventory_path_leaves_no_manifest(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    original = lifecycle_module.scan_tree
+
+    def duplicate_entry(*args: Any, **kwargs: Any) -> list[tuple[str, str]]:
+        entries = original(*args, **kwargs)
+        duplicate = next(entry for entry in entries if entry[0] == "terminal.json")
+        return [*entries, duplicate]
+
+    monkeypatch.setattr(lifecycle_module, "scan_tree", duplicate_entry)
+    with pytest.raises(FilesystemSafetyError, match="duplicate inventory path"):
+        _runtime(tmp_path).run(_callbacks())
+    assert not (tmp_path / "results" / "manifest.json").exists()
+
+
 def test_local_gitattributes_pin_fresh_checkout_line_endings() -> None:
     modern = Path(__file__).resolve().parents[2]
     source = modern / "src" / "cft_revival" / "experiment_runtime" / ".gitattributes"

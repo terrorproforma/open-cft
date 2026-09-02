@@ -6,6 +6,7 @@ import hashlib
 import os
 import platform
 import re
+from collections import Counter
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
@@ -630,6 +631,15 @@ def _inventory(
     allowed_directories: set[str],
 ) -> list[dict[str, Any]]:
     entries = scan_tree(store.safe_root, store.ops)
+    entry_paths = [name for name, _kind_name in entries]
+    duplicate_paths = sorted(
+        path for path, count in Counter(entry_paths).items() if count > 1
+    )
+    if duplicate_paths:
+        raise FilesystemSafetyError(
+            f"duplicate inventory path: {duplicate_paths[0]}"
+        )
+    entries = sorted(entries, key=lambda item: item[0])
     names = {name for name, _kind_name in entries}
     _validate_sidecar_bijection(store, entries, placeholders)
     result: list[dict[str, Any]] = []
@@ -907,8 +917,12 @@ def _validate_manifest(value: Any) -> dict[str, Any]:
                 raise ContractError(f"{name} has invalid file contract")
             if (entry["contract"] == "hash-sidecar") != ("sidecar" in entry):
                 raise ContractError(f"{name} sidecar link does not match contract")
-    if artifact_paths != sorted(set(artifact_paths)):
-        raise ContractError("manifest artifacts must be path-sorted and unique")
+    if len(artifact_paths) != len(set(artifact_paths)):
+        raise ContractError("manifest artifacts contain duplicate paths")
+    if artifact_paths != sorted(artifact_paths):
+        raise ContractError(
+            "manifest artifacts are unsorted; paths must be globally path-sorted"
+        )
     if directory_paths != directories:
         raise ContractError("required directories do not match directory inventory")
     if manifest["artifact_count"] != len(manifest["artifacts"]):
