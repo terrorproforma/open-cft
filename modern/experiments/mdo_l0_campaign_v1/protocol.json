@@ -1,0 +1,267 @@
+{
+  "schema_version": "cft-revival.mdo-l0-campaign-v1.protocol/1.0.0",
+  "experiment_id": "mdo-l0-campaign-v1",
+  "status": "preregistered_pending_single_execution",
+  "classification": "l0_model_robust_multiobjective_optimisation_under_declared_input_uncertainty_not_thruster_performance",
+  "claim_boundary": {
+    "statement": "This campaign optimises the corrected L0 conservation model (cft_revival.physics, L0-conservation-reduced-performance) under DECLARED input uncertainty. It makes no thruster-performance claim, no plasma claim, and no claim about any physical cusped-field thruster. Its estimands are properties of the optimisers (hypervolume attained per evaluation budget, Pareto-set size, seed variance, constraint handling) and of the declared evaluation chain (robust-vs-nominal fronts, sensitivity to the declared cusp-probability prior).",
+    "why_cusp_probabilities_are_uncertain_inputs": "The original MATLAB study derived per-design cusp-arrival probabilities from a magnetic-mirror loss-cone formula (FYP/cusp_prob.m:186-190; compatibility kernel cft_revival.kernels.cusp_arrival_probability). The accepted full-orbit campaign v4 (preregistered 757e365f, recorded 6922a3cf) found ZERO reflections in 4608 orbits, so the mirror picture is unsupported and no per-design cusp probability can be derived from it. The four-cell wall-cusp topology was not shown stable anywhere (four_cell_topology_search_v2, preregistered null). The cusp probabilities therefore enter this campaign only as uncertain inputs with declared ranges.",
+    "why_geometry_variables_are_excluded": "No geometry-to-L0 map survives the audit: the legacy FEMM -> cusp-window -> mirror-formula chain is quarantined (AUDIT.md C5, C6, S6, S7, S8) and its mirror step is falsified by v4; the L1a/P2 field solvers produce no L0 closure; the corrected four-cell discharge solver does not close for nonzero cusp probabilities (see prior_model_disclosure). The five legacy radii would therefore be inert decoys in the optimiser and are excluded, with the exclusion recorded as a structural finding of this campaign.",
+    "closure_disclosure": "CL-1 is a DECLARED closure, not a derived result. Every number produced here is conditional on CL-1 and on the declared priors.",
+    "forbidden_readings": [
+      "any statement that a design 'performs' in thrust, Isp or efficiency",
+      "any statement about a physical thruster, the DM9.2 device, or Yeo 2020",
+      "any statement that BoTorch, NSGA-III or Sobol is 'better' beyond the recorded budget, seeds and model",
+      "any use of these fronts as calibration, validation or design recommendation"
+    ]
+  },
+  "authority": {
+    "base_commit": "cc7706b2",
+    "l0_model": {
+      "package": "cft_revival.physics",
+      "fidelity": "L0-conservation-reduced-performance",
+      "accepted_evidence": "modern/docs/FIRST_RESULTS.md (8,192-point CPU/CUDA parity sweep, config/l0-deterministic-sweep.json)",
+      "backend_used_here": "python-reference (cft_revival.physics.reference.evaluate_performance, CPU, no Warp)"
+    },
+    "wall_loss_v4": {
+      "experiment": "modern/experiments/cft_orbit_wall_loss_v4",
+      "preregistration_commit": "757e365f",
+      "result_commit": "6922a3cf",
+      "audit_commit": "258f69b2",
+      "pooled_wall_hit": {"successes": 2962, "trials": 4608, "probability": 0.6428},
+      "per_cell_wall_hit": {
+        "v4-cell-1": {"successes": 658, "trials": 1152},
+        "v4-cell-2": {"successes": 1152, "trials": 1152},
+        "v4-cell-3": {"successes": 1152, "trials": 1152},
+        "v4-cell-4": {"successes": 0, "trials": 1152}
+      },
+      "coupling_export": {"quantity": "electron_dielectric_wall_loss_probability", "probability": 0.64453125, "confidence_interval_95": [0.6021349532568827, 0.6847749053232215], "trial_count": 512},
+      "reflections": 0,
+      "classification": "collisionless_prescribed_field_test_particle_wall_loss_not_pic"
+    },
+    "legacy_parameterisation": {
+      "source": "FYP/CFTOpt.m, FYP/params.m as recorded in modern/docs/AUDIT.md and spec/optimization/campaign-v1.json decision_space",
+      "variables": ["anode_voltage_v [1, 1000] V", "anode_current_a [0.001, 10] A", "mass_flow_sccm [0.2, 50] sccm", "inner_magnet_radius_mm", "outer_magnet_radius_mm", "inner_shield_radius_mm", "outer_shield_radius_mm", "outer_enclosure_radius_mm"],
+      "objectives": ["thrust_n max", "total_efficiency max", "specific_impulse_s max", "anode_power_w min"]
+    }
+  },
+  "prior_model_disclosure": {
+    "corrected_four_cell_solver_probe": "2026-09-03 08:20 AEST, cft_revival.plasma.solve_global_discharge_multistart_cpu (start_count 3, residual_tolerance 1e-8) over Ua in {150,300,500,1000} V, Ia in {0.1,0.5,1,3} A and five cusp-probability vectors: the 28-by-25 system closed only for p = (0,0,0,0) (13/80 cases); every nonzero p ended at iteration_limit with residual floors 4.7e-4 .. 0.196; ~3 s per multistart solve. It is therefore not used as an evaluation chain; the campaign uses CL-1 instead. Recorded in DEVLOG.md.",
+    "campaign_spec_v1_4": "spec/optimization/campaign-v1.json describes a multi-fidelity F0-F3 campaign with F3 verification; this campaign is F0-only (corrected analytical) and must not populate campaign-v1.json#benchmark.results, whose validator requires verified F3 benchmark evidence. A separate instance index spec/optimization/mdo-l0-campaign-v1.json points at this campaign."
+  },
+  "design_variables": [
+    {"name": "discharge_voltage_v", "lower": 150.0, "upper": 500.0, "units": "V", "legacy": "anode_voltage_v (Ua)", "bound_rule": "accepted L0 sweep domain (config/l0-deterministic-sweep.json)"},
+    {"name": "anode_current_a", "lower": 0.1, "upper": 2.5, "units": "A", "legacy": "anode_current_a (Ia)", "bound_rule": "covers the L0 sweep beam-current range 0.10-1.65 A divided by beam fractions 0.75-0.98; legacy [0.001, 10] A clipped"},
+    {"name": "propellant_mass_flow_kg_per_s", "lower": 2e-7, "upper": 2e-6, "units": "kg/s", "legacy": "mass_flow_sccm (mdot); legacy constant 1 sccm Xe = 9.83009e-8 kg/s (cft_revival.models.LegacyPhysicsConstants), so [0.2, 50] sccm = [1.97e-8, 4.92e-6] kg/s", "bound_rule": "accepted L0 sweep domain"}
+  ],
+  "excluded_legacy_variables": [
+    {"name": "inner_magnet_radius_mm", "reason": "no geometry-to-L0 map (see claim_boundary.why_geometry_variables_are_excluded)"},
+    {"name": "outer_magnet_radius_mm", "reason": "same"},
+    {"name": "inner_shield_radius_mm", "reason": "same"},
+    {"name": "outer_shield_radius_mm", "reason": "same"},
+    {"name": "outer_enclosure_radius_mm", "reason": "same"}
+  ],
+  "uncertain_inputs": {
+    "inputs": [
+      {"name": "cusp_probability_cell_1", "distribution": "uniform", "lower": 0.0, "upper": 0.45, "units": "1", "meaning": "Kornfeld cusp-arrival probability p[1] of the electron current entering cell 1 (XenonGlobalInputs.cusp_arrival_probabilities[0]); electron wall loss to the dielectric cusp"},
+      {"name": "cusp_probability_cell_2", "distribution": "uniform", "lower": 0.0, "upper": 0.45, "units": "1", "meaning": "p[2]"},
+      {"name": "cusp_probability_cell_3", "distribution": "uniform", "lower": 0.0, "upper": 0.45, "units": "1", "meaning": "p[3]"},
+      {"name": "cusp_probability_cell_4", "distribution": "uniform", "lower": 0.0, "upper": 0.45, "units": "1", "meaning": "p[4]"},
+      {"name": "ionized_number_fraction", "distribution": "uniform", "lower": 0.65, "upper": 0.98, "units": "1", "meaning": "produced ionisation number fraction before cusp losses (L0 sweep range)"},
+      {"name": "xe_double_plus_fraction_of_ions", "distribution": "uniform", "lower": 0.0, "upper": 0.15, "units": "1", "meaning": "Xe2+ share of ions (L0 sweep range)"},
+      {"name": "axial_momentum_fraction_of_ion_momentum", "distribution": "uniform", "lower": 0.75, "upper": 0.98, "units": "1", "meaning": "divergence factor (L0 sweep range)"}
+    ],
+    "cusp_prior_calibration": "Independent uniform [0, 0.45] per cell is the documented wide prior. Its implied mean CL-1 survival E[prod(1-p_k)] = (1 - 0.225)^4 = 0.3606 matches the v4 pooled electron survival 1 - 2962/4608 = 0.3572 within 0.0035; the per-cell v4 values are NOT used as the prior because cells 2 and 3 hit the wall 1152/1152 times, which under CL-1 gives survival ~7e-8 (no beam) and is evaluated only as a sensitivity scenario.",
+    "nominal": "midpoint of every prior: p_k = 0.225, eta = 0.815, zeta = 0.075, gamma = 0.865",
+    "sample": {
+      "method": "deterministic prime-base radical-inverse (Halton) rows with the physics-workflow digital offset 17 + seed*104729",
+      "bases": [2, 3, 5, 7, 11, 13, 17],
+      "seed": 20260903,
+      "count": 64,
+      "sha256": "6e574ff122894e0facf951cdf89069c1b4625d6082a33b7026ff4d8a776db33e",
+      "frozen": true
+    },
+    "sensitivity_scenarios": [
+      {"id": "no_wall_loss", "cusp_probabilities": [0.0, 0.0, 0.0, 0.0]},
+      {"id": "wide_prior_mean", "cusp_probabilities": [0.225, 0.225, 0.225, 0.225]},
+      {"id": "v4_pooled_uniform_split", "cusp_probabilities": [0.2269, 0.2269, 0.2269, 0.2269], "rule": "1 - (1 - 2962/4608)^(1/4)"},
+      {"id": "wide_prior_upper", "cusp_probabilities": [0.45, 0.45, 0.45, 0.45]},
+      {"id": "v4_per_cell_jeffreys", "cusp_probabilities": [0.5712, 0.9996, 0.9996, 0.0004], "rule": "(successes + 0.5)/(trials + 1) per cell; must stay below 1 for the Kornfeld domain [0, 1)"}
+    ],
+    "sensitivity_priors": {
+      "cusp_upper_bounds": [0.0, 0.2, 0.45, 0.7],
+      "rule": "re-evaluate every recorded design under uniform [0, a] cusp priors with the same QMC rows and recompute the robust nondominated set; the campaign prior is a = 0.45"
+    }
+  },
+  "closures": {
+    "CL-1": {
+      "id": "CL-1-multiplicative-cusp-survival",
+      "statement": "S(p) = prod_{k=1..4} (1 - p_k). The exhaust ionised number fraction is eta_m = eta_ion * S(p); the complement eta_ion * (1 - S) recombines at the dielectric wall cusps and leaves as neutrals. The anode current is unaffected (the wall current is a closed electron-ion loop outside the anode circuit).",
+      "relation_to_corrected_model": "applies the corrected cusp-current relation jic[k] = p[k] * je[k-1] (dielectric neutrality) of cft_revival.plasma as a multiplicative cascade over the four cells; the ionisation-electron replenishment term of the electron-continuity relation is dropped",
+      "status": "declared assumption; not derived; not validated"
+    },
+    "fixed": {
+      "cathode_input_power_w": 15.0,
+      "ppu_efficiency_fraction": 0.9,
+      "note": "PPU efficiency only constructs an admissible PPU boundary; no PPU objective is used"
+    }
+  },
+  "l0_operating_point": {
+    "charge_state_fractions": "neutral = 1 - eta_m; xe_double_plus = eta_m * zeta; xe_plus = 1 - neutral - xe_double_plus (as in cft_revival.physics.workflows.sweep_points_from_config)",
+    "beam_current_a": "mdot * (e / m_Xe) * (xe_plus + 2 * xe_double_plus)",
+    "beam_current_fraction_of_anode_current": "beam_current_a / anode_current_a (must lie in (0, 1]; L0 rejects > 1)",
+    "power_boundaries": "cathode 15 W; PPU input = (Ua * Ia + 15 W) / 0.9"
+  },
+  "objectives": [
+    {"name": "axial_thrust_n", "direction": "maximize", "units": "N", "definition": "IdealPerformanceResult.axial_thrust_n = gamma * mdot * (xe_plus * v_plus + xe_double_plus * v_double_plus), v_z = sqrt(2 z e Ua / m_Xe)", "comparison_scale": 0.06},
+    {"name": "specific_impulse_s", "direction": "maximize", "units": "s", "definition": "IdealPerformanceResult.specific_impulse_s = gamma * (xe_plus * v_plus + xe_double_plus * v_double_plus) / g0", "comparison_scale": 3000.0},
+    {"name": "thruster_electrical_to_beam_efficiency", "direction": "maximize", "units": "1", "definition": "ReportedPowerBudget.thruster_electrical_to_beam_efficiency = Ua * I_beam / (Ua * Ia + P_cathode); this is L0's ledgered thruster-boundary efficiency and is NOT the legacy total_efficiency (beam * grid * mass utilisation), whose grid factor is unverified (AUDIT.md S3)", "comparison_scale": 1.0},
+    {"name": "anode_input_power_w", "direction": "minimize", "units": "W", "definition": "ReportedPowerBudget.anode_input_power_w = Ua * Ia", "comparison_scale": 1300.0}
+  ],
+  "reference_point": {
+    "axial_thrust_n": 0.0,
+    "specific_impulse_s": 0.0,
+    "thruster_electrical_to_beam_efficiency": 0.0,
+    "anode_input_power_w": 1300.0,
+    "normalization": "maximise objectives: (value - reference) / comparison_scale; minimise: (reference - value) / comparison_scale; hypervolume is computed in this dimensionless all-maximise frame against the origin with an exact recursive slicing algorithm (model.hypervolume)"
+  },
+  "constraints": [
+    {"name": "robust_beam_current_margin_a", "sense": ">=", "threshold": 0.0, "units": "A", "violation_scale": 0.1, "definition": "Ia - max over the frozen sample of beam_current_a(mdot, theta); a negative margin violates the L0 domain (beam current <= anode current) for at least one theta; the design then has NO robust objectives (fail-closed, failure code beam_current_exceeds_anode_current) and never enters a front or hypervolume", "role": "optimised (worst-case robust constraint)"},
+    {"name": "nominal_beam_current_margin_a", "sense": ">=", "threshold": 0.0, "units": "A", "violation_scale": 0.1, "definition": "Ia - beam_current_a(mdot, nominal theta)", "role": "analysis only (nominal front)"}
+  ],
+  "l0_domain_checks": "every L0 evaluation goes through XenonOperatingPoint validation (finite, positive flow and voltage, charge-state fractions summing to one within two ULPs, beam fraction in (0, 1], divergence in [0, 1], PPU boundary) and prepare_operating_point (nonrelativistic, representable); any PhysicsValidationError on a design with non-negative robust margin is a runtime failure of the campaign, never a silently dropped point",
+  "robust_formulation": {
+    "risk_measure": "CVaR",
+    "tail_fraction": 0.25,
+    "tail_count": 16,
+    "definition": "for each objective the mean of the 16 worst of 64 sample values (lower tail for maximise, upper tail for minimise) over the frozen QMC sample; the optimisers see exactly these four robust objectives and the robust constraint",
+    "nominal_front": "the nondominated set of the SAME evaluated designs under the nominal theta and the nominal constraint (re-evaluation, not a separate optimisation)",
+    "predeclared_expectation": "Under CL-1 every objective is separable, f_j(x, theta) = g_j(x) * h_j(theta) with g_j > 0 (anode power has h = 1). A design-independent risk measure of a separable objective preserves Pareto dominance, so the robust nondominated DESIGN set is invariant to the cusp prior whenever the feasible set is unchanged (p = 0 in the support fixes max beam current). Robust and nominal fronts differ only through the feasible set (the nominal constraint admits smaller Ia margins). This expectation is checked and reported, not tuned."
+  },
+  "optimizers": {
+    "qlognehvi": {
+      "library": "botorch",
+      "model": "independent SingleTaskGP per output (Matern-5/2 ARD, Standardize outcome transform, Gaussian likelihood with noise floor 1e-6), objectives fitted on feasible observations only, constraint GP on all observations, ModelListGP",
+      "acquisition": "qLogNoisyExpectedHypervolumeImprovement via cft_revival.optimization.botorch_adapter.build_qlognehvi (prune_baseline, strict-negative constraint callable, IdentityMCMultiOutputObjective on objective indices)",
+      "objective_transform": "cft_revival.optimization.botorch_adapter.transform_model_output_values: physical objectives divided by comparison_scale then sign-transformed to all-maximise; constraint (0 - margin)/0.1 - 1e-12",
+      "reference_point_transform": "same transform applied to the declared reference point",
+      "mc_samples": 32,
+      "sampler": "SobolQMCNormalSampler(seed = seed*1000 + iteration)",
+      "candidate_optimizer": "optimize_acqf joint q, num_restarts 4, raw_samples 128, L-BFGS-B maxiter 100, seed = seed*1000 + iteration",
+      "batch_size": 4,
+      "dtype": "float64",
+      "device": "cpu",
+      "device_note": "GP fits and acquisition were measured on 2026-09-03 while the RTX 5090 was occupied by pic2d_cft_steady_state_v2: cuda:0 fit 13.6 s vs cpu 0.3 s per iteration; cuda:0 acquisition 224-290 s vs cpu 19-29 s. The protocol therefore declares cpu; a CUDA float64 probe is still recorded in the development stage (cft_revival.optimization.botorch_adapter.load_api + Cholesky on cuda:0) so the runtime contract is proven without competing with the PIC run",
+      "seed_policy": "torch.manual_seed(seed); candidate values are recorded so the L0 replay does not depend on floating-point reproducibility of the acquisition optimiser"
+    },
+    "nsga3": {
+      "library": "pymoo",
+      "algorithm": "NSGA3",
+      "reference_directions": "energy, 4 objectives, 16 points, seed 1",
+      "population_size": 16,
+      "generations": 6,
+      "initial_population": "the shared 16 LHS points of the seed",
+      "eliminate_duplicates": false,
+      "constraint_handling": "pymoo feasibility-first with G = -margin/0.1 <= 0",
+      "infeasible_placeholder": "objective placeholder = reference point (zero attained hypervolume) for pymoo's internal ranking only; never recorded as an observation, never in any front or hypervolume",
+      "seed_policy": "pymoo minimize(seed=seed)"
+    },
+    "lhs": {
+      "library": "python stdlib random.Random (Mersenne Twister), numpy",
+      "design": "two-stage Latin hypercube: stage 1 = the shared 16-point LHS of the seed, stage 2 = one 80-point LHS drawn from the continuation of the same seeded stream; each dimension is a random permutation of equal strata with uniform jitter",
+      "seed_policy": "random.Random(seed); the first 16 rows are the shared initial design of the seed",
+      "note": "dependency-free by design so the baseline and the shared initial design replay on any interpreter; scipy Sobol was not used"
+    }
+  },
+  "budget": {
+    "strategies": ["qlognehvi", "nsga3", "lhs"],
+    "seeds": [101, 202, 303],
+    "evaluations_per_run": 96,
+    "initial_design": 16,
+    "qlognehvi_batch_size": 4,
+    "qlognehvi_iterations": 20,
+    "nsga3_population_size": 16,
+    "nsga3_generations": 6,
+    "total_evaluations": 864,
+    "fairness": ["same initial observations per seed across strategies (the 16-point LHS of the seed)", "same evaluation budget", "same constraint and failure policy", "same reference point and normalization"],
+    "sizing": "one L0 design evaluation (64 + 1 L0 points) takes ~4 ms; BO's GP fits and acquisition (~20-40 s per iteration on cpu) dominate; expected total <= ~40 min"
+  },
+  "dense_reference": {
+    "count": 8192,
+    "seed": 20260903,
+    "method": "cft_revival.optimization.sampling.initial_designs (shifted Halton with boundary challenges) over the design variables",
+    "purpose": "reference robust and nominal fronts and hypervolumes for the attained-fraction metric; NOT an optimiser run and not part of the benchmark"
+  },
+  "shakedown": {
+    "purpose": "NON-EVIDENTIARY end-to-end run of exactly the production code path (prebundle, development, assessment, gates, export) on the real L0 model with a small budget and a disjoint seed namespace into a temporary result root; prepare refuses without a passing shakedown whose protocol and code hashes match; execute re-verifies",
+    "seeds": [900101, 900202],
+    "seed_namespace_rule": "evidentiary seeds are < 1000; shakedown seeds are >= 900000",
+    "evaluations_per_run": 24,
+    "initial_design": 8,
+    "qlognehvi_batch_size": 4,
+    "qlognehvi_iterations": 4,
+    "nsga3_population_size": 8,
+    "nsga3_generations": 3,
+    "dense_reference_count": 512,
+    "outcomes_enter_estimand": false
+  },
+  "metrics": [
+    "hypervolume versus evaluations per (strategy, seed) after every evaluation",
+    "final hypervolume and attained fraction of the dense-reference robust hypervolume",
+    "Pareto-set size per run and of the pooled per-strategy set",
+    "constraint violation (infeasible evaluation) counts per run",
+    "wall-clock per run, GP fit and acquisition seconds per BO iteration",
+    "seed-repeat variance: mean, minimum, maximum and sample standard deviation of final hypervolume per strategy",
+    "robust versus nominal fronts of the pooled evaluated designs",
+    "sensitivity of the pooled robust nondominated design set and of the Pareto objective values to the cusp-probability prior and scenarios"
+  ],
+  "gates": {
+    "binding": {
+      "replay_bit_exact": "every recorded evaluation (design values, margins, robust statistics, nominal objectives, sample result hash) is recomputed through model.evaluate_design on CPU and compared bit-exactly",
+      "l0_domain": "every successful evaluation has non-negative robust margin and all objectives finite; every infeasible evaluation has negative robust margin, code beam_current_exceeds_anode_current and no robust objectives",
+      "hypervolume_monotone": "every recorded hypervolume curve is non-decreasing in evaluations",
+      "budget_exact": "every run recorded exactly evaluations_per_run evaluations",
+      "shared_initial_design": "for each seed the first initial_design designs are identical across the three strategies",
+      "sample_hash": "the frozen QMC sample recomputes to uncertain_inputs.sample.sha256",
+      "pareto_replay": "every design in every final Pareto set replays bit-exactly and is nondominated among its run's successful evaluations",
+      "code_contract": "package source hash, package versions and protocol hash equal the preregistered authorities"
+    },
+    "reported_not_binding": {
+      "bo_beats_random": "final robust hypervolume of qlognehvi > lhs for >= 2 of 3 seeds (paired by seed)",
+      "bo_beats_nsga3": "final robust hypervolume of qlognehvi > nsga3 for >= 2 of 3 seeds (paired by seed)",
+      "design_set_invariance": "for every alternative cusp prior (uniform [0, a], a in sensitivity_priors.cusp_upper_bounds) the robust nondominated set of the pooled designs feasible under BOTH the campaign prior and the alternative prior equals the campaign nondominated set restricted to those designs, both computed with roundoff-aware dominance (relative tolerance 1e-9: L0 recomputes the anode power as Ua * I_beam / beam_fraction, which differs from Ua * Ia by an ulp depending on theta, so exact fronts can differ by such ties); the exact-arithmetic fronts and the unrestricted fronts (Jaccard) are also reported because the feasible set itself moves with the prior through the maximum sampled beam current",
+      "robust_vs_nominal": "differences between the robust and nominal fronts of the pooled designs"
+    },
+    "terminal_rule": "accepted_result iff every binding gate passes; the reported tests are recorded pass/fail and never change the terminal state"
+  },
+  "code_contract": {
+    "source_hash_scope": [
+      "modern/src/cft_revival/optimization/*.py",
+      "modern/src/cft_revival/active_learning/*.py",
+      "modern/src/cft_revival/surrogates/*.py",
+      "modern/src/cft_revival/physics/*.py",
+      "modern/spec/optimization/campaign-v1.json",
+      "modern/experiments/mdo_l0_campaign_v1/model.py",
+      "modern/experiments/mdo_l0_campaign_v1/optimizers.py",
+      "modern/experiments/mdo_l0_campaign_v1/experiment.py"
+    ],
+    "source_hash_line_endings": "LF; the hash is over working-tree bytes and fails closed if any hashed file contains a carriage return",
+    "package_versions": {
+      "torch": "2.13.0+cu130",
+      "botorch": "0.18.1",
+      "gpytorch": "1.15.2",
+      "pymoo": "0.6.2",
+      "numpy": "2.5.2",
+      "scipy": "1.18.1"
+    },
+    "package_versions_note": "scipy is pinned because pymoo and BoTorch import it; the campaign code itself does not call scipy",
+    "python": "3.12"
+  },
+  "execution": {
+    "git_common_lock": "mdo-l0-campaign-v1.execution.lock",
+    "device": "cpu (L0 python-reference, GP fits, acquisition); no Warp or CUDA batch jobs are launched",
+    "sequential_runs": "strategies x seeds run sequentially in the declared order qlognehvi, nsga3, lhs per seed; each completed run is checkpointed to the working cache and written as an artifact",
+    "single_execution": "one immutable attempt from the pushed preregistration commit; failure is recorded, never patched or rerun"
+  },
+  "prior_campaign_disclosure": "This is the first optimisation campaign on the corrected physics; spec/optimization/campaign-v1.json#benchmark.results is null at preregistration and stays null (no F3 verification exists)."
+}
