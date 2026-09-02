@@ -64,8 +64,10 @@ def write(path: Path, value: dict[str, object]) -> str:
     ).encode("utf-8")
     path.write_bytes(encoded)
     digest = hashlib.sha256(encoded).hexdigest()
+    # newline="\n": the sidecar bytes must not depend on the producing platform
+    # (Git stores LF repo-wide; a CRLF sidecar would be rewritten on commit).
     path.with_name(path.name + ".sha256").write_text(
-        f"{digest}  {path.name}\n", encoding="ascii"
+        f"{digest}  {path.name}\n", encoding="ascii", newline="\n"
     )
     return digest
 

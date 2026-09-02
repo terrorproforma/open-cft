@@ -152,3 +152,10 @@
 - A P2 handoff may consume structured-grid QoI values for comparison, but must
   not inherit structured-grid gate statuses; qualification authority remains
   with the independent P2 evidence contract.
+- Source-identity digests must be computed over bytes that the version control
+  system preserves. Hashing working-tree bytes under `core.autocrlf=true`
+  bound the v1.4 evidence to CRLF text that no LF checkout can reproduce; the
+  fix is the repo-wide `eol=lf` pin plus re-binding, not a tolerance, because a
+  tolerance placed in the hashed files would change the hashed bytes.
+- Every writer of a hash-bound text sidecar must pass `newline="\n"`; the
+  platform default newline is a reproducibility defect, not a style choice.

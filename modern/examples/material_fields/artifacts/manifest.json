@@ -3,8 +3,8 @@
     {
       "acceptance_status": "SCREENING_NOT_ACCEPTED",
       "artifact": "historical-envelope-baseline.material-field.json",
-      "artifact_file_sha256": "2f68507d739412c7a7df3a8034e74df9f3573072f6ba4ac59d6a582c74a95dab",
-      "artifact_payload_sha256": "d91f4dd8b86251ec4294948b7df4e8a700ec362e45dc920752fca4592039a860",
+      "artifact_file_sha256": "23f26357efd01500d18c31ae825a1a84205338ff0cef0d898eea38fb66a67ef0",
+      "artifact_payload_sha256": "dc1ab5ed462fd34271db64866fb45097767ce64c0f0129bcae69591a68244dcf",
       "axis_bz_peak_t": 0.35706484671067645,
       "boundary_to_peak_ratios": [
         4.65962218569912e-06,
@@ -53,8 +53,8 @@
     {
       "acceptance_status": "SCREENING_NOT_ACCEPTED",
       "artifact": "compact-high-gradient-stack.material-field.json",
-      "artifact_file_sha256": "23d0d6f3b0353a92a57db8417a190f06d6ee002d1f042c83610ff6439cb1cd90",
-      "artifact_payload_sha256": "7579f1602c75cdf6773b24279dd7621dd9c290dd9c2205b875da0962e5c7ed67",
+      "artifact_file_sha256": "7c30a39150e4bdd233a38760f11413def91f58a177db34ffeaa94dc936062c8f",
+      "artifact_payload_sha256": "a6b69d03bde3626f31858b2b914ef8b6d2d9bdc26a3925371b7914a300f60da0",
       "axis_bz_peak_t": 0.17200647270832195,
       "boundary_to_peak_ratios": [
         1.180002766028622e-06,
@@ -107,8 +107,8 @@
     {
       "acceptance_status": "SCREENING_NOT_ACCEPTED",
       "artifact": "divergent-exit-stack.material-field.json",
-      "artifact_file_sha256": "f791dbcc7c4d67443ae5381d14091adaeab161987218c477e3df303258d2b573",
-      "artifact_payload_sha256": "da7ef3f3660f1b2e6f6ea3ac9840bed23b1f177efc9168f75d3c90f5c5f12966",
+      "artifact_file_sha256": "5a70664bbcda76a289dccc6e77aa38bc36609d916e8f5681e5da7cc26779b9e9",
+      "artifact_payload_sha256": "cf703753108f36a0d175e0540262b367d034080141634a062c8820c582194a06",
       "axis_bz_peak_t": 0.16493115860128382,
       "boundary_to_peak_ratios": [
         2.8452865387300926e-06,
@@ -160,7 +160,7 @@
   "integrity": {
     "algorithm": "sha256",
     "canonicalization": "json-sort-keys-compact-utf8-v1",
-    "payload_sha256": "32ce64983a03fc7278be1ceaa7bf20fb73e9b04926786530a1801148893ba134"
+    "payload_sha256": "eba362d8b18f46f8e5254eceecb4092c0e12b35673a011014a3751c43113ae7c"
   },
   "limitations": [
     "Only artifacts with ACCEPTED_PUBLICATION_EVIDENCE pass strict validation.",

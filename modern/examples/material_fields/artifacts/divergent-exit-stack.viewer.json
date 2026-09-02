@@ -1,21 +1,21 @@
 {
   "acceptance_status": "SCREENING_NOT_ACCEPTED",
   "anchors": {
-    "base_run_sha256": "18594cf6d6024f4ba988b2d17c91a28f34a464b518a592f70ff7009b4d300017",
+    "base_run_sha256": "7dfb6f36d4e77247eea531b384b48899c313c9dff4e922638cc4f7ae37e58eae",
     "config_sha256": "3605e8d83168d8d2032ee68ab1ee56a359b40384a2ca51ac5a35775395c8a670",
     "design_geometry_sha256": "04124782d7e33f49ff672899e493efae7e5081f1cd0b37248ac030b53486b5b7",
     "domain_sha256": "9cfcad2dba72922f74532f8c1b3b89512289d3444cf5422e1b744fb8734685b2",
-    "evidence_implementation_sha256": "d229f62d7ba6289646291d925f404785ab879b91f59185a91a90c327e92966b8",
+    "evidence_implementation_sha256": "ef17d1618a934bd1038e24ead341a519dcf365f8f54f1d360afbfedf4bf908db",
     "geometry_sha256": "9b7ec5608d02754dcf7605d0389915efddfe4202f5bc466feb4652a46d004217",
     "grid_sha256": "4cf333fbfeebf5f2326e1031ad75531b47b676a11e1125f7d2f032485b6a4af1",
-    "implementation_sha256": "dc988f4b01648e825ac7a1934b8ddca88ad53d1fa5859c8471e1dfcec745cd0b",
+    "implementation_sha256": "6ced73daca60f883440d9f1a4287549ecd2cb8335c138e0fb121b319c0038d2f",
     "magnetics_sha256": "7b116293f285c6336c38650bd3dfe2809c8517d5cb4ec4e158c6dce11005b4ce",
     "material_registry_sha256": "8bc444620b9634886220ffa000d2cb2af91158139b7ce9faa35189ec5fc6c423",
     "problem_id": "geometry-divergent-exit-stack-v1-recoil_remanence_constitutive",
     "problem_sha256": "73fcb16a167f28b899a49e37010826d90ae39b940e4770158da3d28c787e452f",
     "solver_config_identity_sha256": "31c52d783dfc2bfddb345f85b519590ca0e8fd00ff41c3e03c01d66e7ef8b982"
   },
-  "artifact_payload_sha256": "da7ef3f3660f1b2e6f6ea3ac9840bed23b1f177efc9168f75d3c90f5c5f12966",
+  "artifact_payload_sha256": "cf703753108f36a0d175e0540262b367d034080141634a062c8820c582194a06",
   "classification": "hypothetical_design_simulation_not_validated_hardware_prediction",
   "field_map": {
     "b_magnitude_t": [
@@ -3784,7 +3784,7 @@
   "integrity": {
     "algorithm": "sha256",
     "canonicalization": "json-sort-keys-compact-utf8-v1",
-    "payload_sha256": "daecdb8ab854d6f3c72db75eeca94ba0fe18ddc1925dc670c169d1550650dc27"
+    "payload_sha256": "3a11005812aea5f8246e3de65d29c995417ea1be231b19b4a71e3bc514e47f13"
   },
   "model_level": "L1b",
   "schema_version": "cft_revival.material_fields.viewer/1.4.0",

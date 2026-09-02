@@ -1,8 +1,8 @@
 {
   "acceptance": {
     "backend_parity": {
-      "cpu_run_sha256": "0c3b2282d49acbe4582e9169d7574d391b61265d9c0610ac2d85145f9f0703ad",
-      "cuda_run_sha256": "e79a712149050a2e3702b89c286c32286cde7b1bd6bd736c7cc57c3909af579a",
+      "cpu_run_sha256": "a37ce066a61899104d0222a51729aa54a6729ad21a49c74fc10ec64693e27749",
+      "cuda_run_sha256": "8f412248bb13c6a9a6619864068aebe08fccc3f347ff3e2120c750ebb5c77e01",
       "relative_field_l2": 6.130470466604771e-10
     },
     "gates": [
@@ -163,10 +163,10 @@
         "config_sha256": "3605e8d83168d8d2032ee68ab1ee56a359b40384a2ca51ac5a35775395c8a670",
         "design_geometry_sha256": "f74de926f7e97526ddae71250c6e132e72781cee27f2b73fc776200d952a09e4",
         "domain_sha256": "b10c5abbf2a36933bda1fdc6d7fafab5c1a02b7f52119cc4f069c81237cbd3f3",
-        "evidence_implementation_sha256": "d229f62d7ba6289646291d925f404785ab879b91f59185a91a90c327e92966b8",
+        "evidence_implementation_sha256": "ef17d1618a934bd1038e24ead341a519dcf365f8f54f1d360afbfedf4bf908db",
         "geometry_sha256": "66e033e98aa2dc98af96d4d7072218c4b298839c784a44ee66621e29a58a4f6f",
         "grid_sha256": "a6a9b95dc6d046f40393425624d6a548947b1534303be4bb04a8097e3a004bd1",
-        "implementation_sha256": "dc988f4b01648e825ac7a1934b8ddca88ad53d1fa5859c8471e1dfcec745cd0b",
+        "implementation_sha256": "6ced73daca60f883440d9f1a4287549ecd2cb8335c138e0fb121b319c0038d2f",
         "material_registry_sha256": "8bc444620b9634886220ffa000d2cb2af91158139b7ce9faa35189ec5fc6c423",
         "material_sha256": "69f099546b95ae9387895eb503408a8b0fe6140faecbd552da59fbcb51be4601",
         "problem_sha256": "3208ad4019f324b7b9d3d6d1482dc976a1f1e2647c2a308d04479c0aff6d12e1",
@@ -178,7 +178,7 @@
             "energy_balance_relative": 6.107062530882355e-16,
             "final_true_residual_l2": 0.5220400944772198,
             "host_synchronization_count": 19,
-            "implementation_sha256": "dc988f4b01648e825ac7a1934b8ddca88ad53d1fa5859c8471e1dfcec745cd0b",
+            "implementation_sha256": "6ced73daca60f883440d9f1a4287549ecd2cb8335c138e0fb121b319c0038d2f",
             "initial_residual_l2": 2371930020.317046,
             "iterations": 350,
             "magnetic_energy_j": 5.817385462871953,
@@ -589,7 +589,7 @@
           }
         },
         "role": "base",
-        "run_sha256": "be7698ddce44b75eddbe38d38996f4582ad97d29a89ca20aec586c2c3af38e32",
+        "run_sha256": "6f4ff278f9ae43be470be7f5fedb552b34386cb8aa9dd4b7cc3784c0f05c0a07",
         "solver_config_identity_sha256": "31c52d783dfc2bfddb345f85b519590ca0e8fd00ff41c3e03c01d66e7ef8b982",
         "study_id": "base"
       },
@@ -598,10 +598,10 @@
         "config_sha256": "3605e8d83168d8d2032ee68ab1ee56a359b40384a2ca51ac5a35775395c8a670",
         "design_geometry_sha256": "f74de926f7e97526ddae71250c6e132e72781cee27f2b73fc776200d952a09e4",
         "domain_sha256": "5258a33ade62479a69660500b77a1dc37eebb697051adb311f84a8929add9ee8",
-        "evidence_implementation_sha256": "d229f62d7ba6289646291d925f404785ab879b91f59185a91a90c327e92966b8",
+        "evidence_implementation_sha256": "ef17d1618a934bd1038e24ead341a519dcf365f8f54f1d360afbfedf4bf908db",
         "geometry_sha256": "66e033e98aa2dc98af96d4d7072218c4b298839c784a44ee66621e29a58a4f6f",
         "grid_sha256": "3579b17bba53b9003d9460c041faac9c4ddf43cf1cdb5e520cdee4634c9aa19d",
-        "implementation_sha256": "dc988f4b01648e825ac7a1934b8ddca88ad53d1fa5859c8471e1dfcec745cd0b",
+        "implementation_sha256": "6ced73daca60f883440d9f1a4287549ecd2cb8335c138e0fb121b319c0038d2f",
         "material_registry_sha256": "8bc444620b9634886220ffa000d2cb2af91158139b7ce9faa35189ec5fc6c423",
         "material_sha256": "69f099546b95ae9387895eb503408a8b0fe6140faecbd552da59fbcb51be4601",
         "problem_sha256": "11db1abc254347b5e24d3fb6104f36021383ea83ab54bf70068b8dcf90605d67",
@@ -613,7 +613,7 @@
             "energy_balance_relative": 0.0,
             "final_true_residual_l2": 1.9324394357331012,
             "host_synchronization_count": 23,
-            "implementation_sha256": "dc988f4b01648e825ac7a1934b8ddca88ad53d1fa5859c8471e1dfcec745cd0b",
+            "implementation_sha256": "6ced73daca60f883440d9f1a4287549ecd2cb8335c138e0fb121b319c0038d2f",
             "initial_residual_l2": 2371930020.3170466,
             "iterations": 450,
             "magnetic_energy_j": 5.817385436221697,
@@ -1028,7 +1028,7 @@
           }
         },
         "role": "domain_expansion",
-        "run_sha256": "85d6293d7acc68341d5b0a4423113eb505896d0a0c78742a4461b27f6ee493df",
+        "run_sha256": "90c8ed287db3b4d199540b69bf188c0f36eeb068a5f8e29c92bd5532b6c93efe",
         "solver_config_identity_sha256": "31c52d783dfc2bfddb345f85b519590ca0e8fd00ff41c3e03c01d66e7ef8b982",
         "study_id": "domain-1"
       },
@@ -1037,10 +1037,10 @@
         "config_sha256": "3605e8d83168d8d2032ee68ab1ee56a359b40384a2ca51ac5a35775395c8a670",
         "design_geometry_sha256": "f74de926f7e97526ddae71250c6e132e72781cee27f2b73fc776200d952a09e4",
         "domain_sha256": "9a9693bf6194fd125d3443109b91da4190d7f459e4c501c6d8a3a41ebbeb1b0b",
-        "evidence_implementation_sha256": "d229f62d7ba6289646291d925f404785ab879b91f59185a91a90c327e92966b8",
+        "evidence_implementation_sha256": "ef17d1618a934bd1038e24ead341a519dcf365f8f54f1d360afbfedf4bf908db",
         "geometry_sha256": "66e033e98aa2dc98af96d4d7072218c4b298839c784a44ee66621e29a58a4f6f",
         "grid_sha256": "36c64729f6c34b33a336da93ef7359eb6d81667fa16a08ec366dce1f7bf5965c",
-        "implementation_sha256": "dc988f4b01648e825ac7a1934b8ddca88ad53d1fa5859c8471e1dfcec745cd0b",
+        "implementation_sha256": "6ced73daca60f883440d9f1a4287549ecd2cb8335c138e0fb121b319c0038d2f",
         "material_registry_sha256": "8bc444620b9634886220ffa000d2cb2af91158139b7ce9faa35189ec5fc6c423",
         "material_sha256": "69f099546b95ae9387895eb503408a8b0fe6140faecbd552da59fbcb51be4601",
         "problem_sha256": "784786b79bd2b8dd3d2f47a17b0c4f718730d7e48a94250c76f7a9aa12524a6f",
@@ -1052,7 +1052,7 @@
             "energy_balance_relative": 1.5267656412461925e-16,
             "final_true_residual_l2": 1.7006555400855377,
             "host_synchronization_count": 30,
-            "implementation_sha256": "dc988f4b01648e825ac7a1934b8ddca88ad53d1fa5859c8471e1dfcec745cd0b",
+            "implementation_sha256": "6ced73daca60f883440d9f1a4287549ecd2cb8335c138e0fb121b319c0038d2f",
             "initial_residual_l2": 2371930020.31705,
             "iterations": 625,
             "magnetic_energy_j": 5.817385430387121,
@@ -1474,7 +1474,7 @@
           }
         },
         "role": "domain_expansion",
-        "run_sha256": "ad634864261e95f4d9088466f8df12acb76d981de0b903669b544a665581e28e",
+        "run_sha256": "1350730390723faf745f8c241f2c8f592733c2915f2857bc49fc3bf0ab1f4ef5",
         "solver_config_identity_sha256": "31c52d783dfc2bfddb345f85b519590ca0e8fd00ff41c3e03c01d66e7ef8b982",
         "study_id": "domain-2"
       },
@@ -1483,10 +1483,10 @@
         "config_sha256": "3605e8d83168d8d2032ee68ab1ee56a359b40384a2ca51ac5a35775395c8a670",
         "design_geometry_sha256": "f74de926f7e97526ddae71250c6e132e72781cee27f2b73fc776200d952a09e4",
         "domain_sha256": "b10c5abbf2a36933bda1fdc6d7fafab5c1a02b7f52119cc4f069c81237cbd3f3",
-        "evidence_implementation_sha256": "d229f62d7ba6289646291d925f404785ab879b91f59185a91a90c327e92966b8",
+        "evidence_implementation_sha256": "ef17d1618a934bd1038e24ead341a519dcf365f8f54f1d360afbfedf4bf908db",
         "geometry_sha256": "66e033e98aa2dc98af96d4d7072218c4b298839c784a44ee66621e29a58a4f6f",
         "grid_sha256": "c5c606668c2ddb85bbaf20990415c64cc1ae37cb7a3725713aa1ae17d1845189",
-        "implementation_sha256": "dc988f4b01648e825ac7a1934b8ddca88ad53d1fa5859c8471e1dfcec745cd0b",
+        "implementation_sha256": "6ced73daca60f883440d9f1a4287549ecd2cb8335c138e0fb121b319c0038d2f",
         "material_registry_sha256": "8bc444620b9634886220ffa000d2cb2af91158139b7ce9faa35189ec5fc6c423",
         "material_sha256": "69f099546b95ae9387895eb503408a8b0fe6140faecbd552da59fbcb51be4601",
         "problem_sha256": "748cdb069c7eee68bd4286a895b2516d604dad836c6fe838206fa4c9d78913f9",
@@ -1498,7 +1498,7 @@
             "energy_balance_relative": 1.3980431070930782e-16,
             "final_true_residual_l2": 2.5797524367352804,
             "host_synchronization_count": 22,
-            "implementation_sha256": "dc988f4b01648e825ac7a1934b8ddca88ad53d1fa5859c8471e1dfcec745cd0b",
+            "implementation_sha256": "6ced73daca60f883440d9f1a4287549ecd2cb8335c138e0fb121b319c0038d2f",
             "initial_residual_l2": 3153819301.344072,
             "iterations": 425,
             "magnetic_energy_j": 0.7941264607595826,
@@ -1912,7 +1912,7 @@
           }
         },
         "role": "mesh_refinement",
-        "run_sha256": "26cc5bc9feaf85a4e7c2750b22e7a25ae2b67239e1507f6ca868ed71e2f21ab2",
+        "run_sha256": "f12fe624b4007d004f690fc0cfb53085a730ab8d946bf2d4d65f9a821a8ca9c5",
         "solver_config_identity_sha256": "31c52d783dfc2bfddb345f85b519590ca0e8fd00ff41c3e03c01d66e7ef8b982",
         "study_id": "mesh-fine"
       },
@@ -1921,10 +1921,10 @@
         "config_sha256": "3605e8d83168d8d2032ee68ab1ee56a359b40384a2ca51ac5a35775395c8a670",
         "design_geometry_sha256": "f74de926f7e97526ddae71250c6e132e72781cee27f2b73fc776200d952a09e4",
         "domain_sha256": "b10c5abbf2a36933bda1fdc6d7fafab5c1a02b7f52119cc4f069c81237cbd3f3",
-        "evidence_implementation_sha256": "d229f62d7ba6289646291d925f404785ab879b91f59185a91a90c327e92966b8",
+        "evidence_implementation_sha256": "ef17d1618a934bd1038e24ead341a519dcf365f8f54f1d360afbfedf4bf908db",
         "geometry_sha256": "66e033e98aa2dc98af96d4d7072218c4b298839c784a44ee66621e29a58a4f6f",
         "grid_sha256": "5cae1fec12e3417a57d1d41da020fae97ad51800d70e166b75f6c1450f00e69f",
-        "implementation_sha256": "dc988f4b01648e825ac7a1934b8ddca88ad53d1fa5859c8471e1dfcec745cd0b",
+        "implementation_sha256": "6ced73daca60f883440d9f1a4287549ecd2cb8335c138e0fb121b319c0038d2f",
         "material_registry_sha256": "8bc444620b9634886220ffa000d2cb2af91158139b7ce9faa35189ec5fc6c423",
         "material_sha256": "69f099546b95ae9387895eb503408a8b0fe6140faecbd552da59fbcb51be4601",
         "problem_sha256": "f5732bda1ad41126c2617ffab40d99c232a3f47a03a0138d264785fdd88503b0",
@@ -1936,7 +1936,7 @@
             "energy_balance_relative": 0.0,
             "final_true_residual_l2": 3.2387226187667935,
             "host_synchronization_count": 24,
-            "implementation_sha256": "dc988f4b01648e825ac7a1934b8ddca88ad53d1fa5859c8471e1dfcec745cd0b",
+            "implementation_sha256": "6ced73daca60f883440d9f1a4287549ecd2cb8335c138e0fb121b319c0038d2f",
             "initial_residual_l2": 4226042552.101192,
             "iterations": 475,
             "magnetic_energy_j": 0.8369583420539651,
@@ -2352,7 +2352,7 @@
           }
         },
         "role": "mesh_refinement_2",
-        "run_sha256": "586eb5bc8d7682480fcdb5581905cb56b0cb8494ca67b169b6c78bcb72adc54b",
+        "run_sha256": "23c0700485835f682ee64abe0e1d8dfc1234c7cd508aa8e1762fa40e08604f33",
         "solver_config_identity_sha256": "31c52d783dfc2bfddb345f85b519590ca0e8fd00ff41c3e03c01d66e7ef8b982",
         "study_id": "mesh-third"
       },
@@ -2361,10 +2361,10 @@
         "config_sha256": "3605e8d83168d8d2032ee68ab1ee56a359b40384a2ca51ac5a35775395c8a670",
         "design_geometry_sha256": "f74de926f7e97526ddae71250c6e132e72781cee27f2b73fc776200d952a09e4",
         "domain_sha256": "37bbb42fe7f83495a269ea57868ca056c2a4800f5e6ce59b5b134392ae5f68f5",
-        "evidence_implementation_sha256": "d229f62d7ba6289646291d925f404785ab879b91f59185a91a90c327e92966b8",
+        "evidence_implementation_sha256": "ef17d1618a934bd1038e24ead341a519dcf365f8f54f1d360afbfedf4bf908db",
         "geometry_sha256": "66e033e98aa2dc98af96d4d7072218c4b298839c784a44ee66621e29a58a4f6f",
         "grid_sha256": "5246b34e23ec787c98dab0515d729a801b2b1028bb01314a7cf5234f35acc686",
-        "implementation_sha256": "dc988f4b01648e825ac7a1934b8ddca88ad53d1fa5859c8471e1dfcec745cd0b",
+        "implementation_sha256": "6ced73daca60f883440d9f1a4287549ecd2cb8335c138e0fb121b319c0038d2f",
         "material_registry_sha256": "8bc444620b9634886220ffa000d2cb2af91158139b7ce9faa35189ec5fc6c423",
         "material_sha256": "69f099546b95ae9387895eb503408a8b0fe6140faecbd552da59fbcb51be4601",
         "problem_sha256": "eebaef81446344a984d13762f3ef79cfae405757244c339b273c667d6483da73",
@@ -2376,7 +2376,7 @@
             "energy_balance_relative": 1.8335387580988662e-16,
             "final_true_residual_l2": 2.0518067393999138,
             "host_synchronization_count": 18,
-            "implementation_sha256": "dc988f4b01648e825ac7a1934b8ddca88ad53d1fa5859c8471e1dfcec745cd0b",
+            "implementation_sha256": "6ced73daca60f883440d9f1a4287549ecd2cb8335c138e0fb121b319c0038d2f",
             "initial_residual_l2": 2361897762.1607156,
             "iterations": 325,
             "magnetic_energy_j": 4.844066784936944,
@@ -2786,7 +2786,7 @@
           }
         },
         "role": "grid_alignment",
-        "run_sha256": "173c1325765020dc8f4e2f81d66b80b95c2ce62a6dedbe0d9f09b77ba9927357",
+        "run_sha256": "44ecb86521177d791b304b1bb0aec2374f49d61d0e7d2267d3c07c792605a402",
         "solver_config_identity_sha256": "31c52d783dfc2bfddb345f85b519590ca0e8fd00ff41c3e03c01d66e7ef8b982",
         "study_id": "alignment-1"
       },
@@ -2795,10 +2795,10 @@
         "config_sha256": "3605e8d83168d8d2032ee68ab1ee56a359b40384a2ca51ac5a35775395c8a670",
         "design_geometry_sha256": "f74de926f7e97526ddae71250c6e132e72781cee27f2b73fc776200d952a09e4",
         "domain_sha256": "b10c5abbf2a36933bda1fdc6d7fafab5c1a02b7f52119cc4f069c81237cbd3f3",
-        "evidence_implementation_sha256": "d229f62d7ba6289646291d925f404785ab879b91f59185a91a90c327e92966b8",
+        "evidence_implementation_sha256": "ef17d1618a934bd1038e24ead341a519dcf365f8f54f1d360afbfedf4bf908db",
         "geometry_sha256": "a81409751990d9f08d4d77dbdac06569a062292858cf34783de438f719aae093",
         "grid_sha256": "a6a9b95dc6d046f40393425624d6a548947b1534303be4bb04a8097e3a004bd1",
-        "implementation_sha256": "dc988f4b01648e825ac7a1934b8ddca88ad53d1fa5859c8471e1dfcec745cd0b",
+        "implementation_sha256": "6ced73daca60f883440d9f1a4287549ecd2cb8335c138e0fb121b319c0038d2f",
         "material_registry_sha256": "8bc444620b9634886220ffa000d2cb2af91158139b7ce9faa35189ec5fc6c423",
         "material_sha256": "9419b59e0ef0bf31fad8327af5240340ee6089364c1b3cde30f7a8115225bbe0",
         "problem_sha256": "b43cfeaf2a0a124ab097d2fab5e34334c1f0ef25bd47a3183f3c68ebd7144a93",
@@ -2810,7 +2810,7 @@
             "energy_balance_relative": 1.699501400546334e-16,
             "final_true_residual_l2": 0.5652791437539003,
             "host_synchronization_count": 19,
-            "implementation_sha256": "dc988f4b01648e825ac7a1934b8ddca88ad53d1fa5859c8471e1dfcec745cd0b",
+            "implementation_sha256": "6ced73daca60f883440d9f1a4287549ecd2cb8335c138e0fb121b319c0038d2f",
             "initial_residual_l2": 2503633761.6688848,
             "iterations": 350,
             "magnetic_energy_j": 5.2261117255602425,
@@ -3221,7 +3221,7 @@
           }
         },
         "role": "model_form",
-        "run_sha256": "67e8f937070695b4c545cc5e90d02319ef2d8044e51c03156ecfe21af1625785",
+        "run_sha256": "c86affd50ae659c8b7619a1e4be750151db28758e92ec50adb1f7df55bee8291",
         "solver_config_identity_sha256": "31c52d783dfc2bfddb345f85b519590ca0e8fd00ff41c3e03c01d66e7ef8b982",
         "study_id": "equivalent-base"
       },
@@ -3230,10 +3230,10 @@
         "config_sha256": "3605e8d83168d8d2032ee68ab1ee56a359b40384a2ca51ac5a35775395c8a670",
         "design_geometry_sha256": "f74de926f7e97526ddae71250c6e132e72781cee27f2b73fc776200d952a09e4",
         "domain_sha256": "b10c5abbf2a36933bda1fdc6d7fafab5c1a02b7f52119cc4f069c81237cbd3f3",
-        "evidence_implementation_sha256": "d229f62d7ba6289646291d925f404785ab879b91f59185a91a90c327e92966b8",
+        "evidence_implementation_sha256": "ef17d1618a934bd1038e24ead341a519dcf365f8f54f1d360afbfedf4bf908db",
         "geometry_sha256": "a81409751990d9f08d4d77dbdac06569a062292858cf34783de438f719aae093",
         "grid_sha256": "c5c606668c2ddb85bbaf20990415c64cc1ae37cb7a3725713aa1ae17d1845189",
-        "implementation_sha256": "dc988f4b01648e825ac7a1934b8ddca88ad53d1fa5859c8471e1dfcec745cd0b",
+        "implementation_sha256": "6ced73daca60f883440d9f1a4287549ecd2cb8335c138e0fb121b319c0038d2f",
         "material_registry_sha256": "8bc444620b9634886220ffa000d2cb2af91158139b7ce9faa35189ec5fc6c423",
         "material_sha256": "9419b59e0ef0bf31fad8327af5240340ee6089364c1b3cde30f7a8115225bbe0",
         "problem_sha256": "eab52c213e59141e4e060a9d15c6a9f0c829b12cbe71a5ded1a8e344feb93f4b",
@@ -3245,7 +3245,7 @@
             "energy_balance_relative": 6.221728482816912e-16,
             "final_true_residual_l2": 2.4533569237272776,
             "host_synchronization_count": 22,
-            "implementation_sha256": "dc988f4b01648e825ac7a1934b8ddca88ad53d1fa5859c8471e1dfcec745cd0b",
+            "implementation_sha256": "6ced73daca60f883440d9f1a4287549ecd2cb8335c138e0fb121b319c0038d2f",
             "initial_residual_l2": 3295488373.0061545,
             "iterations": 425,
             "magnetic_energy_j": 0.4461071500031523,
@@ -3659,7 +3659,7 @@
           }
         },
         "role": "model_form",
-        "run_sha256": "84ea916a1f99d0c5b02b5f967095060d733dd379105694f4d4eff358c0869411",
+        "run_sha256": "c95b4f94a7d9d1bad3251f77debbfcf661b29339c205b78b7083ad625a2b8d7f",
         "solver_config_identity_sha256": "31c52d783dfc2bfddb345f85b519590ca0e8fd00ff41c3e03c01d66e7ef8b982",
         "study_id": "equivalent-fine"
       },
@@ -3668,10 +3668,10 @@
         "config_sha256": "afa35c45748fa8481fe19b3f5327cec1dca5add94be99e79e6e46c383a8f2413",
         "design_geometry_sha256": "f74de926f7e97526ddae71250c6e132e72781cee27f2b73fc776200d952a09e4",
         "domain_sha256": "f8a3fe3bda1df40c1672d1cf7d7d86ffe6e2318585a3712dc0553d7f8d5ff995",
-        "evidence_implementation_sha256": "d229f62d7ba6289646291d925f404785ab879b91f59185a91a90c327e92966b8",
+        "evidence_implementation_sha256": "ef17d1618a934bd1038e24ead341a519dcf365f8f54f1d360afbfedf4bf908db",
         "geometry_sha256": "66e033e98aa2dc98af96d4d7072218c4b298839c784a44ee66621e29a58a4f6f",
         "grid_sha256": "049bd6de3a2fa3b127e0745b5352321af2e28379deb1e02d1badbf6f598d9161",
-        "implementation_sha256": "734cff6aabe3964690ee6ccfa3bc5c3f9f88f2bc7184ffc9390a06b5b903e6b5",
+        "implementation_sha256": "2ce98ebd46cab554fc38e81a099935eafcf4a93cf1059a3d86c64fb498fcdd61",
         "material_registry_sha256": "8bc444620b9634886220ffa000d2cb2af91158139b7ce9faa35189ec5fc6c423",
         "material_sha256": "69f099546b95ae9387895eb503408a8b0fe6140faecbd552da59fbcb51be4601",
         "problem_sha256": "e10dec8cee81d088fcddbd6df1c8830e65af9075b410bf2077ba7787901e373f",
@@ -3683,7 +3683,7 @@
             "energy_balance_relative": 0.0,
             "final_true_residual_l2": 14.172799090887233,
             "host_synchronization_count": 0,
-            "implementation_sha256": "734cff6aabe3964690ee6ccfa3bc5c3f9f88f2bc7184ffc9390a06b5b903e6b5",
+            "implementation_sha256": "2ce98ebd46cab554fc38e81a099935eafcf4a93cf1059a3d86c64fb498fcdd61",
             "initial_residual_l2": 14235465635.32259,
             "iterations": 497,
             "magnetic_energy_j": 0.23199124574984153,
@@ -4576,7 +4576,7 @@
           }
         },
         "role": "backend_parity_cpu",
-        "run_sha256": "0c3b2282d49acbe4582e9169d7574d391b61265d9c0610ac2d85145f9f0703ad",
+        "run_sha256": "a37ce066a61899104d0222a51729aa54a6729ad21a49c74fc10ec64693e27749",
         "solver_config_identity_sha256": "31c52d783dfc2bfddb345f85b519590ca0e8fd00ff41c3e03c01d66e7ef8b982",
         "study_id": "parity-cpu"
       },
@@ -4585,10 +4585,10 @@
         "config_sha256": "3605e8d83168d8d2032ee68ab1ee56a359b40384a2ca51ac5a35775395c8a670",
         "design_geometry_sha256": "f74de926f7e97526ddae71250c6e132e72781cee27f2b73fc776200d952a09e4",
         "domain_sha256": "f8a3fe3bda1df40c1672d1cf7d7d86ffe6e2318585a3712dc0553d7f8d5ff995",
-        "evidence_implementation_sha256": "d229f62d7ba6289646291d925f404785ab879b91f59185a91a90c327e92966b8",
+        "evidence_implementation_sha256": "ef17d1618a934bd1038e24ead341a519dcf365f8f54f1d360afbfedf4bf908db",
         "geometry_sha256": "66e033e98aa2dc98af96d4d7072218c4b298839c784a44ee66621e29a58a4f6f",
         "grid_sha256": "049bd6de3a2fa3b127e0745b5352321af2e28379deb1e02d1badbf6f598d9161",
-        "implementation_sha256": "dc988f4b01648e825ac7a1934b8ddca88ad53d1fa5859c8471e1dfcec745cd0b",
+        "implementation_sha256": "6ced73daca60f883440d9f1a4287549ecd2cb8335c138e0fb121b319c0038d2f",
         "material_registry_sha256": "8bc444620b9634886220ffa000d2cb2af91158139b7ce9faa35189ec5fc6c423",
         "material_sha256": "69f099546b95ae9387895eb503408a8b0fe6140faecbd552da59fbcb51be4601",
         "problem_sha256": "e10dec8cee81d088fcddbd6df1c8830e65af9075b410bf2077ba7787901e373f",
@@ -4600,7 +4600,7 @@
             "energy_balance_relative": 2.39281232582009e-16,
             "final_true_residual_l2": 11.521395687104409,
             "host_synchronization_count": 25,
-            "implementation_sha256": "dc988f4b01648e825ac7a1934b8ddca88ad53d1fa5859c8471e1dfcec745cd0b",
+            "implementation_sha256": "6ced73daca60f883440d9f1a4287549ecd2cb8335c138e0fb121b319c0038d2f",
             "initial_residual_l2": 14235465635.32257,
             "iterations": 500,
             "magnetic_energy_j": 0.23199124574984142,
@@ -5017,7 +5017,7 @@
           }
         },
         "role": "backend_parity_cuda",
-        "run_sha256": "e79a712149050a2e3702b89c286c32286cde7b1bd6bd736c7cc57c3909af579a",
+        "run_sha256": "8f412248bb13c6a9a6619864068aebe08fccc3f347ff3e2120c750ebb5c77e01",
         "solver_config_identity_sha256": "31c52d783dfc2bfddb345f85b519590ca0e8fd00ff41c3e03c01d66e7ef8b982",
         "study_id": "parity-cuda"
       }
@@ -5141,7 +5141,7 @@
         "minimum_effective_feature_cells": 1.0791366906474822,
         "padding_characteristic_lengths": 3.0,
         "role": "base",
-        "run_sha256": "be7698ddce44b75eddbe38d38996f4582ad97d29a89ca20aec586c2c3af38e32",
+        "run_sha256": "6f4ff278f9ae43be470be7f5fedb552b34386cb8aa9dd4b7cc3784c0f05c0a07",
         "study_id": "base"
       },
       {
@@ -5165,7 +5165,7 @@
         "minimum_effective_feature_cells": 1.0791366906474822,
         "padding_characteristic_lengths": 4.516666666666667,
         "role": "domain_expansion",
-        "run_sha256": "85d6293d7acc68341d5b0a4423113eb505896d0a0c78742a4461b27f6ee493df",
+        "run_sha256": "90c8ed287db3b4d199540b69bf188c0f36eeb068a5f8e29c92bd5532b6c93efe",
         "study_id": "domain-1"
       },
       {
@@ -5189,7 +5189,7 @@
         "minimum_effective_feature_cells": 1.0791366906474822,
         "padding_characteristic_lengths": 6.785772357723577,
         "role": "domain_expansion",
-        "run_sha256": "ad634864261e95f4d9088466f8df12acb76d981de0b903669b544a665581e28e",
+        "run_sha256": "1350730390723faf745f8c241f2c8f592733c2915f2857bc49fc3bf0ab1f4ef5",
         "study_id": "domain-2"
       },
       {
@@ -5213,7 +5213,7 @@
         "minimum_effective_feature_cells": 1.3489208633093526,
         "padding_characteristic_lengths": 3.0,
         "role": "mesh_refinement",
-        "run_sha256": "26cc5bc9feaf85a4e7c2750b22e7a25ae2b67239e1507f6ca868ed71e2f21ab2",
+        "run_sha256": "f12fe624b4007d004f690fc0cfb53085a730ab8d946bf2d4d65f9a821a8ca9c5",
         "study_id": "mesh-fine"
       },
       {
@@ -5237,7 +5237,7 @@
         "minimum_effective_feature_cells": 1.4928057553956837,
         "padding_characteristic_lengths": 3.0,
         "role": "mesh_refinement_2",
-        "run_sha256": "586eb5bc8d7682480fcdb5581905cb56b0cb8494ca67b169b6c78bcb72adc54b",
+        "run_sha256": "23c0700485835f682ee64abe0e1d8dfc1234c7cd508aa8e1762fa40e08604f33",
         "study_id": "mesh-third"
       },
       {
@@ -5261,7 +5261,7 @@
         "minimum_effective_feature_cells": 1.0791366906474822,
         "padding_characteristic_lengths": 2.9854166666666666,
         "role": "grid_alignment",
-        "run_sha256": "173c1325765020dc8f4e2f81d66b80b95c2ce62a6dedbe0d9f09b77ba9927357",
+        "run_sha256": "44ecb86521177d791b304b1bb0aec2374f49d61d0e7d2267d3c07c792605a402",
         "study_id": "alignment-1"
       },
       {
@@ -5285,7 +5285,7 @@
         "minimum_effective_feature_cells": 1.0791366906474822,
         "padding_characteristic_lengths": 3.0,
         "role": "model_form",
-        "run_sha256": "67e8f937070695b4c545cc5e90d02319ef2d8044e51c03156ecfe21af1625785",
+        "run_sha256": "c86affd50ae659c8b7619a1e4be750151db28758e92ec50adb1f7df55bee8291",
         "study_id": "equivalent-base"
       },
       {
@@ -5309,7 +5309,7 @@
         "minimum_effective_feature_cells": 1.3489208633093526,
         "padding_characteristic_lengths": 3.0,
         "role": "model_form",
-        "run_sha256": "84ea916a1f99d0c5b02b5f967095060d733dd379105694f4d4eff358c0869411",
+        "run_sha256": "c95b4f94a7d9d1bad3251f77debbfcf661b29339c205b78b7083ad625a2b8d7f",
         "study_id": "equivalent-fine"
       },
       {
@@ -5333,7 +5333,7 @@
         "minimum_effective_feature_cells": 3.508771929824562,
         "padding_characteristic_lengths": 1.0,
         "role": "backend_parity_cpu",
-        "run_sha256": "0c3b2282d49acbe4582e9169d7574d391b61265d9c0610ac2d85145f9f0703ad",
+        "run_sha256": "a37ce066a61899104d0222a51729aa54a6729ad21a49c74fc10ec64693e27749",
         "study_id": "parity-cpu"
       },
       {
@@ -5357,7 +5357,7 @@
         "minimum_effective_feature_cells": 3.508771929824562,
         "padding_characteristic_lengths": 1.0,
         "role": "backend_parity_cuda",
-        "run_sha256": "e79a712149050a2e3702b89c286c32286cde7b1bd6bd736c7cc57c3909af579a",
+        "run_sha256": "8f412248bb13c6a9a6619864068aebe08fccc3f347ff3e2120c750ebb5c77e01",
         "study_id": "parity-cuda"
       }
     ],
@@ -5371,14 +5371,14 @@
     ]
   },
   "anchors": {
-    "base_run_sha256": "be7698ddce44b75eddbe38d38996f4582ad97d29a89ca20aec586c2c3af38e32",
+    "base_run_sha256": "6f4ff278f9ae43be470be7f5fedb552b34386cb8aa9dd4b7cc3784c0f05c0a07",
     "config_sha256": "3605e8d83168d8d2032ee68ab1ee56a359b40384a2ca51ac5a35775395c8a670",
     "design_geometry_sha256": "f74de926f7e97526ddae71250c6e132e72781cee27f2b73fc776200d952a09e4",
     "domain_sha256": "b10c5abbf2a36933bda1fdc6d7fafab5c1a02b7f52119cc4f069c81237cbd3f3",
-    "evidence_implementation_sha256": "d229f62d7ba6289646291d925f404785ab879b91f59185a91a90c327e92966b8",
+    "evidence_implementation_sha256": "ef17d1618a934bd1038e24ead341a519dcf365f8f54f1d360afbfedf4bf908db",
     "geometry_sha256": "66e033e98aa2dc98af96d4d7072218c4b298839c784a44ee66621e29a58a4f6f",
     "grid_sha256": "a6a9b95dc6d046f40393425624d6a548947b1534303be4bb04a8097e3a004bd1",
-    "implementation_sha256": "dc988f4b01648e825ac7a1934b8ddca88ad53d1fa5859c8471e1dfcec745cd0b",
+    "implementation_sha256": "6ced73daca60f883440d9f1a4287549ecd2cb8335c138e0fb121b319c0038d2f",
     "magnetics_sha256": "69f099546b95ae9387895eb503408a8b0fe6140faecbd552da59fbcb51be4601",
     "material_registry_sha256": "8bc444620b9634886220ffa000d2cb2af91158139b7ce9faa35189ec5fc6c423",
     "problem_id": "geometry-compact-high-gradient-stack-v1-recoil_remanence_constitutive",
@@ -5394,7 +5394,7 @@
     "final_true_residual_l2": 0.5220400944772198,
     "free_current_represented_a": 0.0,
     "host_synchronization_count": 19,
-    "implementation_sha256": "dc988f4b01648e825ac7a1934b8ddca88ad53d1fa5859c8471e1dfcec745cd0b",
+    "implementation_sha256": "6ced73daca60f883440d9f1a4287549ecd2cb8335c138e0fb121b319c0038d2f",
     "initial_residual_l2": 2371930020.317046,
     "iterations": 350,
     "magnetic_energy_j": 5.817385462871953,
@@ -77276,7 +77276,7 @@
   "integrity": {
     "algorithm": "sha256",
     "canonicalization": "json-sort-keys-compact-utf8-v1",
-    "payload_sha256": "7579f1602c75cdf6773b24279dd7621dd9c290dd9c2205b875da0962e5c7ed67"
+    "payload_sha256": "a6b69d03bde3626f31858b2b914ef8b6d2d9bdc26a3925371b7914a300f60da0"
   },
   "limitations": [
     "Linear recoil PM and linear pole/yoke permeability only.",

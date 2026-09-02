@@ -1,21 +1,21 @@
 {
   "acceptance_status": "SCREENING_NOT_ACCEPTED",
   "anchors": {
-    "base_run_sha256": "f7b4185b93befa35ae359598bc2cc6ccb3289089d39e6286ae9a66445be08a37",
+    "base_run_sha256": "0a7c07af02de32676162bd0f61a57ac7727c2bae31429c55933539ee9f35942f",
     "config_sha256": "3605e8d83168d8d2032ee68ab1ee56a359b40384a2ca51ac5a35775395c8a670",
     "design_geometry_sha256": "0fe66db29e239602efa8203ed5ed995e9e96c83078cf552e887be2121ff6883a",
     "domain_sha256": "9a96b3ab3d4e4739da23c9cab290d17a181098357397260ea0eacdbdc245ad72",
-    "evidence_implementation_sha256": "d229f62d7ba6289646291d925f404785ab879b91f59185a91a90c327e92966b8",
+    "evidence_implementation_sha256": "ef17d1618a934bd1038e24ead341a519dcf365f8f54f1d360afbfedf4bf908db",
     "geometry_sha256": "2524848ff176d7a42b93286c3c6d27c99ce3ccdcf0084d30c0c9ffbfd38a4227",
     "grid_sha256": "13d4646b914ddcf6279361a96d37beb567814f5b37bfb3b3ee6300b6a7999909",
-    "implementation_sha256": "dc988f4b01648e825ac7a1934b8ddca88ad53d1fa5859c8471e1dfcec745cd0b",
+    "implementation_sha256": "6ced73daca60f883440d9f1a4287549ecd2cb8335c138e0fb121b319c0038d2f",
     "magnetics_sha256": "60972ccf7cf2908827e06ebd29f63db00773ae0d0828fdcd785dc3cf6f389be0",
     "material_registry_sha256": "8bc444620b9634886220ffa000d2cb2af91158139b7ce9faa35189ec5fc6c423",
     "problem_id": "geometry-historical-envelope-baseline-v1-recoil_remanence_constitutive",
     "problem_sha256": "47d4b8cc3a4f4f2679b2b4707f33d9950576aa5a1f9d3f1f2ae1e5c2fb614b1f",
     "solver_config_identity_sha256": "31c52d783dfc2bfddb345f85b519590ca0e8fd00ff41c3e03c01d66e7ef8b982"
   },
-  "artifact_payload_sha256": "d91f4dd8b86251ec4294948b7df4e8a700ec362e45dc920752fca4592039a860",
+  "artifact_payload_sha256": "dc1ab5ed462fd34271db64866fb45097767ce64c0f0129bcae69591a68244dcf",
   "classification": "hypothetical_design_simulation_not_validated_hardware_prediction",
   "field_map": {
     "b_magnitude_t": [
@@ -3784,7 +3784,7 @@
   "integrity": {
     "algorithm": "sha256",
     "canonicalization": "json-sort-keys-compact-utf8-v1",
-    "payload_sha256": "1dc7ae1c29f817b8915191ce34abad30264acee20257abc842978ab484f84aed"
+    "payload_sha256": "4dc406ee7d4421f3c33cdb926446df32dfd74d0dc68c7937b515d220b7498ce1"
   },
   "model_level": "L1b",
   "schema_version": "cft_revival.material_fields.viewer/1.4.0",

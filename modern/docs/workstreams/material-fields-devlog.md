@@ -268,3 +268,36 @@ divergent `da7ef3f3660f1b2e6f6ea3ac9840bed23b1f177efc9168f75d3c90f5c5f12966`,
 historical `d91f4dd8b86251ec4294948b7df4e8a700ec362e45dc920752fca4592039a860`,
 and manifest
 `32ce64983a03fc7278be1ceaa7bf20fb73e9b04926786530a1801148893ba134`.
+
+## 2026-09-03 — Implementation digests re-bound after the LF pin
+
+- Defect: after the repo-wide `eol=lf` pin, strict validation refused all
+  three v1.4 artifacts with `raw run hash binding failed` (four failures in
+  `tests/material_fields/test_spec_ledgers.py`). The recorded
+  `implementation_sha256` / `evidence_implementation_sha256` values were the
+  SHA-256 of the **CRLF** working-tree bytes of the seven bound source files at
+  the generating commit `8603a905`; Git stores LF and the digests differ.
+- Audit (`examples/material_fields/POSTHOC_AUDIT.md`,
+  `audit_implementation_eol.py`, `tests/material_fields/test_posthoc_eol_audit.py`):
+  hashing the `8603a905` blobs with `\n` → `\r\n` reproduces all three
+  recorded digests exactly; the live source is those blobs byte-for-byte; every
+  artifact was byte-exact against its sidecar and payload seal. The source
+  content that produced the evidence is unchanged.
+- Resolution: a CRLF tolerance cannot live in verification code here because
+  `acceptance.py`, `replay.py` and `numerics.py` are themselves hashed. Ran
+  `refresh_artifact_metadata.py` once (strict replay of all 30 embedded runs
+  passed). Structural diff before/after: only `implementation_sha256`,
+  `evidence_implementation_sha256`, `run_sha256`, `base_run_sha256`,
+  `cpu_run_sha256`/`cuda_run_sha256`, payload seals and manifest file/payload
+  digests changed; raw solutions, problems, diagnostics, all 18 gates and
+  summaries are identical. A second run reproduced the same bytes.
+- Fixed `refresh_artifact_metadata.write` to emit sidecars with
+  `newline="\n"` (it wrote CRLF on Windows, the orbit_mc 1.6 pattern).
+- New payload digests: compact
+  `a6b69d03bde3626f31858b2b914ef8b6d2d9bdc26a3925371b7914a300f60da0`,
+  divergent `cf703753108f36a0d175e0540262b367d034080141634a062c8820c582194a06`,
+  historical `dc1ab5ed462fd34271db64866fb45097767ce64c0f0129bcae69591a68244dcf`,
+  manifest `eba362d8b18f46f8e5254eceecb4092c0e12b35673a011014a3751c43113ae7c`.
+  Recorded implementation digests are now the LF digests `ef17d161…`
+  (evidence), `6ced73da…` (warp), `2ce98ebd…` (python). Status remains
+  `SCREENING_NOT_ACCEPTED`; `tests/material_fields`: 40 passed.
