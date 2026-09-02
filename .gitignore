@@ -23,6 +23,7 @@ htmlcov/
 .eggs/
 dist/
 .venv/
+/.venv-sota/
 venv/
 env/
 
