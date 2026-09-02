@@ -100,3 +100,18 @@ modern/experiments/pic2d_cft_snapshot_v1/results/**/checkpoint-latest.*
 !modern/experiments/pic2d_cft_snapshot_v2/results/**/series.npz
 modern/experiments/pic2d_cft_snapshot_v2/results/**/checkpoint-*.npz
 modern/experiments/pic2d_cft_snapshot_v2/results/**/checkpoint-latest.*
+# PIC-2D steady-state v1 (no-ignition reference): summary, run state, status
+# log, maps/series npz and the final checkpoint metadata are tracked; the live
+# checkpoint directory, particle arrays, series.jsonl (42 MB, same content as
+# series.npz), logs and pid files are not.
+!modern/experiments/pic2d_cft_steady_state_v1/results/
+!modern/experiments/pic2d_cft_steady_state_v1/results/maps.npz
+!modern/experiments/pic2d_cft_steady_state_v1/results/series.npz
+modern/experiments/pic2d_cft_steady_state_v1/results/checkpoint/
+modern/experiments/pic2d_cft_steady_state_v1/results/checkpoint-tmp/
+modern/experiments/pic2d_cft_steady_state_v1/results/checkpoint-old/
+modern/experiments/pic2d_cft_steady_state_v1/results/checkpoint-final.npz*
+modern/experiments/pic2d_cft_steady_state_v1/results/series.jsonl
+modern/experiments/pic2d_cft_steady_state_v1/results/*.pid
+modern/experiments/pic2d_cft_steady_state_v1/results/*.log
+modern/experiments/pic2d_cft_steady_state_v1/results/*.err
