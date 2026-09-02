@@ -1,0 +1,1 @@
+{"counts":{"assessment_access_count":0,"attempt_count":1,"development_access_count":0,"expensive_operation_count":0,"label_access_count":0,"prebundle_access_count":1},"payload":{},"primary_error":{"message":"detached worktree is not clean","type":"RuntimeError"},"schema_version":"cft-revival.experiment-terminal/1.0.0","secondary_errors":[],"state":"prebundle_failure"}
