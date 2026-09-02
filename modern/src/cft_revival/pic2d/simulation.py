@@ -631,13 +631,26 @@ class Simulation:
         self._last_cumulative = empty_cumulative()
         self._last_energy: float | None = None
         self._last_electrode: tuple[float, float] | None = None
+        self._series_base_step = 0
 
     @property
     def state(self) -> SimulationState:
         return self.backend.export_state()
 
     def load_state(self, state: SimulationState) -> None:
+        """Load a (checkpoint) state and re-base the interval bookkeeping on it.
+
+        The dynamical state resumes bitwise; the series intervals restart here, so
+        the first record after a resume reports currents over the interval since
+        the checkpoint (not since step 0) and a zero interval residual / electrode
+        work (no previous energy sample to difference against).
+        """
+
         self.backend.load_state(state)
+        self._last_cumulative = {key: float(state.cumulative.get(key, 0.0)) for key in CUMULATIVE_KEYS}
+        self._last_energy = None
+        self._last_electrode = None
+        self._series_base_step = int(state.step)
 
     def run(self, steps: int, *, accumulate_from_step: int | None = None, progress: Any = None) -> SimulationState:
         """Advance ``steps`` cycles; accumulate diagnostics from ``accumulate_from_step`` on."""
@@ -679,7 +692,7 @@ class Simulation:
         cumulative = sample["cumulative"]
         u_e = field_energy_j(masks, phi)
         step = int(sample["step"])
-        interval_steps = step - (self.series[-1].step if self.series else 0)
+        interval_steps = step - (self.series[-1].step if self.series else self._series_base_step)
         interval = max(interval_steps, 1) * config.dt_s
         current_unit = ELEMENTARY_CHARGE_C * config.macro_weight / interval
         delta = {key: cumulative[key] - self._last_cumulative[key] for key in CUMULATIVE_KEYS}

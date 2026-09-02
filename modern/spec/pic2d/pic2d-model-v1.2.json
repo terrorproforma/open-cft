@@ -1,0 +1,85 @@
+{
+  "schema": "cft.pic2d.model.v1.2",
+  "package": "cft_revival.pic2d",
+  "version": "0.2.1",
+  "supersedes": "modern/spec/pic2d/pic2d-model-v1.1.json (time step, gates and artifact contracts unchanged; this file records the operating point sized from measured kinetics and the resumable steady-state runner)",
+  "model_level": "L3-development",
+  "status": "development-screening-verified-numerics-not-validated-physics",
+  "what_changed": [
+    "operating point sized from the v2 kinetic loss fraction and ion residence time, not from the 0-D Bohm bound",
+    "single-case detached, checkpointed, resumable runner with a continuously evaluated plateau criterion (experiments/pic2d_cft_steady_state_v1)",
+    "Simulation.load_state re-bases the interval bookkeeping (cumulative tallies, interval step base, energy/electrode samples) so a resumed session reports correct interval currents"
+  ],
+  "kinetic_sizing": {
+    "source": "modern/experiments/pic2d_cft_snapshot_v2/results/fine-w6e4 (cross-check fine-w3e4), 30-sample (9 ns) running means of the 200-step series",
+    "measured_at_n_g_1e20_3ma": {
+      "loss_fraction_f_L_over_S": {"0.25us": 0.30, "0.5us": 0.35, "0.75us": 0.31, "1.0us": 0.30, "1.25us": 0.33, "1.5us": 0.35, "trailing_half_slope_per_us": "0.03 (w3e4) - 0.07 (w6e4)", "reading": "f is flat, not approaching 1: source and loss both scale with the plasma inventory"},
+      "tau_i_eff_s": {"0.25us": 1.06e-6, "0.5us": 1.53e-6, "0.75us": 1.99e-6, "1.0us": 2.40e-6, "1.25us": 2.41e-6, "1.5us": 2.40e-6, "definition": "N_i / L (ions per unit ion loss rate); it saturates at 2.4 us once the first ions born at t = 0 have reached the boundaries, i.e. this IS the kinetic ion residence time (the Bohm/free-fall estimate used in v2 was 1.0 us)"},
+      "nu_iz_per_s": 1.2e6,
+      "nu_iz_definition": "S / N_e, ionisations per plasma electron per second (includes the beam contribution, so it is an upper estimate of the plasma-electron rate); <sigma v>_eff = nu_iz / n_g = 1.2e-14 m^3/s at the density-weighted <T_e> = 6.4 eV",
+      "nu_iz_tau": 2.9,
+      "growth": "dN_i/dt = S - L = (nu_iz - 1/tau) N: predicted 8e5 s^-1, observed exponential growth of N_i over the trailing half 9.0e5 s^-1 (e-folding 1.1 us) in both fine cases - the v2 plateau failure was a genuine avalanche (nu_iz tau > 1), not a transient",
+      "beam_driven_ionisation_a_per_s": 5.0e16,
+      "beam_definition": "S - nu_iz N_e before the avalanche (t = 0.25 us): ~2.7 ionisations per injected 300 V electron; scales as n_g x I_inj"
+    },
+    "equilibrium_model": {
+      "equation": "N_eq = a tau / (1 - nu_iz tau), a = beam-driven ionisation rate (prop. to n_g I_inj), nu_iz prop. to n_g at fixed T_e, tau = 2.4 us assumed unchanged (set by the 300 V potential structure)",
+      "runaway_threshold_n_g_per_m3": 3.4e19,
+      "at_5e19": "nu_iz tau = 1.45: still runaway unless T_e falls by ~30 % - the user's 5e19 mark is not a plausible plateau point with static neutrals",
+      "table_per_m3": {"n_g=2e19,I=3mA": 1.65e17, "n_g=2e19,I=2mA": 1.1e17, "n_g=1.5e19,I=3mA": 9.3e16, "n_g=1.5e19,I=2mA": 6.2e16},
+      "sensitivity": "at n_g = 1.5e19, 3 mA: n_eq = 9.3e16 (rate coefficient as measured), 1.5e17 (1.5x, hotter electrons at lower collisionality), 4.2e17 (2x); the fail-closed gate at 5.6e18 node density covers the remaining uncertainty",
+      "approach_time_constant_s": "tau / (1 - nu_iz tau) = 4.3 us at 1.5e19 (5.7 us at 2e19); the 5 % / trailing-20 % plateau rule fires at ~2.8 time constants for an exponential approach"
+    }
+  },
+  "operating_point_v1_2": {
+    "anode_potential_v": 300.0,
+    "exit_plane_potential_v": 0.0,
+    "neutral_density_per_m3": 1.5e19,
+    "electron_injection_current_a": 3.0e-3,
+    "electron_injection_temperature_ev": 2.0,
+    "seed_plasma_density_per_m3": 1.0e16,
+    "regime": "sub-critical, beam-sustained discharge (nu_iz tau = 0.44 at the measured rate): the plasma density is set by the injected current, not by an ionisation-loss balance; a real CFT at 0.1-1 A and n_g ~ 1e20-1e21 is super-critical and self-limits through neutral depletion and T_e, neither of which is modelled here",
+    "why_below_the_5e19_mark": "n_g >= 3.4e19 has no static-neutral equilibrium at the observed T_e; 1.5e19 leaves a 2.3x margin on the rate coefficient and a 4.3 us approach time so the plateau is reachable inside the 12 h wall budget"
+  },
+  "resolution_budget_v1_2": {
+    "grid": {"radial_cells": 60, "axial_cells": 480, "dr_um": 33.3, "dz_um": 50.0},
+    "n_max_per_m3": 4.0e17,
+    "n_eq_projected_per_m3": 9.3e16,
+    "n_eq_over_n_max": 0.23,
+    "t_e_for_lambda_d_ev": 8.0,
+    "lambda_d_min_um": 33.2,
+    "max_cell_over_lambda_d_at_n_max": 1.50,
+    "cell_over_lambda_d_at_n_eq": 0.72,
+    "dt_s": 1.5e-12,
+    "omega_pe_dt_at_n_max": 0.0535,
+    "omega_pe_dt_at_n_eq": 0.026,
+    "omega_ce_dt_at_b_max_0_291_t": 0.0769,
+    "gate_trip_node_density_per_m3": 5.6e18,
+    "ion_subcycle": 8,
+    "macro_weight": 3.0e4,
+    "macro_particles_at_n_eq": "2.1 M (e- + Xe+) at 9.3e16; 3.4 M at 1.5e17",
+    "ppc_at_n_eq_r_1mm": 33,
+    "ion_transit_time_s": 2.4e-6,
+    "steps_per_transit": 1600000,
+    "min_transits_before_plateau": 3,
+    "expected_plateau": "~2.8 x 4.3 us = 12 us = 8.0e6 steps; at 2-3 ms/step 4.5-6.7 h"
+  },
+  "steady_state_runner": {
+    "module": "experiments/pic2d_cft_steady_state_v1/run.py",
+    "checkpoint": "checkpoint/checkpoint-latest.{json,npz} rewritten by directory swap (tmp -> live, old kept until the swap completes) after every <= 40000-step chunk; resume loads it (hash-bound to config, field, cross sections, code identity) and continues bitwise",
+    "status": "status.jsonl: one line per 200-step sync with step, time_s, electrons, ions, discharge_a, exit_ion_beam_a, n_e_peak_node_per_m3 (from the peak omega_pe dt), n_e_mean_per_m3, t_e_mean_ev, omega_pe_dt_max, phi_max_v, wall_seconds_total (cumulative over sessions), ms_per_step, latest plateau evaluation; 'event' lines mark resume/stop",
+    "series": "series.jsonl holds the full SeriesRecord per sync and is truncated to the checkpoint step on resume; series.npz is rebuilt from it at the stop",
+    "plateau": "linear fit over the trailing plateau_window_fraction (0.2) of the elapsed simulated time for I_d and N_e; drift = slope x window / |mean| < 0.05 for both, and >= 3 ion transit times (2.4 us each) elapsed; evaluated after every chunk",
+    "stops": ["plateau_reached_after_min_transit_times", "wall_clock_budget_reached (12 h cumulative)", "runtime_stability_gate_stopped_run", "target_steps_reached (--max-steps)"],
+    "on_stop": "summary.json, series.npz, maps.npz (last completed 400000-step window, or the current one if >= half full), checkpoint-final.*; exit 0",
+    "resume_caveat": "the interval ledger restarts at the resume step: the first record of a session has zero interval residual and electrode work, and the map window restarts"
+  },
+  "tests": [
+    "tests/pic2d/test_pic2d_steady_state_runner.py: plateau needs both drifts and 3 transits; exponential approach declared at 3.0-4.6 tau; ramp never, noisy constant yes; one status line and series record per sync; checkpoint per chunk; summary on stop; interrupted+resumed run equals the uninterrupted run bitwise (checkpoint-final arrays, counts, interval currents) with a stray post-checkpoint record dropped; Simulation.load_state re-bases the interval bookkeeping"
+  ],
+  "unchanged_simplifications": [
+    "static uniform neutral background (at 1.5e19 and S ~ 1.3e16 s^-1 the depletion is ~0.25 % per us; ~3 % over a 12 us run)",
+    "no ion-neutral elastic or charge-exchange collisions",
+    "no secondary emission; Dirichlet exit plane; prescribed B; electrostatic; momentum-conserving scheme; ions every 8 steps"
+  ]
+}

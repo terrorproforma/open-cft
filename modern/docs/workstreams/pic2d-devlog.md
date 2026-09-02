@@ -233,3 +233,87 @@
   anode; protocol v2 not edited after the runs (its hash is bound into every
   summary); no preregistration; nothing outside `pic2d`, its experiments,
   tests, spec and dashboard touched.
+
+## 2026-09-03 — phase 3: operating point v1.2 and the steady-state runner
+
+### Step 1 — sizing from the measured kinetics (`fine-w6e4`, cross-check `fine-w3e4`)
+
+- Time-resolved (30-sample = 9 ns running means of the 200-step series):
+
+| t (µs) | S (s⁻¹) | L = walls+anode+exit (s⁻¹) | f = L/S | N_i | τ_i,eff = N_i/L (µs) | mean n (m⁻³) |
+|---|---|---|---|---|---|---|
+| 0.25 | 9.0e16 | 2.7e16 | 0.30 | 2.8e10 | 1.06 | 8.2e16 |
+| 0.50 | 7.9e16 | 2.7e16 | 0.35 | 4.2e10 | 1.53 | 1.2e17 |
+| 0.75 | 9.1e16 | 2.8e16 | 0.31 | 5.6e10 | 1.99 | 1.6e17 |
+| 1.00 | 1.01e17 | 3.0e16 | 0.30 | 7.3e10 | 2.40 | 2.1e17 |
+| 1.25 | 1.16e17 | 3.8e16 | 0.33 | 9.2e10 | 2.41 | 2.7e17 |
+| 1.50 | 1.35e17 | 4.7e16 | 0.35 | 1.12e11 | 2.40 | 3.2e17 |
+
+- f does not approach 1: trailing-half slope 0.03 (w3e4) – 0.07 (w6e4) per µs.
+  τ_i,eff rises while the first ions are in flight and saturates at 2.4 µs
+  after 1 µs — the kinetic ion residence time (v2 assumed 1.0 µs from a
+  Bohm/free-fall argument). Per-electron ionisation frequency ν_iz = S/N_e =
+  1.2e6 s⁻¹ (⟨σv⟩_eff = 1.2e-14 m³/s at ⟨T_e⟩ = 6.4 eV), so ν_iz τ = 2.9 > 1:
+  dN_i/dt = (ν_iz − 1/τ) N_i predicts a growth rate of 8e5 s⁻¹; observed 9.0e5
+  s⁻¹ (e-folding 1.1 µs) in both fine cases. The v2 discharge was
+  super-critical — no static-neutral equilibrium at any density, which is
+  exactly why it grew past the budget.
+- Equilibrium model: the plasma-electron term cannot balance (it scales with
+  N); the beam-driven ionisation a ≈ 5e16 s⁻¹ (S − ν_iz N_e at 0.25 µs, ≈ 2.7
+  ionisations per injected 300 V electron, ∝ n_g I_inj) sustains a
+  sub-critical discharge with N_eq = a τ / (1 − ν_iz τ). ν_iz τ = 1 at n_g =
+  3.4e19 m⁻³; at the 5e19 mark it is still 1.45 (runaway unless T_e drops ~30 %)
+  — so yes, a plateau with static neutrals needs n_g < 5e19. Projection
+  (τ = 2.4 µs held fixed): n_g = 2e19 → 1.65e17 (3 mA) / 1.1e17 (2 mA); n_g =
+  1.5e19 → 9.3e16 (3 mA) / 6.2e16 (2 mA).
+- Chosen v1.2: **n_g = 1.5e19 m⁻³, I_inj = 3 mA at 2 eV, 300 V, Δt = 1.5 ps,
+  k = 8, fine grid 60×480 only, W = 3e4** → ν_iz τ = 0.44 (2.3× margin on the
+  rate coefficient), n_eq ≈ 9.3e16 = 0.23 n_max (1.5e17 / 4.2e17 if the rate
+  coefficient is 1.5× / 2× higher), 2.1 M macro-particles at n_eq (33 ppc at
+  r = 1 mm), approach time constant τ/(1 − ν_iz τ) = 4.3 µs → the 5 %/20 %
+  plateau rule fires at ≈ 2.8 time constants = 12 µs = 8.0 M steps, after the
+  required 3 × 2.4 µs. Budget table: `modern/spec/pic2d/pic2d-model-v1.2.json`
+  and `experiments/pic2d_cft_steady_state_v1/protocol.json`.
+
+### Step 2 — detached resumable runner (`experiments/pic2d_cft_steady_state_v1/run.py`)
+
+- Chunks of ≤ 40 000 steps; after each chunk the checkpoint directory is
+  swapped atomically (`checkpoint-tmp` → `checkpoint`, old copy kept until
+  the swap is done), `run_state.json` records the cumulative wall time and
+  sessions, and the plateau rule is evaluated over all records (`series.jsonl`,
+  reloaded and truncated to the checkpoint step on resume). `status.jsonl` gets
+  one line per 200-step sync (t, steps, N_e, N_i, I_d, I_beam,i, peak-node /
+  mean n_e, ⟨T_e⟩, max ω_pe Δt, wall, ms/step, plateau drifts). Stops: plateau
+  (drift of I_d and N_e < 5 % over the trailing 20 % of elapsed time, ≥ 3
+  transit times), 12 h cumulative wall budget, stability gate, `--max-steps`;
+  all exit 0 after writing `summary.json`, `series.npz`, `maps.npz`,
+  `checkpoint-final.*`.
+- `Simulation.load_state` now re-bases the interval bookkeeping (cumulative
+  tallies, interval step base, energy/electrode samples): before, the first
+  record after a resume divided the interval tallies by the absolute step
+  count (5× too small a current in the test) and differenced the cumulative
+  ledger against zero.
+- Tests `tests/pic2d/test_pic2d_steady_state_runner.py` (8): plateau needs
+  both drifts and 3 transits; an exponential approach is declared at 3.0–4.6 τ;
+  a ramp never, a 15 %-noisy constant yes; one status line and series record
+  per sync, one checkpoint per chunk, summary on stop; interrupted + resumed
+  run equals the uninterrupted run bitwise (final arrays, counts, interval
+  currents) with a stray post-checkpoint record dropped; `load_state`
+  re-basing.
+- Launched detached (`Start-Process python -u -m
+  experiments.pic2d_cft_steady_state_v1.run run -WindowStyle Hidden`, logs
+  `results/run.log|run.err`, PID in `results/run.pid`). After 75 s: 39 200
+  steps, 1.92 ms/step at 0.19 M particles (launch-bound floor), ω_pe Δt max
+  0.044, ⟨T_e⟩ 7.4 eV, I_d 0.06–0.11 mA, N_i > N_e (seed electrons leave
+  first; φ_max 351 V). Results are not committed in this phase.
+- GPU note: `nvidia-smi` reports 100 % utilisation with no compute process
+  (display clients only, ~107 W) before the launch; the steady-state run is the
+  only CUDA compute process.
+
+### Deliberate exclusions (phase 3)
+
+- No coarse grid, no second weight (single case by design); no neutral
+  depletion or ion–neutral collisions (depletion ≈ 0.25 %/µs at 1.5e19);
+  v2 protocol still references a non-existent
+  `operating-point-v1.1.json` (its actual spec is `pic2d-model-v1.1.json`) and
+  is left untouched because its hash is bound into the v2 summaries.

@@ -143,3 +143,71 @@ File policy: `COMMITTED` workstream evidence (`modern/docs/workstreams/pic2d-*`)
   and those steps are in the checkpoint.
 - The ledger residual after electrode work is the scheme's grid heating and is
   reported per case; it is not bounded analytically.
+
+## 2026-09-03 phase 3 (v1.2 sizing, steady-state runner)
+
+### Learnings
+
+- [self] Size the operating point from two measured numbers, not a bound:
+  ν_iz = S/N_e (ionisations per plasma electron per second) and τ_i,eff = N_i/L
+  (ion inventory per unit loss rate). Their product decides everything: ν_iz τ
+  > 1 is an avalanche with no static-neutral equilibrium (v2: 2.9), ν_iz τ < 1
+  is a beam-sustained discharge with N_eq = a τ / (1 − ν_iz τ). A flat loss
+  fraction f = L/S (0.30–0.35 for 1.5 µs) is the signature of the avalanche:
+  both terms scale with the inventory, so f cannot approach 1 by itself.
+- [self] τ_i,eff = N_i/L is only meaningful after the first ions have reached
+  the boundaries: it rose 1.06 → 2.40 µs over the first microsecond and then
+  saturated. Read the plateau of τ, not its early value.
+- [self] The v2 "one ion transit time = 1 µs" was a free-fall estimate; the
+  kinetic residence time is 2.4×. Plateau rules in transit-time units must use
+  the measured value (protocol `budget_v1_2.ion_transit_time_s`).
+- [self] Near threshold N_eq ∝ 1/(1 − ν_iz τ): a 1.5× uncertainty in the rate
+  coefficient (hotter electrons at lower collisionality) moves n_eq from 0.23
+  to 0.37 n_max at ν_iz τ = 0.44 but to > n_max at ν_iz τ = 0.73. Choose the
+  margin from the sensitivity, then let the fail-closed gate cover the rest.
+- [self] Resume correctness is more than the dynamical state: `Simulation`
+  keeps `_last_cumulative`, `_last_energy`, `_last_electrode` and the interval
+  step base outside the checkpoint. `load_state` must re-base them or the first
+  resumed record reports currents over the wrong interval (caught by the
+  bitwise resume test comparing interval currents, not just final arrays).
+- [self] Atomic checkpoint replacement on Windows: write into `checkpoint-tmp`,
+  rename live → `checkpoint-old`, rename tmp → live, delete old; the resume
+  path accepts either `checkpoint` or `checkpoint-old` so a crash inside the
+  swap still resumes.
+- [tool] `Set-Content -NoNewline` on a pipeline of lines concatenates them into
+  one line — it destroyed an untracked `run.py` in phase 2. Guardrail: never
+  rewrite a tracked (or not-yet-committed) source file from a PowerShell
+  pipeline; edit with the file tools, or write a temp `.py` and run it; commit
+  WIP before any shell-side rewrite so `git restore` exists.
+- [tool] `Start-Process python -ArgumentList ... -WindowStyle Hidden
+  -RedirectStandardOutput/-RedirectStandardError -WorkingDirectory $PWD
+  -PassThru` detaches cleanly; pass `-u` so the log is unbuffered, set
+  `$env:PYTHONPATH` before (inherited), and record `$p.Id`. The process also
+  writes its own `run.pid`.
+- [tool] `nvidia-smi` shows 100 % utilisation on this WDDM host from display
+  clients alone (Chrome/Electron apps, 107 W); "GPU otherwise idle" must be
+  checked with `--query-compute-apps` / `pmon` (type C), not the utilisation
+  figure.
+- [tool] Append-only `.jsonl` logs should not use `allow_nan=False`: a NaN in
+  one diagnostic must not end a 12 h run. Canonical artifacts keep the strict
+  writer.
+
+### What worked
+
+- Extracting S(t), L(t), f(t) and τ(t) from `series.npz` took one script and
+  gave a mechanism (avalanche) plus a quantitative design rule in < 30 min.
+- Testing the runner with a tiny CPU protocol (12×96, 20-step syncs, 40-step
+  chunks) made the cadence, resume and stray-record cases run in 2 s.
+
+### Open risks
+
+- The projected n_eq assumes τ_i,eff and the beam-driven term scale as stated;
+  if the electrons run hotter at n_g = 1.5e19 the run may still approach or
+  exceed n_max (the gate protects the numerics, not the budget).
+- A resume restarts the map window and the interval ledger; a run with many
+  resumes has a piecewise ledger (each session's first record has zero
+  residual/electrode work) — reported in `summary.json.ledger.note`.
+- The plateau rule is evaluated on I_d (noisy, ~15 % per 200 steps) and N_e;
+  with ~8000 samples in the trailing window the drift noise is ~0.6 %, so a
+  false plateau from noise is unlikely, but a slow drift below 5 %/2.4 µs
+  would be accepted as "plateau" — the summary reports the drifts.
