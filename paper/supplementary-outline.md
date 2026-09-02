@@ -37,6 +37,20 @@
 - Rejected/failed-point accounting.
 - Explicit statement that the bounds are hypothetical.
 
+## S4b. Collisionless test-particle wall-loss campaign v4
+
+- Typed campaign manifest `paper/evidence/manifests/wall-loss-v4.json` and the
+  hash-bound evidence file `paper/evidence/wall-loss-v4.json`.
+- Preregistration commit, results commit, post-hoc audit, and the sealed
+  results bundle with its manifest, lock, transitions and per-orbit artifacts.
+- Frozen protocol: launch strata, field maps, timestep policies, estimator,
+  binding gates, shakedown disclosure, prior-campaign disclosure.
+- Per-case and per-cell tables regenerated from the bundle; convergence
+  chains; energy, endpoint, manufactured-order and CPU/CUDA parity facts.
+- The sealed publication boundary and classification string, verbatim.
+- Explicit statement that the pooled fraction is an equal-weight design
+  average and that no mirror-formula estimate is published.
+
 ## S5. Controlled performance benchmark
 
 This supplement remains closed until a benchmark manifest records kernel

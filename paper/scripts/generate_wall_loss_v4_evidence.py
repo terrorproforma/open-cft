@@ -7,7 +7,8 @@ committed results revision, and writes:
 * ``paper/evidence/wall-loss-v4.json`` — every macro value with the artifact
   path, JSON pointer, formatter and artifact SHA-256 it was read from;
 * ``paper/generated/wall-loss-v4.tex`` — ``\\newcommand`` macros and two
-  generated tables for the draft results subsection;
+  generated tables (each wrapped in ``\\ArtifactClaim``) for the admitted
+  results subsection ``paper/sections/wall-loss-v4.tex``;
 * ``paper/generated/wall-loss-v4.provenance.json`` — generator/input/output
   hashes in the same shape as the L0 table sidecar.
 
@@ -38,6 +39,19 @@ SECTION_PATH = Path("paper/sections/wall-loss-v4.tex")
 
 RESULTS_COMMIT_SHA = "6922a3cf97d261735266aa1a5a0c0c9683e021ca"
 PREREGISTRATION_COMMIT_SHA = "757e365f9f667620c7610663574294c3b71e1f51"
+
+# Admission into the manuscript (paper/evidence/claims.json, result-gates.json,
+# figure-table-contract.json).  The table artifact is authorized by one claim of
+# class quantitative-generated-table; the prose claims live in claims.json and
+# are bound to the manifest below.
+MANIFEST_ID = "WALL-LOSS-V4-20260902-4608-V1"
+MANIFEST_PATH = Path("paper/evidence/manifests/wall-loss-v4.json")
+GATE_ID = "GATE-WALL-LOSS-V4"
+ARTIFACT_ID = "TAB-WALL-LOSS-V4"
+ARTIFACT_CLAIM_ID = "CLM-014"
+PROSE_CLAIM_IDS = ("CLM-012", "CLM-013", "CLM-015", "CLM-016", "CLM-017")
+SECTION_BINDING = "\\input{sections/wall-loss-v4.tex}"
+GENERATED_BINDING = "\\input{generated/wall-loss-v4.tex}"
 CASES = (
     "primary-N", "primary-2N", "primary-4N",
     "refined-N", "refined-2N", "refined-4N",
@@ -600,6 +614,14 @@ def build(repo: Path) -> tuple[dict[str, Any], str]:
         "git commit whose tree holds the results manifest blob (verified with rev-parse against the working tree)",
         [{"artifact": "manifest.json", "pointer": ""}],
     )
+    m.add_derived(
+        "WlfToleratedSidecars", len(bundle.tolerated), "int",
+        "manifest entries that differ from the checkout by end-of-line bytes only (the disclosed sidecar defect)",
+        "count of manifest file entries whose recorded byte_sha256 equals sha256(bytes.replace(LF, CRLF)) and not sha256(bytes)",
+        [{"artifact": "manifest.json", "pointer": "/artifacts"}],
+    )
+    if len(bundle.tolerated) != len(TOLERATED_CRLF_SIDECARS):
+        raise ValueError("tolerated sidecar count differs from the disclosed defect")
     m.add("WlfIntervalMethod", "artifacts/campaign-result.json", "/campaigns/primary-N/wall_hit/method", "text", "interval method identifier")
     if any(campaign["campaigns"][c][k]["method"] != "wilson-95" for c in CASES for k in ("wall_hit", "escaped", "reflected", "incomplete")):
         raise ValueError("interval method is not wilson-95 for every estimand")
@@ -616,7 +638,9 @@ def build(repo: Path) -> tuple[dict[str, Any], str]:
     ]
     for item in m.items:
         lines.append(f"\\newcommand{{\\{item['name']}}}{{{item['value']}}}")
+    artifact_open = f"\\ArtifactClaim{{{ARTIFACT_CLAIM_ID}}}{{{ARTIFACT_ID}}}{{%"
     lines.append("\\newcommand{\\WlfCaseTable}{%")
+    lines.append(artifact_open)
     lines.append("\\begin{table}[ht]")
     lines.append("\\centering")
     lines.append(
@@ -640,8 +664,9 @@ def build(repo: Path) -> tuple[dict[str, Any], str]:
     lines.append("\\bottomrule")
     lines.append("\\end{tabular}")
     lines.append("\\end{table}%")
-    lines.append("}")
+    lines.append("}}")
     lines.append("\\newcommand{\\WlfCellTable}{%")
+    lines.append(artifact_open)
     lines.append("\\begin{table}[ht]")
     lines.append("\\centering")
     lines.append(
@@ -659,7 +684,7 @@ def build(repo: Path) -> tuple[dict[str, Any], str]:
     lines.append("\\bottomrule")
     lines.append("\\end{tabular}")
     lines.append("\\end{table}%")
-    lines.append("}")
+    lines.append("}}")
     tex = "\n".join(lines) + "\n"
 
     evidence = {
@@ -670,13 +695,22 @@ def build(repo: Path) -> tuple[dict[str, Any], str]:
         "evidence_revision": RESULTS_COMMIT_SHA,
         "binding": binding,
         "manuscript_integration": {
-            "status": "draft-section-not-wired-into-manuscript",
+            "status": "admitted",
             "section_path": SECTION_PATH.as_posix(),
+            "section_binding": SECTION_BINDING,
             "generated_tex_path": OUTPUT_PATH.as_posix(),
-            "reason": (
-                "manuscript.tex pins its evidence boundary to the L0 evidence revision and admits "
-                "results only through claims.json/result-gates.json; this section can be \\input "
-                "only after a claim-matrix entry and gate for the wall-loss campaign are accepted."
+            "generated_binding": GENERATED_BINDING,
+            "manifest_id": MANIFEST_ID,
+            "manifest_path": MANIFEST_PATH.as_posix(),
+            "gate_id": GATE_ID,
+            "artifact_id": ARTIFACT_ID,
+            "artifact_claim_id": ARTIFACT_CLAIM_ID,
+            "prose_claim_ids": list(PROSE_CLAIM_IDS),
+            "rule": (
+                "Every number in the section is a macro defined here; each macro is bound below to an "
+                "artifact path, JSON pointer, formatter and SHA-256. Claim-bearing sentences are exact "
+                "EvidenceClaim bodies registered in paper/evidence/claims.json; the campaign gate in "
+                "paper/evidence/result-gates.json names the typed manifest that admits the section."
             ),
         },
         "bundle": {
@@ -717,16 +751,20 @@ def render(repo: Path) -> tuple[bytes, bytes, bytes]:
     sidecar = {
         "document_type": "paper-generated-artifact-provenance",
         "schema_version": "1.0",
-        "artifact_id": "TAB-WALL-LOSS-V4",
-        "claim_ids": [],
-        "claim_status": "draft; no claims.json entry authorizes manuscript prose yet",
+        "artifact_id": ARTIFACT_ID,
+        "claim_ids": [ARTIFACT_CLAIM_ID],
+        "claim_status": (
+            f"authorized by {ARTIFACT_CLAIM_ID} (quantitative-generated-table) in "
+            f"paper/evidence/claims.json; admitted through {GATE_ID}"
+        ),
         "evidence_revision": RESULTS_COMMIT_SHA,
         "source_date_epoch": build_config["source_date_epoch"],
         "generator": evidence["generator"],
         "manifest": {
             "path": EVIDENCE_PATH.as_posix(),
             "sha256": sha256_bytes(canonical_json(evidence)),
-            "manifest_id": "WALL-LOSS-V4-20260902-4608-V1",
+            "manifest_id": MANIFEST_ID,
+            "gate_manifest_path": MANIFEST_PATH.as_posix(),
         },
         "inputs": [
             {"path": (RESULTS / path).as_posix(), "sha256": meta["sha256"], "bytes": meta["bytes"]}

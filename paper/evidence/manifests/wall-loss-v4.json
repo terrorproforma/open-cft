@@ -1,0 +1,306 @@
+{
+  "classification": "collisionless_prescribed_field_test_particle_wall_loss_not_pic",
+  "document_type": "paper-test-particle-campaign-manifest",
+  "evidence_level": {
+    "justification": "The campaign is numerical evidence about a collisionless, prescribed-field, test-particle model of electron orbits in one qualified P2 magnetostatic field. The framework admits accepted numerical evidence through a typed committed manifest, hashed artifacts at a resolvable revision, exact registered claim text and generated artifacts with provenance sidecars; this is the pattern of the accepted L0 evidence and it is applied here unchanged. The campaign is NOT an L1 field-resolved reduced performance model (it produces no L0 mapping and its coupling export has status export_only_pending_consumer_integration), NOT an L2 coupled hybrid plasma model, and NOT an L3 PIC or experimental comparison; it therefore opens none of GATE-L1, GATE-L2 or GATE-L3 and is recorded at the level numerical-campaign, which sits at the verification tier of the V&V protocol and below every validation tier.",
+    "name": "numerical-campaign",
+    "opens_gate": null,
+    "relation_to_levels": {
+      "L0": "independent of the algebraic L0 model; no mapping is claimed and the coupling export is not consumed",
+      "L1": "consumes one qualified finite-element field as a fixed prescribed input; makes no topology, geometry-response or performance claim",
+      "L2": "not self-consistent and not coupled to any plasma model",
+      "L3": "not particle-in-cell and not experimental"
+    },
+    "validation_status": "none: no measurement, facility, or hardware comparison exists",
+    "verification_tier": "code verification (manufactured helix orders, CPU/CUDA parity, exact authority replay) and solution verification (timestep refinement N/2N/4N, field-map refinement and domain enlargement, exact relative-energy gate, Wilson intervals) of a declared component model"
+  },
+  "evidence_revision": "6922a3cf97d261735266aa1a5a0c0c9683e021ca",
+  "evidence_revision_subject": "record CFT full-orbit wall-loss v4 result",
+  "experiment_id": "cft-orbit-wall-loss-v4",
+  "experiment_path": "modern/experiments/cft_orbit_wall_loss_v4",
+  "gate_id": "GATE-WALL-LOSS-V4",
+  "level": "numerical-campaign",
+  "manifest_id": "WALL-LOSS-V4-20260902-4608-V1",
+  "metrics": {
+    "attempt_count": 1,
+    "binding_gate_count": 15,
+    "binding_gates_true": 15,
+    "case_count": 9,
+    "classification": "collisionless_prescribed_field_test_particle_wall_loss_not_pic",
+    "coupling_integration_status": "export_only_pending_consumer_integration",
+    "cross_map_convergence_passed": true,
+    "exact_authority_replays": 9,
+    "failed_cases_count": 0,
+    "hardware_or_experimental_validation": false,
+    "incomplete_or_numerical_failure_count": 0,
+    "interval_method": "wilson-95",
+    "launches_per_case": 512,
+    "maximum_relative_energy_error": 0.0,
+    "maximum_successive_probability_change": 0.00390625,
+    "mirror_formula_publication_forbidden": true,
+    "orbit_count": 4608,
+    "orbits_exceeding_energy_gate": 0,
+    "per_cell_bimodality": {
+      "exit_cell_escapes": 1152,
+      "exit_cell_launches": 1152,
+      "injector_cell_minus_direction_wall_fraction": 1.0,
+      "injector_cell_plus_direction_launches": 576,
+      "injector_cell_plus_direction_wall_hits": 82,
+      "interior_cells_launches": 2304,
+      "interior_cells_wall_hits": 2304
+    },
+    "pic_or_self_consistent_claim_forbidden": true,
+    "plasma_performance_publication_forbidden": true,
+    "pooled_domain_escape_count": 1646,
+    "pooled_wall_hit_count": 2962,
+    "pooled_wall_hit_fraction_is_design_average": true,
+    "preregistered_one_shot": true,
+    "reflected_count": 0,
+    "relative_energy_gate": 1e-10,
+    "successive_probability_change_gate": 0.01,
+    "terminal_state": "accepted_result",
+    "timestep_convergence_passed": true,
+    "tolerated_crlf_sidecar_count": 9,
+    "validator_calls_passed": 289,
+    "validator_failures": 0,
+    "wall_hit_probability_maximum": 0.64453125,
+    "wall_hit_probability_minimum": 0.640625
+  },
+  "model_fidelity": "collisionless-prescribed-field-test-particle-electron-orbits",
+  "paper_evidence_file": {
+    "document_type": "paper-wall-loss-v4-evidence",
+    "generator": "paper/scripts/generate_wall_loss_v4_evidence.py",
+    "generator_command": "python paper/scripts/generate_wall_loss_v4_evidence.py",
+    "macro_count": 131,
+    "macro_prefix": "Wlf",
+    "path": "paper/evidence/wall-loss-v4.json",
+    "rule": "check_paper.py regenerates the evidence file, the generated TeX and the sidecar from the sealed bundle and requires byte identity with the committed files; every macro therefore traces to a verified artifact hash at every check.",
+    "schema_version": "1.0"
+  },
+  "permitted_claim_scope": [
+    "per-case wall-hit and domain-escape probabilities with Wilson intervals",
+    "exact zero reflection and zero incomplete counts",
+    "timestep and cross-map convergence of the wall-hit probability against the preregistered gate",
+    "per-cell bimodality of the pooled result",
+    "code- and solution-verification facts recorded by the binding gates",
+    "the campaign classification string and its sealed publication boundary"
+  ],
+  "posthoc_audit": {
+    "git_blob": "addad3d32edd17431ef71879f8a3b0e11f5efdee",
+    "git_blob_sha256": "267c834b2e6e98868df158adf56fac1df1330eea024bf098cbcc01fe1847eade",
+    "path": "modern/experiments/cft_orbit_wall_loss_v4/POSTHOC_AUDIT.md",
+    "revision": "258f69b2f4bc081c6f571251ce2ad76d49ddab0a",
+    "role": "posthoc-audit",
+    "subject": "add CFT full-orbit wall-loss v4 posthoc audit"
+  },
+  "preregistration_revision": "757e365f9f667620c7610663574294c3b71e1f51",
+  "preregistration_revision_subject": "preregister CFT full-orbit wall-loss v4",
+  "prohibited_inferences": [
+    "particle-in-cell or self-consistent plasma behaviour",
+    "thruster or plasma performance",
+    "hardware or experimental validation",
+    "a physical electron loss rate from the pooled equal-weight design average",
+    "mirror or loss-cone wall-loss formulas for this field",
+    "magnetic-topology, geometry-response or L1 performance prediction",
+    "existence or stability of confinement cells in the explored design space",
+    "generalization to other designs, fields, collisional regimes or energies"
+  ],
+  "results_bundle": {
+    "artifact_count": 407,
+    "manifest_git_blob": "ccb9e85cc48b72bdb3dde44ae9c8e3187c3ac0f2",
+    "manifest_path": "modern/experiments/cft_orbit_wall_loss_v4/results/manifest.json",
+    "manifest_sha256": "ef3863b0a3ba0a1d74187b05daf81d5d94d3838a7e33ecf82c485dccd162929f",
+    "results_tree": "447a5cf79024b85cabbaeb033d719c6d21ab28c0",
+    "tolerance_rule": "sha256(bytes.replace(LF, CRLF)) == recorded byte_sha256; every other mismatch fails",
+    "tolerated_crlf_sidecars": [
+      "artifacts/orbits/enlarged-2N.json.sha256",
+      "artifacts/orbits/enlarged-4N.json.sha256",
+      "artifacts/orbits/enlarged-N.json.sha256",
+      "artifacts/orbits/primary-2N.json.sha256",
+      "artifacts/orbits/primary-4N.json.sha256",
+      "artifacts/orbits/primary-N.json.sha256",
+      "artifacts/orbits/refined-2N.json.sha256",
+      "artifacts/orbits/refined-4N.json.sha256",
+      "artifacts/orbits/refined-N.json.sha256"
+    ],
+    "verified_file_count": 387
+  },
+  "schema_version": "1.0",
+  "source_files": [
+    {
+      "git_blob": "ccb9e85cc48b72bdb3dde44ae9c8e3187c3ac0f2",
+      "git_blob_sha256": "ef3863b0a3ba0a1d74187b05daf81d5d94d3838a7e33ecf82c485dccd162929f",
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/results/manifest.json",
+      "role": "results-manifest"
+    },
+    {
+      "git_blob": "857c8038abf8fa05560ef9efa4138287685a8480",
+      "git_blob_sha256": "a962de40bb91f3a4a1506520df7bc0c44c4e7ca2dd049f7a23060251452600b4",
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/results/artifacts/campaign-result.json",
+      "role": "campaign-result"
+    },
+    {
+      "git_blob": "26643ff597e71b8fa465ab27ec7e2faeaeb61ce2",
+      "git_blob_sha256": "4606ea083c64a03ce9562293783e6aa6de55f6c98d48244e4caf6f940fc5e866",
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/results/artifacts/gates.json",
+      "role": "binding-gates"
+    },
+    {
+      "git_blob": "21655e90ad8d159c9af8465bf62f978d90f3addb",
+      "git_blob_sha256": "b5560f234edde7dca624f796ea71143819d5042ff6eb8f44595a946703f7119a",
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/results/artifacts/probability-convergence.json",
+      "role": "probability-convergence"
+    },
+    {
+      "git_blob": "61634314b69281fc6fc48060686b1d330bee0f94",
+      "git_blob_sha256": "4fedcfe4b421a3b4dca1cde3be11460a23bb28c359d2e55460d86a1c06402ead",
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/results/artifacts/protocol.json",
+      "role": "protocol"
+    },
+    {
+      "git_blob": "e954c371218b91485fc2c6a9e72d6a63ec8f68ff",
+      "git_blob_sha256": "c6951cc2a804cd0db0bced9158b5526f0769198b0760e10690dfb5d701d84e36",
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/results/artifacts/authorities.json",
+      "role": "authorities"
+    },
+    {
+      "git_blob": "e3fa37b8bec3130ed3c83e1b4779e1fb8d01d302",
+      "git_blob_sha256": "656e92a2e24574881cbc7007e57cb4a87e35b5257996fcbb780f1601520e916e",
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/results/artifacts/p2-input-authority.json",
+      "role": "p2-input-authority"
+    },
+    {
+      "git_blob": "1febf4da224e508879364bafa7c2cf48a6f2dde3",
+      "git_blob_sha256": "80630326d6637262417e0185e2d6fc70443ace4663fc03314738cd7d288c924a",
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/results/artifacts/field-map-convergence.json",
+      "role": "field-map-convergence"
+    },
+    {
+      "git_blob": "478be2ec89dc4137936aa72e674a42bab8b8eb49",
+      "git_blob_sha256": "e8dd651099c605a0d6e9f193213ca01a1aa321823f81783870f9646fe6642a2e",
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/results/artifacts/manufactured-gates.json",
+      "role": "manufactured-gates"
+    },
+    {
+      "git_blob": "a9182e1895560f3babd3ce2891135d082520752a",
+      "git_blob_sha256": "45ff2d9e37f22db3f37d5212b05e05daa26daa70cc8ff0cbecf28486e3e20270",
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/results/artifacts/coupling-export-only.json",
+      "role": "coupling-export"
+    },
+    {
+      "git_blob": "c8a2879436014583a7b530d2f2406701ef372460",
+      "git_blob_sha256": "6d23c4af9d1645aa8983054b9d8bc3b40d773ae088f7b1987d77cf77736921f1",
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/results/terminal.json",
+      "role": "terminal-record"
+    },
+    {
+      "git_blob": "982bd87a8d6c9d7365f3ed6865b506827132c9a5",
+      "git_blob_sha256": "6232324add3ecfa3b4b400026dc15825e5df89ee9388e1ee0f3cca961f493952",
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/results/execution-lock.json",
+      "role": "execution-lock"
+    },
+    {
+      "git_blob": "7bac8ffebbf66c24f4391b241a7f81db457e686e",
+      "git_blob_sha256": "0f0058119d7d58ec39ebcfaf273dcdcc1c4c3ea38a423036341f5dd62a9bdcd2",
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/results/artifacts/shakedown.json",
+      "role": "shakedown"
+    },
+    {
+      "git_blob": "a9ed08f3358aadf8a56184410db42a4d43c8f48d",
+      "git_blob_sha256": "27dac88359b7985487c72877fa63a74d658a439cb844272a89c5afa7e0ea8a38",
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/protocol.json",
+      "role": "preregistered-protocol"
+    },
+    {
+      "git_blob": "e954c371218b91485fc2c6a9e72d6a63ec8f68ff",
+      "git_blob_sha256": "c6951cc2a804cd0db0bced9158b5526f0769198b0760e10690dfb5d701d84e36",
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/authorities.json",
+      "role": "preregistered-authorities"
+    },
+    {
+      "git_blob": "7bac8ffebbf66c24f4391b241a7f81db457e686e",
+      "git_blob_sha256": "0f0058119d7d58ec39ebcfaf273dcdcc1c4c3ea38a423036341f5dd62a9bdcd2",
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/shakedown.json",
+      "role": "preregistered-shakedown"
+    },
+    {
+      "git_blob": "21153e0a597ee91d1c4c5d50ce8a6b2e9b731606",
+      "git_blob_sha256": "783142a951e191ac54189863b8f4c77168a21cf931cef456bf29571768af1055",
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/results/artifacts/summaries/primary-N.json",
+      "role": "case-summary"
+    },
+    {
+      "git_blob": "ee79fb12e2c4203a98be50d7118c2f9a6d64f68a",
+      "git_blob_sha256": "471e58ff08ba5cca604a3fff6a60ec835fbfe631f17dd34ed548c35a8174ac91",
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/results/artifacts/summaries/primary-2N.json",
+      "role": "case-summary"
+    },
+    {
+      "git_blob": "88efd98b2ffc69ce653d03206744940b1fe344ae",
+      "git_blob_sha256": "7b8d5010e4f4d41443645fc1fb2bdcbc66c7ddff7c65898f6dca8bb73c7df954",
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/results/artifacts/summaries/primary-4N.json",
+      "role": "case-summary"
+    },
+    {
+      "git_blob": "58b1372ac1aaa5b3a7d004f1a33eb7f4b0d3ad18",
+      "git_blob_sha256": "576225a7027e118c6f9786c7629d8705f8b3b9d27d105f383d3d0e2fcbc4d985",
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/results/artifacts/summaries/refined-N.json",
+      "role": "case-summary"
+    },
+    {
+      "git_blob": "7af3e174c1b992f3274b14bd741f5cda6bd70e83",
+      "git_blob_sha256": "cd2d396f963d68674dcd442f3985ef3ca961b5ebd183c2340ff9ebeb7a3bd18a",
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/results/artifacts/summaries/refined-2N.json",
+      "role": "case-summary"
+    },
+    {
+      "git_blob": "9ad088ab65968f7ec7af8da1cedc9bcdbf3fb234",
+      "git_blob_sha256": "701f5b7c936965597d1b0b98a6b1dfb05999985200533ff4c011b508b2300884",
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/results/artifacts/summaries/refined-4N.json",
+      "role": "case-summary"
+    },
+    {
+      "git_blob": "5c4b679783a0f1f7639871598175c3eca092a6e4",
+      "git_blob_sha256": "1fb27de1c89ea12718bb174c0ad42597f20ad36359e065bf816b40b43e0a4b32",
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/results/artifacts/summaries/enlarged-N.json",
+      "role": "case-summary"
+    },
+    {
+      "git_blob": "cde55d0bef3422dbd6e653c45201670b549b71ff",
+      "git_blob_sha256": "f2b6fa6a0329f74c8d6cca385f625cbcdfc7952b56863fdb3991c0bb23a84740",
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/results/artifacts/summaries/enlarged-2N.json",
+      "role": "case-summary"
+    },
+    {
+      "git_blob": "c66e9bd62a480686a4c98d0ac85294c987cc1be6",
+      "git_blob_sha256": "97a42753bec64fa16a32f4681f332ad29ba73f5e4586394dd199bcf952a265c1",
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/results/artifacts/summaries/enlarged-4N.json",
+      "role": "case-summary"
+    },
+    {
+      "git_blob": "f02890c9192b873e7e5d185487f12c037daa6b2d",
+      "git_blob_sha256": "79ca097f59878853c862e3f484867f32babb27d3a592e449857f9ec7dfcbe148",
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/results/artifacts/field-evidence/primary.json",
+      "role": "field-evidence"
+    },
+    {
+      "git_blob": "1e12d27f8aea4587e0e8eeb477ced9b4e008b038",
+      "git_blob_sha256": "348382983191ed540bcbd723459808cc755ffc4a76b213d4f1f6287260998db1",
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/results/artifacts/field-evidence/refined.json",
+      "role": "field-evidence"
+    },
+    {
+      "git_blob": "92c324557a92268dd5bcb2f49bed51342859a856",
+      "git_blob_sha256": "0ea817df8c820f1f0bceae8d9b5c0df54c3f566f4ca3564baddc625500620dea",
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/results/transitions/0001-lock-acquired.json",
+      "role": "transition"
+    },
+    {
+      "git_blob": "e4858159b4a26205f2ce2dfca849d32aa9379308",
+      "git_blob_sha256": "72f73d30aa60e726b0de23ef30b3118af766285a2e9c0397dee0fd36f6f58e24",
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/results/transitions/0009-terminal.json",
+      "role": "transition"
+    }
+  ],
+  "status": "accepted"
+}

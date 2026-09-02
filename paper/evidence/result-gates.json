@@ -19,11 +19,16 @@
     "manifest_revision_must_be_ancestor_of_current_head": true,
     "required_roles_and_metrics_are_fail_closed": true,
     "closed_gate_has_visible_manuscript_block": true,
-    "accepted_gate_has_no_closed_manuscript_block": true
+    "accepted_gate_has_no_closed_manuscript_block": true,
+    "gate_kinds": {
+      "physics-level": "GATE-L1, GATE-L2 and GATE-L3 open a paper physics level; they stay closed until their typed manifest is accepted.",
+      "numerical-campaign": "Admits one accepted, preregistered numerical campaign about a declared component model. It opens no physics level (opens_level is null), must be accepted (never closed), and its manifest is cross-checked against the sealed results bundle, the hash-bound evidence file, the bound section and the claim matrix by a campaign-specific checker in check_paper.py."
+    }
   },
   "gates": [
     {
       "id": "GATE-L1",
+      "kind": "physics-level",
       "title": "Field-resolved reduction",
       "status": "closed",
       "manifest_path": null,
@@ -48,6 +53,7 @@
     },
     {
       "id": "GATE-L2",
+      "kind": "physics-level",
       "title": "Coupled hybrid model",
       "status": "closed",
       "manifest_path": null,
@@ -79,6 +85,7 @@
     },
     {
       "id": "GATE-L3",
+      "kind": "physics-level",
       "title": "PIC and experimental comparison",
       "status": "closed",
       "manifest_path": null,
@@ -99,6 +106,66 @@
         "PIC-validated design ranking",
         "validated high-fidelity Pareto improvement",
         "generalization beyond the tested applicability domain"
+      ]
+    },
+    {
+      "id": "GATE-WALL-LOSS-V4",
+      "kind": "numerical-campaign",
+      "title": "Collisionless prescribed-field test-particle electron wall loss, campaign v4",
+      "status": "accepted",
+      "opens_level": null,
+      "manifest_path": "paper/evidence/manifests/wall-loss-v4.json",
+      "required_manifest_document_type": "paper-test-particle-campaign-manifest",
+      "required_manifest_schema_version": "1.0",
+      "dependencies": [],
+      "evidence_revision": "6922a3cf97d261735266aa1a5a0c0c9683e021ca",
+      "preregistration_revision": "757e365f9f667620c7610663574294c3b71e1f51",
+      "posthoc_audit_path": "modern/experiments/cft_orbit_wall_loss_v4/POSTHOC_AUDIT.md",
+      "evidence_file": "paper/evidence/wall-loss-v4.json",
+      "generated_macros": "paper/generated/wall-loss-v4.tex",
+      "section_path": "paper/sections/wall-loss-v4.tex",
+      "section_heading": "Collisionless full-orbit electron wall loss in the divergent-exit field",
+      "accepted_manuscript_binding": "\\input{sections/wall-loss-v4.tex}",
+      "manuscript_revision_macro": "WallLossEvidenceRevision",
+      "checks": [
+        "typed manifest under paper/evidence/manifests with every source file bound by Git blob and SHA-256 at the results revision, committed at HEAD",
+        "evidence file, generated macros and sidecar regenerate byte-identically from the sealed bundle; every artifact hash in the evidence file matches the bundle on disk",
+        "every manifest metric equals the raw artifact value behind its macro; the results tree is unchanged since the evidence revision",
+        "preregistration strictly precedes the results revision and the frozen protocol/authorities/shakedown blobs are unchanged; the post-hoc audit revision chains results -> audit -> HEAD",
+        "the section is input exactly once, uses only generated macros, types no literal digit, uses the classification macro whose rendering equals the classification string, and contains every registered non-claim",
+        "every EvidenceClaim in the section is a registered campaign prose claim bound to the manifest and allowed under the section heading; the artifact claim authorizes the generated tables"
+      ],
+      "metric_constraints": {
+        "classification": {"equals": "collisionless_prescribed_field_test_particle_wall_loss_not_pic"},
+        "terminal_state": {"equals": "accepted_result"},
+        "preregistered_one_shot": {"equals": true},
+        "attempt_count": {"equals": 1},
+        "case_count": {"integer_minimum": 9},
+        "orbit_count": {"integer_minimum": 4608},
+        "binding_gate_count": {"equals": 15},
+        "binding_gates_true": {"equals": 15},
+        "validator_failures": {"equals": 0},
+        "reflected_count": {"equals": 0},
+        "incomplete_or_numerical_failure_count": {"equals": 0},
+        "orbits_exceeding_energy_gate": {"equals": 0},
+        "timestep_convergence_passed": {"equals": true},
+        "cross_map_convergence_passed": {"equals": true},
+        "pooled_wall_hit_fraction_is_design_average": {"equals": true},
+        "hardware_or_experimental_validation": {"equals": false},
+        "pic_or_self_consistent_claim_forbidden": {"equals": true},
+        "plasma_performance_publication_forbidden": {"equals": true},
+        "mirror_formula_publication_forbidden": {"equals": true},
+        "failed_cases_count": {"equals": 0}
+      },
+      "prohibited_inferences": [
+        "particle-in-cell or self-consistent plasma behaviour",
+        "thruster or plasma performance",
+        "hardware or experimental validation",
+        "a physical electron loss rate from the pooled equal-weight design average",
+        "mirror or loss-cone wall-loss formulas for this field",
+        "magnetic-topology, geometry-response or L1 performance prediction",
+        "existence or stability of confinement cells in the explored design space",
+        "opening of GATE-L1, GATE-L2 or GATE-L3"
       ]
     }
   ]

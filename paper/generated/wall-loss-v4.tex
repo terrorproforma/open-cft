@@ -130,8 +130,10 @@
 \newcommand{\WlfPTwoCommit}{a1158bad5eac}
 \newcommand{\WlfPreregCommit}{757e365f9f66}
 \newcommand{\WlfResultsCommit}{6922a3cf97d2}
+\newcommand{\WlfToleratedSidecars}{9}
 \newcommand{\WlfIntervalMethod}{wilson-95}
 \newcommand{\WlfCaseTable}{%
+\ArtifactClaim{CLM-014}{TAB-WALL-LOSS-V4}{%
 \begin{table}[ht]
 \centering
 \caption{Termination probabilities of the nine preregistered cases (map role $\times$ timestep policy); \WlfLaunchesPerCase{} equal-weight launches per case; Wilson 95\% intervals as sealed by orbit\_mc. Reflection and timeout counts are exact zeros.}
@@ -156,8 +158,9 @@ pooled & --- & \WlfPooledWall{} & \WlfPooledWallP{} & [\WlfPooledWallLo{}, \WlfP
 \bottomrule
 \end{tabular}
 \end{table}%
-}
+}}
 \newcommand{\WlfCellTable}{%
+\ArtifactClaim{CLM-014}{TAB-WALL-LOSS-V4}{%
 \begin{table}[ht]
 \centering
 \caption{Wall-hit fraction by launch cell, pooled over the nine cases (equal weights). Cells 2--3 are saturated at total wall loss; cell 4 lies beyond the dielectric end and escapes entirely; cell 1 depends on the launch direction.}
@@ -174,4 +177,4 @@ cell & $z$ (mm) & launches & wall & fraction & 95\% & escape\\
 \bottomrule
 \end{tabular}
 \end{table}%
-}
+}}

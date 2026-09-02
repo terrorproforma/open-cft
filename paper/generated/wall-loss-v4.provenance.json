@@ -5,14 +5,16 @@
     "path": "modern/experiments/cft_orbit_wall_loss_v4/results/manifest.json",
     "sha256": "ef3863b0a3ba0a1d74187b05daf81d5d94d3838a7e33ecf82c485dccd162929f"
   },
-  "claim_ids": [],
-  "claim_status": "draft; no claims.json entry authorizes manuscript prose yet",
+  "claim_ids": [
+    "CLM-014"
+  ],
+  "claim_status": "authorized by CLM-014 (quantitative-generated-table) in paper/evidence/claims.json; admitted through GATE-WALL-LOSS-V4",
   "document_type": "paper-generated-artifact-provenance",
   "evidence_revision": "6922a3cf97d261735266aa1a5a0c0c9683e021ca",
   "generator": {
     "command": "python paper/scripts/generate_wall_loss_v4_evidence.py",
     "path": "paper/scripts/generate_wall_loss_v4_evidence.py",
-    "sha256": "7b72649a9c4b0eeedaed55dbe2b50a6ddff640ca89f94f875cced30a8012abd6"
+    "sha256": "155dce30b19b963b9a46438cc32ae9102c1a5e8b3ae21403bd1c9c0376819719"
   },
   "inputs": [
     {
@@ -142,13 +144,14 @@
     }
   ],
   "manifest": {
+    "gate_manifest_path": "paper/evidence/manifests/wall-loss-v4.json",
     "manifest_id": "WALL-LOSS-V4-20260902-4608-V1",
     "path": "paper/evidence/wall-loss-v4.json",
-    "sha256": "d0579cc93258abce7bf0b709ed0a9fd56ce2f3d7f8de930d597d3336e0927044"
+    "sha256": "b5611ccf3f3d4d9b26ca62d421591a90621753f1ce161b0cd7ba6649c771fc90"
   },
   "output": {
     "path": "paper/generated/wall-loss-v4.tex",
-    "sha256": "3d1e4c8af7bfc43d7a86a7ca112b08c0d0bcadb70a15784525ad2d96505608a7"
+    "sha256": "5c8b3bbac71e53c0609bc245f20a2fbe10cd1487c10b5948dd95c71daf9cfe94"
   },
   "schema_version": "1.0",
   "source_date_epoch": 1788270043

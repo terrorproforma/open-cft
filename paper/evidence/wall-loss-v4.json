@@ -133,7 +133,7 @@
   "generator": {
     "command": "python paper/scripts/generate_wall_loss_v4_evidence.py",
     "path": "paper/scripts/generate_wall_loss_v4_evidence.py",
-    "sha256": "7b72649a9c4b0eeedaed55dbe2b50a6ddff640ca89f94f875cced30a8012abd6"
+    "sha256": "155dce30b19b963b9a46438cc32ae9102c1a5e8b3ae21403bd1c9c0376819719"
   },
   "macros": [
     {
@@ -2543,6 +2543,21 @@
       "value": "6922a3cf97d2"
     },
     {
+      "derivation": "count of manifest file entries whose recorded byte_sha256 equals sha256(bytes.replace(LF, CRLF)) and not sha256(bytes)",
+      "derived": true,
+      "description": "manifest entries that differ from the checkout by end-of-line bytes only (the disclosed sidecar defect)",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "manifest.json",
+          "pointer": "/artifacts"
+        }
+      ],
+      "name": "WlfToleratedSidecars",
+      "raw": 9,
+      "value": "9"
+    },
+    {
       "derived": false,
       "description": "interval method identifier",
       "format": "text",
@@ -2556,14 +2571,28 @@
     }
   ],
   "manuscript_integration": {
+    "artifact_claim_id": "CLM-014",
+    "artifact_id": "TAB-WALL-LOSS-V4",
+    "gate_id": "GATE-WALL-LOSS-V4",
+    "generated_binding": "\\input{generated/wall-loss-v4.tex}",
     "generated_tex_path": "paper/generated/wall-loss-v4.tex",
-    "reason": "manuscript.tex pins its evidence boundary to the L0 evidence revision and admits results only through claims.json/result-gates.json; this section can be \\input only after a claim-matrix entry and gate for the wall-loss campaign are accepted.",
+    "manifest_id": "WALL-LOSS-V4-20260902-4608-V1",
+    "manifest_path": "paper/evidence/manifests/wall-loss-v4.json",
+    "prose_claim_ids": [
+      "CLM-012",
+      "CLM-013",
+      "CLM-015",
+      "CLM-016",
+      "CLM-017"
+    ],
+    "rule": "Every number in the section is a macro defined here; each macro is bound below to an artifact path, JSON pointer, formatter and SHA-256. Claim-bearing sentences are exact EvidenceClaim bodies registered in paper/evidence/claims.json; the campaign gate in paper/evidence/result-gates.json names the typed manifest that admits the section.",
+    "section_binding": "\\input{sections/wall-loss-v4.tex}",
     "section_path": "paper/sections/wall-loss-v4.tex",
-    "status": "draft-section-not-wired-into-manuscript"
+    "status": "admitted"
   },
   "output": {
     "path": "paper/generated/wall-loss-v4.tex",
-    "sha256": "3d1e4c8af7bfc43d7a86a7ca112b08c0d0bcadb70a15784525ad2d96505608a7"
+    "sha256": "5c8b3bbac71e53c0609bc245f20a2fbe10cd1487c10b5948dd95c71daf9cfe94"
   },
   "schema_version": "1.0",
   "tables": {
