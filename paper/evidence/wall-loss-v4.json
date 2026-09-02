@@ -1,0 +1,2579 @@
+{
+  "artifacts": {
+    "artifacts/authorities.json": {
+      "bytes": 1677,
+      "sha256": "c6951cc2a804cd0db0bced9158b5526f0769198b0760e10690dfb5d701d84e36"
+    },
+    "artifacts/campaign-result.json": {
+      "bytes": 9306,
+      "sha256": "a962de40bb91f3a4a1506520df7bc0c44c4e7ca2dd049f7a23060251452600b4"
+    },
+    "artifacts/coupling-export-only.json": {
+      "bytes": 886,
+      "sha256": "45ff2d9e37f22db3f37d5212b05e05daa26daa70cc8ff0cbecf28486e3e20270"
+    },
+    "artifacts/field-evidence/primary.json": {
+      "bytes": 1198,
+      "sha256": "79ca097f59878853c862e3f484867f32babb27d3a592e449857f9ec7dfcbe148"
+    },
+    "artifacts/field-evidence/refined.json": {
+      "bytes": 1197,
+      "sha256": "348382983191ed540bcbd723459808cc755ffc4a76b213d4f1f6287260998db1"
+    },
+    "artifacts/field-map-convergence.json": {
+      "bytes": 454,
+      "sha256": "80630326d6637262417e0185e2d6fc70443ace4663fc03314738cd7d288c924a"
+    },
+    "artifacts/gates.json": {
+      "bytes": 1443,
+      "sha256": "4606ea083c64a03ce9562293783e6aa6de55f6c98d48244e4caf6f940fc5e866"
+    },
+    "artifacts/manufactured-gates.json": {
+      "bytes": 1637,
+      "sha256": "e8dd651099c605a0d6e9f193213ca01a1aa321823f81783870f9646fe6642a2e"
+    },
+    "artifacts/p2-input-authority.json": {
+      "bytes": 262,
+      "sha256": "656e92a2e24574881cbc7007e57cb4a87e35b5257996fcbb780f1601520e916e"
+    },
+    "artifacts/probability-convergence.json": {
+      "bytes": 1053,
+      "sha256": "b5560f234edde7dca624f796ea71143819d5042ff6eb8f44595a946703f7119a"
+    },
+    "artifacts/protocol.json": {
+      "bytes": 17122,
+      "sha256": "4fedcfe4b421a3b4dca1cde3be11460a23bb28c359d2e55460d86a1c06402ead"
+    },
+    "artifacts/shakedown.json": {
+      "bytes": 52491,
+      "sha256": "0f0058119d7d58ec39ebcfaf273dcdcc1c4c3ea38a423036341f5dd62a9bdcd2"
+    },
+    "artifacts/summaries/enlarged-2N.json": {
+      "bytes": 29510,
+      "sha256": "f2b6fa6a0329f74c8d6cca385f625cbcdfc7952b56863fdb3991c0bb23a84740"
+    },
+    "artifacts/summaries/enlarged-4N.json": {
+      "bytes": 29511,
+      "sha256": "97a42753bec64fa16a32f4681f332ad29ba73f5e4586394dd199bcf952a265c1"
+    },
+    "artifacts/summaries/enlarged-N.json": {
+      "bytes": 29508,
+      "sha256": "1fb27de1c89ea12718bb174c0ad42597f20ad36359e065bf816b40b43e0a4b32"
+    },
+    "artifacts/summaries/primary-2N.json": {
+      "bytes": 29509,
+      "sha256": "471e58ff08ba5cca604a3fff6a60ec835fbfe631f17dd34ed548c35a8174ac91"
+    },
+    "artifacts/summaries/primary-4N.json": {
+      "bytes": 29512,
+      "sha256": "7b8d5010e4f4d41443645fc1fb2bdcbc66c7ddff7c65898f6dca8bb73c7df954"
+    },
+    "artifacts/summaries/primary-N.json": {
+      "bytes": 29504,
+      "sha256": "783142a951e191ac54189863b8f4c77168a21cf931cef456bf29571768af1055"
+    },
+    "artifacts/summaries/refined-2N.json": {
+      "bytes": 29511,
+      "sha256": "cd2d396f963d68674dcd442f3985ef3ca961b5ebd183c2340ff9ebeb7a3bd18a"
+    },
+    "artifacts/summaries/refined-4N.json": {
+      "bytes": 29510,
+      "sha256": "701f5b7c936965597d1b0b98a6b1dfb05999985200533ff4c011b508b2300884"
+    },
+    "artifacts/summaries/refined-N.json": {
+      "bytes": 29505,
+      "sha256": "576225a7027e118c6f9786c7629d8705f8b3b9d27d105f383d3d0e2fcbc4d985"
+    },
+    "execution-lock.json": {
+      "bytes": 533,
+      "sha256": "6232324add3ecfa3b4b400026dc15825e5df89ee9388e1ee0f3cca961f493952"
+    },
+    "terminal.json": {
+      "bytes": 9611,
+      "sha256": "6d23c4af9d1645aa8983054b9d8bc3b40d773ae088f7b1987d77cf77736921f1"
+    },
+    "transitions/0001-lock-acquired.json": {
+      "bytes": 284,
+      "sha256": "0ea817df8c820f1f0bceae8d9b5c0df54c3f566f4ca3564baddc625500620dea"
+    },
+    "transitions/0009-terminal.json": {
+      "bytes": 229,
+      "sha256": "72f73d30aa60e726b0de23ef30b3118af766285a2e9c0397dee0fd36f6f58e24"
+    }
+  },
+  "binding": {
+    "manifest_git_blob": "ccb9e85cc48b72bdb3dde44ae9c8e3187c3ac0f2",
+    "manifest_path": "modern/experiments/cft_orbit_wall_loss_v4/results/manifest.json",
+    "preregistration_commit": "757e365f9f667620c7610663574294c3b71e1f51",
+    "results_commit": "6922a3cf97d261735266aa1a5a0c0c9683e021ca",
+    "results_commit_subject": "record CFT full-orbit wall-loss v4 result"
+  },
+  "bundle": {
+    "artifact_count": 407,
+    "manifest_path": "modern/experiments/cft_orbit_wall_loss_v4/results/manifest.json",
+    "manifest_sha256": "ef3863b0a3ba0a1d74187b05daf81d5d94d3838a7e33ecf82c485dccd162929f",
+    "tolerance_rule": "sha256(bytes.replace(LF, CRLF)) == recorded byte_sha256; every other mismatch fails",
+    "tolerated_crlf_sidecars": [
+      "artifacts/orbits/enlarged-2N.json.sha256",
+      "artifacts/orbits/enlarged-4N.json.sha256",
+      "artifacts/orbits/enlarged-N.json.sha256",
+      "artifacts/orbits/primary-2N.json.sha256",
+      "artifacts/orbits/primary-4N.json.sha256",
+      "artifacts/orbits/primary-N.json.sha256",
+      "artifacts/orbits/refined-2N.json.sha256",
+      "artifacts/orbits/refined-4N.json.sha256",
+      "artifacts/orbits/refined-N.json.sha256"
+    ],
+    "verified_file_count": 387
+  },
+  "classification": "collisionless_prescribed_field_test_particle_wall_loss_not_pic",
+  "document_type": "paper-wall-loss-v4-evidence",
+  "evidence_revision": "6922a3cf97d261735266aa1a5a0c0c9683e021ca",
+  "experiment_id": "cft-orbit-wall-loss-v4",
+  "generator": {
+    "command": "python paper/scripts/generate_wall_loss_v4_evidence.py",
+    "path": "paper/scripts/generate_wall_loss_v4_evidence.py",
+    "sha256": "7b72649a9c4b0eeedaed55dbe2b50a6ddff640ca89f94f875cced30a8012abd6"
+  },
+  "macros": [
+    {
+      "derived": false,
+      "description": "campaign classification string",
+      "format": "ident",
+      "name": "WlfClassification",
+      "raw": "collisionless_prescribed_field_test_particle_wall_loss_not_pic",
+      "source": {
+        "artifact": "artifacts/campaign-result.json",
+        "pointer": "/classification"
+      },
+      "value": "collisionless\\_\\allowbreak{}prescribed\\_\\allowbreak{}field\\_\\allowbreak{}test\\_\\allowbreak{}particle\\_\\allowbreak{}wall\\_\\allowbreak{}loss\\_\\allowbreak{}not\\_\\allowbreak{}pic"
+    },
+    {
+      "derived": false,
+      "description": "runtime terminal state",
+      "format": "ident",
+      "name": "WlfTerminalState",
+      "raw": "accepted_result",
+      "source": {
+        "artifact": "terminal.json",
+        "pointer": "/state"
+      },
+      "value": "accepted\\_\\allowbreak{}result"
+    },
+    {
+      "derived": false,
+      "description": "assessment status",
+      "format": "text",
+      "name": "WlfStatus",
+      "raw": "accepted",
+      "source": {
+        "artifact": "artifacts/campaign-result.json",
+        "pointer": "/status"
+      },
+      "value": "accepted"
+    },
+    {
+      "derived": false,
+      "description": "number of cases",
+      "format": "int",
+      "name": "WlfCaseCount",
+      "raw": 9,
+      "source": {
+        "artifact": "artifacts/campaign-result.json",
+        "pointer": "/campaign_count"
+      },
+      "value": "9"
+    },
+    {
+      "derived": false,
+      "description": "launches per case",
+      "format": "int",
+      "name": "WlfLaunchesPerCase",
+      "raw": 512,
+      "source": {
+        "artifact": "artifacts/campaign-result.json",
+        "pointer": "/launches_per_case"
+      },
+      "value": "512"
+    },
+    {
+      "derived": false,
+      "description": "orbits integrated",
+      "format": "int",
+      "name": "WlfOrbitCount",
+      "raw": 4608,
+      "source": {
+        "artifact": "artifacts/campaign-result.json",
+        "pointer": "/orbit_count"
+      },
+      "value": "4608"
+    },
+    {
+      "derived": false,
+      "description": "strata per case",
+      "format": "int",
+      "name": "WlfStrataPerCase",
+      "raw": 32,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/launches/strata_per_case"
+      },
+      "value": "32"
+    },
+    {
+      "derived": false,
+      "description": "position repeats per stratum",
+      "format": "int",
+      "name": "WlfRepeatsPerStratum",
+      "raw": 2,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/launches/independent_repeats_per_stratum"
+      },
+      "value": "2"
+    },
+    {
+      "derived": false,
+      "description": "gyrophases per position",
+      "format": "int",
+      "name": "WlfGyrophaseCount",
+      "raw": 8,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/launches/gyrophase_count"
+      },
+      "value": "8"
+    },
+    {
+      "derived": false,
+      "description": "kinetic energies (eV)",
+      "format": "list_g",
+      "name": "WlfEnergies",
+      "raw": [
+        5.0,
+        25.0
+      ],
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/launches/energies_ev"
+      },
+      "value": "5, 25"
+    },
+    {
+      "derived": false,
+      "description": "pitch angles (deg)",
+      "format": "list_g",
+      "name": "WlfPitches",
+      "raw": [
+        20.0,
+        70.0
+      ],
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/launches/pitch_angles_deg"
+      },
+      "value": "20, 70"
+    },
+    {
+      "derived": false,
+      "description": "estimator policy",
+      "format": "ident",
+      "name": "WlfEstimatorPolicy",
+      "raw": "unweighted_binomial",
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/launches/estimator_policy"
+      },
+      "value": "unweighted\\_\\allowbreak{}binomial"
+    },
+    {
+      "derived": false,
+      "description": "plasma region ids",
+      "format": "list_text",
+      "name": "WlfPlasmaRegions",
+      "raw": [
+        "injector-zone",
+        "channel-straight",
+        "channel-divergent-exit"
+      ],
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/field_adapter/plasma_region_ids"
+      },
+      "value": "injector-zone, channel-straight, channel-divergent-exit"
+    },
+    {
+      "derivation": "keys of field_adapter.maps ordered primary, refined, enlarged",
+      "derived": true,
+      "description": "field map roles in campaign order",
+      "format": "list_text",
+      "inputs": [
+        {
+          "artifact": "artifacts/protocol.json",
+          "pointer": "/field_adapter/maps"
+        }
+      ],
+      "name": "WlfMapRoleList",
+      "raw": [
+        "primary",
+        "refined",
+        "enlarged"
+      ],
+      "value": "primary, refined, enlarged"
+    },
+    {
+      "derivation": "keys of orbit.timestep_policies ordered N, 2N, 4N",
+      "derived": true,
+      "description": "timestep policies in refinement order",
+      "format": "list_text",
+      "inputs": [
+        {
+          "artifact": "artifacts/protocol.json",
+          "pointer": "/orbit/timestep_policies"
+        }
+      ],
+      "name": "WlfPolicyList",
+      "raw": [
+        "N",
+        "2N",
+        "4N"
+      ],
+      "value": "N, 2N, 4N"
+    },
+    {
+      "derived": false,
+      "description": "dielectric wall radius (mm)",
+      "format": "mm1",
+      "name": "WlfWallRadiusMm",
+      "raw": 0.002,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/orbit/wall/radius_m"
+      },
+      "value": "2.0"
+    },
+    {
+      "derived": false,
+      "description": "wall start (mm)",
+      "format": "mm1",
+      "name": "WlfWallZMinMm",
+      "raw": 0.001,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/orbit/wall/z_min_m"
+      },
+      "value": "1.0"
+    },
+    {
+      "derived": false,
+      "description": "wall end (mm)",
+      "format": "mm1",
+      "name": "WlfWallZMaxMm",
+      "raw": 0.018,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/orbit/wall/z_max_m"
+      },
+      "value": "18.0"
+    },
+    {
+      "derived": false,
+      "description": "domain exit plane (mm)",
+      "format": "mm1",
+      "name": "WlfDomainZMaxMm",
+      "raw": 0.023,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/orbit/domain/z_max_m"
+      },
+      "value": "23.0"
+    },
+    {
+      "derived": false,
+      "description": "cell 1 axial position (mm)",
+      "format": "mm1",
+      "name": "WlfCellOneZMm",
+      "raw": 0.0035,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/launches/position_seeds/0/position_m/2"
+      },
+      "value": "3.5"
+    },
+    {
+      "derived": false,
+      "description": "cell 2 axial position (mm)",
+      "format": "mm1",
+      "name": "WlfCellTwoZMm",
+      "raw": 0.0095,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/launches/position_seeds/2/position_m/2"
+      },
+      "value": "9.5"
+    },
+    {
+      "derived": false,
+      "description": "cell 3 axial position (mm)",
+      "format": "mm1",
+      "name": "WlfCellThreeZMm",
+      "raw": 0.0155,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/launches/position_seeds/4/position_m/2"
+      },
+      "value": "15.5"
+    },
+    {
+      "derived": false,
+      "description": "cell 4 axial position (mm)",
+      "format": "mm1",
+      "name": "WlfCellFourZMm",
+      "raw": 0.0215,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/launches/position_seeds/6/position_m/2"
+      },
+      "value": "21.5"
+    },
+    {
+      "derived": false,
+      "description": "inner launch radius (mm)",
+      "format": "mm2",
+      "name": "WlfRadiusInnerMm",
+      "raw": 0.00135,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/launches/position_seeds/0/position_m/0"
+      },
+      "value": "1.35"
+    },
+    {
+      "derived": false,
+      "description": "outer launch radius (mm)",
+      "format": "mm2",
+      "name": "WlfRadiusOuterMm",
+      "raw": 0.0016,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/launches/position_seeds/1/position_m/0"
+      },
+      "value": "1.60"
+    },
+    {
+      "derived": false,
+      "description": "max gyro-rotation per step, policy N (rad)",
+      "format": "g",
+      "name": "WlfPolicyN",
+      "raw": 0.16,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/orbit/timestep_policies/N/max_rotation_rad"
+      },
+      "value": "0.16"
+    },
+    {
+      "derived": false,
+      "description": "policy 2N (rad)",
+      "format": "g",
+      "name": "WlfPolicyTwoN",
+      "raw": 0.08,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/orbit/timestep_policies/2N/max_rotation_rad"
+      },
+      "value": "0.08"
+    },
+    {
+      "derived": false,
+      "description": "policy 4N (rad)",
+      "format": "g",
+      "name": "WlfPolicyFourN",
+      "raw": 0.04,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/orbit/timestep_policies/4N/max_rotation_rad"
+      },
+      "value": "0.04"
+    },
+    {
+      "derived": false,
+      "description": "integration time limit (s)",
+      "format": "sci2",
+      "name": "WlfMaxTimeS",
+      "raw": 1e-08,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/orbit/max_time_s"
+      },
+      "value": "$1.00\\times10^{-8}$"
+    },
+    {
+      "derived": false,
+      "description": "integration path limit (mm)",
+      "format": "mm1",
+      "name": "WlfMaxPathMm",
+      "raw": 0.03,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/orbit/max_path_m"
+      },
+      "value": "30.0"
+    },
+    {
+      "derived": false,
+      "description": "integration step limit",
+      "format": "int_comma",
+      "name": "WlfMaxSteps",
+      "raw": 200000,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/orbit/max_steps"
+      },
+      "value": "200{,}000"
+    },
+    {
+      "derived": false,
+      "description": "orbit_mc package version",
+      "format": "text",
+      "name": "WlfOrbitMcVersion",
+      "raw": "1.6.0",
+      "source": {
+        "artifact": "artifacts/authorities.json",
+        "pointer": "/orbit_mc_package_version"
+      },
+      "value": "1.6.0"
+    },
+    {
+      "derived": false,
+      "description": "orbit_mc source hash prefix",
+      "format": "sha_short",
+      "name": "WlfOrbitMcSourceSha",
+      "raw": "007c2d51a44d74f989dae6938d10538454886f2e4970f9a9867aaeac8346aa43",
+      "source": {
+        "artifact": "artifacts/authorities.json",
+        "pointer": "/orbit_mc_source_sha256"
+      },
+      "value": "007c2d51a44d"
+    },
+    {
+      "derived": false,
+      "description": "protocol semantic hash prefix",
+      "format": "sha_short",
+      "name": "WlfProtocolSha",
+      "raw": "4fedcfe4b421a3b4dca1cde3be11460a23bb28c359d2e55460d86a1c06402ead",
+      "source": {
+        "artifact": "artifacts/authorities.json",
+        "pointer": "/protocol_semantic_sha256"
+      },
+      "value": "4fedcfe4b421"
+    },
+    {
+      "derived": false,
+      "description": "P2 design id",
+      "format": "text",
+      "name": "WlfPTwoDesign",
+      "raw": "divergent-exit-stack",
+      "source": {
+        "artifact": "artifacts/p2-input-authority.json",
+        "pointer": "/design_id"
+      },
+      "value": "divergent-exit-stack"
+    },
+    {
+      "derived": false,
+      "description": "P2 qualification status",
+      "format": "ident",
+      "name": "WlfPTwoQualification",
+      "raw": "NUMERICAL_P2_QUALIFIED",
+      "source": {
+        "artifact": "artifacts/p2-input-authority.json",
+        "pointer": "/qualification_status"
+      },
+      "value": "NUMERICAL\\_\\allowbreak{}P2\\_\\allowbreak{}QUALIFIED"
+    },
+    {
+      "derived": false,
+      "description": "P2 manifest hash prefix",
+      "format": "sha_short",
+      "name": "WlfPTwoManifestSha",
+      "raw": "0defabb5bf2aa7750bc4a39ce3392fcd6b23ef22470b4560bc0e37d37bb03da1",
+      "source": {
+        "artifact": "artifacts/p2-input-authority.json",
+        "pointer": "/manifest_file_sha256"
+      },
+      "value": "0defabb5bf2a"
+    },
+    {
+      "derived": false,
+      "description": "primary map radial samples",
+      "format": "int",
+      "name": "WlfPrimaryGrid",
+      "raw": 17,
+      "source": {
+        "artifact": "artifacts/field-evidence/primary.json",
+        "pointer": "/regular_grid/radial_samples"
+      },
+      "value": "17"
+    },
+    {
+      "derived": false,
+      "description": "primary map axial samples",
+      "format": "int",
+      "name": "WlfPrimaryGridAxial",
+      "raw": 89,
+      "source": {
+        "artifact": "artifacts/field-evidence/primary.json",
+        "pointer": "/regular_grid/axial_samples"
+      },
+      "value": "89"
+    },
+    {
+      "derived": false,
+      "description": "refined map radial samples",
+      "format": "int",
+      "name": "WlfRefinedGrid",
+      "raw": 33,
+      "source": {
+        "artifact": "artifacts/field-evidence/refined.json",
+        "pointer": "/regular_grid/radial_samples"
+      },
+      "value": "33"
+    },
+    {
+      "derived": false,
+      "description": "refined map axial samples",
+      "format": "int",
+      "name": "WlfRefinedGridAxial",
+      "raw": 177,
+      "source": {
+        "artifact": "artifacts/field-evidence/refined.json",
+        "pointer": "/regular_grid/axial_samples"
+      },
+      "value": "177"
+    },
+    {
+      "derived": false,
+      "description": "certified max |B|, primary map (T)",
+      "format": "fixed4",
+      "name": "WlfPrimaryCertifiedB",
+      "raw": 0.23162909239853657,
+      "source": {
+        "artifact": "artifacts/field-evidence/primary.json",
+        "pointer": "/certificate/certified_max_b_t"
+      },
+      "value": "0.2316"
+    },
+    {
+      "derived": false,
+      "description": "adapter relative RMS limit",
+      "format": "g",
+      "name": "WlfAdapterRmsLimit",
+      "raw": 0.05,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/field_adapter/maximum_b_relative_rms"
+      },
+      "value": "0.05"
+    },
+    {
+      "derived": false,
+      "description": "primary adapter relative RMS error",
+      "format": "sci2",
+      "name": "WlfPrimaryAdapterRms",
+      "raw": 0.000249600618024203,
+      "source": {
+        "artifact": "artifacts/field-evidence/primary.json",
+        "pointer": "/field_error_report/b_relative_rms"
+      },
+      "value": "$2.50\\times10^{-4}$"
+    },
+    {
+      "derived": false,
+      "description": "primary\u2192refined field RMS",
+      "format": "sci2",
+      "name": "WlfPrimaryToRefinedRms",
+      "raw": 0.0003872733176964779,
+      "source": {
+        "artifact": "artifacts/field-map-convergence.json",
+        "pointer": "/primary_to_refined/b_relative_rms"
+      },
+      "value": "$3.87\\times10^{-4}$"
+    },
+    {
+      "derived": false,
+      "description": "refined\u2192enlarged field RMS",
+      "format": "sci2",
+      "name": "WlfRefinedToEnlargedRms",
+      "raw": 0.0014577802609655117,
+      "source": {
+        "artifact": "artifacts/field-map-convergence.json",
+        "pointer": "/refined_to_enlarged/b_relative_rms"
+      },
+      "value": "$1.46\\times10^{-3}$"
+    },
+    {
+      "derivation": "len(gates.checks)",
+      "derived": true,
+      "description": "number of binding gate checks",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/gates.json",
+          "pointer": "/checks"
+        }
+      ],
+      "name": "WlfGateCount",
+      "raw": 15,
+      "value": "15"
+    },
+    {
+      "derivation": "count(gates.checks == true)",
+      "derived": true,
+      "description": "binding gate checks that are true",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/gates.json",
+          "pointer": "/checks"
+        }
+      ],
+      "name": "WlfGatesTrue",
+      "raw": 15,
+      "value": "15"
+    },
+    {
+      "derived": false,
+      "description": "validator calls passed",
+      "format": "int",
+      "name": "WlfValidatorsPassed",
+      "raw": 289,
+      "source": {
+        "artifact": "artifacts/campaign-result.json",
+        "pointer": "/validators/passed"
+      },
+      "value": "289"
+    },
+    {
+      "derived": false,
+      "description": "validator calls failed",
+      "format": "int",
+      "name": "WlfValidatorsFailed",
+      "raw": 0,
+      "source": {
+        "artifact": "artifacts/campaign-result.json",
+        "pointer": "/validators/failed"
+      },
+      "value": "0"
+    },
+    {
+      "derived": false,
+      "description": "execution attempts",
+      "format": "int",
+      "name": "WlfAttemptCount",
+      "raw": 1,
+      "source": {
+        "artifact": "terminal.json",
+        "pointer": "/counts/attempt_count"
+      },
+      "value": "1"
+    },
+    {
+      "derived": false,
+      "description": "exact authority replays",
+      "format": "int",
+      "name": "WlfReplayCount",
+      "raw": 9,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/exact_authority_replay_count"
+      },
+      "value": "9"
+    },
+    {
+      "derived": false,
+      "description": "successive-change gate",
+      "format": "g",
+      "name": "WlfGateThreshold",
+      "raw": 0.01,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/gates/maximum_successive_probability_change"
+      },
+      "value": "0.01"
+    },
+    {
+      "derived": false,
+      "description": "relative energy gate",
+      "format": "sci2",
+      "name": "WlfEnergyGate",
+      "raw": 1e-10,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/gates/maximum_relative_energy_error"
+      },
+      "value": "$1.00\\times10^{-10}$"
+    },
+    {
+      "derived": false,
+      "description": "maximum relative energy error",
+      "format": "g",
+      "name": "WlfEnergyErrorMax",
+      "raw": 0.0,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/maximum_relative_energy_error"
+      },
+      "value": "0"
+    },
+    {
+      "derived": false,
+      "description": "orbits exceeding the energy gate",
+      "format": "int",
+      "name": "WlfEnergyExceed",
+      "raw": 0,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/orbits_exceeding_energy_gate"
+      },
+      "value": "0"
+    },
+    {
+      "derived": false,
+      "description": "final/event velocity mismatches",
+      "format": "int",
+      "name": "WlfVelocityMismatch",
+      "raw": 0,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/final_velocity_event_velocity_mismatches"
+      },
+      "value": "0"
+    },
+    {
+      "derived": false,
+      "description": "maximum wall endpoint error (m)",
+      "format": "sci2",
+      "name": "WlfWallEndpointErr",
+      "raw": 4.336808689942018e-19,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/maximum_wall_endpoint_error_m"
+      },
+      "value": "$4.34\\times10^{-19}$"
+    },
+    {
+      "derived": false,
+      "description": "wall endpoint gate (m)",
+      "format": "sci2",
+      "name": "WlfWallEndpointGate",
+      "raw": 1e-08,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/gates/maximum_wall_endpoint_error_m"
+      },
+      "value": "$1.00\\times10^{-8}$"
+    },
+    {
+      "derived": false,
+      "description": "manufactured gates passed",
+      "format": "bool",
+      "name": "WlfManufacturedPassed",
+      "raw": true,
+      "source": {
+        "artifact": "artifacts/manufactured-gates.json",
+        "pointer": "/passed"
+      },
+      "value": "true"
+    },
+    {
+      "derived": false,
+      "description": "helix observed orders",
+      "format": "list_g",
+      "name": "WlfHelixOrders",
+      "raw": [
+        1.9984247462817009,
+        1.9996082338427408
+      ],
+      "source": {
+        "artifact": "artifacts/manufactured-gates.json",
+        "pointer": "/helix_convergence/observed_orders"
+      },
+      "value": "1.99842, 1.99961"
+    },
+    {
+      "derived": false,
+      "description": "CUDA parity max relative velocity difference",
+      "format": "g",
+      "name": "WlfCudaParity",
+      "raw": 0.0,
+      "source": {
+        "artifact": "artifacts/manufactured-gates.json",
+        "pointer": "/cuda_parity/maximum_relative_velocity_difference"
+      },
+      "value": "0"
+    },
+    {
+      "derived": false,
+      "description": "primary-N wall-hit probability",
+      "format": "fixed4",
+      "name": "WlfPrimaryNWallP",
+      "raw": 0.642578125,
+      "source": {
+        "artifact": "artifacts/campaign-result.json",
+        "pointer": "/campaigns/primary-N/wall_hit/probability"
+      },
+      "value": "0.6426"
+    },
+    {
+      "derived": false,
+      "description": "primary-2N wall-hit probability",
+      "format": "fixed4",
+      "name": "WlfPrimaryTwoNWallP",
+      "raw": 0.64453125,
+      "source": {
+        "artifact": "artifacts/campaign-result.json",
+        "pointer": "/campaigns/primary-2N/wall_hit/probability"
+      },
+      "value": "0.6445"
+    },
+    {
+      "derived": false,
+      "description": "primary-4N wall-hit probability",
+      "format": "fixed4",
+      "name": "WlfPrimaryFourNWallP",
+      "raw": 0.64453125,
+      "source": {
+        "artifact": "artifacts/campaign-result.json",
+        "pointer": "/campaigns/primary-4N/wall_hit/probability"
+      },
+      "value": "0.6445"
+    },
+    {
+      "derived": false,
+      "description": "refined-N wall-hit probability",
+      "format": "fixed4",
+      "name": "WlfRefinedNWallP",
+      "raw": 0.642578125,
+      "source": {
+        "artifact": "artifacts/campaign-result.json",
+        "pointer": "/campaigns/refined-N/wall_hit/probability"
+      },
+      "value": "0.6426"
+    },
+    {
+      "derived": false,
+      "description": "refined-2N wall-hit probability",
+      "format": "fixed4",
+      "name": "WlfRefinedTwoNWallP",
+      "raw": 0.64453125,
+      "source": {
+        "artifact": "artifacts/campaign-result.json",
+        "pointer": "/campaigns/refined-2N/wall_hit/probability"
+      },
+      "value": "0.6445"
+    },
+    {
+      "derived": false,
+      "description": "refined-4N wall-hit probability",
+      "format": "fixed4",
+      "name": "WlfRefinedFourNWallP",
+      "raw": 0.64453125,
+      "source": {
+        "artifact": "artifacts/campaign-result.json",
+        "pointer": "/campaigns/refined-4N/wall_hit/probability"
+      },
+      "value": "0.6445"
+    },
+    {
+      "derived": false,
+      "description": "enlarged-N wall-hit probability",
+      "format": "fixed4",
+      "name": "WlfEnlargedNWallP",
+      "raw": 0.640625,
+      "source": {
+        "artifact": "artifacts/campaign-result.json",
+        "pointer": "/campaigns/enlarged-N/wall_hit/probability"
+      },
+      "value": "0.6406"
+    },
+    {
+      "derived": false,
+      "description": "enlarged-2N wall-hit probability",
+      "format": "fixed4",
+      "name": "WlfEnlargedTwoNWallP",
+      "raw": 0.640625,
+      "source": {
+        "artifact": "artifacts/campaign-result.json",
+        "pointer": "/campaigns/enlarged-2N/wall_hit/probability"
+      },
+      "value": "0.6406"
+    },
+    {
+      "derived": false,
+      "description": "enlarged-4N wall-hit probability",
+      "format": "fixed4",
+      "name": "WlfEnlargedFourNWallP",
+      "raw": 0.640625,
+      "source": {
+        "artifact": "artifacts/campaign-result.json",
+        "pointer": "/campaigns/enlarged-4N/wall_hit/probability"
+      },
+      "value": "0.6406"
+    },
+    {
+      "derivation": "sum over cases of termination_counts.wall_hit",
+      "derived": true,
+      "description": "pooled wall hits",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/primary-N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/primary-2N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/primary-4N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/refined-N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/refined-2N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/refined-4N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/enlarged-N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/enlarged-2N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/enlarged-4N/termination_counts"
+        }
+      ],
+      "name": "WlfPooledWall",
+      "raw": 2962,
+      "value": "2962"
+    },
+    {
+      "derivation": "sum over cases of termination_counts.domain_escape",
+      "derived": true,
+      "description": "pooled domain escapes",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/primary-N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/primary-2N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/primary-4N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/refined-N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/refined-2N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/refined-4N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/enlarged-N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/enlarged-2N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/enlarged-4N/termination_counts"
+        }
+      ],
+      "name": "WlfPooledEscape",
+      "raw": 1646,
+      "value": "1646"
+    },
+    {
+      "derivation": "sum over cases of termination_counts.reflected",
+      "derived": true,
+      "description": "pooled reflections",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/primary-N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/primary-2N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/primary-4N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/refined-N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/refined-2N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/refined-4N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/enlarged-N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/enlarged-2N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/enlarged-4N/termination_counts"
+        }
+      ],
+      "name": "WlfPooledReflected",
+      "raw": 0,
+      "value": "0"
+    },
+    {
+      "derivation": "trials - wall_hit - domain_escape - reflected, summed over cases",
+      "derived": true,
+      "description": "pooled timeouts and numerical failures",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/primary-N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/primary-2N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/primary-4N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/refined-N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/refined-2N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/refined-4N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/enlarged-N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/enlarged-2N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/enlarged-4N/termination_counts"
+        }
+      ],
+      "name": "WlfPooledIncomplete",
+      "raw": 0,
+      "value": "0"
+    },
+    {
+      "derivation": "sum over cases of trial_count",
+      "derived": true,
+      "description": "pooled trials",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/primary-N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/primary-2N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/primary-4N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/refined-N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/refined-2N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/refined-4N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/enlarged-N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/enlarged-2N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/enlarged-4N/termination_counts"
+        }
+      ],
+      "name": "WlfPooledTrials",
+      "raw": 4608,
+      "value": "4608"
+    },
+    {
+      "derivation": "WlfPooledWall / WlfPooledTrials",
+      "derived": true,
+      "description": "pooled wall-hit fraction",
+      "format": "fixed3",
+      "inputs": [
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/primary-N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/primary-2N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/primary-4N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/refined-N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/refined-2N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/refined-4N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/enlarged-N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/enlarged-2N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/enlarged-4N/termination_counts"
+        }
+      ],
+      "name": "WlfPooledWallP",
+      "raw": 0.6427951388888888,
+      "value": "0.643"
+    },
+    {
+      "derivation": "wilson95(WlfPooledWall, WlfPooledTrials).lower",
+      "derived": true,
+      "description": "pooled wall-hit Wilson lower",
+      "format": "fixed3",
+      "inputs": [
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/primary-N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/primary-2N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/primary-4N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/refined-N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/refined-2N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/refined-4N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/enlarged-N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/enlarged-2N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/enlarged-4N/termination_counts"
+        }
+      ],
+      "name": "WlfPooledWallLo",
+      "raw": 0.6288462045205335,
+      "value": "0.629"
+    },
+    {
+      "derivation": "wilson95(WlfPooledWall, WlfPooledTrials).upper",
+      "derived": true,
+      "description": "pooled wall-hit Wilson upper",
+      "format": "fixed3",
+      "inputs": [
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/primary-N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/primary-2N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/primary-4N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/refined-N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/refined-2N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/refined-4N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/enlarged-N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/enlarged-2N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/enlarged-4N/termination_counts"
+        }
+      ],
+      "name": "WlfPooledWallHi",
+      "raw": 0.6565061892576597,
+      "value": "0.657"
+    },
+    {
+      "derivation": "WlfPooledEscape / WlfPooledTrials",
+      "derived": true,
+      "description": "pooled escape fraction",
+      "format": "fixed3",
+      "inputs": [
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/primary-N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/primary-2N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/primary-4N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/refined-N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/refined-2N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/refined-4N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/enlarged-N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/enlarged-2N/termination_counts"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/enlarged-4N/termination_counts"
+        }
+      ],
+      "name": "WlfPooledEscapeP",
+      "raw": 0.3572048611111111,
+      "value": "0.357"
+    },
+    {
+      "derivation": "min over cases",
+      "derived": true,
+      "description": "minimum per-case wall-hit probability",
+      "format": "fixed4",
+      "inputs": [
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/primary-N/wall_hit/probability"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/primary-2N/wall_hit/probability"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/primary-4N/wall_hit/probability"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/refined-N/wall_hit/probability"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/refined-2N/wall_hit/probability"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/refined-4N/wall_hit/probability"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/enlarged-N/wall_hit/probability"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/enlarged-2N/wall_hit/probability"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/enlarged-4N/wall_hit/probability"
+        }
+      ],
+      "name": "WlfWallPMin",
+      "raw": 0.640625,
+      "value": "0.6406"
+    },
+    {
+      "derivation": "max over cases",
+      "derived": true,
+      "description": "maximum per-case wall-hit probability",
+      "format": "fixed4",
+      "inputs": [
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/primary-N/wall_hit/probability"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/primary-2N/wall_hit/probability"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/primary-4N/wall_hit/probability"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/refined-N/wall_hit/probability"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/refined-2N/wall_hit/probability"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/refined-4N/wall_hit/probability"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/enlarged-N/wall_hit/probability"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/enlarged-2N/wall_hit/probability"
+        },
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/campaigns/enlarged-4N/wall_hit/probability"
+        }
+      ],
+      "name": "WlfWallPMax",
+      "raw": 0.64453125,
+      "value": "0.6445"
+    },
+    {
+      "derivation": "max over all timestep and cross-map successive_changes",
+      "derived": true,
+      "description": "largest successive wall-hit probability change",
+      "format": "fixed6",
+      "inputs": [
+        {
+          "artifact": "artifacts/probability-convergence.json",
+          "pointer": "/timestep"
+        },
+        {
+          "artifact": "artifacts/probability-convergence.json",
+          "pointer": "/cross_map"
+        }
+      ],
+      "name": "WlfMaxSuccessiveChange",
+      "raw": 0.00390625,
+      "value": "0.003906"
+    },
+    {
+      "derived": false,
+      "description": "timestep convergence gate",
+      "format": "bool",
+      "name": "WlfTimestepPassed",
+      "raw": true,
+      "source": {
+        "artifact": "artifacts/probability-convergence.json",
+        "pointer": "/timestep_passed"
+      },
+      "value": "true"
+    },
+    {
+      "derived": false,
+      "description": "cross-map convergence gate",
+      "format": "bool",
+      "name": "WlfCrossMapPassed",
+      "raw": true,
+      "source": {
+        "artifact": "artifacts/probability-convergence.json",
+        "pointer": "/cross_map_passed"
+      },
+      "value": "true"
+    },
+    {
+      "derivation": "sum of stratum wall_hit for cells 2 and 3",
+      "derived": true,
+      "description": "wall hits in cells 2\u20133 (all cases)",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/summaries/primary-N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/primary-2N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/primary-4N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/refined-N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/refined-2N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/refined-4N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/enlarged-N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/enlarged-2N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/enlarged-4N.json",
+          "pointer": "/strata"
+        }
+      ],
+      "name": "WlfCellTwoThreeWall",
+      "raw": 2304,
+      "value": "2304"
+    },
+    {
+      "derivation": "sum of stratum trials for cells 2 and 3",
+      "derived": true,
+      "description": "launches in cells 2\u20133 (all cases)",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/summaries/primary-N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/primary-2N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/primary-4N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/refined-N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/refined-2N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/refined-4N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/enlarged-N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/enlarged-2N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/enlarged-4N.json",
+          "pointer": "/strata"
+        }
+      ],
+      "name": "WlfCellTwoThreeTrials",
+      "raw": 2304,
+      "value": "2304"
+    },
+    {
+      "derivation": "sum of stratum (trials - wall_hit) for cell 4",
+      "derived": true,
+      "description": "domain escapes in cell 4 (all cases)",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/summaries/primary-N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/primary-2N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/primary-4N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/refined-N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/refined-2N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/refined-4N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/enlarged-N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/enlarged-2N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/enlarged-4N.json",
+          "pointer": "/strata"
+        }
+      ],
+      "name": "WlfCellFourEscape",
+      "raw": 1152,
+      "value": "1152"
+    },
+    {
+      "derivation": "sum of stratum trials for cell 4",
+      "derived": true,
+      "description": "launches in cell 4 (all cases)",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/summaries/primary-N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/primary-2N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/primary-4N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/refined-N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/refined-2N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/refined-4N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/enlarged-N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/enlarged-2N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/enlarged-4N.json",
+          "pointer": "/strata"
+        }
+      ],
+      "name": "WlfCellFourTrials",
+      "raw": 1152,
+      "value": "1152"
+    },
+    {
+      "derivation": "cell-1 strata with parallel_direction=-1: wall_hit/trials",
+      "derived": true,
+      "description": "cell-1 \u2212z wall-hit fraction",
+      "format": "pct1",
+      "inputs": [
+        {
+          "artifact": "artifacts/summaries/primary-N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/primary-2N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/primary-4N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/refined-N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/refined-2N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/refined-4N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/enlarged-N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/enlarged-2N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/enlarged-4N.json",
+          "pointer": "/strata"
+        }
+      ],
+      "name": "WlfCellOneMinusWallP",
+      "raw": 1.0,
+      "value": "100.0\\%"
+    },
+    {
+      "derivation": "cell-1 strata with parallel_direction=+1: wall_hit/trials",
+      "derived": true,
+      "description": "cell-1 +z wall-hit fraction",
+      "format": "pct1",
+      "inputs": [
+        {
+          "artifact": "artifacts/summaries/primary-N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/primary-2N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/primary-4N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/refined-N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/refined-2N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/refined-4N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/enlarged-N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/enlarged-2N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/enlarged-4N.json",
+          "pointer": "/strata"
+        }
+      ],
+      "name": "WlfCellOnePlusWallP",
+      "raw": 0.1423611111111111,
+      "value": "14.2\\%"
+    },
+    {
+      "derivation": "cell-1 strata with parallel_direction=+1: sum wall_hit",
+      "derived": true,
+      "description": "cell-1 +z wall hits",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/summaries/primary-N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/primary-2N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/primary-4N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/refined-N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/refined-2N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/refined-4N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/enlarged-N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/enlarged-2N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/enlarged-4N.json",
+          "pointer": "/strata"
+        }
+      ],
+      "name": "WlfCellOnePlusWall",
+      "raw": 82,
+      "value": "82"
+    },
+    {
+      "derivation": "cell-1 strata with parallel_direction=+1: sum trials",
+      "derived": true,
+      "description": "cell-1 +z launches",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/summaries/primary-N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/primary-2N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/primary-4N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/refined-N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/refined-2N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/refined-4N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/enlarged-N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/enlarged-2N.json",
+          "pointer": "/strata"
+        },
+        {
+          "artifact": "artifacts/summaries/enlarged-4N.json",
+          "pointer": "/strata"
+        }
+      ],
+      "name": "WlfCellOnePlusTrials",
+      "raw": 576,
+      "value": "576"
+    },
+    {
+      "derived": false,
+      "description": "mu variation minimum",
+      "format": "fixed4",
+      "name": "WlfMuMin",
+      "raw": 0.026098424339838253,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/diagnostics_not_gates/magnetic_moment_variation/min"
+      },
+      "value": "0.0261"
+    },
+    {
+      "derived": false,
+      "description": "mu variation median",
+      "format": "fixed4",
+      "name": "WlfMuMedian",
+      "raw": 0.14056227338236832,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/diagnostics_not_gates/magnetic_moment_variation/median"
+      },
+      "value": "0.1406"
+    },
+    {
+      "derived": false,
+      "description": "mu variation maximum",
+      "format": "fixed4",
+      "name": "WlfMuMax",
+      "raw": 0.6286307459733615,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/diagnostics_not_gates/magnetic_moment_variation/max"
+      },
+      "value": "0.6286"
+    },
+    {
+      "derived": false,
+      "description": "orbits with mu variation > 0.1",
+      "format": "int",
+      "name": "WlfMuAboveTenth",
+      "raw": 2786,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/diagnostics_not_gates/magnetic_moment_variation/count_above_0p1"
+      },
+      "value": "2786"
+    },
+    {
+      "derived": false,
+      "description": "orbits with mu variation > 0.5",
+      "format": "int",
+      "name": "WlfMuAboveHalf",
+      "raw": 209,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/diagnostics_not_gates/magnetic_moment_variation/count_above_0p5"
+      },
+      "value": "209"
+    },
+    {
+      "derived": false,
+      "description": "mu diagnostic role",
+      "format": "ident",
+      "name": "WlfMuRole",
+      "raw": "diagnostic_only",
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/diagnostics_not_gates/magnetic_moment_variation/role"
+      },
+      "value": "diagnostic\\_\\allowbreak{}only"
+    },
+    {
+      "derivation": "count_above_0p1 / orbit_count_with_mu",
+      "derived": true,
+      "description": "share of orbits with mu variation > 0.1",
+      "format": "pct1",
+      "inputs": [
+        {
+          "artifact": "artifacts/gates.json",
+          "pointer": "/diagnostics_not_gates/magnetic_moment_variation"
+        }
+      ],
+      "name": "WlfMuAboveTenthP",
+      "raw": 0.6046006944444444,
+      "value": "60.5\\%"
+    },
+    {
+      "derivation": "sum(summaries.diagnostics.tolerance_close_event_count) / orbit_count",
+      "derived": true,
+      "description": "share of tolerance-close terminations",
+      "format": "pct1",
+      "inputs": [
+        {
+          "artifact": "artifacts/summaries/primary-N.json",
+          "pointer": "/diagnostics/tolerance_close_event_count"
+        },
+        {
+          "artifact": "artifacts/summaries/primary-2N.json",
+          "pointer": "/diagnostics/tolerance_close_event_count"
+        },
+        {
+          "artifact": "artifacts/summaries/primary-4N.json",
+          "pointer": "/diagnostics/tolerance_close_event_count"
+        },
+        {
+          "artifact": "artifacts/summaries/refined-N.json",
+          "pointer": "/diagnostics/tolerance_close_event_count"
+        },
+        {
+          "artifact": "artifacts/summaries/refined-2N.json",
+          "pointer": "/diagnostics/tolerance_close_event_count"
+        },
+        {
+          "artifact": "artifacts/summaries/refined-4N.json",
+          "pointer": "/diagnostics/tolerance_close_event_count"
+        },
+        {
+          "artifact": "artifacts/summaries/enlarged-N.json",
+          "pointer": "/diagnostics/tolerance_close_event_count"
+        },
+        {
+          "artifact": "artifacts/summaries/enlarged-2N.json",
+          "pointer": "/diagnostics/tolerance_close_event_count"
+        },
+        {
+          "artifact": "artifacts/summaries/enlarged-4N.json",
+          "pointer": "/diagnostics/tolerance_close_event_count"
+        }
+      ],
+      "name": "WlfToleranceCloseShare",
+      "raw": 0.4268663194444444,
+      "value": "42.7\\%"
+    },
+    {
+      "derivation": "sum(summaries.diagnostics.tolerance_close_event_count)",
+      "derived": true,
+      "description": "tolerance-close terminations",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/summaries/primary-N.json",
+          "pointer": "/diagnostics/tolerance_close_event_count"
+        },
+        {
+          "artifact": "artifacts/summaries/primary-2N.json",
+          "pointer": "/diagnostics/tolerance_close_event_count"
+        },
+        {
+          "artifact": "artifacts/summaries/primary-4N.json",
+          "pointer": "/diagnostics/tolerance_close_event_count"
+        },
+        {
+          "artifact": "artifacts/summaries/refined-N.json",
+          "pointer": "/diagnostics/tolerance_close_event_count"
+        },
+        {
+          "artifact": "artifacts/summaries/refined-2N.json",
+          "pointer": "/diagnostics/tolerance_close_event_count"
+        },
+        {
+          "artifact": "artifacts/summaries/refined-4N.json",
+          "pointer": "/diagnostics/tolerance_close_event_count"
+        },
+        {
+          "artifact": "artifacts/summaries/enlarged-N.json",
+          "pointer": "/diagnostics/tolerance_close_event_count"
+        },
+        {
+          "artifact": "artifacts/summaries/enlarged-2N.json",
+          "pointer": "/diagnostics/tolerance_close_event_count"
+        },
+        {
+          "artifact": "artifacts/summaries/enlarged-4N.json",
+          "pointer": "/diagnostics/tolerance_close_event_count"
+        }
+      ],
+      "name": "WlfToleranceCloseCount",
+      "raw": 1967,
+      "value": "1967"
+    },
+    {
+      "derivation": "min(summaries.diagnostics.runtime_max_b_t)",
+      "derived": true,
+      "description": "minimum runtime max |B| (T)",
+      "format": "fixed4",
+      "inputs": [
+        {
+          "artifact": "artifacts/summaries/primary-N.json",
+          "pointer": "/diagnostics/runtime_max_b_t"
+        },
+        {
+          "artifact": "artifacts/summaries/primary-2N.json",
+          "pointer": "/diagnostics/runtime_max_b_t"
+        },
+        {
+          "artifact": "artifacts/summaries/primary-4N.json",
+          "pointer": "/diagnostics/runtime_max_b_t"
+        },
+        {
+          "artifact": "artifacts/summaries/refined-N.json",
+          "pointer": "/diagnostics/runtime_max_b_t"
+        },
+        {
+          "artifact": "artifacts/summaries/refined-2N.json",
+          "pointer": "/diagnostics/runtime_max_b_t"
+        },
+        {
+          "artifact": "artifacts/summaries/refined-4N.json",
+          "pointer": "/diagnostics/runtime_max_b_t"
+        },
+        {
+          "artifact": "artifacts/summaries/enlarged-N.json",
+          "pointer": "/diagnostics/runtime_max_b_t"
+        },
+        {
+          "artifact": "artifacts/summaries/enlarged-2N.json",
+          "pointer": "/diagnostics/runtime_max_b_t"
+        },
+        {
+          "artifact": "artifacts/summaries/enlarged-4N.json",
+          "pointer": "/diagnostics/runtime_max_b_t"
+        }
+      ],
+      "name": "WlfRuntimeBMin",
+      "raw": 0.2136483526518506,
+      "value": "0.2136"
+    },
+    {
+      "derivation": "max(summaries.diagnostics.runtime_max_b_t)",
+      "derived": true,
+      "description": "maximum runtime max |B| (T)",
+      "format": "fixed4",
+      "inputs": [
+        {
+          "artifact": "artifacts/summaries/primary-N.json",
+          "pointer": "/diagnostics/runtime_max_b_t"
+        },
+        {
+          "artifact": "artifacts/summaries/primary-2N.json",
+          "pointer": "/diagnostics/runtime_max_b_t"
+        },
+        {
+          "artifact": "artifacts/summaries/primary-4N.json",
+          "pointer": "/diagnostics/runtime_max_b_t"
+        },
+        {
+          "artifact": "artifacts/summaries/refined-N.json",
+          "pointer": "/diagnostics/runtime_max_b_t"
+        },
+        {
+          "artifact": "artifacts/summaries/refined-2N.json",
+          "pointer": "/diagnostics/runtime_max_b_t"
+        },
+        {
+          "artifact": "artifacts/summaries/refined-4N.json",
+          "pointer": "/diagnostics/runtime_max_b_t"
+        },
+        {
+          "artifact": "artifacts/summaries/enlarged-N.json",
+          "pointer": "/diagnostics/runtime_max_b_t"
+        },
+        {
+          "artifact": "artifacts/summaries/enlarged-2N.json",
+          "pointer": "/diagnostics/runtime_max_b_t"
+        },
+        {
+          "artifact": "artifacts/summaries/enlarged-4N.json",
+          "pointer": "/diagnostics/runtime_max_b_t"
+        }
+      ],
+      "name": "WlfRuntimeBMax",
+      "raw": 0.21412015480218538,
+      "value": "0.2141"
+    },
+    {
+      "derived": false,
+      "description": "integration wall time (s)",
+      "format": "fixed1",
+      "name": "WlfIntegrationWallS",
+      "raw": 212.57426659999328,
+      "source": {
+        "artifact": "artifacts/campaign-result.json",
+        "pointer": "/execution_mode/integration_wall_s"
+      },
+      "value": "212.6"
+    },
+    {
+      "derived": false,
+      "description": "parallel case workers",
+      "format": "int",
+      "name": "WlfWorkers",
+      "raw": 9,
+      "source": {
+        "artifact": "artifacts/campaign-result.json",
+        "pointer": "/execution_mode/worker_pool_size"
+      },
+      "value": "9"
+    },
+    {
+      "derivation": "terminal.recorded_at_utc - lock_acquired.recorded_at_utc",
+      "derived": true,
+      "description": "lock-acquired to terminal wall time (s)",
+      "format": "fixed1",
+      "inputs": [
+        {
+          "artifact": "transitions/0001-lock-acquired.json",
+          "pointer": "/recorded_at_utc/value"
+        },
+        {
+          "artifact": "transitions/0009-terminal.json",
+          "pointer": "/recorded_at_utc/value"
+        }
+      ],
+      "name": "WlfLifecycleWallS",
+      "raw": 667.585978,
+      "value": "667.6"
+    },
+    {
+      "derived": false,
+      "description": "coupling integration status",
+      "format": "ident",
+      "name": "WlfCouplingStatus",
+      "raw": "export_only_pending_consumer_integration",
+      "source": {
+        "artifact": "artifacts/coupling-export-only.json",
+        "pointer": "/integration_status"
+      },
+      "value": "export\\_\\allowbreak{}only\\_\\allowbreak{}pending\\_\\allowbreak{}consumer\\_\\allowbreak{}integration"
+    },
+    {
+      "derived": false,
+      "description": "coupling quantity",
+      "format": "ident",
+      "name": "WlfCouplingQuantity",
+      "raw": "electron_dielectric_wall_loss_probability",
+      "source": {
+        "artifact": "artifacts/coupling-export-only.json",
+        "pointer": "/quantity"
+      },
+      "value": "electron\\_\\allowbreak{}dielectric\\_\\allowbreak{}wall\\_\\allowbreak{}loss\\_\\allowbreak{}probability"
+    },
+    {
+      "derived": false,
+      "description": "exported wall-loss probability",
+      "format": "fixed4",
+      "name": "WlfCouplingP",
+      "raw": 0.64453125,
+      "source": {
+        "artifact": "artifacts/coupling-export-only.json",
+        "pointer": "/probability"
+      },
+      "value": "0.6445"
+    },
+    {
+      "derived": false,
+      "description": "exported standard uncertainty",
+      "format": "fixed4",
+      "name": "WlfCouplingU",
+      "raw": 0.021153767292169143,
+      "source": {
+        "artifact": "artifacts/coupling-export-only.json",
+        "pointer": "/standard_uncertainty"
+      },
+      "value": "0.0212"
+    },
+    {
+      "derived": false,
+      "description": "PIC/self-consistent claims forbidden",
+      "format": "bool",
+      "name": "WlfForbidPic",
+      "raw": true,
+      "source": {
+        "artifact": "artifacts/campaign-result.json",
+        "pointer": "/limitations/forbid_pic_or_self_consistent_claim"
+      },
+      "value": "true"
+    },
+    {
+      "derived": false,
+      "description": "mirror-formula publication forbidden",
+      "format": "bool",
+      "name": "WlfForbidMirror",
+      "raw": true,
+      "source": {
+        "artifact": "artifacts/campaign-result.json",
+        "pointer": "/limitations/forbid_mirror_formula_publication"
+      },
+      "value": "true"
+    },
+    {
+      "derived": false,
+      "description": "plasma performance publication forbidden",
+      "format": "bool",
+      "name": "WlfForbidPerformance",
+      "raw": true,
+      "source": {
+        "artifact": "artifacts/campaign-result.json",
+        "pointer": "/limitations/forbid_plasma_performance_publication"
+      },
+      "value": "true"
+    },
+    {
+      "derived": false,
+      "description": "hardware/experimental validation claimed",
+      "format": "bool",
+      "name": "WlfHardwareValidation",
+      "raw": false,
+      "source": {
+        "artifact": "artifacts/campaign-result.json",
+        "pointer": "/limitations/hardware_or_experimental_validation"
+      },
+      "value": "false"
+    },
+    {
+      "derived": false,
+      "description": "v1 terminal state",
+      "format": "ident",
+      "name": "WlfVOneState",
+      "raw": "prebundle_failure",
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/prior_campaign_disclosure/v1/terminal_state"
+      },
+      "value": "prebundle\\_\\allowbreak{}failure"
+    },
+    {
+      "derived": false,
+      "description": "v1 error message",
+      "format": "text",
+      "name": "WlfVOneError",
+      "raw": "launch manifest differs from preregistered authority",
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/prior_campaign_disclosure/v1/primary_error_message"
+      },
+      "value": "launch manifest differs from preregistered authority"
+    },
+    {
+      "derived": false,
+      "description": "v2 terminal state",
+      "format": "ident",
+      "name": "WlfVTwoState",
+      "raw": "runtime_failure",
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/prior_campaign_disclosure/v2/terminal_state"
+      },
+      "value": "runtime\\_\\allowbreak{}failure"
+    },
+    {
+      "derived": false,
+      "description": "v2 error message",
+      "format": "text",
+      "name": "WlfVTwoError",
+      "raw": "ordered launch/result/campaign identities are inconsistent",
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/prior_campaign_disclosure/v2/primary_error_message"
+      },
+      "value": "ordered launch/result/campaign identities are inconsistent"
+    },
+    {
+      "derived": false,
+      "description": "v3 terminal state",
+      "format": "ident",
+      "name": "WlfVThreeState",
+      "raw": "runtime_failure",
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/prior_campaign_disclosure/v3/terminal_state"
+      },
+      "value": "runtime\\_\\allowbreak{}failure"
+    },
+    {
+      "derived": false,
+      "description": "v3 error message",
+      "format": "text",
+      "name": "WlfVThreeError",
+      "raw": "physical event witness requires a positive step",
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/prior_campaign_disclosure/v3/primary_error_message"
+      },
+      "value": "physical event witness requires a positive step"
+    },
+    {
+      "derived": false,
+      "description": "shakedown passed",
+      "format": "bool",
+      "name": "WlfShakedownPassed",
+      "raw": true,
+      "source": {
+        "artifact": "artifacts/shakedown.json",
+        "pointer": "/passed"
+      },
+      "value": "true"
+    },
+    {
+      "derived": false,
+      "description": "shakedown evidentiary flag",
+      "format": "bool",
+      "name": "WlfShakedownEvidentiary",
+      "raw": false,
+      "source": {
+        "artifact": "artifacts/shakedown.json",
+        "pointer": "/evidentiary"
+      },
+      "value": "false"
+    },
+    {
+      "derived": false,
+      "description": "shakedown launches",
+      "format": "int",
+      "name": "WlfShakedownLaunches",
+      "raw": 576,
+      "source": {
+        "artifact": "artifacts/shakedown.json",
+        "pointer": "/disjointness/shakedown_launch_count"
+      },
+      "value": "576"
+    },
+    {
+      "derived": false,
+      "description": "shakedown disjointness proven",
+      "format": "bool",
+      "name": "WlfShakedownDisjoint",
+      "raw": true,
+      "source": {
+        "artifact": "artifacts/shakedown.json",
+        "pointer": "/disjointness/proven"
+      },
+      "value": "true"
+    },
+    {
+      "derived": false,
+      "description": "orbit_mc/base commit prefix",
+      "format": "sha_short",
+      "name": "WlfBaseCommit",
+      "raw": "3ab50ef5c31cfa45f2256ddba18dafa965010c7a",
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/authority/base_commit"
+      },
+      "value": "3ab50ef5c31c"
+    },
+    {
+      "derived": false,
+      "description": "P2 evidence commit prefix",
+      "format": "sha_short",
+      "name": "WlfPTwoCommit",
+      "raw": "a1158bad5eac3dd27ca6464a7649ce359524d8db",
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/authority/p2_evidence_commit"
+      },
+      "value": "a1158bad5eac"
+    },
+    {
+      "derived": false,
+      "description": "preregistration commit recorded in the execution lock",
+      "format": "sha_short",
+      "name": "WlfPreregCommit",
+      "raw": "757e365f9f667620c7610663574294c3b71e1f51",
+      "source": {
+        "artifact": "execution-lock.json",
+        "pointer": "/commit"
+      },
+      "value": "757e365f9f66"
+    },
+    {
+      "derivation": "git commit whose tree holds the results manifest blob (verified with rev-parse against the working tree)",
+      "derived": true,
+      "description": "results commit prefix",
+      "format": "sha_short",
+      "inputs": [
+        {
+          "artifact": "manifest.json",
+          "pointer": ""
+        }
+      ],
+      "name": "WlfResultsCommit",
+      "raw": "6922a3cf97d261735266aa1a5a0c0c9683e021ca",
+      "value": "6922a3cf97d2"
+    },
+    {
+      "derived": false,
+      "description": "interval method identifier",
+      "format": "text",
+      "name": "WlfIntervalMethod",
+      "raw": "wilson-95",
+      "source": {
+        "artifact": "artifacts/campaign-result.json",
+        "pointer": "/campaigns/primary-N/wall_hit/method"
+      },
+      "value": "wilson-95"
+    }
+  ],
+  "manuscript_integration": {
+    "generated_tex_path": "paper/generated/wall-loss-v4.tex",
+    "reason": "manuscript.tex pins its evidence boundary to the L0 evidence revision and admits results only through claims.json/result-gates.json; this section can be \\input only after a claim-matrix entry and gate for the wall-loss campaign are accepted.",
+    "section_path": "paper/sections/wall-loss-v4.tex",
+    "status": "draft-section-not-wired-into-manuscript"
+  },
+  "output": {
+    "path": "paper/generated/wall-loss-v4.tex",
+    "sha256": "3d1e4c8af7bfc43d7a86a7ca112b08c0d0bcadb70a15784525ad2d96505608a7"
+  },
+  "schema_version": "1.0",
+  "tables": {
+    "WlfCaseTable": {
+      "rows": 9,
+      "source": "artifacts/campaign-result.json#/campaigns"
+    },
+    "WlfCellTable": {
+      "rows": 4,
+      "source": "artifacts/summaries/<case>.json#/strata"
+    }
+  }
+}

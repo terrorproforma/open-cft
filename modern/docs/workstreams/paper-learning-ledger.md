@@ -115,3 +115,23 @@
   remain human gates.
 - `paper/build/` and Python caches stay local; evidence manifests, generated
   TeX sources, and sidecars must remain trackable for integration.
+## 2026-09-03 — Wall-loss v4 evidence
+
+- [self] Generated TeX must be macro-only and the section must reference
+  macros only; a regex test that strips comments, `\label`/`\ref` arguments,
+  macro names and layout dimensions and then asserts "no digits" catches every
+  hand-typed number, including layout constants that had to be exempted
+  explicitly.
+- [self] Long `\texttt` identifiers (`snake_case` classifications, hashes)
+  overflow the line; format identifiers with `\allowbreak{}` after `\_` and
+  `-`, and never put a box directly after a run-in `\paragraph` heading (the
+  heading joins the box's paragraph and overflows by the heading width).
+- [self] Provenance sidecars that hash a generator's working-tree bytes are
+  CRLF-sensitive; after the repository-wide `eol=lf` pin the L0 sidecar was
+  stale on every fresh checkout. Hash LF-normalised bytes in new generators.
+- [tool] Headless Chrome (`--headless=new`) clamps the window to ~512 px wide
+  and ~5400 px tall; test narrow layouts through a 390 px iframe host page and
+  capture tails through an offset iframe.
+- [user] Draft results stay outside `manuscript.tex` until a claim record and
+  gate admit them; `manuscript_integration.status` in the evidence file
+  records that boundary explicitly.

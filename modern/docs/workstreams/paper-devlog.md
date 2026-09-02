@@ -135,3 +135,48 @@
 - Supply and approve current affiliations.
 - Select a corresponding author and approve correspondence details.
 - Confirm target-venue disclosure, licensing, and submission-format choices.
+## 2026-09-03 — Wall-loss v4 evidence and draft subsection
+
+### Scope
+
+- New paths only: `paper/scripts/generate_wall_loss_v4_evidence.py`,
+  `paper/evidence/wall-loss-v4.json`, `paper/generated/wall-loss-v4.tex`,
+  `paper/generated/wall-loss-v4.provenance.json`, `paper/sections/`,
+  `paper/tests/test_wall_loss_v4_evidence.py`; `manuscript.tex`, `claims.json`
+  and `result-gates.json` untouched.
+- Evidence source: the accepted `cft_orbit_wall_loss_v4` bundle at commit
+  `6922a3cf97d261735266aa1a5a0c0c9683e021ca` (results manifest SHA-256
+  `ef3863b0a3ba0a1d74187b05daf81d5d94d3838a7e33ecf82c485dccd162929f`).
+
+### Added
+
+- Standard-library generator that verifies every bundle file against the
+  results manifest (tolerating exactly the nine CRLF-recorded
+  `artifacts/orbits/<case>.json.sha256` sidecars), cross-checks terminal,
+  campaign, gates, summaries and convergence artifacts, and emits macro-only
+  TeX with a per-macro artifact/pointer/format trace.
+- Draft results subsection "Collisionless full-orbit electron wall loss in the
+  divergent-exit field" (method, results with per-case and per-cell tables,
+  numerical convergence, boxed model-bounded interpretation) using evidence
+  macros only; a standalone driver compiles it.
+- Tests: deterministic regeneration, committed outputs current, every macro
+  traces to a hashed artifact and reformats identically, derived macros
+  recompute, section uses only defined macros and no literal digits, tampered
+  bundles rejected, standalone pdflatex compile clean of errors and overfull
+  boxes.
+
+### Repaired
+
+- `paper/generated/l0-ranges.provenance.json` regenerated with the repository's
+  own `generate_tables.py`: the committed sidecar carried the CRLF-era
+  generator and manifest hashes, so `check_paper.py` and two existing tests
+  failed on every LF checkout. Table bytes unchanged.
+
+### Validation
+
+- `python paper/scripts/check_paper.py`: passed.
+- `python -m unittest discover -s paper/tests`: 19 tests OK.
+- `python paper/scripts/build.py`: clean deterministic manuscript build
+  (pdflatex/bibtex, MiKTeX installer disabled).
+- Standalone section: two pdflatex passes, no errors, no undefined references,
+  no overfull boxes; three pages.

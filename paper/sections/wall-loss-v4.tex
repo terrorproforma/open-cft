@@ -1,0 +1,131 @@
+% Draft results subsection: CFT full-orbit electron wall loss, campaign v4.
+%
+% Every quantity in this file is a \Wlf... macro defined in
+% paper/generated/wall-loss-v4.tex, which paper/scripts/generate_wall_loss_v4_evidence.py
+% writes from the sealed results bundle of modern/experiments/cft_orbit_wall_loss_v4;
+% paper/evidence/wall-loss-v4.json records the artifact path, JSON pointer and
+% SHA-256 behind each macro. No numeric literal is typed here.
+%
+% Status: draft. This file is not \input into manuscript.tex. The manuscript pins
+% its evidence boundary to the L0 evidence revision and admits results only through
+% claims.json and result-gates.json; integrating this subsection requires a claim
+% record and gate for the wall-loss campaign. The standalone driver
+% paper/sections/wall-loss-v4-standalone.tex compiles this file on its own.
+\subsection{Collisionless full-orbit electron wall loss in the divergent-exit field}
+\label{sec:wall-loss-v4}
+
+\paragraph{Method.}
+The campaign integrates relativistic Boris test-particle electron orbits in the
+prescribed magnetostatic field of the \texttt{\WlfPTwoDesign} design, the third-level
+P2 finite-element reference that carries the \texttt{\WlfPTwoQualification} status
+(manifest hash prefix \texttt{\WlfPTwoManifestSha}, evidence commit prefix
+\texttt{\WlfPTwoCommit}). Three hash-bound field maps are used
+(\WlfMapRoleList): the bound quadratic $A_\phi$ solution is sampled onto a regular
+$\psi$ grid (\WlfPrimaryGrid$\times$\WlfPrimaryGridAxial{} nodes for the primary and
+enlarged-domain maps, \WlfRefinedGrid$\times$\WlfRefinedGridAxial{} for the refined
+map) inside the homogeneous plasma sub-domain (regions \WlfPlasmaRegions), with a
+withheld mid-cell adapter error of \WlfPrimaryAdapterRms{} relative RMS against a
+limit of \WlfAdapterRmsLimit. Each of the \WlfCaseCount{} cases (map role $\times$
+timestep policy \WlfPolicyList, with maximum gyro-rotations of \WlfPolicyN,
+\WlfPolicyTwoN{} and \WlfPolicyFourN{} rad per step) launches \WlfLaunchesPerCase{}
+electrons with equal weights: \WlfStrataPerCase{} strata formed by four axial cells
+at $z = \WlfCellOneZMm$, \WlfCellTwoZMm, \WlfCellThreeZMm{} and \WlfCellFourZMm{} mm,
+two kinetic energies (\WlfEnergies{} eV), two pitch angles (\WlfPitches$^\circ$) and
+both parallel directions; each stratum holds \WlfRepeatsPerStratum{} launch radii
+(\WlfRadiusInnerMm{} and \WlfRadiusOuterMm{} mm) times \WlfGyrophaseCount{}
+gyrophases. The wall estimand is a hit on the straight cylindrical dielectric
+($r = \WlfWallRadiusMm$ mm, $\WlfWallZMinMm \le z \le \WlfWallZMaxMm$ mm); radial exit
+in the divergent section ($\WlfWallZMaxMm$--$\WlfDomainZMaxMm$ mm) and axial exit
+through either plane are domain escapes, not wall events. Orbits are limited to
+\WlfMaxTimeS{} s, \WlfMaxPathMm{} mm and \WlfMaxSteps{} steps; no orbit reached a
+limit. The estimator is \texttt{\WlfEstimatorPolicy} with \texttt{\WlfIntervalMethod}
+intervals.
+
+The protocol was frozen before any outcome was observed and executed exactly
+\WlfAttemptCount{} time with \texttt{orbit\_mc} \WlfOrbitMcVersion. Its identities are
+the preregistration commit \texttt{\WlfPreregCommit}, the results commit
+\texttt{\WlfResultsCommit}, the integrator source hash \texttt{\WlfOrbitMcSourceSha}
+and the protocol hash \texttt{\WlfProtocolSha} (all quoted as prefixes; the full
+digests are in the evidence file). Three earlier preregistered attempts terminated on
+code defects before producing any orbit outcome (\texttt{\WlfVOneState}:
+``\WlfVOneError''; \texttt{\WlfVTwoState}: ``\WlfVTwoError''; \texttt{\WlfVThreeState}:
+``\WlfVThreeError''). This campaign therefore added a disclosed non-evidentiary
+shakedown of the complete production path on the real fields
+(\WlfShakedownLaunches{} launches on a design proven disjoint from the evidentiary
+one: disjoint \WlfShakedownDisjoint, passed \WlfShakedownPassed, evidentiary
+\WlfShakedownEvidentiary) that must pass before the preregistration can be frozen.
+Acceptance is decided by \WlfGateCount{} binding gates: probability convergence in
+timestep and across maps, a relative energy gate of \WlfEnergyGate, wall-endpoint
+error, earliest-event ordering, the runtime rotation bound, manufactured convergence
+orders, CPU/CUDA parity, material quarantine, exact authority replay, and zero
+incomplete or numerical failures.
+
+\paragraph{Results.}
+The run terminated in state \texttt{\WlfTerminalState} with \WlfGatesTrue{} of
+\WlfGateCount{} binding gates true and \WlfValidatorsPassed{} validator calls with
+\WlfValidatorsFailed{} failures; every case was re-integrated by the exact authority
+replay (\WlfReplayCount{} replays). Table~\ref{tab:wall-loss-v4-cases} lists the
+per-case termination probabilities. The wall-hit probability lies between
+\WlfWallPMin{} and \WlfWallPMax{} across the nine cases; pooled with equal weights
+over all \WlfPooledTrials{} orbits it is \WlfPooledWallP{} (interval
+[\WlfPooledWallLo, \WlfPooledWallHi]), with \WlfPooledEscape{} domain escapes
+(\WlfPooledEscapeP), exactly \WlfPooledReflected{} reflections and
+\WlfPooledIncomplete{} timeouts or numerical failures.
+Table~\ref{tab:wall-loss-v4-cells} shows that the pooled value averages a bimodal
+per-cell result: the two interior cells lose every launch to the wall
+(\WlfCellTwoThreeWall{} of \WlfCellTwoThreeTrials), the exit cell beyond the
+dielectric end escapes entirely (\WlfCellFourEscape{} of \WlfCellFourTrials), and the
+injector-side cell depends on the launch direction (\WlfCellOneMinusWallP{} wall loss
+for launches toward the injector plane against \WlfCellOnePlusWallP{}, that is
+\WlfCellOnePlusWall{} of \WlfCellOnePlusTrials, toward the exit).
+\WlfCaseTable
+\WlfCellTable
+
+\paragraph{Numerical convergence.}
+Halving the maximum gyro-rotation per step twice (\WlfPolicyList) and changing the
+field map (\WlfMapRoleList) moved the wall-hit probability by at most
+\WlfMaxSuccessiveChange{} against a preregistered gate of \WlfGateThreshold, and every
+adjacent pair of intervals overlaps (timestep gate \WlfTimestepPassed, cross-map gate
+\WlfCrossMapPassed). The maximum relative kinetic-energy drift over all orbits is
+\WlfEnergyErrorMax{} against a gate of \WlfEnergyGate{} (\WlfEnergyExceed{} orbits above
+the gate, \WlfVelocityMismatch{} final-velocity/event-velocity mismatches); the maximum
+wall-endpoint error is \WlfWallEndpointErr{} m against \WlfWallEndpointGate{} m; the
+manufactured helix orders are \WlfHelixOrders{} and the CPU/CUDA relative velocity
+difference is \WlfCudaParity. The maps agree to \WlfPrimaryToRefinedRms{} (primary to
+refined) and \WlfRefinedToEnlargedRms{} (refined to enlarged) relative RMS in $|B|$,
+and the runtime maximum $|B|$ seen by any orbit was
+\WlfRuntimeBMin--\WlfRuntimeBMax{} T against the certified bound of
+\WlfPrimaryCertifiedB{} T. The per-orbit magnetic-moment variation (minimum
+\WlfMuMin, median \WlfMuMedian, maximum \WlfMuMax; \WlfMuAboveTenthP{} of orbits above
+one tenth, \WlfMuAboveHalf{} orbits above one half) is reported as
+\texttt{\WlfMuRole} and is not a gate: electrons in the divergent-exit cusp are
+non-adiabatic where the gyroradius approaches the field scale length, so large
+variation is the measured physics of this configuration rather than a numerical
+defect. \WlfToleranceCloseShare{} of terminations (\WlfToleranceCloseCount{} orbits)
+resolved through the tolerance-close event path, which the bound integrator contract
+treats as physical events. The campaign took \WlfLifecycleWallS{} s of wall time from
+lock acquisition to the terminal record (\WlfIntegrationWallS{} s of integration on
+\WlfWorkers{} parallel case workers); timings are diagnostic only.
+
+\paragraph{Interpretation.}
+The boxed statement is the only interpretation offered; it is bounded to the model
+and repeats the publication boundary sealed with the campaign.
+\par\medskip\noindent
+\fbox{\begin{minipage}{0.94\linewidth}
+\textbf{Model-bounded interpretation.} Within a collisionless, prescribed-field,
+test-particle model (\texttt{\WlfClassification}), electrons launched in the straight
+channel between the cusps reach the dielectric on their first pass regardless of
+energy, pitch or direction, electrons launched beyond the dielectric end leave the
+domain, and only launches nearest the injector plane show any direction dependence.
+No orbit reflected (\WlfPooledReflected{} of \WlfPooledTrials), so a mirror or
+loss-cone description does not apply to this field and design
+(mirror-formula publication forbidden: \WlfForbidMirror). The pooled fraction
+\WlfPooledWallP{} is an equal-weight design average of a bimodal per-cell result and
+is not a physical loss rate. The result is not a particle-in-cell or
+self-consistent plasma calculation (forbidden: \WlfForbidPic), not thruster
+performance (forbidden: \WlfForbidPerformance), and carries no hardware or
+experimental validation (claimed: \WlfHardwareValidation). The coupling export
+(\texttt{\WlfCouplingQuantity} $= \WlfCouplingP \pm \WlfCouplingU$) has status
+\texttt{\WlfCouplingStatus}; no consumer model has ingested it.
+\end{minipage}}
+\par\medskip

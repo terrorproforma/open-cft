@@ -8,7 +8,7 @@
   "generator": {
     "command": "python paper/scripts/generate_tables.py",
     "path": "paper/scripts/generate_tables.py",
-    "sha256": "0c1ac8cbd1be6e358ae5172041c180538968eac3127cecc894dbdd60742bd780"
+    "sha256": "4ac53c6eea9c1edd0f84a745299ff748a51d0e4b61ad4c14ea0a2d4c7983c470"
   },
   "inputs": [
     {
@@ -21,7 +21,7 @@
   "manifest": {
     "manifest_id": "L0-SWEEP-20260901-8192-V1",
     "path": "paper/evidence/l0-run-manifest.json",
-    "sha256": "bd946049652dfd03b3ce1014541e085f39231f2ead371799ccddce8555168938"
+    "sha256": "91ee7a06dc322ccc3ea7e128b61a6082f1e7cd75d02d6d0f5e4e326c3036eb47"
   },
   "output": {
     "path": "paper/generated/l0-ranges.tex",
