@@ -911,8 +911,10 @@ def _write_canonical_bytes(path: Path, data: bytes) -> str:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_bytes(data)
     digest = hashlib.sha256(data).hexdigest()
+    # newline="\n": the sidecar must be byte-identical on every platform (the
+    # repository stores LF; a CRLF sidecar cannot reproduce a recorded hash).
     path.with_name(path.name + ".sha256").write_text(
-        f"{digest}  {path.name}\n", encoding="ascii"
+        f"{digest}  {path.name}\n", encoding="ascii", newline="\n"
     )
     return digest
 

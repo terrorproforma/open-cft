@@ -1,6 +1,6 @@
 """Verified full-orbit test-particle Monte Carlo for CFT wall-loss evidence."""
 
-__version__ = "1.6.0"
+__version__ = "1.7.0"
 
 from .artifacts import (
     CHECKPOINT_VERSION,

@@ -64,6 +64,51 @@ def _mentions_mu(key: str) -> bool:
     return "mu" in parts or "magnetic_moment" in key.lower()
 
 
+# The frozen contract binds the *executed* orbit_mc (1.6.0 at preregistration
+# commit 757e365f). Before execution the live worktree had to match it exactly;
+# after the terminal bundle exists the live package is allowed to move on (v1.7
+# fixed sidecar EOL bytes) and the binding is checked against the recorded
+# bundle and the preregistration commit's blobs instead.
+FROZEN_ORBIT_MC_VERSION = "1.6.0"
+RESULT_MANIFEST = experiment.RESULTS_ROOT / "manifest.json"
+EXECUTED = RESULT_MANIFEST.is_file()
+
+
+def _live_orbit_mc_matches_frozen_contract() -> bool:
+    if not experiment.AUTHORITIES_PATH.is_file():
+        return True
+    authorities = strict_json_file(experiment.AUTHORITIES_PATH)
+    return (
+        orbit_mc.__version__ == authorities["orbit_mc_package_version"]
+        and orbit_mc_source_sha256() == authorities["orbit_mc_source_sha256"]
+    )
+
+
+def _git_blob(commit: str, relative_to_repo: str) -> bytes:
+    import subprocess
+
+    return subprocess.run(
+        ["git", "show", f"{commit}:{relative_to_repo}"],
+        cwd=experiment.REPOSITORY,
+        check=True,
+        capture_output=True,
+    ).stdout
+
+
+def _source_sha256_at_commit(commit: str, source_files: list[str]) -> str:
+    """Recompute ``orbit_mc_source_sha256`` from the commit's LF blobs."""
+
+    digest = hashlib.sha256()
+    for relative in source_files:
+        data = _git_blob(commit, f"modern/{relative}")
+        assert b"\r" not in data, relative
+        digest.update(relative.encode("utf-8"))
+        digest.update(b"\0")
+        digest.update(data)
+        digest.update(b"\0")
+    return digest.hexdigest()
+
+
 def test_only_qualified_divergent_exit_design_is_authorized() -> None:
     value = protocol()
     assert value["schema_version"] == schema("protocol")
@@ -168,7 +213,6 @@ def test_all_checkpoint_chains_and_fresh_grid_preflight_pass() -> None:
     audit = production_synthetic_preflight(
         value, build_all_case_authorities(value, plan)
     )
-    assert audit["passed"]
     assert len(audit["covered_fields"]) == 11
     assert "event_witness_v1_6_event_velocity_and_midpoint_fields" in audit["covered_fields"]
     assert "failure_event_witness_v1_6_zero_vectors" in audit["covered_fields"]
@@ -188,8 +232,19 @@ def test_all_checkpoint_chains_and_fresh_grid_preflight_pass() -> None:
     for report in overlap["reports"].values():
         assert report["disjoint"] is True
         assert set(report["overlap_counts"].values()) == {0}
-    assert all(audit["checks"].values())
-    assert audit["orbit_mc_contract"]["matches"] is True
+    if EXECUTED and not _live_orbit_mc_matches_frozen_contract():
+        # Post-execution drift of the live package is the only admissible
+        # failure; every numerical/coverage check must still pass.
+        failed = {key for key, passed in audit["checks"].items() if not passed}
+        assert failed == {"orbit_mc_contract_matches"}, failed
+        assert audit["orbit_mc_contract"]["matches"] is False
+        assert audit["orbit_mc_contract"]["expected"]["package_version"] == FROZEN_ORBIT_MC_VERSION
+        assert audit["orbit_mc_contract"]["observed"]["package_version"] == orbit_mc.__version__
+        assert audit["passed"] is False
+    else:
+        assert audit["passed"]
+        assert all(audit["checks"].values())
+        assert audit["orbit_mc_contract"]["matches"] is True
     with pytest.raises(CanonicalizationError, match="reserved"):
         canonical_bytes({"__cft_type__": "tuple", "items": []})
 
@@ -266,21 +321,43 @@ def test_prior_campaign_disclosure_lists_exact_failures_and_shakedown_rule() -> 
 def test_orbit_mc_contract_and_source_hash_are_bound_to_this_worktree() -> None:
     value = protocol()
     report = orbit_mc_contract_report(value)
-    assert report["matches"] is True, report
-    assert report["observed"]["package_version"] == orbit_mc.__version__ == "1.6.0"
-    assert report["observed"]["result_schema_version"] == "cft-revival-orbit-mc-result/1.6.0"
-    assert (
-        report["observed"]["checkpoint_schema_version"]
-        == "cft-revival-orbit-mc-checkpoint/1.6.0"
-    )
-    assert (
-        report["observed"]["validation_protocol_schema_version"]
-        == "cft-revival-orbit-mc-validation-protocol/1.6.0"
-    )
-    assert (
-        report["observed"]["handoff_schema_version"]
-        == "cft-revival-orbit-mc-coupling-v4.2/1.3.0"
-    )
+    expected = {
+        "package_version": FROZEN_ORBIT_MC_VERSION,
+        "result_schema_version": "cft-revival-orbit-mc-result/1.6.0",
+        "checkpoint_schema_version": "cft-revival-orbit-mc-checkpoint/1.6.0",
+        "validation_protocol_schema_version": (
+            "cft-revival-orbit-mc-validation-protocol/1.6.0"
+        ),
+        "handoff_schema_version": "cft-revival-orbit-mc-coupling-v4.2/1.3.0",
+    }
+    assert report["expected"] == expected
+    if EXECUTED and not _live_orbit_mc_matches_frozen_contract():
+        # The evidence was produced under the frozen contract; the live package
+        # has since moved (schemas unchanged). Check the recorded bindings.
+        recorded = strict_json_file(
+            experiment.RESULTS_ROOT / "artifacts" / "orbit-mc-contract.json"
+        )
+        authorities = strict_json_file(experiment.AUTHORITIES_PATH)
+        assert recorded["matches"] is True
+        assert recorded["expected"] == recorded["observed"] == expected
+        assert authorities["orbit_mc_schema_versions"] == expected
+        assert authorities["orbit_mc_package_version"] == FROZEN_ORBIT_MC_VERSION
+        assert recorded["source_sha256"] == authorities["orbit_mc_source_sha256"]
+        assert recorded["source_files"] == report["source_files"]
+        lock = strict_json_file(experiment.RESULTS_ROOT / "execution-lock.json")
+        assert recorded["source_sha256"] == _source_sha256_at_commit(
+            lock["commit"], recorded["source_files"]
+        )
+        # Only the package version may differ; every schema version is frozen.
+        drift = {
+            key for key in expected if report["observed"][key] != expected[key]
+        }
+        assert drift == {"package_version"}, report["observed"]
+        assert report["observed"]["package_version"] == orbit_mc.__version__ != "1.6.0"
+    else:
+        assert report["matches"] is True, report
+        assert report["observed"] == expected
+        assert orbit_mc.__version__ == FROZEN_ORBIT_MC_VERSION
     assert report["source_sha256"] == orbit_mc_source_sha256()
     assert len(report["source_sha256"]) == 64
     assert any(item.endswith("orbit_mc/integrator.py") for item in report["source_files"])

@@ -172,6 +172,32 @@
   particle; on CUDA it is ~18x slower than numpy for this workload. The CPU
   reference at ~90 ms/orbit (primary-N) and ~380 ms/orbit (4N) is the campaign
   path; 9 cases × 512 launches is ~30-40 CPU minutes.
+- [evidence, v1.7] Anything whose bytes are hashed must be written as bytes or
+  with an explicit `newline="\n"`. `Path.write_text(...)` without `newline=`
+  emits the platform EOL, so the same sidecar text hashed differently on
+  Windows (CRLF) and in Git (LF): the v4 bundle recorded nine CRLF sidecar
+  hashes that a fresh checkout cannot reproduce, while every hash of the
+  evidence itself (the canonical JSON artifacts, which contain no EOL bytes)
+  was unaffected. v1.7 pins the EOL; the fix changes no hash of any artifact,
+  only the sidecar's bytes. Version bumped 1.6.0 -> 1.7.0 with all schema
+  versions unchanged because the on-disk contract did not change.
+- [testing, v1.7] A one-off grep is not a guardrail. The newline lint is a
+  fail-closed AST test over every hash-bound package: text-mode opens without
+  `newline=`, and opens whose mode is not a string literal, fail; the only
+  allowlist entries are `.open(...)` calls that provably return binary or
+  directory handles, each with its reason next to it. The lint proved itself
+  by reporting exactly the two pre-fix lines when run against the old blobs.
+- [testing, v1.7] Readers were lenient all along (`read_text` uses universal
+  newlines), so no unit test could see the CRLF sidecar; only the byte-exact
+  `experiment_runtime` manifest did, and only on a checkout that was not the
+  producing tree. Tests for byte-bound outputs must compare bytes, simulate
+  the normalisation the VCS applies, and never route through a text reader.
+- [protocol, v1.7] A preregistered experiment's tests that bind the *live*
+  worktree to the frozen code contract are correct only until the one
+  execution. After the terminal bundle exists they must bind the *recorded*
+  contract (bundle + preregistration-commit blobs) and assert the gate stays
+  closed, or the first legitimate package change after the campaign turns the
+  experiment's own tests red for reasons unrelated to its evidence.
 
 ## Follow-up risks
 

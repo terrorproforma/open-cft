@@ -147,11 +147,90 @@ def _record() -> dict:
     return strict_json_file(SHAKEDOWN_PATH)
 
 
+# After the one immutable execution (results/manifest.json exists) the live
+# orbit_mc may legitimately differ from the frozen 1.6.0 contract (v1.7 fixed
+# sidecar EOL bytes). The shakedown gate must then stay CLOSED for exactly the
+# orbit_mc binding checks and prepare must keep refusing; the frozen record's
+# content assertions remain unchanged.
+EXECUTED = (experiment.RESULTS_ROOT / "manifest.json").is_file()
+ORBIT_MC_BINDING_CHECKS = {
+    "orbit_mc_source_sha256_current",
+    "orbit_mc_schema_versions_current",
+}
+
+
+def _live_orbit_mc_drifted() -> bool:
+    if not experiment.AUTHORITIES_PATH.is_file():
+        return False
+    authorities = strict_json_file(experiment.AUTHORITIES_PATH)
+    return (
+        experiment.orbit_mc_package.__version__ != authorities["orbit_mc_package_version"]
+        or experiment.orbit_mc_source_sha256() != authorities["orbit_mc_source_sha256"]
+    )
+
+
+def _refused_checks(error: BaseException) -> set[str]:
+    message = str(error)
+    return set(message.rsplit("refused: ", 1)[1].split(", "))
+
+
+@pytest.fixture
+def frozen_contract_for_prepare(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Let the prepare-refusal tests reach the shakedown gate after execution.
+
+    ``prepare`` checks the orbit_mc contract before the shakedown gate. Once the
+    live package has drifted from the executed contract that first check refuses
+    everything, which is asserted separately; here it is replaced by the frozen
+    authorities so the deeper refusal branches stay covered.
+    """
+
+    if not (EXECUTED and _live_orbit_mc_drifted()):
+        return
+    authorities = strict_json_file(experiment.AUTHORITIES_PATH)
+    frozen = {
+        "expected": dict(authorities["orbit_mc_schema_versions"]),
+        "observed": dict(authorities["orbit_mc_schema_versions"]),
+        "matches": True,
+        "source_sha256": authorities["orbit_mc_source_sha256"],
+        "code_identity_sha256": authorities["orbit_mc_code_identity_sha256"],
+        "source_files": [],
+    }
+    monkeypatch.setattr(run, "require_orbit_mc_contract", lambda _value: frozen)
+
+
+def test_prepare_and_shakedown_gate_stay_closed_after_execution() -> None:
+    if not EXECUTED:
+        pytest.skip("the experiment has not executed yet")
+    assert experiment.AUTHORITIES_PATH.is_file()
+    before = _frozen_state()
+    if _live_orbit_mc_drifted():
+        with pytest.raises(ValueError, match="orbit_mc contract") as info:
+            run.prepare()
+        assert "differs from protocol" in str(info.value)
+        with pytest.raises(ValueError, match="shakedown gate refused") as gate:
+            verify_shakedown_record(protocol(), _record())
+        assert _refused_checks(gate.value) == ORBIT_MC_BINDING_CHECKS
+    else:
+        # A worktree pinned to the executed orbit_mc still refuses: prepare's
+        # frozen outputs exist and must never be rewritten.
+        with pytest.raises(RuntimeError):
+            run.prepare()
+    assert _frozen_state() == before
+
+
 def test_committed_shakedown_record_opens_the_gate_for_current_protocol_and_code() -> None:
     value = protocol()
     record = _record()
-    checks = verify_shakedown_record(value, record)
-    assert all(checks.values()), checks
+    if EXECUTED and _live_orbit_mc_drifted():
+        with pytest.raises(ValueError, match="shakedown gate refused") as info:
+            verify_shakedown_record(value, record)
+        assert _refused_checks(info.value) == ORBIT_MC_BINDING_CHECKS
+        authorities = strict_json_file(experiment.AUTHORITIES_PATH)
+        assert record["orbit_mc_source_sha256"] == authorities["orbit_mc_source_sha256"]
+        assert record["orbit_mc_schema_versions"] == authorities["orbit_mc_schema_versions"]
+    else:
+        checks = verify_shakedown_record(value, record)
+        assert all(checks.values()), checks
     assert record["evidentiary"] is False
     assert record["outcomes_enter_estimand"] is False
     assert record["passed"] is True
@@ -204,7 +283,9 @@ def test_committed_shakedown_record_opens_the_gate_for_current_protocol_and_code
 # --------------------------------------------------------------------------
 
 
-def test_prepare_refuses_without_shakedown(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+def test_prepare_refuses_without_shakedown(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, frozen_contract_for_prepare: None
+) -> None:
     before = _frozen_state()
     monkeypatch.setattr(run, "SHAKEDOWN_PATH", tmp_path / "missing-shakedown.json")
     with pytest.raises(RuntimeError, match="shakedown.json is missing"):
@@ -212,7 +293,9 @@ def test_prepare_refuses_without_shakedown(monkeypatch: pytest.MonkeyPatch, tmp_
     assert _frozen_state() == before
 
 
-def test_prepare_refuses_on_code_hash_mismatch(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_prepare_refuses_on_code_hash_mismatch(
+    monkeypatch: pytest.MonkeyPatch, frozen_contract_for_prepare: None
+) -> None:
     _record()
     before = _frozen_state()
     monkeypatch.setattr(
@@ -223,7 +306,9 @@ def test_prepare_refuses_on_code_hash_mismatch(monkeypatch: pytest.MonkeyPatch) 
     assert _frozen_state() == before
 
 
-def test_prepare_refuses_on_stale_protocol_hash(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_prepare_refuses_on_stale_protocol_hash(
+    monkeypatch: pytest.MonkeyPatch, frozen_contract_for_prepare: None
+) -> None:
     _record()
     before = _frozen_state()
     stale = copy.deepcopy(protocol())
@@ -235,7 +320,7 @@ def test_prepare_refuses_on_stale_protocol_hash(monkeypatch: pytest.MonkeyPatch)
 
 
 def test_prepare_refuses_on_failed_or_tampered_shakedown(
-    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, frozen_contract_for_prepare: None
 ) -> None:
     record = _record()
     before = _frozen_state()

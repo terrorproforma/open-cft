@@ -1481,8 +1481,12 @@ def write_artifact(
     temporary.write_bytes(data)
     os.replace(temporary, target)
     digest = sha256(data).hexdigest()
+    # v1.7: the sidecar is part of the byte-hashed evidence bundle. Without
+    # newline="\n" Python's text layer writes the platform EOL (CRLF on
+    # Windows), so the sidecar bytes differed from the LF bytes Git stores and
+    # the recorded byte_sha256 could not be reproduced from a checkout.
     target.with_name(target.name + ".sha256").write_text(
-        f"{digest}  {target.name}\n", encoding="ascii"
+        f"{digest}  {target.name}\n", encoding="ascii", newline="\n"
     )
     return VerifiedOrbitEvidence(data, digest, _VERIFICATION_SEAL)
 

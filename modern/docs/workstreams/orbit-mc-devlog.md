@@ -373,3 +373,58 @@ physical CFT campaign, or wall-loss probability was produced.
   with no interior-fraction event; nothing physical moved.
 - Verification: `tests/orbit_mc` 120/120 (107 existing + 13 new),
   `tests/experiment_runtime` 132 passed / 1 skipped.
+
+## 2026-09-03 — v1.7 LF sidecars (byte portability; identical hashes)
+
+- Branch `feat/orbit-mc-v1.7` from `origin/feat/sota-foundation` (`6922a3cf`,
+  the recorded v4 wall-loss result). Byte-portability fix only: no physics,
+  no schema, no artifact-byte change.
+- Defect: `write_artifact` wrote `<name>.json.sha256` with
+  `Path.write_text(..., encoding="ascii")` and no `newline=`, so Python's text
+  layer emitted the platform EOL. On Windows the sidecar was
+  `<64 hex>  <name>\r\n` (88 bytes for `primary-N-orbit.json`) while Git
+  (`* text=auto eol=lf`) stores the LF form (87 bytes). The v4 campaign bundle
+  therefore recorded CRLF `byte_sha256` values for the nine
+  `artifacts/orbits/<case>.json.sha256` entries; a fresh checkout of
+  `6922a3cf` cannot reproduce exactly those nine (every other manifest entry,
+  including the nine `.json.gz` orbit artifacts and their content hashes,
+  validates). See `experiments/cft_orbit_wall_loss_v4/POSTHOC_AUDIT.md`.
+- Fix (`newline="\n"`), every text write audited in `orbit_mc`,
+  `experiment_runtime`, `fem_reference`, `coupling`, `fields`:
+  - `src/cft_revival/orbit_mc/artifacts.py:1484` (`write_artifact` sidecar) —
+    fixed.
+  - `src/cft_revival/fields/artifacts.py:914` (`_write_canonical_bytes`
+    sidecar for field artifacts) — same defect, fixed.
+  - All other writes in the five packages are binary (`write_bytes`,
+    `os.write`, `np.savez_compressed`) or reads; `experiment_runtime` writes
+    sidecars as canonical JSON bytes through descriptors and was never affected.
+- Contract: artifact JSON bytes unchanged (canonical compact, no EOL); sidecar
+  text unchanged (`f"{digest}  {name}\n"`), only its on-disk EOL is now LF on
+  every platform. `SCHEMA_VERSION`, `CHECKPOINT_VERSION`, `HANDOFF_VERSION`
+  stay `1.6.0/1.6.0/1.3.0`; `orbit_mc.__version__ = "1.7.0"`. `code_identity()`
+  and the v4 `orbit_mc_source_sha256()` move because `artifacts.py` and
+  `__init__.py` changed; result content hashes do not.
+- Readers (`load_artifact`, fields `_validate_file_sidecar`) use universal
+  newlines and accept both EOLs; the strict byte check lives in the
+  `experiment_runtime` manifest, which is where the v4 mismatch surfaced.
+- Tests (`tests/orbit_mc/test_sidecar_portability.py`, 27 new): sidecar bytes
+  carry no `\r` and have the exact Git byte length; a written artifact +
+  sidecar re-validate byte-exactly (`load_artifact`, `load_and_verify_artifact`)
+  after simulated `text=auto eol=lf` normalisation, and the CRLF form is shown
+  to hash differently; a fail-closed AST lint over the five packages requires
+  `newline=` on every `write_text` and every text-mode `open`/`Path.open`/
+  `os.fdopen`/`io.open`/`TextIOWrapper`/tempfile call (dynamic modes fail),
+  with a three-entry allowlist of provably non-text `.open(...)` calls
+  (zipfile member read, `PinnedDirectory.open` directory handle ×2); the lint
+  is self-tested on 22 snippets and, run against the `6922a3cf` blobs, reports
+  exactly the two fixed lines.
+- v4 experiment tests (`tests/experiments/cft_orbit_wall_loss_v4`): the frozen
+  contract binds the *executed* orbit_mc 1.6.0 at `757e365f`; the tests that
+  bound the live worktree to it now switch, once `results/manifest.json`
+  exists, to checking the recorded bundle (`artifacts/orbit-mc-contract.json`,
+  `authorities.json`) and recomputing the frozen source hash from the
+  preregistration commit's blobs; `prepare` and the shakedown gate are
+  asserted to stay closed for exactly the two orbit_mc binding checks.
+- Verification: `tests/orbit_mc` 147 passed (120 + 27), `tests/fields` 62,
+  `tests/coupling` 143, `tests/fem_reference` 37, `tests/experiment_runtime`
+  132 passed / 1 skipped, `tests/experiments/cft_orbit_wall_loss_v4` 26 passed.
