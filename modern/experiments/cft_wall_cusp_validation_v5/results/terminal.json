@@ -1,0 +1,1 @@
+{"counts":{"assessment_access_count":1,"attempt_count":1,"development_access_count":1,"expensive_operation_count":8,"label_access_count":0,"prebundle_access_count":1},"payload":{},"primary_error":{"message":"'__cft_type__' is reserved","type":"CanonicalizationError"},"schema_version":"cft-revival.experiment-terminal/1.0.0","secondary_errors":[],"state":"runtime_failure"}
