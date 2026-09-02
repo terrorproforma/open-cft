@@ -40,9 +40,13 @@ cmake.version = ">=3.20"
 wheel.packages = ["src/cft_revival"]
 
 [tool.pytest.ini_options]
-addopts = "-ra"
+# --import-mode=importlib: test modules are imported by path, so the repeated
+# basenames across experiment test packages (test_protocol.py, test_results.py,
+# test_dashboard.py, ...) no longer collide and one `python -m pytest tests`
+# invocation collects everything without renaming files or adding __init__.py.
+addopts = "-ra --import-mode=importlib"
 testpaths = ["tests"]
-pythonpath = ["src"]
+pythonpath = ["src", "."]
 
 [tool.ruff]
 line-length = 100
