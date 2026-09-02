@@ -1,0 +1,10 @@
+{
+  "cleanup_performed_by_runner": false,
+  "failure_preceded_runner_finally_region": true,
+  "label_cache_retained": false,
+  "manual_cache_deletion_performed": false,
+  "reason": "The results parent did not exist, so cache.mkdir() failed before creating .working and before entering the runner try/finally region.",
+  "schema_version": "cft-revival.l1a-field-surrogate-v4.prebundle-cleanup/4.0.0",
+  "working_cache_existed_after_failure": false,
+  "working_cache_exists_at_recording": false
+}

@@ -1,0 +1,72 @@
+{
+  "access_counters": {
+    "checkpoint_reads": {
+      "assessment": 0,
+      "calibration": 0,
+      "candidate": 0,
+      "method": 0
+    },
+    "label_reads": {
+      "assessment": 0,
+      "calibration": 0,
+      "candidate": 0,
+      "method": 0
+    },
+    "materialized": {
+      "assessment": {
+        "fine": 0,
+        "low": 0
+      },
+      "calibration": {
+        "fine": 0,
+        "low": 0
+      },
+      "candidate": {
+        "fine": 0,
+        "low": 0
+      },
+      "method": {
+        "fine": 0,
+        "low": 0
+      }
+    },
+    "model_fit_accesses": 0,
+    "solver_accesses": {
+      "assessment": {
+        "fine": 0,
+        "low": 0
+      },
+      "calibration": {
+        "fine": 0,
+        "low": 0
+      },
+      "candidate": {
+        "fine": 0,
+        "low": 0
+      },
+      "method": {
+        "fine": 0,
+        "low": 0
+      }
+    }
+  },
+  "exception_message": "[WinError 3] The system cannot find the path specified: 'C:\\Users\\Angus\\Desktop\\projects\\uni-project-l1a-field-surrogate-v4-run\\modern\\experiments\\l1a_field_surrogate_v4\\results\\.working'",
+  "exception_type": "FileNotFoundError",
+  "exclusive_lock_commit": "99092987e827862fe325f905668a070dfb51ab37",
+  "exclusive_lock_retained": true,
+  "failure_location": "run.py:979 cache.mkdir()",
+  "failure_stage": "post-lock results-cache-initialization",
+  "field_solver_access_count": 0,
+  "fine_completion_count": 0,
+  "label_read_count": 0,
+  "low_completion_count": 0,
+  "no_patch_or_rerun": true,
+  "phase_records_persisted": 0,
+  "preregistration_commit": "99092987e827862fe325f905668a070dfb51ab37",
+  "protocol_hash": "a8b83ec80965da3ca91a746852af02e4a02d5a30dfeaf6901c486ada734ebc5a",
+  "result_bundle_kind": "prebundle-initialization-failure",
+  "schema_version": "cft-revival.l1a-field-surrogate-v4.prebundle-failure/4.0.0",
+  "status": "failed-execution",
+  "terminal_transcript_sha256": "98f5a7a57e92f4214fba6c9e4250061694ba3d41197ec8e00fca4eadc7f869b4",
+  "valid_prospective_result": true
+}
