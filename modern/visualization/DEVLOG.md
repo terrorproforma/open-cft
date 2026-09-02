@@ -55,3 +55,31 @@ dashboards keep their own logs next to their generators.
   changes cancelled each other's animation frame.
 - Validation: `pytest tests/visualization/test_plasma_topology_dashboard.py`
   → 17 passed. Generated HTML is 3.7 MB (cap 15 MiB).
+## 2026-09-03 — CFT full-orbit wall-loss v4 results dashboard
+
+- Added `generate_wall_loss_v4_dashboard.py`, its template
+  `wall-loss-v4-results.template.html`, the generated
+  `wall-loss-v4-results.html` (about 0.68 MB against a 1.2 MB cap) and
+  `tests/visualization/test_wall_loss_v4_dashboard.py` (13 tests).
+- Source: the accepted `experiments/cft_orbit_wall_loss_v4/results` bundle at
+  results commit `6922a3cf` (preregistration `757e365f`). The generator
+  verifies all 387 manifest-bound files, tolerates exactly the nine
+  `artifacts/orbits/<case>.json.sha256` sidecars whose recorded hash is the
+  CRLF form of the LF bytes, and fails on any other mismatch; every repeated
+  quantity is cross-checked (terminal payload == campaign result == gates,
+  summaries == orbit artifacts, strata == per-orbit outcomes, Wilson bounds
+  recomputed, convergence chains recomputed from the campaign probabilities,
+  |B| certificates reproduced through `PsiBicubicField`).
+- Panels: headline KPIs and the 15 named binding gates; per-case Wilson table
+  and dot-and-interval plot; timestep and cross-map convergence against the
+  0.01 gate with overlap flags; 32-stratum heatmap with case/pooled selector
+  and marginals; (r,z) channel geometry with all 4608 embedded endpoints
+  histogrammed by class (wall, radial exit, injector plane, exit plane);
+  reconstructed |B|/psi map for the three roles with certified and runtime
+  bounds; diagnostics-not-gates (mu variation, tolerance-close share, step
+  distributions, exact-zero energy error, lifecycle timing); verbatim claim
+  boundary; v1/v2/v3 lineage with exact error strings, shakedown rule, v1.5/
+  v1.6 fixes and the second latent v3 bug; provenance footer with commit SHAs,
+  artifact hashes and LF-normalised generator/template hashes.
+- Browser check: headless Chrome at 1440 px and inside a 390 px iframe host;
+  zero runtime errors, no horizontal overflow, screenshots kept under %TEMP%.
