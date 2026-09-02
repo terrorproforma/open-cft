@@ -65,7 +65,8 @@
   "backends": {
     "cpu": "numpy reference; bitwise deterministic; checkpoint/resume bitwise",
     "warp": "CPU or CUDA; bit-identical fixed-point deposition; roundoff-level push (FMA contraction); host block-Thomas field solve shared with the CPU backend (identical phi); counter-based RNG seeded by (seed, step, stream): deterministic and checkpoint-resumable bitwise; ledger energies via float64 atomics (roundoff-level run-to-run)",
-    "gpu_pcg": "device Jacobi-PCG with deterministic reductions and CUDA graphs available via PoissonConfig2D(method='pcg'); verified against the direct solve to 1e-8 relative"
+    "gpu_pcg": "device Jacobi-PCG with deterministic reductions and CUDA graphs available via PoissonConfig2D(method='pcg'); verified against the direct solve to 1e-8 relative",
+    "gpu_device_direct_v1_1": "device block-Thomas solve (PoissonConfig2D(method='device-direct')), host sync every device_sync_steps, tile-reduced kernels, ion subcycling and electrode-work ledger: see modern/spec/pic2d/pic2d-model-v1.1.json"
   },
   "artifacts": {
     "canonical_json": "sorted, compact, finite JSON + .sha256.json sidecar (byte and semantic SHA-256)",
@@ -76,6 +77,6 @@
     "development/screening numerics; not a validated or preregistered CFT prediction",
     "no experimental comparison; no performance metric is derivable from these outputs",
     "static uniform neutral background, no ion-neutral collisions, no secondary emission, Dirichlet exit plane, prescribed B",
-    "momentum-conserving scheme: energy is not exactly conserved; the ledger residual is reported, not hidden"
+    "momentum-conserving scheme: energy is not exactly conserved; the ledger residual is reported, not hidden (v1.1 adds the electrode-work term so the residual no longer contains the supply work)"
   ]
 }

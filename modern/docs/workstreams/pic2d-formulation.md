@@ -155,9 +155,15 @@ Kinetic energies use the stable relativistic form `(γ−1)mc²` summed with `W`
 field energy is the exact discrete `½ φᵀAφ`. In a pure magnetic field a single
 electron conserves kinetic energy to < 1e-9 over 500 steps. For the open
 system the series report `Δ(K+U) − (K_injected − K_absorbed − E_inelastic +
-K_born ions)` per interval; this residual contains the untracked
-electrode/injection electrostatic work and the scheme's non-conservation and
-is reported as a diagnostic, not claimed to vanish.
+K_born ions + W_electrode)` per interval. `W_electrode = Σ_k V_k (ΔQ_induced,k −
+q_absorbed,k)` (v1.1) is the work of the supplies holding the Dirichlet
+electrodes: `Q_induced,k = Σ_{nodes of k} (Aφ)` is the conductor charge of the
+discrete Gauss law and `q_absorbed,k` the net particle charge collected there.
+With this term the ledger closes to within ~15 % of the electrode work in the
+verification test (`test_ledger_closes_with_electrode_work`); the remaining
+residual is the momentum-conserving scheme's grid heating and is reported per
+case, not claimed to vanish. In v1 the term was absent and the residual was
+essentially the supply work.
 
 ## Backends and determinism
 
@@ -172,6 +178,26 @@ PCG path is available (`PoissonConfig2D(method="pcg")`) and verified against
 the direct solve; it is slower than the host direct solve for these grids
 because ~500–1000 Jacobi-PCG iterations per step dominate.
 
+### v1.1 all-GPU step
+
+`PoissonConfig2D(method="device-direct")` runs the block-Thomas sweeps on the
+device (factorisation built once on the host): one launch per radial block,
+256-lane coalesced row dot products with deterministic tile reductions. φ
+equals the host direct solve to 1e-10 and the true residual contract
+(`‖Aφ − b‖ ≤ tol‖b‖`) is re-evaluated on the device at every host sync and fails
+closed. The particle counts, the statistics vector (work, max speed², absorbed
+tallies, collision tallies) and the series sample are read by the host every
+`device_sync_steps` steps only; between syncs the step is entirely on the
+device. Per-particle same-address atomics in the push and MCC kernels were
+replaced by per-block `tile_sum`/`tile_max` reductions (block 256) with one
+atomic per block; the tallies stay exact integers identical to numpy. Ions are
+pushed every `ion_subcycle = k` steps with `k Δt` (leapfrog stagger `k Δt/2`),
+newborn ions join the charge immediately and are first pushed at the next ion
+step; `k = 4` vs `k = 8` agree in ion count, positions and φ (see
+`tests/pic2d/test_pic2d_v11_step.py`). The v1 fine case (5.4 M macro-particles)
+went from 40.7 ms/step (host solve 18 ms) to 5.46 ms/step (device solve
+2.3 ms); the specification is `modern/spec/pic2d/pic2d-model-v1.1.json`.
+
 ## Artifacts
 
 Canonical JSON (sorted, compact, finite) with `.sha256.json` sidecars,
@@ -180,10 +206,46 @@ binding config, field, cross-section and code identities. Provenance records
 grid, species, stability gate, field map hash, P2 authority hashes,
 cross-section payload/file hashes, code hash, runtime identity.
 
-## Simplifications (v1)
+## Operating point and resolution budget (v1.1)
 
-- static uniform neutral background; no depletion, no neutral flow;
-- no ion–neutral collisions (elastic or charge exchange);
+v1 ran at `n_g = 5e20 m⁻³`, 100 mA injection: the ionisation source exceeded the
+unmagnetised Bohm ion loss 12× at the observed `T_e ≈ 18 eV`, and because ions
+need ~1 µs to reach the walls there is no saturation channel before then, so
+the avalanche had to overshoot and tripped the `ω_pe Δt` gate at 49–60 ns
+(`diagnosis.json` in the v1 results). v1.1 chooses the operating point from the
+0-D balance `n_g⟨σ_iz v⟩ n_e V = n_e v_Bohm A_loss` (`V = 3.5e-7 m³`,
+`A_loss = 3.6e-4 m²`): at `n_g = 1e20 m⁻³` the particle balance closes at
+`T_e ≈ 7.9 eV`, and a power balance at 3 mA gives `n_eq ≈ 2e17 m⁻³`.
+The numerics budget uses a 2× design ceiling `n_max = 4e17 m⁻³`, `T_e = 8 eV`:
+
+| quantity | value |
+|---|---|
+| `λ_D,min` | 33.2 µm |
+| `Δt` | 1.5 ps (`ω_pe Δt = 0.054` at `n_max`; `Ω_ce Δt = 0.077` at 0.291 T) |
+| fine grid 60 × 480 | `Δr = 33.3 µm`, `Δz = 50 µm`, `max(Δr,Δz)/λ_D = 1.50` (gate 2.0) |
+| coarse grid 30 × 240 | `66.7 × 100 µm`, ratio 3.01 (gate 3.1, under-resolved by design) |
+| macro-particles per cell at `n_max`, r = 1 mm | fine 70 / 140, coarse 70 / 140 |
+| ion subcycle | `k = 8`, `k Δt = 12 ps`, `ω_pi k Δt = 8.8e-4` |
+| runtime gate trip density | `5.6e18 m⁻³` (14× `n_max`) |
+
+The first v2 attempt used `Δt = 3 ps` (`ω_pe Δt = 0.107` at `n_max`) and was
+stopped fail-closed after 0.27 µs in both coarse cases: the runtime gate reads
+the instantaneous peak node density, and the axis nodes (a handful of
+macro-particles) carry ~3× shot noise on top of the window-averaged peak
+(1.4e18 instantaneous vs 4.7–5.4e17 window). Halving `Δt` moves the trip
+density far above the design ceiling so the gate only fires on a genuine
+runaway; the shot-noise reading is recorded in the v2 protocol.
+
+## Simplifications (v1.1)
+
+- static uniform neutral background; no depletion, no neutral flow (at
+  `n_g = 1e20 m⁻³` the 0-D ionisation rate `n_e v_Bohm A_loss ≈ 2e17 s⁻¹`
+  removes ~1 % of the 3.4e13 neutrals in the channel over 1.6 µs, locally a few
+  per cent near the ionisation peak, so depletion is deferred and stated rather
+  than implemented; a real campaign at longer times needs it);
+- no ion–neutral collisions (elastic or charge exchange): the hash-bound LXCat
+  extract holds only the e–Xe set, so the Xe⁺–Xe data would need a new
+  provenance-bound source first;
 - elastic e–Xe isotropic without recoil energy loss; one lumped excitation;
   isotropic ionisation products;
 - dielectric wall perfectly absorbing with surface charge; zero field in the
@@ -199,12 +261,15 @@ cross-section payload/file hashes, code hash, runtime identity.
 
 ## Remaining for a preregistered PIC campaign
 
-1. Operating-point study that keeps the peak density within the resolved
-   Debye/ω_pe envelope for the chosen grid, or a finer grid/timestep budget.
-2. Ion–neutral elastic and charge-exchange collisions; neutral depletion or a
-   neutral flow model; wall secondary electron emission.
-3. Energy-conserving or explicitly corrected deposition/gather; ledger closure
-   including electrode work.
+1. Operating-point study beyond the single v1.1 point (3 mA, 1e20 m⁻³): map
+   the resolved envelope in (I_inj, n_g, V) and confirm the 0-D balance against
+   the kinetic plateau density; runs to several ion transit times.
+2. Ion–neutral elastic and charge-exchange collisions (needs a hash-bound
+   Xe⁺–Xe cross-section source); neutral depletion or a neutral flow model;
+   wall secondary electron emission.
+3. Energy-conserving or explicitly corrected deposition/gather: the electrode
+   work now closes the supply term, the remaining per-case residual is the
+   scheme's grid heating and must be bounded, not just reported.
 4. Exit boundary alternatives (plume domain, floating cathode line) and
    sensitivity to the exit reference.
 5. Convergence in grid, timestep and particles per cell with quantified

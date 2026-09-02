@@ -1,0 +1,105 @@
+{
+  "schema_version": "cft-revival.pic2d-cft-snapshot-v2.protocol/0.1.0",
+  "experiment_id": "pic2d-cft-snapshot-v2",
+  "status": "development_screening_not_preregistered",
+  "classification": "axisymmetric_electrostatic_pic_mcc_development_snapshot_not_validated",
+  "model_version": "pic2d v1.1 (all-GPU step, device block-Thomas Poisson, ion subcycling, electrode-work ledger)",
+  "design_id": "divergent-exit-stack",
+  "field_authority": "modern/spec/pic2d/p2-field-authority-v1.json (role primary)",
+  "cross_sections": "modern/spec/pic2d/xenon-cross-sections-v1.json",
+  "operating_point_spec": "modern/spec/pic2d/operating-point-v1.1.json",
+  "geometry": {
+    "bore_radius_m": 2.0e-3,
+    "z_min_m": 0.0,
+    "z_max_m": 24.0e-3,
+    "cone_start_z_m": 18.0e-3,
+    "exit_radius_m": 3.0e-3,
+    "source": "P2 mesh regions injector-zone/channel-straight/channel-divergent-exit of divergent-exit-stack.level-1"
+  },
+  "operating_point": {
+    "anode_potential_v": 300.0,
+    "exit_plane_potential_v": 0.0,
+    "neutral_density_per_m3": 1.0e20,
+    "neutral_temperature_k": 300.0,
+    "neutral_density_justification": "v1.1 budget: at n_g = 1e20 the 0-D particle balance n_g K_iz(T_e) V = v_B(T_e) A_loss closes at T_e ~ 8 eV (v1 ran at 5e20 where it closes at ~4 eV and the avalanche gain per injected electron was 12); static uniform background, ~0.015 mg/s equivalent effusion through the 2 mm bore at 300 K",
+    "electron_injection_current_a": 3.0e-3,
+    "electron_injection_justification": "power balance I_d U_a = n_eq v_B A_loss e (eps_c + 7 T_e) with I_d ~ 2-3 x I_inj gives n_eq ~ 2e17 m^-3; the resolvability budget below is written for a 2x peak-to-mean factor (n_max = 4e17)",
+    "electron_injection_temperature_ev": 2.0,
+    "seed_plasma_density_per_m3": 5.0e16,
+    "seed_electron_temperature_ev": 5.0,
+    "seed_ion_temperature_ev": 0.0
+  },
+  "numerics": {
+    "dt_s": 1.5e-12,
+    "dt_justification": "a first v2 attempt at dt = 3 ps (omega_pe dt = 0.107 at the design ceiling) was stopped fail-closed by the runtime gate after 0.27 us in both coarse cases: the instantaneous peak-node density (axis nodes hold a handful of macro-particles) reached 1.4e18 m^-3 while the window-averaged peak was 4.7-5.4e17 m^-3, i.e. the gate sees ~3x shot noise on top of the physical peak; dt = 1.5 ps keeps omega_pe dt <= 0.2 up to a node density of 5.6e18 m^-3 (14x the design ceiling) so the gate only trips on a genuine runaway",
+    "ion_subcycle": 8,
+    "ion_subcycle_justification": "k dt = 12 ps; ion plasma period at n_max = 4e17 is 2 pi / omega_pi = 0.09 us, ion cyclotron period at 0.29 T is 29 us, a 21 km/s ion (full 300 V) moves 0.25 um per ion step (< 1 % of a fine cell); insensitivity k vs 2k is a unit test",
+    "poisson": "device block-Thomas direct (exact to round-off, true-residual contract 1e-10 |rhs| verified at every host sync)",
+    "device_sync_steps": 200,
+    "deposition": "bilinear, fixed-point 2^-40 integer accumulation",
+    "stability_limits": {
+      "max_omega_pe_dt": 0.2,
+      "max_omega_ce_dt": 0.2,
+      "max_cell_debye_ratio": 2.0,
+      "max_particle_courant": 1.0,
+      "max_collision_probability": 0.1
+    },
+    "coarse_debye_ratio_limit": 3.1,
+    "coarse_debye_ratio_note": "the coarse pair is the under-resolved member of the convergence pair by design (dz = 100 um vs lambda_D,min = 33.2 um, ratio 3.008); its a-priori gate allows a 3.1x cell/Debye ratio and this is stated on the dashboard",
+    "stability_reference": {
+      "density_per_m3": 4.0e17,
+      "electron_temperature_ev": 8.0,
+      "max_electron_energy_ev": 400.0
+    },
+    "series_interval_steps": 200,
+    "averaging_window_steps": 120000,
+    "averaging_window_note": "consecutive 120000-step (180 ns) windows; the reported maps are the last completed window (or the current one if at least half full)"
+  },
+  "budget_v1_1": {
+    "n_max_per_m3": 4.0e17,
+    "t_e_for_lambda_d_ev": 8.0,
+    "lambda_d_min_m": 3.32e-5,
+    "omega_pe_max_rad_per_s": 3.57e10,
+    "omega_pe_dt": 0.0535,
+    "b_max_t": 0.2914,
+    "omega_ce_dt_at_b_max": 0.0769,
+    "gate_trip_node_density_per_m3": 5.6e18,
+    "fine_dr_m": 3.33e-5,
+    "fine_dz_m": 5.0e-5,
+    "coarse_dr_m": 6.67e-5,
+    "coarse_dz_m": 1.0e-4,
+    "fine_cell_over_lambda_d": 1.5,
+    "coarse_cell_over_lambda_d": 3.008,
+    "ppc_at_n_mean_2e17": {"coarse-w2.4e5": 40, "coarse-w1.2e5": 80, "fine-w6e4": 40, "fine-w3e4": 80},
+    "ion_transit_time_s": 1.0e-6,
+    "ion_transit_note": "Bohm-speed radial transit 2 mm / 2.4 km/s ~ 0.8 us and a 300 V ion crossing 18 mm in 0.9 us: one transit time is taken as 1.0 us = 666667 steps"
+  },
+  "cases": {
+    "coarse-w2.4e5": {"radial_cells": 30, "axial_cells": 240, "macro_weight": 2.4e5, "min_steps": 666667, "target_steps": 1066667},
+    "coarse-w1.2e5": {"radial_cells": 30, "axial_cells": 240, "macro_weight": 1.2e5, "min_steps": 666667, "target_steps": 1066667},
+    "fine-w6e4": {"radial_cells": 60, "axial_cells": 480, "macro_weight": 6.0e4, "min_steps": 666667, "target_steps": 1066667},
+    "fine-w3e4": {"radial_cells": 60, "axial_cells": 480, "macro_weight": 3.0e4, "min_steps": 666667, "target_steps": 1066667}
+  },
+  "stopping_rule": {
+    "description": "a case runs at least min_steps (one ion transit time); after that it stops as soon as the plateau criterion holds, else at target_steps (1.6 us) or at its wall-clock budget; the reason is recorded",
+    "plateau": "relative drift < 5 % over the trailing 20 % of the run for both the discharge current and the plasma electron count (linear fit over the trailing window, drift = slope x window / mean)",
+    "plateau_threshold": 0.05,
+    "plateau_window_fraction": 0.2,
+    "wall_budget_seconds_per_case": 7200
+  },
+  "simplifications": [
+    "static uniform neutral background (no depletion, no neutral flow) - depletion was not added in v1.1",
+    "no ion-neutral collisions (elastic or charge exchange) - not added in v1.1",
+    "electron-neutral: isotropic elastic without the 2 m_e/M energy loss, one lumped 8.32 eV excitation, single ionisation with Vahedi-Surendra secondary energy and isotropic emission",
+    "dielectric wall: perfectly absorbing with accumulated surface charge, zero field in the dielectric backing (perfect insulator), no secondary electron emission, no sputtering",
+    "exit plane: Dirichlet 0 V cathode/neutraliser reference; electrons injected there as a flux-weighted half-Maxwellian at fixed current",
+    "anode: perfectly absorbing conductor at fixed potential",
+    "cone wall represented as a one-cell stair-step of the plasma cell mask",
+    "prescribed static B from the P2 solution (no plasma-induced field); bilinear node interpolation of the C1 bicubic psi field",
+    "ions pushed every 8 steps with 8 dt (frozen in between; births added to the ion charge immediately)",
+    "electrostatic only, azimuthally symmetric: no azimuthal instabilities/anomalous transport",
+    "momentum-conserving bilinear scheme: energy is not exactly conserved; the ledger (with electrode work) residual is reported",
+    "operating point scaled to a resolvable density: 3 mA injection at 300 V and n_g = 1e20 m^-3 (a real CFT runs at 0.1-1 A; the kinetic structure, not the absolute current, is the object of this screening run)",
+    "development/screening run: not preregistered, no experimental validation, not a performance prediction"
+  ]
+}

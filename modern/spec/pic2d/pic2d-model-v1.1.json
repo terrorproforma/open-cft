@@ -1,0 +1,68 @@
+{
+  "schema": "cft.pic2d.model.v1.1",
+  "package": "cft_revival.pic2d",
+  "version": "0.2.0",
+  "supersedes": "modern/spec/pic2d/pic2d-foundation-v1.json (equations, gates and artifact contracts unchanged; this file records the v1.1 additions)",
+  "model_level": "L3-development",
+  "status": "development-screening-verified-numerics-not-validated-physics",
+  "time_step_v1_1": {
+    "all_gpu_step": "deposit -> device block-Thomas field solve -> gather/push (electrons every step, ions every k steps) -> boundaries -> MCC -> injection -> compaction/spawn all on the device; the host reads a small statistics vector and the particle counts every device_sync_steps steps only",
+    "poisson": {
+      "method": "device-direct (PoissonConfig2D.method = 'device-direct'): the block-Thomas factorisation of the reduced cylindrical Gauss matrix is built once on the host and copied to the device; each step runs the forward/backward sweeps as one kernel launch per radial block with 256-lane coalesced row dot products and deterministic tile reductions",
+      "tolerance_contract": "the true residual ||A phi - b|| <= relative_tolerance * ||b|| (1e-10 in the v2 protocol) is recomputed on the device and checked at every host sync; a violation raises PIC2DStabilityError (fail closed)",
+      "parity": "phi equals the host direct solve to 1e-10 relative on the first step; electron positions agree to 1e-15 m after the first push (tests/pic2d/test_pic2d_v11_step.py)",
+      "pcg_status": "device Jacobi-PCG with warm start from the previous phi remains available (method = 'pcg'); on these grids the direct device solve is faster than the 500-1000 PCG iterations per step, so it is the default for the GPU backend and PCG is kept as a cross-check"
+    },
+    "kernel_reductions": "per-particle same-address float64 atomics for the work, speed^2 and the five collision tallies were replaced by per-block wp.tile_sum / wp.tile_max reductions (block 256) followed by one atomic per block; the absorbed counts are exact integers identical to the numpy reference, the work sum agrees to 1e-9 of the gross kinetic energy",
+    "ion_subcycling": {
+      "k": 8,
+      "rule": "ions are pushed every k steps with k dt; ionisation-born ions are added to the ion charge immediately and receive their first push at the next ion step; the ion velocity is staggered by k dt / 2 (leapfrog)",
+      "budget": "k dt = 12 ps at dt = 1.5 ps; ion plasma period at n_max = 4e17 m^-3 is 2 pi / omega_pi = 90 ns (omega_pi k dt = 8.8e-4); ion cyclotron period at 0.29 T is 29 us; a 21 km/s ion (300 V) moves 0.25 um per ion step (< 1 % of a fine cell)",
+      "insensitivity": "k = 4 vs k = 8 over 400 steps: identical ion count, mean ion position within 1e-6 of the domain, mean phi within 1e-3, ion kinetic energy within 2.5 % (the half-step stagger of a cold population accelerating from rest)"
+    },
+    "electrode_work": {
+      "relation": "for each Dirichlet electrode k at V_k the supply provides dQ_src = dQ_induced,k - q_absorbed,k per interval, with Q_induced,k = sum over the electrode's Dirichlet nodes of (A phi)_k (the conductor charge of the discrete Gauss law) and q_absorbed the net charge of particles absorbed there; the ledger source term gains sum_k V_k dQ_src,k",
+      "verification": "with the term the cumulative residual of a 300 V discharge is <= 15 % of both the total-energy change and the electrode work, and the electrode work exceeds half the total-energy change (it is the dominant budget term); without it the ledger misses the whole supply work"
+    }
+  },
+  "operating_point_v1_1": {
+    "anode_potential_v": 300.0,
+    "exit_plane_potential_v": 0.0,
+    "neutral_density_per_m3": 1.0e20,
+    "electron_injection_current_a": 3.0e-3,
+    "why": "v1 ran at n_g = 5e20 m^-3 and 100 mA: the ionisation source exceeded the unmagnetised Bohm ion loss 12x at the observed T_e = 18 eV, so the density had to grow until ions reach the walls (~1 us); it hit the omega_pe dt gate at 49-60 ns. At n_g = 1e20 the particle balance closes at T_e = 7.9 eV (amplification 2.4 at 18 eV) and a 0-D power balance gives n_eq ~ 2e17 m^-3; the design ceiling for the numerics budget is n_max = 4e17 m^-3 (2x margin)",
+    "zero_d_estimate": "n_g <sigma_iz v>(T_e) n_e V = n_e v_Bohm(T_e) A_loss with V = 3.5e-7 m^3 and A_loss = 3.6e-4 m^2 (walls + exit + anode; unmagnetised Bohm loss is an upper bound on the loss, so n_eq is a lower bound); power balance 300 V * I_d = n_eq v_Bohm A_loss (E_iz + 2 T_e + wall sheath losses)"
+  },
+  "resolution_budget_v1_1": {
+    "n_max_per_m3": 4.0e17,
+    "t_e_for_lambda_d_ev": 8.0,
+    "lambda_d_min_um": 33.2,
+    "dt_s": 1.5e-12,
+    "omega_pe_dt_at_n_max": 0.0535,
+    "omega_ce_dt_at_b_max_0_291_t": 0.0769,
+    "gate_trip_node_density_per_m3": 5.6e18,
+    "grids": {
+      "fine": {"radial_cells": 60, "axial_cells": 480, "dr_um": 33.3, "dz_um": 50.0, "max_cell_over_lambda_d": 1.50, "gate_limit": 2.0, "macro_weights": [6.0e4, 3.0e4]},
+      "coarse": {"radial_cells": 30, "axial_cells": 240, "dr_um": 66.7, "dz_um": 100.0, "max_cell_over_lambda_d": 3.01, "gate_limit": 3.1, "macro_weights": [2.4e5, 1.2e5], "note": "deliberately under-resolved member of the convergence pair"}
+    },
+    "particles_per_cell_at_n_max": {"note": "electrons per cell in the annulus at r = 1 mm (fine V_cell = 2 pi r dr dz = 1.05e-11 m^3, coarse 4x); at the expected mean density 1e17 divide by 4", "fine-w6e4": 70, "fine-w3e4": 140, "coarse-w2.4e5": 70, "coarse-w1.2e5": 140},
+    "dt_lesson": "a first v2 attempt at dt = 3 ps was stopped fail-closed after 0.27 us in both coarse cases: the runtime gate evaluates the instantaneous peak node density, and the axis nodes (a handful of macro-particles) carry ~3x shot noise on top of the window-averaged peak (1.4e18 instantaneous vs 4.7-5.4e17 window peak). Halving dt moves the trip density to 5.6e18 m^-3, 14x the design ceiling, so the gate again only fires on a genuine runaway"
+  },
+  "performance": {
+    "hardware": "NVIDIA GeForce RTX 5090 (Windows, WDDM)",
+    "before_v1_1": "v1 fine case (60 x 480, 5.4 M macro-particles): 40.7 ms/step; host block-Thomas solve 18 ms/step plus per-step host<->device particle-count and statistics copies",
+    "after_v1_1": "same fine case with device-direct Poisson, ion subcycling k = 8 and tile-reduced kernels: 5.46 ms/step (Poisson 2.3 ms/step) = 1.0 ns per particle-step; coarse v2 cases (0.13-0.27 M particles) run at 1.2-2.0 ms/step with four cases sharing the GPU",
+    "single_process_from_v2_checkpoints": "2.04 ms/step at 1.53 M macro-particles (30 x 240), 4.34 ms/step at 3.8 M and 5.45 ms/step at 5.3 M (60 x 480): 1.0-1.3 ns per particle-step above a ~1.2 ms launch-bound floor",
+    "target": "<= 1.5 ms/step at 1-2 M macro-particles was not met (2.0 ms at 1.5 M); the remaining cost is ~40 kernel launches per step on a WDDM host, removable only by CUDA-graph capture of the full step (blocked by the dynamic particle bounds) or by a TCC/Linux host",
+    "launch_overhead_note": "kernel launches on this WDDM host cost ~0.5 ms each when the GPU is shared; the step is launch-bound below ~1 M particles, which is why the kernels were fused/reduced rather than further vectorised"
+  },
+  "tests": [
+    "tests/pic2d/test_pic2d_v11_step.py: device-direct parity and residual contract; tile-reduced tallies exact; subcycling k vs 2k; ledger closes with electrode work; ion_subcycle provenance",
+    "tests/pic2d/test_pic2d_warp_parity.py: CPU/GPU parity of deposition (bitwise), push, MCC statistics, PCG vs direct still green"
+  ],
+  "unchanged_simplifications": [
+    "static uniform neutral background (no depletion: the 0-D ionisation rate ~2e17 s^-1 removes ~1 % of the 3.4e13 channel neutrals over 1.6 us at n_g = 1e20 m^-3, locally a few per cent; deferred and stated, documented in pic2d-formulation.md)",
+    "no ion-neutral elastic or charge-exchange collisions (deferred: the Biagi Xe+-Xe set is not in the hash-bound extract)",
+    "no secondary emission; Dirichlet exit plane; prescribed B; electrostatic; momentum-conserving scheme"
+  ]
+}
