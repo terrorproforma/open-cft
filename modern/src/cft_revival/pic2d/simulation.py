@@ -18,7 +18,7 @@ reproduce it (bit-identical deposition, roundoff-level push, distributional MCC)
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from math import isfinite, pi, sqrt
+from math import gcd, isfinite, pi, sqrt
 from typing import Any, Literal, Mapping
 
 import numpy as np
@@ -45,7 +45,7 @@ from .models import (
     stability_report,
     xenon_ion_species,
 )
-from .poisson import Poisson2D, electric_field_nodes, field_energy_j
+from .poisson import Poisson2D, electric_field_nodes, field_energy_j, induced_electrode_charge_c
 
 BackendName = Literal["cpu", "warp-cpu", "warp-cuda"]
 
@@ -105,6 +105,13 @@ class PIC2DConfig:
     fixed_point_deposition: bool = True
     series_interval_steps: int = 100
     runtime_stability_check_steps: int = 100
+    # v1.1: ions are pushed every ``ion_subcycle`` steps with ``ion_subcycle * dt``
+    # (positions and charge frozen in between, births added incrementally).
+    ion_subcycle: int = 1
+    # v1.1: the device backend reads its ledger/gate statistics back every
+    # ``device_sync_steps`` steps (default: gcd of the series and gate cadences);
+    # series and gate cadences must be multiples of it.
+    device_sync_steps: int | None = None
 
     def __post_init__(self) -> None:
         if not isfinite(self.dt_s) or self.dt_s <= 0.0:
@@ -113,10 +120,18 @@ class PIC2DConfig:
             raise PIC2DValidationError("macro_weight must be positive")
         if isinstance(self.seed, bool) or not isinstance(self.seed, int) or self.seed < 0:
             raise PIC2DValidationError("seed must be a non-negative integer")
-        for name in ("series_interval_steps", "runtime_stability_check_steps"):
+        for name in ("series_interval_steps", "runtime_stability_check_steps", "ion_subcycle"):
             value = getattr(self, name)
             if isinstance(value, bool) or not isinstance(value, int) or value < 1:
                 raise PIC2DValidationError(f"{name} must be a positive integer")
+        if self.device_sync_steps is not None:
+            value = self.device_sync_steps
+            if isinstance(value, bool) or not isinstance(value, int) or value < 1:
+                raise PIC2DValidationError("device_sync_steps must be a positive integer")
+            if self.series_interval_steps % value != 0:
+                raise PIC2DValidationError("series_interval_steps must be a multiple of device_sync_steps")
+            if self.runtime_stability_check_steps % value != 0:
+                raise PIC2DValidationError("runtime_stability_check_steps must be a multiple of device_sync_steps")
         for name in ("reference_density_per_m3", "reference_electron_temperature_ev", "max_electron_energy_ev"):
             value = getattr(self, name)
             if not isfinite(value) or value <= 0.0:
@@ -140,7 +155,15 @@ class PIC2DConfig:
             "fixed_point_deposition": self.fixed_point_deposition,
             "series_interval_steps": self.series_interval_steps,
             "runtime_stability_check_steps": self.runtime_stability_check_steps,
+            "ion_subcycle": self.ion_subcycle,
+            "device_sync_steps": self.sync_steps,
         }
+
+    @property
+    def sync_steps(self) -> int:
+        if self.device_sync_steps is not None:
+            return self.device_sync_steps
+        return gcd(self.series_interval_steps, self.runtime_stability_check_steps)
 
 
 @dataclass(slots=True)
@@ -278,6 +301,7 @@ class CPUBackend:
         self.state: SimulationState | None = None
         self.diagnostics = DiagnosticAccumulator(masks)
         self.quantum_c = ELEMENTARY_CHARGE_C * config.macro_weight
+        self.last_tally: StepTally | None = None
 
     # -- state exchange -------------------------------------------------
     def load_state(self, state: SimulationState) -> None:
@@ -286,6 +310,26 @@ class CPUBackend:
     def export_state(self) -> SimulationState:
         assert self.state is not None
         return self.state.copy()
+
+    @property
+    def step_index(self) -> int:
+        assert self.state is not None
+        return self.state.step
+
+    def flush(self) -> StepTally | None:
+        return self.last_tally
+
+    def series_sample(self) -> dict[str, Any]:
+        assert self.state is not None
+        state = self.state
+        return {
+            "step": state.step, "time_s": state.time_s,
+            "electrons": state.electrons.count, "ions": state.ions.count,
+            "kinetic_electron_j": kernels.kinetic_energy_j(self.electron, state.electrons),
+            "kinetic_ion_j": kernels.kinetic_energy_j(self.ion, state.ions),
+            "surface_charge_c": float(state.surface_charge_c.sum()), "phi_v": state.phi_v.copy(),
+            "cumulative": dict(state.cumulative),
+        }
 
     # -- one cycle --------------------------------------------------------
     def step(self, accumulate: bool) -> StepTally:
@@ -297,6 +341,7 @@ class CPUBackend:
         dt = config.dt_s
         electrons, ions = state.electrons, state.ions
         fixed = config.fixed_point_deposition
+        ion_step = (state.step + 1) % config.ion_subcycle == 0
 
         q_e = kernels.deposit_node_charge(masks, self.electron, electrons, fixed_point=fixed)
         q_i = kernels.deposit_node_charge(masks, self.ion, ions, fixed_point=fixed)
@@ -312,8 +357,9 @@ class CPUBackend:
         max_speed = 0.0
         field_work = 0.0
         for species, particles, is_electron in ((self.electron, electrons, True), (self.ion, ions, False)):
-            if particles.count == 0:
+            if particles.count == 0 or (not is_electron and not ion_step):
                 continue
+            species_dt = dt if is_electron else dt * config.ion_subcycle
             er = kernels.gather_nodes(grid, e_r, particles.r_m, particles.z_m)
             ez = kernels.gather_nodes(grid, e_z, particles.r_m, particles.z_m)
             br = kernels.gather_nodes(grid, self.field.b_r_t, particles.r_m, particles.z_m)
@@ -321,10 +367,10 @@ class CPUBackend:
             k_before = kernels.kinetic_energy_j(species, particles)
             vx, vy, vz = kernels.boris_push(
                 particles.vr_m_per_s, particles.vt_m_per_s, particles.vz_m_per_s,
-                er, ez, br, bz, species.charge_c, species.mass_kg, dt,
+                er, ez, br, bz, species.charge_c, species.mass_kg, species_dt,
             )
             r_new, z_new, vr_new, vt_new, _, _ = kernels.advance_positions(
-                particles.r_m, particles.z_m, vx, vy, vz, dt
+                particles.r_m, particles.z_m, vx, vy, vz, species_dt
             )
             moved = ParticleArrays(r_new, z_new, vr_new, vt_new, vz)
             field_work += kernels.kinetic_energy_j(species, moved) - k_before
@@ -375,7 +421,8 @@ class CPUBackend:
             self.diagnostics.steps += 1
         peak_density = float(np.max(np.abs(q_e[masks.plasma_node]) / (ELEMENTARY_CHARGE_C * masks.shape_volume_m3[masks.plasma_node])))
         omega_pe = sqrt(peak_density * ELEMENTARY_CHARGE_C**2 / (8.8541878128e-12 * ELECTRON_MASS_KG))
-        return StepTally(result.diagnostics.iterations, omega_pe * dt, max_speed, electrons.count, ions.count)
+        self.last_tally = StepTally(result.diagnostics.iterations, omega_pe * dt, max_speed, electrons.count, ions.count)
+        return self.last_tally
 
     def _accumulate_maps(self, q_e: np.ndarray, q_i: np.ndarray, phi: np.ndarray, electrons: ParticleArrays) -> None:
         masks = self.masks
@@ -583,6 +630,7 @@ class Simulation:
         self.series: list[SeriesRecord] = []
         self._last_cumulative = empty_cumulative()
         self._last_energy: float | None = None
+        self._last_electrode: tuple[float, float] | None = None
 
     @property
     def state(self) -> SimulationState:
@@ -595,37 +643,61 @@ class Simulation:
         """Advance ``steps`` cycles; accumulate diagnostics from ``accumulate_from_step`` on."""
 
         config = self.config
-        state = self.backend.export_state()
-        start = state.step
+        start = self.backend.step_index
         target = start + steps
         window_start = target if accumulate_from_step is None else accumulate_from_step
         tally: StepTally | None = None
         for step in range(start, target):
             accumulate = step >= window_start
-            tally = self.backend.step(accumulate)
-            if tally.max_omega_pe_dt > config.limits.max_omega_pe_dt and (step + 1) % config.runtime_stability_check_steps == 0:
+            fresh = self.backend.step(accumulate)
+            if fresh is not None:
+                tally = fresh
+            record = (step + 1) % config.series_interval_steps == 0 or step + 1 == target
+            if record:
+                tally = self.backend.flush() or tally
+            if (
+                tally is not None and (step + 1) % config.runtime_stability_check_steps == 0
+                and tally.max_omega_pe_dt > config.limits.max_omega_pe_dt
+            ):
                 raise PIC2DStabilityError(
                     f"observed peak omega_pe*dt = {tally.max_omega_pe_dt:.3g} exceeds {config.limits.max_omega_pe_dt}"
                 )
-            if (step + 1) % config.series_interval_steps == 0 or step + 1 == target:
+            if record:
+                assert tally is not None
                 self._record(tally)
                 if progress is not None:
                     progress(self.series[-1])
         return self.backend.export_state()
 
     def _record(self, tally: StepTally) -> None:
-        state = self.backend.export_state()
+        sample = self.backend.series_sample()
         masks = self.masks
         config = self.config
-        electron = electron_species(config.macro_weight)
-        ion = xenon_ion_species(config.macro_weight)
-        k_e = kernels.kinetic_energy_j(electron, state.electrons)
-        k_i = kernels.kinetic_energy_j(ion, state.ions)
-        u_e = field_energy_j(masks, state.phi_v)
-        interval_steps = state.step - (self.series[-1].step if self.series else 0)
+        k_e = float(sample["kinetic_electron_j"])
+        k_i = float(sample["kinetic_ion_j"])
+        phi = sample["phi_v"]
+        cumulative = sample["cumulative"]
+        u_e = field_energy_j(masks, phi)
+        step = int(sample["step"])
+        interval_steps = step - (self.series[-1].step if self.series else 0)
         interval = max(interval_steps, 1) * config.dt_s
         current_unit = ELEMENTARY_CHARGE_C * config.macro_weight / interval
-        delta = {key: state.cumulative[key] - self._last_cumulative[key] for key in CUMULATIVE_KEYS}
+        delta = {key: cumulative[key] - self._last_cumulative[key] for key in CUMULATIVE_KEYS}
+        # Electrode work: the source holding electrode k at V_k supplies
+        # dQ_src = dQ_induced - q_absorbed; its energy V_k dQ_src closes the ledger
+        # (Gauss: the induced charge is the conductor charge, A phi on Dirichlet nodes).
+        q_anode, q_exit = induced_electrode_charge_c(masks, phi)
+        quantum = ELEMENTARY_CHARGE_C * config.macro_weight
+        absorbed_anode_c = quantum * (delta["anode_ions"] - delta["anode_electrons"])
+        absorbed_exit_c = quantum * (delta["exit_ions"] - delta["exit_electrons"])
+        if self._last_electrode is None:
+            electrode_work = 0.0
+        else:
+            electrode_work = (
+                config.potentials.anode_v * ((q_anode - self._last_electrode[0]) - absorbed_anode_c)
+                + config.potentials.exit_v * ((q_exit - self._last_electrode[1]) - absorbed_exit_c)
+            )
+        self._last_electrode = (q_anode, q_exit)
         currents = {
             "anode_electron_a": delta["anode_electrons"] * current_unit,
             "anode_ion_a": delta["anode_ions"] * current_unit,
@@ -640,7 +712,7 @@ class Simulation:
         total = k_e + k_i + u_e
         sources = (
             delta["ke_injected_j"] - delta["ke_absorbed_anode_j"] - delta["ke_absorbed_exit_j"]
-            - delta["ke_absorbed_wall_j"] - delta["inelastic_loss_j"] + delta["ke_born_ions_j"]
+            - delta["ke_absorbed_wall_j"] - delta["inelastic_loss_j"] + delta["ke_born_ions_j"] + electrode_work
         )
         residual = 0.0 if self._last_energy is None else (total - self._last_energy) - sources
         ledger = {
@@ -648,18 +720,21 @@ class Simulation:
             "interval_sources_j": sources,
             "interval_residual_j": residual,
             "interval_field_work_j": delta["field_work_j"],
-            "cumulative": dict(state.cumulative),
+            "interval_electrode_work_j": electrode_work,
+            "anode_induced_charge_c": q_anode,
+            "exit_induced_charge_c": q_exit,
+            "cumulative": dict(cumulative),
         }
-        plasma_phi = state.phi_v[masks.plasma_node]
+        plasma_phi = phi[masks.plasma_node]
         self.series.append(
             SeriesRecord(
-                state.step, state.time_s, state.electrons.count, state.ions.count,
+                step, float(sample["time_s"]), int(sample["electrons"]), int(sample["ions"]),
                 float(plasma_phi.mean()), float(plasma_phi.min()), float(plasma_phi.max()),
-                k_e, k_i, u_e, float(state.surface_charge_c.sum()), tally.max_omega_pe_dt,
+                k_e, k_i, u_e, float(sample["surface_charge_c"]), tally.max_omega_pe_dt,
                 tally.poisson_iterations, currents, ledger,
             )
         )
-        self._last_cumulative = dict(state.cumulative)
+        self._last_cumulative = dict(cumulative)
         self._last_energy = total
 
     def diagnostic_arrays(self) -> dict[str, np.ndarray]:

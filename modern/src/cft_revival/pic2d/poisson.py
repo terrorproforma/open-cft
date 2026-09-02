@@ -107,7 +107,7 @@ class Poisson2D:
         self.inverse_diagonal = np.zeros_like(masks.diagonal)
         self.inverse_diagonal[self.unknown] = 1.0 / diagonal
         self.direct: BlockTridiagonalSolver | None = None
-        if config.method == "direct":
+        if config.method in ("direct", "device-direct"):
             self.direct = BlockTridiagonalSolver(masks, relative_tolerance=config.relative_tolerance)
 
     def _matvec(self, x: np.ndarray) -> np.ndarray:

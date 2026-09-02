@@ -56,7 +56,7 @@ def test_fixed_point_deposition_is_bitwise_identical(device: str):
     reference = kernels.deposit_node_charge(masks, cpu.backend.electron, state.electrons, fixed_point=True)
     backend = gpu.backend
     species = backend.species["e"]
-    backend._deposit(species, backend.acc_e, backend.q_e, backend.electron.charge_c * config.macro_weight)
+    backend._deposit(species, 0, backend.acc_e, backend.q_e, backend.electron.charge_c * config.macro_weight)
     warp.synchronize_device(backend.device)
     device_charge = backend.q_e.numpy().reshape(grid.node_shape)
     assert np.array_equal(device_charge, reference)

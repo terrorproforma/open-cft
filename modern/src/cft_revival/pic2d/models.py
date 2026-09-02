@@ -304,13 +304,19 @@ class ParticleArrays:
 
 @dataclass(frozen=True, slots=True)
 class PoissonConfig2D:
-    """``direct``: exact block-Thomas factorisation (default); ``pcg``: Jacobi-PCG.
+    """Field-solve method; every path publishes only against a recomputed true residual.
 
-    Both publish only after an independently recomputed true residual meets
-    ``max(absolute_tolerance, relative_tolerance * |rhs|)``.
+    * ``direct``: exact block-Thomas factorisation on the host (columns blocked
+      along z); identical on the CPU and Warp backends.
+    * ``device-direct``: exact block-Thomas on the device (rows blocked along r,
+      one CUDA graph, no host synchronisation); the CPU backend maps it to
+      ``direct``.  Agrees with ``direct`` to roundoff, not bitwise.
+    * ``pcg``: Jacobi preconditioned conjugate gradient (host or device).
+
+    The contract is ``true residual <= max(absolute_tolerance, relative_tolerance * |rhs|)``.
     """
 
-    method: Literal["direct", "pcg"] = "direct"
+    method: Literal["direct", "device-direct", "pcg"] = "direct"
     relative_tolerance: float = 1.0e-10
     absolute_tolerance: float = 0.0
     max_iterations: int = 20_000
@@ -322,8 +328,8 @@ class PoissonConfig2D:
         object.__setattr__(self, "max_iterations", _integer("max_iterations", self.max_iterations, 1))
         if self.preconditioner != "jacobi":
             raise PIC2DValidationError("only the Jacobi preconditioner is implemented")
-        if self.method not in ("direct", "pcg"):
-            raise PIC2DValidationError("Poisson method must be 'direct' or 'pcg'")
+        if self.method not in ("direct", "device-direct", "pcg"):
+            raise PIC2DValidationError("Poisson method must be 'direct', 'device-direct' or 'pcg'")
 
     def to_dict(self) -> dict[str, object]:
         return {

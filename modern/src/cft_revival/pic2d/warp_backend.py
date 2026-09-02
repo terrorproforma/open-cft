@@ -22,6 +22,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from hashlib import sha256
 from math import isfinite, sqrt
+import time
 from typing import Any
 
 import numpy as np
@@ -59,6 +60,18 @@ except ImportError:  # pragma: no cover - optional dependency
 
 REDUCTION_THREADS = 4096
 REDUCTION_GROUP = 64
+# Threads per block for particle kernels that reduce per-particle scalars with
+# block-level tile sums instead of one same-address atomic per particle.
+PARTICLE_BLOCK = 256
+# Lanes per output row in the block-Thomas sweeps (one block per unknown).  Warp
+# compiles a module for one block width, so this equals PARTICLE_BLOCK.
+THOMAS_LANES = PARTICLE_BLOCK
+
+
+def padded_dim(count: int, block: int) -> int:
+    """Launch dimension rounded up so every tile block is fully populated."""
+
+    return ((max(int(count), 1) + block - 1) // block) * block
 
 
 def warp_available() -> bool:
@@ -100,11 +113,12 @@ if wp is not None:
     @wp.kernel
     def deposit_fixed_kernel(
         r: wp.array(dtype=F64), z: wp.array(dtype=F64), alive: wp.array(dtype=wp.int32),
+        slots: wp.array(dtype=wp.int32), slot: int,
         dr: F64, dz: F64, z_min: F64, nr: int, nz: int, scale: F64,
         accumulator: wp.array(dtype=wp.int64),
     ):
         p = wp.tid()
-        if alive[p] == 0:
+        if p >= slots[slot] or alive[p] == 0:
             return
         fr = r[p] / dr
         fz = (z[p] - z_min) / dz
@@ -131,13 +145,14 @@ if wp is not None:
     @wp.kernel
     def deposit_moment_kernel(
         r: wp.array(dtype=F64), z: wp.array(dtype=F64), alive: wp.array(dtype=wp.int32),
+        slots: wp.array(dtype=wp.int32), slot: int,
         vr: wp.array(dtype=F64), vt: wp.array(dtype=F64), vz: wp.array(dtype=F64),
         dr: F64, dz: F64, z_min: F64, nr: int, nz: int,
         weight_sum: wp.array(dtype=F64), vr_sum: wp.array(dtype=F64), vt_sum: wp.array(dtype=F64),
         vz_sum: wp.array(dtype=F64), v2_sum: wp.array(dtype=F64),
     ):
         p = wp.tid()
-        if alive[p] == 0:
+        if p >= slots[slot] or alive[p] == 0:
             return
         fr = r[p] / dr
         fz = (z[p] - z_min) / dz
@@ -170,10 +185,11 @@ if wp is not None:
     @wp.kernel
     def deposit_unit_kernel(
         r: wp.array(dtype=F64), z: wp.array(dtype=F64), flags: wp.array(dtype=wp.int32),
+        slots: wp.array(dtype=wp.int32), slot: int,
         dr: F64, dz: F64, z_min: F64, nr: int, nz: int, out: wp.array(dtype=F64),
     ):
         p = wp.tid()
-        if flags[p] == 0:
+        if p >= slots[slot] or flags[p] == 0:
             return
         fr = r[p] / dr
         fz = (z[p] - z_min) / dz
@@ -362,6 +378,59 @@ if wp is not None:
         e_z[n] = value
 
     @wp.kernel
+    def block_forward_kernel(
+        g: wp.array(dtype=F64), c: wp.array(dtype=F64), b: wp.array(dtype=F64), y: wp.array(dtype=F64), i: int, m: int,
+    ):
+        # y_i = b_i - c_{i-1} * (G_{i-1} y_{i-1});  G stored row-major g[i, j, k].
+        # One THOMAS_LANES-thread block per output j: lane q sums k = q, q+P, ...
+        # (coalesced across lanes), then a deterministic tile reduction.
+        t = wp.tid()
+        lanes = wp.block_dim()
+        j = t / lanes
+        q = t % lanes
+        acc = F64(0.0)
+        if i > 0:
+            prev = i - 1
+            base_g = prev * m * m + j * m
+            base_y = prev * m
+            k = q
+            while k < m:
+                acc += g[base_g + k] * y[base_y + k]
+                k += lanes
+        value = wp.tile_extract(wp.tile_sum(wp.tile(acc)), 0)
+        if q == 0:
+            if i == 0:
+                y[j] = b[j]
+            else:
+                y[i * m + j] = b[i * m + j] - c[(i - 1) * m + j] * value
+
+    @wp.kernel
+    def block_backward_kernel(
+        g: wp.array(dtype=F64), c: wp.array(dtype=F64), y: wp.array(dtype=F64), x: wp.array(dtype=F64), i: int, m: int, last: int,
+    ):
+        # x_i = G_i (y_i - c_i * x_{i+1})
+        t = wp.tid()
+        lanes = wp.block_dim()
+        j = t / lanes
+        q = t % lanes
+        base_g = i * m * m + j * m
+        base = i * m
+        acc = F64(0.0)
+        k = q
+        if i == last:
+            while k < m:
+                acc += g[base_g + k] * y[base + k]
+                k += lanes
+        else:
+            nxt = (i + 1) * m
+            while k < m:
+                acc += g[base_g + k] * (y[base + k] - c[base + k] * x[nxt + k])
+                k += lanes
+        value = wp.tile_extract(wp.tile_sum(wp.tile(acc)), 0)
+        if q == 0:
+            x[base + j] = value
+
+    @wp.kernel
     def apply_dirichlet_kernel(x: wp.array(dtype=F64), boundary: wp.array(dtype=F64), unknown: wp.array(dtype=wp.int32),
                                phi: wp.array(dtype=F64)):
         n = wp.tid()
@@ -427,6 +496,7 @@ if wp is not None:
         e_r: wp.array(dtype=F64), e_z: wp.array(dtype=F64), b_r: wp.array(dtype=F64), b_z: wp.array(dtype=F64),
         dr: F64, dz: F64, z_min: F64, z_max: F64, nr: int, nz: int,
         plasma_cell: wp.array(dtype=wp.int32), top_cell: wp.array(dtype=wp.int32), plasma_node: wp.array(dtype=wp.int32),
+        slots: wp.array(dtype=wp.int32), slot: int,
         charge: F64, mass: F64, weight: F64, dt: F64, scale: F64, charge_sign: wp.int64,
         wall_accumulator: wp.array(dtype=wp.int64),
         stats: wp.array(dtype=F64), count_slot: int, energy_slot: int,
@@ -434,126 +504,139 @@ if wp is not None:
         exit_bins: wp.array(dtype=F64),
     ):
         # stats layout (see WarpBackend.STATS): counts at count_slot+code-1, energies at
-        # energy_slot+code-1, work at 0, max speed^2 at 1, invalid at 2
+        # energy_slot+code-1, work at 0, max speed^2 at 1, invalid at 2.
+        # No early returns: the per-particle work and speed^2 are reduced per
+        # block with tile sums (launch dim padded to PARTICLE_BLOCK).
         p = wp.tid()
-        if alive[p] == 0:
-            return
-        rp = r[p]
-        zp = z[p]
-        fr = rp / dr
-        fz = (zp - z_min) / dz
-        i = wp.clamp(int(wp.floor(fr)), 0, nr - 1)
-        j = wp.clamp(int(wp.floor(fz)), 0, nz - 1)
-        s = fr - F64(i)
-        t = fz - F64(j)
-        w00 = (F64(1.0) - s) * (F64(1.0) - t)
-        w10 = s * (F64(1.0) - t)
-        w01 = (F64(1.0) - s) * t
-        w11 = s * t
-        stride = nz + 1
-        n00 = i * stride + j
-        n10 = n00 + stride
-        n01 = n00 + 1
-        n11 = n10 + 1
-        ex = w00 * e_r[n00] + w10 * e_r[n10] + w01 * e_r[n01] + w11 * e_r[n11]
-        ez = w00 * e_z[n00] + w10 * e_z[n10] + w01 * e_z[n01] + w11 * e_z[n11]
-        bx = w00 * b_r[n00] + w10 * b_r[n10] + w01 * b_r[n01] + w11 * b_r[n11]
-        bz = w00 * b_z[n00] + w10 * b_z[n10] + w01 * b_z[n01] + w11 * b_z[n11]
-        vx0 = vr[p]
-        vy0 = vt[p]
-        vz0 = vz[p]
-        mass_weight = mass * weight
-        k_before = kinetic_energy(vx0, vy0, vz0, mass_weight)
-        v = relativistic_boris(vx0, vy0, vz0, ex, ez, bx, bz, charge, mass, dt)
-        x_new = rp + v[0] * dt
-        y_new = v[1] * dt
-        r_new = wp.sqrt(x_new * x_new + y_new * y_new)
-        cos_a = F64(1.0)
-        sin_a = F64(0.0)
-        if r_new > F64(0.0):
-            cos_a = x_new / r_new
-            sin_a = y_new / r_new
-        vr_new = v[0] * cos_a + v[1] * sin_a
-        vt_new = -v[0] * sin_a + v[1] * cos_a
-        vz_new = v[2]
-        z_new = zp + vz_new * dt
-        k_after = kinetic_energy(vr_new, vt_new, vz_new, mass_weight)
-        wp.atomic_add(stats, 0, k_after - k_before)
-        wp.atomic_max(stats, 1, vr_new * vr_new + vt_new * vt_new + vz_new * vz_new)
-        # boundary classification (identical to kernels.classify_boundary)
-        code = 0
-        if z_new < z_min:
-            code = 1
-        elif z_new >= z_max:
-            code = 2
-        else:
-            fi = int(wp.floor(r_new / dr))
-            jj = wp.clamp(int(wp.floor((z_new - z_min) / dz)), 0, nz - 1)
-            inside = 0
-            if fi < nr:
-                if plasma_cell[fi * nz + jj] != 0:
-                    inside = 1
-            if inside == 0:
-                code = 3
-                if fi > nr:
-                    code = 4
-        if code == 0:
-            r[p] = r_new
-            z[p] = z_new
-            vr[p] = vr_new
-            vt[p] = vt_new
-            vz[p] = vz_new
-            return
-        alive[p] = 0
-        if code == 4:
-            wp.atomic_add(stats, 2, F64(1.0))
-            return
-        wp.atomic_add(stats, count_slot + code - 1, F64(1.0))
-        wp.atomic_add(stats, energy_slot + code - 1, k_after)
-        if code == 3:
-            # renormalised bilinear surface deposit on plasma nodes
-            gr = wp.clamp(r_new / dr, F64(0.0), F64(nr) - F64(1.0e-12))
-            gz = wp.clamp((z_new - z_min) / dz, F64(0.0), F64(nz) - F64(1.0e-12))
-            ii = int(wp.floor(gr))
-            jw = int(wp.floor(gz))
-            ss = gr - F64(ii)
-            tt = gz - F64(jw)
-            m00 = ii * stride + jw
-            m10 = m00 + stride
-            m01 = m00 + 1
-            m11 = m10 + 1
-            a00 = F64(0.0)
-            a10 = F64(0.0)
-            a01 = F64(0.0)
-            a11 = F64(0.0)
-            if plasma_node[m00] != 0:
-                a00 = (F64(1.0) - ss) * (F64(1.0) - tt)
-            if plasma_node[m10] != 0:
-                a10 = ss * (F64(1.0) - tt)
-            if plasma_node[m01] != 0:
-                a01 = (F64(1.0) - ss) * tt
-            if plasma_node[m11] != 0:
-                a11 = ss * tt
-            total = F64(0.0)
-            total += a00
-            total += a10
-            total += a01
-            total += a11
-            if total <= F64(0.0):
-                wp.atomic_add(stats, 2, F64(1.0))
-                return
-            wp.atomic_add(wall_accumulator, m00, wp.int64(wp.rint(a00 / total * scale)) * charge_sign)
-            wp.atomic_add(wall_accumulator, m10, wp.int64(wp.rint(a10 / total * scale)) * charge_sign)
-            wp.atomic_add(wall_accumulator, m01, wp.int64(wp.rint(a01 / total * scale)) * charge_sign)
-            wp.atomic_add(wall_accumulator, m11, wp.int64(wp.rint(a11 / total * scale)) * charge_sign)
-            if accumulate != 0:
-                col = wp.clamp(int((z_new - z_min) / dz), 0, nz - 1)
-                wp.atomic_add(wall_columns, col, F64(1.0))
-                wp.atomic_add(wall_column_energy, col, k_after)
-        elif code == 2:
-            if accumulate != 0:
-                bin_index = wp.clamp(int(r_new / dr), 0, nr - 1)
-                wp.atomic_add(exit_bins, bin_index, F64(1.0))
+        active = 0
+        if p < slots[slot]:
+            if alive[p] != 0:
+                active = 1
+        work = F64(0.0)
+        speed2 = F64(0.0)
+        if active != 0:
+            rp = r[p]
+            zp = z[p]
+            fr = rp / dr
+            fz = (zp - z_min) / dz
+            i = wp.clamp(int(wp.floor(fr)), 0, nr - 1)
+            j = wp.clamp(int(wp.floor(fz)), 0, nz - 1)
+            s = fr - F64(i)
+            t = fz - F64(j)
+            w00 = (F64(1.0) - s) * (F64(1.0) - t)
+            w10 = s * (F64(1.0) - t)
+            w01 = (F64(1.0) - s) * t
+            w11 = s * t
+            stride = nz + 1
+            n00 = i * stride + j
+            n10 = n00 + stride
+            n01 = n00 + 1
+            n11 = n10 + 1
+            ex = w00 * e_r[n00] + w10 * e_r[n10] + w01 * e_r[n01] + w11 * e_r[n11]
+            ez = w00 * e_z[n00] + w10 * e_z[n10] + w01 * e_z[n01] + w11 * e_z[n11]
+            bx = w00 * b_r[n00] + w10 * b_r[n10] + w01 * b_r[n01] + w11 * b_r[n11]
+            bz = w00 * b_z[n00] + w10 * b_z[n10] + w01 * b_z[n01] + w11 * b_z[n11]
+            vx0 = vr[p]
+            vy0 = vt[p]
+            vz0 = vz[p]
+            mass_weight = mass * weight
+            k_before = kinetic_energy(vx0, vy0, vz0, mass_weight)
+            v = relativistic_boris(vx0, vy0, vz0, ex, ez, bx, bz, charge, mass, dt)
+            x_new = rp + v[0] * dt
+            y_new = v[1] * dt
+            r_new = wp.sqrt(x_new * x_new + y_new * y_new)
+            cos_a = F64(1.0)
+            sin_a = F64(0.0)
+            if r_new > F64(0.0):
+                cos_a = x_new / r_new
+                sin_a = y_new / r_new
+            vr_new = v[0] * cos_a + v[1] * sin_a
+            vt_new = -v[0] * sin_a + v[1] * cos_a
+            vz_new = v[2]
+            z_new = zp + vz_new * dt
+            k_after = kinetic_energy(vr_new, vt_new, vz_new, mass_weight)
+            work = k_after - k_before
+            speed2 = vr_new * vr_new + vt_new * vt_new + vz_new * vz_new
+            # boundary classification (identical to kernels.classify_boundary)
+            code = 0
+            if z_new < z_min:
+                code = 1
+            elif z_new >= z_max:
+                code = 2
+            else:
+                fi = int(wp.floor(r_new / dr))
+                jj = wp.clamp(int(wp.floor((z_new - z_min) / dz)), 0, nz - 1)
+                inside = 0
+                if fi < nr:
+                    if plasma_cell[fi * nz + jj] != 0:
+                        inside = 1
+                if inside == 0:
+                    code = 3
+                    if fi > nr:
+                        code = 4
+            if code == 0:
+                r[p] = r_new
+                z[p] = z_new
+                vr[p] = vr_new
+                vt[p] = vt_new
+                vz[p] = vz_new
+            else:
+                alive[p] = 0
+                if code == 4:
+                    wp.atomic_add(stats, 2, F64(1.0))
+                else:
+                    wp.atomic_add(stats, count_slot + code - 1, F64(1.0))
+                    wp.atomic_add(stats, energy_slot + code - 1, k_after)
+                    if code == 3:
+                        # renormalised bilinear surface deposit on plasma nodes
+                        gr = wp.clamp(r_new / dr, F64(0.0), F64(nr) - F64(1.0e-12))
+                        gz = wp.clamp((z_new - z_min) / dz, F64(0.0), F64(nz) - F64(1.0e-12))
+                        ii = int(wp.floor(gr))
+                        jw = int(wp.floor(gz))
+                        ss = gr - F64(ii)
+                        tt = gz - F64(jw)
+                        m00 = ii * stride + jw
+                        m10 = m00 + stride
+                        m01 = m00 + 1
+                        m11 = m10 + 1
+                        a00 = F64(0.0)
+                        a10 = F64(0.0)
+                        a01 = F64(0.0)
+                        a11 = F64(0.0)
+                        if plasma_node[m00] != 0:
+                            a00 = (F64(1.0) - ss) * (F64(1.0) - tt)
+                        if plasma_node[m10] != 0:
+                            a10 = ss * (F64(1.0) - tt)
+                        if plasma_node[m01] != 0:
+                            a01 = (F64(1.0) - ss) * tt
+                        if plasma_node[m11] != 0:
+                            a11 = ss * tt
+                        total = F64(0.0)
+                        total += a00
+                        total += a10
+                        total += a01
+                        total += a11
+                        if total <= F64(0.0):
+                            wp.atomic_add(stats, 2, F64(1.0))
+                        else:
+                            wp.atomic_add(wall_accumulator, m00, wp.int64(wp.rint(a00 / total * scale)) * charge_sign)
+                            wp.atomic_add(wall_accumulator, m10, wp.int64(wp.rint(a10 / total * scale)) * charge_sign)
+                            wp.atomic_add(wall_accumulator, m01, wp.int64(wp.rint(a01 / total * scale)) * charge_sign)
+                            wp.atomic_add(wall_accumulator, m11, wp.int64(wp.rint(a11 / total * scale)) * charge_sign)
+                            if accumulate != 0:
+                                col = wp.clamp(int((z_new - z_min) / dz), 0, nz - 1)
+                                wp.atomic_add(wall_columns, col, F64(1.0))
+                                wp.atomic_add(wall_column_energy, col, k_after)
+                    elif code == 2:
+                        if accumulate != 0:
+                            bin_index = wp.clamp(int(r_new / dr), 0, nr - 1)
+                            wp.atomic_add(exit_bins, bin_index, F64(1.0))
+        # block reductions (deterministic tree order) replace 2 same-address atomics per particle
+        block_work = wp.tile_sum(wp.tile(work))
+        wp.tile_atomic_add(stats, block_work, offset=0)
+        block_speed = wp.tile_extract(wp.tile_max(wp.tile(speed2)), 0)
+        if p % wp.block_dim() == 0:
+            wp.atomic_max(stats, 1, block_speed)
 
     @wp.kernel
     def wall_int_to_charge_kernel(accumulator: wp.array(dtype=wp.int64), factor: F64, surface: wp.array(dtype=F64)):
@@ -582,113 +665,143 @@ if wp is not None:
     @wp.kernel
     def mcc_kernel(
         vr: wp.array(dtype=F64), vt: wp.array(dtype=F64), vz: wp.array(dtype=F64), alive: wp.array(dtype=wp.int32),
-        count: int, seed: int, probability: F64, nu_max: F64, neutral_density: F64,
+        slots: wp.array(dtype=wp.int32), seed: int, probability: F64, nu_max: F64, neutral_density: F64,
         table: wp.array(dtype=F64), points: int, step_ev: F64, max_ev: F64,
         threshold_exc: F64, threshold_ion: F64, b_ev: F64, ion_thermal: F64,
         ionize: wp.array(dtype=wp.int32), sec_vr: wp.array(dtype=F64), sec_vt: wp.array(dtype=F64), sec_vz: wp.array(dtype=F64),
         ion_vr: wp.array(dtype=F64), ion_vt: wp.array(dtype=F64), ion_vz: wp.array(dtype=F64),
-        stats: wp.array(dtype=F64), tally_slot: int,
+        stats: wp.array(dtype=F64), tally_slot: int, flag_bound: int,
     ):
+        # No early returns: the five tallies (candidates, elastic, excitation,
+        # ionisation, null) are reduced per block with tile sums.
         p = wp.tid()
-        ionize[p] = 0
-        if p >= count or alive[p] == 0:
-            return
-        state = wp.rand_init(seed, p)
-        u0 = F64(wp.randf(state))
-        if u0 >= probability:
-            return
-        wp.atomic_add(stats, tally_slot, F64(1.0))
-        vx = vr[p]
-        vy = vt[p]
-        vzp = vz[p]
-        speed2 = vx * vx + vy * vy + vzp * vzp
-        speed = wp.sqrt(speed2)
-        m_e = F64(9.1093837139e-31)
-        ev = F64(1.602176634e-19)
-        energy = F64(0.5) * m_e * speed2 / ev
-        nu0 = neutral_density * sigma_lookup(table, points, step_ev, max_ev, energy, 0) * speed
-        nu1 = neutral_density * sigma_lookup(table, points, step_ev, max_ev, energy, 1) * speed
-        nu2 = neutral_density * sigma_lookup(table, points, step_ev, max_ev, energy, 2) * speed
-        if energy < threshold_exc:
-            nu1 = F64(0.0)
-        if energy < threshold_ion:
-            nu2 = F64(0.0)
-        selector = F64(wp.randf(state)) * nu_max
-        c1 = nu0
-        c2 = nu0 + nu1
-        c3 = c2 + nu2
-        u2 = F64(wp.randf(state))
-        u3 = F64(wp.randf(state))
-        if selector < c1:
-            v = isotropic(speed, u2, u3)
-            vr[p] = v[0]
-            vt[p] = v[1]
-            vz[p] = v[2]
-            wp.atomic_add(stats, tally_slot + 1, F64(1.0))
-        elif selector < c2:
-            remaining = wp.max(energy - threshold_exc, F64(0.0))
-            v = isotropic(wp.sqrt(F64(2.0) * remaining * ev / m_e), u2, u3)
-            vr[p] = v[0]
-            vt[p] = v[1]
-            vz[p] = v[2]
-            wp.atomic_add(stats, tally_slot + 2, F64(1.0))
-        elif selector < c3:
-            available = wp.max(energy - threshold_ion, F64(0.0))
-            u4 = F64(wp.randf(state))
-            secondary = b_ev * wp.tan(u4 * wp.atan(available / (F64(2.0) * b_ev)))
-            secondary = wp.clamp(secondary, F64(0.0), available)
-            primary = available - secondary
-            v = isotropic(wp.sqrt(F64(2.0) * primary * ev / m_e), u2, u3)
-            vr[p] = v[0]
-            vt[p] = v[1]
-            vz[p] = v[2]
-            u5 = F64(wp.randf(state))
-            u6 = F64(wp.randf(state))
-            sv = isotropic(wp.sqrt(F64(2.0) * secondary * ev / m_e), u5, u6)
-            sec_vr[p] = sv[0]
-            sec_vt[p] = sv[1]
-            sec_vz[p] = sv[2]
-            u7 = wp.max(F64(wp.randf(state)), F64(1.0e-30))
-            u8 = F64(wp.randf(state))
-            u9 = wp.max(F64(wp.randf(state)), F64(1.0e-30))
-            u10 = F64(wp.randf(state))
-            rad1 = wp.sqrt(F64(-2.0) * wp.log(u7))
-            rad2 = wp.sqrt(F64(-2.0) * wp.log(u9))
-            ion_vr[p] = ion_thermal * rad1 * wp.cos(F64(6.283185307179586) * u8)
-            ion_vt[p] = ion_thermal * rad1 * wp.sin(F64(6.283185307179586) * u8)
-            ion_vz[p] = ion_thermal * rad2 * wp.cos(F64(6.283185307179586) * u10)
-            ionize[p] = 1
-            wp.atomic_add(stats, tally_slot + 3, F64(1.0))
-        else:
-            wp.atomic_add(stats, tally_slot + 4, F64(1.0))
+        if p < flag_bound:
+            ionize[p] = 0
+        candidate = F64(0.0)
+        outcome = 4  # 0 elastic, 1 excitation, 2 ionisation, 3 null, 4 no candidate
+        active = 0
+        if p < slots[0]:
+            if alive[p] != 0:
+                active = 1
+        if active != 0:
+            state = wp.rand_init(seed, p)
+            u0 = F64(wp.randf(state))
+            if u0 < probability:
+                candidate = F64(1.0)
+                vx = vr[p]
+                vy = vt[p]
+                vzp = vz[p]
+                speed2 = vx * vx + vy * vy + vzp * vzp
+                speed = wp.sqrt(speed2)
+                m_e = F64(9.1093837139e-31)
+                ev = F64(1.602176634e-19)
+                energy = F64(0.5) * m_e * speed2 / ev
+                nu0 = neutral_density * sigma_lookup(table, points, step_ev, max_ev, energy, 0) * speed
+                nu1 = neutral_density * sigma_lookup(table, points, step_ev, max_ev, energy, 1) * speed
+                nu2 = neutral_density * sigma_lookup(table, points, step_ev, max_ev, energy, 2) * speed
+                if energy < threshold_exc:
+                    nu1 = F64(0.0)
+                if energy < threshold_ion:
+                    nu2 = F64(0.0)
+                selector = F64(wp.randf(state)) * nu_max
+                c1 = nu0
+                c2 = nu0 + nu1
+                c3 = c2 + nu2
+                u2 = F64(wp.randf(state))
+                u3 = F64(wp.randf(state))
+                if selector < c1:
+                    v = isotropic(speed, u2, u3)
+                    vr[p] = v[0]
+                    vt[p] = v[1]
+                    vz[p] = v[2]
+                    outcome = 0
+                elif selector < c2:
+                    remaining = wp.max(energy - threshold_exc, F64(0.0))
+                    v = isotropic(wp.sqrt(F64(2.0) * remaining * ev / m_e), u2, u3)
+                    vr[p] = v[0]
+                    vt[p] = v[1]
+                    vz[p] = v[2]
+                    outcome = 1
+                elif selector < c3:
+                    available = wp.max(energy - threshold_ion, F64(0.0))
+                    u4 = F64(wp.randf(state))
+                    secondary = b_ev * wp.tan(u4 * wp.atan(available / (F64(2.0) * b_ev)))
+                    secondary = wp.clamp(secondary, F64(0.0), available)
+                    primary = available - secondary
+                    v = isotropic(wp.sqrt(F64(2.0) * primary * ev / m_e), u2, u3)
+                    vr[p] = v[0]
+                    vt[p] = v[1]
+                    vz[p] = v[2]
+                    u5 = F64(wp.randf(state))
+                    u6 = F64(wp.randf(state))
+                    sv = isotropic(wp.sqrt(F64(2.0) * secondary * ev / m_e), u5, u6)
+                    sec_vr[p] = sv[0]
+                    sec_vt[p] = sv[1]
+                    sec_vz[p] = sv[2]
+                    u7 = wp.max(F64(wp.randf(state)), F64(1.0e-30))
+                    u8 = F64(wp.randf(state))
+                    u9 = wp.max(F64(wp.randf(state)), F64(1.0e-30))
+                    u10 = F64(wp.randf(state))
+                    rad1 = wp.sqrt(F64(-2.0) * wp.log(u7))
+                    rad2 = wp.sqrt(F64(-2.0) * wp.log(u9))
+                    ion_vr[p] = ion_thermal * rad1 * wp.cos(F64(6.283185307179586) * u8)
+                    ion_vt[p] = ion_thermal * rad1 * wp.sin(F64(6.283185307179586) * u8)
+                    ion_vz[p] = ion_thermal * rad2 * wp.cos(F64(6.283185307179586) * u10)
+                    ionize[p] = 1
+                    outcome = 2
+                else:
+                    outcome = 3
+        e_flag = F64(0.0)
+        x_flag = F64(0.0)
+        i_flag = F64(0.0)
+        n_flag = F64(0.0)
+        if outcome == 0:
+            e_flag = F64(1.0)
+        elif outcome == 1:
+            x_flag = F64(1.0)
+        elif outcome == 2:
+            i_flag = F64(1.0)
+        elif outcome == 3:
+            n_flag = F64(1.0)
+        wp.tile_atomic_add(stats, wp.tile_sum(wp.tile(candidate)), offset=tally_slot)
+        wp.tile_atomic_add(stats, wp.tile_sum(wp.tile(e_flag)), offset=tally_slot + 1)
+        wp.tile_atomic_add(stats, wp.tile_sum(wp.tile(x_flag)), offset=tally_slot + 2)
+        wp.tile_atomic_add(stats, wp.tile_sum(wp.tile(i_flag)), offset=tally_slot + 3)
+        wp.tile_atomic_add(stats, wp.tile_sum(wp.tile(n_flag)), offset=tally_slot + 4)
 
     @wp.kernel
     def spawn_kernel(
-        ionize: wp.array(dtype=wp.int32), offsets: wp.array(dtype=wp.int32), count: int,
+        ionize: wp.array(dtype=wp.int32), offsets: wp.array(dtype=wp.int32), slots: wp.array(dtype=wp.int32),
+        e_capacity: int, i_capacity: int,
         r: wp.array(dtype=F64), z: wp.array(dtype=F64),
         sec_vr: wp.array(dtype=F64), sec_vt: wp.array(dtype=F64), sec_vz: wp.array(dtype=F64),
         ion_vr: wp.array(dtype=F64), ion_vt: wp.array(dtype=F64), ion_vz: wp.array(dtype=F64),
         e_r: wp.array(dtype=F64), e_z: wp.array(dtype=F64), e_vr: wp.array(dtype=F64), e_vt: wp.array(dtype=F64),
-        e_vz: wp.array(dtype=F64), e_alive: wp.array(dtype=wp.int32), e_base: int,
+        e_vz: wp.array(dtype=F64), e_alive: wp.array(dtype=wp.int32),
         i_r: wp.array(dtype=F64), i_z: wp.array(dtype=F64), i_vr: wp.array(dtype=F64), i_vt: wp.array(dtype=F64),
-        i_vz: wp.array(dtype=F64), i_alive: wp.array(dtype=wp.int32), i_base: int,
+        i_vz: wp.array(dtype=F64), i_alive: wp.array(dtype=wp.int32),
         born_r: wp.array(dtype=F64), born_z: wp.array(dtype=F64), born_flag: wp.array(dtype=wp.int32),
+        stats: wp.array(dtype=F64), overflow_slot: int,
     ):
+        # ``slots[0]``/``slots[1]`` are the electron/ion slot counts *before* this
+        # step's births; ``spawn_commit_kernel`` advances them afterwards.
         p = wp.tid()
-        if p >= count:
-            return
         born_flag[p] = 0
-        if ionize[p] == 0:
+        if p >= slots[0] or ionize[p] == 0:
             return
         k = offsets[p]
-        de = e_base + k
+        de = slots[0] + k
+        di = slots[1] + k
+        if de >= e_capacity or di >= i_capacity:
+            # fail closed at the next host sync instead of writing out of bounds
+            wp.atomic_add(stats, overflow_slot, F64(1.0))
+            return
         e_r[de] = r[p]
         e_z[de] = z[p]
         e_vr[de] = sec_vr[p]
         e_vt[de] = sec_vt[p]
         e_vz[de] = sec_vz[p]
         e_alive[de] = 1
-        di = i_base + k
         i_r[di] = r[p]
         i_z[di] = z[p]
         i_vr[di] = ion_vr[p]
@@ -700,12 +813,34 @@ if wp is not None:
         born_flag[p] = 1
 
     @wp.kernel
+    def spawn_commit_kernel(
+        ionize: wp.array(dtype=wp.int32), offsets: wp.array(dtype=wp.int32), slots: wp.array(dtype=wp.int32),
+        e_capacity: int, i_capacity: int,
+    ):
+        # total births = exclusive offset of the last candidate + its own flag
+        n = slots[0]
+        total = 0
+        if n > 0:
+            total = offsets[n - 1] + ionize[n - 1]
+        slots[0] = wp.min(slots[0] + total, e_capacity)
+        slots[1] = wp.min(slots[1] + total, i_capacity)
+
+    @wp.kernel
+    def add_slots_kernel(slots: wp.array(dtype=wp.int32), slot: int, amount: int):
+        slots[slot] = slots[slot] + amount
+
+    @wp.kernel
     def inject_kernel(
-        seed: int, base: int, r_max: F64, z_max: F64, dz: F64, thermal: F64,
+        seed: int, slots: wp.array(dtype=wp.int32), capacity: int, r_max: F64, z_max: F64, dz: F64, thermal: F64,
         r: wp.array(dtype=F64), z: wp.array(dtype=F64), vr: wp.array(dtype=F64), vt: wp.array(dtype=F64),
         vz: wp.array(dtype=F64), alive: wp.array(dtype=wp.int32), stats: wp.array(dtype=F64), slot: int, mass_weight: F64,
+        overflow_slot: int,
     ):
         k = wp.tid()
+        base = slots[0]
+        if base + k >= capacity:
+            wp.atomic_add(stats, overflow_slot, F64(1.0))
+            return
         state = wp.rand_init(seed, k)
         u0 = F64(wp.randf(state))
         u1 = F64(wp.randf(state))
@@ -729,13 +864,13 @@ if wp is not None:
 
     @wp.kernel
     def compact_kernel(
-        alive: wp.array(dtype=wp.int32), offsets: wp.array(dtype=wp.int32), count: int,
+        alive: wp.array(dtype=wp.int32), offsets: wp.array(dtype=wp.int32), slots: wp.array(dtype=wp.int32), slot: int,
         r: wp.array(dtype=F64), z: wp.array(dtype=F64), vr: wp.array(dtype=F64), vt: wp.array(dtype=F64), vz: wp.array(dtype=F64),
         r2: wp.array(dtype=F64), z2: wp.array(dtype=F64), vr2: wp.array(dtype=F64), vt2: wp.array(dtype=F64), vz2: wp.array(dtype=F64),
         alive2: wp.array(dtype=wp.int32),
     ):
         p = wp.tid()
-        if p >= count or alive[p] == 0:
+        if p >= slots[slot] or alive[p] == 0:
             return
         d = offsets[p]
         r2[d] = r[p]
@@ -747,9 +882,10 @@ if wp is not None:
 
     @wp.kernel
     def energy_sum_kernel(vr: wp.array(dtype=F64), vt: wp.array(dtype=F64), vz: wp.array(dtype=F64),
-                          alive: wp.array(dtype=wp.int32), count: int, threads: int, mass_weight: F64,
-                          partial: wp.array(dtype=F64)):
+                          alive: wp.array(dtype=wp.int32), slots: wp.array(dtype=wp.int32), slot: int, threads: int,
+                          mass_weight: F64, partial: wp.array(dtype=F64)):
         k = wp.tid()
+        count = slots[slot]
         acc = F64(0.0)
         p = k
         while p < count:
@@ -762,6 +898,16 @@ if wp is not None:
     def peak_density_kernel(q_e: wp.array(dtype=F64), inverse_volume: wp.array(dtype=F64), stats: wp.array(dtype=F64), slot: int):
         n = wp.tid()
         wp.atomic_max(stats, slot, wp.abs(q_e[n]) * inverse_volume[n])
+
+    @wp.kernel
+    def sum_kernel(values: wp.array(dtype=F64), count: int, threads: int, partial: wp.array(dtype=F64)):
+        k = wp.tid()
+        acc = F64(0.0)
+        n = k
+        while n < count:
+            acc += values[n]
+            n += threads
+        partial[k] = acc
 
 
 def efield_stencil_codes(masks: MeshMasks) -> tuple[np.ndarray, np.ndarray]:
@@ -950,20 +1096,175 @@ class WarpPoisson:
         return iterations, true_residual, tolerance
 
 
+class WarpBlockThomas:
+    """Exact block-Thomas direct solve on the device, blocked along radial rows.
+
+    Unknowns are grouped by radial index ``i`` (one block = the whole axial row,
+    ``m = nz + 1`` nodes, identity rows for non-unknown nodes); the coupling to
+    row ``i + 1`` is the diagonal ``-cond_r``.  The Schur complements
+    ``S_i = D_i - C_{i-1} S_{i-1}^{-1} C_{i-1}`` are inverted once on the host;
+    a solve is then ``2 nr + 1`` dense row-block matvecs (``m`` threads each,
+    fixed summation order, no atomics) captured in a single CUDA graph, so the
+    field solve costs no host synchronisation.  The true residual of the most
+    recent solve is verified at every host sync against the same contract as
+    the iterative and host paths (``relative_tolerance * |rhs|``).
+    """
+
+    def __init__(self, masks: MeshMasks, potentials, config, device, *, use_graph: bool = True) -> None:
+        if wp is None:
+            raise PIC2DDeviceError("NVIDIA Warp is unavailable")
+        self.masks = masks
+        self.config = config
+        self.device = device
+        grid = masks.grid
+        nr, nz = grid.cell_shape
+        self.nr, self.nz = nr, nz
+        self.m = nz + 1
+        self.node_count = int(np.prod(grid.node_shape))
+        unknown = masks.unknown_node
+        m = self.m
+        g_blocks = np.zeros((nr + 1, m, m), dtype=np.float64)
+        coupling = np.zeros((nr + 1, m), dtype=np.float64)
+        previous_g: np.ndarray | None = None
+        for i in range(nr + 1):
+            d = np.zeros((m, m), dtype=np.float64)
+            row_unknown = unknown[i]
+            diag = np.where(row_unknown, masks.diagonal[i], 1.0)
+            d[np.arange(m), np.arange(m)] = diag
+            both = row_unknown[:-1] & row_unknown[1:]
+            cz = np.where(both, -masks.cond_z[i], 0.0)
+            idx = np.arange(m - 1)
+            d[idx, idx + 1] = cz
+            d[idx + 1, idx] = cz
+            if i > 0 and previous_g is not None:
+                c_prev = coupling[i - 1]
+                d = d - (c_prev[:, None] * previous_g) * c_prev[None, :]
+            g = np.linalg.inv(d)
+            if not np.isfinite(g).all():
+                raise PIC2DConvergenceError("block-Thomas Schur complement inversion produced nonfinite values")
+            g_blocks[i] = g
+            previous_g = g
+            if i < nr:
+                both_r = row_unknown & unknown[i + 1]
+                coupling[i] = np.where(both_r, -masks.cond_r[i], 0.0)
+        f64 = lambda a: wp.array(np.ascontiguousarray(a, dtype=np.float64).ravel(), dtype=wp.float64, device=device)  # noqa: E731
+        self.g_blocks = f64(g_blocks)
+        self.coupling = f64(coupling)
+        self.unknown = wp.array(unknown.ravel().astype(np.int32), dtype=wp.int32, device=device)
+        self.cond_r = f64(masks.cond_r)
+        self.cond_z = f64(masks.cond_z)
+        inverse = np.zeros(grid.node_shape)
+        inverse[unknown] = 1.0 / masks.diagonal[unknown]
+        self.inv_diag = f64(inverse)
+        boundary = boundary_potential_array(masks, potentials)
+        offset = apply_operator(masks, boundary)
+        offset[~unknown] = 0.0
+        self.offset = f64(offset)
+        self.boundary = f64(boundary)
+        self.ratio = f64(masks.charge_to_source)
+        zeros = lambda: wp.zeros(self.node_count, dtype=wp.float64, device=device)  # noqa: E731
+        self.rhs, self.x, self.y, self.r, self.z, self.p, self.ax = (zeros() for _ in range(7))
+        self.threads = int(min(REDUCTION_THREADS, max(64, self.node_count)))
+        self.groups = (self.threads + REDUCTION_GROUP - 1) // REDUCTION_GROUP
+        self.partial_a = wp.zeros(self.threads, dtype=wp.float64, device=device)
+        self.partial_b = wp.zeros(self.threads, dtype=wp.float64, device=device)
+        self.stage_a = wp.zeros(self.groups, dtype=wp.float64, device=device)
+        self.stage_b = wp.zeros(self.groups, dtype=wp.float64, device=device)
+        # scalars: [unused, unused, unused, unused, unused, rr, rhs2, unused]
+        self.scalars = wp.zeros(8, dtype=wp.float64, device=device)
+        self.use_graph = bool(use_graph) and device.is_cuda
+        self.graph = None
+        self.bound_inputs: tuple | None = None
+        self.host_memory_bytes = int(g_blocks.nbytes)
+
+    def _sweeps(self) -> None:
+        m = self.m
+        dev = self.device
+        # the CPU device runs one-thread blocks: one lane per output row
+        dim = m * (THOMAS_LANES if dev.is_cuda else 1)
+        for i in range(self.nr + 1):
+            wp.launch(block_forward_kernel, dim=dim, inputs=[self.g_blocks, self.coupling, self.rhs, self.y, i, m],
+                      device=dev, block_dim=THOMAS_LANES)
+        for i in range(self.nr, -1, -1):
+            wp.launch(block_backward_kernel, dim=dim, inputs=[self.g_blocks, self.coupling, self.y, self.x, i, m, self.nr],
+                      device=dev, block_dim=THOMAS_LANES)
+
+    def _solve_sequence(self, q_e, q_i, surface, phi_out) -> None:
+        n = self.node_count
+        dev = self.device
+        wp.launch(source_kernel, dim=n, inputs=[q_e, q_i, self.ratio, surface, self.offset, self.unknown, self.rhs], device=dev)
+        self._sweeps()
+        wp.launch(apply_dirichlet_kernel, dim=n, inputs=[self.x, self.boundary, self.unknown, phi_out], device=dev)
+
+    def bind(self, q_e, q_i, surface, phi_out) -> None:
+        """Fix the input/output arrays and capture the whole solve as one graph."""
+
+        self.bound_inputs = (q_e, q_i, surface, phi_out)
+        self.graph = None
+        if self.use_graph:
+            self._solve_sequence(q_e, q_i, surface, phi_out)  # loads the module before capture
+            wp.synchronize_device(self.device)
+            with wp.ScopedCapture(device=self.device) as capture:
+                self._solve_sequence(q_e, q_i, surface, phi_out)
+            self.graph = capture.graph
+
+    def solve(self, q_e, q_i, surface, phi_out) -> tuple[int, float, float]:
+        if self.graph is not None and self.bound_inputs is not None and all(a is b for a, b in zip(self.bound_inputs, (q_e, q_i, surface, phi_out))):
+            wp.capture_launch(self.graph)
+        else:
+            self._solve_sequence(q_e, q_i, surface, phi_out)
+        return 1, float("nan"), float("nan")
+
+    def queue_residual_check(self) -> None:
+        """Launch the true-residual and rhs-norm reductions for the last solve (read via ``verify``)."""
+
+        n = self.node_count
+        dev = self.device
+        wp.launch(matvec_kernel, dim=n, inputs=[self.x, self.unknown, self.cond_r, self.cond_z, self.nr, self.nz, self.ax], device=dev)
+        wp.launch(residual_kernel, dim=n, inputs=[self.rhs, self.ax, self.inv_diag, self.r, self.z, self.p], device=dev)
+        wp.launch(dot_stride_kernel, dim=self.threads, inputs=[self.r, self.r, n, self.threads, self.partial_a], device=dev)
+        wp.launch(reduce_stage_kernel, dim=self.groups, inputs=[self.partial_a, self.threads, REDUCTION_GROUP, self.stage_a], device=dev)
+        wp.launch(final_sum_kernel, dim=1, inputs=[self.stage_a, self.groups, self.scalars, 5], device=dev)
+        wp.launch(dot_stride_kernel, dim=self.threads, inputs=[self.rhs, self.rhs, n, self.threads, self.partial_b], device=dev)
+        wp.launch(reduce_stage_kernel, dim=self.groups, inputs=[self.partial_b, self.threads, REDUCTION_GROUP, self.stage_b], device=dev)
+        wp.launch(final_sum_kernel, dim=1, inputs=[self.stage_b, self.groups, self.scalars, 6], device=dev)
+
+    def verify(self) -> tuple[float, float]:
+        """Read the queued residual check; raise if the direct solve broke its contract."""
+
+        scalars = self.scalars.numpy()
+        true_residual = sqrt(max(float(scalars[5]), 0.0))
+        rhs_norm = sqrt(max(float(scalars[6]), 0.0))
+        tolerance = max(self.config.absolute_tolerance, self.config.relative_tolerance * rhs_norm)
+        if not isfinite(true_residual) or true_residual > tolerance:
+            raise PIC2DConvergenceError(
+                f"device block-Thomas solve failed its residual contract: true residual {true_residual:.3e} > {tolerance:.3e}"
+            )
+        return true_residual, tolerance
+
+
 @dataclass
 class DeviceSpecies:
+    """Device particle arrays.
+
+    ``capacity`` is the allocated length; ``bound`` is a host-side upper bound on
+    the slots in use (the launch dimension); the exact slot count lives on the
+    device in ``WarpBackend.slots`` and is only read back at a host sync.
+    ``alive`` is the host ledger of live particles, exact at every sync.
+    """
+
     capacity: int
-    count: int
-    alive_count: int
+    bound: int
+    alive: int
     r: Any
     z: Any
     vr: Any
     vt: Any
     vz: Any
-    alive: Any
+    alive_flags: Any
 
 
-# Per-step device statistics (float64; counts are exact integers in binary64).
+# Per-interval device statistics (float64; counts are exact integers in binary64).
 STATS_WORK = 0
 STATS_MAX_SPEED2 = 1
 STATS_INVALID = 2
@@ -973,15 +1274,33 @@ STATS_E_ENERGY = 7
 STATS_I_COUNTS = 10         # anode, exit, wall (ions)
 STATS_I_ENERGY = 13
 STATS_MCC = 16              # candidates, elastic, excitation, ionization, null
+STATS_KE_INJECTED = 21
+STATS_KE_BORN = 22
+STATS_OVERFLOW = 23
 STATS_SIZE = 24
+
+
+def birth_bound(candidates: int, probability: float) -> int:
+    """Upper bound on ionisations in one step: mean + 8 sigma of Binomial(n, P) + slack.
+
+    Exceeding it is detected fail-closed at the next sync (device slot count
+    above the host bound, or the overflow flag), so this only sets how much
+    head-room the launch dimension and the allocations carry.
+    """
+
+    mean = candidates * probability
+    return int(mean + 8.0 * sqrt(max(mean, 1.0)) + 64.0)
 
 
 class WarpBackend:
     """Warp implementation of the PIC-MCC cycle; interface matches ``CPUBackend``.
 
-    Host synchronisation per step is limited to the Poisson convergence read
-    and one read of the ``STATS_SIZE`` statistics vector; the cumulative ledger
-    is kept on the host from those statistics.
+    The time step is entirely on the device: particle slot counts, boundary
+    tallies, ledger energies and the peak-density gate live in device arrays
+    and are read back once every ``config.device_sync_steps`` steps (plus one
+    scalar convergence read per Poisson solve when the device PCG is used).
+    Compaction, ledger updates and the stability gate happen at those syncs;
+    ``step`` returns a ``StepTally`` only on sync steps.
     """
 
     def __init__(
@@ -992,7 +1311,6 @@ class WarpBackend:
         cross_sections: XenonCrossSections | None,
         *,
         device: str = "cuda:0",
-        compaction_interval: int = 20,
         use_graph: bool = True,
     ) -> None:
         if wp is None:
@@ -1011,25 +1329,29 @@ class WarpBackend:
             if cross_sections is None:
                 raise PIC2DValidationError("MCC requires cross sections")
             self.mcc = NullCollisionMCC(cross_sections, config.mcc, self.ion)
-        self.compaction_interval = int(compaction_interval)
+        self.sync_interval = int(config.sync_steps)
         grid = masks.grid
         self.nr, self.nz = grid.cell_shape
         self.node_count = int(np.prod(grid.node_shape))
         dev = self.device
         f64 = lambda a: wp.array(np.ascontiguousarray(a, dtype=np.float64).ravel(), dtype=wp.float64, device=dev)  # noqa: E731
         i32 = lambda a: wp.array(np.ascontiguousarray(a, dtype=np.int32).ravel(), dtype=wp.int32, device=dev)  # noqa: E731
-        # Field solve: the exact host block-Thomas solver is the default (a few
-        # milliseconds for <=1e5 unknowns, deterministic, identical to the CPU
-        # backend); the device Jacobi-PCG remains available via method="pcg".
+        # Field solve: ``pcg`` runs the device Jacobi-PCG warm-started from the
+        # previous potential (one scalar convergence read per solve); ``direct``
+        # uses the exact host block-Thomas factorisation (two node-array copies
+        # per step) and is identical to the CPU backend.
         self.gpu_poisson: WarpPoisson | None = None
+        self.device_direct: WarpBlockThomas | None = None
         self.host_poisson: Poisson2D | None = None
+        self.ratio = f64(masks.charge_to_source)
+        self.use_graph = bool(use_graph)
         if config.poisson.method == "pcg":
             self.gpu_poisson = WarpPoisson(masks, config.potentials, config.poisson, dev, use_graph=use_graph)
+        elif config.poisson.method == "device-direct":
+            self.device_direct = WarpBlockThomas(masks, config.potentials, config.poisson, dev, use_graph=use_graph)
         else:
             self.host_poisson = Poisson2D(masks, config.poisson)
-            self.ratio = f64(masks.charge_to_source)
             self.source_dev = wp.zeros(self.node_count, dtype=wp.float64, device=dev)
-            self.host_phi = np.zeros(grid.node_shape)
         code_r, code_z = efield_stencil_codes(masks)
         self.code_r = i32(code_r)
         self.code_z = i32(code_z)
@@ -1047,8 +1369,8 @@ class WarpBackend:
         self.acc_wall = zeros(wp.int64)
         self.q_e, self.q_i, self.surface, self.phi, self.e_r, self.e_z = (zeros() for _ in range(6))
         self.stats = wp.zeros(STATS_SIZE, dtype=wp.float64, device=dev)
-        # deferred ledger energies (injected, born ions) accumulated across steps
-        self.deferred = wp.zeros(2, dtype=wp.float64, device=dev)
+        self.slots = wp.zeros(2, dtype=wp.int32, device=dev)
+        self.sample_out = wp.zeros(4, dtype=wp.float64, device=dev)
         # diagnostics (device)
         self.d_n_e, self.d_n_i, self.d_phi, self.d_w, self.d_vr, self.d_vt, self.d_vz, self.d_v2, self.d_ion = (zeros() for _ in range(9))
         self.d_wall_e = wp.zeros(self.nz, dtype=wp.float64, device=dev)
@@ -1064,9 +1386,33 @@ class WarpBackend:
         if self.mcc is not None:
             self.table = f64(self.mcc.table.table_m2)
             self.table_points = self.mcc.table.point_count
+            self.probability = self.mcc.collision_probability(config.dt_s)
+        else:
+            self.probability = 0.0
         self.sync_count = 0
+        self.steps_since_sync = 0
+        self.injected_since_sync = 0
+        self.ions_dirty = True
+        self.last_iterations = 0
+        self.last_tally: StepTally | None = None
+        # Optional phase profiler: when ``profile`` is a dict, every phase boundary
+        # synchronises the device and accumulates wall seconds per phase label.
+        self.profile: dict[str, float] | None = None
+        self._profile_clock = 0.0
+
+    def _mark(self, label: str) -> None:
+        if self.profile is None:
+            return
+        wp.synchronize_device(self.device)
+        now = time.perf_counter()
+        self.profile[label] = self.profile.get(label, 0.0) + (now - self._profile_clock)
+        self._profile_clock = now
 
     # ------------------------------------------------------------------ helpers
+    @property
+    def step_index(self) -> int:
+        return int(self.state_meta["step"])
+
     def _alloc_species(self, capacity: int) -> DeviceSpecies:
         dev = self.device
         arrays = [wp.zeros(capacity, dtype=wp.float64, device=dev) for _ in range(5)]
@@ -1090,16 +1436,18 @@ class WarpBackend:
         self.partial_particles = wp.zeros(REDUCTION_THREADS, dtype=wp.float64, device=dev)
 
     def _grow(self, species: DeviceSpecies, minimum: int) -> DeviceSpecies:
+        """Reallocate (at a sync) so that ``capacity >= minimum``; copies ``bound`` slots."""
+
         if minimum <= species.capacity:
             return species
-        capacity = max(minimum, 2 * species.capacity, 1024)
+        capacity = max(minimum, int(1.5 * species.capacity), 1024)
         new = self._alloc_species(capacity)
-        if species.count:
-            for src, dst in zip((species.r, species.z, species.vr, species.vt, species.vz, species.alive),
-                                (new.r, new.z, new.vr, new.vt, new.vz, new.alive)):
-                wp.copy(dst, src, count=species.count)
-        new.count = species.count
-        new.alive_count = species.alive_count
+        if species.bound:
+            for src, dst in zip((species.r, species.z, species.vr, species.vt, species.vz, species.alive_flags),
+                                (new.r, new.z, new.vr, new.vt, new.vz, new.alive_flags)):
+                wp.copy(dst, src, count=species.bound)
+        new.bound = species.bound
+        new.alive = species.alive
         self._ensure_scratch(capacity)
         return new
 
@@ -1112,50 +1460,78 @@ class WarpBackend:
                 (species.r, species.z, species.vr, species.vt, species.vz),
             ):
                 wp.copy(target, wp.array(values, dtype=wp.float64, device=self.device), count=particles.count)
-            wp.copy(species.alive, wp.array(np.ones(particles.count, dtype=np.int32), dtype=wp.int32, device=self.device), count=particles.count)
-        species.count = particles.count
-        species.alive_count = particles.count
+            wp.copy(species.alive_flags, wp.array(np.ones(particles.count, dtype=np.int32), dtype=wp.int32, device=self.device), count=particles.count)
+        species.bound = particles.count
+        species.alive = particles.count
         self._ensure_scratch(capacity)
         return species
 
     def _download(self, species: DeviceSpecies) -> ParticleArrays:
-        self._compact(species)
-        n = species.count
+        """Host copy of a compacted species (call only right after a sync)."""
+
+        n = species.alive
         if n == 0:
             return ParticleArrays.empty()
         arrays = [np.asarray(a.numpy()[:n], dtype=np.float64).copy() for a in (species.r, species.z, species.vr, species.vt, species.vz)]
         return ParticleArrays(*arrays)
 
-    def _compact(self, species: DeviceSpecies) -> None:
-        n = species.count
-        if n == 0:
+    def _set_slots(self, electrons: int, ions: int) -> None:
+        wp.copy(self.slots, wp.array(np.array([electrons, ions], dtype=np.int32), dtype=wp.int32, device=self.device))
+
+    def _compact(self, species: DeviceSpecies, slot: int, used: int, expected_alive: int) -> None:
+        """Compact live particles to the front; fail closed if the device count disagrees."""
+
+        if used == 0:
+            if expected_alive != 0:
+                raise PIC2DValidationError("host ledger expects live particles but the device has none")
+            species.bound = 0
+            species.alive = 0
             return
         self._ensure_scratch(species.capacity)
-        wp.utils.array_scan(species.alive[:n], self.offsets[:n], inclusive=True)
-        total = int(self.offsets.numpy()[n - 1])
+        wp.utils.array_scan(species.alive_flags[:used], self.offsets[:used], inclusive=True)
+        total = int(self.offsets.numpy()[used - 1])
         self.sync_count += 1
-        if total != species.alive_count:
+        if total != expected_alive:
             raise PIC2DValidationError(
-                f"device alive count {total} disagrees with the host ledger {species.alive_count}"
+                f"device alive count {total} disagrees with the host ledger {expected_alive}"
             )
-        # exclusive offsets = inclusive - alive
-        wp.utils.array_scan(species.alive[:n], self.offsets[:n], inclusive=False)
+        wp.utils.array_scan(species.alive_flags[:used], self.offsets[:used], inclusive=False)
         tmp = self.tmp
         self.tmp_alive.zero_()
-        wp.launch(compact_kernel, dim=n, inputs=[species.alive, self.offsets, n, species.r, species.z, species.vr, species.vt, species.vz,
-                                                 tmp[0], tmp[1], tmp[2], tmp[3], tmp[4], self.tmp_alive], device=self.device)
-        species.alive.zero_()
+        wp.launch(compact_kernel, dim=used, inputs=[species.alive_flags, self.offsets, self.slots, slot, species.r, species.z, species.vr,
+                                                    species.vt, species.vz, tmp[0], tmp[1], tmp[2], tmp[3], tmp[4], self.tmp_alive],
+                  device=self.device)
+        species.alive_flags.zero_()
         if total:
             for src, dst in zip((tmp[0], tmp[1], tmp[2], tmp[3], tmp[4]), (species.r, species.z, species.vr, species.vt, species.vz)):
                 wp.copy(dst, src, count=total)
-            wp.copy(species.alive, self.tmp_alive, count=total)
-        species.count = total
+            wp.copy(species.alive_flags, self.tmp_alive, count=total)
+        species.bound = total
+        species.alive = total
+
+    def _projected_bound(self, species: DeviceSpecies, is_electron: bool, steps: int) -> int:
+        """Slots that ``steps`` more steps can use at most (births + injection)."""
+
+        bound = species.bound
+        injected_per_step = 0
+        if is_electron and self.config.injection is not None:
+            injected_per_step = int(self.config.injection.electron_current_a * self.config.dt_s / (ELEMENTARY_CHARGE_C * self.config.macro_weight)) + 1
+        electrons = self.species["e"].bound if "e" in self.species else bound
+        for _ in range(steps):
+            births = birth_bound(electrons, self.probability) if self.mcc is not None else 0
+            electrons += births + injected_per_step
+            bound += births + (injected_per_step if is_electron else 0)
+        return bound
 
     # ------------------------------------------------------------------ state exchange
     def load_state(self, state: SimulationState) -> None:
         self.species = {"e": self._upload(state.electrons), "i": self._upload(state.ions)}
-        self.surface = wp.array(state.surface_charge_c.ravel(), dtype=wp.float64, device=self.device)
-        self.phi = wp.array(state.phi_v.ravel(), dtype=wp.float64, device=self.device)
+        self._set_slots(state.electrons.count, state.ions.count)
+        # copy into the existing node arrays so captured graphs stay bound to them
+        wp.copy(self.surface, wp.array(state.surface_charge_c.ravel(), dtype=wp.float64, device=self.device))
+        wp.copy(self.phi, wp.array(state.phi_v.ravel(), dtype=wp.float64, device=self.device))
+        if self.device_direct is not None and self.device_direct.bound_inputs is None:
+            self.device_direct.bind(self.q_e, self.q_i, self.surface, self.phi)
         if self.gpu_poisson is not None:
             x = state.phi_v.copy()
             x[~self.masks.unknown_node] = 0.0
@@ -1164,10 +1540,14 @@ class WarpBackend:
             "step": int(state.step), "time_s": float(state.time_s),
             "injection_carry": float(state.injection_carry), "cumulative": dict(state.cumulative),
         }
+        self.stats.zero_()
+        self.steps_since_sync = 0
+        self.injected_since_sync = 0
+        self.ions_dirty = True
+        self._reserve_capacity()
 
     def export_state(self) -> SimulationState:
-        wp.synchronize_device(self.device)
-        self._flush_pending_energy()
+        self.flush()
         shape = self.masks.grid.node_shape
         return SimulationState(
             self.state_meta["step"], self.state_meta["time_s"],
@@ -1176,17 +1556,25 @@ class WarpBackend:
             self.state_meta["injection_carry"], dict(self.state_meta["cumulative"]),
         )
 
+    def flush(self) -> StepTally | None:
+        """Force a host sync (ledger, compaction, gate values) if steps are pending."""
+
+        if self.steps_since_sync > 0:
+            self._sync()
+        return self.last_tally
+
     # ------------------------------------------------------------------ cycle
-    def _deposit(self, species: DeviceSpecies, accumulator, out, per_particle: float) -> None:
+    def _deposit(self, species: DeviceSpecies, slot: int, accumulator, out, per_particle: float, *, redo: bool = True) -> None:
         grid = self.masks.grid
-        accumulator.zero_()
-        if species.count:
-            wp.launch(deposit_fixed_kernel, dim=species.count,
-                      inputs=[species.r, species.z, species.alive, grid.dr_m, grid.dz_m, grid.geometry.z_min_m,
-                              self.nr, self.nz, FIXED_POINT_SCALE, accumulator], device=self.device)
+        if redo:
+            accumulator.zero_()
+            if species.bound:
+                wp.launch(deposit_fixed_kernel, dim=species.bound,
+                          inputs=[species.r, species.z, species.alive_flags, self.slots, slot, grid.dr_m, grid.dz_m, grid.geometry.z_min_m,
+                                  self.nr, self.nz, FIXED_POINT_SCALE, accumulator], device=self.device)
         wp.launch(int_to_charge_kernel, dim=self.node_count, inputs=[accumulator, per_particle / FIXED_POINT_SCALE, out], device=self.device)
 
-    def step(self, accumulate: bool) -> StepTally:
+    def step(self, accumulate: bool) -> StepTally | None:
         config = self.config
         grid = self.masks.grid
         dev = self.device
@@ -1196,42 +1584,55 @@ class WarpBackend:
         electrons = self.species["e"]
         ions = self.species["i"]
         mcc = self.mcc
+        ion_step = (step_index + 1) % config.ion_subcycle == 0
 
-        self._deposit(electrons, self.acc_e, self.q_e, self.electron.charge_c * config.macro_weight)
-        self._deposit(ions, self.acc_i, self.q_i, self.ion.charge_c * config.macro_weight)
+        self._mark("other")
+        self._deposit(electrons, 0, self.acc_e, self.q_e, self.electron.charge_c * config.macro_weight)
+        # Ions are frozen between subcycle pushes; births are added incrementally
+        # (exact integer accumulation), so a full redeposit is only needed after a push.
+        self._deposit(ions, 1, self.acc_i, self.q_i, self.ion.charge_c * config.macro_weight, redo=self.ions_dirty)
+        self.ions_dirty = False
+        self._mark("deposit")
         if self.gpu_poisson is not None:
             iterations, _, _ = self.gpu_poisson.solve(self.q_e, self.q_i, self.surface, self.phi)
+        elif self.device_direct is not None:
+            iterations, _, _ = self.device_direct.solve(self.q_e, self.q_i, self.surface, self.phi)
+            if self.steps_since_sync + 1 >= self.sync_interval:
+                self.device_direct.queue_residual_check()  # read and enforced in _sync
         else:
             wp.launch(host_source_kernel, dim=self.node_count, inputs=[self.q_e, self.q_i, self.ratio, self.surface, self.source_dev], device=dev)
             source = self.source_dev.numpy().reshape(grid.node_shape)
             result = self.host_poisson.solve(source, config.potentials)  # type: ignore[union-attr]
             iterations = result.diagnostics.iterations
             wp.copy(self.phi, wp.array(result.phi_v.ravel(), dtype=wp.float64, device=dev))
-        self.sync_count += 1
+            self.sync_count += 1
+        self.last_iterations = iterations
+        self._mark("poisson")
         wp.launch(efield_kernel, dim=self.node_count, inputs=[self.phi, self.code_r, self.code_z, grid.dr_m, grid.dz_m, self.nz, self.e_r, self.e_z], device=dev)
-        self.stats.zero_()
         wp.launch(peak_density_kernel, dim=self.node_count, inputs=[self.q_e, self.inverse_volume, self.stats, STATS_PEAK_DENSITY], device=dev)
 
         if accumulate:
             wp.launch(axpy_kernel, dim=self.node_count, inputs=[self.d_phi, 1.0, self.phi], device=dev)
             wp.launch(abs_axpy_kernel, dim=self.node_count, inputs=[self.d_n_e, self.inverse_volume, self.q_e], device=dev)
             wp.launch(abs_axpy_kernel, dim=self.node_count, inputs=[self.d_n_i, self.inverse_volume, self.q_i], device=dev)
-            if electrons.count:
-                wp.launch(deposit_moment_kernel, dim=electrons.count,
-                          inputs=[electrons.r, electrons.z, electrons.alive, electrons.vr, electrons.vt, electrons.vz,
+            if electrons.bound:
+                wp.launch(deposit_moment_kernel, dim=electrons.bound,
+                          inputs=[electrons.r, electrons.z, electrons.alive_flags, self.slots, 0, electrons.vr, electrons.vt, electrons.vz,
                                   grid.dr_m, grid.dz_m, grid.geometry.z_min_m, self.nr, self.nz,
                                   self.d_w, self.d_vr, self.d_vt, self.d_vz, self.d_v2], device=dev)
+        self._mark("field+diag")
 
-        for index, (species, particles) in enumerate(((self.electron, electrons), (self.ion, ions))):
-            if particles.count == 0:
+        for slot, (species, particles) in enumerate(((self.electron, electrons), (self.ion, ions))):
+            is_electron = slot == 0
+            if particles.bound == 0 or (not is_electron and not ion_step):
                 continue
-            is_electron = index == 0
+            species_dt = dt if is_electron else dt * config.ion_subcycle
             wp.launch(
-                push_kernel, dim=particles.count,
-                inputs=[particles.r, particles.z, particles.vr, particles.vt, particles.vz, particles.alive,
+                push_kernel, dim=padded_dim(particles.bound, PARTICLE_BLOCK), block_dim=PARTICLE_BLOCK,
+                inputs=[particles.r, particles.z, particles.vr, particles.vt, particles.vz, particles.alive_flags,
                         self.e_r, self.e_z, self.b_r, self.b_z, grid.dr_m, grid.dz_m, grid.geometry.z_min_m, grid.geometry.z_max_m,
-                        self.nr, self.nz, self.plasma_cell, self.top_cell, self.plasma_node,
-                        species.charge_c, species.mass_kg, species.macro_weight, dt, FIXED_POINT_SCALE,
+                        self.nr, self.nz, self.plasma_cell, self.top_cell, self.plasma_node, self.slots, slot,
+                        species.charge_c, species.mass_kg, species.macro_weight, species_dt, FIXED_POINT_SCALE,
                         wp.int64(1 if species.charge_c > 0 else -1), self.acc_wall,
                         self.stats, STATS_E_COUNTS if is_electron else STATS_I_COUNTS,
                         STATS_E_ENERGY if is_electron else STATS_I_ENERGY, 1 if accumulate else 0,
@@ -1240,73 +1641,52 @@ class WarpBackend:
                         self.d_exit_e if is_electron else self.d_exit_i],
                 device=dev,
             )
+            if not is_electron:
+                self.ions_dirty = True
         wp.launch(wall_int_to_charge_kernel, dim=self.node_count,
                   inputs=[self.acc_wall, ELEMENTARY_CHARGE_C * config.macro_weight / FIXED_POINT_SCALE, self.surface], device=dev)
+        self._mark("push")
 
-        n_electrons = electrons.count
-        if mcc is not None and n_electrons:
-            electrons = self._grow(electrons, 2 * n_electrons + 1024)
-            ions = self._grow(ions, ions.count + n_electrons + 1024)
-            self._ensure_scratch(max(electrons.capacity, ions.capacity))
+        n_bound = electrons.bound
+        if mcc is not None and n_bound:
             ion_thermal = sqrt(1.380649e-23 * config.mcc.neutral_temperature_k / self.ion.mass_kg)  # type: ignore[union-attr]
             wp.launch(
-                mcc_kernel, dim=n_electrons,
-                inputs=[electrons.vr, electrons.vt, electrons.vz, electrons.alive, n_electrons, stream_seed(config.seed, step_index, 1),
-                        mcc.collision_probability(dt), mcc.nu_max, config.mcc.neutral_density_per_m3,  # type: ignore[union-attr]
+                mcc_kernel, dim=padded_dim(n_bound, PARTICLE_BLOCK), block_dim=PARTICLE_BLOCK,
+                inputs=[electrons.vr, electrons.vt, electrons.vz, electrons.alive_flags, self.slots, stream_seed(config.seed, step_index, 1),
+                        self.probability, mcc.nu_max, config.mcc.neutral_density_per_m3,  # type: ignore[union-attr]
                         self.table, self.table_points, mcc.table.energy_step_ev, mcc.table.energy_max_ev,
                         mcc.table.thresholds_ev[1], mcc.table.thresholds_ev[2], 8.7, ion_thermal,
                         self.ionize, self.sec[0], self.sec[1], self.sec[2], self.ionv[0], self.ionv[1], self.ionv[2],
-                        self.stats, STATS_MCC],
+                        self.stats, STATS_MCC, n_bound],
                 device=dev,
             )
-
-        # ---- single host read of the per-step statistics
-        stats = self.stats.numpy()
-        self.sync_count += 1
-        if stats[STATS_INVALID] != 0.0:
-            raise PIC2DStabilityError("a particle crossed more than one cell in a step (Courant violation)")
-        cumulative = meta["cumulative"]
-        for base, label in ((STATS_E_COUNTS, "electrons"), (STATS_I_COUNTS, "ions")):
-            cumulative[f"anode_{label}"] += float(stats[base])
-            cumulative[f"exit_{label}"] += float(stats[base + 1])
-            cumulative[f"wall_{label}"] += float(stats[base + 2])
-        electrons.alive_count -= int(stats[STATS_E_COUNTS] + stats[STATS_E_COUNTS + 1] + stats[STATS_E_COUNTS + 2])
-        ions.alive_count -= int(stats[STATS_I_COUNTS] + stats[STATS_I_COUNTS + 1] + stats[STATS_I_COUNTS + 2])
-        for offset, key in ((0, "ke_absorbed_anode_j"), (1, "ke_absorbed_exit_j"), (2, "ke_absorbed_wall_j")):
-            cumulative[key] += float(stats[STATS_E_ENERGY + offset] + stats[STATS_I_ENERGY + offset])
-        cumulative["field_work_j"] += float(stats[STATS_WORK])
-        max_speed2 = float(stats[STATS_MAX_SPEED2])
-        peak_density = float(stats[STATS_PEAK_DENSITY])
-
-        if mcc is not None and n_electrons:
-            n_ion = int(stats[STATS_MCC + 3])
-            cumulative["elastic"] += float(stats[STATS_MCC + 1])
-            cumulative["excitations"] += float(stats[STATS_MCC + 2])
-            cumulative["ionizations"] += float(n_ion)
-            cumulative["inelastic_loss_j"] += (float(stats[STATS_MCC + 2]) * mcc.table.thresholds_ev[1] + n_ion * mcc.table.thresholds_ev[2]) * EV_J
-            if n_ion:
-                n = n_electrons
-                wp.utils.array_scan(self.ionize[:n], self.offsets[:n], inclusive=False)
-                wp.launch(
-                    spawn_kernel, dim=n,
-                    inputs=[self.ionize, self.offsets, n, electrons.r, electrons.z, self.sec[0], self.sec[1], self.sec[2],
-                            self.ionv[0], self.ionv[1], self.ionv[2],
-                            electrons.r, electrons.z, electrons.vr, electrons.vt, electrons.vz, electrons.alive, electrons.count,
-                            ions.r, ions.z, ions.vr, ions.vt, ions.vz, ions.alive, ions.count,
-                            self.born_r, self.born_z, self.born_flag],
-                    device=dev,
-                )
-                wp.launch(energy_sum_kernel, dim=REDUCTION_THREADS,
-                          inputs=[self.ionv[0], self.ionv[1], self.ionv[2], self.born_flag, n, REDUCTION_THREADS,
-                                  self.ion.mass_kg * config.macro_weight, self.partial_particles], device=dev)
-                wp.launch(deferred_add_kernel, dim=1, inputs=[self.partial_particles, REDUCTION_THREADS, self.deferred, 1], device=dev)
-                if accumulate:
-                    wp.launch(deposit_unit_kernel, dim=n, inputs=[self.born_r, self.born_z, self.born_flag, grid.dr_m, grid.dz_m,
-                                                                  grid.geometry.z_min_m, self.nr, self.nz, self.d_ion], device=dev)
-                electrons.count += n_ion
-                electrons.alive_count += n_ion
-                ions.count += n_ion
-                ions.alive_count += n_ion
+            self._mark("mcc")
+            wp.utils.array_scan(self.ionize[:n_bound], self.offsets[:n_bound], inclusive=False)
+            wp.launch(
+                spawn_kernel, dim=n_bound,
+                inputs=[self.ionize, self.offsets, self.slots, electrons.capacity, ions.capacity, electrons.r, electrons.z,
+                        self.sec[0], self.sec[1], self.sec[2], self.ionv[0], self.ionv[1], self.ionv[2],
+                        electrons.r, electrons.z, electrons.vr, electrons.vt, electrons.vz, electrons.alive_flags,
+                        ions.r, ions.z, ions.vr, ions.vt, ions.vz, ions.alive_flags,
+                        self.born_r, self.born_z, self.born_flag, self.stats, STATS_OVERFLOW],
+                device=dev,
+            )
+            wp.launch(energy_sum_kernel, dim=REDUCTION_THREADS,
+                      inputs=[self.ionv[0], self.ionv[1], self.ionv[2], self.born_flag, self.slots, 0, REDUCTION_THREADS,
+                              self.ion.mass_kg * config.macro_weight, self.partial_particles], device=dev)
+            wp.launch(deferred_add_kernel, dim=1, inputs=[self.partial_particles, REDUCTION_THREADS, self.stats, STATS_KE_BORN], device=dev)
+            # newly born ions join the frozen ion charge immediately (exact integer add)
+            wp.launch(deposit_fixed_kernel, dim=n_bound,
+                      inputs=[self.born_r, self.born_z, self.born_flag, self.slots, 0, grid.dr_m, grid.dz_m, grid.geometry.z_min_m,
+                              self.nr, self.nz, FIXED_POINT_SCALE, self.acc_i], device=dev)
+            if accumulate:
+                wp.launch(deposit_unit_kernel, dim=n_bound, inputs=[self.born_r, self.born_z, self.born_flag, self.slots, 0, grid.dr_m, grid.dz_m,
+                                                                    grid.geometry.z_min_m, self.nr, self.nz, self.d_ion], device=dev)
+            wp.launch(spawn_commit_kernel, dim=1, inputs=[self.ionize, self.offsets, self.slots, electrons.capacity, ions.capacity], device=dev)
+            births = birth_bound(n_bound, self.probability)
+            electrons.bound = min(electrons.bound + births, electrons.capacity)
+            ions.bound = min(ions.bound + births, ions.capacity)
+        self._mark("spawn")
 
         injected = 0
         if config.injection is not None and config.injection.electron_current_a > 0.0:
@@ -1314,46 +1694,122 @@ class WarpBackend:
             injected = int(np.floor(expected))
             meta["injection_carry"] = expected - injected
             if injected:
-                electrons = self._grow(electrons, electrons.count + injected)
                 r_max = grid.r_m[self.masks.top_plasma_cell[self.nz - 1] + 1]
                 thermal = sqrt(EV_J * config.injection.electron_temperature_ev / ELECTRON_MASS_KG)
                 wp.launch(inject_kernel, dim=injected,
-                          inputs=[stream_seed(config.seed, step_index, 2), electrons.count, float(r_max), grid.geometry.z_max_m, grid.dz_m, thermal,
-                                  electrons.r, electrons.z, electrons.vr, electrons.vt, electrons.vz, electrons.alive,
-                                  self.deferred, 0, ELECTRON_MASS_KG * config.macro_weight], device=dev)
-                electrons.count += injected
-                electrons.alive_count += injected
-                cumulative["injected_electrons"] += float(injected)
-        self._pending_energy = (injected > 0) or (mcc is not None and n_electrons > 0)
+                          inputs=[stream_seed(config.seed, step_index, 2), self.slots, electrons.capacity, float(r_max), grid.geometry.z_max_m,
+                                  grid.dz_m, thermal, electrons.r, electrons.z, electrons.vr, electrons.vt, electrons.vz, electrons.alive_flags,
+                                  self.stats, STATS_KE_INJECTED, ELECTRON_MASS_KG * config.macro_weight, STATS_OVERFLOW], device=dev)
+                wp.launch(add_slots_kernel, dim=1, inputs=[self.slots, 0, injected], device=dev)
+                electrons.bound = min(electrons.bound + injected, electrons.capacity)
+                self.injected_since_sync += injected
+        self._mark("inject")
 
-        if (step_index + 1) % self.compaction_interval == 0:
-            # The compaction read also flushes the deferred energy slots.
-            self._flush_pending_energy()
-            self._compact(electrons)
-            self._compact(ions)
-        self.species["e"] = electrons
-        self.species["i"] = ions
         meta["step"] = step_index + 1
         meta["time_s"] = meta["step"] * dt
         if accumulate:
             self.diag_steps += 1
-        omega_pe = sqrt(peak_density * ELEMENTARY_CHARGE_C**2 / (EPSILON_0_F_PER_M * ELECTRON_MASS_KG))
-        return StepTally(iterations, omega_pe * dt, sqrt(max_speed2), electrons.alive_count, ions.alive_count)
+        self.steps_since_sync += 1
+        if self.steps_since_sync >= self.sync_interval:
+            return self._sync()
+        return None
 
-    def _flush_pending_energy(self) -> None:
-        """Read the injected/born energy slots written after the per-step stats read."""
+    def _sync(self) -> StepTally:
+        """Read the interval statistics once; update the ledger; compact; gate values."""
 
-        if not getattr(self, "_pending_energy", False):
-            return
-        deferred = self.deferred.numpy()
-        self.deferred.zero_()
-        self.sync_count += 1
+        config = self.config
+        electrons = self.species["e"]
+        ions = self.species["i"]
+        stats = self.stats.numpy()
+        slots = self.slots.numpy()
+        self.sync_count += 2
+        if self.device_direct is not None and self.steps_since_sync >= self.sync_interval:
+            self.device_direct.verify()
+            self.sync_count += 1
+        if stats[STATS_OVERFLOW] != 0.0:
+            raise PIC2DValidationError("device particle arrays overflowed their reserved capacity")
+        if stats[STATS_INVALID] != 0.0:
+            raise PIC2DStabilityError("a particle crossed more than one cell in a step (Courant violation)")
+        if int(slots[0]) > electrons.bound or int(slots[1]) > ions.bound:
+            raise PIC2DValidationError(
+                f"device slot counts {int(slots[0])}/{int(slots[1])} exceed the host bounds {electrons.bound}/{ions.bound}"
+            )
         cumulative = self.state_meta["cumulative"]
-        cumulative["ke_injected_j"] += float(deferred[0])
-        cumulative["ke_born_ions_j"] += float(deferred[1])
-        self._pending_energy = False
+        for base, label in ((STATS_E_COUNTS, "electrons"), (STATS_I_COUNTS, "ions")):
+            cumulative[f"anode_{label}"] += float(stats[base])
+            cumulative[f"exit_{label}"] += float(stats[base + 1])
+            cumulative[f"wall_{label}"] += float(stats[base + 2])
+        for offset, key in ((0, "ke_absorbed_anode_j"), (1, "ke_absorbed_exit_j"), (2, "ke_absorbed_wall_j")):
+            cumulative[key] += float(stats[STATS_E_ENERGY + offset] + stats[STATS_I_ENERGY + offset])
+        cumulative["field_work_j"] += float(stats[STATS_WORK])
+        cumulative["ke_injected_j"] += float(stats[STATS_KE_INJECTED])
+        cumulative["ke_born_ions_j"] += float(stats[STATS_KE_BORN])
+        cumulative["injected_electrons"] += float(self.injected_since_sync)
+        n_ion = int(stats[STATS_MCC + 3])
+        if self.mcc is not None:
+            cumulative["elastic"] += float(stats[STATS_MCC + 1])
+            cumulative["excitations"] += float(stats[STATS_MCC + 2])
+            cumulative["ionizations"] += float(n_ion)
+            cumulative["inelastic_loss_j"] += (float(stats[STATS_MCC + 2]) * self.mcc.table.thresholds_ev[1] + n_ion * self.mcc.table.thresholds_ev[2]) * EV_J
+        absorbed_e = int(stats[STATS_E_COUNTS] + stats[STATS_E_COUNTS + 1] + stats[STATS_E_COUNTS + 2])
+        absorbed_i = int(stats[STATS_I_COUNTS] + stats[STATS_I_COUNTS + 1] + stats[STATS_I_COUNTS + 2])
+        expected_e = electrons.alive + n_ion + self.injected_since_sync - absorbed_e
+        expected_i = ions.alive + n_ion - absorbed_i
+        self._compact(electrons, 0, int(slots[0]), expected_e)
+        self._compact(ions, 1, int(slots[1]), expected_i)
+        self._set_slots(electrons.alive, ions.alive)
+        peak_density = float(stats[STATS_PEAK_DENSITY])
+        max_speed2 = float(stats[STATS_MAX_SPEED2])
+        self.stats.zero_()
+        self.steps_since_sync = 0
+        self.injected_since_sync = 0
+        self._reserve_capacity()
+        omega_pe = sqrt(peak_density * ELEMENTARY_CHARGE_C**2 / (EPSILON_0_F_PER_M * ELECTRON_MASS_KG))
+        self.last_tally = StepTally(self.last_iterations, omega_pe * config.dt_s, sqrt(max_speed2), electrons.alive, ions.alive)
+        self._mark("sync")
+        return self.last_tally
+
+    def _reserve_capacity(self) -> None:
+        """Grow the device arrays so the next sync interval cannot overflow."""
+
+        electrons = self.species["e"]
+        ions = self.species["i"]
+        need_e = self._projected_bound(electrons, True, self.sync_interval)
+        need_i = self._projected_bound(ions, False, self.sync_interval)
+        self.species["e"] = self._grow(electrons, need_e)
+        self.species["i"] = self._grow(ions, need_i)
+        self._ensure_scratch(max(self.species["e"].capacity, self.species["i"].capacity))
 
     # ------------------------------------------------------------------ diagnostics
+    def series_sample(self) -> dict[str, Any]:
+        """Kinetic energies, potential and surface charge for the time series (at a sync)."""
+
+        self.flush()
+        electrons = self.species["e"]
+        ions = self.species["i"]
+        config = self.config
+        dev = self.device
+        for slot, species, particles in ((0, self.electron, electrons), (1, self.ion, ions)):
+            if particles.alive:
+                wp.launch(energy_sum_kernel, dim=REDUCTION_THREADS,
+                          inputs=[particles.vr, particles.vt, particles.vz, particles.alive_flags, self.slots, slot, REDUCTION_THREADS,
+                                  species.mass_kg * config.macro_weight, self.partial_particles], device=dev)
+            else:
+                self.partial_particles.zero_()
+            wp.launch(final_sum_kernel, dim=1, inputs=[self.partial_particles, REDUCTION_THREADS, self.sample_out, slot], device=dev)
+        wp.launch(sum_kernel, dim=REDUCTION_THREADS, inputs=[self.surface, self.node_count, REDUCTION_THREADS, self.partial_particles], device=dev)
+        wp.launch(final_sum_kernel, dim=1, inputs=[self.partial_particles, REDUCTION_THREADS, self.sample_out, 2], device=dev)
+        out = self.sample_out.numpy()
+        phi = self.phi.numpy().reshape(self.masks.grid.node_shape).copy()
+        self.sync_count += 2
+        return {
+            "step": self.state_meta["step"], "time_s": self.state_meta["time_s"],
+            "electrons": electrons.alive, "ions": ions.alive,
+            "kinetic_electron_j": float(out[0]), "kinetic_ion_j": float(out[1]),
+            "surface_charge_c": float(out[2]), "phi_v": phi,
+            "cumulative": dict(self.state_meta["cumulative"]),
+        }
+
     def diagnostic_arrays(self) -> dict[str, np.ndarray]:
         wp.synchronize_device(self.device)
         shape = self.masks.grid.node_shape
@@ -1386,6 +1842,7 @@ class WarpBackend:
 __all__ = [
     "WarpBackend",
     "WarpPoisson",
+    "birth_bound",
     "device_available",
     "efield_stencil_codes",
     "resolve_device",
