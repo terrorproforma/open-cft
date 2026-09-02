@@ -671,7 +671,7 @@ def finalize(
     protocol: dict[str, Any],
     results: Path,
     *,
-    backend: str = "cpu",
+    backend: str = "warp-cuda",
     field_map: MagneticFieldMap | None = None,
     cross_sections: XenonCrossSections | None = None,
     stop_reason: str = "finalized_from_checkpoint",
@@ -683,7 +683,9 @@ def finalize(
     The device-side window accumulators die with the process, so the maps are the
     instantaneous single-sample maps of the checkpoint (``maps_kind =
     "instantaneous_checkpoint"``; flux and ionisation maps are zero).  The checkpoint
-    is loaded with the code-identity check relaxed (no dynamics are computed).
+    is loaded with the code-identity check relaxed (no dynamics are computed);
+    ``backend`` must be the one the run used (the Poisson method is part of the
+    config identity).
     """
 
     checkpoint = find_checkpoint(results)
@@ -752,6 +754,7 @@ def main(argv: list[str] | None = None, *, protocol_path: Path = PROTOCOL_PATH, 
     run_parser.add_argument("--wall-budget-seconds", type=float, default=None)
     run_parser.add_argument("--ignore-code-identity", action="store_true", help="resume even if the package code hash changed")
     fin = sub.add_parser("finalize")
+    fin.add_argument("--backend", default="warp-cuda", help="the backend the run used (part of the config identity)")
     fin.add_argument("--stop-reason", default="finalized_from_checkpoint")
     sub.add_parser("status")
     args = parser.parse_args(argv)
@@ -760,7 +763,7 @@ def main(argv: list[str] | None = None, *, protocol_path: Path = PROTOCOL_PATH, 
         run_steady_state(protocol, results, backend=args.backend, max_steps=args.max_steps, wall_budget_seconds=args.wall_budget_seconds,
                          require_same_code=not args.ignore_code_identity, protocol_path=protocol_path)
     elif args.command == "finalize":
-        finalize(protocol, results, stop_reason=args.stop_reason, protocol_path=protocol_path)
+        finalize(protocol, results, backend=args.backend, stop_reason=args.stop_reason, protocol_path=protocol_path)
     else:
         print(json.dumps(status(results, protocol), indent=1))
     return 0
