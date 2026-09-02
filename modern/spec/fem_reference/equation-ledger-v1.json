@@ -1,0 +1,90 @@
+{
+  "schema_version": "cft_revival.fem_reference.equation_ledger/1.0.0",
+  "classification": "independent_numerical_reference_not_hardware_validation",
+  "coordinates": "right_handed_cylindrical_r_phi_z_axisymmetric",
+  "unknowns": {
+    "physical": "psi=r*A_phi [Wb/rad]",
+    "discrete": "A_phi in continuous quadratic Lagrange P2",
+    "axis_regularity": "A_phi=0 at r=0, hence psi=O(r^2)"
+  },
+  "constitutive_law": {
+    "B": "B_r=-(1/r)*partial_z(psi), B_z=(1/r)*partial_r(psi)",
+    "H": "H=nu*(B-B_r_remanent)",
+    "reluctivity": "nu=1/(mu0*mu_r), elementwise constant"
+  },
+  "strong_form": "-div((nu/r)*grad(psi))=J_free_phi-div(nu*Br_z,-nu*Br_r)",
+  "weak_form_without_common_2pi": {
+    "lhs": "integral_Omega (nu/r)*grad(psi).grad(v) dr dz + integral_GammaR (nu/r)*alpha*psi*v ds",
+    "rhs": "integral_Omega J_free_phi*v dr dz + integral_Omega nu*(Br_z*partial_r(v)-Br_r*partial_z(v)) dr dz + integral_sheet K_phi*v ds",
+    "test_space": "v=r*N_i, where N_i is P2 and axis N_i DOFs are essential zero"
+  },
+  "interfaces": {
+    "essential": "psi is single-valued because the P2 space is conforming",
+    "natural": "normal component of (nu/r)*grad(psi)-(nu*Br_z,-nu*Br_r) is continuous when K_free_phi=0",
+    "maxwell": "equivalent to n dot (B_plus-B_minus)=0 and tangential H continuity",
+    "mesh_rule": "every linear material boundary is a union of complete triangle edges"
+  },
+  "dipole_robin": {
+    "analytic_far_field": "psi=C*r^2/(r^2+(z-z_c)^2)^(3/2)",
+    "condition": "partial_n(psi)+alpha*psi=0",
+    "outer_radial_alpha": "3*r/(r^2+(z-z_c)^2)-2/r",
+    "axial_alpha": "3*abs(z-z_c)/(r^2+(z-z_c)^2)",
+    "weak_boundary_coefficient": "(nu/r)*alpha"
+  },
+  "energy_action": {
+    "magnetic_quadratic": "pi*x^T*K*x",
+    "source_stationarity_action": "pi*x^T*f",
+    "note": "equality applies for homogeneous essential data; manufactured nonzero-Dirichlet tests include boundary work"
+  },
+  "qois": {
+    "axisymmetric_bore_volume_average": "2/(R^2*(z1-z0))*integral_z0^z1 psi(R,z) dz",
+    "identity": "integral_0^R B_z*r dr=psi(R,z)-psi(0,z)=psi(R,z)",
+    "trace_integration": "piecewise P2 Gauss integration split at every triangle crossing",
+    "legacy_metric": "bore_wall_line_average=(z1-z0)^-1*integral B_z(R,z) dz; diagnostic only",
+    "axis_metric": "weighted quadratic patch recovery from adjacent axis-edge traces; diagnostic only"
+  },
+  "adaptivity": {
+    "estimator": "h_K^2*integral_K residual^2 + sum_edges h_e*integral_edge jump(normal flux)^2 ds",
+    "edge_quadrature": "three-point Gauss; a constant jump contributes edge_length^2*jump^2",
+    "qoi_proxy": "exponentially localized bore/window weighting of residual-plus-jump action",
+    "marking": "union of separate deterministic residual, normal-flux-jump, and QoI-proxy Dorfler bulk sets with theta=0.5",
+    "refinement": "nested conforming longest-edge midpoint bisection with red and parent-level adjacent-size gradation closure",
+    "acceptance": "two successive volume-QoI changes below 1 percent and stable positive observed order from actual local h"
+  },
+  "quadrature": {
+    "triangles": "seven-point positive Dunavant degree-five",
+    "edges": "three-point Gauss-Legendre"
+  },
+  "resource_policy": {
+    "maximum_p2_dofs": 1500000,
+    "minimum_free_ram_bytes": 8589934592,
+    "allocation_safety_factor": 1.75,
+    "maximum_python_reserve_bytes": 268435456,
+    "allocation_components": "COO keys, sort workspace, unique masks/keys, CSR upper bound, mesh/solver temporaries, checkpoint parse/decompression/serialization buffers",
+    "recheck": "before every heavy mesh, solve, assembly, artifact, checkpoint, replay, validation and publication phase",
+    "blocked_status": "typed ResourceBlockedError with NOT_EVALUATED",
+    "startup_low_ram_status": "typed ResourceBlockedError with explicit NOT_EVALUATED reason",
+    "execution": "explicit opt-in and exactly one design at a time",
+    "accuracy_gate_relaxation": false
+  },
+  "robin_domain_expansion": {
+    "padding_factors": [0.5, 1.0, 1.5],
+    "phase_matching": "fixed source/QoI-region h across domains",
+    "bound_grid_validation": "finite positive local h and finite nested extents recomputed from complete checkpoint grids",
+    "maximum_qoi_relative_change": 0.01,
+    "separate_acceptance_gate": true
+  },
+  "assembly": {
+    "sparse_construction": "preallocated topology COO key pass followed by direct numerical CSR pass",
+    "adaptive_initial_guess": "linear-work element_parent_ids P2 basis prolongation without global point location"
+  },
+  "acceptance_authority": {
+    "schema": "cft_revival.fem_reference.result/1.3.0",
+    "level_evidence": "ordered hash-addressed metadata plus compressed binary mesh/topology/problem/solver/solution sidecars",
+    "metadata_limit_bytes": 8388608,
+    "resource_dimensions": "derived from ZIP central directory and bounded NPY headers before allocation; anchors must match",
+    "chain_identity": "artifact schema/classification, design, geometry, magnetics, config, code, problem, parent and final run/mesh",
+    "bound_identity_replay": "direct equality against top-level chain authority for every adaptive and domain checkpoint",
+    "recomputed": "true residual, QoIs, local h, orders, changes, domain status and gates"
+  }
+}

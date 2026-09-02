@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cft_revival.fem_reference.checkpoint/1.2.0",
+  "title": "Manifest-authorized adaptive FEM checkpoint",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "classification",
+    "config_id",
+    "level",
+    "run_sha256",
+    "mesh_sha256",
+    "parent_mesh_sha256",
+    "previous_checkpoint_file_sha256",
+    "run",
+    "bound_artifact",
+    "array_sidecar",
+    "chain_authority",
+    "integrity"
+  ],
+  "properties": {
+    "schema_version": {"type": "string"},
+    "classification": {
+      "const": "independent_numerical_reference_not_hardware_validation"
+    },
+    "config_id": {"type": "string"},
+    "level": {"type": "integer", "minimum": 0},
+    "run_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "mesh_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "parent_mesh_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "previous_checkpoint_file_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "run": {"type": "object"},
+    "bound_artifact": {"type": "object"},
+    "array_sidecar": {"type": "object"},
+    "chain_authority": {"type": "object"},
+    "integrity": {"type": "object"}
+  }
+}

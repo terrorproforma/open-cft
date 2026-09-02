@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cft_revival.fem_reference.result/1.3.0",
+  "title": "Independent axisymmetric P2 FEM reference result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "model_level",
+    "classification",
+    "method",
+    "anchors",
+    "problem",
+    "mesh",
+    "solution",
+    "diagnostics",
+    "qois_bz_t",
+    "acceptance_evidence",
+    "convergence",
+    "comparisons",
+    "limitations",
+    "integrity"
+  ],
+  "properties": {
+    "schema_version": {"const": "cft_revival.fem_reference.result/1.3.0"},
+    "model_level": {"const": "independent-P2-FEM-reference"},
+    "classification": {"const": "independent_numerical_reference_not_hardware_validation"},
+    "method": {"type": "object"},
+    "anchors": {
+      "type": "object",
+      "required": ["geometry_sha256", "magnetics_sha256", "mesh_sha256", "solution_sha256", "run_sha256"],
+      "additionalProperties": false,
+      "properties": {
+        "geometry_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "magnetics_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "mesh_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "solution_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "run_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "problem": {"type": "object"},
+    "mesh": {"type": "object"},
+    "solution": {"type": "object"},
+    "diagnostics": {"type": "object"},
+    "qois_bz_t": {"type": "object", "additionalProperties": {"type": "number"}},
+    "acceptance_evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "qoi_windows",
+        "level_evidence",
+        "domain_studies",
+        "evidence_base_path",
+        "solver_controls",
+        "implementation_sha256",
+        "acceptance_code_sha256",
+        "array_contract",
+        "checkpoint_authority",
+        "initial_solution_sha256",
+        "authority"
+      ],
+      "properties": {
+        "qoi_windows": {"type": "array"},
+        "level_evidence": {"type": "array"},
+        "domain_studies": {"type": "array"},
+        "evidence_base_path": {"type": "string"},
+        "solver_controls": {"type": "object"},
+        "implementation_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "acceptance_code_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "array_contract": {"type": "object"},
+        "checkpoint_authority": {"type": "object"},
+        "initial_solution_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "authority": {"const": "recompute_from_bound_mesh_solution_and_inputs"}
+      }
+    },
+    "convergence": {"type": "object"},
+    "comparisons": {"type": "object"},
+    "limitations": {"type": "array", "items": {"type": "string"}},
+    "integrity": {
+      "type": "object",
+      "required": ["algorithm", "canonicalization", "payload_sha256"],
+      "additionalProperties": false,
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "canonicalization": {"const": "json-sort-keys-compact-utf8-v1"},
+        "payload_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    }
+  }
+}

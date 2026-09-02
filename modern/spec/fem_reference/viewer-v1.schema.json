@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cft_revival.fem_reference.viewer/1.1.0",
+  "title": "Viewer-ready independent P2 FEM field mesh",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "classification",
+    "artifact_payload_sha256",
+    "coordinates_rz_m",
+    "triangles",
+    "triangle_region_ids",
+    "vertex_fields",
+    "qois_bz_t",
+    "limitations",
+    "integrity"
+  ],
+  "properties": {
+    "schema_version": {"const": "cft_revival.fem_reference.viewer/1.1.0"},
+    "classification": {"const": "independent_numerical_reference_not_hardware_validation"},
+    "artifact_payload_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "coordinates_rz_m": {"type": "array"},
+    "triangles": {"type": "array"},
+    "triangle_region_ids": {"type": "array", "items": {"type": "string"}},
+    "vertex_fields": {
+      "type": "object",
+      "required": ["psi_wb_per_rad", "b_r_t", "b_z_t"],
+      "additionalProperties": false,
+      "properties": {
+        "psi_wb_per_rad": {"type": "array", "items": {"type": "number"}},
+        "b_r_t": {"type": "array", "items": {"type": "number"}},
+        "b_z_t": {"type": "array", "items": {"type": "number"}}
+      }
+    },
+    "qois_bz_t": {"type": "object", "additionalProperties": {"type": "number"}},
+    "limitations": {"type": "array", "items": {"type": "string"}},
+    "integrity": {"type": "object"}
+  }
+}
