@@ -170,3 +170,45 @@
   after the manifest is committed; run the checker before the commit to see
   every other error, commit, rerun, and amend locally if anything remains
   (never force-push).
+
+## 2026-09-03 — Admitting the sweep and the two topology nulls
+
+- [self] A null result needs a gate kind whose `accepted` status cannot be
+  read as "finding accepted". `numerical-screening` carries a
+  `recorded_outcome` (`accepted-screening` / `preregistered-null` /
+  `recorded-characterization`) that gate, manifest, evidence file and
+  generator must all spell identically; the checker refuses any drift, and the
+  claim text says "not shown stable" / "undemonstrated", never "does not
+  exist".
+- [self] Section headings are scanned by the literal-digit rule: "L1a" in a
+  `\subsection` title failed the check. Rename the heading rather than exempt
+  headings; the model level is rendered from a macro (`\SwpModelLevel`,
+  `\FcnFieldModelLevel`, `\TchFieldModel`) inside the prose.
+- [self] The unregistered-quantitative heuristic is case-insensitive:
+  "v2-031, v2-063" (digits, comma, space, "v") and "+1, a nearby" both match
+  `\d[\d,]* \s [WVASN]`. Render identifier lists as `\texttt{}` items and join
+  clause lists with ";" instead of loosening the heuristic; a new formatter is
+  cheaper than a weaker rule.
+- [self] One generic `Bundle.verify` with the audited files as data is enough
+  for both EOL defects; the checker then re-derives the CRLF digest on disk
+  and requires both digests to appear verbatim in the experiment's own audit
+  module, so the paper's tolerance can never drift from the experiment's.
+- [self] The four-cell bundle's own summary records `gpu_replay_pass_count: 2`
+  of 4; the field components reproduced but a residual diagnostic exceeded its
+  limit on two candidates. Report it as recorded in the results claim rather
+  than omitting it; the topology null does not depend on it, and the paper
+  says so.
+- [self] Hash-bound lineage (superseded proxy search, failed criterion
+  validations) belongs inside a registered non-claim with its own manifest
+  block (`lineage_files`, revisions of their own) and `lineage-` roles; it is
+  quoted, never cited as evidence, and the checker validates the blobs anyway.
+- [tool] `pdflatex -output-directory='$out'` with single quotes in PowerShell
+  writes into a literal `$out` directory inside the repo; double-quote the
+  variable and move any stray directory out before committing.
+- [tool] A `$env:SOURCE_DATE_EPOCH` exported for a trial TeX build persists in
+  the shell and changes the plasma-topology dashboard's footer time, making
+  its byte-identity test fail; unset the build variables before running
+  `modern/tests`.
+- [tool] Long `\texttt{}` table cells without break points overflow `p{}`
+  columns silently until the log is read; `>{\raggedright\arraybackslash}p{}`
+  columns remove the underfull noise so the one real overfull stands out.

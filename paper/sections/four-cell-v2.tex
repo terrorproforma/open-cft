@@ -1,0 +1,104 @@
+% Results subsection: preregistered four-cell topology search (null result).
+%
+% Every quantity in this file is a \Fcn... macro defined in
+% paper/generated/four-cell-v2.tex, which paper/scripts/generate_topology_screening_evidence.py
+% writes from the sealed results bundle of modern/experiments/four_cell_topology_search_v2;
+% paper/evidence/four-cell-v2.json records the artifact path, JSON pointer and
+% SHA-256 behind each macro. No numeric literal is typed here.
+%
+% Status: admitted as a preregistered null. manuscript.tex binds this file once
+% through \input{sections/four-cell-v2.tex}. Admission is governed by the
+% numerical-screening gate GATE-FOUR-CELL-V2 in paper/evidence/result-gates.json,
+% the typed manifest paper/evidence/manifests/four-cell-v2.json and the claim
+% records bound to manifest FOUR-CELL-V2-20260902-128-V1. Every \EvidenceClaim body
+% below must equal its registered authorized_tex exactly; check_paper.py verifies
+% that, the macro-only rule, the classification string and the registered
+% non-claims. Lineage records (the superseded proxy search and the two failed
+% criterion validations) are quoted as non-claims only.
+\subsection{Preregistered four-cell topology search: null result}
+\label{sec:four-cell-v2}
+
+\paragraph{Method.}
+The search, classified \texttt{\FcnClassification}, asks whether the four-cell
+wall-cusp topology assumed by the legacy design parameterisation exists as a
+stable feature of the linear-vacuum \FcnFieldModelLevel{} field over the
+original design variables. It draws
+\FcnCandidateCount{} candidates (\FcnSamplingAlgorithm; \FcnDesignVariableCount{}
+variables; \FcnStageCount{} strictly alternating magnet stages per candidate) and
+solves \FcnMapCount{} independent maps per candidate: a primary map of
+\FcnPrimaryRadial$\times$\FcnPrimaryAxial{} intervals, a downsampled map of
+\FcnDownsampledRadial$\times$\FcnDownsampledAxial{} and an enlarged-domain map of
+\FcnEnlargedRadial$\times$\FcnEnlargedAxial{} at \FcnEnlargedScale{} times the domain.
+Under the frozen definition a candidate is stable only if every map contains
+exactly \FcnRequiredCells{} interior cusps, where an interior cusp is a vector null
+of the accepted $\psi$ map with finite-box boundary nulls excluded
+(\FcnBoundaryNullPolicy), each cusp is registered to its geometry slot within
+\FcnSlotErrorFraction{} of a pitch (\FcnCuspSlots), no cusp lies inside the
+\FcnEndpointExclusionCells-cell endpoint exclusion, and the cusp positions shift
+by at most \FcnMaxCuspShiftMm{} mm across the maps. Only a stable candidate would
+have its constant-$\psi$ components traced at the flux quantiles
+\FcnFluxQuantiles{} (saddle policy \texttt{\FcnSaddlePolicy}), its
+\FcnElectronEnergyEv{} eV screening electrons checked for
+$\rho_e/L_B \le \FcnGyroLimit$, and an exact $N=\FcnRequiredCells$ plasma network
+coupled; the default publication is \FcnDefaultPublication, and the same-height
+mirror proxy of the superseded first search is forbidden (allowed:
+\FcnSameZProxyAllowed). The zero-pass policy was frozen before execution:
+\FcnZeroPassPolicy. The protocol was executed once (single execution:
+\FcnSingleExecution) at preregistration commit \texttt{\FcnPreregCommit}, results
+commit \texttt{\FcnResultsCommit}, accepted coupling baseline
+\texttt{\FcnCouplingCommit} and protocol payload \texttt{\FcnProtocolPayloadSha}. A
+post-hoc audit (commit \texttt{\FcnAuditCommit}) found that \FcnToleratedEolFiles{}
+bundle entry, the copied protocol whose recorded digest \texttt{\FcnProtocolRecordedSha}
+was taken on a platform-line-ending checkout against \texttt{\FcnProtocolLfSha}
+for the committed bytes, differs by end-of-line bytes only; the protocol payload
+recomputes and every other bundle file is byte-exact. The evidence generator
+tolerates exactly that file and nothing else.
+
+\paragraph{Results.}
+\EvidenceClaim{CLM-022}{Under the frozen cusp/cell definition, the four-cell
+wall-cusp topology targeted by the original design parameterisation was not shown
+stable for any candidate: \FcnStable{} of \FcnEvaluated{} candidates passed the
+topology gates although all \FcnThreeMapAccepted{} passed every field gate on all
+three maps. Every candidate recorded \texttt{TOPOLOGY\_COUNT}
+(\FcnTopologyCountFailures{} of \FcnEvaluated) and \texttt{TOPOLOGY\_UNSTABLE}
+(\FcnTopologyUnstableFailures{} of \FcnEvaluated) and no other failure code: the
+primary maps hold \FcnPrimaryCuspMin{} to \FcnPrimaryCuspMax{} interior cusps per
+candidate (\FcnPrimaryCuspTotal{} in total) against the required \FcnRequiredCells,
+\FcnAnyExactCount{} candidates reached the exact count on any map, so no flux
+surface was traced, no adiabaticity gate was evaluated (\FcnAdiabatic{} adiabatic),
+no candidate was coupled (\FcnCoupled{} coupled), and \FcnUniqueStates{} plasma
+states and \FcnPerformancePublications{} performance values were published. The
+tolerance-based GPU replay reproduced the field components of all
+\FcnGpuReplayRequired{} replay candidates to within \FcnGpuReplayMaxFieldDiff{} T and
+\FcnGpuReplayMaxPsiDiff{} Wb, but the residual-diagnostic relative difference
+exceeded its \FcnGpuReplayDiagnosticLimit{} limit for \FcnGpuReplayFailed{} of them
+(\FcnGpuReplayFailedIds; maximum \FcnGpuReplayMaxDiagnostic), so the bundle records
+\FcnGpuReplayPassed{} of \FcnGpuReplayRequired{} replay passes.}
+Table~\ref{tab:four-cell-v2-failures} gives the complete failure taxonomy with its
+counts and Table~\ref{tab:four-cell-v2-cusps} the interior-cusp counts per map.
+The primary-map peak fields range from \FcnFieldPeakMin{} to \FcnFieldPeakMax{} T
+and every primary map carries \FcnBoundaryNullMin{} finite-box boundary nulls,
+which are diagnostics and never cells. The two top-ranked candidates
+(\FcnRepresentativeIds) are archived with their geometry and all three field
+maps; ranking follows the completed terminal gate only (\FcnRankingPolicy).
+\FcnFailureTable
+\FcnCuspTable
+
+\paragraph{Scope and lineage.}
+\EvidenceClaim{CLM-024}{The null holds for the frozen definition of a stable
+four-cell topology (exactly \FcnRequiredCells{} geometry-registered interior cusps on
+all \FcnMapCount{} maps) over \FcnEvaluated{} candidates of one linear-vacuum
+\FcnFieldModelLevel{} equivalent-current parameterisation; a null under this
+definition is not proof that no such design exists, the screening fields are not
+a permanent-magnet or nonlinear-iron material model, and no plasma state, mirror
+probability or performance quantity is claimed. The superseded first search,
+which screened \FcnLineageVOneCompatible{} of \FcnLineageVOneEvaluated{} candidates
+as compatible through a deprecated same-height mirror proxy (status
+\texttt{\FcnLineageVOneStatus}; preregistered: \FcnLineageVOnePreregistered; valid
+for physical mirror claims: \FcnLineageVOneMirrorValid), and the two held-out
+validations of the wall-cusp criterion, which failed with a
+\FcnLineageWcvalOneException{} in \texttt{\FcnLineageWcvalOnePhase} after
+\FcnLineageWcvalOneAttempted{} of \FcnLineageWcvalOneDeclared{} cases and with a
+\FcnLineageWcvalTwoException{} in \texttt{\FcnLineageWcvalTwoPhase} before any case
+(criterion promoted: \FcnLineageWcvalOnePromoted, \FcnLineageWcvalTwoPromoted), are
+lineage only and are not evidence.}

@@ -7,6 +7,7 @@
     "authorization_rule": "The complete macro body, claim ID, and manuscript section must exactly match authorized_tex and allowed_locations.",
     "artifact_rule": "Quantitative table or figure claims require an authorized artifact ID, generated output, provenance sidecar, and manuscript binding.",
     "prose_rule": "Claim-bearing quantitative, accuracy, validation, parity, and performance prose outside a registered macro or artifact is prohibited.",
+    "screening_rule": "A section admitted by a numerical-screening gate follows the campaign_macro_rule and additionally states the recorded outcome (accepted screening, preregistered null or recorded characterization) as recorded: a null is admitted under the frozen cusp/cell definitions only, is never phrased as an existence disproof, and lineage records (superseded or failed studies) appear only inside registered non-claims.",
     "working_tree_rule": "Uncommitted scientific inputs are never evidence; paper-owned generated sources are hash-bound pending integration.",
     "campaign_macro_rule": "A section admitted by a numerical-campaign gate may render numbers only through evidence macros whose value, artifact path, JSON pointer and SHA-256 are recorded in the campaign's evidence file and regenerated from the sealed bundle by the checker; the section may type no literal digit, and its claim-bearing sentences remain exact EvidenceClaim bodies bound to the campaign manifest.",
     "section_input_rule": "Files bound through \\input{sections/...} are flattened into the manuscript before every claim, citation and prose check; a section is not a way around the matrix."
@@ -64,6 +65,38 @@
       "preregistration_revision": "757e365f9f667620c7610663574294c3b71e1f51",
       "evidence_file": "paper/evidence/wall-loss-v4.json",
       "posthoc_audit": "modern/experiments/cft_orbit_wall_loss_v4/POSTHOC_AUDIT.md"
+    },
+    "L1A-SWEEP-V2-20260902-96-V1": {
+      "path": "paper/evidence/manifests/l1a-sweep-v2.json",
+      "document_type": "paper-l1a-screening-manifest",
+      "schema_version": "1.0",
+      "gate_id": "GATE-L1A-SWEEP-V2",
+      "recorded_outcome": "accepted-screening",
+      "evidence_revision": "f30cb42ec4a8633bf634a3d32ffa5b11f66be97a",
+      "preregistration_revision": "092f5fae692ee7d6711e0c7e1c94dac6a345f37c",
+      "evidence_file": "paper/evidence/l1a-sweep-v2.json",
+      "posthoc_audit": "modern/experiments/l1a_geometry_sweep_v2/POSTHOC_AUDIT.md"
+    },
+    "FOUR-CELL-V2-20260902-128-V1": {
+      "path": "paper/evidence/manifests/four-cell-v2.json",
+      "document_type": "paper-l1a-screening-manifest",
+      "schema_version": "1.0",
+      "gate_id": "GATE-FOUR-CELL-V2",
+      "recorded_outcome": "preregistered-null",
+      "evidence_revision": "7120e8edcb74c02c1df968c730d1f93b3758b4e1",
+      "preregistration_revision": "d6317910703de91ca6dc25c4d4d855e36cc3b14d",
+      "evidence_file": "paper/evidence/four-cell-v2.json",
+      "posthoc_audit": "modern/experiments/four_cell_topology_search_v2/POSTHOC_AUDIT.md"
+    },
+    "TOPOLOGY-CHAR-V1-20260902-56-V1": {
+      "path": "paper/evidence/manifests/topology-characterization-v1.json",
+      "document_type": "paper-l1a-screening-manifest",
+      "schema_version": "1.0",
+      "gate_id": "GATE-TOPOLOGY-CHAR-V1",
+      "recorded_outcome": "recorded-characterization",
+      "evidence_revision": "3ce6c546194e1d3e943d0b3d0951d03e15e354d9",
+      "preregistration_revision": "af88470b86fd95882ae7fddc48e2860cbfba1219",
+      "evidence_file": "paper/evidence/topology-characterization-v1.json"
     }
   },
   "claims": [
@@ -320,6 +353,265 @@
       ]
     },
     {
+      "id": "CLM-018",
+      "status": "verified",
+      "claim_class": "screening-summary",
+      "authorized_tex": "Preregistered field-only topology screening is admitted at its recorded outcomes: a \\SwpEvaluated-design geometry sweep passed all \\SwpGateCount{} terminal gates with \\SwpCuspLow{} to \\SwpCuspHigh{} axis cusps per design, while the four-cell wall-cusp topology assumed by the legacy parameterisation was not shown stable for any of \\FcnEvaluated{} preregistered candidates and no stable eligible cusp or cell was found in \\TchEvaluated{} characterised designs under the frozen cusp and cell definitions.",
+      "allowed_locations": ["Abstract"],
+      "manifest_ids": ["L1A-SWEEP-V2-20260902-96-V1", "FOUR-CELL-V2-20260902-128-V1", "TOPOLOGY-CHAR-V1-20260902-56-V1"],
+      "permitted_scope": [
+        "existence and recorded outcome of the three admitted screening studies",
+        "macro-bound design, gate and axis-cusp counts",
+        "the null phrased as not shown stable / not found under the frozen definitions"
+      ],
+      "prohibited_inferences": [
+        "non-existence of a stable multi-cell wall-cusp topology",
+        "plasma, confinement or thruster performance",
+        "permanent-magnet or nonlinear-iron material behaviour",
+        "hardware or experimental validation"
+      ]
+    },
+    {
+      "id": "CLM-019",
+      "status": "verified",
+      "claim_class": "quantitative-screening-result",
+      "authorized_tex": "The sweep terminated \\texttt{\\SwpTerminalStatus} with \\SwpEvaluated{} of \\SwpRequested{} designs evaluated, \\SwpFailed{} failures and \\SwpGatesPassed{} of \\SwpGateCount{} preregistered terminal gates passed (\\SwpGateFailures{} per-design gate failures); \\SwpNondominated{} designs are non-dominated under the \\SwpObjectiveCount{} preregistered objectives. Every design resolved its axis nulls (\\SwpResolvedDesigns{} of \\SwpEvaluated): the designs carry \\SwpCuspLow, \\SwpCuspMid{} or \\SwpCuspHigh{} axis cusps (\\SwpCuspThreeDesigns, \\SwpCuspFourDesigns{} and \\SwpCuspFiveDesigns{} designs respectively, one cusp per magnet stage), \\SwpAxisCuspTotal{} axis cusps in total at axial positions between \\SwpAxisCuspZMinMm{} and \\SwpAxisCuspZMaxMm{} mm, with per-design minimum mirror ratios from \\SwpMinMirrorMin{} to \\SwpMinMirrorMax{} and peak fields from \\SwpFieldPeakMin{} to \\SwpFieldPeakMax{} T.",
+      "allowed_locations": ["Accepted geometry sweep: field-only design-space screening"],
+      "manifest_ids": ["L1A-SWEEP-V2-20260902-96-V1"],
+      "gate_id": "GATE-L1A-SWEEP-V2",
+      "classification": "L1a_FIELD_ONLY_SCREENING_NOT_HARDWARE_VALID",
+      "recorded_outcome": "accepted-screening",
+      "evidence_level": "numerical-screening",
+      "evidence_level_justification": "The sweep is preregistered numerical screening of a design space with the linear-vacuum L1a equivalent-current field solver: one solve per design, seven terminal gates evaluated over the sweep, outcome recorded ACCEPTED. The framework's mechanism for admitted numerical evidence (typed committed manifest, artifacts bound by Git blob and SHA-256 at a resolvable revision, exact registered claim text, generated artifacts with sidecars) is applied through a numerical-screening gate rather than the numerical-campaign gate of the wall-loss result because the study screens a design space rather than a component model on one qualified field, because the same gate kind must also admit the two null studies at their recorded outcomes, and because it needs its own manifest type with the audited end-of-line tolerance. It is not the L1 field-resolved reduction of GATE-L1 (no manufactured solution, refinement study, L0 mapping or performance model) and opens no physics level.",
+      "bindings": {
+        "evidence_file": "paper/evidence/l1a-sweep-v2.json",
+        "evidence_macros": "every \\Swp... macro in the authorized text is defined in paper/generated/l1a-sweep-v2.tex and bound in the evidence file to an artifact path, JSON pointer, formatter and SHA-256",
+        "results_commit": "f30cb42ec4a8633bf634a3d32ffa5b11f66be97a",
+        "preregistration_commit": "092f5fae692ee7d6711e0c7e1c94dac6a345f37c",
+        "posthoc_audit": "modern/experiments/l1a_geometry_sweep_v2/POSTHOC_AUDIT.md at 9e68df21dde5d5238f665ef685e6d457731136c9"
+      },
+      "non_claims": [
+        "field-only screening",
+        "no permanent-magnet or nonlinear-iron material model enters the screening",
+        "sampled-axis descriptors, not a continuous critical-point proof",
+        "computes no thrust, efficiency, plasma, thermal or structural quantity",
+        "carries no hardware validation and opens no physics level"
+      ],
+      "permitted_scope": [
+        "terminal status, design counts, failure count and gate outcomes",
+        "axis cusp counts, positions and per-design mirror-ratio ranges as sampled-axis screening QoIs",
+        "non-dominated count under the preregistered objectives"
+      ],
+      "prohibited_inferences": [
+        "continuous critical-point topology of the fields",
+        "plasma confinement from mirror ratios",
+        "thrust, efficiency, specific impulse, thermal or structural quantities",
+        "hardware validity or build qualification",
+        "existence or stability of a multi-cell wall-cusp topology"
+      ]
+    },
+    {
+      "id": "CLM-020",
+      "status": "verified",
+      "claim_class": "quantitative-generated-table",
+      "authorized_artifact_ids": ["TAB-L1A-SWEEP-V2"],
+      "allowed_locations": ["Accepted geometry sweep: field-only design-space screening"],
+      "manifest_ids": ["L1A-SWEEP-V2-20260902-96-V1"],
+      "permitted_scope": [
+        "the seven terminal gates with observed aggregates, failure counts and outcomes as sealed in summary.json",
+        "representative designs with stage count, axis cusp count and positions, per-cell mirror ratios and peak field as sealed in raw-results.json"
+      ],
+      "prohibited_inferences": [
+        "plasma confinement",
+        "hardware validity",
+        "performance"
+      ]
+    },
+    {
+      "id": "CLM-021",
+      "status": "verified",
+      "claim_class": "screening-scope-limitation",
+      "authorized_tex": "The sweep is field-only screening classified \\texttt{\\SwpClassification}: its fields are linear-vacuum \\SwpModelLevel{} equivalent-current models, no permanent-magnet or nonlinear-iron material model enters the screening, and the only finite-element field admitted elsewhere in this manuscript is the P2 reference of the wall-loss campaign; the axis cusps are sampled-axis descriptors, not a continuous critical-point proof; the sweep computes no thrust, efficiency, plasma, thermal or structural quantity, carries no hardware validation and opens no physics level.",
+      "allowed_locations": ["Accepted geometry sweep: field-only design-space screening"],
+      "manifest_ids": ["L1A-SWEEP-V2-20260902-96-V1"],
+      "classification": "L1a_FIELD_ONLY_SCREENING_NOT_HARDWARE_VALID",
+      "permitted_scope": [
+        "model-bounded restatement of the sweep's classification and claim limits"
+      ],
+      "prohibited_inferences": [
+        "material-aware field behaviour",
+        "plasma or performance quantities",
+        "hardware validation",
+        "opening of GATE-L1"
+      ]
+    },
+    {
+      "id": "CLM-022",
+      "status": "verified",
+      "claim_class": "quantitative-screening-null",
+      "authorized_tex": "Under the frozen cusp/cell definition, the four-cell wall-cusp topology targeted by the original design parameterisation was not shown stable for any candidate: \\FcnStable{} of \\FcnEvaluated{} candidates passed the topology gates although all \\FcnThreeMapAccepted{} passed every field gate on all three maps. Every candidate recorded \\texttt{TOPOLOGY\\_COUNT} (\\FcnTopologyCountFailures{} of \\FcnEvaluated) and \\texttt{TOPOLOGY\\_UNSTABLE} (\\FcnTopologyUnstableFailures{} of \\FcnEvaluated) and no other failure code: the primary maps hold \\FcnPrimaryCuspMin{} to \\FcnPrimaryCuspMax{} interior cusps per candidate (\\FcnPrimaryCuspTotal{} in total) against the required \\FcnRequiredCells, \\FcnAnyExactCount{} candidates reached the exact count on any map, so no flux surface was traced, no adiabaticity gate was evaluated (\\FcnAdiabatic{} adiabatic), no candidate was coupled (\\FcnCoupled{} coupled), and \\FcnUniqueStates{} plasma states and \\FcnPerformancePublications{} performance values were published. The tolerance-based GPU replay reproduced the field components of all \\FcnGpuReplayRequired{} replay candidates to within \\FcnGpuReplayMaxFieldDiff{} T and \\FcnGpuReplayMaxPsiDiff{} Wb, but the residual-diagnostic relative difference exceeded its \\FcnGpuReplayDiagnosticLimit{} limit for \\FcnGpuReplayFailed{} of them (\\FcnGpuReplayFailedIds; maximum \\FcnGpuReplayMaxDiagnostic), so the bundle records \\FcnGpuReplayPassed{} of \\FcnGpuReplayRequired{} replay passes.",
+      "allowed_locations": ["Preregistered four-cell topology search: null result"],
+      "manifest_ids": ["FOUR-CELL-V2-20260902-128-V1"],
+      "gate_id": "GATE-FOUR-CELL-V2",
+      "classification": "PREREGISTERED_PHYSICS_GATED_V2",
+      "recorded_outcome": "preregistered-null",
+      "evidence_level": "numerical-screening",
+      "evidence_level_justification": "The search is a preregistered, single-execution numerical screening of 128 candidates of the original four-cell parameterisation with the linear-vacuum L1a equivalent-current solver and the accepted flux-surface coupling baseline, whose recorded outcome is a null that the frozen zero-pass policy requires to be published without patching or rerunning. The numerical-screening gate admits it as recorded (recorded_outcome preregistered-null): the gate status accepted means the study is admitted, never that a positive finding is accepted. It is not the L1 field-resolved reduction of GATE-L1, not L2 (no plasma network was coupled) and not L3, and opens no physics level. The GPU replay outcome (two of four replay candidates exceeding the residual-diagnostic tolerance while every field component reproduced) is admitted as recorded and does not bear on the topology gates, which failed on maps that passed every field gate.",
+      "bindings": {
+        "evidence_file": "paper/evidence/four-cell-v2.json",
+        "evidence_macros": "every \\Fcn... macro in the authorized text is defined in paper/generated/four-cell-v2.tex and bound in the evidence file to an artifact path, JSON pointer, formatter and SHA-256",
+        "results_commit": "7120e8edcb74c02c1df968c730d1f93b3758b4e1",
+        "preregistration_commit": "d6317910703de91ca6dc25c4d4d855e36cc3b14d",
+        "posthoc_audit": "modern/experiments/four_cell_topology_search_v2/POSTHOC_AUDIT.md at 605be5ceffa407142a2acb11cc040b13eef89b0c"
+      },
+      "non_claims": [
+        "a null under this definition is not proof that no such design exists",
+        "the screening fields are not a permanent-magnet or nonlinear-iron material model",
+        "no plasma state, mirror probability or performance quantity is claimed",
+        "are lineage only and are not evidence"
+      ],
+      "permitted_scope": [
+        "candidate, map-acceptance and stable counts and the failure taxonomy counts of the single execution",
+        "interior-cusp counts per map against the frozen target",
+        "the GPU replay outcome as recorded",
+        "the frozen cusp/cell definition under which the null holds"
+      ],
+      "prohibited_inferences": [
+        "non-existence of a stable four-cell topology in any design space",
+        "mirror probabilities, flux-surface or adiabaticity results",
+        "plasma state, power or performance",
+        "permanent-magnet or nonlinear-iron material behaviour",
+        "any result of the superseded proxy search or of the failed criterion validations"
+      ]
+    },
+    {
+      "id": "CLM-023",
+      "status": "verified",
+      "claim_class": "quantitative-generated-table",
+      "authorized_artifact_ids": ["TAB-FOUR-CELL-V2"],
+      "allowed_locations": ["Preregistered four-cell topology search: null result"],
+      "manifest_ids": ["FOUR-CELL-V2-20260902-128-V1"],
+      "permitted_scope": [
+        "the preregistered failure taxonomy with per-code candidate counts as sealed in dataset.json",
+        "interior-cusp counts per map role against the required count as derived from the per-candidate records"
+      ],
+      "prohibited_inferences": [
+        "non-existence of a stable four-cell topology",
+        "plasma or performance quantities"
+      ]
+    },
+    {
+      "id": "CLM-024",
+      "status": "verified",
+      "claim_class": "screening-scope-limitation",
+      "authorized_tex": "The null holds for the frozen definition of a stable four-cell topology (exactly \\FcnRequiredCells{} geometry-registered interior cusps on all \\FcnMapCount{} maps) over \\FcnEvaluated{} candidates of one linear-vacuum \\FcnFieldModelLevel{} equivalent-current parameterisation; a null under this definition is not proof that no such design exists, the screening fields are not a permanent-magnet or nonlinear-iron material model, and no plasma state, mirror probability or performance quantity is claimed. The superseded first search, which screened \\FcnLineageVOneCompatible{} of \\FcnLineageVOneEvaluated{} candidates as compatible through a deprecated same-height mirror proxy (status \\texttt{\\FcnLineageVOneStatus}; preregistered: \\FcnLineageVOnePreregistered; valid for physical mirror claims: \\FcnLineageVOneMirrorValid), and the two held-out validations of the wall-cusp criterion, which failed with a \\FcnLineageWcvalOneException{} in \\texttt{\\FcnLineageWcvalOnePhase} after \\FcnLineageWcvalOneAttempted{} of \\FcnLineageWcvalOneDeclared{} cases and with a \\FcnLineageWcvalTwoException{} in \\texttt{\\FcnLineageWcvalTwoPhase} before any case (criterion promoted: \\FcnLineageWcvalOnePromoted, \\FcnLineageWcvalTwoPromoted), are lineage only and are not evidence.",
+      "allowed_locations": ["Preregistered four-cell topology search: null result"],
+      "manifest_ids": ["FOUR-CELL-V2-20260902-128-V1"],
+      "classification": "PREREGISTERED_PHYSICS_GATED_V2",
+      "recorded_outcome": "preregistered-null",
+      "permitted_scope": [
+        "model-bounded restatement of the definition under which the null holds",
+        "lineage records of the superseded proxy search and the failed criterion validations, quoted as non-claims"
+      ],
+      "prohibited_inferences": [
+        "non-existence of a stable four-cell topology",
+        "any physical mirror, identifiable-state or performance claim from the superseded proxy search",
+        "any outcome of the failed criterion validations",
+        "opening of GATE-L1"
+      ]
+    },
+    {
+      "id": "CLM-025",
+      "status": "verified",
+      "claim_class": "quantitative-characterization-null",
+      "authorized_tex": "Across \\TchEvaluated{} of \\TchDeclared{} characterised designs, all \\TchThreeMapAccepted{} with three accepted maps and \\TchGpuReplayPassed{} of \\TchGpuReplayRequired{} GPU replays passing, the preregistered eligibility rules found \\TchStableEligibleCusps{} stable eligible cusps and \\TchStableEligibleCells{} stable eligible cells (\\TchEligibleCuspsAnyMap{} eligible cusps and \\TchEligibleCellsAnyMap{} eligible cells on any single map). The \\TchClusteredRoots{} clustered primary-map vector nulls (\\TchRawDetections{} raw detections; \\TchXRoots{} X, \\TchORoots{} O, \\TchDegenerateRoots{} degenerate) were all excluded: \\TchExclMagnet{} lie in magnet or current-sheet material, \\TchExclFiniteBox{} on the finite-box boundary, \\TchExclYoke{} in yoke or material and \\TchExclOutsideAxial{} outside the channel axially, while the \\TchChannelRoots{} roots inside the plasma channel are all X-type and none established a cell-bounding separatrix (\\TchChannelUnresolved{} of \\TchChannelRoots); \\TchCompleteCorrespondence{} of \\TchEvaluated{} designs achieved complete primary-to-refined-to-enlarged root correspondence.",
+      "allowed_locations": ["Recorded topology characterization: no stable eligible cusp or cell"],
+      "manifest_ids": ["TOPOLOGY-CHAR-V1-20260902-56-V1"],
+      "gate_id": "GATE-TOPOLOGY-CHAR-V1",
+      "classification": "developmental_topology_characterization",
+      "recorded_outcome": "recorded-characterization",
+      "evidence_level": "numerical-screening",
+      "evidence_level_justification": "The characterization is a preregistered, single-execution developmental study whose own protocol declares it neither a design optimization nor a blind validation; the numerical-screening gate admits it at exactly that level (recorded_outcome recorded-characterization) rather than as accepted evidence of a positive finding. Its recorded outcome, zero stable eligible cusps and cells under the preregistered eligibility rules, is admitted as recorded. It is not the L1 field-resolved reduction of GATE-L1, not L2 and not L3, and opens no physics level.",
+      "bindings": {
+        "evidence_file": "paper/evidence/topology-characterization-v1.json",
+        "evidence_macros": "every \\Tch... macro in the authorized text is defined in paper/generated/topology-characterization-v1.tex and bound in the evidence file to an artifact path, JSON pointer, formatter and SHA-256",
+        "results_commit": "3ce6c546194e1d3e943d0b3d0951d03e15e354d9",
+        "preregistration_commit": "af88470b86fd95882ae7fddc48e2860cbfba1219"
+      },
+      "non_claims": [
+        "a null under these definitions is not proof that no design with a stable eligible cusp or cell exists",
+        "no permanent-magnet or nonlinear-iron material model enters it",
+        "not validated or optimal",
+        "no mirror probability, plasma state or performance quantity is claimed"
+      ],
+      "permitted_scope": [
+        "case, map-acceptance, replay and eligible/stable-eligible counts of the single execution",
+        "root classification, zone and exclusion tallies over the primary maps",
+        "complete-correspondence count"
+      ],
+      "prohibited_inferences": [
+        "non-existence of a design with a stable eligible cusp or cell",
+        "validated or optimal design levels",
+        "mirror probabilities, plasma state, power or performance",
+        "permanent-magnet or nonlinear-iron material behaviour"
+      ]
+    },
+    {
+      "id": "CLM-026",
+      "status": "verified",
+      "claim_class": "quantitative-generated-table",
+      "authorized_artifact_ids": ["TAB-TOPOLOGY-CHAR-V1"],
+      "allowed_locations": ["Recorded topology characterization: no stable eligible cusp or cell"],
+      "manifest_ids": ["TOPOLOGY-CHAR-V1-20260902-56-V1"],
+      "permitted_scope": [
+        "clustered primary-map nulls by zone, classification and exclusion reason as derived from dataset.json",
+        "the empirical stage relation as sealed in dataset.json"
+      ],
+      "prohibited_inferences": [
+        "non-existence of a stable eligible cusp or cell",
+        "validated or optimal design levels"
+      ]
+    },
+    {
+      "id": "CLM-027",
+      "status": "verified",
+      "claim_class": "screening-scope-limitation",
+      "authorized_tex": "The characterization is recorded developmental evidence about the \\TchFieldModel{} under the preregistered eligibility definitions; a null under these definitions is not proof that no design with a stable eligible cusp or cell exists, no permanent-magnet or nonlinear-iron material model enters it, the descriptive search recommendation (stage counts \\TchRecommendedStages; not validated or optimal: \\TchRecommendationNotValidated) is input for a separate preregistration and not a result, and no mirror probability, plasma state or performance quantity is claimed.",
+      "allowed_locations": ["Recorded topology characterization: no stable eligible cusp or cell"],
+      "manifest_ids": ["TOPOLOGY-CHAR-V1-20260902-56-V1"],
+      "classification": "developmental_topology_characterization",
+      "recorded_outcome": "recorded-characterization",
+      "permitted_scope": [
+        "model-bounded restatement of the characterization's level, definitions and descriptive recommendation status"
+      ],
+      "prohibited_inferences": [
+        "non-existence of a stable eligible cusp or cell",
+        "validated or optimal design levels",
+        "mirror probabilities, plasma state, power or performance",
+        "opening of GATE-L1"
+      ]
+    },
+    {
+      "id": "CLM-028",
+      "status": "verified",
+      "claim_class": "interpretation",
+      "authorized_tex": "Under the frozen cusp and cell definitions of the admitted screening, the four-cell wall-cusp topology targeted by the original design parameterisation was not shown stable for any of \\FcnEvaluated{} preregistered candidates, and \\TchStableEligibleCusps{} stable eligible cusps and \\TchStableEligibleCells{} stable eligible cells were found across \\TchEvaluated{} characterised designs; within the explored linear-vacuum \\FcnFieldModelLevel{} design space the multi-cell confinement picture of the legacy parameterisation is therefore undemonstrated, which is a null under these definitions and not proof that no such design exists.",
+      "allowed_locations": ["Discussion"],
+      "manifest_ids": ["FOUR-CELL-V2-20260902-128-V1", "TOPOLOGY-CHAR-V1-20260902-56-V1"],
+      "evidence": ["SRC-AUDIT", "SRC-PROVENANCE"],
+      "bibliography": ["Muffatti2017"],
+      "permitted_scope": [
+        "model-bounded inference from the two recorded nulls under their frozen definitions",
+        "identification of the legacy multi-cell parameterisation documented by the audit and provenance records"
+      ],
+      "prohibited_inferences": [
+        "non-existence of a stable multi-cell wall-cusp topology",
+        "behaviour of permanent-magnet or nonlinear-iron fields",
+        "plasma confinement or performance",
+        "opening of GATE-L1"
+      ]
+    },
+    {
       "id": "GATE-L1",
       "status": "evidence-gate",
       "gate_registry_id": "GATE-L1"
@@ -341,6 +633,33 @@
       "kind": "numerical-campaign",
       "gate_status": "accepted",
       "manifest_id": "WALL-LOSS-V4-20260902-4608-V1"
+    },
+    {
+      "id": "GATE-L1A-SWEEP-V2",
+      "status": "evidence-gate",
+      "gate_registry_id": "GATE-L1A-SWEEP-V2",
+      "kind": "numerical-screening",
+      "gate_status": "accepted",
+      "recorded_outcome": "accepted-screening",
+      "manifest_id": "L1A-SWEEP-V2-20260902-96-V1"
+    },
+    {
+      "id": "GATE-FOUR-CELL-V2",
+      "status": "evidence-gate",
+      "gate_registry_id": "GATE-FOUR-CELL-V2",
+      "kind": "numerical-screening",
+      "gate_status": "accepted",
+      "recorded_outcome": "preregistered-null",
+      "manifest_id": "FOUR-CELL-V2-20260902-128-V1"
+    },
+    {
+      "id": "GATE-TOPOLOGY-CHAR-V1",
+      "status": "evidence-gate",
+      "gate_registry_id": "GATE-TOPOLOGY-CHAR-V1",
+      "kind": "numerical-screening",
+      "gate_status": "accepted",
+      "recorded_outcome": "recorded-characterization",
+      "manifest_id": "TOPOLOGY-CHAR-V1-20260902-56-V1"
     }
   ]
 }

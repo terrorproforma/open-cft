@@ -13,10 +13,26 @@ the preregistered collisionless test-particle electron wall-loss campaign
 committed at `6922a3cf97d261735266aa1a5a0c0c9683e021ca` (preregistration
 `757e365f9f667620c7610663574294c3b71e1f51`, post-hoc audit
 `258f69b2f4bc081c6f571251ce2ad76d49ddab0a`) and admitted through the
-numerical-campaign gate `GATE-WALL-LOSS-V4`. The checked evidence is enumerated
-in `evidence/claims.json`. Concurrent or later work is not publishable merely
-because files exist in a working tree: a planned section opens only when its
-gate in `evidence/result-gates.json` names an accepted, committed manifest.
+numerical-campaign gate `GATE-WALL-LOSS-V4`. Three preregistered, single-execution
+L1a field-only topology-screening studies are admitted at exactly their recorded
+outcomes through `numerical-screening` gates: the accepted geometry sweep
+`modern/experiments/l1a_geometry_sweep_v2` (results
+`f30cb42ec4a8633bf634a3d32ffa5b11f66be97a`, preregistration `092f5fae…`,
+post-hoc EOL audit `9e68df21…`; `GATE-L1A-SWEEP-V2`, `accepted-screening`), the
+four-cell topology search `modern/experiments/four_cell_topology_search_v2`
+(results `7120e8edcb74c02c1df968c730d1f93b3758b4e1`, preregistration
+`d6317910…`, post-hoc EOL audit `605be5ce…`; `GATE-FOUR-CELL-V2`,
+`preregistered-null`: 0 of 128 candidates stable under the frozen cusp/cell
+definition) and the developmental characterization
+`modern/experiments/cft_topology_characterization_v1` (results
+`3ce6c546194e1d3e943d0b3d0951d03e15e354d9`, preregistration `af88470b…`;
+`GATE-TOPOLOGY-CHAR-V1`, `recorded-characterization`: 0 stable eligible cusps
+or cells over 56 designs). A null is admitted as a null under its frozen
+definitions, never as proof that no such design exists. The checked evidence is
+enumerated in `evidence/claims.json`. Concurrent or later work is not
+publishable merely because files exist in a working tree: a planned section
+opens only when its gate in `evidence/result-gates.json` names an accepted,
+committed manifest.
 
 The manuscript prohibits classifying L0 as one-dimensional, geometrically
 predictive, physically calibrated, or experimentally validated. No comparative
@@ -25,7 +41,12 @@ operating-point baseline with externally supplied closures. The wall-loss
 campaign is classified `collisionless_prescribed_field_test_particle_wall_loss_not_pic`:
 it is not particle-in-cell, not self-consistent, not thruster performance, not
 validated, and its pooled wall-hit fraction is an equal-weight design average
-of a bimodal per-cell result, not a loss rate. It opens none of L1--L3.
+of a bimodal per-cell result, not a loss rate. It opens none of L1--L3. The
+topology-screening studies use linear-vacuum L1a equivalent-current fields
+(no permanent-magnet or nonlinear-iron material model); their axis cusps are
+sampled-axis descriptors, their mirror ratios are screening QoIs, and none of
+them demonstrates a stable multi-cell wall-cusp topology, claims plasma or
+performance content, or opens `GATE-L1`.
 
 ## Reproduce checks and build
 
@@ -62,8 +83,21 @@ it does not modify the environment.
 - `evidence/manifest-schemas.json` — recognized manifest types, versions,
   file roles, and required metrics.
 - `evidence/result-gates.json` — explicit L1/L2/L3 admission criteria
-  (`physics-level` gates) and the accepted `numerical-campaign` gate
-  `GATE-WALL-LOSS-V4`.
+  (`physics-level` gates), the accepted `numerical-campaign` gate
+  `GATE-WALL-LOSS-V4`, and the three `numerical-screening` gates
+  `GATE-L1A-SWEEP-V2`, `GATE-FOUR-CELL-V2` and `GATE-TOPOLOGY-CHAR-V1`, each
+  carrying its `recorded_outcome`.
+- `evidence/manifests/{l1a-sweep-v2,four-cell-v2,topology-characterization-v1}.json`
+  — typed screening manifests (`paper-l1a-screening-manifest` 1.0) binding
+  every bundle file by Git blob and SHA-256 at the results revision, the frozen
+  protocol, the post-hoc EOL audit where one exists, lineage files (four-cell
+  only; non-claims), and the metrics the checker compares with the raw
+  artifact values behind the evidence macros.
+- `evidence/{l1a-sweep-v2,four-cell-v2,topology-characterization-v1}.json` —
+  hash-bound evidence files for the `\Swp...`, `\Fcn...` and `\Tch...` macros.
+- `sections/{l1a-sweep-v2,four-cell-v2,topology-characterization-v1}.tex` —
+  the admitted screening subsections, each bound once by `\input` from
+  Section 8 of `manuscript.tex`; macro-only.
 - `evidence/manifests/wall-loss-v4.json` — typed campaign manifest binding
   every results-bundle file by Git blob and SHA-256, the frozen
   preregistration files, the post-hoc audit, and the metrics that the checker
@@ -138,4 +172,36 @@ manifest revision.
 ```powershell
 python paper/scripts/generate_wall_loss_v4_evidence.py
 python -m unittest discover -s paper/tests -p "test_wall_loss*" -v
+```
+
+## Admitted topology screening: sweep v2, four-cell v2 null, characterization v1
+
+`paper/scripts/generate_topology_screening_evidence.py` reads the three sealed
+bundles, verifies each against its own manifest (sidecars, sealed canonical
+payloads, protocol bindings), binds each to its committed results revision and
+writes, per study, `paper/evidence/<key>.json`, `paper/generated/<key>.tex`
+(macros plus two generated tables wrapped in `\ArtifactClaim`) and
+`paper/generated/<key>.provenance.json`. Two bundles recorded one frozen-protocol
+digest on a `core.autocrlf=true` checkout (the sweep's `protocol.json.sha256`
+and the four-cell copy `results/preregistered-protocol.json`); the generator and
+`check_paper.py` accept exactly those files through the audited rule of their
+`POSTHOC_AUDIT.md` (`sha256(bytes.replace(LF, CRLF)) == recorded`, LF digest
+as audited, recorded byte count) and require the digests to appear verbatim in
+`protocol.py::EOL_AUDITED_SIDECARS` and `audit_sidecar_eol.py`. Every other
+byte difference fails. The four-cell evidence additionally hash-binds lineage
+records (the superseded proxy search and the two failed coupling-v4 criterion
+validations) that the section quotes only inside a registered non-claim.
+
+The `numerical-screening` gate kind admits a study at its recorded outcome:
+`accepted-screening` for the sweep, `preregistered-null` for the four-cell
+search (0 of 128 candidates stable under the frozen definition; not an
+existence disproof) and `recorded-characterization` for the developmental
+characterization (0 stable eligible cusps or cells over 56 designs). The
+checker requires the outcome to agree between gate, manifest, evidence file and
+generator, the section to render numbers only through macros, and the
+Discussion claim on the multi-cell topology to be macro-bound.
+
+```powershell
+python paper/scripts/generate_topology_screening_evidence.py
+python -m unittest discover -s paper/tests -p "test_topology_screening*" -v
 ```

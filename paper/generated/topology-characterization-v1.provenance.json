@@ -1,0 +1,208 @@
+{
+  "artifact_id": "TAB-TOPOLOGY-CHAR-V1",
+  "bundle_manifest": {
+    "git_blob": "faaa42d22ceb49ab1f4d04af3ae6c17def451f1e",
+    "path": "modern/experiments/cft_topology_characterization_v1/results/manifest.json",
+    "sha256": "bd2ad68e6cc68dd547847f8e07817dc86d35e7a45075fcee9102a2e9eca938a8"
+  },
+  "claim_ids": [
+    "CLM-026"
+  ],
+  "claim_status": "authorized by CLM-026 (quantitative-generated-table) in paper/evidence/claims.json; admitted through GATE-TOPOLOGY-CHAR-V1 (numerical-screening, recorded outcome recorded-characterization)",
+  "document_type": "paper-generated-artifact-provenance",
+  "evidence_revision": "3ce6c546194e1d3e943d0b3d0951d03e15e354d9",
+  "generator": {
+    "command": "python paper/scripts/generate_topology_screening_evidence.py",
+    "path": "paper/scripts/generate_topology_screening_evidence.py",
+    "sha256": "36ae2d1a3663f3471d3f07ed2fa4447bbf9fea4bbbb69cc7177feb35c49fd86a"
+  },
+  "inputs": [
+    {
+      "bytes": 11133,
+      "path": "modern/experiments/cft_topology_characterization_v1/protocol.json",
+      "sha256": "8722541835628e08712ee8f8bf59fd8e8f4875b10fbb04f4a2efc6f1d0051291"
+    },
+    {
+      "bytes": 16055198,
+      "path": "modern/experiments/cft_topology_characterization_v1/results/dataset.json",
+      "sha256": "885cc8703329f9226592dbdf73d6d5f4ad4bcc35a0a69786621374d7e5a6b419"
+    },
+    {
+      "bytes": 455,
+      "path": "modern/experiments/cft_topology_characterization_v1/results/execution-lock.json",
+      "sha256": "01abd32b753daf22fdb8cd44b35377b9b029ad005e5ac7d4ede5b93826fdbfce"
+    },
+    {
+      "bytes": 16710,
+      "path": "modern/experiments/cft_topology_characterization_v1/results/manifest.json",
+      "sha256": "bd2ad68e6cc68dd547847f8e07817dc86d35e7a45075fcee9102a2e9eca938a8"
+    },
+    {
+      "bytes": 9586,
+      "path": "modern/experiments/cft_topology_characterization_v1/results/preregistered-protocol.json",
+      "sha256": "5dcdc162d0f3d33e8fecea0434c2ebfd37d5718f122a7f4b6b12a81bf413172b"
+    },
+    {
+      "bytes": 1695,
+      "path": "modern/experiments/cft_topology_characterization_v1/results/report.md",
+      "sha256": "caf99a0aa6553948a94bfe610c763dfcfefbfb76c671e18af6e0b2707bd428b3"
+    },
+    {
+      "bytes": 988779,
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s02-p0-r0-neg/enlarged_domain-field.json",
+      "sha256": "eddcd2a35bbc2b16e0f78136c41516641f0dfa4118bf1175d539cc63512a355f"
+    },
+    {
+      "bytes": 6988,
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s02-p0-r0-neg/geometry.json",
+      "sha256": "c04820b33c4d1db5405e5511bef4e34f010c317ab1db93f46d82b0ab7493f14c"
+    },
+    {
+      "bytes": 634210,
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s02-p0-r0-neg/primary-field.json",
+      "sha256": "421fd310644b2a4131defc843723fef5924f98f65a41f483247db1c0d44b26bd"
+    },
+    {
+      "bytes": 1401418,
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s02-p0-r0-neg/refined-field.json",
+      "sha256": "fdd5e88daf3f7bc5817ee42c292894600ff605278dbb818071e36b13538169e9"
+    },
+    {
+      "bytes": 989579,
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s03-p0-r0-neg/enlarged_domain-field.json",
+      "sha256": "d5589a3b08723975f6a8864e37dbc77a0dcf5296dc9295b8bedb65e574410b50"
+    },
+    {
+      "bytes": 7780,
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s03-p0-r0-neg/geometry.json",
+      "sha256": "a9138f698170e632797d414d0581b2813e20041d459ba689b43e166a0861f64a"
+    },
+    {
+      "bytes": 634162,
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s03-p0-r0-neg/primary-field.json",
+      "sha256": "0f564b079f32022bc6ba1ce3f3d8a6e582672336cb1dfbf155bb343a02368b45"
+    },
+    {
+      "bytes": 1399600,
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s03-p0-r0-neg/refined-field.json",
+      "sha256": "b593254a5e31f747719d499b50043b76cc41e2b96fa2f1471b84ed7b122a7e4b"
+    },
+    {
+      "bytes": 988450,
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s04-p0-r0-neg/enlarged_domain-field.json",
+      "sha256": "8fa98b22f02720c5096038a060a08c34f43ef582afc88bff38c75777899f26bc"
+    },
+    {
+      "bytes": 8606,
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s04-p0-r0-neg/geometry.json",
+      "sha256": "30b3b0b3ba8afc6b965e14f1c7aebd89144cc8090e21c8e8d3a0e52f358cd3ac"
+    },
+    {
+      "bytes": 635531,
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s04-p0-r0-neg/primary-field.json",
+      "sha256": "6666214427879c246b0af6695330b17dbee3d1d29874f03b22faa6be9c44383f"
+    },
+    {
+      "bytes": 1399927,
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s04-p0-r0-neg/refined-field.json",
+      "sha256": "846a52f001dbdafe2a0e80a8e18cf460cceb009e03097675969dec9b70a79e51"
+    },
+    {
+      "bytes": 993232,
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s05-p0-r0-neg/enlarged_domain-field.json",
+      "sha256": "b06f7931ec0425591b4b027821347bad5072098443a6698bf40edc32e3ec9058"
+    },
+    {
+      "bytes": 9472,
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s05-p0-r0-neg/geometry.json",
+      "sha256": "8232371a5f45d4de02a4b3339396fab99a46bab23fc9fbbb471e77c7d35348cd"
+    },
+    {
+      "bytes": 636848,
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s05-p0-r0-neg/primary-field.json",
+      "sha256": "b88567ddb875856de13d880cfc465ca3331d39898741c46b28fa88d27268265b"
+    },
+    {
+      "bytes": 1401471,
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s05-p0-r0-neg/refined-field.json",
+      "sha256": "f043441ed9aa08b932616ec74fa8149d37683f126e32c0356a5ac11bc25c8fb1"
+    },
+    {
+      "bytes": 991109,
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s06-p0-r0-neg/enlarged_domain-field.json",
+      "sha256": "29fc8cb1e37222e06dbddd0a7de00f464b6aafca5d8a873637d421a0926d24b1"
+    },
+    {
+      "bytes": 10202,
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s06-p0-r0-neg/geometry.json",
+      "sha256": "f7feb9df6e2cdbbf4a211a821f628206b6fb4f79314e5471d78e2f84b80a90a1"
+    },
+    {
+      "bytes": 638070,
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s06-p0-r0-neg/primary-field.json",
+      "sha256": "548d87b421c0412385ee35beb2289be873dc7102a6c51b325dd621cb6c657398"
+    },
+    {
+      "bytes": 1401206,
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s06-p0-r0-neg/refined-field.json",
+      "sha256": "83d08a1801fbe379063fd0a4592163e68f9c5dd06b7ad6caa9b982dcfa4d45b3"
+    },
+    {
+      "bytes": 996645,
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s07-p0-r0-neg/enlarged_domain-field.json",
+      "sha256": "ce5bb0fe181ee7ba27566a16ebd22d9c5ffaf9309ac47126a06c5087092caf33"
+    },
+    {
+      "bytes": 11336,
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s07-p0-r0-neg/geometry.json",
+      "sha256": "64fd9c074684ab301487aed50f0fd62206e92479484d7d18c5e7573a65a2800e"
+    },
+    {
+      "bytes": 639989,
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s07-p0-r0-neg/primary-field.json",
+      "sha256": "a1aad66a2fbc2d3dfd8f580a5226ba6bb746d422f83fb43f3e701597a0f7ecff"
+    },
+    {
+      "bytes": 1403337,
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s07-p0-r0-neg/refined-field.json",
+      "sha256": "11fad2c384a7f4f3bb0a0d1b68b4170f762e51c281faa180085c9142aa5cedea"
+    },
+    {
+      "bytes": 994702,
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s08-p0-r0-neg/enlarged_domain-field.json",
+      "sha256": "ec73b133a3630fb0534a812235f0bb896df8d7d5de083d4f9be23dca62778d94"
+    },
+    {
+      "bytes": 12117,
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s08-p0-r0-neg/geometry.json",
+      "sha256": "84ba6952057e9342aea36678a5ecb1cd2cb710d71e156e4eb4aaba7cb5cecc0d"
+    },
+    {
+      "bytes": 641017,
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s08-p0-r0-neg/primary-field.json",
+      "sha256": "b823af8f152f78c744e49131b560fe68c07df13200cfa0d6a852fbe278988852"
+    },
+    {
+      "bytes": 1404020,
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s08-p0-r0-neg/refined-field.json",
+      "sha256": "5cbb7110bf1cfcce1a018a1f66f7bb14a5cd06eeaa74425d4bb89c327b8844fd"
+    },
+    {
+      "bytes": 663,
+      "path": "modern/experiments/cft_topology_characterization_v1/results/runtime.json",
+      "sha256": "355a3701d160938510068597a890893c7083b2df09a73f36cb40482aafaf8054"
+    }
+  ],
+  "manifest": {
+    "gate_manifest_path": "paper/evidence/manifests/topology-characterization-v1.json",
+    "manifest_id": "TOPOLOGY-CHAR-V1-20260902-56-V1",
+    "path": "paper/evidence/topology-characterization-v1.json",
+    "sha256": "80d96c150bef9ddd0c9cc9e95c0907857b604d47c76216027770ad2e2ae2968d"
+  },
+  "output": {
+    "path": "paper/generated/topology-characterization-v1.tex",
+    "sha256": "a544117c4aa9adcb6ea7dd6df48a1409b88e472aff93ac4827c6f45d695da14b"
+  },
+  "schema_version": "1.0",
+  "source_date_epoch": 1788270043
+}

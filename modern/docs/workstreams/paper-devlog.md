@@ -276,3 +276,123 @@
   references, no overfull boxes (with `microtype`, as in the manuscript).
 - One overfull box appeared while integrating (2.9 pt, the sentence before the
   40-hex L0 revision); fixed by rewording the sentence, not the hash.
+
+## 2026-09-03 — L1a sweep v2 and topology null results admitted to the claim matrix
+
+### Scope
+
+- Worktree `uni-project-paper-topo`, branch `paper/topology-and-sweep-claims`
+  from `origin/feat/sota-foundation` (`7a30fc2e`). Paper-owned paths,
+  `modern/docs/workstreams/paper-*`, plus one read-only overlay under
+  `modern/experiments/four_cell_topology_search_v2` (`POSTHOC_AUDIT.md`,
+  `audit_sidecar_eol.py`) and its test; nothing under
+  `modern/experiments/**/results/`, no frozen preregistration file and nothing
+  under `FYP/` touched.
+
+### Evidence level decision
+
+- New gate kind `numerical-screening` beside `numerical-campaign`: it admits one
+  preregistered, single-execution L1a field-only screening study (linear-vacuum
+  equivalent-current fields; no permanent-magnet or nonlinear-iron material
+  model) at exactly its `recorded_outcome`, one of `accepted-screening`,
+  `preregistered-null`, `recorded-characterization`. Gate status `accepted`
+  means "admitted as recorded", never that a positive finding is accepted; a
+  null is admitted as a null under the frozen cusp/cell definitions and is not
+  an existence disproof. `numerical-campaign` was not reused because that kind
+  was defined for one accepted campaign on a declared component model with a
+  campaign-specific manifest type, whereas these studies screen a design space
+  and two of them are nulls that "accepted campaign" would overstate. None of
+  the three is the L1 field-resolved reduction (no manufactured solution,
+  refinement study, L0 mapping or performance model); `GATE-L1`--`L3` stay
+  closed and every gate declares `opens_level: null`.
+
+### Added
+
+- `605be5ce add four_cell_topology_search_v2 posthoc EOL audit`: read-only
+  `audit_sidecar_eol.py` (stdlib), `POSTHOC_AUDIT.md`,
+  `modern/tests/experiments/four_cell_topology_search_v2/test_posthoc_audit.py`
+  (10 tests). Finding: `results/preregistered-protocol.json` (and the
+  `protocol_sha256` bound by manifest, dataset and lock) records the CRLF-era
+  digest `ec2e9a73…` (10811 bytes) of the frozen protocol whose LF bytes hash
+  to `5c195119…` (10580 bytes, 231 lines); canonical payload `bd522269…`
+  recomputes; the other 12 artifacts and 13 sidecars are byte-exact.
+  Disclosed: `validate_results` refuses the bundle on LF checkouts, and the
+  bundle's own GPU replay records 2 of 4 diagnostic passes (`v2-031` 9.42e-6,
+  `v2-063` 6.50e-6 against 5e-6) while every field component reproduced.
+- `paper/scripts/generate_topology_screening_evidence.py`: one generator for
+  the three studies (`ExperimentSpec` per study), verifying each bundle against
+  its own manifest (sidecars, sealed canonical payloads, protocol bindings),
+  binding it to its results commit and tree, and writing per study the
+  evidence file, generated macros with two `\ArtifactClaim` tables, and
+  sidecar. Audited LF→CRLF tolerance for exactly `protocol.json` (sweep) and
+  `results/preregistered-protocol.json` (four-cell), nothing else.
+  Macro prefixes `Swp` (107 macros), `Fcn` (107, including hash-bound lineage
+  macros for the superseded proxy search and the two failed coupling-v4
+  validations), `Tch` (83).
+- Typed manifests `paper/evidence/manifests/{l1a-sweep-v2,four-cell-v2,
+  topology-characterization-v1}.json` (`paper-l1a-screening-manifest` 1.0):
+  20 / 17 / 35 source files bound by Git blob and SHA-256 at the results
+  revisions (`f30cb42e`, `7120e8ed`, `3ce6c546`), frozen protocols, post-hoc
+  audits (`9e68df21`, `605be5ce`), six lineage files at their own revisions
+  (four-cell only), 34 / 42 / 37 metrics copied from the raw artifact values.
+- Gates `GATE-L1A-SWEEP-V2`, `GATE-FOUR-CELL-V2`, `GATE-TOPOLOGY-CHAR-V1` in
+  `result-gates.json` with `recorded_outcome`, metric constraints, prohibited
+  inferences and `null_semantics`; claims CLM-018 (abstract sentence), CLM-019
+  / CLM-022 / CLM-025 (results, with `non_claims`), CLM-020 / CLM-023 / CLM-026
+  (tables), CLM-021 / CLM-024 / CLM-027 (scope limitations; CLM-024 carries the
+  lineage non-claim), CLM-028 (Discussion interpretation bound to the two
+  nulls); contract items `TAB-L1A-SWEEP-V2`, `TAB-FOUR-CELL-V2`,
+  `TAB-TOPOLOGY-CHAR-V1`.
+- `check_paper.py`: `SCREENING_GATE_KIND`, `SCREENING_OUTCOMES`,
+  `SCREENING_METRIC_MACROS`, `SCREENING_POLICY_METRICS`, schema type;
+  `_check_topology_screening` (byte-identical regeneration, artifact and
+  lineage hashes on disk, audited-EOL recomputation bound to
+  `protocol.py::EOL_AUDITED_SIDECARS` / `audit_sidecar_eol.py` digests, metric
+  == raw macro with type equality, policy metrics, outcome / model /
+  classification agreement across gate, manifest, evidence and generator,
+  results tree unchanged, prereg → results → audit → HEAD chains, frozen
+  blobs, macro-only section with no literal digit, required table and
+  classification macros, ArtifactClaim wrapping, bindings once, revision
+  macro, claim records bound and located, lineage entries validated);
+  `acceptance_policy.gate_kinds` must define exactly the known kinds; artifact
+  renderers now take the contract item; new trackables; new required section.
+- `manuscript.tex`: three revision macros; `\input` of the three macro files
+  in the preamble; abstract sentence CLM-018; contribution list; evidence
+  boundary paragraph; new Section 8 "Preregistered topology screening: sweep
+  acceptance and four-cell null result" with three `\input` subsections
+  (`sections/l1a-sweep-v2.tex`, `four-cell-v2.tex`,
+  `topology-characterization-v1.tex`) between the wall-loss campaign and the
+  L1 gate; sentence after the L1 gate box; Discussion paragraph rewritten
+  from "open question, not cited" to the macro-bound CLM-028 with the labelled
+  interpretation kept; Limitations, data availability and Conclusion updated
+  without new numbers; date line points to Section 8 for the three revisions.
+- Standalone driver `sections/topology-screening-standalone.tex`; tests
+  `test_topology_screening_admission.py` (17) and
+  `test_topology_screening_evidence.py` (8); README, author checklist,
+  supplementary outline (S4c) and notation updated.
+
+### Validation
+
+- Before the paper commit `check_paper.py` reported exactly the three
+  fail-closed "accepted manifest is not committed at HEAD" errors; after
+  `ee633e6f` it passed.
+- `python -m unittest discover -s paper/tests`: 58 tests OK (33 existing + 25
+  new). `pytest tests/experiments/four_cell_topology_search_v2`: 10 passed;
+  `l1a_geometry_sweep_v2`, `cft_orbit_wall_loss_v4/test_posthoc_audit.py`,
+  `tests/visualization/test_plasma_topology_dashboard.py`: green (one false
+  alarm from a `SOURCE_DATE_EPOCH` left in the shell; passed once unset).
+- `python paper/scripts/verify_reproducible_build.py`: two clean builds
+  byte-identical, `paper/build/manuscript.pdf` 391,734 bytes, SHA-256
+  `6b4c6978e56fd5c225a24387f44a84ec080b19f8074733e7d3766b04d34f8701`, 17
+  pages, no LaTeX errors, undefined references, warnings or overfull boxes.
+- Pages rendered with MiKTeX `pdftoppm -r 70` to `%TEMP%\paper-topo-pages\`
+  (`p-01.png` … `p-17.png`) and inspected: abstract sentence p. 1; Section 8
+  opens p. 8 with 8.1 (p. 8–9); Table 4 (sweep gates) p. 10, Table 5
+  (representatives with per-cell mirror ratios) p. 11; 8.2 p. 10–12 with
+  Table 6 (failure taxonomy, `TOPOLOGY_COUNT` / `TOPOLOGY_UNSTABLE` 128 each)
+  p. 11 and Table 7 (interior cusps per map) p. 12; 8.3 p. 12–13 with Table 8
+  (null classes by zone) and Table 9 (stage relation) p. 13; L1 gate p. 14;
+  Discussion p. 14–15 with the macro-bound multi-cell paragraph p. 15.
+- Two overfull boxes appeared while integrating (a 148 pt gate table and the
+  unbreakable `\texttt{manufacturability}` cell); fixed by ragged-right `p{}`
+  columns with a wider gate column, not by editing any number.

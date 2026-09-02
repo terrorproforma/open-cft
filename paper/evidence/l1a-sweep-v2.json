@@ -1,0 +1,1649 @@
+{
+  "artifacts": {
+    "protocol.json": {
+      "bytes": 7790,
+      "sha256": "2a5ba9e46c777225384539a4c453a43aa3298c956b32b022cc5ddeac72ba874c"
+    },
+    "protocol.json.sha256": {
+      "bytes": 80,
+      "sha256": "6d3f6bd6be660ee18297d7a758d63f3c1d30253d02edb3f9f4004b59ba01b4d8"
+    },
+    "results/REPORT.md": {
+      "bytes": 2713,
+      "sha256": "dc5dae94cf5208b8ac461a4dd701b18231947ca82046a88e38b361ec2f4ad034"
+    },
+    "results/REPORT.md.sha256": {
+      "bytes": 76,
+      "sha256": "2db206b5ef2561cd09e2adc23082b8bc1f7822a839ba2052276f8919cf08a9fe"
+    },
+    "results/execution-lock.json": {
+      "bytes": 660,
+      "sha256": "23e581d549c4cee64267d379e969b1eb99a5f00203e17fe50c7b05a9a864b9c1"
+    },
+    "results/execution-lock.json.sha256": {
+      "bytes": 86,
+      "sha256": "d4eb25038b865a1c5af7a873ff0cd79807c2b3de428f2d7217bd32a6a853419f"
+    },
+    "results/manifest.json": {
+      "bytes": 10185,
+      "sha256": "768b345e946a45e623f83aaa18e01f8ec5bc7f823e81858a0a8c3a3e2e448754"
+    },
+    "results/manifest.json.sha256": {
+      "bytes": 80,
+      "sha256": "2f0a886f7940c758db5b2db40221c3c30b41e6d9ab3f2013bce2d89f0590c3de"
+    },
+    "results/raw-results.json": {
+      "bytes": 1407997,
+      "sha256": "76f145f816a187c36c3260c184a07d8979c244999f40c2562f4207dbca90b4c1"
+    },
+    "results/raw-results.json.sha256": {
+      "bytes": 83,
+      "sha256": "179f30b0cec4a3cd1a2d30133beaccc6eb9ab4472bef8ff9b61d251da0e2bedb"
+    },
+    "results/representatives/l1a-gs-v2-000-48d2ccedd5.field-downsampled.json": {
+      "bytes": 131719,
+      "sha256": "0088a8d0d23c55eba28977e7934ad4a2e9bba6c55f085e5d0ef43c4deb657845"
+    },
+    "results/representatives/l1a-gs-v2-000-48d2ccedd5.field-downsampled.json.sha256": {
+      "bytes": 114,
+      "sha256": "25ce1914e6eba7465f9725244a5c73eba011792a7c0cbcf49cbb523540b23a1d"
+    },
+    "results/representatives/l1a-gs-v2-000-48d2ccedd5.field-full.json": {
+      "bytes": 1504878,
+      "sha256": "0808795c91c3ec28dcf76a831534a62679b99cdb80bc1dd7ebf7d363be1887b5"
+    },
+    "results/representatives/l1a-gs-v2-000-48d2ccedd5.field-full.json.sha256": {
+      "bytes": 107,
+      "sha256": "8920743e3c8afbd10983161644511f3df33333d0a598aed94f59df4600a900a6"
+    },
+    "results/representatives/l1a-gs-v2-000-48d2ccedd5.geometry.json": {
+      "bytes": 7621,
+      "sha256": "60e3416bdd9671a2cf8c05d13adacfec83708fbec1e6214a1ece00f2722aa58b"
+    },
+    "results/representatives/l1a-gs-v2-000-48d2ccedd5.geometry.json.sha256": {
+      "bytes": 105,
+      "sha256": "d910990963320d8556a663584a1621c3fc9384ce1b3271a042cc5a3a910e8985"
+    },
+    "results/representatives/l1a-gs-v2-032-570ad83ba6.field-downsampled.json": {
+      "bytes": 131202,
+      "sha256": "748f3e257a481aea4d9c312f780ca413cc71cd4b73e2c0c88d33ed2dea2f465e"
+    },
+    "results/representatives/l1a-gs-v2-032-570ad83ba6.field-downsampled.json.sha256": {
+      "bytes": 114,
+      "sha256": "93122ede2bb0c4172ba134626a9d49e862d499ba76402bee6e9e66e058654038"
+    },
+    "results/representatives/l1a-gs-v2-032-570ad83ba6.field-full.json": {
+      "bytes": 1492575,
+      "sha256": "662c0e140dcc2921872e367eda17de93a1ab20671af5b5fe634cd45eaad1003b"
+    },
+    "results/representatives/l1a-gs-v2-032-570ad83ba6.field-full.json.sha256": {
+      "bytes": 107,
+      "sha256": "6a367c13e46982ff81beec8f9c9f416c0ded327125f4a6f86549d32d40281916"
+    },
+    "results/representatives/l1a-gs-v2-032-570ad83ba6.geometry.json": {
+      "bytes": 9271,
+      "sha256": "6dcd38a11ec298f7105e98667b3dcff3e52fe5bb0a958c839724964b78611f7b"
+    },
+    "results/representatives/l1a-gs-v2-032-570ad83ba6.geometry.json.sha256": {
+      "bytes": 105,
+      "sha256": "7498d90a6b4c10a83f3563cd45d8025e932dadb4d63296d7335e489c1e228109"
+    },
+    "results/representatives/l1a-gs-v2-065-9e98f08f3b.field-downsampled.json": {
+      "bytes": 134525,
+      "sha256": "3238d32074beca631ec7fbf74708f6dd7190a03924564382ca723fdb3dd228f3"
+    },
+    "results/representatives/l1a-gs-v2-065-9e98f08f3b.field-downsampled.json.sha256": {
+      "bytes": 114,
+      "sha256": "6e4df6aa0890754c3d683e4209ff5faeecc9af5432eb9bc4cea8e9f128bde99d"
+    },
+    "results/representatives/l1a-gs-v2-065-9e98f08f3b.field-full.json": {
+      "bytes": 1478107,
+      "sha256": "21e4cf4c4456d1d2fb4a6e16bdfca8cca1ede2959d58ea9ea507c242292d829f"
+    },
+    "results/representatives/l1a-gs-v2-065-9e98f08f3b.field-full.json.sha256": {
+      "bytes": 107,
+      "sha256": "b7764612167a13d31c9dea287549b798a387adb83cfdaf5d92709c900f3ff524"
+    },
+    "results/representatives/l1a-gs-v2-065-9e98f08f3b.geometry.json": {
+      "bytes": 10485,
+      "sha256": "d724ee63c444f5c03c4c7e675722d59ed44a89f87c2491a6d1f6f8670e340d61"
+    },
+    "results/representatives/l1a-gs-v2-065-9e98f08f3b.geometry.json.sha256": {
+      "bytes": 105,
+      "sha256": "5a7d297cfedbe550ba6cfc20be243616f8bb292c20d552bb67bca101fe644a98"
+    },
+    "results/representatives/l1a-gs-v2-068-375d1b1b13.field-downsampled.json": {
+      "bytes": 130713,
+      "sha256": "bb337d02f4cca56980662108427bdf541dba827564958df4bb8ab5945645fee3"
+    },
+    "results/representatives/l1a-gs-v2-068-375d1b1b13.field-downsampled.json.sha256": {
+      "bytes": 114,
+      "sha256": "61d4475ccfe8adad32e6f9b25a546f69aa67f91b8051763a618329539b1e97a8"
+    },
+    "results/representatives/l1a-gs-v2-068-375d1b1b13.field-full.json": {
+      "bytes": 1486295,
+      "sha256": "b280c00f2323d6cd576b6f5a1da7f5c58aec9afc4b57e0403512e2598f0c7bd3"
+    },
+    "results/representatives/l1a-gs-v2-068-375d1b1b13.field-full.json.sha256": {
+      "bytes": 107,
+      "sha256": "5da9289ba4f53e5bc6f27ec4b33987768538fc5a797e08f14911651151ba22a1"
+    },
+    "results/representatives/l1a-gs-v2-068-375d1b1b13.geometry.json": {
+      "bytes": 9275,
+      "sha256": "135c35697983e69d667a2f41e567917cb1ee22b67d315319361c25406015f12f"
+    },
+    "results/representatives/l1a-gs-v2-068-375d1b1b13.geometry.json.sha256": {
+      "bytes": 105,
+      "sha256": "d326e1b04eaa0cd8182ac4e87c05970fe9fb74206eef4c49dcfca16a9bf5d0eb"
+    },
+    "results/summary.json": {
+      "bytes": 8318,
+      "sha256": "942852295d3b2ee04f968734a31e15694e46d389838259a01113ae090ad30e29"
+    },
+    "results/summary.json.sha256": {
+      "bytes": 79,
+      "sha256": "a250cbb55170b6401ebed95555727364687fcbfdcd92cb3a6236f1ba6ee40270"
+    }
+  },
+  "binding": {
+    "manifest_git_blob": "cc2e29ba5bd1a6cd245bf6cc4a4f41a85ac83e82",
+    "manifest_path": "modern/experiments/l1a_geometry_sweep_v2/results/manifest.json",
+    "posthoc_audit_commit": "9e68df21dde5d5238f665ef685e6d457731136c9",
+    "posthoc_audit_path": "modern/experiments/l1a_geometry_sweep_v2/POSTHOC_AUDIT.md",
+    "preregistration_commit": "092f5fae692ee7d6711e0c7e1c94dac6a345f37c",
+    "results_commit": "f30cb42ec4a8633bf634a3d32ffa5b11f66be97a",
+    "results_commit_subject": "record L1a geometry sweep v2 results",
+    "results_tree": "de85a158a01aa4113154ef256c9d11032bdf6538"
+  },
+  "bundle": {
+    "audited_eol_files": {
+      "protocol.json": {
+        "audit_module": "modern/experiments/l1a_geometry_sweep_v2/protocol.py",
+        "lf_sha256": "2a5ba9e46c777225384539a4c453a43aa3298c956b32b022cc5ddeac72ba874c",
+        "recorded_bytes": 7924,
+        "recorded_sha256": "64b2c58c3cecb2ea1836d2bf48e23ff83dffb114866bf21e7135b411beaa2b2c"
+      }
+    },
+    "manifest_path": "modern/experiments/l1a_geometry_sweep_v2/results/manifest.json",
+    "manifest_sha256": "768b345e946a45e623f83aaa18e01f8ec5bc7f823e81858a0a8c3a3e2e448754",
+    "tolerance_rule": "for exactly the audited files: bytes contain no CR, sha256(bytes) == audited LF digest and sha256(bytes.replace(LF, CRLF)) == recorded digest with the recorded byte count; every other mismatch fails",
+    "tolerated_eol_files": [
+      "protocol.json"
+    ],
+    "verified_file_count": 36
+  },
+  "classification": "L1a_FIELD_ONLY_SCREENING_NOT_HARDWARE_VALID",
+  "document_type": "paper-l1a-sweep-v2-evidence",
+  "evidence_revision": "f30cb42ec4a8633bf634a3d32ffa5b11f66be97a",
+  "experiment_id": "l1a-geometry-sweep-v2",
+  "generator": {
+    "command": "python paper/scripts/generate_topology_screening_evidence.py",
+    "path": "paper/scripts/generate_topology_screening_evidence.py",
+    "sha256": "36ae2d1a3663f3471d3f07ed2fa4447bbf9fea4bbbb69cc7177feb35c49fd86a"
+  },
+  "macros": [
+    {
+      "derived": false,
+      "description": "sweep classification string",
+      "format": "ident",
+      "name": "SwpClassification",
+      "raw": "L1a_FIELD_ONLY_SCREENING_NOT_HARDWARE_VALID",
+      "source": {
+        "artifact": "results/summary.json",
+        "pointer": "/classification"
+      },
+      "value": "L1a\\_\\allowbreak{}FIELD\\_\\allowbreak{}ONLY\\_\\allowbreak{}SCREENING\\_\\allowbreak{}NOT\\_\\allowbreak{}HARDWARE\\_\\allowbreak{}VALID"
+    },
+    {
+      "derived": false,
+      "description": "screening level label",
+      "format": "ident",
+      "name": "SwpScreeningLevel",
+      "raw": "L1a_field_only_design_space_screening",
+      "source": {
+        "artifact": "results/summary.json",
+        "pointer": "/screening_level"
+      },
+      "value": "L1a\\_\\allowbreak{}field\\_\\allowbreak{}only\\_\\allowbreak{}design\\_\\allowbreak{}space\\_\\allowbreak{}screening"
+    },
+    {
+      "derivation": "summary.classification.split('_')[0]",
+      "derived": true,
+      "description": "field model level named by the classification",
+      "format": "text",
+      "inputs": [
+        {
+          "artifact": "results/summary.json",
+          "pointer": "/classification"
+        }
+      ],
+      "name": "SwpModelLevel",
+      "raw": "L1a",
+      "value": "L1a"
+    },
+    {
+      "derived": false,
+      "description": "terminal acceptance status",
+      "format": "ident",
+      "name": "SwpTerminalStatus",
+      "raw": "ACCEPTED",
+      "source": {
+        "artifact": "results/summary.json",
+        "pointer": "/terminal_status"
+      },
+      "value": "ACCEPTED"
+    },
+    {
+      "derived": false,
+      "description": "designs requested",
+      "format": "int",
+      "name": "SwpRequested",
+      "raw": 96,
+      "source": {
+        "artifact": "results/summary.json",
+        "pointer": "/requested_count"
+      },
+      "value": "96"
+    },
+    {
+      "derived": false,
+      "description": "designs evaluated",
+      "format": "int",
+      "name": "SwpEvaluated",
+      "raw": 96,
+      "source": {
+        "artifact": "results/summary.json",
+        "pointer": "/evaluated_count"
+      },
+      "value": "96"
+    },
+    {
+      "derived": false,
+      "description": "designs failed",
+      "format": "int",
+      "name": "SwpFailed",
+      "raw": 0,
+      "source": {
+        "artifact": "results/summary.json",
+        "pointer": "/failed_count"
+      },
+      "value": "0"
+    },
+    {
+      "derived": false,
+      "description": "non-dominated designs",
+      "format": "int",
+      "name": "SwpNondominated",
+      "raw": 25,
+      "source": {
+        "artifact": "results/summary.json",
+        "pointer": "/nondominated_count"
+      },
+      "value": "25"
+    },
+    {
+      "derived": false,
+      "description": "unique representative designs",
+      "format": "int",
+      "name": "SwpUniqueRepresentatives",
+      "raw": 4,
+      "source": {
+        "artifact": "results/summary.json",
+        "pointer": "/unique_representative_count"
+      },
+      "value": "4"
+    },
+    {
+      "derivation": "len(summary.representative_roles)",
+      "derived": true,
+      "description": "representative roles",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/summary.json",
+          "pointer": "/representative_roles"
+        }
+      ],
+      "name": "SwpRoleCount",
+      "raw": 5,
+      "value": "5"
+    },
+    {
+      "derived": false,
+      "description": "maximum executions allowed by the protocol",
+      "format": "int",
+      "name": "SwpMaxExecutions",
+      "raw": 1,
+      "source": {
+        "artifact": "protocol.json",
+        "pointer": "/execution/maximum_executions"
+      },
+      "value": "1"
+    },
+    {
+      "derived": false,
+      "description": "sampling seed",
+      "format": "int",
+      "name": "SwpSeed",
+      "raw": 20260902,
+      "source": {
+        "artifact": "protocol.json",
+        "pointer": "/sampling/seed"
+      },
+      "value": "20260902"
+    },
+    {
+      "derived": false,
+      "description": "sampling algorithm",
+      "format": "text",
+      "name": "SwpSamplingAlgorithm",
+      "raw": "accepted shifted-Halton with deterministic boundary challenges",
+      "source": {
+        "artifact": "protocol.json",
+        "pointer": "/sampling/algorithm"
+      },
+      "value": "accepted shifted-Halton with deterministic boundary challenges"
+    },
+    {
+      "derivation": "len(protocol.sampling.variables)",
+      "derived": true,
+      "description": "design variables",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "protocol.json",
+          "pointer": "/sampling/variables"
+        }
+      ],
+      "name": "SwpDesignVariableCount",
+      "raw": 11,
+      "value": "11"
+    },
+    {
+      "derivation": "len(protocol.objectives)",
+      "derived": true,
+      "description": "preregistered objectives",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "protocol.json",
+          "pointer": "/objectives"
+        }
+      ],
+      "name": "SwpObjectiveCount",
+      "raw": 4,
+      "value": "4"
+    },
+    {
+      "derivation": "len(protocol.execution.parity_case_indices)",
+      "derived": true,
+      "description": "CPU parity cases",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "protocol.json",
+          "pointer": "/execution/parity_case_indices"
+        }
+      ],
+      "name": "SwpParityCaseCount",
+      "raw": 6,
+      "value": "6"
+    },
+    {
+      "derived": false,
+      "description": "radial intervals",
+      "format": "int",
+      "name": "SwpGridRadial",
+      "raw": 80,
+      "source": {
+        "artifact": "protocol.json",
+        "pointer": "/field/domain/radial_intervals"
+      },
+      "value": "80"
+    },
+    {
+      "derived": false,
+      "description": "axial intervals",
+      "format": "int",
+      "name": "SwpGridAxial",
+      "raw": 144,
+      "source": {
+        "artifact": "protocol.json",
+        "pointer": "/field/domain/axial_intervals"
+      },
+      "value": "144"
+    },
+    {
+      "derived": false,
+      "description": "domain radius (mm)",
+      "format": "mm1",
+      "name": "SwpDomainRadiusMm",
+      "raw": 0.03,
+      "source": {
+        "artifact": "protocol.json",
+        "pointer": "/field/domain/radius_m"
+      },
+      "value": "30.0"
+    },
+    {
+      "derived": false,
+      "description": "domain z minimum (mm)",
+      "format": "mm1",
+      "name": "SwpDomainZMinMm",
+      "raw": -0.015,
+      "source": {
+        "artifact": "protocol.json",
+        "pointer": "/field/domain/z_min_m"
+      },
+      "value": "-15.0"
+    },
+    {
+      "derived": false,
+      "description": "domain z maximum (mm)",
+      "format": "mm1",
+      "name": "SwpDomainZMaxMm",
+      "raw": 0.05,
+      "source": {
+        "artifact": "protocol.json",
+        "pointer": "/field/domain/z_max_m"
+      },
+      "value": "50.0"
+    },
+    {
+      "derived": false,
+      "description": "solver relative tolerance",
+      "format": "sci1",
+      "name": "SwpSolverRelTol",
+      "raw": 1e-10,
+      "source": {
+        "artifact": "protocol.json",
+        "pointer": "/field/solver/relative_tolerance"
+      },
+      "value": "$1.0\\times10^{-10}$"
+    },
+    {
+      "derived": false,
+      "description": "equivalent-current preview authoritative flag",
+      "format": "bool",
+      "name": "SwpPreviewAuthoritative",
+      "raw": false,
+      "source": {
+        "artifact": "protocol.json",
+        "pointer": "/field/preview/authoritative"
+      },
+      "value": "false"
+    },
+    {
+      "derived": false,
+      "description": "field source description",
+      "format": "text",
+      "name": "SwpPreviewDescription",
+      "raw": "geometry v1.1 thin-volume current-equivalent preview; not material-aware",
+      "source": {
+        "artifact": "protocol.json",
+        "pointer": "/field/preview/description"
+      },
+      "value": "geometry v1.1 thin-volume current-equivalent preview; not material-aware"
+    },
+    {
+      "derived": false,
+      "description": "stage count mapping",
+      "format": "text",
+      "name": "SwpStageMapping",
+      "raw": "min(5, 3 + int(selector*3))",
+      "source": {
+        "artifact": "protocol.json",
+        "pointer": "/geometry/stage_count_mapping"
+      },
+      "value": "min(5, 3 + int(selector*3))"
+    },
+    {
+      "derived": false,
+      "description": "mirror ratio QoI definition",
+      "format": "text",
+      "name": "SwpMirrorRatioDefinition",
+      "raw": "per adjacent stages: larger absolute stage-centre axis Bz divided by max(abs gap-midpoint Bz, accepted topology tolerance)",
+      "source": {
+        "artifact": "protocol.json",
+        "pointer": "/qoi_policy/mirror_ratio"
+      },
+      "value": "per adjacent stages: larger absolute stage-centre axis Bz divided by max(abs gap-midpoint Bz, accepted topology tolerance)"
+    },
+    {
+      "derived": false,
+      "description": "topology claim limit of the QoI policy",
+      "format": "text",
+      "name": "SwpTopologyClaim",
+      "raw": "sampled-axis descriptor; not a continuous critical-point proof",
+      "source": {
+        "artifact": "protocol.json",
+        "pointer": "/qoi_policy/topology_claim"
+      },
+      "value": "sampled-axis descriptor; not a continuous critical-point proof"
+    },
+    {
+      "derived": false,
+      "description": "protocol claim limits",
+      "format": "list_sentences",
+      "name": "SwpClaimLimits",
+      "raw": [
+        "No thrust, efficiency, Isp, plasma, thermal or structural quantity is calculated.",
+        "Equivalent current bands are non-authoritative and not a permanent-magnet material model.",
+        "Results are L1a screening evidence only and are not hardware-valid or build-qualified."
+      ],
+      "source": {
+        "artifact": "protocol.json",
+        "pointer": "/claim_limits"
+      },
+      "value": "No thrust, efficiency, Isp, plasma, thermal or structural quantity is calculated. Equivalent current bands are non-authoritative and not a permanent-magnet material model. Results are L1a screening evidence only and are not hardware-valid or build-qualified."
+    },
+    {
+      "derived": false,
+      "description": "timing policy",
+      "format": "text",
+      "name": "SwpTimingPolicy",
+      "raw": "uncontrolled diagnostics only; concurrent GPU load forbids benchmark claims",
+      "source": {
+        "artifact": "protocol.json",
+        "pointer": "/execution/timing_policy"
+      },
+      "value": "uncontrolled diagnostics only; concurrent GPU load forbids benchmark claims"
+    },
+    {
+      "derivation": "min over cases of derived_geometry.stage_count",
+      "derived": true,
+      "description": "minimum stage count",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/raw-results.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "SwpStageMin",
+      "raw": 3,
+      "value": "3"
+    },
+    {
+      "derivation": "max over cases of derived_geometry.stage_count",
+      "derived": true,
+      "description": "maximum stage count",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/raw-results.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "SwpStageMax",
+      "raw": 5,
+      "value": "5"
+    },
+    {
+      "derivation": "len(summary.terminal_gates)",
+      "derived": true,
+      "description": "terminal gates",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/summary.json",
+          "pointer": "/terminal_gates"
+        }
+      ],
+      "name": "SwpGateCount",
+      "raw": 7,
+      "value": "7"
+    },
+    {
+      "derivation": "count(summary.terminal_gates.passed == true)",
+      "derived": true,
+      "description": "terminal gates passed",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/summary.json",
+          "pointer": "/terminal_gates"
+        }
+      ],
+      "name": "SwpGatesPassed",
+      "raw": 7,
+      "value": "7"
+    },
+    {
+      "derivation": "sum(summary.terminal_gates.failure_count)",
+      "derived": true,
+      "description": "gate failures summed",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/summary.json",
+          "pointer": "/terminal_gates"
+        }
+      ],
+      "name": "SwpGateFailures",
+      "raw": 0,
+      "value": "0"
+    },
+    {
+      "derived": false,
+      "description": "boundary gate limit",
+      "format": "g",
+      "name": "SwpBoundaryLimit",
+      "raw": 0.05,
+      "source": {
+        "artifact": "protocol.json",
+        "pointer": "/terminal_acceptance/gates/0/limit"
+      },
+      "value": "0.05"
+    },
+    {
+      "derived": false,
+      "description": "boundary gate observed maximum",
+      "format": "sci2",
+      "name": "SwpBoundaryObserved",
+      "raw": 0.011652580349992949,
+      "source": {
+        "artifact": "results/summary.json",
+        "pointer": "/terminal_gates/0/observed"
+      },
+      "value": "$1.17\\times10^{-2}$"
+    },
+    {
+      "derived": false,
+      "description": "residual gate limit",
+      "format": "sci1",
+      "name": "SwpResidualLimit",
+      "raw": 1e-10,
+      "source": {
+        "artifact": "protocol.json",
+        "pointer": "/terminal_acceptance/gates/1/limit"
+      },
+      "value": "$1.0\\times10^{-10}$"
+    },
+    {
+      "derived": false,
+      "description": "residual gate observed maximum",
+      "format": "sci2",
+      "name": "SwpResidualObserved",
+      "raw": 9.998083198193306e-11,
+      "source": {
+        "artifact": "results/summary.json",
+        "pointer": "/terminal_gates/1/observed"
+      },
+      "value": "$1.00\\times10^{-10}$"
+    },
+    {
+      "derived": false,
+      "description": "CPU/CUDA parity observed maximum (psi)",
+      "format": "sci2",
+      "name": "SwpParityPsiObserved",
+      "raw": 1.633321727281456e-15,
+      "source": {
+        "artifact": "results/summary.json",
+        "pointer": "/terminal_gates/2/observed/psi"
+      },
+      "value": "$1.63\\times10^{-15}$"
+    },
+    {
+      "derived": false,
+      "description": "CPU/CUDA parity observed maximum (B_r)",
+      "format": "sci2",
+      "name": "SwpParityBrObserved",
+      "raw": 5.3105473081447324e-15,
+      "source": {
+        "artifact": "results/summary.json",
+        "pointer": "/terminal_gates/2/observed/br"
+      },
+      "value": "$5.31\\times10^{-15}$"
+    },
+    {
+      "derived": false,
+      "description": "CPU/CUDA parity observed maximum (B_z)",
+      "format": "sci2",
+      "name": "SwpParityBzObserved",
+      "raw": 2.893550379622971e-15,
+      "source": {
+        "artifact": "results/summary.json",
+        "pointer": "/terminal_gates/2/observed/bz"
+      },
+      "value": "$2.89\\times10^{-15}$"
+    },
+    {
+      "derived": false,
+      "description": "CPU/CUDA parity limit (psi)",
+      "format": "sci1",
+      "name": "SwpParityPsiLimit",
+      "raw": 2e-09,
+      "source": {
+        "artifact": "protocol.json",
+        "pointer": "/terminal_acceptance/gates/2/limits/psi"
+      },
+      "value": "$2.0\\times10^{-9}$"
+    },
+    {
+      "derived": false,
+      "description": "CPU/CUDA parity limit (B components)",
+      "format": "sci1",
+      "name": "SwpParityBLimit",
+      "raw": 2e-08,
+      "source": {
+        "artifact": "protocol.json",
+        "pointer": "/terminal_acceptance/gates/2/limits/br"
+      },
+      "value": "$2.0\\times10^{-8}$"
+    },
+    {
+      "derived": false,
+      "description": "flux identity observed maximum (T/m)",
+      "format": "sci2",
+      "name": "SwpFluxIdentityObserved",
+      "raw": 4.547473508864641e-13,
+      "source": {
+        "artifact": "results/summary.json",
+        "pointer": "/terminal_gates/3/observed"
+      },
+      "value": "$4.55\\times10^{-13}$"
+    },
+    {
+      "derived": false,
+      "description": "source representation observed maximum",
+      "format": "sci2",
+      "name": "SwpSourceErrorObserved",
+      "raw": 0.017476475601085336,
+      "source": {
+        "artifact": "results/summary.json",
+        "pointer": "/terminal_gates/4/observed"
+      },
+      "value": "$1.75\\times10^{-2}$"
+    },
+    {
+      "derived": false,
+      "description": "topology confidence gate limit",
+      "format": "g",
+      "name": "SwpTopologyConfidenceLimit",
+      "raw": 0.5,
+      "source": {
+        "artifact": "protocol.json",
+        "pointer": "/terminal_acceptance/gates/5/limit"
+      },
+      "value": "0.5"
+    },
+    {
+      "derived": false,
+      "description": "topology confidence observed minimum",
+      "format": "fixed3",
+      "name": "SwpTopologyConfidenceObserved",
+      "raw": 0.9117788360760948,
+      "source": {
+        "artifact": "results/summary.json",
+        "pointer": "/terminal_gates/5/observed"
+      },
+      "value": "0.912"
+    },
+    {
+      "derived": false,
+      "description": "manufacturability margin observed minimum (mm)",
+      "format": "mm2",
+      "name": "SwpManufacturabilityObservedMm",
+      "raw": 4.9999999999999806e-05,
+      "source": {
+        "artifact": "results/summary.json",
+        "pointer": "/terminal_gates/6/observed"
+      },
+      "value": "0.05"
+    },
+    {
+      "derived": false,
+      "description": "zero case failures required",
+      "format": "bool",
+      "name": "SwpZeroFailuresRequired",
+      "raw": true,
+      "source": {
+        "artifact": "protocol.json",
+        "pointer": "/terminal_acceptance/requires_zero_case_failures"
+      },
+      "value": "true"
+    },
+    {
+      "derived": false,
+      "description": "minimum axis cusp count",
+      "format": "g",
+      "name": "SwpAxisCuspMin",
+      "raw": 3.0,
+      "source": {
+        "artifact": "results/summary.json",
+        "pointer": "/qoi_ranges/axis_cusp_count/0"
+      },
+      "value": "3"
+    },
+    {
+      "derived": false,
+      "description": "maximum axis cusp count",
+      "format": "g",
+      "name": "SwpAxisCuspMax",
+      "raw": 5.0,
+      "source": {
+        "artifact": "results/summary.json",
+        "pointer": "/qoi_ranges/axis_cusp_count/1"
+      },
+      "value": "5"
+    },
+    {
+      "derived": false,
+      "description": "minimum axis null count",
+      "format": "g",
+      "name": "SwpAxisNullMin",
+      "raw": 4.0,
+      "source": {
+        "artifact": "results/summary.json",
+        "pointer": "/qoi_ranges/axis_null_count/0"
+      },
+      "value": "4"
+    },
+    {
+      "derived": false,
+      "description": "maximum axis null count",
+      "format": "g",
+      "name": "SwpAxisNullMax",
+      "raw": 6.0,
+      "source": {
+        "artifact": "results/summary.json",
+        "pointer": "/qoi_ranges/axis_null_count/1"
+      },
+      "value": "6"
+    },
+    {
+      "derived": false,
+      "description": "minimum field peak (T)",
+      "format": "fixed3",
+      "name": "SwpFieldPeakMin",
+      "raw": 0.3831904660606699,
+      "source": {
+        "artifact": "results/summary.json",
+        "pointer": "/qoi_ranges/field_peak_t/0"
+      },
+      "value": "0.383"
+    },
+    {
+      "derived": false,
+      "description": "maximum field peak (T)",
+      "format": "fixed3",
+      "name": "SwpFieldPeakMax",
+      "raw": 0.9678319214639943,
+      "source": {
+        "artifact": "results/summary.json",
+        "pointer": "/qoi_ranges/field_peak_t/1"
+      },
+      "value": "0.968"
+    },
+    {
+      "derived": false,
+      "description": "smallest per-design minimum mirror ratio",
+      "format": "fixed2",
+      "name": "SwpMinMirrorMin",
+      "raw": 3.3195098194233905,
+      "source": {
+        "artifact": "results/summary.json",
+        "pointer": "/qoi_ranges/minimum_mirror_ratio/0"
+      },
+      "value": "3.32"
+    },
+    {
+      "derived": false,
+      "description": "largest per-design minimum mirror ratio",
+      "format": "fixed2",
+      "name": "SwpMinMirrorMax",
+      "raw": 22.233371790641478,
+      "source": {
+        "artifact": "results/summary.json",
+        "pointer": "/qoi_ranges/minimum_mirror_ratio/1"
+      },
+      "value": "22.23"
+    },
+    {
+      "derived": false,
+      "description": "smallest per-design maximum mirror ratio",
+      "format": "fixed2",
+      "name": "SwpMaxMirrorMin",
+      "raw": 4.367799159577215,
+      "source": {
+        "artifact": "results/summary.json",
+        "pointer": "/qoi_ranges/maximum_mirror_ratio/0"
+      },
+      "value": "4.37"
+    },
+    {
+      "derived": false,
+      "description": "largest per-design maximum mirror ratio",
+      "format": "fixed0",
+      "name": "SwpMaxMirrorMax",
+      "raw": 2672.7658289964456,
+      "source": {
+        "artifact": "results/summary.json",
+        "pointer": "/qoi_ranges/maximum_mirror_ratio/1"
+      },
+      "value": "2673"
+    },
+    {
+      "derived": false,
+      "description": "minimum topology confidence",
+      "format": "fixed3",
+      "name": "SwpTopologyConfidenceMin",
+      "raw": 0.9117788360760948,
+      "source": {
+        "artifact": "results/summary.json",
+        "pointer": "/qoi_ranges/topology_confidence/0"
+      },
+      "value": "0.912"
+    },
+    {
+      "derived": false,
+      "description": "maximum topology confidence",
+      "format": "fixed3",
+      "name": "SwpTopologyConfidenceMax",
+      "raw": 0.9579934155903538,
+      "source": {
+        "artifact": "results/summary.json",
+        "pointer": "/qoi_ranges/topology_confidence/1"
+      },
+      "value": "0.958"
+    },
+    {
+      "derived": false,
+      "description": "minimum field energy (J)",
+      "format": "fixed4",
+      "name": "SwpFieldEnergyMin",
+      "raw": 0.012331729557738617,
+      "source": {
+        "artifact": "results/summary.json",
+        "pointer": "/qoi_ranges/field_energy_j/0"
+      },
+      "value": "0.0123"
+    },
+    {
+      "derived": false,
+      "description": "maximum field energy (J)",
+      "format": "fixed3",
+      "name": "SwpFieldEnergyMax",
+      "raw": 0.9537912904428748,
+      "source": {
+        "artifact": "results/summary.json",
+        "pointer": "/qoi_ranges/field_energy_j/1"
+      },
+      "value": "0.954"
+    },
+    {
+      "derivation": "count(cases.qois.axis_cusp_count == 3)",
+      "derived": true,
+      "description": "designs with three axis cusps",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/raw-results.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "SwpCuspThreeDesigns",
+      "raw": 26,
+      "value": "26"
+    },
+    {
+      "derivation": "count(cases.qois.axis_cusp_count == 4)",
+      "derived": true,
+      "description": "designs with four axis cusps",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/raw-results.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "SwpCuspFourDesigns",
+      "raw": 45,
+      "value": "45"
+    },
+    {
+      "derivation": "count(cases.qois.axis_cusp_count == 5)",
+      "derived": true,
+      "description": "designs with five axis cusps",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/raw-results.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "SwpCuspFiveDesigns",
+      "raw": 25,
+      "value": "25"
+    },
+    {
+      "derivation": "min(cases.qois.axis_cusp_count)",
+      "derived": true,
+      "description": "lowest axis cusp count observed",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/raw-results.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "SwpCuspLow",
+      "raw": 3,
+      "value": "3"
+    },
+    {
+      "derivation": "the one value strictly between min and max of cases.qois.axis_cusp_count",
+      "derived": true,
+      "description": "middle axis cusp count observed",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/raw-results.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "SwpCuspMid",
+      "raw": 4,
+      "value": "4"
+    },
+    {
+      "derivation": "max(cases.qois.axis_cusp_count)",
+      "derived": true,
+      "description": "highest axis cusp count observed",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/raw-results.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "SwpCuspHigh",
+      "raw": 5,
+      "value": "5"
+    },
+    {
+      "derivation": "sum(cases.qois.axis_cusp_count)",
+      "derived": true,
+      "description": "axis cusps recorded over all designs",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/raw-results.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "SwpAxisCuspTotal",
+      "raw": 383,
+      "value": "383"
+    },
+    {
+      "derivation": "min over cases of qois.axis_cusp_positions_m",
+      "derived": true,
+      "description": "smallest axis cusp position (mm)",
+      "format": "mm2",
+      "inputs": [
+        {
+          "artifact": "results/raw-results.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "SwpAxisCuspZMinMm",
+      "raw": 0.0012500000000000011,
+      "value": "1.25"
+    },
+    {
+      "derivation": "max over cases of qois.axis_cusp_positions_m",
+      "derived": true,
+      "description": "largest axis cusp position (mm)",
+      "format": "mm2",
+      "inputs": [
+        {
+          "artifact": "results/raw-results.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "SwpAxisCuspZMaxMm",
+      "raw": 0.029687500000000006,
+      "value": "29.69"
+    },
+    {
+      "derivation": "count(cases.qois.topology_status == resolved_axis_nulls)",
+      "derived": true,
+      "description": "designs with resolved axis nulls",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/raw-results.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "SwpResolvedDesigns",
+      "raw": 96,
+      "value": "96"
+    },
+    {
+      "derivation": "unique(cases.qois.topology_status)",
+      "derived": true,
+      "description": "the single topology status observed",
+      "format": "ident",
+      "inputs": [
+        {
+          "artifact": "results/raw-results.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "SwpTopologyStatus",
+      "raw": "resolved_axis_nulls",
+      "value": "resolved\\_\\allowbreak{}axis\\_\\allowbreak{}nulls"
+    },
+    {
+      "derivation": "summary.representative_roles[*].case_id",
+      "derived": true,
+      "description": "representative 000 case id",
+      "format": "ident",
+      "inputs": [
+        {
+          "artifact": "results/summary.json",
+          "pointer": "/representative_roles"
+        }
+      ],
+      "name": "SwpRepZeroZeroZeroId",
+      "raw": "l1a-gs-v2-000-48d2ccedd5",
+      "value": "l1a-\\allowbreak{}gs-\\allowbreak{}v2-\\allowbreak{}000-\\allowbreak{}48d2ccedd5"
+    },
+    {
+      "derived": false,
+      "description": "representative 000 axis cusp count",
+      "format": "g",
+      "name": "SwpRepZeroZeroZeroCusps",
+      "raw": 3,
+      "source": {
+        "artifact": "results/raw-results.json",
+        "pointer": "/cases/0/qois/axis_cusp_count"
+      },
+      "value": "3"
+    },
+    {
+      "derived": false,
+      "description": "representative 000 axis cusp positions (mm)",
+      "format": "list_mm2",
+      "name": "SwpRepZeroZeroZeroCuspZMm",
+      "raw": [
+        0.0017013888888888912,
+        0.005763888888888891,
+        0.009375000000000001
+      ],
+      "source": {
+        "artifact": "results/raw-results.json",
+        "pointer": "/cases/0/qois/axis_cusp_positions_m"
+      },
+      "value": "1.70, 5.76, 9.38"
+    },
+    {
+      "derived": false,
+      "description": "representative 000 per-cell mirror ratios",
+      "format": "list_fixed1",
+      "name": "SwpRepZeroZeroZeroMirror",
+      "raw": [
+        4.366087334148353,
+        7.183566485815692
+      ],
+      "source": {
+        "artifact": "results/raw-results.json",
+        "pointer": "/cases/0/qois/mirror_ratios"
+      },
+      "value": "4.4, 7.2"
+    },
+    {
+      "derived": false,
+      "description": "representative 000 roles",
+      "format": "list_text",
+      "name": "SwpRepZeroZeroZeroRoles",
+      "raw": [
+        "best-boundary-isolation",
+        "lowest-field-energy"
+      ],
+      "source": {
+        "artifact": "results/manifest.json",
+        "pointer": "/representative_artifacts/0/roles"
+      },
+      "value": "best-boundary-isolation, lowest-field-energy"
+    },
+    {
+      "derivation": "summary.representative_roles[*].case_id",
+      "derived": true,
+      "description": "representative 032 case id",
+      "format": "ident",
+      "inputs": [
+        {
+          "artifact": "results/summary.json",
+          "pointer": "/representative_roles"
+        }
+      ],
+      "name": "SwpRepZeroThreeTwoId",
+      "raw": "l1a-gs-v2-032-570ad83ba6",
+      "value": "l1a-\\allowbreak{}gs-\\allowbreak{}v2-\\allowbreak{}032-\\allowbreak{}570ad83ba6"
+    },
+    {
+      "derived": false,
+      "description": "representative 032 axis cusp count",
+      "format": "g",
+      "name": "SwpRepZeroThreeTwoCusps",
+      "raw": 3,
+      "source": {
+        "artifact": "results/raw-results.json",
+        "pointer": "/cases/32/qois/axis_cusp_count"
+      },
+      "value": "3"
+    },
+    {
+      "derived": false,
+      "description": "representative 032 axis cusp positions (mm)",
+      "format": "list_mm2",
+      "name": "SwpRepZeroThreeTwoCuspZMm",
+      "raw": [
+        0.0017013888888888912,
+        0.006215277777777781,
+        0.010729166666666668
+      ],
+      "source": {
+        "artifact": "results/raw-results.json",
+        "pointer": "/cases/32/qois/axis_cusp_positions_m"
+      },
+      "value": "1.70, 6.22, 10.73"
+    },
+    {
+      "derived": false,
+      "description": "representative 032 per-cell mirror ratios",
+      "format": "list_fixed1",
+      "name": "SwpRepZeroThreeTwoMirror",
+      "raw": [
+        25.36271632310618,
+        22.233371790641478
+      ],
+      "source": {
+        "artifact": "results/raw-results.json",
+        "pointer": "/cases/32/qois/mirror_ratios"
+      },
+      "value": "25.4, 22.2"
+    },
+    {
+      "derived": false,
+      "description": "representative 032 roles",
+      "format": "list_text",
+      "name": "SwpRepZeroThreeTwoRoles",
+      "raw": [
+        "strongest-mirror"
+      ],
+      "source": {
+        "artifact": "results/manifest.json",
+        "pointer": "/representative_artifacts/1/roles"
+      },
+      "value": "strongest-mirror"
+    },
+    {
+      "derivation": "summary.representative_roles[*].case_id",
+      "derived": true,
+      "description": "representative 065 case id",
+      "format": "ident",
+      "inputs": [
+        {
+          "artifact": "results/summary.json",
+          "pointer": "/representative_roles"
+        }
+      ],
+      "name": "SwpRepZeroSixFiveId",
+      "raw": "l1a-gs-v2-065-9e98f08f3b",
+      "value": "l1a-\\allowbreak{}gs-\\allowbreak{}v2-\\allowbreak{}065-\\allowbreak{}9e98f08f3b"
+    },
+    {
+      "derived": false,
+      "description": "representative 065 axis cusp count",
+      "format": "g",
+      "name": "SwpRepZeroSixFiveCusps",
+      "raw": 5,
+      "source": {
+        "artifact": "results/raw-results.json",
+        "pointer": "/cases/65/qois/axis_cusp_count"
+      },
+      "value": "5"
+    },
+    {
+      "derived": false,
+      "description": "representative 065 axis cusp positions (mm)",
+      "format": "list_mm2",
+      "name": "SwpRepZeroSixFiveCuspZMm",
+      "raw": [
+        0.003055555555555558,
+        0.009375000000000001,
+        0.016145833333333335,
+        0.02246527777777778,
+        0.028784722222222225
+      ],
+      "source": {
+        "artifact": "results/raw-results.json",
+        "pointer": "/cases/65/qois/axis_cusp_positions_m"
+      },
+      "value": "3.06, 9.38, 16.15, 22.47, 28.78"
+    },
+    {
+      "derived": false,
+      "description": "representative 065 per-cell mirror ratios",
+      "format": "list_fixed1",
+      "name": "SwpRepZeroSixFiveMirror",
+      "raw": [
+        168.49770146688584,
+        22.367418085204072,
+        15.25043426128577,
+        10.444188375371441
+      ],
+      "source": {
+        "artifact": "results/raw-results.json",
+        "pointer": "/cases/65/qois/mirror_ratios"
+      },
+      "value": "168.5, 22.4, 15.3, 10.4"
+    },
+    {
+      "derived": false,
+      "description": "representative 065 roles",
+      "format": "list_text",
+      "name": "SwpRepZeroSixFiveRoles",
+      "raw": [
+        "strongest-centreline"
+      ],
+      "source": {
+        "artifact": "results/manifest.json",
+        "pointer": "/representative_artifacts/2/roles"
+      },
+      "value": "strongest-centreline"
+    },
+    {
+      "derivation": "summary.representative_roles[*].case_id",
+      "derived": true,
+      "description": "representative 068 case id",
+      "format": "ident",
+      "inputs": [
+        {
+          "artifact": "results/summary.json",
+          "pointer": "/representative_roles"
+        }
+      ],
+      "name": "SwpRepZeroSixEightId",
+      "raw": "l1a-gs-v2-068-375d1b1b13",
+      "value": "l1a-\\allowbreak{}gs-\\allowbreak{}v2-\\allowbreak{}068-\\allowbreak{}375d1b1b13"
+    },
+    {
+      "derived": false,
+      "description": "representative 068 axis cusp count",
+      "format": "g",
+      "name": "SwpRepZeroSixEightCusps",
+      "raw": 3,
+      "source": {
+        "artifact": "results/raw-results.json",
+        "pointer": "/cases/68/qois/axis_cusp_count"
+      },
+      "value": "3"
+    },
+    {
+      "derived": false,
+      "description": "representative 068 axis cusp positions (mm)",
+      "format": "list_mm2",
+      "name": "SwpRepZeroSixEightCuspZMm",
+      "raw": [
+        0.0017013888888888912,
+        0.006215277777777781,
+        0.010277777777777782
+      ],
+      "source": {
+        "artifact": "results/raw-results.json",
+        "pointer": "/cases/68/qois/axis_cusp_positions_m"
+      },
+      "value": "1.70, 6.22, 10.28"
+    },
+    {
+      "derived": false,
+      "description": "representative 068 per-cell mirror ratios",
+      "format": "list_fixed1",
+      "name": "SwpRepZeroSixEightMirror",
+      "raw": [
+        7.778956905698035,
+        5.956673047201341
+      ],
+      "source": {
+        "artifact": "results/raw-results.json",
+        "pointer": "/cases/68/qois/mirror_ratios"
+      },
+      "value": "7.8, 6.0"
+    },
+    {
+      "derived": false,
+      "description": "representative 068 roles",
+      "format": "list_text",
+      "name": "SwpRepZeroSixEightRoles",
+      "raw": [
+        "steepest-stage-gradient"
+      ],
+      "source": {
+        "artifact": "results/manifest.json",
+        "pointer": "/representative_artifacts/3/roles"
+      },
+      "value": "steepest-stage-gradient"
+    },
+    {
+      "derived": false,
+      "description": "strongest-mirror representative",
+      "format": "ident",
+      "name": "SwpStrongestMirrorId",
+      "raw": "l1a-gs-v2-032-570ad83ba6",
+      "source": {
+        "artifact": "results/summary.json",
+        "pointer": "/representative_roles/1/case_id"
+      },
+      "value": "l1a-\\allowbreak{}gs-\\allowbreak{}v2-\\allowbreak{}032-\\allowbreak{}570ad83ba6"
+    },
+    {
+      "derived": false,
+      "description": "GPU name",
+      "format": "text",
+      "name": "SwpGpuName",
+      "raw": "NVIDIA GeForce RTX 5090",
+      "source": {
+        "artifact": "results/summary.json",
+        "pointer": "/environment/gpu/nvidia_smi_name"
+      },
+      "value": "NVIDIA GeForce RTX 5090"
+    },
+    {
+      "derived": false,
+      "description": "Warp version",
+      "format": "text",
+      "name": "SwpWarpVersion",
+      "raw": "1.14.0",
+      "source": {
+        "artifact": "results/summary.json",
+        "pointer": "/environment/warp/version"
+      },
+      "value": "1.14.0"
+    },
+    {
+      "derived": false,
+      "description": "Python version",
+      "format": "text",
+      "name": "SwpPythonVersion",
+      "raw": "3.12.10",
+      "source": {
+        "artifact": "results/summary.json",
+        "pointer": "/environment/python"
+      },
+      "value": "3.12.10"
+    },
+    {
+      "derived": false,
+      "description": "floating replay policy",
+      "format": "text",
+      "name": "SwpFloatingReplayPolicy",
+      "raw": "CUDA floating outputs are compared numerically and are never required or claimed bitwise-identical",
+      "source": {
+        "artifact": "results/summary.json",
+        "pointer": "/environment/floating_replay_policy"
+      },
+      "value": "CUDA floating outputs are compared numerically and are never required or claimed bitwise-identical"
+    },
+    {
+      "derived": false,
+      "description": "preregistration commit prefix",
+      "format": "sha_short",
+      "name": "SwpPreregCommit",
+      "raw": "092f5fae692ee7d6711e0c7e1c94dac6a345f37c",
+      "source": {
+        "artifact": "results/summary.json",
+        "pointer": "/preregistration_commit_sha"
+      },
+      "value": "092f5fae692e"
+    },
+    {
+      "derived": false,
+      "description": "protocol payload hash prefix",
+      "format": "sha_short",
+      "name": "SwpProtocolPayloadSha",
+      "raw": "da319f2271d56b0d0c883b76d3106b094359a608b560d58ac7801de1293ecbc8",
+      "source": {
+        "artifact": "results/summary.json",
+        "pointer": "/protocol_payload_sha256"
+      },
+      "value": "da319f2271d5"
+    },
+    {
+      "derivation": "git commit whose tree holds the results manifest blob (verified with rev-parse against the working tree)",
+      "derived": true,
+      "description": "results commit prefix",
+      "format": "sha_short",
+      "inputs": [
+        {
+          "artifact": "results/manifest.json",
+          "pointer": ""
+        }
+      ],
+      "name": "SwpResultsCommit",
+      "raw": "f30cb42ec4a8633bf634a3d32ffa5b11f66be97a",
+      "value": "f30cb42ec4a8"
+    },
+    {
+      "derivation": "sha256(results/manifest.json)",
+      "derived": true,
+      "description": "results manifest SHA-256 prefix",
+      "format": "sha_short",
+      "inputs": [
+        {
+          "artifact": "results/manifest.json",
+          "pointer": ""
+        }
+      ],
+      "name": "SwpManifestSha",
+      "raw": "768b345e946a45e623f83aaa18e01f8ec5bc7f823e81858a0a8c3a3e2e448754",
+      "value": "768b345e946a"
+    },
+    {
+      "derivation": "commit that added POSTHOC_AUDIT.md (bound in the typed manifest)",
+      "derived": true,
+      "description": "post-hoc audit commit prefix",
+      "format": "sha_short",
+      "inputs": [
+        {
+          "artifact": "protocol.json.sha256",
+          "pointer": ""
+        }
+      ],
+      "name": "SwpAuditCommit",
+      "raw": "9e68df21dde5d5238f665ef685e6d457731136c9",
+      "value": "9e68df21dde5"
+    },
+    {
+      "derivation": "count of verified files accepted through the audited EOL rule",
+      "derived": true,
+      "description": "files whose recorded digest differs from the checkout by end-of-line bytes only",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "protocol.json.sha256",
+          "pointer": ""
+        }
+      ],
+      "name": "SwpToleratedEolFiles",
+      "raw": 1,
+      "value": "1"
+    },
+    {
+      "derivation": "protocol.json.sha256 as frozen at the preregistration commit",
+      "derived": true,
+      "description": "recorded (CRLF-era) protocol file digest prefix",
+      "format": "sha_short",
+      "inputs": [
+        {
+          "artifact": "protocol.json.sha256",
+          "pointer": ""
+        }
+      ],
+      "name": "SwpProtocolRecordedSha",
+      "raw": "64b2c58c3cecb2ea1836d2bf48e23ff83dffb114866bf21e7135b411beaa2b2c",
+      "value": "64b2c58c3cec"
+    },
+    {
+      "derivation": "sha256(protocol.json) on an eol=lf checkout",
+      "derived": true,
+      "description": "LF protocol file digest prefix",
+      "format": "sha_short",
+      "inputs": [
+        {
+          "artifact": "protocol.json",
+          "pointer": ""
+        }
+      ],
+      "name": "SwpProtocolLfSha",
+      "raw": "2a5ba9e46c777225384539a4c453a43aa3298c956b32b022cc5ddeac72ba874c",
+      "value": "2a5ba9e46c77"
+    }
+  ],
+  "manuscript_integration": {
+    "artifact_claim_id": "CLM-020",
+    "artifact_id": "TAB-L1A-SWEEP-V2",
+    "gate_id": "GATE-L1A-SWEEP-V2",
+    "gate_kind": "numerical-screening",
+    "generated_binding": "\\input{generated/l1a-sweep-v2.tex}",
+    "generated_tex_path": "paper/generated/l1a-sweep-v2.tex",
+    "manifest_id": "L1A-SWEEP-V2-20260902-96-V1",
+    "manifest_path": "paper/evidence/manifests/l1a-sweep-v2.json",
+    "prose_claim_ids": [
+      "CLM-018",
+      "CLM-019",
+      "CLM-021"
+    ],
+    "rule": "Every number in the section is a macro defined here; each macro is bound below to an artifact path, JSON pointer, formatter and SHA-256. Claim-bearing sentences are exact EvidenceClaim bodies registered in paper/evidence/claims.json; the numerical-screening gate in paper/evidence/result-gates.json names the typed manifest that admits the section and records the outcome as accepted screening, preregistered null or recorded characterization without opening any physics level.",
+    "section_binding": "\\input{sections/l1a-sweep-v2.tex}",
+    "section_heading": "Accepted geometry sweep: field-only design-space screening",
+    "section_path": "paper/sections/l1a-sweep-v2.tex",
+    "status": "admitted",
+    "table_macros": [
+      "SwpGateTable",
+      "SwpRepresentativeTable"
+    ]
+  },
+  "output": {
+    "path": "paper/generated/l1a-sweep-v2.tex",
+    "sha256": "cd6170185b92c1de3f1a1d1242f8d4680cb93737a0c4bd516bf870686525de11"
+  },
+  "recorded_outcome": "accepted-screening",
+  "schema_version": "1.0",
+  "screening_model": "linear-vacuum L1a equivalent-current axisymmetric field (not a permanent-magnet or nonlinear-iron material model)",
+  "tables": {
+    "SwpGateTable": {
+      "rows": 7,
+      "source": "results/summary.json#/terminal_gates"
+    },
+    "SwpRepresentativeTable": {
+      "rows": 4,
+      "source": "results/raw-results.json#/cases (representative ids from summary.json)"
+    }
+  }
+}

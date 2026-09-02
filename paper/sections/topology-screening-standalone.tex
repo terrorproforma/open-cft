@@ -1,0 +1,26 @@
+% Standalone dry-parse driver for the three admitted topology-screening subsections.
+% Compile from the paper/ directory, for example:
+%   pdflatex -interaction=nonstopmode -halt-on-error -output-directory=<scratch> sections/topology-screening-standalone.tex
+% (twice, so the table references resolve). paper/tests/test_topology_screening_evidence.py
+% runs exactly this when pdflatex is available. The claim macros mirror manuscript.tex
+% so that the sections render identically on their own.
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{microtype}
+\usepackage{xcolor}
+\ifdefined\pdfinfoomitdate\pdfinfoomitdate=1\fi
+\ifdefined\pdftrailerid\pdftrailerid{}\fi
+\ifdefined\pdfsuppressptexinfo\pdfsuppressptexinfo=15\fi
+\newcommand{\EvidenceClaim}[2]{#2\textsuperscript{\textcolor{blue}{[#1]}}}
+\newcommand{\ArtifactClaim}[3]{#3\par\noindent\textsuperscript{\textcolor{blue}{[#1; #2]}}}
+\input{generated/l1a-sweep-v2.tex}
+\input{generated/four-cell-v2.tex}
+\input{generated/topology-characterization-v1.tex}
+\begin{document}
+\input{sections/l1a-sweep-v2.tex}
+\input{sections/four-cell-v2.tex}
+\input{sections/topology-characterization-v1.tex}
+\end{document}

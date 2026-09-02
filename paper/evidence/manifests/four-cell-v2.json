@@ -1,0 +1,287 @@
+{
+  "classification": "PREREGISTERED_PHYSICS_GATED_V2",
+  "document_type": "paper-l1a-screening-manifest",
+  "evidence_level": {
+    "justification": "The search is a preregistered, single-execution numerical screening of 128 candidates of the original four-cell design parameterisation with the linear-vacuum L1a equivalent-current field solver and the accepted flux-surface coupling baseline; its recorded outcome is a null (0 of 128 candidates stable under the frozen cusp/cell definition) that the frozen zero-pass policy requires to be published without patching or rerunning. The framework admits recorded numerical outcomes through a typed committed manifest, hashed artifacts at a resolvable revision, exact registered claim text and generated artifacts with provenance sidecars; that pattern is applied here through the numerical-screening gate GATE-FOUR-CELL-V2 with recorded_outcome preregistered-null, so the gate admits the null as recorded and never as a positive finding. The search is NOT the L1 field-resolved reduction of GATE-L1 (no manufactured solution, no refinement study, no L0 mapping, no performance model), not L2 (no plasma network was coupled) and not L3; it opens none of those gates.",
+    "name": "numerical-screening",
+    "opens_gate": null,
+    "relation_to_levels": {
+      "L0": "independent of the algebraic L0 model; no mapping is claimed",
+      "L1": "linear-vacuum L1a equivalent-current fields; topology gates evaluated on vector nulls of the accepted psi maps; no field-resolved reduction, no L0 mapping, no geometry-response prediction",
+      "L2": "not coupled to any plasma model",
+      "L3": "not particle-in-cell and not experimental"
+    },
+    "validation_status": "none: no measurement, facility, or hardware comparison exists",
+    "verification_tier": "code verification (tolerance-based GPU replay of the field components on four candidates; three independent maps per candidate with residual, boundary, source and flux gates) of a declared linear-vacuum field model; the replay residual diagnostic exceeded its limit for two of four candidates and is reported as recorded; no validation"
+  },
+  "evidence_revision": "7120e8edcb74c02c1df968c730d1f93b3758b4e1",
+  "evidence_revision_subject": "record four-cell v2 null terminal-gate result",
+  "experiment_id": "four-cell-topology-search-v2",
+  "experiment_path": "modern/experiments/four_cell_topology_search_v2",
+  "gate_id": "GATE-FOUR-CELL-V2",
+  "gate_kind": "numerical-screening",
+  "level": "numerical-screening",
+  "lineage_files": [
+    {
+      "git_blob": "041cf393da2419569d21ea817c2244ffe16c8ede",
+      "git_blob_sha256": "3ddae4a7254e832126a3e368b9e30cc29c25fe8fdafd127fcbbaafe27def7b53",
+      "note": "not preregistered; deprecated coupling v2 same-z mirror proxy; invalid for physical mirror, identifiable-state or performance claims",
+      "path": "modern/experiments/four_cell_topology_search/results/manifest.json",
+      "revision": "4afcecfb024cd06e79d0ce8e063fc863ba3f79dc",
+      "role": "lineage-superseded-search"
+    },
+    {
+      "git_blob": "57654b9d9a69502de8ee59702eed4886b3af16a3",
+      "git_blob_sha256": "145decd7f1856b9e00429e07f06d47beb2a1de24523d75e6eb10c8f0856344de",
+      "note": "2 of 128 candidates screened compatible by the deprecated proxy; quoted as a non-claim only",
+      "path": "modern/experiments/four_cell_topology_search/results/dataset.json",
+      "revision": "4afcecfb024cd06e79d0ce8e063fc863ba3f79dc",
+      "role": "lineage-superseded-search"
+    },
+    {
+      "git_blob": "999cc0b68f27a3b783e2c61a5124de8596e2ce3c",
+      "git_blob_sha256": "43a5bbe83a05ba7802d8dd78ed2d539d97f85fbff879e92e6405e81fdf3dcaf3",
+      "note": "failed immutable run; criterion not promoted",
+      "path": "modern/experiments/cft_wall_cusp_validation_v1/results/manifest.json",
+      "revision": "2504175ea845dca1b57fef159961f335a2b546ee",
+      "role": "lineage-failed-validation"
+    },
+    {
+      "git_blob": "d8606966e97d25b9a603d61f2a9262233ee43fe3",
+      "git_blob_sha256": "58d84d0531abd938bb7f4c171129506afd434ee52995a7e43bef8a50af6d102d",
+      "note": "TypeError in topology_diagnostics_serialization after 1 of 24 cases; recorded byte digest in its manifest is CRLF-era, canonical semantic identity verified",
+      "path": "modern/experiments/cft_wall_cusp_validation_v1/results/failure.json",
+      "revision": "2504175ea845dca1b57fef159961f335a2b546ee",
+      "role": "lineage-failed-validation"
+    },
+    {
+      "git_blob": "05ebaefca768eec8d6ffc0d68d882bd75d8c3fe1",
+      "git_blob_sha256": "8e0be571d43111caeb45c3a5d87f2e104ea49693848d4fd520a18d058ae3c5cc",
+      "note": "failed immutable run before any held-out access; criterion not promoted",
+      "path": "modern/experiments/cft_wall_cusp_validation_v2/results/manifest.json",
+      "revision": "7e1246b5b76830fe09afb10ffe076e953a3c2905",
+      "role": "lineage-failed-validation"
+    },
+    {
+      "git_blob": "ba5f37f61a0fe9e8ff08f3b448c08de7cf108a22",
+      "git_blob_sha256": "d18a284606b98ce3c10dfed1fbfbba937395d2b2fcfaea810f02756510574084",
+      "note": "TypeError in exclusive_lock_payload_serialization; 0 of 24 cases attempted",
+      "path": "modern/experiments/cft_wall_cusp_validation_v2/results/failure.json",
+      "revision": "7e1246b5b76830fe09afb10ffe076e953a3c2905",
+      "role": "lineage-failed-validation"
+    }
+  ],
+  "manifest_id": "FOUR-CELL-V2-20260902-128-V1",
+  "metrics": {
+    "adiabatic_count": 0,
+    "classification": "PREREGISTERED_PHYSICS_GATED_V2",
+    "coupled_count": 0,
+    "declared_count": 128,
+    "evaluated_count": 128,
+    "exact_count_candidates": 0,
+    "failed_cases_count": 0,
+    "failure_code_count": 19,
+    "field_maps_per_design": 3,
+    "geometry_registered_candidates": 0,
+    "gpu_replay_failed_count": 2,
+    "gpu_replay_pass_count": 2,
+    "gpu_replay_required_count": 4,
+    "hardware_or_experimental_validation": false,
+    "lineage_v1_compatible": 2,
+    "lineage_v1_evaluated": 128,
+    "lineage_v1_preregistered": false,
+    "lineage_validation_v1_attempted": 1,
+    "lineage_validation_v1_promoted": false,
+    "lineage_validation_v2_attempted": 0,
+    "lineage_validation_v2_promoted": false,
+    "nonzero_failure_codes": 2,
+    "null_is_existence_disproof": false,
+    "permanent_magnet_material_model": false,
+    "plasma_or_performance_claim_forbidden": true,
+    "power_or_performance_publication_count": 0,
+    "preregistered_one_shot": true,
+    "primary_interior_cusp_maximum": 17,
+    "primary_interior_cusp_minimum": 11,
+    "primary_interior_cusp_total": 1843,
+    "recorded_outcome": "preregistered-null",
+    "required_stable_cell_count": 4,
+    "same_z_proxy_allowed": false,
+    "screening_model": "linear-vacuum L1a equivalent-current axisymmetric field (not a permanent-magnet or nonlinear-iron material model)",
+    "single_execution": true,
+    "stable_count": 0,
+    "stable_multicell_wall_cusp_topology_demonstrated": false,
+    "three_map_accepted_count": 128,
+    "tolerated_eol_file_count": 1,
+    "topology_count_failures": 128,
+    "topology_unstable_failures": 128,
+    "unique_state_count": 0
+  },
+  "model_fidelity": "linear-vacuum-L1a-equivalent-current-axisymmetric-field-screening",
+  "null_semantics": "0 of 128 candidates stable under the frozen definition of exactly four geometry-registered interior cusps stable across three maps; a null under this definition is not proof that no such design exists",
+  "paper_evidence_file": {
+    "document_type": "paper-four-cell-v2-evidence",
+    "generator": "paper/scripts/generate_topology_screening_evidence.py",
+    "generator_command": "python paper/scripts/generate_topology_screening_evidence.py four-cell-v2",
+    "macro_count": 107,
+    "macro_prefix": "Fcn",
+    "path": "paper/evidence/four-cell-v2.json",
+    "rule": "check_paper.py regenerates the evidence file, the generated TeX and the sidecar from the sealed bundle and requires byte identity with the committed files; every macro therefore traces to a verified artifact hash at every check.",
+    "schema_version": "1.0"
+  },
+  "permitted_claim_scope": [
+    "candidate, map-acceptance and stable counts, the failure taxonomy counts and the interior-cusp counts per map",
+    "the frozen cusp/cell definition and the zero-pass policy as preregistered",
+    "GPU replay outcome as recorded, including the two candidates that exceeded the diagnostic tolerance",
+    "lineage records of the superseded proxy search and the two failed criterion validations, quoted as non-claims"
+  ],
+  "posthoc_audit": {
+    "git_blob": "ae44999330fb1aaf84a6d69a9571278925c846ca",
+    "git_blob_sha256": "dbd0d48a9057584384b76a2cd88f6fbf5dc22eca3c47776445177e21305da3cd",
+    "path": "modern/experiments/four_cell_topology_search_v2/POSTHOC_AUDIT.md",
+    "revision": "605be5ceffa407142a2acb11cc040b13eef89b0c",
+    "role": "posthoc-audit",
+    "subject": "add four_cell_topology_search_v2 posthoc EOL audit"
+  },
+  "preregistration_revision": "d6317910703de91ca6dc25c4d4d855e36cc3b14d",
+  "preregistration_revision_subject": "preregister physical four-cell topology search v2",
+  "prohibited_inferences": [
+    "non-existence of a stable four-cell topology in any design space",
+    "mirror probabilities, flux-surface or adiabaticity results (none were reached)",
+    "plasma state, power or performance",
+    "any result of the superseded proxy search or of the failed criterion validations",
+    "existence or stability of a multi-cell wall-cusp topology in any design not evaluated",
+    "permanent-magnet or nonlinear-iron material behaviour",
+    "plasma, confinement or thruster performance",
+    "hardware or experimental validation",
+    "field-resolved reduction, L0 mapping or geometry-response prediction (GATE-L1 stays closed)",
+    "opening of GATE-L1, GATE-L2 or GATE-L3"
+  ],
+  "recorded_outcome": "preregistered-null",
+  "results_bundle": {
+    "audited_eol_files": {
+      "results/preregistered-protocol.json": {
+        "audit_module": "modern/experiments/four_cell_topology_search_v2/audit_sidecar_eol.py",
+        "lf_sha256": "5c195119c7a3c3c7e8b2c2d58e2e9836ac0ece6e000e52b0fd86c4718446c1b4",
+        "recorded_bytes": 10811,
+        "recorded_sha256": "ec2e9a732b7d0e909ff742ebbbb0215e1102909c148b812306df6f0759f48e49"
+      }
+    },
+    "manifest_git_blob": "aaa3be7730958c38d553a0c2b067810bc27ecb01",
+    "manifest_path": "modern/experiments/four_cell_topology_search_v2/results/manifest.json",
+    "manifest_sha256": "f5e26373d72bd13aa5631516009797567e0f66812941d993d5fad534be07240a",
+    "results_tree": "56b41d451d94e0fde1f86bd4d3a40b7fbc2470b2",
+    "tolerance_rule": "for exactly the audited files: bytes contain no CR, sha256(bytes) == audited LF digest and sha256(bytes.replace(LF, CRLF)) == recorded digest with the recorded byte count; every other mismatch fails",
+    "tolerated_eol_files": [
+      "results/preregistered-protocol.json"
+    ],
+    "verified_file_count": 29
+  },
+  "schema_version": "1.0",
+  "screening_model": "linear-vacuum L1a equivalent-current axisymmetric field (not a permanent-magnet or nonlinear-iron material model)",
+  "section_heading": "Preregistered four-cell topology search: null result",
+  "source_files": [
+    {
+      "git_blob": "aaa3be7730958c38d553a0c2b067810bc27ecb01",
+      "git_blob_sha256": "f5e26373d72bd13aa5631516009797567e0f66812941d993d5fad534be07240a",
+      "path": "modern/experiments/four_cell_topology_search_v2/results/manifest.json",
+      "role": "results-manifest"
+    },
+    {
+      "git_blob": "0e23b3dbdfbe51f8935aaaad6aa1989d381860bf",
+      "git_blob_sha256": "86976893260993b213e95d0d4ae2643c80d8956a39e48b0817969879a25a78bd",
+      "path": "modern/experiments/four_cell_topology_search_v2/results/manifest.json.sha256",
+      "role": "results-manifest-sidecar"
+    },
+    {
+      "git_blob": "11360bf35b1bcb5911283559d47b60897274c358",
+      "git_blob_sha256": "f01c044b99349ee1fc207702b4b7ab73c6eab49362a5b0249c3a99f501252d68",
+      "path": "modern/experiments/four_cell_topology_search_v2/results/dataset.json",
+      "role": "primary-dataset"
+    },
+    {
+      "git_blob": "adbd5260c49c207199d08e240767e244b2ba646e",
+      "git_blob_sha256": "9fd6a8945d5a7ce0104b1dc06d9d2204c8205457fc69d882a305d7465a3f3de5",
+      "path": "modern/experiments/four_cell_topology_search_v2/results/report.md",
+      "role": "report"
+    },
+    {
+      "git_blob": "09cf3a154b9f99a28e997254c1ead464009a8cbe",
+      "git_blob_sha256": "2973e4cbba2f712cf85907b6dc3542ae53674001fd29372d0ce41698db2a7877",
+      "path": "modern/experiments/four_cell_topology_search_v2/results/runtime.json",
+      "role": "runtime"
+    },
+    {
+      "git_blob": "08ef27e9ddff049ab2799a9ada90e3d8654e0c0b",
+      "git_blob_sha256": "c70c8471575f848b249ecf72da414839aa8fd6e5aebf24398bc78eb2b3368135",
+      "path": "modern/experiments/four_cell_topology_search_v2/results/execution-lock.json",
+      "role": "execution-lock"
+    },
+    {
+      "git_blob": "9fda58faa70e49da8e17a94a478329fd6d408f3c",
+      "git_blob_sha256": "5c195119c7a3c3c7e8b2c2d58e2e9836ac0ece6e000e52b0fd86c4718446c1b4",
+      "path": "modern/experiments/four_cell_topology_search_v2/protocol.json",
+      "role": "preregistered-protocol"
+    },
+    {
+      "git_blob": "9fda58faa70e49da8e17a94a478329fd6d408f3c",
+      "git_blob_sha256": "5c195119c7a3c3c7e8b2c2d58e2e9836ac0ece6e000e52b0fd86c4718446c1b4",
+      "path": "modern/experiments/four_cell_topology_search_v2/results/preregistered-protocol.json",
+      "role": "protocol-copy"
+    },
+    {
+      "git_blob": "dc73a9d384b7ad17bd39f4b1def43e189b4e8529",
+      "git_blob_sha256": "b7e16b78997642aa153745eb35f0455bd2921caafd15f30dd04ce78be56b0b46",
+      "path": "modern/experiments/four_cell_topology_search_v2/results/preregistered-protocol.json.sha256",
+      "role": "protocol-copy-sidecar"
+    },
+    {
+      "git_blob": "f818bb9de2e49c37d047adc6ba939b27600b3ad5",
+      "git_blob_sha256": "c08b060868502992436b51ff8add5ab6bc549ded817602a5e332fd50ba63883f",
+      "path": "modern/experiments/four_cell_topology_search_v2/results/representatives/v2-006-geometry.json",
+      "role": "representative-artifact"
+    },
+    {
+      "git_blob": "0ff2b5913afa2342030f73e7da3598cb4da223f9",
+      "git_blob_sha256": "7b4a4a30267a6d5f847c78e8513fda4c47c4db8a5389c0a064108ec982f5385f",
+      "path": "modern/experiments/four_cell_topology_search_v2/results/representatives/v2-006-primary-field.json",
+      "role": "representative-artifact"
+    },
+    {
+      "git_blob": "28cbecee29607176fd76812119f2fd2288472538",
+      "git_blob_sha256": "d32747ef7293e01fba70699b7d92c4e954bd88ec8327c1672388468e27b5e020",
+      "path": "modern/experiments/four_cell_topology_search_v2/results/representatives/v2-006-downsampled-field.json",
+      "role": "representative-artifact"
+    },
+    {
+      "git_blob": "47543c990ddbe3729e35458d58d5ea61a465a941",
+      "git_blob_sha256": "f85484b090551f8c9b371f267dda62f500b9eb94152387d42896adb28d34ccc1",
+      "path": "modern/experiments/four_cell_topology_search_v2/results/representatives/v2-006-enlarged_domain-field.json",
+      "role": "representative-artifact"
+    },
+    {
+      "git_blob": "f2d30a71a516cb68ab6834fd210c05be11eee2f7",
+      "git_blob_sha256": "9099c30bf2eb1c5520d4f8103e79bba9044a4a29b65a761a4ae0eade4b183823",
+      "path": "modern/experiments/four_cell_topology_search_v2/results/representatives/v2-010-geometry.json",
+      "role": "representative-artifact"
+    },
+    {
+      "git_blob": "89477dbc9875dd5abf7ee55e8c71934b83ea847d",
+      "git_blob_sha256": "d5f774e1f0a50c5942ced5abf0b876e83b402d462e42999d4111af520959f36f",
+      "path": "modern/experiments/four_cell_topology_search_v2/results/representatives/v2-010-primary-field.json",
+      "role": "representative-artifact"
+    },
+    {
+      "git_blob": "d5ff8486411745c3336f5d6e72ff693530bc63bd",
+      "git_blob_sha256": "265caaf8b6301f1f1a94df3cbf98c280c4ba65700d06f6851487dcedb879facb",
+      "path": "modern/experiments/four_cell_topology_search_v2/results/representatives/v2-010-downsampled-field.json",
+      "role": "representative-artifact"
+    },
+    {
+      "git_blob": "cab2a6c540a64806b8fce17eba83dae91f0b7172",
+      "git_blob_sha256": "eaa4eb9f8a3307f89d49fdf4f48968933ca5f69ba326f7a1d8f11e44947d28f2",
+      "path": "modern/experiments/four_cell_topology_search_v2/results/representatives/v2-010-enlarged_domain-field.json",
+      "role": "representative-artifact"
+    }
+  ],
+  "status": "accepted"
+}

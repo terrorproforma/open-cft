@@ -1,0 +1,1334 @@
+{
+  "artifacts": {
+    "protocol.json": {
+      "bytes": 11133,
+      "sha256": "8722541835628e08712ee8f8bf59fd8e8f4875b10fbb04f4a2efc6f1d0051291"
+    },
+    "results/dataset.json": {
+      "bytes": 16055198,
+      "sha256": "885cc8703329f9226592dbdf73d6d5f4ad4bcc35a0a69786621374d7e5a6b419"
+    },
+    "results/execution-lock.json": {
+      "bytes": 455,
+      "sha256": "01abd32b753daf22fdb8cd44b35377b9b029ad005e5ac7d4ede5b93826fdbfce"
+    },
+    "results/manifest.json": {
+      "bytes": 16710,
+      "sha256": "bd2ad68e6cc68dd547847f8e07817dc86d35e7a45075fcee9102a2e9eca938a8"
+    },
+    "results/preregistered-protocol.json": {
+      "bytes": 9586,
+      "sha256": "5dcdc162d0f3d33e8fecea0434c2ebfd37d5718f122a7f4b6b12a81bf413172b"
+    },
+    "results/report.md": {
+      "bytes": 1695,
+      "sha256": "caf99a0aa6553948a94bfe610c763dfcfefbfb76c671e18af6e0b2707bd428b3"
+    },
+    "results/representatives/topology-s02-p0-r0-neg/enlarged_domain-field.json": {
+      "bytes": 988779,
+      "sha256": "eddcd2a35bbc2b16e0f78136c41516641f0dfa4118bf1175d539cc63512a355f"
+    },
+    "results/representatives/topology-s02-p0-r0-neg/geometry.json": {
+      "bytes": 6988,
+      "sha256": "c04820b33c4d1db5405e5511bef4e34f010c317ab1db93f46d82b0ab7493f14c"
+    },
+    "results/representatives/topology-s02-p0-r0-neg/primary-field.json": {
+      "bytes": 634210,
+      "sha256": "421fd310644b2a4131defc843723fef5924f98f65a41f483247db1c0d44b26bd"
+    },
+    "results/representatives/topology-s02-p0-r0-neg/refined-field.json": {
+      "bytes": 1401418,
+      "sha256": "fdd5e88daf3f7bc5817ee42c292894600ff605278dbb818071e36b13538169e9"
+    },
+    "results/representatives/topology-s03-p0-r0-neg/enlarged_domain-field.json": {
+      "bytes": 989579,
+      "sha256": "d5589a3b08723975f6a8864e37dbc77a0dcf5296dc9295b8bedb65e574410b50"
+    },
+    "results/representatives/topology-s03-p0-r0-neg/geometry.json": {
+      "bytes": 7780,
+      "sha256": "a9138f698170e632797d414d0581b2813e20041d459ba689b43e166a0861f64a"
+    },
+    "results/representatives/topology-s03-p0-r0-neg/primary-field.json": {
+      "bytes": 634162,
+      "sha256": "0f564b079f32022bc6ba1ce3f3d8a6e582672336cb1dfbf155bb343a02368b45"
+    },
+    "results/representatives/topology-s03-p0-r0-neg/refined-field.json": {
+      "bytes": 1399600,
+      "sha256": "b593254a5e31f747719d499b50043b76cc41e2b96fa2f1471b84ed7b122a7e4b"
+    },
+    "results/representatives/topology-s04-p0-r0-neg/enlarged_domain-field.json": {
+      "bytes": 988450,
+      "sha256": "8fa98b22f02720c5096038a060a08c34f43ef582afc88bff38c75777899f26bc"
+    },
+    "results/representatives/topology-s04-p0-r0-neg/geometry.json": {
+      "bytes": 8606,
+      "sha256": "30b3b0b3ba8afc6b965e14f1c7aebd89144cc8090e21c8e8d3a0e52f358cd3ac"
+    },
+    "results/representatives/topology-s04-p0-r0-neg/primary-field.json": {
+      "bytes": 635531,
+      "sha256": "6666214427879c246b0af6695330b17dbee3d1d29874f03b22faa6be9c44383f"
+    },
+    "results/representatives/topology-s04-p0-r0-neg/refined-field.json": {
+      "bytes": 1399927,
+      "sha256": "846a52f001dbdafe2a0e80a8e18cf460cceb009e03097675969dec9b70a79e51"
+    },
+    "results/representatives/topology-s05-p0-r0-neg/enlarged_domain-field.json": {
+      "bytes": 993232,
+      "sha256": "b06f7931ec0425591b4b027821347bad5072098443a6698bf40edc32e3ec9058"
+    },
+    "results/representatives/topology-s05-p0-r0-neg/geometry.json": {
+      "bytes": 9472,
+      "sha256": "8232371a5f45d4de02a4b3339396fab99a46bab23fc9fbbb471e77c7d35348cd"
+    },
+    "results/representatives/topology-s05-p0-r0-neg/primary-field.json": {
+      "bytes": 636848,
+      "sha256": "b88567ddb875856de13d880cfc465ca3331d39898741c46b28fa88d27268265b"
+    },
+    "results/representatives/topology-s05-p0-r0-neg/refined-field.json": {
+      "bytes": 1401471,
+      "sha256": "f043441ed9aa08b932616ec74fa8149d37683f126e32c0356a5ac11bc25c8fb1"
+    },
+    "results/representatives/topology-s06-p0-r0-neg/enlarged_domain-field.json": {
+      "bytes": 991109,
+      "sha256": "29fc8cb1e37222e06dbddd0a7de00f464b6aafca5d8a873637d421a0926d24b1"
+    },
+    "results/representatives/topology-s06-p0-r0-neg/geometry.json": {
+      "bytes": 10202,
+      "sha256": "f7feb9df6e2cdbbf4a211a821f628206b6fb4f79314e5471d78e2f84b80a90a1"
+    },
+    "results/representatives/topology-s06-p0-r0-neg/primary-field.json": {
+      "bytes": 638070,
+      "sha256": "548d87b421c0412385ee35beb2289be873dc7102a6c51b325dd621cb6c657398"
+    },
+    "results/representatives/topology-s06-p0-r0-neg/refined-field.json": {
+      "bytes": 1401206,
+      "sha256": "83d08a1801fbe379063fd0a4592163e68f9c5dd06b7ad6caa9b982dcfa4d45b3"
+    },
+    "results/representatives/topology-s07-p0-r0-neg/enlarged_domain-field.json": {
+      "bytes": 996645,
+      "sha256": "ce5bb0fe181ee7ba27566a16ebd22d9c5ffaf9309ac47126a06c5087092caf33"
+    },
+    "results/representatives/topology-s07-p0-r0-neg/geometry.json": {
+      "bytes": 11336,
+      "sha256": "64fd9c074684ab301487aed50f0fd62206e92479484d7d18c5e7573a65a2800e"
+    },
+    "results/representatives/topology-s07-p0-r0-neg/primary-field.json": {
+      "bytes": 639989,
+      "sha256": "a1aad66a2fbc2d3dfd8f580a5226ba6bb746d422f83fb43f3e701597a0f7ecff"
+    },
+    "results/representatives/topology-s07-p0-r0-neg/refined-field.json": {
+      "bytes": 1403337,
+      "sha256": "11fad2c384a7f4f3bb0a0d1b68b4170f762e51c281faa180085c9142aa5cedea"
+    },
+    "results/representatives/topology-s08-p0-r0-neg/enlarged_domain-field.json": {
+      "bytes": 994702,
+      "sha256": "ec73b133a3630fb0534a812235f0bb896df8d7d5de083d4f9be23dca62778d94"
+    },
+    "results/representatives/topology-s08-p0-r0-neg/geometry.json": {
+      "bytes": 12117,
+      "sha256": "84ba6952057e9342aea36678a5ecb1cd2cb710d71e156e4eb4aaba7cb5cecc0d"
+    },
+    "results/representatives/topology-s08-p0-r0-neg/primary-field.json": {
+      "bytes": 641017,
+      "sha256": "b823af8f152f78c744e49131b560fe68c07df13200cfa0d6a852fbe278988852"
+    },
+    "results/representatives/topology-s08-p0-r0-neg/refined-field.json": {
+      "bytes": 1404020,
+      "sha256": "5cbb7110bf1cfcce1a018a1f66f7bb14a5cd06eeaa74425d4bb89c327b8844fd"
+    },
+    "results/runtime.json": {
+      "bytes": 663,
+      "sha256": "355a3701d160938510068597a890893c7083b2df09a73f36cb40482aafaf8054"
+    }
+  },
+  "binding": {
+    "manifest_git_blob": "faaa42d22ceb49ab1f4d04af3ae6c17def451f1e",
+    "manifest_path": "modern/experiments/cft_topology_characterization_v1/results/manifest.json",
+    "preregistration_commit": "af88470b86fd95882ae7fddc48e2860cbfba1219",
+    "results_commit": "3ce6c546194e1d3e943d0b3d0951d03e15e354d9",
+    "results_commit_subject": "record CFT topology characterization v1 results",
+    "results_tree": "b0ac89f433d8a645ac663b10269358d532c341cb"
+  },
+  "bundle": {
+    "audited_eol_files": {},
+    "manifest_path": "modern/experiments/cft_topology_characterization_v1/results/manifest.json",
+    "manifest_sha256": "bd2ad68e6cc68dd547847f8e07817dc86d35e7a45075fcee9102a2e9eca938a8",
+    "tolerance_rule": "for exactly the audited files: bytes contain no CR, sha256(bytes) == audited LF digest and sha256(bytes.replace(LF, CRLF)) == recorded digest with the recorded byte count; every other mismatch fails",
+    "tolerated_eol_files": [],
+    "verified_file_count": 35
+  },
+  "classification": "developmental_topology_characterization",
+  "document_type": "paper-topology-characterization-v1-evidence",
+  "evidence_revision": "3ce6c546194e1d3e943d0b3d0951d03e15e354d9",
+  "experiment_id": "cft-topology-characterization-v1",
+  "generator": {
+    "command": "python paper/scripts/generate_topology_screening_evidence.py",
+    "path": "paper/scripts/generate_topology_screening_evidence.py",
+    "sha256": "36ae2d1a3663f3471d3f07ed2fa4447bbf9fea4bbbb69cc7177feb35c49fd86a"
+  },
+  "macros": [
+    {
+      "derived": false,
+      "description": "characterization classification string",
+      "format": "ident",
+      "name": "TchClassification",
+      "raw": "developmental_topology_characterization",
+      "source": {
+        "artifact": "results/dataset.json",
+        "pointer": "/classification"
+      },
+      "value": "developmental\\_\\allowbreak{}topology\\_\\allowbreak{}characterization"
+    },
+    {
+      "derived": false,
+      "description": "declared purpose",
+      "format": "text",
+      "name": "TchPurpose",
+      "raw": "Establish the empirical physical stage-to-vector-null-to-closed-cell relation before a separately preregistered search v3.",
+      "source": {
+        "artifact": "results/dataset.json",
+        "pointer": "/purpose"
+      },
+      "value": "Establish the empirical physical stage-to-vector-null-to-closed-cell relation before a separately preregistered search v3."
+    },
+    {
+      "derived": false,
+      "description": "accepted field model of the baseline",
+      "format": "text",
+      "name": "TchFieldModel",
+      "raw": "accepted L1a equivalent-current axisymmetric solver",
+      "source": {
+        "artifact": "results/preregistered-protocol.json",
+        "pointer": "/accepted_baseline/field_model"
+      },
+      "value": "accepted L1a equivalent-current axisymmetric solver"
+    },
+    {
+      "derived": false,
+      "description": "single execution flag",
+      "format": "bool",
+      "name": "TchSingleExecution",
+      "raw": true,
+      "source": {
+        "artifact": "results/manifest.json",
+        "pointer": "/single_execution"
+      },
+      "value": "true"
+    },
+    {
+      "derived": false,
+      "description": "declared cases",
+      "format": "int",
+      "name": "TchDeclared",
+      "raw": 56,
+      "source": {
+        "artifact": "results/dataset.json",
+        "pointer": "/summary/declared_case_count"
+      },
+      "value": "56"
+    },
+    {
+      "derived": false,
+      "description": "cases evaluated",
+      "format": "int",
+      "name": "TchEvaluated",
+      "raw": 56,
+      "source": {
+        "artifact": "results/dataset.json",
+        "pointer": "/summary/evaluated_count"
+      },
+      "value": "56"
+    },
+    {
+      "derived": false,
+      "description": "cases whose three maps passed every field gate",
+      "format": "int",
+      "name": "TchThreeMapAccepted",
+      "raw": 56,
+      "source": {
+        "artifact": "results/dataset.json",
+        "pointer": "/summary/three_map_accepted_count"
+      },
+      "value": "56"
+    },
+    {
+      "derived": false,
+      "description": "stable eligible cusps",
+      "format": "int",
+      "name": "TchStableEligibleCusps",
+      "raw": 0,
+      "source": {
+        "artifact": "results/dataset.json",
+        "pointer": "/summary/stable_eligible_cusp_count"
+      },
+      "value": "0"
+    },
+    {
+      "derived": false,
+      "description": "stable eligible cells",
+      "format": "int",
+      "name": "TchStableEligibleCells",
+      "raw": 0,
+      "source": {
+        "artifact": "results/dataset.json",
+        "pointer": "/summary/stable_eligible_cell_count"
+      },
+      "value": "0"
+    },
+    {
+      "derived": false,
+      "description": "mirror probabilities computed",
+      "format": "int",
+      "name": "TchMirrorProbabilityCount",
+      "raw": 0,
+      "source": {
+        "artifact": "results/dataset.json",
+        "pointer": "/summary/mirror_probability_count"
+      },
+      "value": "0"
+    },
+    {
+      "derived": false,
+      "description": "plasma publications",
+      "format": "int",
+      "name": "TchPlasmaPublicationCount",
+      "raw": 0,
+      "source": {
+        "artifact": "results/dataset.json",
+        "pointer": "/summary/plasma_publication_count"
+      },
+      "value": "0"
+    },
+    {
+      "derived": false,
+      "description": "GPU replay passes",
+      "format": "int",
+      "name": "TchGpuReplayPassed",
+      "raw": 3,
+      "source": {
+        "artifact": "results/dataset.json",
+        "pointer": "/summary/gpu_replay_pass_count"
+      },
+      "value": "3"
+    },
+    {
+      "derived": false,
+      "description": "GPU replays required",
+      "format": "int",
+      "name": "TchGpuReplayRequired",
+      "raw": 3,
+      "source": {
+        "artifact": "results/dataset.json",
+        "pointer": "/summary/gpu_replay_required_count"
+      },
+      "value": "3"
+    },
+    {
+      "derived": false,
+      "description": "cases with SEPARATRIX_UNRESOLVED",
+      "format": "int",
+      "name": "TchFailSeparatrix",
+      "raw": 56,
+      "source": {
+        "artifact": "results/dataset.json",
+        "pointer": "/summary/failure_counts/SEPARATRIX_UNRESOLVED"
+      },
+      "value": "56"
+    },
+    {
+      "derived": false,
+      "description": "cases with CROSS_MAP_UNMATCHED",
+      "format": "int",
+      "name": "TchFailUnmatched",
+      "raw": 56,
+      "source": {
+        "artifact": "results/dataset.json",
+        "pointer": "/summary/failure_counts/CROSS_MAP_UNMATCHED"
+      },
+      "value": "56"
+    },
+    {
+      "derived": false,
+      "description": "cases with CROSS_MAP_CLASS_CHANGED",
+      "format": "int",
+      "name": "TchFailClassChanged",
+      "raw": 12,
+      "source": {
+        "artifact": "results/dataset.json",
+        "pointer": "/summary/failure_counts/CROSS_MAP_CLASS_CHANGED"
+      },
+      "value": "12"
+    },
+    {
+      "derived": false,
+      "description": "cases with ROOT_EXCLUDED_HARDWARE",
+      "format": "int",
+      "name": "TchFailHardware",
+      "raw": 56,
+      "source": {
+        "artifact": "results/dataset.json",
+        "pointer": "/summary/failure_counts/ROOT_EXCLUDED_HARDWARE"
+      },
+      "value": "56"
+    },
+    {
+      "derived": false,
+      "description": "cases with ROOT_OUTSIDE_CHANNEL",
+      "format": "int",
+      "name": "TchFailOutsideChannel",
+      "raw": 54,
+      "source": {
+        "artifact": "results/dataset.json",
+        "pointer": "/summary/failure_counts/ROOT_OUTSIDE_CHANNEL"
+      },
+      "value": "54"
+    },
+    {
+      "derived": false,
+      "description": "cases with FIELD_PRIMARY_INVALID",
+      "format": "int",
+      "name": "TchFailFieldPrimary",
+      "raw": 0,
+      "source": {
+        "artifact": "results/dataset.json",
+        "pointer": "/summary/failure_counts/FIELD_PRIMARY_INVALID"
+      },
+      "value": "0"
+    },
+    {
+      "derivation": "count(cases with any of GEOMETRY_INVALID, FIELD_PRIMARY_INVALID, FIELD_REFINED_INVALID, FIELD_ENLARGED_INVALID in failures)",
+      "derived": true,
+      "description": "cases whose geometry or any field map failed to evaluate",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/dataset.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "TchEvaluationFailures",
+      "raw": 0,
+      "value": "0"
+    },
+    {
+      "derivation": "len(protocol.maps.roles)",
+      "derived": true,
+      "description": "independent maps per case",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/preregistered-protocol.json",
+          "pointer": "/maps/roles"
+        }
+      ],
+      "name": "TchMapCount",
+      "raw": 3,
+      "value": "3"
+    },
+    {
+      "derived": false,
+      "description": "not a design optimization",
+      "format": "bool",
+      "name": "TchNotOptimization",
+      "raw": true,
+      "source": {
+        "artifact": "results/preregistered-protocol.json",
+        "pointer": "/not_a_design_optimization"
+      },
+      "value": "true"
+    },
+    {
+      "derived": false,
+      "description": "not a blind validation",
+      "format": "bool",
+      "name": "TchNotValidation",
+      "raw": true,
+      "source": {
+        "artifact": "results/preregistered-protocol.json",
+        "pointer": "/not_a_blind_validation"
+      },
+      "value": "true"
+    },
+    {
+      "derived": false,
+      "description": "allowed publication scope",
+      "format": "text",
+      "name": "TchPublicationAllowed",
+      "raw": "field, root, local topology, separatrix connectivity, map correspondence and descriptive stage-relation characterization only",
+      "source": {
+        "artifact": "results/dataset.json",
+        "pointer": "/publication/allowed"
+      },
+      "value": "field, root, local topology, separatrix connectivity, map correspondence and descriptive stage-relation characterization only"
+    },
+    {
+      "derived": false,
+      "description": "mirror probability publication flag",
+      "format": "bool",
+      "name": "TchMirrorPublished",
+      "raw": false,
+      "source": {
+        "artifact": "results/dataset.json",
+        "pointer": "/publication/mirror_probability"
+      },
+      "value": "false"
+    },
+    {
+      "derived": false,
+      "description": "plasma publication flag",
+      "format": "bool",
+      "name": "TchPlasmaPublished",
+      "raw": false,
+      "source": {
+        "artifact": "results/dataset.json",
+        "pointer": "/publication/plasma_state_power_or_performance"
+      },
+      "value": "false"
+    },
+    {
+      "derived": false,
+      "description": "stage counts of the family",
+      "format": "list_int",
+      "name": "TchStageCounts",
+      "raw": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "source": {
+        "artifact": "results/preregistered-protocol.json",
+        "pointer": "/families/stage_counts"
+      },
+      "value": "2, 3, 4, 5, 6, 7, 8"
+    },
+    {
+      "derived": false,
+      "description": "pitches (mm)",
+      "format": "list_mm1",
+      "name": "TchPitches",
+      "raw": [
+        0.0045,
+        0.006
+      ],
+      "source": {
+        "artifact": "results/preregistered-protocol.json",
+        "pointer": "/families/pitch_m"
+      },
+      "value": "4.5, 6.0"
+    },
+    {
+      "derived": false,
+      "description": "chamber radii (mm)",
+      "format": "list_mm1",
+      "name": "TchRadii",
+      "raw": [
+        0.0065,
+        0.009
+      ],
+      "source": {
+        "artifact": "results/preregistered-protocol.json",
+        "pointer": "/families/chamber_outer_radius_m"
+      },
+      "value": "6.5, 9.0"
+    },
+    {
+      "derived": false,
+      "description": "first polarities",
+      "format": "list_int",
+      "name": "TchPolarities",
+      "raw": [
+        -1,
+        1
+      ],
+      "source": {
+        "artifact": "results/preregistered-protocol.json",
+        "pointer": "/families/first_polarity"
+      },
+      "value": "-1, 1"
+    },
+    {
+      "derived": false,
+      "description": "declared family case count",
+      "format": "int",
+      "name": "TchFamilyCaseCount",
+      "raw": 56,
+      "source": {
+        "artifact": "results/preregistered-protocol.json",
+        "pointer": "/families/case_count"
+      },
+      "value": "56"
+    },
+    {
+      "derivation": "min(protocol.families.stage_counts)",
+      "derived": true,
+      "description": "minimum stage count",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/preregistered-protocol.json",
+          "pointer": "/families/stage_counts"
+        }
+      ],
+      "name": "TchStageMin",
+      "raw": 2,
+      "value": "2"
+    },
+    {
+      "derivation": "max(protocol.families.stage_counts)",
+      "derived": true,
+      "description": "maximum stage count",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/preregistered-protocol.json",
+          "pointer": "/families/stage_counts"
+        }
+      ],
+      "name": "TchStageMax",
+      "raw": 8,
+      "value": "8"
+    },
+    {
+      "derivation": "len(protocol.families.stage_counts)",
+      "derived": true,
+      "description": "stage count levels",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/preregistered-protocol.json",
+          "pointer": "/families/stage_counts"
+        }
+      ],
+      "name": "TchStageLevels",
+      "raw": 7,
+      "value": "7"
+    },
+    {
+      "derived": false,
+      "description": "primary radial intervals",
+      "format": "int",
+      "name": "TchPrimaryRadial",
+      "raw": 48,
+      "source": {
+        "artifact": "results/preregistered-protocol.json",
+        "pointer": "/maps/roles/primary/radial_intervals"
+      },
+      "value": "48"
+    },
+    {
+      "derived": false,
+      "description": "primary axial intervals",
+      "format": "int",
+      "name": "TchPrimaryAxial",
+      "raw": 144,
+      "source": {
+        "artifact": "results/preregistered-protocol.json",
+        "pointer": "/maps/roles/primary/axial_intervals"
+      },
+      "value": "144"
+    },
+    {
+      "derived": false,
+      "description": "refined radial intervals",
+      "format": "int",
+      "name": "TchRefinedRadial",
+      "raw": 72,
+      "source": {
+        "artifact": "results/preregistered-protocol.json",
+        "pointer": "/maps/roles/refined/radial_intervals"
+      },
+      "value": "72"
+    },
+    {
+      "derived": false,
+      "description": "refined axial intervals",
+      "format": "int",
+      "name": "TchRefinedAxial",
+      "raw": 216,
+      "source": {
+        "artifact": "results/preregistered-protocol.json",
+        "pointer": "/maps/roles/refined/axial_intervals"
+      },
+      "value": "216"
+    },
+    {
+      "derived": false,
+      "description": "enlarged-domain radial intervals",
+      "format": "int",
+      "name": "TchEnlargedRadial",
+      "raw": 60,
+      "source": {
+        "artifact": "results/preregistered-protocol.json",
+        "pointer": "/maps/roles/enlarged_domain/radial_intervals"
+      },
+      "value": "60"
+    },
+    {
+      "derived": false,
+      "description": "enlarged-domain axial intervals",
+      "format": "int",
+      "name": "TchEnlargedAxial",
+      "raw": 180,
+      "source": {
+        "artifact": "results/preregistered-protocol.json",
+        "pointer": "/maps/roles/enlarged_domain/axial_intervals"
+      },
+      "value": "180"
+    },
+    {
+      "derived": false,
+      "description": "enlarged-domain scale",
+      "format": "g",
+      "name": "TchEnlargedScale",
+      "raw": 1.25,
+      "source": {
+        "artifact": "results/preregistered-protocol.json",
+        "pointer": "/maps/roles/enlarged_domain/domain_scale"
+      },
+      "value": "1.25"
+    },
+    {
+      "derived": false,
+      "description": "root detector",
+      "format": "ident",
+      "name": "TchRootDetector",
+      "raw": "coupling-v3 magnetic_null_geometry",
+      "source": {
+        "artifact": "results/preregistered-protocol.json",
+        "pointer": "/root_detection/accepted_detector"
+      },
+      "value": "coupling-\\allowbreak{}v3 magnetic\\_\\allowbreak{}null\\_\\allowbreak{}geometry"
+    },
+    {
+      "derived": false,
+      "description": "clustering tolerance (mesh factor)",
+      "format": "g",
+      "name": "TchClusterFactor",
+      "raw": 0.75,
+      "source": {
+        "artifact": "results/preregistered-protocol.json",
+        "pointer": "/root_detection/clustering/tolerance_mesh_factor"
+      },
+      "value": "0.75"
+    },
+    {
+      "derived": false,
+      "description": "eligible cusp conditions",
+      "format": "list_clauses",
+      "name": "TchCuspEligibility",
+      "raw": [
+        "clustered vector null is strictly inside the declared plasma channel with the mesh margin",
+        "local classification is verified X with topological index -1",
+        "offset constant-psi probes establish cell-bounding separatrix connectivity",
+        "root is not in any excluded zone"
+      ],
+      "source": {
+        "artifact": "results/preregistered-protocol.json",
+        "pointer": "/eligibility/eligible_cusp"
+      },
+      "value": "clustered vector null is strictly inside the declared plasma channel with the mesh margin; local classification is verified X with topological index -1; offset constant-psi probes establish cell-bounding separatrix connectivity; root is not in any excluded zone"
+    },
+    {
+      "derived": false,
+      "description": "eligible cell conditions",
+      "format": "list_clauses",
+      "name": "TchCellEligibility",
+      "raw": [
+        "clustered vector null is strictly inside the declared plasma channel",
+        "local classification is verified O with topological index +1",
+        "a nearby simple closed constant-psi component lies wholly inside the plasma channel"
+      ],
+      "source": {
+        "artifact": "results/preregistered-protocol.json",
+        "pointer": "/eligibility/eligible_cell"
+      },
+      "value": "clustered vector null is strictly inside the declared plasma channel; local classification is verified O with topological index +1; a nearby simple closed constant-psi component lies wholly inside the plasma channel"
+    },
+    {
+      "derived": false,
+      "description": "cell-bounding requirement",
+      "format": "text",
+      "name": "TchCellBoundingRequirement",
+      "raw": "X root with at least one nearby simple closed constant-psi component wholly inside the plasma channel and a changed nearby closed-component count across the two offset levels",
+      "source": {
+        "artifact": "results/preregistered-protocol.json",
+        "pointer": "/separatrix/cell_bounding_requirement"
+      },
+      "value": "X root with at least one nearby simple closed constant-psi component wholly inside the plasma channel and a changed nearby closed-component count across the two offset levels"
+    },
+    {
+      "derived": false,
+      "description": "stable root definition",
+      "format": "text",
+      "name": "TchStableRootDefinition",
+      "raw": "matched in all three maps, same X/O classification and same cusp/cell eligibility, with both shifts within assignment distance",
+      "source": {
+        "artifact": "results/preregistered-protocol.json",
+        "pointer": "/cross_map_correspondence/stable_root"
+      },
+      "value": "matched in all three maps, same X/O classification and same cusp/cell eligibility, with both shifts within assignment distance"
+    },
+    {
+      "derived": false,
+      "description": "correspondence algorithm",
+      "format": "text",
+      "name": "TchCorrespondenceAlgorithm",
+      "raw": "global minimum-cost rectangular Hungarian assignment in Euclidean (r,z)",
+      "source": {
+        "artifact": "results/preregistered-protocol.json",
+        "pointer": "/cross_map_correspondence/algorithm"
+      },
+      "value": "global minimum-cost rectangular Hungarian assignment in Euclidean (r,z)"
+    },
+    {
+      "derived": false,
+      "description": "search-v3 recommendation class",
+      "format": "ident",
+      "name": "TchRecommendationClass",
+      "raw": "descriptive_input_for_separate_search_v3_preregistration",
+      "source": {
+        "artifact": "results/dataset.json",
+        "pointer": "/analyses/search_v3_recommendation/classification"
+      },
+      "value": "descriptive\\_\\allowbreak{}input\\_\\allowbreak{}for\\_\\allowbreak{}separate\\_\\allowbreak{}search\\_\\allowbreak{}v3\\_\\allowbreak{}preregistration"
+    },
+    {
+      "derived": false,
+      "description": "recommended stage counts (descriptive)",
+      "format": "list_int",
+      "name": "TchRecommendedStages",
+      "raw": [
+        8,
+        6
+      ],
+      "source": {
+        "artifact": "results/dataset.json",
+        "pointer": "/analyses/search_v3_recommendation/recommended_stage_counts"
+      },
+      "value": "8, 6"
+    },
+    {
+      "derived": false,
+      "description": "recommendation not validated or optimal",
+      "format": "bool",
+      "name": "TchRecommendationNotValidated",
+      "raw": true,
+      "source": {
+        "artifact": "results/dataset.json",
+        "pointer": "/analyses/search_v3_recommendation/not_validated_or_optimal"
+      },
+      "value": "true"
+    },
+    {
+      "derived": false,
+      "description": "accepted coupling v3 commit prefix",
+      "format": "sha_short",
+      "name": "TchCouplingCommit",
+      "raw": "f80a360fd740a30017cdac1874cedbfa2806874a",
+      "source": {
+        "artifact": "results/dataset.json",
+        "pointer": "/accepted_coupling_v3_commit_sha"
+      },
+      "value": "f80a360fd740"
+    },
+    {
+      "derived": false,
+      "description": "preregistration commit prefix",
+      "format": "sha_short",
+      "name": "TchPreregCommit",
+      "raw": "af88470b86fd95882ae7fddc48e2860cbfba1219",
+      "source": {
+        "artifact": "results/dataset.json",
+        "pointer": "/preregistration_commit_sha"
+      },
+      "value": "af88470b86fd"
+    },
+    {
+      "derived": false,
+      "description": "protocol semantic hash prefix",
+      "format": "sha_short",
+      "name": "TchProtocolSemanticSha",
+      "raw": "5dcdc162d0f3d33e8fecea0434c2ebfd37d5718f122a7f4b6b12a81bf413172b",
+      "source": {
+        "artifact": "results/dataset.json",
+        "pointer": "/protocol_semantic_sha256"
+      },
+      "value": "5dcdc162d0f3"
+    },
+    {
+      "derived": false,
+      "description": "GPU name",
+      "format": "text",
+      "name": "TchGpuName",
+      "raw": "NVIDIA GeForce RTX 5090",
+      "source": {
+        "artifact": "results/dataset.json",
+        "pointer": "/runtime_identity/gpu_name"
+      },
+      "value": "NVIDIA GeForce RTX 5090"
+    },
+    {
+      "derived": false,
+      "description": "Warp version",
+      "format": "text",
+      "name": "TchWarpVersion",
+      "raw": "1.14.0",
+      "source": {
+        "artifact": "results/dataset.json",
+        "pointer": "/runtime_identity/warp_version"
+      },
+      "value": "1.14.0"
+    },
+    {
+      "derivation": "sum(cases.maps.primary.clustered_root_count)",
+      "derived": true,
+      "description": "clustered primary-map vector nulls",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/dataset.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "TchClusteredRoots",
+      "raw": 1276,
+      "value": "1276"
+    },
+    {
+      "derivation": "sum(cases.maps.primary.raw_detection_count)",
+      "derived": true,
+      "description": "raw primary-map detections before clustering",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/dataset.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "TchRawDetections",
+      "raw": 1302,
+      "value": "1302"
+    },
+    {
+      "derivation": "count(roots.local_topology.classification == X)",
+      "derived": true,
+      "description": "primary-map roots classified X",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/dataset.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "TchXRoots",
+      "raw": 520,
+      "value": "520"
+    },
+    {
+      "derivation": "count(roots.local_topology.classification == O)",
+      "derived": true,
+      "description": "primary-map roots classified O",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/dataset.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "TchORoots",
+      "raw": 532,
+      "value": "532"
+    },
+    {
+      "derivation": "count(roots.local_topology.classification == degenerate)",
+      "derived": true,
+      "description": "primary-map roots classified degenerate",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/dataset.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "TchDegenerateRoots",
+      "raw": 224,
+      "value": "224"
+    },
+    {
+      "derivation": "count(roots.geometry_association.zone == plasma_channel)",
+      "derived": true,
+      "description": "primary-map roots inside the plasma channel",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/dataset.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "TchChannelRoots",
+      "raw": 200,
+      "value": "200"
+    },
+    {
+      "derivation": "count(channel roots with classification X)",
+      "derived": true,
+      "description": "plasma-channel roots classified X",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/dataset.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "TchChannelXRoots",
+      "raw": 200,
+      "value": "200"
+    },
+    {
+      "derivation": "count(channel roots with classification O)",
+      "derived": true,
+      "description": "plasma-channel roots classified O",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/dataset.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "TchChannelORoots",
+      "raw": 0,
+      "value": "0"
+    },
+    {
+      "derivation": "count(channel roots with exclusion_reason no_cell_bounding_separatrix)",
+      "derived": true,
+      "description": "plasma-channel roots excluded for an unresolved cell-bounding separatrix",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/dataset.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "TchChannelUnresolved",
+      "raw": 200,
+      "value": "200"
+    },
+    {
+      "derivation": "count(roots.exclusion_reason == exterior_magnet_or_current_sheet)",
+      "derived": true,
+      "description": "roots excluded as magnet or current sheet",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/dataset.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "TchExclMagnet",
+      "raw": 756,
+      "value": "756"
+    },
+    {
+      "derivation": "count(roots.exclusion_reason == finite_box_boundary)",
+      "derived": true,
+      "description": "roots excluded on the finite-box boundary",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/dataset.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "TchExclFiniteBox",
+      "raw": 224,
+      "value": "224"
+    },
+    {
+      "derivation": "count(roots.exclusion_reason == no_cell_bounding_separatrix)",
+      "derived": true,
+      "description": "roots excluded for no cell-bounding separatrix",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/dataset.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "TchExclNoSeparatrix",
+      "raw": 200,
+      "value": "200"
+    },
+    {
+      "derivation": "count(roots.exclusion_reason == yoke_or_material)",
+      "derived": true,
+      "description": "roots excluded as yoke or material",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/dataset.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "TchExclYoke",
+      "raw": 70,
+      "value": "70"
+    },
+    {
+      "derivation": "count(roots.exclusion_reason == outside_channel_axial)",
+      "derived": true,
+      "description": "roots excluded outside the channel axially",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/dataset.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "TchExclOutsideAxial",
+      "raw": 26,
+      "value": "26"
+    },
+    {
+      "derivation": "len(set(roots.exclusion_reason))",
+      "derived": true,
+      "description": "distinct exclusion reasons observed",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/dataset.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "TchExclusionReasonCount",
+      "raw": 5,
+      "value": "5"
+    },
+    {
+      "derivation": "len(set(roots.geometry_association.zone))",
+      "derived": true,
+      "description": "distinct geometric zones observed",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/dataset.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "TchZoneCount",
+      "raw": 5,
+      "value": "5"
+    },
+    {
+      "derivation": "sum(cases.cross_map.stable_root_count)",
+      "derived": true,
+      "description": "roots matched in all three maps with unchanged class and eligibility",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/dataset.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "TchStableRoots",
+      "raw": 980,
+      "value": "980"
+    },
+    {
+      "derivation": "sum(len(cases.maps.refined.roots))",
+      "derived": true,
+      "description": "clustered roots on the refined maps",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/dataset.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "TchRefinedRoots",
+      "raw": 1302,
+      "value": "1302"
+    },
+    {
+      "derivation": "sum(len(cases.maps.enlarged_domain.roots))",
+      "derived": true,
+      "description": "clustered roots on the enlarged_domain maps",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/dataset.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "TchEnlargedDomainRoots",
+      "raw": 1376,
+      "value": "1376"
+    },
+    {
+      "derivation": "sum(cases.maps.*.eligible_cusp_count)",
+      "derived": true,
+      "description": "eligible cusps on any map before cross-map stability",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/dataset.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "TchEligibleCuspsAnyMap",
+      "raw": 0,
+      "value": "0"
+    },
+    {
+      "derivation": "sum(cases.maps.*.eligible_cell_count)",
+      "derived": true,
+      "description": "eligible cells on any map before cross-map stability",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/dataset.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "TchEligibleCellsAnyMap",
+      "raw": 0,
+      "value": "0"
+    },
+    {
+      "derivation": "count(cases.cross_map.complete_primary_correspondence == true)",
+      "derived": true,
+      "description": "cases with complete primary correspondence",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/dataset.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "TchCompleteCorrespondence",
+      "raw": 0,
+      "value": "0"
+    },
+    {
+      "derivation": "analyses.stage_relation[*].case_count (all equal)",
+      "derived": true,
+      "description": "cases per stage count",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/dataset.json",
+          "pointer": "/analyses/stage_relation"
+        }
+      ],
+      "name": "TchCasesPerStage",
+      "raw": 8,
+      "value": "8"
+    },
+    {
+      "derivation": "max(analyses.stage_relation.median_maximum_shift_m)",
+      "derived": true,
+      "description": "largest median maximum root shift across stage counts (mm)",
+      "format": "mm2",
+      "inputs": [
+        {
+          "artifact": "results/dataset.json",
+          "pointer": "/analyses/stage_relation"
+        }
+      ],
+      "name": "TchMedianShiftMaxMm",
+      "raw": 0.00042518386494900926,
+      "value": "0.43"
+    },
+    {
+      "derivation": "git commit whose tree holds the results manifest blob (verified with rev-parse against the working tree)",
+      "derived": true,
+      "description": "results commit prefix",
+      "format": "sha_short",
+      "inputs": [
+        {
+          "artifact": "results/manifest.json",
+          "pointer": ""
+        }
+      ],
+      "name": "TchResultsCommit",
+      "raw": "3ce6c546194e1d3e943d0b3d0951d03e15e354d9",
+      "value": "3ce6c546194e"
+    },
+    {
+      "derivation": "sha256(results/manifest.json)",
+      "derived": true,
+      "description": "results manifest SHA-256 prefix",
+      "format": "sha_short",
+      "inputs": [
+        {
+          "artifact": "results/manifest.json",
+          "pointer": ""
+        }
+      ],
+      "name": "TchManifestSha",
+      "raw": "bd2ad68e6cc68dd547847f8e07817dc86d35e7a45075fcee9102a2e9eca938a8",
+      "value": "bd2ad68e6cc6"
+    },
+    {
+      "derivation": "count of verified files accepted through the audited EOL rule (none: this bundle binds canonical semantic identities)",
+      "derived": true,
+      "description": "files whose recorded digest differs from the checkout by end-of-line bytes only",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/manifest.json",
+          "pointer": "/artifacts"
+        }
+      ],
+      "name": "TchToleratedEolFiles",
+      "raw": 0,
+      "value": "0"
+    }
+  ],
+  "manuscript_integration": {
+    "artifact_claim_id": "CLM-026",
+    "artifact_id": "TAB-TOPOLOGY-CHAR-V1",
+    "gate_id": "GATE-TOPOLOGY-CHAR-V1",
+    "gate_kind": "numerical-screening",
+    "generated_binding": "\\input{generated/topology-characterization-v1.tex}",
+    "generated_tex_path": "paper/generated/topology-characterization-v1.tex",
+    "manifest_id": "TOPOLOGY-CHAR-V1-20260902-56-V1",
+    "manifest_path": "paper/evidence/manifests/topology-characterization-v1.json",
+    "prose_claim_ids": [
+      "CLM-018",
+      "CLM-025",
+      "CLM-027",
+      "CLM-028"
+    ],
+    "rule": "Every number in the section is a macro defined here; each macro is bound below to an artifact path, JSON pointer, formatter and SHA-256. Claim-bearing sentences are exact EvidenceClaim bodies registered in paper/evidence/claims.json; the numerical-screening gate in paper/evidence/result-gates.json names the typed manifest that admits the section and records the outcome as accepted screening, preregistered null or recorded characterization without opening any physics level.",
+    "section_binding": "\\input{sections/topology-characterization-v1.tex}",
+    "section_heading": "Recorded topology characterization: no stable eligible cusp or cell",
+    "section_path": "paper/sections/topology-characterization-v1.tex",
+    "status": "admitted",
+    "table_macros": [
+      "TchNullClassTable",
+      "TchStageTable"
+    ]
+  },
+  "output": {
+    "path": "paper/generated/topology-characterization-v1.tex",
+    "sha256": "a544117c4aa9adcb6ea7dd6df48a1409b88e472aff93ac4827c6f45d695da14b"
+  },
+  "recorded_outcome": "recorded-characterization",
+  "schema_version": "1.0",
+  "screening_model": "linear-vacuum L1a equivalent-current axisymmetric field (not a permanent-magnet or nonlinear-iron material model)",
+  "tables": {
+    "TchNullClassTable": {
+      "rows": 6,
+      "source": "results/dataset.json#/cases/*/maps/primary/roots"
+    },
+    "TchStageTable": {
+      "rows": 7,
+      "source": "results/dataset.json#/analyses/stage_relation"
+    }
+  }
+}

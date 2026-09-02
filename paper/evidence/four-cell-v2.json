@@ -1,0 +1,1694 @@
+{
+  "artifacts": {
+    "protocol.json": {
+      "bytes": 10580,
+      "sha256": "5c195119c7a3c3c7e8b2c2d58e2e9836ac0ece6e000e52b0fd86c4718446c1b4"
+    },
+    "results/dataset.json": {
+      "bytes": 1001973,
+      "sha256": "f01c044b99349ee1fc207702b4b7ab73c6eab49362a5b0249c3a99f501252d68"
+    },
+    "results/dataset.json.sha256": {
+      "bytes": 79,
+      "sha256": "01ce1be2762fcebe2db562b80fd7250c0acb756c28fd5c9bff007cc91eef0e40"
+    },
+    "results/execution-lock.json": {
+      "bytes": 442,
+      "sha256": "c70c8471575f848b249ecf72da414839aa8fd6e5aebf24398bc78eb2b3368135"
+    },
+    "results/execution-lock.json.sha256": {
+      "bytes": 86,
+      "sha256": "af90da40225ff0ea8b2fc57c29e6b0e27626cdd437342ce7a2b43c09d76635d8"
+    },
+    "results/manifest.json": {
+      "bytes": 5856,
+      "sha256": "f5e26373d72bd13aa5631516009797567e0f66812941d993d5fad534be07240a"
+    },
+    "results/manifest.json.sha256": {
+      "bytes": 80,
+      "sha256": "86976893260993b213e95d0d4ae2643c80d8956a39e48b0817969879a25a78bd"
+    },
+    "results/preregistered-protocol.json": {
+      "bytes": 10580,
+      "sha256": "5c195119c7a3c3c7e8b2c2d58e2e9836ac0ece6e000e52b0fd86c4718446c1b4"
+    },
+    "results/preregistered-protocol.json.sha256": {
+      "bytes": 94,
+      "sha256": "b7e16b78997642aa153745eb35f0455bd2921caafd15f30dd04ce78be56b0b46"
+    },
+    "results/report.md": {
+      "bytes": 2419,
+      "sha256": "9fd6a8945d5a7ce0104b1dc06d9d2204c8205457fc69d882a305d7465a3f3de5"
+    },
+    "results/report.md.sha256": {
+      "bytes": 76,
+      "sha256": "729c6baa7d278a6d9489a313fa1e2fac7d78a51bf7a20217c711387953d6b014"
+    },
+    "results/representatives/v2-006-downsampled-field.json": {
+      "bytes": 639901,
+      "sha256": "d32747ef7293e01fba70699b7d92c4e954bd88ec8327c1672388468e27b5e020"
+    },
+    "results/representatives/v2-006-downsampled-field.json.sha256": {
+      "bytes": 96,
+      "sha256": "bee3d191de11720314ce4cd981cc0416dacf72863b8ed3a50bd2ed2888b18e2e"
+    },
+    "results/representatives/v2-006-enlarged_domain-field.json": {
+      "bytes": 1588789,
+      "sha256": "f85484b090551f8c9b371f267dda62f500b9eb94152387d42896adb28d34ccc1"
+    },
+    "results/representatives/v2-006-enlarged_domain-field.json.sha256": {
+      "bytes": 100,
+      "sha256": "e72d729d6aa0879fe03b8f32e154e1eef9ea2d58e5f97c1035ec537a40671846"
+    },
+    "results/representatives/v2-006-geometry.json": {
+      "bytes": 8632,
+      "sha256": "c08b060868502992436b51ff8add5ab6bc549ded817602a5e332fd50ba63883f"
+    },
+    "results/representatives/v2-006-geometry.json.sha256": {
+      "bytes": 87,
+      "sha256": "bcfab8e2a2b35980a558e1bd68760b4a59b47d86b7661b1c4609919661d530e8"
+    },
+    "results/representatives/v2-006-primary-field.json": {
+      "bytes": 1222271,
+      "sha256": "7b4a4a30267a6d5f847c78e8513fda4c47c4db8a5389c0a064108ec982f5385f"
+    },
+    "results/representatives/v2-006-primary-field.json.sha256": {
+      "bytes": 92,
+      "sha256": "4e07b25074b8916e0daabf9d30f9d3958da6571b019b62fd075bfec368c274dd"
+    },
+    "results/representatives/v2-010-downsampled-field.json": {
+      "bytes": 637456,
+      "sha256": "265caaf8b6301f1f1a94df3cbf98c280c4ba65700d06f6851487dcedb879facb"
+    },
+    "results/representatives/v2-010-downsampled-field.json.sha256": {
+      "bytes": 96,
+      "sha256": "dbebd7ae11b0bd0533b3d03c6a7187f9fb6e9804f0d17ff69ae80ff9ee273a4f"
+    },
+    "results/representatives/v2-010-enlarged_domain-field.json": {
+      "bytes": 1581999,
+      "sha256": "eaa4eb9f8a3307f89d49fdf4f48968933ca5f69ba326f7a1d8f11e44947d28f2"
+    },
+    "results/representatives/v2-010-enlarged_domain-field.json.sha256": {
+      "bytes": 100,
+      "sha256": "583f21dc99a9226b72e2ee355417bb9e5e1fac88f9dd7f06783d85f47b3350f4"
+    },
+    "results/representatives/v2-010-geometry.json": {
+      "bytes": 8760,
+      "sha256": "9099c30bf2eb1c5520d4f8103e79bba9044a4a29b65a761a4ae0eade4b183823"
+    },
+    "results/representatives/v2-010-geometry.json.sha256": {
+      "bytes": 87,
+      "sha256": "d82e05ba06a12a8baf439e4cb1c39f69d9c5e0770a308ca714f12428ea7e4d31"
+    },
+    "results/representatives/v2-010-primary-field.json": {
+      "bytes": 1217588,
+      "sha256": "d5f774e1f0a50c5942ced5abf0b876e83b402d462e42999d4111af520959f36f"
+    },
+    "results/representatives/v2-010-primary-field.json.sha256": {
+      "bytes": 92,
+      "sha256": "845d911301721f4553a9f75d9b828dad72e7a4ab39433dc8e054e249846157e0"
+    },
+    "results/runtime.json": {
+      "bytes": 723,
+      "sha256": "2973e4cbba2f712cf85907b6dc3542ae53674001fd29372d0ce41698db2a7877"
+    },
+    "results/runtime.json.sha256": {
+      "bytes": 79,
+      "sha256": "bb7afefecff0e449126d5726cb092e90c8dbcde8a358f76aa703e500771a6a33"
+    }
+  },
+  "binding": {
+    "manifest_git_blob": "aaa3be7730958c38d553a0c2b067810bc27ecb01",
+    "manifest_path": "modern/experiments/four_cell_topology_search_v2/results/manifest.json",
+    "posthoc_audit_commit": "605be5ceffa407142a2acb11cc040b13eef89b0c",
+    "posthoc_audit_path": "modern/experiments/four_cell_topology_search_v2/POSTHOC_AUDIT.md",
+    "preregistration_commit": "d6317910703de91ca6dc25c4d4d855e36cc3b14d",
+    "results_commit": "7120e8edcb74c02c1df968c730d1f93b3758b4e1",
+    "results_commit_subject": "record four-cell v2 null terminal-gate result",
+    "results_tree": "56b41d451d94e0fde1f86bd4d3a40b7fbc2470b2"
+  },
+  "bundle": {
+    "audited_eol_files": {
+      "results/preregistered-protocol.json": {
+        "audit_module": "modern/experiments/four_cell_topology_search_v2/audit_sidecar_eol.py",
+        "lf_sha256": "5c195119c7a3c3c7e8b2c2d58e2e9836ac0ece6e000e52b0fd86c4718446c1b4",
+        "recorded_bytes": 10811,
+        "recorded_sha256": "ec2e9a732b7d0e909ff742ebbbb0215e1102909c148b812306df6f0759f48e49"
+      }
+    },
+    "manifest_path": "modern/experiments/four_cell_topology_search_v2/results/manifest.json",
+    "manifest_sha256": "f5e26373d72bd13aa5631516009797567e0f66812941d993d5fad534be07240a",
+    "tolerance_rule": "for exactly the audited files: bytes contain no CR, sha256(bytes) == audited LF digest and sha256(bytes.replace(LF, CRLF)) == recorded digest with the recorded byte count; every other mismatch fails",
+    "tolerated_eol_files": [
+      "results/preregistered-protocol.json"
+    ],
+    "verified_file_count": 29
+  },
+  "classification": "PREREGISTERED_PHYSICS_GATED_V2",
+  "document_type": "paper-four-cell-v2-evidence",
+  "evidence_revision": "7120e8edcb74c02c1df968c730d1f93b3758b4e1",
+  "experiment_id": "four-cell-topology-search-v2",
+  "generator": {
+    "command": "python paper/scripts/generate_topology_screening_evidence.py",
+    "path": "paper/scripts/generate_topology_screening_evidence.py",
+    "sha256": "36ae2d1a3663f3471d3f07ed2fa4447bbf9fea4bbbb69cc7177feb35c49fd86a"
+  },
+  "lineage_artifacts": {
+    "files": {
+      "modern/experiments/cft_wall_cusp_validation_v1/results/failure.json": {
+        "bytes": 5472,
+        "identity": "manifest canonical-json-sha256 (recorded byte digest is CRLF-era; not relied on)",
+        "results_commit": "2504175ea845dca1b57fef159961f335a2b546ee",
+        "sha256": "58d84d0531abd938bb7f4c171129506afd434ee52995a7e43bef8a50af6d102d"
+      },
+      "modern/experiments/cft_wall_cusp_validation_v1/results/manifest.json": {
+        "bytes": 4173,
+        "identity": "canonical-semantic-payload",
+        "results_commit": "2504175ea845dca1b57fef159961f335a2b546ee",
+        "sha256": "43a5bbe83a05ba7802d8dd78ed2d539d97f85fbff879e92e6405e81fdf3dcaf3"
+      },
+      "modern/experiments/cft_wall_cusp_validation_v2/results/failure.json": {
+        "bytes": 2020,
+        "identity": "manifest canonical-json-sha256 (recorded byte digest is CRLF-era; not relied on)",
+        "results_commit": "7e1246b5b76830fe09afb10ffe076e953a3c2905",
+        "sha256": "d18a284606b98ce3c10dfed1fbfbba937395d2b2fcfaea810f02756510574084"
+      },
+      "modern/experiments/cft_wall_cusp_validation_v2/results/manifest.json": {
+        "bytes": 5647,
+        "identity": "canonical-semantic-payload",
+        "results_commit": "7e1246b5b76830fe09afb10ffe076e953a3c2905",
+        "sha256": "8e0be571d43111caeb45c3a5d87f2e104ea49693848d4fd520a18d058ae3c5cc"
+      },
+      "modern/experiments/four_cell_topology_search/results/dataset.json": {
+        "bytes": 7818345,
+        "identity": "sidecar-sha256+canonical-payload",
+        "results_commit": "4afcecfb024cd06e79d0ce8e063fc863ba3f79dc",
+        "sha256": "145decd7f1856b9e00429e07f06d47beb2a1de24523d75e6eb10c8f0856344de"
+      },
+      "modern/experiments/four_cell_topology_search/results/manifest.json": {
+        "bytes": 6814,
+        "identity": "sidecar-sha256+canonical-payload",
+        "results_commit": "4afcecfb024cd06e79d0ce8e063fc863ba3f79dc",
+        "sha256": "3ddae4a7254e832126a3e368b9e30cc29c25fe8fdafd127fcbbaafe27def7b53"
+      }
+    },
+    "rule": "hash-bound lineage records quoted as non-claims only; they are not evidence and authorize no result"
+  },
+  "macros": [
+    {
+      "derived": false,
+      "description": "search classification string",
+      "format": "ident",
+      "name": "FcnClassification",
+      "raw": "PREREGISTERED_PHYSICS_GATED_V2",
+      "source": {
+        "artifact": "results/dataset.json",
+        "pointer": "/classification"
+      },
+      "value": "PREREGISTERED\\_\\allowbreak{}PHYSICS\\_\\allowbreak{}GATED\\_\\allowbreak{}V2"
+    },
+    {
+      "derived": false,
+      "description": "field model level of the accepted baseline",
+      "format": "text",
+      "name": "FcnFieldModelLevel",
+      "raw": "L1a",
+      "source": {
+        "artifact": "protocol.json",
+        "pointer": "/accepted_dependency_baseline/field_model_level"
+      },
+      "value": "L1a"
+    },
+    {
+      "derived": false,
+      "description": "single execution flag",
+      "format": "bool",
+      "name": "FcnSingleExecution",
+      "raw": true,
+      "source": {
+        "artifact": "results/manifest.json",
+        "pointer": "/single_execution"
+      },
+      "value": "true"
+    },
+    {
+      "derived": false,
+      "description": "declared candidates",
+      "format": "int",
+      "name": "FcnDeclared",
+      "raw": 128,
+      "source": {
+        "artifact": "results/dataset.json",
+        "pointer": "/summary/declared_candidate_count"
+      },
+      "value": "128"
+    },
+    {
+      "derived": false,
+      "description": "candidates evaluated",
+      "format": "int",
+      "name": "FcnEvaluated",
+      "raw": 128,
+      "source": {
+        "artifact": "results/dataset.json",
+        "pointer": "/summary/evaluated_count"
+      },
+      "value": "128"
+    },
+    {
+      "derived": false,
+      "description": "candidates whose three maps passed every field gate",
+      "format": "int",
+      "name": "FcnThreeMapAccepted",
+      "raw": 128,
+      "source": {
+        "artifact": "results/dataset.json",
+        "pointer": "/summary/three_map_accepted_count"
+      },
+      "value": "128"
+    },
+    {
+      "derived": false,
+      "description": "candidates with a stable four-cusp topology",
+      "format": "int",
+      "name": "FcnStable",
+      "raw": 0,
+      "source": {
+        "artifact": "results/dataset.json",
+        "pointer": "/summary/stable_count"
+      },
+      "value": "0"
+    },
+    {
+      "derived": false,
+      "description": "candidates passing adiabaticity",
+      "format": "int",
+      "name": "FcnAdiabatic",
+      "raw": 0,
+      "source": {
+        "artifact": "results/dataset.json",
+        "pointer": "/summary/adiabatic_count"
+      },
+      "value": "0"
+    },
+    {
+      "derived": false,
+      "description": "candidates coupled into the plasma network",
+      "format": "int",
+      "name": "FcnCoupled",
+      "raw": 0,
+      "source": {
+        "artifact": "results/dataset.json",
+        "pointer": "/summary/coupled_count"
+      },
+      "value": "0"
+    },
+    {
+      "derived": false,
+      "description": "unique plasma states published",
+      "format": "int",
+      "name": "FcnUniqueStates",
+      "raw": 0,
+      "source": {
+        "artifact": "results/dataset.json",
+        "pointer": "/summary/unique_state_count"
+      },
+      "value": "0"
+    },
+    {
+      "derived": false,
+      "description": "power or performance publications",
+      "format": "int",
+      "name": "FcnPerformancePublications",
+      "raw": 0,
+      "source": {
+        "artifact": "results/dataset.json",
+        "pointer": "/summary/power_or_performance_publication_count"
+      },
+      "value": "0"
+    },
+    {
+      "derived": false,
+      "description": "plasma residual-root scenarios",
+      "format": "int",
+      "name": "FcnResidualRootScenarios",
+      "raw": 0,
+      "source": {
+        "artifact": "results/dataset.json",
+        "pointer": "/summary/plasma_residual_root_scenario_count"
+      },
+      "value": "0"
+    },
+    {
+      "derived": false,
+      "description": "candidates failing TOPOLOGY_COUNT",
+      "format": "int",
+      "name": "FcnTopologyCountFailures",
+      "raw": 128,
+      "source": {
+        "artifact": "results/dataset.json",
+        "pointer": "/summary/failure_counts/TOPOLOGY_COUNT"
+      },
+      "value": "128"
+    },
+    {
+      "derived": false,
+      "description": "candidates failing TOPOLOGY_UNSTABLE",
+      "format": "int",
+      "name": "FcnTopologyUnstableFailures",
+      "raw": 128,
+      "source": {
+        "artifact": "results/dataset.json",
+        "pointer": "/summary/failure_counts/TOPOLOGY_UNSTABLE"
+      },
+      "value": "128"
+    },
+    {
+      "derived": false,
+      "description": "candidates failing FIELD_PRIMARY_INVALID",
+      "format": "int",
+      "name": "FcnFieldFailures",
+      "raw": 0,
+      "source": {
+        "artifact": "results/dataset.json",
+        "pointer": "/summary/failure_counts/FIELD_PRIMARY_INVALID"
+      },
+      "value": "0"
+    },
+    {
+      "derivation": "count(cases with any of GEOMETRY_INVALID, FIELD_PRIMARY_INVALID, FIELD_DOWNSAMPLED_INVALID, FIELD_ENLARGED_INVALID, FIELD_DOMAIN_UNSTABLE in failures)",
+      "derived": true,
+      "description": "candidates whose geometry or any field map failed to evaluate",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/dataset.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "FcnEvaluationFailures",
+      "raw": 0,
+      "value": "0"
+    },
+    {
+      "derivation": "len(summary.failure_counts)",
+      "derived": true,
+      "description": "failure taxonomy codes",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/dataset.json",
+          "pointer": "/summary/failure_counts"
+        }
+      ],
+      "name": "FcnFailureCodeCount",
+      "raw": 19,
+      "value": "19"
+    },
+    {
+      "derivation": "count(summary.failure_counts > 0)",
+      "derived": true,
+      "description": "failure codes with a non-zero count",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/dataset.json",
+          "pointer": "/summary/failure_counts"
+        }
+      ],
+      "name": "FcnNonzeroFailureCodes",
+      "raw": 2,
+      "value": "2"
+    },
+    {
+      "derived": false,
+      "description": "required stable cell count",
+      "format": "int",
+      "name": "FcnRequiredCells",
+      "raw": 4,
+      "source": {
+        "artifact": "protocol.json",
+        "pointer": "/topology/required_stable_cell_count"
+      },
+      "value": "4"
+    },
+    {
+      "derived": false,
+      "description": "required geometry-registered cusps",
+      "format": "int",
+      "name": "FcnRequiredRegisteredCusps",
+      "raw": 4,
+      "source": {
+        "artifact": "protocol.json",
+        "pointer": "/topology/required_geometry_registered_cusp_count"
+      },
+      "value": "4"
+    },
+    {
+      "derived": false,
+      "description": "maximum cross-map cusp shift (mm)",
+      "format": "mm1",
+      "name": "FcnMaxCuspShiftMm",
+      "raw": 0.0008,
+      "source": {
+        "artifact": "protocol.json",
+        "pointer": "/topology/maximum_cross_map_cusp_shift_m"
+      },
+      "value": "0.8"
+    },
+    {
+      "derived": false,
+      "description": "maximum geometry slot error (pitch fraction)",
+      "format": "g",
+      "name": "FcnSlotErrorFraction",
+      "raw": 0.45,
+      "source": {
+        "artifact": "protocol.json",
+        "pointer": "/topology/maximum_geometry_slot_error_pitch_fraction"
+      },
+      "value": "0.45"
+    },
+    {
+      "derived": false,
+      "description": "endpoint exclusion cells",
+      "format": "int",
+      "name": "FcnEndpointExclusionCells",
+      "raw": 3,
+      "source": {
+        "artifact": "protocol.json",
+        "pointer": "/topology/endpoint_exclusion_cells"
+      },
+      "value": "3"
+    },
+    {
+      "derived": false,
+      "description": "flux quantiles",
+      "format": "list_g",
+      "name": "FcnFluxQuantiles",
+      "raw": [
+        0.35,
+        0.55,
+        0.75
+      ],
+      "source": {
+        "artifact": "protocol.json",
+        "pointer": "/topology/flux_quantiles"
+      },
+      "value": "0.35, 0.55, 0.75"
+    },
+    {
+      "derived": false,
+      "description": "saddle tie policy",
+      "format": "ident",
+      "name": "FcnSaddlePolicy",
+      "raw": "reject",
+      "source": {
+        "artifact": "protocol.json",
+        "pointer": "/topology/saddle_tie_policy"
+      },
+      "value": "reject"
+    },
+    {
+      "derived": false,
+      "description": "geometry cusp slot rule",
+      "format": "text",
+      "name": "FcnCuspSlots",
+      "raw": "one upstream return-field slot at first_stage_center-0.75*pitch followed by all three adjacent-stage midplanes",
+      "source": {
+        "artifact": "protocol.json",
+        "pointer": "/topology/geometry_cusp_slots"
+      },
+      "value": "one upstream return-field slot at first\\_stage\\_center-0.75*pitch followed by all three adjacent-stage midplanes"
+    },
+    {
+      "derived": false,
+      "description": "boundary null policy",
+      "format": "text",
+      "name": "FcnBoundaryNullPolicy",
+      "raw": "finite-box boundary nulls are diagnostics only and never cells or plasma closures",
+      "source": {
+        "artifact": "protocol.json",
+        "pointer": "/topology/boundary_null_policy"
+      },
+      "value": "finite-box boundary nulls are diagnostics only and never cells or plasma closures"
+    },
+    {
+      "derived": false,
+      "description": "TOPOLOGY_COUNT definition",
+      "format": "text",
+      "name": "FcnCountFailureDefinition",
+      "raw": "a map did not contain exactly four accepted interior cusps",
+      "source": {
+        "artifact": "protocol.json",
+        "pointer": "/failure_taxonomy/TOPOLOGY_COUNT"
+      },
+      "value": "a map did not contain exactly four accepted interior cusps"
+    },
+    {
+      "derived": false,
+      "description": "TOPOLOGY_UNSTABLE definition",
+      "format": "text",
+      "name": "FcnUnstableFailureDefinition",
+      "raw": "cell count or cusp positions changed across maps",
+      "source": {
+        "artifact": "protocol.json",
+        "pointer": "/failure_taxonomy/TOPOLOGY_UNSTABLE"
+      },
+      "value": "cell count or cusp positions changed across maps"
+    },
+    {
+      "derived": false,
+      "description": "zero-pass policy",
+      "format": "text",
+      "name": "FcnZeroPassPolicy",
+      "raw": "publish the immutable null result and failure taxonomy without patching or rerunning",
+      "source": {
+        "artifact": "protocol.json",
+        "pointer": "/execution/zero_pass_policy"
+      },
+      "value": "publish the immutable null result and failure taxonomy without patching or rerunning"
+    },
+    {
+      "derived": false,
+      "description": "independent maps per candidate",
+      "format": "int",
+      "name": "FcnMapCount",
+      "raw": 3,
+      "source": {
+        "artifact": "protocol.json",
+        "pointer": "/maps/independent_solves_per_candidate"
+      },
+      "value": "3"
+    },
+    {
+      "derived": false,
+      "description": "primary radial intervals",
+      "format": "int",
+      "name": "FcnPrimaryRadial",
+      "raw": 56,
+      "source": {
+        "artifact": "protocol.json",
+        "pointer": "/maps/roles/primary/radial_intervals"
+      },
+      "value": "56"
+    },
+    {
+      "derived": false,
+      "description": "primary axial intervals",
+      "format": "int",
+      "name": "FcnPrimaryAxial",
+      "raw": 168,
+      "source": {
+        "artifact": "protocol.json",
+        "pointer": "/maps/roles/primary/axial_intervals"
+      },
+      "value": "168"
+    },
+    {
+      "derived": false,
+      "description": "downsampled radial intervals",
+      "format": "int",
+      "name": "FcnDownsampledRadial",
+      "raw": 40,
+      "source": {
+        "artifact": "protocol.json",
+        "pointer": "/maps/roles/downsampled/radial_intervals"
+      },
+      "value": "40"
+    },
+    {
+      "derived": false,
+      "description": "downsampled axial intervals",
+      "format": "int",
+      "name": "FcnDownsampledAxial",
+      "raw": 120,
+      "source": {
+        "artifact": "protocol.json",
+        "pointer": "/maps/roles/downsampled/axial_intervals"
+      },
+      "value": "120"
+    },
+    {
+      "derived": false,
+      "description": "enlarged-domain radial intervals",
+      "format": "int",
+      "name": "FcnEnlargedRadial",
+      "raw": 64,
+      "source": {
+        "artifact": "protocol.json",
+        "pointer": "/maps/roles/enlarged_domain/radial_intervals"
+      },
+      "value": "64"
+    },
+    {
+      "derived": false,
+      "description": "enlarged-domain axial intervals",
+      "format": "int",
+      "name": "FcnEnlargedAxial",
+      "raw": 192,
+      "source": {
+        "artifact": "protocol.json",
+        "pointer": "/maps/roles/enlarged_domain/axial_intervals"
+      },
+      "value": "192"
+    },
+    {
+      "derived": false,
+      "description": "enlarged-domain scale factor",
+      "format": "g",
+      "name": "FcnEnlargedScale",
+      "raw": 1.25,
+      "source": {
+        "artifact": "protocol.json",
+        "pointer": "/maps/roles/enlarged_domain/domain_scale"
+      },
+      "value": "1.25"
+    },
+    {
+      "derived": false,
+      "description": "sampling algorithm",
+      "format": "text",
+      "name": "FcnSamplingAlgorithm",
+      "raw": "deterministic shifted Halton, bases 2 through 41",
+      "source": {
+        "artifact": "protocol.json",
+        "pointer": "/sampling/algorithm"
+      },
+      "value": "deterministic shifted Halton, bases 2 through 41"
+    },
+    {
+      "derived": false,
+      "description": "preregistered candidate count",
+      "format": "int",
+      "name": "FcnCandidateCount",
+      "raw": 128,
+      "source": {
+        "artifact": "protocol.json",
+        "pointer": "/sampling/candidate_count"
+      },
+      "value": "128"
+    },
+    {
+      "derived": false,
+      "description": "magnet stages per candidate",
+      "format": "int",
+      "name": "FcnStageCount",
+      "raw": 4,
+      "source": {
+        "artifact": "protocol.json",
+        "pointer": "/sampling/stage_count"
+      },
+      "value": "4"
+    },
+    {
+      "derivation": "len(protocol.sampling.variables)",
+      "derived": true,
+      "description": "design variables",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "protocol.json",
+          "pointer": "/sampling/variables"
+        }
+      ],
+      "name": "FcnDesignVariableCount",
+      "raw": 13,
+      "value": "13"
+    },
+    {
+      "derived": false,
+      "description": "screening electron energy (eV)",
+      "format": "g",
+      "name": "FcnElectronEnergyEv",
+      "raw": 100.0,
+      "source": {
+        "artifact": "protocol.json",
+        "pointer": "/coupling_v3/electron_distribution/kinetic_energy_ev"
+      },
+      "value": "100"
+    },
+    {
+      "derived": false,
+      "description": "adiabaticity limit rho_e/L_B",
+      "format": "g",
+      "name": "FcnGyroLimit",
+      "raw": 0.1,
+      "source": {
+        "artifact": "protocol.json",
+        "pointer": "/coupling_v3/electron_distribution/maximum_gyroradius_to_scale_length"
+      },
+      "value": "0.1"
+    },
+    {
+      "derived": false,
+      "description": "default publication policy",
+      "format": "text",
+      "name": "FcnDefaultPublication",
+      "raw": "rank, nullity, residual and conservation diagnostics only; no state, power or performance",
+      "source": {
+        "artifact": "protocol.json",
+        "pointer": "/claim_boundary/default_publication"
+      },
+      "value": "rank, nullity, residual and conservation diagnostics only; no state, power or performance"
+    },
+    {
+      "derived": false,
+      "description": "same-z proxy allowed",
+      "format": "bool",
+      "name": "FcnSameZProxyAllowed",
+      "raw": false,
+      "source": {
+        "artifact": "protocol.json",
+        "pointer": "/claim_boundary/same_z_proxy_allowed"
+      },
+      "value": "false"
+    },
+    {
+      "derived": false,
+      "description": "accepted coupling v3 commit prefix",
+      "format": "sha_short",
+      "name": "FcnCouplingCommit",
+      "raw": "f80a360fd740a30017cdac1874cedbfa2806874a",
+      "source": {
+        "artifact": "results/dataset.json",
+        "pointer": "/accepted_coupling_v3_commit_sha"
+      },
+      "value": "f80a360fd740"
+    },
+    {
+      "derived": false,
+      "description": "preregistration commit prefix",
+      "format": "sha_short",
+      "name": "FcnPreregCommit",
+      "raw": "d6317910703de91ca6dc25c4d4d855e36cc3b14d",
+      "source": {
+        "artifact": "results/dataset.json",
+        "pointer": "/preregistration_commit_sha"
+      },
+      "value": "d6317910703d"
+    },
+    {
+      "derived": false,
+      "description": "protocol canonical payload hash prefix",
+      "format": "sha_short",
+      "name": "FcnProtocolPayloadSha",
+      "raw": "bd522269b87e555fee279bd669d34e2b6a98a31540c6f4687cfcf51b40614c33",
+      "source": {
+        "artifact": "results/dataset.json",
+        "pointer": "/protocol_payload_sha256"
+      },
+      "value": "bd522269b87e"
+    },
+    {
+      "derived": false,
+      "description": "GPU name",
+      "format": "text",
+      "name": "FcnGpuName",
+      "raw": "NVIDIA GeForce RTX 5090",
+      "source": {
+        "artifact": "results/runtime.json",
+        "pointer": "/gpu_name"
+      },
+      "value": "NVIDIA GeForce RTX 5090"
+    },
+    {
+      "derived": false,
+      "description": "Warp version",
+      "format": "text",
+      "name": "FcnWarpVersion",
+      "raw": "1.14.0",
+      "source": {
+        "artifact": "results/runtime.json",
+        "pointer": "/warp_version"
+      },
+      "value": "1.14.0"
+    },
+    {
+      "derivation": "min over cases of len(maps.primary.interior_cusp_z_m)",
+      "derived": true,
+      "description": "minimum interior cusps per candidate (primary)",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/dataset.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "FcnPrimaryCuspMin",
+      "raw": 11,
+      "value": "11"
+    },
+    {
+      "derivation": "max over cases of len(maps.primary.interior_cusp_z_m)",
+      "derived": true,
+      "description": "maximum interior cusps per candidate (primary)",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/dataset.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "FcnPrimaryCuspMax",
+      "raw": 17,
+      "value": "17"
+    },
+    {
+      "derivation": "sum over cases of len(maps.primary.interior_cusp_z_m)",
+      "derived": true,
+      "description": "interior cusps recorded over all candidates (primary)",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/dataset.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "FcnPrimaryCuspTotal",
+      "raw": 1843,
+      "value": "1843"
+    },
+    {
+      "derivation": "count over cases of len(maps.primary.interior_cusp_z_m) == protocol.topology.required_stable_cell_count",
+      "derived": true,
+      "description": "candidates with exactly the required cusp count (primary)",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/dataset.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "FcnPrimaryExactCount",
+      "raw": 0,
+      "value": "0"
+    },
+    {
+      "derivation": "min over cases of len(maps.downsampled.interior_cusp_z_m)",
+      "derived": true,
+      "description": "minimum interior cusps per candidate (downsampled)",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/dataset.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "FcnDownsampledCuspMin",
+      "raw": 10,
+      "value": "10"
+    },
+    {
+      "derivation": "max over cases of len(maps.downsampled.interior_cusp_z_m)",
+      "derived": true,
+      "description": "maximum interior cusps per candidate (downsampled)",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/dataset.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "FcnDownsampledCuspMax",
+      "raw": 16,
+      "value": "16"
+    },
+    {
+      "derivation": "sum over cases of len(maps.downsampled.interior_cusp_z_m)",
+      "derived": true,
+      "description": "interior cusps recorded over all candidates (downsampled)",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/dataset.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "FcnDownsampledCuspTotal",
+      "raw": 1805,
+      "value": "1805"
+    },
+    {
+      "derivation": "count over cases of len(maps.downsampled.interior_cusp_z_m) == protocol.topology.required_stable_cell_count",
+      "derived": true,
+      "description": "candidates with exactly the required cusp count (downsampled)",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/dataset.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "FcnDownsampledExactCount",
+      "raw": 0,
+      "value": "0"
+    },
+    {
+      "derivation": "min over cases of len(maps.enlarged_domain.interior_cusp_z_m)",
+      "derived": true,
+      "description": "minimum interior cusps per candidate (enlarged_domain)",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/dataset.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "FcnEnlargedDomainCuspMin",
+      "raw": 11,
+      "value": "11"
+    },
+    {
+      "derivation": "max over cases of len(maps.enlarged_domain.interior_cusp_z_m)",
+      "derived": true,
+      "description": "maximum interior cusps per candidate (enlarged_domain)",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/dataset.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "FcnEnlargedDomainCuspMax",
+      "raw": 18,
+      "value": "18"
+    },
+    {
+      "derivation": "sum over cases of len(maps.enlarged_domain.interior_cusp_z_m)",
+      "derived": true,
+      "description": "interior cusps recorded over all candidates (enlarged_domain)",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/dataset.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "FcnEnlargedDomainCuspTotal",
+      "raw": 2007,
+      "value": "2007"
+    },
+    {
+      "derivation": "count over cases of len(maps.enlarged_domain.interior_cusp_z_m) == protocol.topology.required_stable_cell_count",
+      "derived": true,
+      "description": "candidates with exactly the required cusp count (enlarged_domain)",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/dataset.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "FcnEnlargedDomainExactCount",
+      "raw": 0,
+      "value": "0"
+    },
+    {
+      "derivation": "count(cases.topology.exact_count == true)",
+      "derived": true,
+      "description": "candidates with exactly four cusps on all three maps",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/dataset.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "FcnAnyExactCount",
+      "raw": 0,
+      "value": "0"
+    },
+    {
+      "derivation": "count(cases.topology.geometry_registered == true)",
+      "derived": true,
+      "description": "candidates whose cusps registered to the geometry slots",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/dataset.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "FcnGeometryRegistered",
+      "raw": 0,
+      "value": "0"
+    },
+    {
+      "derivation": "count(cases.topology.all_field_gates == true)",
+      "derived": true,
+      "description": "candidates whose three maps passed every field gate",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/dataset.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "FcnAllFieldGates",
+      "raw": 128,
+      "value": "128"
+    },
+    {
+      "derivation": "count(cases.topology.endpoint_exclusion == true)",
+      "derived": true,
+      "description": "candidates with no cusp in the endpoint exclusion region",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/dataset.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "FcnEndpointExclusionPassed",
+      "raw": 128,
+      "value": "128"
+    },
+    {
+      "derivation": "count(cases.topology.enlarged_domain_boundary_comparison == true)",
+      "derived": true,
+      "description": "candidates passing the enlarged-domain boundary comparison",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/dataset.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "FcnDomainStable",
+      "raw": 128,
+      "value": "128"
+    },
+    {
+      "derivation": "min(cases.maps.primary.boundary_null_count)",
+      "derived": true,
+      "description": "minimum finite-box boundary nulls (primary)",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/dataset.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "FcnBoundaryNullMin",
+      "raw": 4,
+      "value": "4"
+    },
+    {
+      "derivation": "max(cases.maps.primary.boundary_null_count)",
+      "derived": true,
+      "description": "maximum finite-box boundary nulls (primary)",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/dataset.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "FcnBoundaryNullMax",
+      "raw": 4,
+      "value": "4"
+    },
+    {
+      "derivation": "min(cases.maps.primary.quality.field_peak_t)",
+      "derived": true,
+      "description": "minimum primary field peak (T)",
+      "format": "fixed3",
+      "inputs": [
+        {
+          "artifact": "results/dataset.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "FcnFieldPeakMin",
+      "raw": 0.4197958873135346,
+      "value": "0.420"
+    },
+    {
+      "derivation": "max(cases.maps.primary.quality.field_peak_t)",
+      "derived": true,
+      "description": "maximum primary field peak (T)",
+      "format": "fixed3",
+      "inputs": [
+        {
+          "artifact": "results/dataset.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "FcnFieldPeakMax",
+      "raw": 0.6904950093965093,
+      "value": "0.690"
+    },
+    {
+      "derived": false,
+      "description": "GPU replay candidates required",
+      "format": "int",
+      "name": "FcnGpuReplayRequired",
+      "raw": 4,
+      "source": {
+        "artifact": "results/dataset.json",
+        "pointer": "/summary/gpu_replay_required_count"
+      },
+      "value": "4"
+    },
+    {
+      "derived": false,
+      "description": "GPU replay candidates passing all replay tolerances",
+      "format": "int",
+      "name": "FcnGpuReplayPassed",
+      "raw": 2,
+      "source": {
+        "artifact": "results/dataset.json",
+        "pointer": "/summary/gpu_replay_pass_count"
+      },
+      "value": "2"
+    },
+    {
+      "derived": false,
+      "description": "replay diagnostic relative-difference limit",
+      "format": "sci1",
+      "name": "FcnGpuReplayDiagnosticLimit",
+      "raw": 5e-06,
+      "source": {
+        "artifact": "protocol.json",
+        "pointer": "/replay/maximum_diagnostic_relative_difference"
+      },
+      "value": "$5.0\\times10^{-6}$"
+    },
+    {
+      "derived": false,
+      "description": "replay field component limit (T)",
+      "format": "sci1",
+      "name": "FcnGpuReplayFieldLimit",
+      "raw": 2e-08,
+      "source": {
+        "artifact": "protocol.json",
+        "pointer": "/replay/maximum_b_component_absolute_difference_t"
+      },
+      "value": "$2.0\\times10^{-8}$"
+    },
+    {
+      "derived": false,
+      "description": "replay psi limit (Wb)",
+      "format": "sci1",
+      "name": "FcnGpuReplayPsiLimit",
+      "raw": 2e-10,
+      "source": {
+        "artifact": "protocol.json",
+        "pointer": "/replay/maximum_psi_absolute_difference_wb"
+      },
+      "value": "$2.0\\times10^{-10}$"
+    },
+    {
+      "derivation": "max over gpu_replay of max(differences.br_max_abs_t, differences.bz_max_abs_t)",
+      "derived": true,
+      "description": "largest replay field component difference (T)",
+      "format": "sci1",
+      "inputs": [
+        {
+          "artifact": "results/dataset.json",
+          "pointer": "/gpu_replay"
+        }
+      ],
+      "name": "FcnGpuReplayMaxFieldDiff",
+      "raw": 4.3298697960381105e-15,
+      "value": "$4.3\\times10^{-15}$"
+    },
+    {
+      "derivation": "max over gpu_replay of differences.psi_max_abs_wb",
+      "derived": true,
+      "description": "largest replay psi difference (Wb)",
+      "format": "sci1",
+      "inputs": [
+        {
+          "artifact": "results/dataset.json",
+          "pointer": "/gpu_replay"
+        }
+      ],
+      "name": "FcnGpuReplayMaxPsiDiff",
+      "raw": 2.202285662861181e-20,
+      "value": "$2.2\\times10^{-20}$"
+    },
+    {
+      "derivation": "max over gpu_replay of diagnostic_relative_difference",
+      "derived": true,
+      "description": "largest replay diagnostic relative difference",
+      "format": "sci1",
+      "inputs": [
+        {
+          "artifact": "results/dataset.json",
+          "pointer": "/gpu_replay"
+        }
+      ],
+      "name": "FcnGpuReplayMaxDiagnostic",
+      "raw": 9.424648774014898e-06,
+      "value": "$9.4\\times10^{-6}$"
+    },
+    {
+      "derivation": "gpu_replay[passed == false].candidate_id",
+      "derived": true,
+      "description": "replay candidates exceeding the diagnostic limit",
+      "format": "list_ident_tt",
+      "inputs": [
+        {
+          "artifact": "results/dataset.json",
+          "pointer": "/gpu_replay"
+        }
+      ],
+      "name": "FcnGpuReplayFailedIds",
+      "raw": [
+        "v2-031",
+        "v2-063"
+      ],
+      "value": "\\texttt{v2-\\allowbreak{}031}, \\texttt{v2-\\allowbreak{}063}"
+    },
+    {
+      "derivation": "count(gpu_replay.passed == false)",
+      "derived": true,
+      "description": "replay candidates exceeding the diagnostic limit",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/dataset.json",
+          "pointer": "/gpu_replay"
+        }
+      ],
+      "name": "FcnGpuReplayFailed",
+      "raw": 2,
+      "value": "2"
+    },
+    {
+      "derivation": "sorted unique manifest.representatives.candidate_id",
+      "derived": true,
+      "description": "representative candidates archived with full artifacts",
+      "format": "list_ident_tt",
+      "inputs": [
+        {
+          "artifact": "results/manifest.json",
+          "pointer": "/representatives"
+        }
+      ],
+      "name": "FcnRepresentativeIds",
+      "raw": [
+        "v2-006",
+        "v2-010"
+      ],
+      "value": "\\texttt{v2-\\allowbreak{}006}, \\texttt{v2-\\allowbreak{}010}"
+    },
+    {
+      "derived": false,
+      "description": "top-ranked candidate",
+      "format": "ident",
+      "name": "FcnTopRankedId",
+      "raw": "v2-006",
+      "source": {
+        "artifact": "results/dataset.json",
+        "pointer": "/ranking/0/candidate_id"
+      },
+      "value": "v2-\\allowbreak{}006"
+    },
+    {
+      "derived": false,
+      "description": "ranking policy for missing stages",
+      "format": "text",
+      "name": "FcnRankingPolicy",
+      "raw": "rank by completed terminal gate only; no numerical fake penalty",
+      "source": {
+        "artifact": "protocol.json",
+        "pointer": "/ranking/missing_stage_policy"
+      },
+      "value": "rank by completed terminal gate only; no numerical fake penalty"
+    },
+    {
+      "derivation": "len(v1 dataset.cases)",
+      "derived": true,
+      "description": "v1 proxy search candidates (lineage, not evidence)",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "lineage:modern/experiments/four_cell_topology_search/results/dataset.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "FcnLineageVOneEvaluated",
+      "raw": 128,
+      "value": "128"
+    },
+    {
+      "derivation": "count(v1 dataset.cases.topology.compatible == true)",
+      "derived": true,
+      "description": "v1 candidates screened compatible by the deprecated proxy (lineage, not evidence)",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "lineage:modern/experiments/four_cell_topology_search/results/dataset.json",
+          "pointer": "/cases"
+        }
+      ],
+      "name": "FcnLineageVOneCompatible",
+      "raw": 2,
+      "value": "2"
+    },
+    {
+      "derivation": "v1 dataset.protocol_status.status",
+      "derived": true,
+      "description": "v1 protocol status",
+      "format": "ident",
+      "inputs": [
+        {
+          "artifact": "lineage:modern/experiments/four_cell_topology_search/results/dataset.json",
+          "pointer": "/protocol_status/status"
+        }
+      ],
+      "name": "FcnLineageVOneStatus",
+      "raw": "development_evidence_only",
+      "value": "development\\_\\allowbreak{}evidence\\_\\allowbreak{}only"
+    },
+    {
+      "derivation": "v1 dataset.protocol_status.preregistered",
+      "derived": true,
+      "description": "v1 preregistered flag",
+      "format": "bool",
+      "inputs": [
+        {
+          "artifact": "lineage:modern/experiments/four_cell_topology_search/results/dataset.json",
+          "pointer": "/protocol_status/preregistered"
+        }
+      ],
+      "name": "FcnLineageVOnePreregistered",
+      "raw": false,
+      "value": "false"
+    },
+    {
+      "derivation": "v1 dataset.protocol_status.valid_for_physical_mirror_claims",
+      "derived": true,
+      "description": "v1 validity for physical mirror claims",
+      "format": "bool",
+      "inputs": [
+        {
+          "artifact": "lineage:modern/experiments/four_cell_topology_search/results/dataset.json",
+          "pointer": "/protocol_status/valid_for_physical_mirror_claims"
+        }
+      ],
+      "name": "FcnLineageVOneMirrorValid",
+      "raw": false,
+      "value": "false"
+    },
+    {
+      "derivation": "v1 manifest.classification",
+      "derived": true,
+      "description": "v1 classification",
+      "format": "ident",
+      "inputs": [
+        {
+          "artifact": "lineage:modern/experiments/four_cell_topology_search/results/manifest.json",
+          "pointer": "/classification"
+        }
+      ],
+      "name": "FcnLineageVOneClassification",
+      "raw": "DEVELOPMENT_EVIDENCE_INVALID_FOR_PHYSICAL_MIRROR_OR_PERFORMANCE_CLAIMS",
+      "value": "DEVELOPMENT\\_\\allowbreak{}EVIDENCE\\_\\allowbreak{}INVALID\\_\\allowbreak{}FOR\\_\\allowbreak{}PHYSICAL\\_\\allowbreak{}MIRROR\\_\\allowbreak{}OR\\_\\allowbreak{}PERFORMANCE\\_\\allowbreak{}CLAIMS"
+    },
+    {
+      "derivation": "failure.failure.phase",
+      "derived": true,
+      "description": "coupling-v4 validation v1 failure phase (lineage)",
+      "format": "ident",
+      "inputs": [
+        {
+          "artifact": "lineage:modern/experiments/cft_wall_cusp_validation_v1/results/failure.json",
+          "pointer": "/failure/phase"
+        }
+      ],
+      "name": "FcnLineageWcvalOnePhase",
+      "raw": "topology_diagnostics_serialization",
+      "value": "topology\\_\\allowbreak{}diagnostics\\_\\allowbreak{}serialization"
+    },
+    {
+      "derivation": "failure.failure.exception_type",
+      "derived": true,
+      "description": "coupling-v4 validation v1 exception type (lineage)",
+      "format": "text",
+      "inputs": [
+        {
+          "artifact": "lineage:modern/experiments/cft_wall_cusp_validation_v1/results/failure.json",
+          "pointer": "/failure/exception_type"
+        }
+      ],
+      "name": "FcnLineageWcvalOneException",
+      "raw": "TypeError",
+      "value": "TypeError"
+    },
+    {
+      "derivation": "manifest.summary.declared_case_count",
+      "derived": true,
+      "description": "coupling-v4 validation v1 declared cases (lineage)",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "lineage:modern/experiments/cft_wall_cusp_validation_v1/results/manifest.json",
+          "pointer": "/summary/declared_case_count"
+        }
+      ],
+      "name": "FcnLineageWcvalOneDeclared",
+      "raw": 24,
+      "value": "24"
+    },
+    {
+      "derivation": "manifest.summary.attempted_case_count",
+      "derived": true,
+      "description": "coupling-v4 validation v1 attempted cases (lineage)",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "lineage:modern/experiments/cft_wall_cusp_validation_v1/results/manifest.json",
+          "pointer": "/summary/attempted_case_count"
+        }
+      ],
+      "name": "FcnLineageWcvalOneAttempted",
+      "raw": 1,
+      "value": "1"
+    },
+    {
+      "derivation": "manifest.summary.criterion_numerically_promoted",
+      "derived": true,
+      "description": "coupling-v4 validation v1 criterion promoted (lineage)",
+      "format": "bool",
+      "inputs": [
+        {
+          "artifact": "lineage:modern/experiments/cft_wall_cusp_validation_v1/results/manifest.json",
+          "pointer": "/summary/criterion_numerically_promoted"
+        }
+      ],
+      "name": "FcnLineageWcvalOnePromoted",
+      "raw": false,
+      "value": "false"
+    },
+    {
+      "derivation": "failure.failure.phase",
+      "derived": true,
+      "description": "coupling-v4 validation v2 failure phase (lineage)",
+      "format": "ident",
+      "inputs": [
+        {
+          "artifact": "lineage:modern/experiments/cft_wall_cusp_validation_v2/results/failure.json",
+          "pointer": "/failure/phase"
+        }
+      ],
+      "name": "FcnLineageWcvalTwoPhase",
+      "raw": "exclusive_lock_payload_serialization",
+      "value": "exclusive\\_\\allowbreak{}lock\\_\\allowbreak{}payload\\_\\allowbreak{}serialization"
+    },
+    {
+      "derivation": "failure.failure.exception_type",
+      "derived": true,
+      "description": "coupling-v4 validation v2 exception type (lineage)",
+      "format": "text",
+      "inputs": [
+        {
+          "artifact": "lineage:modern/experiments/cft_wall_cusp_validation_v2/results/failure.json",
+          "pointer": "/failure/exception_type"
+        }
+      ],
+      "name": "FcnLineageWcvalTwoException",
+      "raw": "TypeError",
+      "value": "TypeError"
+    },
+    {
+      "derivation": "manifest.summary.declared_case_count",
+      "derived": true,
+      "description": "coupling-v4 validation v2 declared cases (lineage)",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "lineage:modern/experiments/cft_wall_cusp_validation_v2/results/manifest.json",
+          "pointer": "/summary/declared_case_count"
+        }
+      ],
+      "name": "FcnLineageWcvalTwoDeclared",
+      "raw": 24,
+      "value": "24"
+    },
+    {
+      "derivation": "manifest.summary.attempted_case_count",
+      "derived": true,
+      "description": "coupling-v4 validation v2 attempted cases (lineage)",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "lineage:modern/experiments/cft_wall_cusp_validation_v2/results/manifest.json",
+          "pointer": "/summary/attempted_case_count"
+        }
+      ],
+      "name": "FcnLineageWcvalTwoAttempted",
+      "raw": 0,
+      "value": "0"
+    },
+    {
+      "derivation": "manifest.summary.criterion_numerically_promoted",
+      "derived": true,
+      "description": "coupling-v4 validation v2 criterion promoted (lineage)",
+      "format": "bool",
+      "inputs": [
+        {
+          "artifact": "lineage:modern/experiments/cft_wall_cusp_validation_v2/results/manifest.json",
+          "pointer": "/summary/criterion_numerically_promoted"
+        }
+      ],
+      "name": "FcnLineageWcvalTwoPromoted",
+      "raw": false,
+      "value": "false"
+    },
+    {
+      "derivation": "git commit whose tree holds the results manifest blob (verified with rev-parse against the working tree)",
+      "derived": true,
+      "description": "results commit prefix",
+      "format": "sha_short",
+      "inputs": [
+        {
+          "artifact": "results/manifest.json",
+          "pointer": ""
+        }
+      ],
+      "name": "FcnResultsCommit",
+      "raw": "7120e8edcb74c02c1df968c730d1f93b3758b4e1",
+      "value": "7120e8edcb74"
+    },
+    {
+      "derivation": "sha256(results/manifest.json)",
+      "derived": true,
+      "description": "results manifest SHA-256 prefix",
+      "format": "sha_short",
+      "inputs": [
+        {
+          "artifact": "results/manifest.json",
+          "pointer": ""
+        }
+      ],
+      "name": "FcnManifestSha",
+      "raw": "f5e26373d72bd13aa5631516009797567e0f66812941d993d5fad534be07240a",
+      "value": "f5e26373d72b"
+    },
+    {
+      "derivation": "commit that added POSTHOC_AUDIT.md (bound in the typed manifest)",
+      "derived": true,
+      "description": "post-hoc audit commit prefix",
+      "format": "sha_short",
+      "inputs": [
+        {
+          "artifact": "results/preregistered-protocol.json.sha256",
+          "pointer": ""
+        }
+      ],
+      "name": "FcnAuditCommit",
+      "raw": "605be5ceffa407142a2acb11cc040b13eef89b0c",
+      "value": "605be5ceffa4"
+    },
+    {
+      "derivation": "count of verified files accepted through the audited EOL rule",
+      "derived": true,
+      "description": "files whose recorded digest differs from the checkout by end-of-line bytes only",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "results/preregistered-protocol.json.sha256",
+          "pointer": ""
+        }
+      ],
+      "name": "FcnToleratedEolFiles",
+      "raw": 1,
+      "value": "1"
+    },
+    {
+      "derivation": "manifest.protocol_sha256 as sealed at the results commit",
+      "derived": true,
+      "description": "recorded (CRLF-era) protocol digest prefix",
+      "format": "sha_short",
+      "inputs": [
+        {
+          "artifact": "results/manifest.json",
+          "pointer": "/protocol_sha256"
+        }
+      ],
+      "name": "FcnProtocolRecordedSha",
+      "raw": "ec2e9a732b7d0e909ff742ebbbb0215e1102909c148b812306df6f0759f48e49",
+      "value": "ec2e9a732b7d"
+    },
+    {
+      "derivation": "sha256(protocol.json) on an eol=lf checkout",
+      "derived": true,
+      "description": "LF protocol digest prefix",
+      "format": "sha_short",
+      "inputs": [
+        {
+          "artifact": "protocol.json",
+          "pointer": ""
+        }
+      ],
+      "name": "FcnProtocolLfSha",
+      "raw": "5c195119c7a3c3c7e8b2c2d58e2e9836ac0ece6e000e52b0fd86c4718446c1b4",
+      "value": "5c195119c7a3"
+    }
+  ],
+  "manuscript_integration": {
+    "artifact_claim_id": "CLM-023",
+    "artifact_id": "TAB-FOUR-CELL-V2",
+    "gate_id": "GATE-FOUR-CELL-V2",
+    "gate_kind": "numerical-screening",
+    "generated_binding": "\\input{generated/four-cell-v2.tex}",
+    "generated_tex_path": "paper/generated/four-cell-v2.tex",
+    "manifest_id": "FOUR-CELL-V2-20260902-128-V1",
+    "manifest_path": "paper/evidence/manifests/four-cell-v2.json",
+    "prose_claim_ids": [
+      "CLM-018",
+      "CLM-022",
+      "CLM-024",
+      "CLM-028"
+    ],
+    "rule": "Every number in the section is a macro defined here; each macro is bound below to an artifact path, JSON pointer, formatter and SHA-256. Claim-bearing sentences are exact EvidenceClaim bodies registered in paper/evidence/claims.json; the numerical-screening gate in paper/evidence/result-gates.json names the typed manifest that admits the section and records the outcome as accepted screening, preregistered null or recorded characterization without opening any physics level.",
+    "section_binding": "\\input{sections/four-cell-v2.tex}",
+    "section_heading": "Preregistered four-cell topology search: null result",
+    "section_path": "paper/sections/four-cell-v2.tex",
+    "status": "admitted",
+    "table_macros": [
+      "FcnFailureTable",
+      "FcnCuspTable"
+    ]
+  },
+  "output": {
+    "path": "paper/generated/four-cell-v2.tex",
+    "sha256": "2a49f1b6fb6aeaa1119115d732d9615483f89b98600c3dc1a1ec4ca6dd91c61b"
+  },
+  "recorded_outcome": "preregistered-null",
+  "schema_version": "1.0",
+  "screening_model": "linear-vacuum L1a equivalent-current axisymmetric field (not a permanent-magnet or nonlinear-iron material model)",
+  "tables": {
+    "FcnCuspTable": {
+      "rows": 3,
+      "source": "results/dataset.json#/cases/*/maps/<role>/interior_cusp_z_m"
+    },
+    "FcnFailureTable": {
+      "rows": 10,
+      "source": "results/dataset.json#/summary/failure_counts"
+    }
+  }
+}

@@ -1,0 +1,178 @@
+{
+  "artifact_id": "TAB-FOUR-CELL-V2",
+  "bundle_manifest": {
+    "git_blob": "aaa3be7730958c38d553a0c2b067810bc27ecb01",
+    "path": "modern/experiments/four_cell_topology_search_v2/results/manifest.json",
+    "sha256": "f5e26373d72bd13aa5631516009797567e0f66812941d993d5fad534be07240a"
+  },
+  "claim_ids": [
+    "CLM-023"
+  ],
+  "claim_status": "authorized by CLM-023 (quantitative-generated-table) in paper/evidence/claims.json; admitted through GATE-FOUR-CELL-V2 (numerical-screening, recorded outcome preregistered-null)",
+  "document_type": "paper-generated-artifact-provenance",
+  "evidence_revision": "7120e8edcb74c02c1df968c730d1f93b3758b4e1",
+  "generator": {
+    "command": "python paper/scripts/generate_topology_screening_evidence.py",
+    "path": "paper/scripts/generate_topology_screening_evidence.py",
+    "sha256": "36ae2d1a3663f3471d3f07ed2fa4447bbf9fea4bbbb69cc7177feb35c49fd86a"
+  },
+  "inputs": [
+    {
+      "bytes": 10580,
+      "path": "modern/experiments/four_cell_topology_search_v2/protocol.json",
+      "sha256": "5c195119c7a3c3c7e8b2c2d58e2e9836ac0ece6e000e52b0fd86c4718446c1b4"
+    },
+    {
+      "bytes": 1001973,
+      "path": "modern/experiments/four_cell_topology_search_v2/results/dataset.json",
+      "sha256": "f01c044b99349ee1fc207702b4b7ab73c6eab49362a5b0249c3a99f501252d68"
+    },
+    {
+      "bytes": 79,
+      "path": "modern/experiments/four_cell_topology_search_v2/results/dataset.json.sha256",
+      "sha256": "01ce1be2762fcebe2db562b80fd7250c0acb756c28fd5c9bff007cc91eef0e40"
+    },
+    {
+      "bytes": 442,
+      "path": "modern/experiments/four_cell_topology_search_v2/results/execution-lock.json",
+      "sha256": "c70c8471575f848b249ecf72da414839aa8fd6e5aebf24398bc78eb2b3368135"
+    },
+    {
+      "bytes": 86,
+      "path": "modern/experiments/four_cell_topology_search_v2/results/execution-lock.json.sha256",
+      "sha256": "af90da40225ff0ea8b2fc57c29e6b0e27626cdd437342ce7a2b43c09d76635d8"
+    },
+    {
+      "bytes": 5856,
+      "path": "modern/experiments/four_cell_topology_search_v2/results/manifest.json",
+      "sha256": "f5e26373d72bd13aa5631516009797567e0f66812941d993d5fad534be07240a"
+    },
+    {
+      "bytes": 80,
+      "path": "modern/experiments/four_cell_topology_search_v2/results/manifest.json.sha256",
+      "sha256": "86976893260993b213e95d0d4ae2643c80d8956a39e48b0817969879a25a78bd"
+    },
+    {
+      "bytes": 10580,
+      "path": "modern/experiments/four_cell_topology_search_v2/results/preregistered-protocol.json",
+      "sha256": "5c195119c7a3c3c7e8b2c2d58e2e9836ac0ece6e000e52b0fd86c4718446c1b4"
+    },
+    {
+      "bytes": 94,
+      "path": "modern/experiments/four_cell_topology_search_v2/results/preregistered-protocol.json.sha256",
+      "sha256": "b7e16b78997642aa153745eb35f0455bd2921caafd15f30dd04ce78be56b0b46"
+    },
+    {
+      "bytes": 2419,
+      "path": "modern/experiments/four_cell_topology_search_v2/results/report.md",
+      "sha256": "9fd6a8945d5a7ce0104b1dc06d9d2204c8205457fc69d882a305d7465a3f3de5"
+    },
+    {
+      "bytes": 76,
+      "path": "modern/experiments/four_cell_topology_search_v2/results/report.md.sha256",
+      "sha256": "729c6baa7d278a6d9489a313fa1e2fac7d78a51bf7a20217c711387953d6b014"
+    },
+    {
+      "bytes": 639901,
+      "path": "modern/experiments/four_cell_topology_search_v2/results/representatives/v2-006-downsampled-field.json",
+      "sha256": "d32747ef7293e01fba70699b7d92c4e954bd88ec8327c1672388468e27b5e020"
+    },
+    {
+      "bytes": 96,
+      "path": "modern/experiments/four_cell_topology_search_v2/results/representatives/v2-006-downsampled-field.json.sha256",
+      "sha256": "bee3d191de11720314ce4cd981cc0416dacf72863b8ed3a50bd2ed2888b18e2e"
+    },
+    {
+      "bytes": 1588789,
+      "path": "modern/experiments/four_cell_topology_search_v2/results/representatives/v2-006-enlarged_domain-field.json",
+      "sha256": "f85484b090551f8c9b371f267dda62f500b9eb94152387d42896adb28d34ccc1"
+    },
+    {
+      "bytes": 100,
+      "path": "modern/experiments/four_cell_topology_search_v2/results/representatives/v2-006-enlarged_domain-field.json.sha256",
+      "sha256": "e72d729d6aa0879fe03b8f32e154e1eef9ea2d58e5f97c1035ec537a40671846"
+    },
+    {
+      "bytes": 8632,
+      "path": "modern/experiments/four_cell_topology_search_v2/results/representatives/v2-006-geometry.json",
+      "sha256": "c08b060868502992436b51ff8add5ab6bc549ded817602a5e332fd50ba63883f"
+    },
+    {
+      "bytes": 87,
+      "path": "modern/experiments/four_cell_topology_search_v2/results/representatives/v2-006-geometry.json.sha256",
+      "sha256": "bcfab8e2a2b35980a558e1bd68760b4a59b47d86b7661b1c4609919661d530e8"
+    },
+    {
+      "bytes": 1222271,
+      "path": "modern/experiments/four_cell_topology_search_v2/results/representatives/v2-006-primary-field.json",
+      "sha256": "7b4a4a30267a6d5f847c78e8513fda4c47c4db8a5389c0a064108ec982f5385f"
+    },
+    {
+      "bytes": 92,
+      "path": "modern/experiments/four_cell_topology_search_v2/results/representatives/v2-006-primary-field.json.sha256",
+      "sha256": "4e07b25074b8916e0daabf9d30f9d3958da6571b019b62fd075bfec368c274dd"
+    },
+    {
+      "bytes": 637456,
+      "path": "modern/experiments/four_cell_topology_search_v2/results/representatives/v2-010-downsampled-field.json",
+      "sha256": "265caaf8b6301f1f1a94df3cbf98c280c4ba65700d06f6851487dcedb879facb"
+    },
+    {
+      "bytes": 96,
+      "path": "modern/experiments/four_cell_topology_search_v2/results/representatives/v2-010-downsampled-field.json.sha256",
+      "sha256": "dbebd7ae11b0bd0533b3d03c6a7187f9fb6e9804f0d17ff69ae80ff9ee273a4f"
+    },
+    {
+      "bytes": 1581999,
+      "path": "modern/experiments/four_cell_topology_search_v2/results/representatives/v2-010-enlarged_domain-field.json",
+      "sha256": "eaa4eb9f8a3307f89d49fdf4f48968933ca5f69ba326f7a1d8f11e44947d28f2"
+    },
+    {
+      "bytes": 100,
+      "path": "modern/experiments/four_cell_topology_search_v2/results/representatives/v2-010-enlarged_domain-field.json.sha256",
+      "sha256": "583f21dc99a9226b72e2ee355417bb9e5e1fac88f9dd7f06783d85f47b3350f4"
+    },
+    {
+      "bytes": 8760,
+      "path": "modern/experiments/four_cell_topology_search_v2/results/representatives/v2-010-geometry.json",
+      "sha256": "9099c30bf2eb1c5520d4f8103e79bba9044a4a29b65a761a4ae0eade4b183823"
+    },
+    {
+      "bytes": 87,
+      "path": "modern/experiments/four_cell_topology_search_v2/results/representatives/v2-010-geometry.json.sha256",
+      "sha256": "d82e05ba06a12a8baf439e4cb1c39f69d9c5e0770a308ca714f12428ea7e4d31"
+    },
+    {
+      "bytes": 1217588,
+      "path": "modern/experiments/four_cell_topology_search_v2/results/representatives/v2-010-primary-field.json",
+      "sha256": "d5f774e1f0a50c5942ced5abf0b876e83b402d462e42999d4111af520959f36f"
+    },
+    {
+      "bytes": 92,
+      "path": "modern/experiments/four_cell_topology_search_v2/results/representatives/v2-010-primary-field.json.sha256",
+      "sha256": "845d911301721f4553a9f75d9b828dad72e7a4ab39433dc8e054e249846157e0"
+    },
+    {
+      "bytes": 723,
+      "path": "modern/experiments/four_cell_topology_search_v2/results/runtime.json",
+      "sha256": "2973e4cbba2f712cf85907b6dc3542ae53674001fd29372d0ce41698db2a7877"
+    },
+    {
+      "bytes": 79,
+      "path": "modern/experiments/four_cell_topology_search_v2/results/runtime.json.sha256",
+      "sha256": "bb7afefecff0e449126d5726cb092e90c8dbcde8a358f76aa703e500771a6a33"
+    }
+  ],
+  "manifest": {
+    "gate_manifest_path": "paper/evidence/manifests/four-cell-v2.json",
+    "manifest_id": "FOUR-CELL-V2-20260902-128-V1",
+    "path": "paper/evidence/four-cell-v2.json",
+    "sha256": "38d3fde3412ff488e48de1bb735ff4f3ab8e01cbb9a4a1dd0dbf6a1b8681b79e"
+  },
+  "output": {
+    "path": "paper/generated/four-cell-v2.tex",
+    "sha256": "2a49f1b6fb6aeaa1119115d732d9615483f89b98600c3dc1a1ec4ca6dd91c61b"
+  },
+  "schema_version": "1.0",
+  "source_date_epoch": 1788270043
+}

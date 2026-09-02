@@ -160,6 +160,32 @@
         "wall_hit_probability_maximum",
         "wall_hit_probability_minimum"
       ]
+    },
+    "paper-l1a-screening-manifest": {
+      "supported_versions": ["1.0"],
+      "level": "numerical-screening",
+      "required_file_roles": [
+        "execution-lock",
+        "preregistered-protocol",
+        "primary-dataset",
+        "report",
+        "representative-artifact",
+        "results-manifest"
+      ],
+      "required_metrics": [
+        "classification",
+        "declared_count",
+        "evaluated_count",
+        "failed_cases_count",
+        "hardware_or_experimental_validation",
+        "permanent_magnet_material_model",
+        "plasma_or_performance_claim_forbidden",
+        "preregistered_one_shot",
+        "recorded_outcome",
+        "screening_model",
+        "stable_multicell_wall_cusp_topology_demonstrated",
+        "tolerated_eol_file_count"
+      ]
     }
   }
 }

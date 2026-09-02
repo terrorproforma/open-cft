@@ -36,7 +36,19 @@
 - [ ] Keep every number of the wall-loss section a `\Wlf...` macro; never
   type a digit into `paper/sections/wall-loss-v4.tex`.
 - [ ] Keep the mirror-picture and multi-cell-topology statements in the
-  Discussion labelled as interpretation; cite no unadmitted topology result.
+  Discussion labelled as interpretation; the multi-cell statement is
+  macro-bound to the admitted four-cell null and characterization null and
+  phrased as "not shown stable" / "undemonstrated", never as non-existence.
+- [ ] Describe the topology-screening studies as linear-vacuum L1a
+  equivalent-current field screening (no permanent-magnet or nonlinear-iron
+  material model); report each at its `recorded_outcome` (accepted screening,
+  preregistered null, recorded characterization) and report the four-cell GPU
+  replay as recorded (2 of 4 diagnostic passes).
+- [ ] Keep every number of the screening sections a `\Swp...`, `\Fcn...` or
+  `\Tch...` macro; never type a digit into `paper/sections/l1a-sweep-v2.tex`,
+  `four-cell-v2.tex` or `topology-characterization-v1.tex`.
+- [ ] Quote the superseded four-cell proxy search and the failed coupling-v4
+  validations only inside the registered lineage non-claim.
 
 ## Methods and uncertainty
 
@@ -57,6 +69,8 @@
 - [ ] Run `python paper/scripts/generate_tables.py`.
 - [ ] Run `python paper/scripts/generate_wall_loss_v4_evidence.py` and confirm
   `git status` shows no change to the three generated wall-loss files.
+- [ ] Run `python paper/scripts/generate_topology_screening_evidence.py` and
+  confirm `git status` shows no change to the nine generated screening files.
 - [ ] Run `python paper/scripts/check_paper.py`.
 - [ ] Run `python -m unittest discover -s paper/tests -v`.
 - [ ] Run `python paper/scripts/verify_reproducible_build.py` and require two

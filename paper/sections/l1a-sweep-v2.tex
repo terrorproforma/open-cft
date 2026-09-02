@@ -1,0 +1,88 @@
+% Results subsection: preregistered L1a geometry sweep (accepted field-only screening).
+%
+% Every quantity in this file is a \Swp... macro defined in
+% paper/generated/l1a-sweep-v2.tex, which paper/scripts/generate_topology_screening_evidence.py
+% writes from the sealed results bundle of modern/experiments/l1a_geometry_sweep_v2;
+% paper/evidence/l1a-sweep-v2.json records the artifact path, JSON pointer and
+% SHA-256 behind each macro. No numeric literal is typed here.
+%
+% Status: admitted. manuscript.tex binds this file once through
+% \input{sections/l1a-sweep-v2.tex}. Admission is governed by the
+% numerical-screening gate GATE-L1A-SWEEP-V2 in paper/evidence/result-gates.json,
+% the typed manifest paper/evidence/manifests/l1a-sweep-v2.json and the claim
+% records bound to manifest L1A-SWEEP-V2-20260902-96-V1. Every \EvidenceClaim body
+% below must equal its registered authorized_tex exactly; check_paper.py verifies
+% that, the macro-only rule, the classification string and the registered
+% non-claims.
+\subsection{Accepted geometry sweep: field-only design-space screening}
+\label{sec:l1a-sweep-v2}
+
+\paragraph{Method.}
+The sweep evaluates \SwpEvaluated{} designs drawn by the \SwpSamplingAlgorithm{}
+(seed \SwpSeed) over \SwpDesignVariableCount{} design variables of the geometry
+model, including stage pitch, chamber radius, dielectric thickness, magnet
+dimensions, source strength, exit length and expansion, first polarity and a
+stage-count selector mapped as \texttt{\SwpStageMapping} (\SwpStageMin{} to
+\SwpStageMax{} stages). Each design is solved once with the linear-vacuum
+\SwpModelLevel{} equivalent-current axisymmetric solver on a
+\SwpGridRadial$\times$\SwpGridAxial{} grid (domain radius \SwpDomainRadiusMm{} mm,
+$z$ from \SwpDomainZMinMm{} to \SwpDomainZMaxMm{} mm) to a relative residual of
+\SwpSolverRelTol; the magnet source is a \SwpPreviewDescription{} (authoritative:
+\SwpPreviewAuthoritative). An axis cusp is a sign change of the on-axis $B_z$
+between adjacent stages, and the per-cell mirror ratio is defined by the frozen
+QoI policy as the \SwpMirrorRatioDefinition; the policy itself states that the
+topology quantities are a \SwpTopologyClaim. Acceptance requires zero case
+failures (\SwpZeroFailuresRequired) and \SwpGateCount{} terminal gates; \SwpParityCaseCount{}
+designs are re-solved on the CPU for backend parity; \SwpObjectiveCount{}
+preregistered objectives define the non-dominated set and \SwpRoleCount{} roles
+select representatives whose full field artifacts are archived. The protocol was
+executed exactly \SwpMaxExecutions{} time (preregistration commit
+\texttt{\SwpPreregCommit}, results commit \texttt{\SwpResultsCommit}, protocol
+payload \texttt{\SwpProtocolPayloadSha}; \SwpTimingPolicy). A post-hoc audit
+(commit \texttt{\SwpAuditCommit}) found that \SwpToleratedEolFiles{} frozen
+sidecar, the protocol digest \texttt{\SwpProtocolRecordedSha} recorded on a
+platform-line-ending checkout against \texttt{\SwpProtocolLfSha} for the
+committed bytes, differs by end-of-line bytes only; the protocol payload
+recomputes and every file of the results bundle is byte-exact. The evidence
+generator tolerates exactly that file and nothing else.
+
+\paragraph{Results.}
+\EvidenceClaim{CLM-019}{The sweep terminated \texttt{\SwpTerminalStatus} with
+\SwpEvaluated{} of \SwpRequested{} designs evaluated, \SwpFailed{} failures and
+\SwpGatesPassed{} of \SwpGateCount{} preregistered terminal gates passed
+(\SwpGateFailures{} per-design gate failures); \SwpNondominated{} designs are
+non-dominated under the \SwpObjectiveCount{} preregistered objectives. Every design
+resolved its axis nulls (\SwpResolvedDesigns{} of \SwpEvaluated): the designs carry
+\SwpCuspLow, \SwpCuspMid{} or \SwpCuspHigh{} axis cusps (\SwpCuspThreeDesigns,
+\SwpCuspFourDesigns{} and \SwpCuspFiveDesigns{} designs respectively, one cusp per
+magnet stage), \SwpAxisCuspTotal{} axis cusps in total at axial positions between
+\SwpAxisCuspZMinMm{} and \SwpAxisCuspZMaxMm{} mm, with per-design minimum mirror
+ratios from \SwpMinMirrorMin{} to \SwpMinMirrorMax{} and peak fields from
+\SwpFieldPeakMin{} to \SwpFieldPeakMax{} T.}
+Table~\ref{tab:l1a-sweep-v2-gates} lists the gates with their observed aggregates
+and Table~\ref{tab:l1a-sweep-v2-representatives} the representative designs with
+their axis cusps and per-cell mirror ratios. The strongest-mirror representative
+(\texttt{\SwpStrongestMirrorId}) has per-cell ratios of \SwpRepZeroThreeTwoMirror,
+the strongest-centreline representative \SwpRepZeroSixFiveMirror{} over its
+\SwpRepZeroSixFiveCusps{} cusps, and the lowest-field-energy and
+steepest-stage-gradient representatives \SwpRepZeroZeroZeroMirror{} and
+\SwpRepZeroSixEightMirror; the largest per-design maximum mirror ratio in the
+sweep is \SwpMaxMirrorMax, a value produced by a near-zero gap-midpoint field
+rather than a strong stage field, which is why the preregistered objective uses
+the per-design minimum ratio. The observed CPU/CUDA component differences
+(\SwpParityPsiObserved{} for $\psi$, \SwpParityBrObserved{} and
+\SwpParityBzObserved{} for $B_r$ and $B_z$) are implementation-consistency facts
+under the limits \SwpParityPsiLimit{} and \SwpParityBLimit, not independent
+validation; \SwpFloatingReplayPolicy.
+\SwpGateTable
+\SwpRepresentativeTable
+
+\paragraph{Scope.}
+\EvidenceClaim{CLM-021}{The sweep is field-only screening classified
+\texttt{\SwpClassification}: its fields are linear-vacuum \SwpModelLevel{}
+equivalent-current models, no permanent-magnet or nonlinear-iron material model
+enters the screening, and the only finite-element field admitted elsewhere in
+this manuscript is the P2 reference of the wall-loss campaign; the axis cusps
+are sampled-axis descriptors, not a continuous critical-point proof; the sweep
+computes no thrust, efficiency, plasma, thermal or structural quantity, carries
+no hardware validation and opens no physics level.}

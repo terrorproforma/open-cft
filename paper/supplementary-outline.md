@@ -51,6 +51,30 @@
 - Explicit statement that the pooled fraction is an equal-weight design
   average and that no mirror-formula estimate is published.
 
+## S4c. Preregistered L1a topology screening (sweep v2, four-cell v2, characterization v1)
+
+- Typed screening manifests `paper/evidence/manifests/{l1a-sweep-v2,
+  four-cell-v2,topology-characterization-v1}.json` and the hash-bound
+  evidence files `paper/evidence/<key>.json`, each with its `recorded_outcome`.
+- Preregistration and results commits, the two post-hoc end-of-line audits
+  (`l1a_geometry_sweep_v2/POSTHOC_AUDIT.md`,
+  `four_cell_topology_search_v2/POSTHOC_AUDIT.md`) and the sealed bundles
+  (manifests, summaries/datasets, reports, locks, frozen protocols,
+  representative geometry and field artifacts).
+- Frozen definitions verbatim: sweep terminal gates and QoI policy (axis cusp,
+  mirror ratio, topology-claim limit); four-cell cusp/cell definition, geometry
+  slots, cross-map shift, endpoint exclusion, zero-pass policy; characterization
+  eligibility, separatrix and cross-map correspondence rules.
+- Tables regenerated from the bundles: sweep gates and representatives;
+  four-cell failure taxonomy and interior-cusp counts per map; characterization
+  null classes by zone and the empirical stage relation.
+- GPU replay outcomes as recorded, including the two four-cell replay
+  candidates that exceeded the residual-diagnostic tolerance.
+- Explicit statements that the fields are linear-vacuum equivalent-current
+  models, that each null holds under its frozen definitions only, that no
+  plasma, mirror-probability or performance quantity is claimed, and that the
+  superseded proxy search and failed criterion validations are lineage only.
+
 ## S5. Controlled performance benchmark
 
 This supplement remains closed until a benchmark manifest records kernel

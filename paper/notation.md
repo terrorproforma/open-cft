@@ -39,6 +39,25 @@
   and cross-checked against the sealed results bundle; it opens no L gate. The
   only current one is `GATE-WALL-LOSS-V4`, classified
   `collisionless_prescribed_field_test_particle_wall_loss_not_pic`.
+- **Numerical screening** — a preregistered, single-execution L1a field-only
+  screening study (linear-vacuum equivalent-current fields; no
+  permanent-magnet or nonlinear-iron material model) admitted by a
+  `numerical-screening` gate at exactly its `recorded_outcome`:
+  `accepted-screening` (`GATE-L1A-SWEEP-V2`), `preregistered-null`
+  (`GATE-FOUR-CELL-V2`) or `recorded-characterization`
+  (`GATE-TOPOLOGY-CHAR-V1`). Gate status `accepted` means admitted as
+  recorded, never that a positive finding is accepted; it opens no L gate.
+- **Axis cusp (sweep QoI)** — a sign change of the on-axis \(B_z\) between
+  adjacent magnet stages in a sampled field map; a sampled-axis descriptor,
+  not a continuous critical-point proof.
+- **Interior cusp (four-cell search)** — a vector null of the accepted
+  \(\psi\) map with finite-box boundary nulls excluded; a candidate is stable
+  only if every map holds exactly four such cusps, geometry-registered and
+  shifting by at most the frozen tolerance across maps.
+- **Eligible cusp / eligible cell (characterization)** — an X-type (index
+  \(-1\)) or O-type (index \(+1\)) clustered vector null strictly inside the
+  plasma channel with the required constant-\(\psi\) connectivity; "stable"
+  adds matching in all three maps with unchanged class and eligibility.
 - **Test-particle wall-hit probability** — the fraction of collisionless
   electron orbits, launched by a preregistered protocol in one prescribed
   magnetostatic field, that first intersect the dielectric wall rather than
@@ -82,3 +101,9 @@
 - The launch cells of the wall-loss protocol are protocol positions in one
   qualified field; they are not demonstrated confinement cells, and the
   campaign does not open `GATE-L1`.
+- A preregistered null (four-cell v2) or a recorded characterization null
+  (characterization v1) is a null under its frozen cusp/cell definitions and
+  linear-vacuum field model; it is not proof that no such design exists.
+- Sweep axis cusps and per-cell mirror ratios are field-only screening
+  quantities; they are not confinement cells, confinement predictions or
+  performance.

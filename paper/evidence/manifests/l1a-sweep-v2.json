@@ -1,0 +1,246 @@
+{
+  "classification": "L1a_FIELD_ONLY_SCREENING_NOT_HARDWARE_VALID",
+  "document_type": "paper-l1a-screening-manifest",
+  "evidence_level": {
+    "justification": "The sweep is preregistered numerical screening of a design space with the linear-vacuum L1a equivalent-current axisymmetric field solver: every design is solved once, seven terminal gates (boundary isolation, residual, CPU/CUDA parity, flux identity, source representation, topology confidence, manufacturability) are evaluated over the whole sweep and the outcome is recorded as ACCEPTED. The framework admits accepted numerical evidence through a typed committed manifest, hashed artifacts at a resolvable revision, exact registered claim text and generated artifacts with provenance sidecars; that pattern is applied here through the numerical-screening gate GATE-L1A-SWEEP-V2. The sweep is NOT the L1 field-resolved reduction of GATE-L1: it has no manufactured solution, no mesh or domain refinement study, no L0 mapping and no reduced performance model, and its axis cusps are sampled-axis descriptors rather than a continuous critical-point proof. It therefore opens none of GATE-L1, GATE-L2 or GATE-L3 and sits at the verification tier of the V&V protocol.",
+    "name": "numerical-screening",
+    "opens_gate": null,
+    "relation_to_levels": {
+      "L0": "independent of the algebraic L0 model; no mapping is claimed",
+      "L1": "linear-vacuum L1a equivalent-current fields solved once per design; no field-resolved reduction, no L0 mapping, no geometry-response prediction",
+      "L2": "not coupled to any plasma model",
+      "L3": "not particle-in-cell and not experimental"
+    },
+    "validation_status": "none: no measurement, facility, or hardware comparison exists",
+    "verification_tier": "code verification (CPU/CUDA parity on six designs, flux-reconstruction identity, residual gate) and design-space screening of a declared linear-vacuum field model; no solution-verification refinement study and no validation"
+  },
+  "evidence_revision": "f30cb42ec4a8633bf634a3d32ffa5b11f66be97a",
+  "evidence_revision_subject": "record L1a geometry sweep v2 results",
+  "experiment_id": "l1a-geometry-sweep-v2",
+  "experiment_path": "modern/experiments/l1a_geometry_sweep_v2",
+  "gate_id": "GATE-L1A-SWEEP-V2",
+  "gate_kind": "numerical-screening",
+  "level": "numerical-screening",
+  "manifest_id": "L1A-SWEEP-V2-20260902-96-V1",
+  "metrics": {
+    "axis_cusp_count_maximum": 5.0,
+    "axis_cusp_count_minimum": 3.0,
+    "axis_cusp_total": 383,
+    "axis_cusp_z_maximum_m": 0.029687500000000006,
+    "axis_cusp_z_minimum_m": 0.0012500000000000011,
+    "classification": "L1a_FIELD_ONLY_SCREENING_NOT_HARDWARE_VALID",
+    "declared_count": 96,
+    "design_variable_count": 11,
+    "designs_with_five_axis_cusps": 25,
+    "designs_with_four_axis_cusps": 45,
+    "designs_with_three_axis_cusps": 26,
+    "evaluated_count": 96,
+    "failed_cases_count": 0,
+    "gate_count": 7,
+    "gate_failures": 0,
+    "gates_passed": 7,
+    "hardware_or_experimental_validation": false,
+    "maximum_executions": 1,
+    "nondominated_count": 25,
+    "objective_count": 4,
+    "parity_case_count": 6,
+    "permanent_magnet_material_model": false,
+    "plasma_or_performance_claim_forbidden": true,
+    "preregistered_one_shot": true,
+    "preview_source_authoritative": false,
+    "recorded_outcome": "accepted-screening",
+    "representative_role_count": 5,
+    "resolved_axis_null_designs": 96,
+    "screening_model": "linear-vacuum L1a equivalent-current axisymmetric field (not a permanent-magnet or nonlinear-iron material model)",
+    "stable_multicell_wall_cusp_topology_demonstrated": false,
+    "terminal_status": "ACCEPTED",
+    "tolerated_eol_file_count": 1,
+    "unique_representative_count": 4,
+    "zero_failures_required": true
+  },
+  "model_fidelity": "linear-vacuum-L1a-equivalent-current-axisymmetric-field-screening",
+  "paper_evidence_file": {
+    "document_type": "paper-l1a-sweep-v2-evidence",
+    "generator": "paper/scripts/generate_topology_screening_evidence.py",
+    "generator_command": "python paper/scripts/generate_topology_screening_evidence.py l1a-sweep-v2",
+    "macro_count": 107,
+    "macro_prefix": "Swp",
+    "path": "paper/evidence/l1a-sweep-v2.json",
+    "rule": "check_paper.py regenerates the evidence file, the generated TeX and the sidecar from the sealed bundle and requires byte identity with the committed files; every macro therefore traces to a verified artifact hash at every check.",
+    "schema_version": "1.0"
+  },
+  "permitted_claim_scope": [
+    "terminal acceptance status, design counts, failure count and the seven gate outcomes with their observed aggregates",
+    "axis cusp counts and positions and per-cell centreline mirror ratios as sampled-axis screening QoIs",
+    "non-dominated count and representative designs selected by the preregistered roles",
+    "the classification string and the protocol claim limits"
+  ],
+  "posthoc_audit": {
+    "git_blob": "74e92d9fc84f468e417fad173a39ae9ff7604ed7",
+    "git_blob_sha256": "874cbae01d6d36cd880996503f4a9ec3b06646b666ff2f778d2d761f86296cd0",
+    "path": "modern/experiments/l1a_geometry_sweep_v2/POSTHOC_AUDIT.md",
+    "revision": "9e68df21dde5d5238f665ef685e6d457731136c9",
+    "role": "posthoc-audit",
+    "subject": "fix(l1a-sweep-v2): posthoc EOL audit and bound verification"
+  },
+  "preregistration_revision": "092f5fae692ee7d6711e0c7e1c94dac6a345f37c",
+  "preregistration_revision_subject": "preregister L1a geometry sweep v2",
+  "prohibited_inferences": [
+    "continuous critical-point topology of the fields",
+    "plasma confinement from mirror ratios",
+    "thrust, efficiency, specific impulse, thermal or structural quantities",
+    "hardware validity or build qualification",
+    "existence or stability of a multi-cell wall-cusp topology in any design not evaluated",
+    "permanent-magnet or nonlinear-iron material behaviour",
+    "plasma, confinement or thruster performance",
+    "hardware or experimental validation",
+    "field-resolved reduction, L0 mapping or geometry-response prediction (GATE-L1 stays closed)",
+    "opening of GATE-L1, GATE-L2 or GATE-L3"
+  ],
+  "recorded_outcome": "accepted-screening",
+  "results_bundle": {
+    "audited_eol_files": {
+      "protocol.json": {
+        "audit_module": "modern/experiments/l1a_geometry_sweep_v2/protocol.py",
+        "lf_sha256": "2a5ba9e46c777225384539a4c453a43aa3298c956b32b022cc5ddeac72ba874c",
+        "recorded_bytes": 7924,
+        "recorded_sha256": "64b2c58c3cecb2ea1836d2bf48e23ff83dffb114866bf21e7135b411beaa2b2c"
+      }
+    },
+    "manifest_git_blob": "cc2e29ba5bd1a6cd245bf6cc4a4f41a85ac83e82",
+    "manifest_path": "modern/experiments/l1a_geometry_sweep_v2/results/manifest.json",
+    "manifest_sha256": "768b345e946a45e623f83aaa18e01f8ec5bc7f823e81858a0a8c3a3e2e448754",
+    "results_tree": "de85a158a01aa4113154ef256c9d11032bdf6538",
+    "tolerance_rule": "for exactly the audited files: bytes contain no CR, sha256(bytes) == audited LF digest and sha256(bytes.replace(LF, CRLF)) == recorded digest with the recorded byte count; every other mismatch fails",
+    "tolerated_eol_files": [
+      "protocol.json"
+    ],
+    "verified_file_count": 36
+  },
+  "schema_version": "1.0",
+  "screening_model": "linear-vacuum L1a equivalent-current axisymmetric field (not a permanent-magnet or nonlinear-iron material model)",
+  "section_heading": "Accepted geometry sweep: field-only design-space screening",
+  "source_files": [
+    {
+      "git_blob": "cc2e29ba5bd1a6cd245bf6cc4a4f41a85ac83e82",
+      "git_blob_sha256": "768b345e946a45e623f83aaa18e01f8ec5bc7f823e81858a0a8c3a3e2e448754",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/manifest.json",
+      "role": "results-manifest"
+    },
+    {
+      "git_blob": "f316e90a5589be8582487ea486885f09c01de218",
+      "git_blob_sha256": "2f0a886f7940c758db5b2db40221c3c30b41e6d9ab3f2013bce2d89f0590c3de",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/manifest.json.sha256",
+      "role": "results-manifest-sidecar"
+    },
+    {
+      "git_blob": "e657679da4aa357301ee6e242890d696a9df6704",
+      "git_blob_sha256": "942852295d3b2ee04f968734a31e15694e46d389838259a01113ae090ad30e29",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/summary.json",
+      "role": "summary"
+    },
+    {
+      "git_blob": "e7e02e225a7d8e88fdd1a90e1393dea6e00e1c51",
+      "git_blob_sha256": "76f145f816a187c36c3260c184a07d8979c244999f40c2562f4207dbca90b4c1",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/raw-results.json",
+      "role": "primary-dataset"
+    },
+    {
+      "git_blob": "77aa373a4b2541e06e33b121dcd17517ec5f0874",
+      "git_blob_sha256": "dc5dae94cf5208b8ac461a4dd701b18231947ca82046a88e38b361ec2f4ad034",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/REPORT.md",
+      "role": "report"
+    },
+    {
+      "git_blob": "d8493c33ee57d23ef392262f2be2e1340bc6b369",
+      "git_blob_sha256": "23e581d549c4cee64267d379e969b1eb99a5f00203e17fe50c7b05a9a864b9c1",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/execution-lock.json",
+      "role": "execution-lock"
+    },
+    {
+      "git_blob": "37d455a952306d9a6fe36456a1c0a3c6fd4c747a",
+      "git_blob_sha256": "2a5ba9e46c777225384539a4c453a43aa3298c956b32b022cc5ddeac72ba874c",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/protocol.json",
+      "role": "preregistered-protocol"
+    },
+    {
+      "git_blob": "270da0c4c0939ed727b0ceb1c4ad9cc9cfb762c1",
+      "git_blob_sha256": "6d3f6bd6be660ee18297d7a758d63f3c1d30253d02edb3f9f4004b59ba01b4d8",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/protocol.json.sha256",
+      "role": "preregistered-protocol-sidecar"
+    },
+    {
+      "git_blob": "7313b12c7919be8fa2b7dd4341fd385c99011960",
+      "git_blob_sha256": "60e3416bdd9671a2cf8c05d13adacfec83708fbec1e6214a1ece00f2722aa58b",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/representatives/l1a-gs-v2-000-48d2ccedd5.geometry.json",
+      "role": "representative-artifact"
+    },
+    {
+      "git_blob": "e6245d3a5f3bb0746655abe2826d796277d695ab",
+      "git_blob_sha256": "0808795c91c3ec28dcf76a831534a62679b99cdb80bc1dd7ebf7d363be1887b5",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/representatives/l1a-gs-v2-000-48d2ccedd5.field-full.json",
+      "role": "representative-artifact"
+    },
+    {
+      "git_blob": "ad3a028fb2d25035912820b381d066f802d72e6d",
+      "git_blob_sha256": "0088a8d0d23c55eba28977e7934ad4a2e9bba6c55f085e5d0ef43c4deb657845",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/representatives/l1a-gs-v2-000-48d2ccedd5.field-downsampled.json",
+      "role": "representative-artifact"
+    },
+    {
+      "git_blob": "ac44043a87c88b6a7a22c199826614153dbf5c06",
+      "git_blob_sha256": "6dcd38a11ec298f7105e98667b3dcff3e52fe5bb0a958c839724964b78611f7b",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/representatives/l1a-gs-v2-032-570ad83ba6.geometry.json",
+      "role": "representative-artifact"
+    },
+    {
+      "git_blob": "2f1c1c855158f5a36b0055f311f1d35ddbf51c35",
+      "git_blob_sha256": "662c0e140dcc2921872e367eda17de93a1ab20671af5b5fe634cd45eaad1003b",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/representatives/l1a-gs-v2-032-570ad83ba6.field-full.json",
+      "role": "representative-artifact"
+    },
+    {
+      "git_blob": "609835dd08fcbae09fdd795db5ad2fc1789ec8c7",
+      "git_blob_sha256": "748f3e257a481aea4d9c312f780ca413cc71cd4b73e2c0c88d33ed2dea2f465e",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/representatives/l1a-gs-v2-032-570ad83ba6.field-downsampled.json",
+      "role": "representative-artifact"
+    },
+    {
+      "git_blob": "2dea2d2fcd1d849de48f90d6e02b94a2e59e5330",
+      "git_blob_sha256": "d724ee63c444f5c03c4c7e675722d59ed44a89f87c2491a6d1f6f8670e340d61",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/representatives/l1a-gs-v2-065-9e98f08f3b.geometry.json",
+      "role": "representative-artifact"
+    },
+    {
+      "git_blob": "56b388f10fd37547f7256243cc8d075c5ab09f08",
+      "git_blob_sha256": "21e4cf4c4456d1d2fb4a6e16bdfca8cca1ede2959d58ea9ea507c242292d829f",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/representatives/l1a-gs-v2-065-9e98f08f3b.field-full.json",
+      "role": "representative-artifact"
+    },
+    {
+      "git_blob": "2eba93ed2ef1d87a55fe20ee1e4aaafeb4b695b8",
+      "git_blob_sha256": "3238d32074beca631ec7fbf74708f6dd7190a03924564382ca723fdb3dd228f3",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/representatives/l1a-gs-v2-065-9e98f08f3b.field-downsampled.json",
+      "role": "representative-artifact"
+    },
+    {
+      "git_blob": "900f86325e5e68d0f31a1708e2aea5e76e602654",
+      "git_blob_sha256": "135c35697983e69d667a2f41e567917cb1ee22b67d315319361c25406015f12f",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/representatives/l1a-gs-v2-068-375d1b1b13.geometry.json",
+      "role": "representative-artifact"
+    },
+    {
+      "git_blob": "0e1d13d1e17cd4e873546feee6f46982c55d7b55",
+      "git_blob_sha256": "b280c00f2323d6cd576b6f5a1da7f5c58aec9afc4b57e0403512e2598f0c7bd3",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/representatives/l1a-gs-v2-068-375d1b1b13.field-full.json",
+      "role": "representative-artifact"
+    },
+    {
+      "git_blob": "1101fd163c3faf3bf787775d098b03f379a0a494",
+      "git_blob_sha256": "bb337d02f4cca56980662108427bdf541dba827564958df4bb8ab5945645fee3",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/representatives/l1a-gs-v2-068-375d1b1b13.field-downsampled.json",
+      "role": "representative-artifact"
+    }
+  ],
+  "status": "accepted"
+}

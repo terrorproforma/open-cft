@@ -1,0 +1,321 @@
+{
+  "classification": "developmental_topology_characterization",
+  "document_type": "paper-l1a-screening-manifest",
+  "evidence_level": {
+    "justification": "The characterization is a preregistered, single-execution developmental study (classified developmental_topology_characterization; declared not a design optimization and not a blind validation) of a fixed 56-case family with the linear-vacuum L1a equivalent-current field solver and the accepted flux-surface coupling baseline; its recorded outcome is 0 stable eligible cusps and 0 stable eligible cells under the preregistered eligibility rules. The framework admits recorded numerical outcomes through a typed committed manifest, hashed artifacts at a resolvable revision, exact registered claim text and generated artifacts with provenance sidecars; that pattern is applied here through the numerical-screening gate GATE-TOPOLOGY-CHAR-V1 with recorded_outcome recorded-characterization, which admits the study at the level its own protocol declares (developmental characterization) and not as accepted evidence of any positive finding. It is NOT the L1 field-resolved reduction of GATE-L1, not L2 and not L3, and opens none of those gates.",
+    "name": "numerical-screening",
+    "opens_gate": null,
+    "relation_to_levels": {
+      "L0": "independent of the algebraic L0 model; no mapping is claimed",
+      "L1": "linear-vacuum L1a equivalent-current fields; vector nulls classified X/O/degenerate with fail-closed eligibility; no field-resolved reduction, no L0 mapping, no geometry-response prediction",
+      "L2": "not coupled to any plasma model",
+      "L3": "not particle-in-cell and not experimental"
+    },
+    "validation_status": "none: no measurement, facility, or hardware comparison exists",
+    "verification_tier": "code verification (three independent maps per case with residual, boundary, source and flux gates; GPU replay of three cases with field equality and residual reproducibility) of a declared linear-vacuum field model; no validation"
+  },
+  "evidence_revision": "3ce6c546194e1d3e943d0b3d0951d03e15e354d9",
+  "evidence_revision_subject": "record CFT topology characterization v1 results",
+  "experiment_id": "cft-topology-characterization-v1",
+  "experiment_path": "modern/experiments/cft_topology_characterization_v1",
+  "gate_id": "GATE-TOPOLOGY-CHAR-V1",
+  "gate_kind": "numerical-screening",
+  "level": "numerical-screening",
+  "manifest_id": "TOPOLOGY-CHAR-V1-20260902-56-V1",
+  "metrics": {
+    "classification": "developmental_topology_characterization",
+    "clustered_root_count": 1276,
+    "complete_correspondence_count": 0,
+    "declared_count": 56,
+    "degenerate_root_count": 224,
+    "eligible_cells_any_map": 0,
+    "eligible_cusps_any_map": 0,
+    "evaluated_count": 56,
+    "failed_cases_count": 0,
+    "field_maps_per_design": 3,
+    "gpu_replay_pass_count": 3,
+    "gpu_replay_required_count": 3,
+    "hardware_or_experimental_validation": false,
+    "mirror_probability_count": 0,
+    "not_a_blind_validation": true,
+    "not_a_design_optimization": true,
+    "null_is_existence_disproof": false,
+    "o_root_count": 532,
+    "permanent_magnet_material_model": false,
+    "plasma_channel_root_count": 200,
+    "plasma_channel_unresolved_separatrix_count": 200,
+    "plasma_channel_x_root_count": 200,
+    "plasma_or_performance_claim_forbidden": true,
+    "plasma_publication_count": 0,
+    "preregistered_one_shot": true,
+    "raw_detection_count": 1302,
+    "recommendation_not_validated_or_optimal": true,
+    "recorded_outcome": "recorded-characterization",
+    "screening_model": "linear-vacuum L1a equivalent-current axisymmetric field (not a permanent-magnet or nonlinear-iron material model)",
+    "single_execution": true,
+    "stable_eligible_cell_count": 0,
+    "stable_eligible_cusp_count": 0,
+    "stable_multicell_wall_cusp_topology_demonstrated": false,
+    "stable_root_count": 980,
+    "three_map_accepted_count": 56,
+    "tolerated_eol_file_count": 0,
+    "x_root_count": 520
+  },
+  "model_fidelity": "linear-vacuum-L1a-equivalent-current-axisymmetric-field-screening",
+  "null_semantics": "0 stable eligible cusps and 0 stable eligible cells over 56 cases under the preregistered eligibility definitions; a null under these definitions is not proof that no such design exists",
+  "paper_evidence_file": {
+    "document_type": "paper-topology-characterization-v1-evidence",
+    "generator": "paper/scripts/generate_topology_screening_evidence.py",
+    "generator_command": "python paper/scripts/generate_topology_screening_evidence.py topology-characterization-v1",
+    "macro_count": 83,
+    "macro_prefix": "Tch",
+    "path": "paper/evidence/topology-characterization-v1.json",
+    "rule": "check_paper.py regenerates the evidence file, the generated TeX and the sidecar from the sealed bundle and requires byte identity with the committed files; every macro therefore traces to a verified artifact hash at every check.",
+    "schema_version": "1.0"
+  },
+  "permitted_claim_scope": [
+    "case, map-acceptance and eligible/stable-eligible counts and the root classification, zone and exclusion tallies",
+    "the preregistered eligibility, separatrix and cross-map correspondence definitions",
+    "the descriptive stage relation and the descriptive search-v3 recommendation labelled as not validated or optimal"
+  ],
+  "preregistration_revision": "af88470b86fd95882ae7fddc48e2860cbfba1219",
+  "preregistration_revision_subject": "preregister CFT topology characterization v1",
+  "prohibited_inferences": [
+    "non-existence of a design with a stable eligible cusp or cell",
+    "validated or optimal design levels from the descriptive recommendation",
+    "mirror probabilities, plasma state, power or performance",
+    "existence or stability of a multi-cell wall-cusp topology in any design not evaluated",
+    "permanent-magnet or nonlinear-iron material behaviour",
+    "plasma, confinement or thruster performance",
+    "hardware or experimental validation",
+    "field-resolved reduction, L0 mapping or geometry-response prediction (GATE-L1 stays closed)",
+    "opening of GATE-L1, GATE-L2 or GATE-L3"
+  ],
+  "recorded_outcome": "recorded-characterization",
+  "results_bundle": {
+    "audited_eol_files": {},
+    "manifest_git_blob": "faaa42d22ceb49ab1f4d04af3ae6c17def451f1e",
+    "manifest_path": "modern/experiments/cft_topology_characterization_v1/results/manifest.json",
+    "manifest_sha256": "bd2ad68e6cc68dd547847f8e07817dc86d35e7a45075fcee9102a2e9eca938a8",
+    "results_tree": "b0ac89f433d8a645ac663b10269358d532c341cb",
+    "tolerance_rule": "for exactly the audited files: bytes contain no CR, sha256(bytes) == audited LF digest and sha256(bytes.replace(LF, CRLF)) == recorded digest with the recorded byte count; every other mismatch fails",
+    "tolerated_eol_files": [],
+    "verified_file_count": 35
+  },
+  "schema_version": "1.0",
+  "screening_model": "linear-vacuum L1a equivalent-current axisymmetric field (not a permanent-magnet or nonlinear-iron material model)",
+  "section_heading": "Recorded topology characterization: no stable eligible cusp or cell",
+  "source_files": [
+    {
+      "git_blob": "faaa42d22ceb49ab1f4d04af3ae6c17def451f1e",
+      "git_blob_sha256": "bd2ad68e6cc68dd547847f8e07817dc86d35e7a45075fcee9102a2e9eca938a8",
+      "path": "modern/experiments/cft_topology_characterization_v1/results/manifest.json",
+      "role": "results-manifest"
+    },
+    {
+      "git_blob": "f628358682d8d9cc94c7cc49e4427833cf58966e",
+      "git_blob_sha256": "885cc8703329f9226592dbdf73d6d5f4ad4bcc35a0a69786621374d7e5a6b419",
+      "path": "modern/experiments/cft_topology_characterization_v1/results/dataset.json",
+      "role": "primary-dataset"
+    },
+    {
+      "git_blob": "7cd27f36b34295b188b4fcbfb18c087e3b01272d",
+      "git_blob_sha256": "caf99a0aa6553948a94bfe610c763dfcfefbfb76c671e18af6e0b2707bd428b3",
+      "path": "modern/experiments/cft_topology_characterization_v1/results/report.md",
+      "role": "report"
+    },
+    {
+      "git_blob": "cb9201f00bc69f5b8aa39630b4910b51d00c7714",
+      "git_blob_sha256": "355a3701d160938510068597a890893c7083b2df09a73f36cb40482aafaf8054",
+      "path": "modern/experiments/cft_topology_characterization_v1/results/runtime.json",
+      "role": "runtime"
+    },
+    {
+      "git_blob": "69ea2e3fc5bf8e4e9d2ef554b727e660241bfe0a",
+      "git_blob_sha256": "01abd32b753daf22fdb8cd44b35377b9b029ad005e5ac7d4ede5b93826fdbfce",
+      "path": "modern/experiments/cft_topology_characterization_v1/results/execution-lock.json",
+      "role": "execution-lock"
+    },
+    {
+      "git_blob": "88c15719639f332d6878b1d366f2465b41eeca3e",
+      "git_blob_sha256": "8722541835628e08712ee8f8bf59fd8e8f4875b10fbb04f4a2efc6f1d0051291",
+      "path": "modern/experiments/cft_topology_characterization_v1/protocol.json",
+      "role": "preregistered-protocol"
+    },
+    {
+      "git_blob": "9a1721559732667d94c728d44a2ee369017f194d",
+      "git_blob_sha256": "5dcdc162d0f3d33e8fecea0434c2ebfd37d5718f122a7f4b6b12a81bf413172b",
+      "path": "modern/experiments/cft_topology_characterization_v1/results/preregistered-protocol.json",
+      "role": "protocol-copy"
+    },
+    {
+      "git_blob": "92a53e82e9efe5732369c017ecf6d7f38356eaf1",
+      "git_blob_sha256": "c04820b33c4d1db5405e5511bef4e34f010c317ab1db93f46d82b0ab7493f14c",
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s02-p0-r0-neg/geometry.json",
+      "role": "representative-artifact"
+    },
+    {
+      "git_blob": "262555deb4cb46850d255489d4522abfaf3cdc62",
+      "git_blob_sha256": "421fd310644b2a4131defc843723fef5924f98f65a41f483247db1c0d44b26bd",
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s02-p0-r0-neg/primary-field.json",
+      "role": "representative-artifact"
+    },
+    {
+      "git_blob": "687f34c99900e120e515ddabe539af5d5bb19ce3",
+      "git_blob_sha256": "fdd5e88daf3f7bc5817ee42c292894600ff605278dbb818071e36b13538169e9",
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s02-p0-r0-neg/refined-field.json",
+      "role": "representative-artifact"
+    },
+    {
+      "git_blob": "58b6bb5e558ee9602dca618d31af8c00e2d351dc",
+      "git_blob_sha256": "eddcd2a35bbc2b16e0f78136c41516641f0dfa4118bf1175d539cc63512a355f",
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s02-p0-r0-neg/enlarged_domain-field.json",
+      "role": "representative-artifact"
+    },
+    {
+      "git_blob": "4615f9560394695b589629e3de027f1cf592476b",
+      "git_blob_sha256": "a9138f698170e632797d414d0581b2813e20041d459ba689b43e166a0861f64a",
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s03-p0-r0-neg/geometry.json",
+      "role": "representative-artifact"
+    },
+    {
+      "git_blob": "833e1c673fe31a71aad6daaf2abd0471b44d0e97",
+      "git_blob_sha256": "0f564b079f32022bc6ba1ce3f3d8a6e582672336cb1dfbf155bb343a02368b45",
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s03-p0-r0-neg/primary-field.json",
+      "role": "representative-artifact"
+    },
+    {
+      "git_blob": "e424eab9d70da97f72a92837b728cba667cf6da1",
+      "git_blob_sha256": "b593254a5e31f747719d499b50043b76cc41e2b96fa2f1471b84ed7b122a7e4b",
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s03-p0-r0-neg/refined-field.json",
+      "role": "representative-artifact"
+    },
+    {
+      "git_blob": "1ce56dc5df4b8f010de8ebdcbc9be0d72285bc6a",
+      "git_blob_sha256": "d5589a3b08723975f6a8864e37dbc77a0dcf5296dc9295b8bedb65e574410b50",
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s03-p0-r0-neg/enlarged_domain-field.json",
+      "role": "representative-artifact"
+    },
+    {
+      "git_blob": "85759a74a83a16cb8e702309495370669f1e1ad2",
+      "git_blob_sha256": "30b3b0b3ba8afc6b965e14f1c7aebd89144cc8090e21c8e8d3a0e52f358cd3ac",
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s04-p0-r0-neg/geometry.json",
+      "role": "representative-artifact"
+    },
+    {
+      "git_blob": "d4465b8e14aebb09e89f397fb8f8bf56156e4c82",
+      "git_blob_sha256": "6666214427879c246b0af6695330b17dbee3d1d29874f03b22faa6be9c44383f",
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s04-p0-r0-neg/primary-field.json",
+      "role": "representative-artifact"
+    },
+    {
+      "git_blob": "4e600e1a2b371076c45231e55b6897751ad35861",
+      "git_blob_sha256": "846a52f001dbdafe2a0e80a8e18cf460cceb009e03097675969dec9b70a79e51",
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s04-p0-r0-neg/refined-field.json",
+      "role": "representative-artifact"
+    },
+    {
+      "git_blob": "80f4b6b55d662ade5a018d189d31bcad8ef629df",
+      "git_blob_sha256": "8fa98b22f02720c5096038a060a08c34f43ef582afc88bff38c75777899f26bc",
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s04-p0-r0-neg/enlarged_domain-field.json",
+      "role": "representative-artifact"
+    },
+    {
+      "git_blob": "c2933b863f6e8d39f079bd84de98d1582603897b",
+      "git_blob_sha256": "8232371a5f45d4de02a4b3339396fab99a46bab23fc9fbbb471e77c7d35348cd",
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s05-p0-r0-neg/geometry.json",
+      "role": "representative-artifact"
+    },
+    {
+      "git_blob": "0ee7be635171b56b244b7f8bdbd6923d59860406",
+      "git_blob_sha256": "b88567ddb875856de13d880cfc465ca3331d39898741c46b28fa88d27268265b",
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s05-p0-r0-neg/primary-field.json",
+      "role": "representative-artifact"
+    },
+    {
+      "git_blob": "a61b00620cfe2d26957c15dc731c7bf8900da480",
+      "git_blob_sha256": "f043441ed9aa08b932616ec74fa8149d37683f126e32c0356a5ac11bc25c8fb1",
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s05-p0-r0-neg/refined-field.json",
+      "role": "representative-artifact"
+    },
+    {
+      "git_blob": "df50d222d9ef746af7b3b5e2e34cdad6e627c97b",
+      "git_blob_sha256": "b06f7931ec0425591b4b027821347bad5072098443a6698bf40edc32e3ec9058",
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s05-p0-r0-neg/enlarged_domain-field.json",
+      "role": "representative-artifact"
+    },
+    {
+      "git_blob": "d91a255fdd0f98a32143fa0aca1677bcb278431f",
+      "git_blob_sha256": "f7feb9df6e2cdbbf4a211a821f628206b6fb4f79314e5471d78e2f84b80a90a1",
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s06-p0-r0-neg/geometry.json",
+      "role": "representative-artifact"
+    },
+    {
+      "git_blob": "1622b87f1d66cf7caa6b53af70bd8006dd25967e",
+      "git_blob_sha256": "548d87b421c0412385ee35beb2289be873dc7102a6c51b325dd621cb6c657398",
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s06-p0-r0-neg/primary-field.json",
+      "role": "representative-artifact"
+    },
+    {
+      "git_blob": "aa32dd833cce14c170b06aaba14a8006d38bc8d9",
+      "git_blob_sha256": "83d08a1801fbe379063fd0a4592163e68f9c5dd06b7ad6caa9b982dcfa4d45b3",
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s06-p0-r0-neg/refined-field.json",
+      "role": "representative-artifact"
+    },
+    {
+      "git_blob": "e28e63f3e4f55b34b874ea29fed10096af47a082",
+      "git_blob_sha256": "29fc8cb1e37222e06dbddd0a7de00f464b6aafca5d8a873637d421a0926d24b1",
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s06-p0-r0-neg/enlarged_domain-field.json",
+      "role": "representative-artifact"
+    },
+    {
+      "git_blob": "ae74397ba17ffb952a8cb0ded141b9cf0dd0e307",
+      "git_blob_sha256": "64fd9c074684ab301487aed50f0fd62206e92479484d7d18c5e7573a65a2800e",
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s07-p0-r0-neg/geometry.json",
+      "role": "representative-artifact"
+    },
+    {
+      "git_blob": "891a0c4b5ec11b7bb1f19328b99ee6828b7357a0",
+      "git_blob_sha256": "a1aad66a2fbc2d3dfd8f580a5226ba6bb746d422f83fb43f3e701597a0f7ecff",
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s07-p0-r0-neg/primary-field.json",
+      "role": "representative-artifact"
+    },
+    {
+      "git_blob": "e65efe5a63ecae7bb586bcf7991ea18153ef037c",
+      "git_blob_sha256": "11fad2c384a7f4f3bb0a0d1b68b4170f762e51c281faa180085c9142aa5cedea",
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s07-p0-r0-neg/refined-field.json",
+      "role": "representative-artifact"
+    },
+    {
+      "git_blob": "18ff0187cd176d3d9cdc3cc82ad66ec72107cbef",
+      "git_blob_sha256": "ce5bb0fe181ee7ba27566a16ebd22d9c5ffaf9309ac47126a06c5087092caf33",
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s07-p0-r0-neg/enlarged_domain-field.json",
+      "role": "representative-artifact"
+    },
+    {
+      "git_blob": "1625b0f4ece6d793732e2b1c1475401c7dc514cf",
+      "git_blob_sha256": "84ba6952057e9342aea36678a5ecb1cd2cb710d71e156e4eb4aaba7cb5cecc0d",
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s08-p0-r0-neg/geometry.json",
+      "role": "representative-artifact"
+    },
+    {
+      "git_blob": "f29aa92356b4b29c0a5d44c56b283ff0fe4c4845",
+      "git_blob_sha256": "b823af8f152f78c744e49131b560fe68c07df13200cfa0d6a852fbe278988852",
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s08-p0-r0-neg/primary-field.json",
+      "role": "representative-artifact"
+    },
+    {
+      "git_blob": "c03fc0a261e383902f16a77c18965c2108d6286d",
+      "git_blob_sha256": "5cbb7110bf1cfcce1a018a1f66f7bb14a5cd06eeaa74425d4bb89c327b8844fd",
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s08-p0-r0-neg/refined-field.json",
+      "role": "representative-artifact"
+    },
+    {
+      "git_blob": "973820f0fa7f149a04295926d8b18d0585501aa6",
+      "git_blob_sha256": "ec73b133a3630fb0534a812235f0bb896df8d7d5de083d4f9be23dca62778d94",
+      "path": "modern/experiments/cft_topology_characterization_v1/results/representatives/topology-s08-p0-r0-neg/enlarged_domain-field.json",
+      "role": "representative-artifact"
+    }
+  ],
+  "status": "accepted"
+}
