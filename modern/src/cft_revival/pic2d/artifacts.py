@@ -15,6 +15,7 @@ import numpy as np
 
 from ..orbit_mc.artifacts import canonical_bytes, content_hash
 from .models import PIC2DValidationError, ParticleArrays
+from .neutrals import NEUTRAL_LEDGER_KEYS, NeutralState
 from .simulation import CUMULATIVE_KEYS, PIC2DConfig, SimulationState
 
 SIDECAR_SCHEMA = "cft.pic2d.artifact-sidecar.v1"
@@ -158,6 +159,9 @@ def save_checkpoint(
         "phi_v": state.phi_v,
         "cumulative": np.array([state.cumulative[key] for key in CUMULATIVE_KEYS], dtype=np.float64),
     }
+    if state.neutral is not None:
+        # v1.3: n_g and the atom ledgers travel with the arrays (hash-bound like the particles)
+        arrays["neutral"] = state.neutral.to_array()
     npz_path = directory / f"{name}.npz"
     npz_sha = write_npz(npz_path, arrays)
     metadata = {
@@ -168,6 +172,7 @@ def save_checkpoint(
         "electron_count": state.electrons.count,
         "ion_count": state.ions.count,
         "cumulative_keys": list(CUMULATIVE_KEYS),
+        "neutral_keys": None if state.neutral is None else ["density_per_m3", *NEUTRAL_LEDGER_KEYS],
         "arrays_file": npz_path.name,
         "arrays_sha256": npz_sha,
         "config_sha256": config_identity(config),
@@ -218,9 +223,16 @@ def load_checkpoint(
     if not np.isfinite(surface).all() or not np.isfinite(phi).all():
         raise PIC2DValidationError("checkpoint node arrays are nonfinite")
     cumulative = {key: float(value) for key, value in zip(CUMULATIVE_KEYS, arrays["cumulative"], strict=True)}
+    neutral = None
+    if metadata.get("neutral_keys") is not None or "neutral" in arrays:
+        if metadata.get("neutral_keys") != ["density_per_m3", *NEUTRAL_LEDGER_KEYS] or "neutral" not in arrays:
+            raise PIC2DValidationError("checkpoint neutral inventory keys differ")
+        neutral = NeutralState.from_array(arrays["neutral"])
+    if (config.neutral_inventory is not None) != (neutral is not None):
+        raise PIC2DValidationError("checkpoint neutral inventory presence does not match the configuration")
     return SimulationState(
         int(metadata["step"]), float(metadata["time_s"]), electrons, ions, surface, phi,
-        float(metadata["injection_carry"]), cumulative,
+        float(metadata["injection_carry"]), cumulative, neutral,
     )
 
 

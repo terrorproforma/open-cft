@@ -1,0 +1,89 @@
+{
+  "schema": "cft.pic2d.model.v1.3",
+  "package": "cft_revival.pic2d",
+  "version": "0.3.0",
+  "supersedes": "modern/spec/pic2d/pic2d-model-v1.2.json (time step, gates, runner and artifact contracts unchanged; this file adds the quasi-steady 0-D neutral inventory, the finalize command and the v1.3 operating point)",
+  "model_level": "L3-development",
+  "status": "development-screening-verified-numerics-not-validated-physics",
+  "what_changed": [
+    "quasi-steady 0-D neutral inventory: one scalar n_g(t) driven by a prescribed feed Q_in, the measured ionisation S(t) and thermal effusion through the exit plane, integrated exactly per series interval with an artificial relaxation toward the fixed point (cft_revival.pic2d.neutrals)",
+    "MCC scales the real-collision frequency by n_g / n_g0 with the null-collision ceiling fixed at n_g0 (CPU reference and Warp kernel take the same scaled density); scale > 1 fails closed",
+    "n_g and the four atom ledgers travel in the checkpoint arrays (hash-bound) and in every series/status record; a resume continues the neutral state bitwise",
+    "plateau criterion additionally tracks n_g (drift < 5 % over the trailing 20 %) whenever the inventory is on",
+    "runner 'finalize' command: summary/maps/series from the latest checkpoint and the series history without stepping (maps_kind = instantaneous_checkpoint)",
+    "the same runner module drives experiments/pic2d_cft_steady_state_v2 (model v1.3) through its own protocol"
+  ],
+  "neutral_inventory_v1_3": {
+    "state": "n_g(t) [m^-3], uniform in space (as the static background it replaces), plus cumulative atom ledgers fed / ionized / effused / artificial",
+    "balance": "V dn_g/dt = Q_in - S(t) - c n_g - (V / tau_g)(n_g - n_g*),  n_g* = (Q_in - S)/c",
+    "feed": "Q_in prescribed [atoms/s]; equals the effusion at the zero-ionisation density n_g0 = Q_in / c, which is also the MCC null-collision ceiling and the initial density",
+    "ionisation_sink": "S = (MCC ionisations over the series interval) x W / interval; measured, not modelled",
+    "effusion_sink": "c n_g with c = v_bar A_exit / 4, v_bar = sqrt(8 k T_g / (pi m_Xe)) = 220.0 m/s at T_g = 300 K (the same documented neutral temperature that sets the born-ion Maxwellian), A_exit = pi (3 mm)^2 = 2.827e-5 m^2, c = 1.5547e-3 m^3/s; the anode and dielectric walls do not absorb neutrals",
+    "physical_time_constant_s": 2.208e-4,
+    "physical_time_constant_note": "V / c with V = 3.432e-7 m^3 (plasma volume of the 60x480 mesh): ~100x longer than a feasible run, hence the artificial relaxation",
+    "artificial_relaxation": {
+      "relaxation_time_s": 3.0e-8,
+      "why_this_value": "tau_g = 30 ns is << the ion transit time (2.4 us) so n_g is quasi-steady on every plasma time scale, << the physical 221 us so the transient is explicitly artificial, and 100 series intervals (0.3 ns each) so the shot noise of S over one interval (~6 % at S = 3e16 s^-1 and W = 6e4) is averaged to < 1 % on n_g",
+      "statement": "the transient toward n_g* is ARTIFICIAL and is not a neutral-flow prediction; only the fixed point (artificial term = 0, Q_in = S + c n_g) is physical; the artificial term is integrated into its own ledger so the atom balance still closes to round-off"
+    },
+    "integration": "exact solution of the linear ODE over each series interval with S held at its interval mean: n_1 = n_inf + (n_0 - n_inf) exp(-r dt), r = c/V + 1/tau_g, n_inf = [(Q_in - S)/V + n_g*/tau_g] / r; the ledgers are the exact interval integrals so fed - ionized - effused - artificial = V (n_1 - n_0) to round-off (interval residual reported)",
+    "update_cadence": "every series interval (200 steps = 0.3 ns); series_interval_steps must equal device_sync_steps when the inventory is on",
+    "mcc_coupling": "real collision frequencies nu_k = n_g sigma_k(E) v; the null ceiling nu_max = n_g0 max(sigma_tot v) is fixed, so the candidate fraction is unchanged and the per-candidate real-collision probability scales with n_g/n_g0; n_g > n_g0 (1 + 1e-9) or n_g < 0 (inventory exhausted) raise PIC2DStabilityError (fail closed)",
+    "fail_closed_validation": "feed above the ceiling (Q_in / c > n_g0) is rejected at configuration; a checkpoint without the inventory cannot be loaded into an inventory configuration and vice versa; the config identity carries the inventory block only when it is on, so v1.0-v1.2 identities are unchanged"
+  },
+  "operating_point_v1_3": {
+    "anode_potential_v": 300.0,
+    "exit_plane_potential_v": 0.0,
+    "electron_injection_current_a": 3.0e-3,
+    "electron_injection_temperature_ev": 2.0,
+    "injection_note": "kept from v1.2: the reference run showed the beam returning to the exit plane at n_g = 1.5e19 (2.94 of 3 mA); at the v1.3 start density 5e19 the collision rate along the channel is 3.3x higher and v2 (1e20) ignited from the same injection, so the seed is not changed before the first attempt",
+    "neutral_ceiling_and_initial_density_per_m3": 5.0e19,
+    "feed_atoms_per_s": 7.7737e16,
+    "mass_flow_mg_per_s": 0.01695,
+    "feed_note": "Q_in = c n_g0 with n_g0 = 5e19 (top of the 4.5-5e19 range: more margin for ignition, which failed at 1.5e19). 0.017 mg/s is ~10-50x below a laboratory CFT feed because the exit is a 3 mm hole at 300 K and there is no downstream plume region; the fixed point, not the absolute flow, is the object",
+    "seed_plasma_density_per_m3": 1.0e16,
+    "expected_fixed_point": {
+      "user_estimate": "nu_iz tau = 1 at n_g = 3.4e19 -> S = Q_in - c n_g = 2.5e16 s^-1, n_eq = 1.1-1.7e17 (0.3-0.4 n_max) if the plasma electrons carry most of the ionisation",
+      "linear_projection_from_v2_coefficients": "a = 6.03e16 (n_g/1e20) s^-1 beam ionisation, nu_iz = 6.12e5 (n_g/1e20) s^-1 per plasma electron, tau = 2.4 us: fixed point n_g = 2.3e19, n_e = 2.9e17 (0.73 n_max), S = 4.2e16 s^-1 (54 % utilisation)",
+      "why_the_bracket": "the v1.2 reference run showed the beam-ionisation coefficient collapsing below the linear scaling at low n_g (the beam mirrors back before colliding), so the linear projection is an upper bound on n_e and a lower bound on n_g*: expected n_g* in [2.3e19, 3.4e19] and n_e in [1.1e17, 2.9e17] = 0.28-0.73 n_max; the runtime gate trips at 5.6e18 (14x n_max), the ceiling is a resolvability budget not a stability limit",
+      "ignition": "the run starts at n_g0 = 5e19 where nu_iz tau = 1.45 > 1 (avalanche), and the inventory depletes n_g toward the fixed point as S grows: ignition is expected within ~1 us; if S does not grow and N_e decays within ~1 us the run is stopped and one documented adjustment is made (seed density or Q_in for 5.5e19)"
+    }
+  },
+  "resolution_budget_v1_3": {
+    "grid": {"radial_cells": 60, "axial_cells": 480, "dr_um": 33.3, "dz_um": 50.0},
+    "n_max_per_m3": 4.0e17,
+    "n_eq_projected_per_m3": 1.5e17,
+    "n_eq_projected_range_per_m3": [1.1e17, 2.9e17],
+    "n_eq_over_n_max": "0.28-0.73",
+    "t_e_for_lambda_d_ev": 8.0,
+    "lambda_d_min_um": 33.2,
+    "max_cell_over_lambda_d_at_n_max": 1.50,
+    "dt_s": 1.5e-12,
+    "omega_pe_dt_at_n_max": 0.0535,
+    "omega_pe_dt_at_2_9e17": 0.0456,
+    "omega_ce_dt_at_b_max_0_291_t": 0.0769,
+    "gate_trip_node_density_per_m3": 5.6e18,
+    "ion_subcycle": 8,
+    "macro_weight": 6.0e4,
+    "macro_particles_at_n_eq": "2 n V / W: 1.26 M at 1.1e17, 1.72 M at 1.5e17, 1.94 M at 1.7e17, 3.2 M at 2.9e17 (e- + Xe+)",
+    "ppc_at_1_5e17_r_1mm": 27,
+    "ion_transit_time_s": 2.4e-6,
+    "steps_per_transit": 1600000,
+    "min_transits_before_plateau": 3,
+    "expected_duration": "3 transits = 4.8e6 steps; at 1-2 ms/step 1.3-2.7 h; 10 transits 4.4-8.9 h inside the 12 h budget"
+  },
+  "finalize_command": {
+    "usage": "python -m experiments.<exp>.run finalize [--stop-reason ...]",
+    "does": "loads checkpoint/checkpoint-latest (code-identity check relaxed: nothing is stepped), truncates series.jsonl to the checkpoint step, writes summary.json, series.npz, maps.npz (instantaneous single-sample n_e / n_i / phi / T_e maps deposited from the checkpoint particles; flux and ionisation maps are zero, window_steps = 1), checkpoint-final.*, marks run_state.json finished and appends a stop event to status.jsonl",
+    "when": "closing a run whose process was stopped externally (e.g. the v1.2 no-ignition reference run) without spending GPU time"
+  },
+  "tests": [
+    "tests/pic2d/test_pic2d_neutral_inventory.py: v_bar / c / feed / mass-flow numbers; atom ledger closes to 1e-9 of the inventory at every update and cumulatively with a varying prescribed S; fixed point equals (Q_in - S)/c to 1e-8, approach rate 1/tau_g + c/V, artificial term vanishes at the fixed point (e^-20); feed above the ceiling, scale > 1 and exhaustion fail closed; MCC candidate count unchanged and every real channel halves at scale 0.5 within 5 sigma; a Simulation records the inventory, its ledger equals the MCC tally x W and closes; checkpoint carries n_g (arrays + neutral_keys), resume is bitwise incl. n_g and ledgers, tampering with n_g breaks the hash; static checkpoint cannot load into an inventory config; GPU backend receives the same scale",
+    "tests/pic2d/test_pic2d_steady_state_runner.py: plateau tracks n_g when present (ramp blocks, flat passes); finalize writes summary/maps/series from the checkpoint without stepping (checkpoint bytes unchanged, stray record dropped); v1.3 protocol run has n_g / fixed point / effusion in status, neutral arrays in series.npz, ledger closure < 1e-12 in summary, n_g in the checkpoint; series interval != sync interval rejected"
+  ],
+  "unchanged_simplifications": [
+    "neutrals uniform in space: the inventory is 0-D (no neutral flow field, no wall accommodation); at the fixed point the ionisation source is spatially where the electrons are, but n_g is not depleted locally",
+    "no ion-neutral elastic or charge-exchange collisions",
+    "no secondary emission; Dirichlet exit plane; prescribed B; electrostatic; momentum-conserving scheme; ions every 8 steps"
+  ]
+}

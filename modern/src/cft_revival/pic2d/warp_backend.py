@@ -1524,6 +1524,13 @@ class WarpBackend:
         return bound
 
     # ------------------------------------------------------------------ state exchange
+    def set_neutral_scale(self, scale: float) -> None:
+        """v1.3: the MCC kernel receives ``n_g0 * scale`` as its density at every launch."""
+
+        if self.mcc is None:
+            raise PIC2DValidationError("neutral scale requires MCC")
+        self.mcc.set_neutral_scale(scale)
+
     def load_state(self, state: SimulationState) -> None:
         self.species = {"e": self._upload(state.electrons), "i": self._upload(state.ions)}
         self._set_slots(state.electrons.count, state.ions.count)
@@ -1653,7 +1660,7 @@ class WarpBackend:
             wp.launch(
                 mcc_kernel, dim=padded_dim(n_bound, PARTICLE_BLOCK), block_dim=PARTICLE_BLOCK,
                 inputs=[electrons.vr, electrons.vt, electrons.vz, electrons.alive_flags, self.slots, stream_seed(config.seed, step_index, 1),
-                        self.probability, mcc.nu_max, config.mcc.neutral_density_per_m3,  # type: ignore[union-attr]
+                        self.probability, mcc.nu_max, mcc.neutral_density_per_m3,  # scaled by n_g/n_g0 (v1.3); ceiling fixed
                         self.table, self.table_points, mcc.table.energy_step_ev, mcc.table.energy_max_ev,
                         mcc.table.thresholds_ev[1], mcc.table.thresholds_ev[2], 8.7, ion_thermal,
                         self.ionize, self.sec[0], self.sec[1], self.sec[2], self.ionv[0], self.ionv[1], self.ionv[2],

@@ -27,6 +27,7 @@ from . import kernels
 from .fields import MagneticFieldMap
 from .mcc import MCCConfig, NullCollisionMCC, XenonCrossSections, maxwellian_velocity
 from .mesh import MeshMasks, build_mesh_masks
+from .neutrals import NeutralInventory, NeutralInventoryConfig, NeutralState
 from .models import (
     ELECTRON_MASS_KG,
     ELEMENTARY_CHARGE_C,
@@ -112,10 +113,16 @@ class PIC2DConfig:
     # ``device_sync_steps`` steps (default: gcd of the series and gate cadences);
     # series and gate cadences must be multiples of it.
     device_sync_steps: int | None = None
+    # v1.3: quasi-steady 0-D neutral inventory (feed, ionisation, effusion, artificial
+    # relaxation) updated at every series interval; requires ``mcc`` whose density is
+    # the initial value and the null-collision ceiling.
+    neutral_inventory: NeutralInventoryConfig | None = None
 
     def __post_init__(self) -> None:
         if not isfinite(self.dt_s) or self.dt_s <= 0.0:
             raise PIC2DValidationError("dt_s must be positive")
+        if self.neutral_inventory is not None and (self.mcc is None or self.mcc.neutral_density_per_m3 <= 0.0):
+            raise PIC2DValidationError("neutral_inventory requires an MCC configuration with a positive neutral density")
         if not isfinite(self.macro_weight) or self.macro_weight <= 0.0:
             raise PIC2DValidationError("macro_weight must be positive")
         if isinstance(self.seed, bool) or not isinstance(self.seed, int) or self.seed < 0:
@@ -157,7 +164,8 @@ class PIC2DConfig:
             "runtime_stability_check_steps": self.runtime_stability_check_steps,
             "ion_subcycle": self.ion_subcycle,
             "device_sync_steps": self.sync_steps,
-        }
+        } | ({} if self.neutral_inventory is None else {"neutral_inventory": self.neutral_inventory.to_dict()})
+        # (the key is present only when the inventory is on, so v1.0-v1.2 config identities are unchanged)
 
     @property
     def sync_steps(self) -> int:
@@ -178,11 +186,14 @@ class SimulationState:
     phi_v: np.ndarray
     injection_carry: float
     cumulative: dict[str, float]
+    # v1.3: the neutral inventory (None when the background is static)
+    neutral: NeutralState | None = None
 
     def copy(self) -> "SimulationState":
         return SimulationState(
             self.step, self.time_s, self.electrons.copy(), self.ions.copy(),
             self.surface_charge_c.copy(), self.phi_v.copy(), self.injection_carry, dict(self.cumulative),
+            None if self.neutral is None else self.neutral.copy(),
         )
 
 
@@ -275,6 +286,35 @@ class DiagnosticAccumulator:
         }
 
 
+def instantaneous_maps(config: PIC2DConfig, masks: MeshMasks, state: SimulationState) -> dict[str, np.ndarray]:
+    """Single-sample node maps (n_e, n_i, phi, T_e) from a state, in the window-map layout.
+
+    Used to finalize a run from its checkpoint when the device-side window
+    accumulators are gone; the flux/ionisation maps have no history and are zero,
+    ``window_steps`` is 1.
+    """
+
+    diag = DiagnosticAccumulator(masks)
+    electron = electron_species(config.macro_weight)
+    ion = xenon_ion_species(config.macro_weight)
+    q_e = kernels.deposit_node_charge(masks, electron, state.electrons, fixed_point=config.fixed_point_deposition)
+    q_i = kernels.deposit_node_charge(masks, ion, state.ions, fixed_point=config.fixed_point_deposition)
+    with np.errstate(invalid="ignore", divide="ignore"):
+        volume = np.where(masks.plasma_node, masks.shape_volume_m3, np.inf)
+        diag.n_e += np.abs(q_e) / (ELEMENTARY_CHARGE_C * volume)
+        diag.n_i += np.abs(q_i) / (ELEMENTARY_CHARGE_C * volume)
+    diag.phi += state.phi_v
+    electrons = state.electrons
+    if electrons.count:
+        diag.e_weight += kernels.deposit_node_moment(masks, electrons, np.ones(electrons.count))
+        diag.e_vr += kernels.deposit_node_moment(masks, electrons, electrons.vr_m_per_s)
+        diag.e_vt += kernels.deposit_node_moment(masks, electrons, electrons.vt_m_per_s)
+        diag.e_vz += kernels.deposit_node_moment(masks, electrons, electrons.vz_m_per_s)
+        diag.e_v2 += kernels.deposit_node_moment(masks, electrons, electrons.speed_squared())
+    diag.steps = 1
+    return diag.to_arrays(config.macro_weight, config.dt_s)
+
+
 class CPUBackend:
     """Numpy reference implementation of one PIC-MCC cycle."""
 
@@ -310,6 +350,13 @@ class CPUBackend:
     def export_state(self) -> SimulationState:
         assert self.state is not None
         return self.state.copy()
+
+    def set_neutral_scale(self, scale: float) -> None:
+        """v1.3: real-collision frequency factor ``n_g / n_g0`` (null ceiling fixed at ``n_g0``)."""
+
+        if self.mcc is None:
+            raise PIC2DValidationError("neutral scale requires MCC")
+        self.mcc.set_neutral_scale(scale)
 
     @property
     def step_index(self) -> int:
@@ -573,6 +620,8 @@ class SeriesRecord:
     poisson_iterations: int
     currents_a: dict[str, float]
     ledger: dict[str, float]
+    # v1.3: neutral inventory sample (None for a static background)
+    neutral: dict[str, Any] | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -582,6 +631,7 @@ class SeriesRecord:
             "field_energy_j": self.field_energy_j, "surface_charge_c": self.surface_charge_c,
             "peak_omega_pe_dt": self.peak_omega_pe_dt, "poisson_iterations": self.poisson_iterations,
             "currents_a": dict(self.currents_a), "ledger": dict(self.ledger),
+            "neutral": None if self.neutral is None else dict(self.neutral),
         }
 
 
@@ -632,10 +682,26 @@ class Simulation:
         self._last_energy: float | None = None
         self._last_electrode: tuple[float, float] | None = None
         self._series_base_step = 0
+        self.neutrals: NeutralInventory | None = None
+        self.neutral_state: NeutralState | None = None
+        if config.neutral_inventory is not None:
+            assert config.mcc is not None
+            geometry = config.grid.geometry
+            self.neutrals = NeutralInventory(
+                config.neutral_inventory,
+                ceiling_density_per_m3=config.mcc.neutral_density_per_m3,
+                exit_area_m2=pi * geometry.exit_radius_m**2,
+                temperature_k=config.mcc.neutral_temperature_k,
+                volume_m3=float(self.masks.to_dict()["plasma_volume_m3"]),
+            )
+            self.neutral_state = NeutralState.initial(config.mcc.neutral_density_per_m3)
+            self.backend.set_neutral_scale(1.0)
 
     @property
     def state(self) -> SimulationState:
-        return self.backend.export_state()
+        state = self.backend.export_state()
+        state.neutral = None if self.neutral_state is None else self.neutral_state.copy()
+        return state
 
     def load_state(self, state: SimulationState) -> None:
         """Load a (checkpoint) state and re-base the interval bookkeeping on it.
@@ -651,6 +717,13 @@ class Simulation:
         self._last_energy = None
         self._last_electrode = None
         self._series_base_step = int(state.step)
+        if self.neutrals is not None:
+            if state.neutral is None:
+                raise PIC2DValidationError("state has no neutral inventory but the configuration enables one")
+            self.neutral_state = state.neutral.copy()
+            self.backend.set_neutral_scale(self.neutrals.scale(self.neutral_state))
+        elif state.neutral is not None:
+            raise PIC2DValidationError("state carries a neutral inventory but the configuration is a static background")
 
     def run(self, steps: int, *, accumulate_from_step: int | None = None, progress: Any = None) -> SimulationState:
         """Advance ``steps`` cycles; accumulate diagnostics from ``accumulate_from_step`` on."""
@@ -739,12 +812,31 @@ class Simulation:
             "cumulative": dict(cumulative),
         }
         plasma_phi = phi[masks.plasma_node]
+        neutral: dict[str, Any] | None = None
+        if self.neutrals is not None and self.neutral_state is not None:
+            # v1.3: advance the inventory with the ionisation measured over this interval,
+            # then hand the new n_g / n_g0 to the MCC for the next interval (fails closed
+            # on exhaustion or on exceeding the null-collision ceiling).
+            advance = self.neutrals.advance(self.neutral_state, currents["ionization_rate_per_s"], interval)
+            self.neutral_state = advance.state
+            self.backend.set_neutral_scale(self.neutrals.scale(self.neutral_state))
+            neutral = {
+                "density_per_m3": advance.state.density_per_m3,
+                "fixed_point_per_m3": advance.fixed_point_per_m3,
+                "scale": self.neutrals.scale(advance.state),
+                "ionization_rate_per_s": advance.ionization_rate_per_s,
+                "effusion_rate_per_s": advance.effusion_rate_per_s,
+                "artificial_rate_per_s": advance.artificial_rate_per_s,
+                "feed_atoms_per_s": self.neutrals.config.feed_atoms_per_s,
+                "interval_ledger_residual_atoms": advance.ledger_residual_atoms,
+                "ledger": dict(advance.state.ledger),
+            }
         self.series.append(
             SeriesRecord(
                 step, float(sample["time_s"]), int(sample["electrons"]), int(sample["ions"]),
                 float(plasma_phi.mean()), float(plasma_phi.min()), float(plasma_phi.max()),
                 k_e, k_i, u_e, float(sample["surface_charge_c"]), tally.max_omega_pe_dt,
-                tally.poisson_iterations, currents, ledger,
+                tally.poisson_iterations, currents, ledger, neutral,
             )
         )
         self._last_cumulative = dict(cumulative)
@@ -765,6 +857,8 @@ class Simulation:
             record["cross_sections"] = self.cross_sections.to_dict()
         if getattr(self.backend, "mcc", None) is not None:
             record["mcc"] = self.backend.mcc.to_dict()
+        if self.neutrals is not None:
+            record["neutral_inventory"] = self.neutrals.to_dict()
         return record
 
 
@@ -780,5 +874,6 @@ __all__ = [
     "SimulationState",
     "StepTally",
     "empty_cumulative",
+    "instantaneous_maps",
     "seed_plasma_state",
 ]

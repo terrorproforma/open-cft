@@ -283,6 +283,19 @@ class NullCollisionMCC:
             cross_sections, energy_step_ev=config.energy_step_ev, energy_max_ev=config.energy_max_ev
         )
         self.nu_max = maximum_collision_frequency(self.table, config.neutral_density_per_m3)
+        # v1.3: the instantaneous neutral density is ``neutral_scale * config.neutral_density_per_m3``;
+        # the null-collision ceiling ``nu_max`` stays at the configured density, so the scale
+        # must not exceed 1 (fail closed).
+        self.neutral_scale = 1.0
+
+    def set_neutral_scale(self, scale: float) -> None:
+        if not isfinite(scale) or scale < 0.0 or scale > 1.0 + 1e-9:
+            raise PIC2DValidationError(f"neutral scale {scale!r} must lie in [0, 1] (null-collision ceiling)")
+        self.neutral_scale = float(scale)
+
+    @property
+    def neutral_density_per_m3(self) -> float:
+        return self.config.neutral_density_per_m3 * self.neutral_scale
 
     def collision_probability(self, dt_s: float) -> float:
         return -_expm1(-self.nu_max * dt_s)
@@ -302,7 +315,7 @@ class NullCollisionMCC:
         energy = electron_energy_ev(vx, vy, vz)
         speed = np.sqrt(vx * vx + vy * vy + vz * vz)
         sigma = self.table.lookup(energy)  # (3, N)
-        nu = self.config.neutral_density_per_m3 * sigma * speed[None, :]
+        nu = self.neutral_density_per_m3 * sigma * speed[None, :]
         cumulative = np.cumsum(nu, axis=0)
         selector = u[1] * self.nu_max
         elastic = candidate & (selector < cumulative[0])
