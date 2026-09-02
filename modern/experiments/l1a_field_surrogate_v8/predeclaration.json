@@ -1,0 +1,265 @@
+{
+  "schema_version": "cft-revival.l1a-field-surrogate-v8.protocol/8.0.0",
+  "classification": "L1a_NUMERICAL_EMULATION_ONLY_NOT_MATERIAL_PLASMA_OR_HARDWARE_ACCURACY",
+  "branch": "exp/l1a-field-surrogate-v8",
+  "execution": {
+    "accepted_experiment_runtime_commit": "b46e263950f91530ea61710b5dcc9354fc63cf6c",
+    "lifecycle": "cft_revival.experiment_runtime.ExperimentRuntime callbacks",
+    "attestation_order": "detached/commit/dependency/remote/global-clean verification before runtime construction; prebundle consumes immutable verification",
+    "runtime_drift_policy": "tracked or staged changes forbidden globally; untracked entries allowed only under exact results and .runtime-cache roots",
+    "git_common_namespace_lock": "persistent atomic attempt-1 claim under the repository Git common directory, created with shared runtime pinned filesystem primitives before ExperimentRuntime construction",
+    "terminal_states": [
+      "prebundle_failure",
+      "runtime_failure",
+      "development_rejection",
+      "assessment_rejection",
+      "accepted_result"
+    ],
+    "maximum_lock_claims": 1,
+    "device": "cuda:0",
+    "required_gpu": "NVIDIA GeForce RTX 5090",
+    "clean_detached_pushed_preregistration": true,
+    "direct_parent_child_commits": true,
+    "no_patch_or_rerun_after_lock": true
+  },
+  "sampling": {
+    "seed": 20260913,
+    "raw_rows": 1024,
+    "frozen_rows": 432,
+    "roles": {
+      "candidate": [
+        0,
+        270
+      ],
+      "method": [
+        270,
+        324
+      ],
+      "calibration": [
+        324,
+        378
+      ],
+      "assessment": [
+        378,
+        432
+      ]
+    },
+    "method_strata": {
+      "interpolation": [
+        270,
+        288
+      ],
+      "boundary": [
+        288,
+        306
+      ],
+      "ood": [
+        306,
+        324
+      ]
+    },
+    "calibration_strata": {
+      "interpolation": [
+        324,
+        342
+      ],
+      "boundary": [
+        342,
+        360
+      ],
+      "ood": [
+        360,
+        378
+      ]
+    },
+    "assessment_strata": {
+      "interpolation": [
+        378,
+        396
+      ],
+      "boundary": [
+        396,
+        414
+      ],
+      "ood": [
+        414,
+        432
+      ]
+    },
+    "high_budgets": [
+      162,
+      216,
+      270
+    ],
+    "geometry_selection": "input-only valid geometry stratification and balanced maximin selection over 1024 screened fresh rows",
+    "zero_v1_v2_v3_v4_v5_v6_v7_coordinate_overlap": true,
+    "role_balance": "each role balances stage counts 3/4/5, interpolation/boundary/OOD, and both canonical polarities; odd cell counts differ by at most one polarity row",
+    "candidate_prefix": "18 stage/stratum/polarity cells in deterministic maximin rounds; budgets 162/216/270 end after 9/12/15 rows per cell"
+  },
+  "geometry": {
+    "nextafter_steps": 4096,
+    "requested_radius_first": true,
+    "rebuild_all_frozen": true,
+    "zero_rebuild_hash_failures": true
+  },
+  "staging": {
+    "candidate_method_before_method_freeze": true,
+    "calibration_after_method_freeze": true,
+    "assessment_after_calibration_freeze_once": true,
+    "future_field_materialization_forbidden": true,
+    "read_counters_increment_before_checkpoint_read": true,
+    "materialized_and_read_counters_separate_by_role": true,
+    "phase_records_sidecar_protected": true,
+    "working_cache_owned_and_deleted_by_shared_runtime": true
+  },
+  "fidelities": {
+    "low_shape": [
+      41,
+      73
+    ],
+    "high_shape": [
+      81,
+      145
+    ],
+    "domain": {
+      "radius_m": 0.03,
+      "z_min_m": -0.015,
+      "z_max_m": 0.05
+    },
+    "physical_source_smear_m": 0.0008,
+    "coarse_source_transfer": "conservative integration of unchanged physical bands over coarse dual cells",
+    "solver": {
+      "relative_tolerance": 1e-10,
+      "absolute_tolerance": 1e-13,
+      "max_iterations": 20000,
+      "residual_history_stride": 10,
+      "max_true_residual_restarts": 2
+    }
+  },
+  "models": {
+    "qois": [
+      "centreline_mid_abs_bz_t",
+      "centreline_abs_bz_peak_t",
+      "minimum_mirror_ratio",
+      "maximum_mirror_ratio",
+      "stage_gradient_rms_t_per_m",
+      "stage_gradient_max_abs_t_per_m",
+      "field_energy_j",
+      "boundary_to_peak_ratio",
+      "source_representation_error"
+    ],
+    "scalar_families": [
+      "observed_coarse_standardized_log_ratio_ard_matern"
+    ],
+    "field_families": [
+      "observed_coarse_stagewise_residual_aligned_pod_ard_matern"
+    ],
+    "length_scales": [
+      1.0
+    ],
+    "ridge": 1e-08,
+    "pod_retained_energy_min": 0.995,
+    "pod_retained_energy_targets": {
+      "162": 0.999,
+      "216": 0.9995,
+      "270": 0.9995
+    },
+    "pod_rank_caps": {
+      "162": 96,
+      "216": 128,
+      "270": 161
+    },
+    "alignment": "polarity-canonical piecewise input-only map through axis bounds, chamber endpoints and every stage centre",
+    "pod": "stage-local joint multi-view windowed residual basis: cylindrical-energy channel, unweighted axial windows, explicit axis-Bz channel",
+    "scalar_features": "one relevant observed coarse QOI per output; source representation error additionally uses preregistered radial/axial grid-phase sin/cos features",
+    "scalar_target": "per-output standardized transformed high-minus-low discrepancy with fitted constant mean",
+    "mirror_transform": {
+      "kind": "regularized-log1p-above-one",
+      "scale": 0.05
+    },
+    "coefficient_features": "dedicated low-field joint basis coefficients plus geometry; singular-value-whitened residual coefficients and per-mode ridge regularization",
+    "kernel": "ARD Mahalanobis Matern-5/2",
+    "ard_fit": "deterministic candidate-only grouped 3-fold CV then marginal-likelihood tie-break; no correlation heuristic",
+    "topology_from_reconstructed_fields_only": true,
+    "scalar_targets": [
+      "centreline_mid_abs_bz_t",
+      "centreline_abs_bz_peak_t",
+      "field_energy_j",
+      "boundary_to_peak_ratio"
+    ],
+    "derived_from_reconstruction": [
+      "minimum_mirror_ratio",
+      "maximum_mirror_ratio",
+      "stage_gradient_rms_t_per_m",
+      "stage_gradient_max_abs_t_per_m"
+    ],
+    "input_only_targets": [
+      "source_representation_error"
+    ],
+    "scalar_suitability": "candidate-only absolute Pearson coarse/high correlation >=0.8; unsuitable targets derived from reconstructed field or rejected",
+    "alignment_roundtrip_l2_max": 0.005,
+    "projection_objectives": [
+      "cylindrical_energy",
+      "unweighted_field_l2",
+      "axis_topology"
+    ],
+    "ard_candidate_lengths": [
+      0.25,
+      0.5,
+      1.0,
+      2.0,
+      4.0
+    ]
+  },
+  "gates": {
+    "scalar_nrmse_max": 0.05,
+    "scalar_worst_max": 0.15,
+    "field_l2_max": 0.05,
+    "field_energy_max": 0.05,
+    "topology_exact": true,
+    "conformal_nominal": 0.8,
+    "group_coverage_min": 0.6,
+    "median_width_max": 0.3,
+    "p95_width_max": 0.6,
+    "latency_median_speedup_min": 3.0,
+    "residual_max": 1e-10,
+    "boundary_max": 0.05,
+    "source_error_max": 0.25,
+    "flux_identity_max": 1e-08
+  },
+  "synthetic_preflight": {
+    "all_five_runtime_terminal_states": true,
+    "shared_runtime_callback_matrix": true,
+    "real_production_runner_paths": true,
+    "real_field_solver_calls": 0,
+    "static_undefined_name_check": true,
+    "required_path_groups": [
+      "npz-save-load-qoi",
+      "snapshot-high-residual",
+      "align-unalign",
+      "scalar-high-ratio",
+      "all-budgets-lengths-families",
+      "shared-kernel-fit-predict-serialize",
+      "pod-fit-project-reconstruct-serialize-rank-fail",
+      "field-predict-projection-oracle",
+      "baseline-oracle-coefficient-metrics",
+      "selection-pass-fail-none",
+      "calibration-conformal-assessment-topology-latency"
+    ]
+  },
+  "integrity": {
+    "protocol_subject": "preregister L1a field surrogate v8 experiment",
+    "results_subject": "record L1a field surrogate v8 results",
+    "remote_branch": "origin/exp/l1a-field-surrogate-v8",
+    "dependency_lock": true,
+    "full_git_blob_closure_before_solver": true,
+    "line_endings": "experiment-local .gitattributes pins LF text and binary NPZ",
+    "strict_success_failure_loader": true,
+    "globally_sorted_manifest": true
+  },
+  "claim_limits": [
+    "Accepted L1a discretization emulation only; not physical truth.",
+    "No material, plasma, thermal, structural, propulsion or hardware accuracy.",
+    "V1-v7 outcomes are immutable; v7 development artifacts are the sole scientific development evidence and provide no v8 labels."
+  ]
+}
