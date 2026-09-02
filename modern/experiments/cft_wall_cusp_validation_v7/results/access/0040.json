@@ -1,0 +1,1 @@
+{"details":{"case_id":"wcval-v7-s05-p1-r1-neg","device":"cuda:0","map_role":"enlarged"},"kind":"solver","operation":"wcval-v7-s05-p1-r1-neg-enlarged","recorded_at_utc":{"__cft_type__":"aware-utc-datetime","value":"2026-09-02T10:20:58.142031Z"},"recorded_before_operation":true,"schema_version":"cft-revival.experiment-access/1.0.0","sequence":40}
