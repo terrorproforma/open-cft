@@ -1,0 +1,1 @@
+{"details":{"case_count":9,"plan_kind":"evidentiary","worker_pool_size":9},"kind":"backend","operation":"exact-authority-replay-all-cases","recorded_at_utc":{"__cft_type__":"aware-utc-datetime","value":"2026-09-02T15:07:27.019159Z"},"recorded_before_operation":true,"schema_version":"cft-revival.experiment-access/1.0.0","sequence":16}
