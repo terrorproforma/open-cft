@@ -1,6 +1,6 @@
 {
   "schema_version": "cft-coupling-equation-ledger/4.0.0",
-  "record_schema": "cft-field-plasma-coupling/4.1.0",
+  "record_schema": "cft-field-plasma-coupling/4.2.0",
   "model_scope": "accepted axisymmetric maps to HEMP/CFT wall cusps, inter-cusp cells, wall-connected mirror paths, and orbit-gated uncertainty",
   "coordinate_convention": {
     "system": "right-handed cylindrical axisymmetric (r,z)",
@@ -116,6 +116,12 @@
       "name": "projection authority",
       "equation": "rows(t_eval)=project(rebuild(private accepted raw map artifacts + private accepted held-out bytes + orbit adapter,t_eval))",
       "validity": "explicit timezone-aware evaluation time; all map/held-out diagnostics, freshness, cusp/cell/path/orbit statuses, wall events, same-line extrema, probabilities, and coverage are rechecked atomically"
+    },
+    {
+      "id": "CPL-004-019",
+      "name": "authoritative field artifact acceptance",
+      "equation": "E_map=reload_field_artifact_bytes(B_v1.2,allow_legacy_v1_1=false); B_v1.2=field_artifact_canonical_bytes(E_map); H_evidence binds payload hash + canonicalization + optional H(migration manifest,v1.1 source)",
+      "validity": "new held-out promotion requires canonical cft-axisymmetric-field-map/1.2.0 bytes with field-json-sorted-utf8-signed-zero-v2 semantics; v1.1 is historical unless a canonical migration manifest uniquely binds source and v1.2 target"
     }
   ],
   "source_basis": [
@@ -158,6 +164,7 @@
     "sampling an RK stage outside the dielectric channel wall before resolving the wall event",
     "treating a caller-rehashed summary record or copyable canonical seal as projection authority",
     "binding held-out membership only to field-value hashes while ignoring schema/model/code/config/backend/provenance/diagnostic identity",
+    "promoting direct v1.1 field bytes or a v1.2 rewrite without a uniquely bound canonical migration manifest",
     "projecting deprecated v2 screening proxies or v3 closed-contour records as v4 CFT cells",
     "using fixed axial windows instead of consecutive stable wall-cusp planes"
   ]

@@ -1,0 +1,12 @@
+{
+  "schema_version": "1.0.0",
+  "status": "read-only-legacy",
+  "accepted_schemas": [
+    "cft-axisymmetric-field-map/1.1.0",
+    "cft-axisymmetric-design-manifest/1.1.0"
+  ],
+  "canonicalization": "json-sort-keys-compact-utf8-v1",
+  "read_policy": "Verify the original embedded payload hash and raw file sidecar without signed-zero normalization. Never rewrite, reseal, or silently migrate legacy bytes.",
+  "write_policy": "All new writes must use field/manifest 1.2.0 and field-json-sorted-utf8-signed-zero-v2.",
+  "historical_evidence_policy": "Preregistered experiments and accepted old-commit artifacts remain immutable historical evidence."
+}

@@ -53,6 +53,15 @@
 - Embedded file hashes are recursively ambiguous. Canonical payload integrity
   excludes only the integrity object; raw file integrity belongs in a
   filename-bound sidecar and is anchored by the non-recursive manifest payload.
+- Signed zero is numerically equal but byte-distinct in ordinary JSON. Payload
+  sealing and file persistence therefore cannot use independent `json.dumps`
+  paths. One recursive normalization step must precede both: it maps only
+  floating signed zero to `+0.0`, preserves finite nonzero binary64 values
+  exactly, and rejects nonfinite/overflow values before any file exists.
+- A serialization correction must not silently rewrite accepted evidence.
+  v1.1 remains an explicit read-only verification path using its original hash
+  semantics; all new writes are v1.2, and a migration manifest anchors both
+  byte histories.
 - A raw `width < 2*spacing` comparison is not a geometry policy: decimal-looking
   endpoints can subtract one rounding step low. Summed half-ULP uncertainty for
   both endpoints and the target admits the exact intended boundary while still

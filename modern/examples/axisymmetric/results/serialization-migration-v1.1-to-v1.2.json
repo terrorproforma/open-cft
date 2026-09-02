@@ -1,0 +1,49 @@
+{
+  "from": {
+    "artifact_schema": "cft-axisymmetric-field-map/1.1.0",
+    "artifacts": {
+      "hypothetical-compact-mirror": {
+        "file_sha256": "6510f6ea687022f358103bba99456e7bf651686e3add29205c0560c933981afb",
+        "payload_sha256": "92e5535af0492e1697dad2540d8f6e837ba11f28f7a81626673a1c0004183348"
+      },
+      "hypothetical-opposed-cusp": {
+        "file_sha256": "dbf05208dc77e694bb40bb3ca82e4ee3e7126bb3036156f7fa1a726eab06b5c6",
+        "payload_sha256": "c4c7c3dc45466bfa4ba187e925b8e41a1c979b3700a59e185d24897501f97263"
+      },
+      "hypothetical-thick-outer-triplet": {
+        "file_sha256": "ac5420d9276d3db03adffe548a459706de95593d74c4181af4034ddbd1ce4b7a",
+        "payload_sha256": "d6ef0a42b0a73cfafc7cad1a3fdca8ca59fff4c13a444f5fe5ee8fae9ebf690b"
+      }
+    },
+    "manifest_file_sha256": "8444389efc87f89495e34d46ccf2deedcc44ee65614dfdd660beecf84cedc3b4",
+    "manifest_payload_sha256": "2c912b847702e14223170917850d1ecd5fbdfb45899d96ddb222b5577531d7a6",
+    "manifest_schema": "cft-axisymmetric-design-manifest/1.1.0"
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "canonicalization": "field-json-sorted-utf8-signed-zero-v2",
+    "payload_sha256": "fe9c5375695d6fde3b5ab3b6a876527ce541d1490b98e55ca92742bca408413d"
+  },
+  "policy": "v1.1 is read-only historical serialization; new outputs use v1.2 signed-zero normalization; no experiment artifact is migrated in place",
+  "schema_version": "cft-axisymmetric-serialization-migration/1.0.0",
+  "to": {
+    "artifact_schema": "cft-axisymmetric-field-map/1.2.0",
+    "artifacts": {
+      "hypothetical-compact-mirror": {
+        "file_sha256": "bec5ea78f87e812ab18a7cd242fd41201230df8689f125b1c24daf078c23255c",
+        "payload_sha256": "36122709c7cbb673907ca594b72f64554deb46d26e0d29ae22439d34b6610601"
+      },
+      "hypothetical-opposed-cusp": {
+        "file_sha256": "6591950a2966ffef3e0ac80ec0dca04f6f5ac08521d539a6dd39afb5192059a9",
+        "payload_sha256": "ae63bca441f0a1c32e546904e530e60e6f064681a5ac252d230dbc523778e194"
+      },
+      "hypothetical-thick-outer-triplet": {
+        "file_sha256": "86ec001f7209428837a9c4a777f4e9181a1acee8f342d373d8a661d30a2483d4",
+        "payload_sha256": "ea8b7d8b8a4f61c986f5982825585216e569d1e91d0846c259550350d4462328"
+      }
+    },
+    "manifest_file_sha256": "462c46d25603cc2168ea8d069f615f0eb6b9e8ba704133426171fd47b7b38479",
+    "manifest_payload_sha256": "c961e56037bef18462c8ab56a9b2221269da5b4a10bdafc3dad7462909ffce99",
+    "manifest_schema": "cft-axisymmetric-design-manifest/1.2.0"
+  }
+}

@@ -243,3 +243,21 @@ coupling paths.
 - [tool] Fixed-clock adversarial tests canonically rehashed invalid summaries,
   advanced only the map clock while held-out evidence remained fresh, and
   substituted model/code/config provenance without changing field arrays.
+
+## 2026-09-02 — V4.2 field serialization learning loop
+
+- [user] A schema string in adapter claims is not evidence that field bytes
+  obey the field workstream's canonical representation. Coupling must invoke
+  the authoritative reload and canonical-byte APIs itself.
+- [self] Signed zero needs one semantic policy across both JSON and binary map
+  identities. Normalizing only JSON would let `-0.0` and `+0.0` artifacts
+  reload identically but retain different coupling map hashes.
+- [self] Zero normalization must be exact and narrow: finite nonzero
+  subnormals remain physically and cryptographically distinct from zero.
+- [self] Historical acceptance and held-out promotion are different trust
+  levels. V1.1 can remain readable by historical v3 code, while a v4
+  validation may refer to it only through exact source bytes and a canonical
+  manifest that uniquely binds a separately generated v1.2 target.
+- [self] Migration metadata must be retained as raw accepted evidence, not
+  copied hash strings. Projection-time rebuild then rechecks manifest
+  canonicalization, integrity, endpoint schemas, and both file/payload pairs.

@@ -51,8 +51,19 @@ def test_manifest_and_artifact_identities_are_exact(payload) -> None:
         GENERATOR.EXPECTED_MANIFEST_PAYLOAD_SHA256
     )
     assert payload["manifest"]["schema_version"] == (
-        "cft-axisymmetric-design-manifest/1.1.0"
+        "cft-axisymmetric-design-manifest/1.2.0"
     )
+    assert payload["migration"] == {
+        "file": "serialization-migration-v1.1-to-v1.2.json",
+        "file_sha256": GENERATOR.EXPECTED_MIGRATION_FILE_SHA256,
+        "payload_sha256": GENERATOR.EXPECTED_MIGRATION_PAYLOAD_SHA256,
+        "policy": (
+            "v1.1 is read-only historical serialization; new outputs use v1.2 "
+            "signed-zero normalization; no experiment artifact is migrated in place"
+        ),
+        "from_schema": "cft-axisymmetric-field-map/1.1.0",
+        "to_schema": "cft-axisymmetric-field-map/1.2.0",
+    }
     assert [design["id"] for design in payload["designs"]] == [
         expected[0] for expected in GENERATOR.EXPECTED_DESIGNS
     ]
@@ -63,6 +74,22 @@ def test_manifest_and_artifact_identities_are_exact(payload) -> None:
         expected[3] for expected in GENERATOR.EXPECTED_DESIGNS
     ]
     GENERATOR.validate_payload(payload)
+
+
+def test_v12_authoritative_roundtrip_and_signed_zero_semantics(payload) -> None:
+    assert GENERATOR._canonical_payload_sha256({"value": -0.0}) == (
+        GENERATOR._canonical_payload_sha256({"value": 0.0})
+    )
+    assert not GENERATOR.contains_negative_zero(payload)
+    for expected in GENERATOR.EXPECTED_DESIGNS:
+        path = RESULTS / expected[1]
+        raw = path.read_bytes()
+        artifact = GENERATOR.reload_field_artifact_bytes(
+            raw, source=path.name, allow_legacy_v1_1=False
+        )
+        assert artifact["schema_version"] == "cft-axisymmetric-field-map/1.2.0"
+        assert GENERATOR.field_artifact_canonical_bytes(artifact) == raw
+        assert not GENERATOR.contains_negative_zero(artifact)
 
 
 def test_embedded_field_arrays_are_finite_radial_major_and_physical(payload) -> None:
@@ -256,6 +283,9 @@ def test_html_has_required_controls_accessibility_and_redraw_hooks(payload) -> N
     assert "Accepted CPU/CUDA artifact parity" in html
     assert "Runtime parity tests" in html
     assert "not recorded" in html
+    assert "accepted v1.2 serialization" in html
+    assert "signed-zero canonical bytes" in html
+    assert "historical/read-only, never rewritten in place" in html
 
 
 def test_embedded_json_round_trips_strictly(payload) -> None:
@@ -278,22 +308,13 @@ def _reseal(value: dict) -> None:
     payload = {key: item for key, item in value.items() if key != "integrity"}
     value["integrity"] = {
         "algorithm": "sha256",
-        "canonicalization": "json-sort-keys-compact-utf8-v1",
+        "canonicalization": "field-json-sorted-utf8-signed-zero-v2",
         "payload_sha256": GENERATOR._canonical_payload_sha256(payload),
     }
 
 
 def _write_sealed(path: Path, value: dict) -> str:
-    data = (
-        json.dumps(
-            value,
-            indent=2,
-            sort_keys=True,
-            ensure_ascii=False,
-            allow_nan=False,
-        )
-        + "\n"
-    ).encode("utf-8")
+    data = GENERATOR.canonical_field_artifact_bytes(value, representation="file")
     path.write_bytes(data)
     digest = __import__("hashlib").sha256(data).hexdigest()
     path.with_name(path.name + ".sha256").write_text(
@@ -318,17 +339,17 @@ def _rewrite_artifact_and_manifest(
 @pytest.mark.parametrize(
     ("mutation", "message"),
     (
-        ("manifest-name", "identity/order"),
-        ("superseded-schema", "superseded"),
-        ("unknown-key", "keys do not match"),
-        ("matrix-shape", "radial dimension"),
-        ("magnitude", r"\|B\| does not equal"),
-        ("source", "geometry is outside"),
-        ("backend", "backend provenance"),
-        ("nonconverged", "converged/non-stagnant"),
-        ("residual", "exceeds solver tolerance"),
-        ("topology", "degenerate topology"),
-        ("old-diagnostic", "closed schema"),
+        ("manifest-name", "authoritative manifest reload rejected"),
+        ("superseded-schema", "authoritative manifest reload rejected"),
+        ("unknown-key", "authoritative manifest reload rejected"),
+        ("matrix-shape", "authoritative manifest reload rejected"),
+        ("magnitude", "authoritative manifest reload rejected"),
+        ("source", "authoritative manifest reload rejected"),
+        ("backend", "authoritative manifest reload rejected"),
+        ("nonconverged", "authoritative manifest reload rejected"),
+        ("residual", "authoritative manifest reload rejected"),
+        ("topology", "authoritative manifest reload rejected"),
+        ("old-diagnostic", "authoritative manifest reload rejected"),
     ),
 )
 def test_resealed_semantic_corruption_is_rejected(
@@ -342,7 +363,7 @@ def test_resealed_semantic_corruption_is_rejected(
         if mutation == "manifest-name":
             manifest["designs"][0]["name"] = "lookalike"
         else:
-            manifest["schema_version"] = "cft-axisymmetric-design-manifest/1.0.0"
+            manifest["schema_version"] = "cft-axisymmetric-design-manifest/1.1.0"
         _reseal(manifest)
         _write_sealed(manifest_path, manifest)
     else:
@@ -409,6 +430,38 @@ def test_manifest_and_artifact_hash_layers_reject_tampering(tmp_path: Path) -> N
         GENERATOR.build_payload(manifest_path)
 
 
+def test_noncanonical_signed_zero_file_is_rejected(tmp_path: Path) -> None:
+    manifest_path = _copy_results(tmp_path)
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    artifact_path = manifest_path.parent / manifest["designs"][0]["artifact"]
+    raw = artifact_path.read_bytes()
+    tampered = raw.replace(b": 0.0", b": -0.0", 1)
+    assert tampered != raw
+    artifact_path.write_bytes(tampered)
+    digest = __import__("hashlib").sha256(tampered).hexdigest()
+    artifact_path.with_name(artifact_path.name + ".sha256").write_text(
+        f"{digest}  {artifact_path.name}\n", encoding="ascii"
+    )
+    manifest["designs"][0]["artifact_file_sha256"] = digest
+    _reseal(manifest)
+    _write_sealed(manifest_path, manifest)
+    with pytest.raises(ValueError, match="not canonical"):
+        GENERATOR.build_payload(manifest_path)
+
+
+def test_migration_manifest_anchor_tampering_is_rejected(tmp_path: Path) -> None:
+    manifest_path = _copy_results(tmp_path)
+    migration_path = manifest_path.parent / "serialization-migration-v1.1-to-v1.2.json"
+    migration = json.loads(migration_path.read_text(encoding="utf-8"))
+    migration["to"]["artifacts"]["hypothetical-compact-mirror"][
+        "payload_sha256"
+    ] = "0" * 64
+    _reseal(migration)
+    _write_sealed(migration_path, migration)
+    with pytest.raises(ValueError, match="accepted anchors"):
+        GENERATOR.build_payload(manifest_path, migration_path)
+
+
 def test_tampered_embedded_identity_or_parity_claim_is_rejected(payload) -> None:
     changed = deepcopy(payload)
     changed["designs"][0]["file_sha256"] = "0" * 64
@@ -417,6 +470,10 @@ def test_tampered_embedded_identity_or_parity_claim_is_rejected(payload) -> None
     changed = deepcopy(payload)
     changed["manifest"]["payload_sha256"] = "f" * 64
     with pytest.raises(ValueError, match="manifest identity"):
+        GENERATOR.validate_payload(changed)
+    changed = deepcopy(payload)
+    changed["migration"]["payload_sha256"] = "f" * 64
+    with pytest.raises(ValueError, match="migration identity"):
         GENERATOR.validate_payload(changed)
     changed = deepcopy(payload)
     changed["designs"][0]["parity"]["accepted_artifact_evidence"] = True

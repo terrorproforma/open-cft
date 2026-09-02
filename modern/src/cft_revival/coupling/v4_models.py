@@ -433,6 +433,16 @@ class V4CouplingRecord:
     registrations: tuple[CFTCellRegistration, ...]
     validation_registration: HeldOutValidationRegistration
     evidence_fingerprints: tuple[str, str, str]
+    field_migration_manifest_hashes: tuple[
+        str | None,
+        str | None,
+        str | None,
+    ]
+    field_migration_source_artifact_hashes: tuple[
+        str | None,
+        str | None,
+        str | None,
+    ]
     stability: V4StabilityAssessment
     orbit_identity: OrbitVerificationIdentity | None
     held_out_validation: HeldOutValidationIdentity | None

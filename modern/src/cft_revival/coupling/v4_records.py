@@ -53,7 +53,7 @@ from .v4_models import (
     validation_set_manifest_hash,
 )
 
-COUPLING_V4_SCHEMA_VERSION = "cft-field-plasma-coupling/4.1.0"
+COUPLING_V4_SCHEMA_VERSION = "cft-field-plasma-coupling/4.2.0"
 _ELECTRON_MASS_KG = 9.1093837139e-31
 _ELEMENTARY_CHARGE_C = 1.602176634e-19
 _ELECTRON_REST_ENERGY_EV = 510_998.95069
@@ -1507,6 +1507,18 @@ def build_cft_coupling_record(
         evidence,
         reference_time_utc=evaluation_time,
     )
+    migration_manifest_hashes = tuple(
+        hashlib.sha256(snapshot.migration_manifest_bytes).hexdigest()
+        if snapshot.migration_manifest_bytes is not None
+        else None
+        for snapshot in snapshots
+    )
+    migration_source_artifact_hashes = tuple(
+        hashlib.sha256(snapshot.migration_source_artifact_bytes).hexdigest()
+        if snapshot.migration_source_artifact_bytes is not None
+        else None
+        for snapshot in snapshots
+    )
     expected_registration_hash = cft_preregistration_hash(
         geometry=geometry,
         registrations=registrations,
@@ -1608,6 +1620,10 @@ def build_cft_coupling_record(
         registrations=registrations,
         validation_registration=validation_registration,
         evidence_fingerprints=evidence_fingerprints,
+        field_migration_manifest_hashes=migration_manifest_hashes,
+        field_migration_source_artifact_hashes=(
+            migration_source_artifact_hashes
+        ),
         stability=stability,
         orbit_identity=orbit_identity,
         held_out_validation=validation_identity,
@@ -1762,6 +1778,23 @@ def _projection_record_is_complete(record: V4CouplingRecord) -> bool:
         or record.held_out_validation is None
         or len(record.evidence_fingerprints) != 3
         or any(not _is_sha256(value) for value in record.evidence_fingerprints)
+        or len(record.field_migration_manifest_hashes) != 3
+        or len(record.field_migration_source_artifact_hashes) != 3
+        or any(
+            value is not None and not _is_sha256(value)
+            for value in (
+                *record.field_migration_manifest_hashes,
+                *record.field_migration_source_artifact_hashes,
+            )
+        )
+        or any(
+            (manifest is None) != (source is None)
+            for manifest, source in zip(
+                record.field_migration_manifest_hashes,
+                record.field_migration_source_artifact_hashes,
+                strict=True,
+            )
+        )
         or not isfinite(record.uncertainty_model.coverage_factor)
         or record.uncertainty_model.coverage_factor <= 0.0
         or not _valid_diagnostics(record.held_out_validation.diagnostics)
@@ -2207,6 +2240,12 @@ def cft_solver_inputs(
             "primary_evidence_fingerprint": record.evidence_fingerprints[0],
             "refined_evidence_fingerprint": record.evidence_fingerprints[1],
             "enlarged_evidence_fingerprint": record.evidence_fingerprints[2],
+            "field_migration_manifest_hashes": (
+                record.field_migration_manifest_hashes
+            ),
+            "field_migration_source_artifact_hashes": (
+                record.field_migration_source_artifact_hashes
+            ),
             "projection_evaluated_at_utc": evaluation_time.astimezone(
                 timezone.utc
             ).isoformat(),

@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.1.0",
+  "schema_version": "1.2.0",
   "workstream": "axisymmetric-magnetostatics-l1a",
   "classification": "linear constant-permeability equivalent-current structured-grid FDM",
   "coordinates": {
@@ -71,9 +71,10 @@
     "flux_reconstruction_identity": "reported cylindrical mixed-derivative identity of Br/Bz reconstructed from the same psi; useful for reconstruction consistency but not independent solution validation"
   },
   "artifact_contract": {
-    "field_schema": "cft-axisymmetric-field-map/1.1.0",
-    "manifest_schema": "cft-axisymmetric-design-manifest/1.1.0",
-    "canonicalization": "compact UTF-8 JSON with sorted keys and no nonfinite numbers",
+    "field_schema": "cft-axisymmetric-field-map/1.2.0",
+    "manifest_schema": "cft-axisymmetric-design-manifest/1.2.0",
+    "legacy_read_schemas": ["cft-axisymmetric-field-map/1.1.0", "cft-axisymmetric-design-manifest/1.1.0"],
+    "canonicalization": "one recursive field-artifact normalizer followed by compact or pretty UTF-8 sorted-key JSON; every floating signed zero becomes +0.0 while finite nonzero binary64 values are preserved exactly",
     "payload_integrity": "top-level integrity is excluded from its own SHA-256 payload, avoiding recursion",
     "file_integrity": "raw file SHA-256 is stored in a filename-bound .sha256 sidecar; manifest entries anchor both artifact file and payload hashes",
     "topology_policy": "fields with |B|max <= 1e-14 T are degenerate and publish no isolated nulls; nondegenerate axis candidates are classified as sign-changing, isolated, or near-zero plateaus",

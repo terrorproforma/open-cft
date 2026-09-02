@@ -9,6 +9,8 @@ from datetime import datetime
 
 from .models import EvidenceVerificationError
 from .v3_evidence import AcceptedV3FieldEvidence, _V3Snapshot, reverify_v3_evidence
+from ..fields import reload_field_artifact_bytes
+from ..fields.serialization import CANONICALIZATION_V2
 
 
 @dataclass(frozen=True, slots=True)
@@ -23,6 +25,8 @@ class _V4MapSetSnapshot:
 
 
 _V4_SET_KEY = object()
+V4_FIELD_ARTIFACT_SCHEMA = "cft-axisymmetric-field-map/1.2.0"
+V4_FIELD_ADAPTER_ID = "cft.coupling.authoritative-field-v1.2"
 
 
 class AcceptedV4MapSet:
@@ -71,6 +75,16 @@ def _set_hash(snapshot: _V4MapSetSnapshot) -> str:
 
 def _evidence_fingerprint(snapshot: _V3Snapshot) -> str:
     claims = snapshot.claims
+    field_payload_hash = None
+    field_canonicalization = None
+    if claims.artifact_schema_version == "cft-axisymmetric-field-map/1.2.0":
+        artifact = reload_field_artifact_bytes(
+            snapshot.artifact_bytes,
+            source="v4-evidence-fingerprint",
+            allow_legacy_v1_1=False,
+        )
+        field_payload_hash = artifact["integrity"]["payload_sha256"]
+        field_canonicalization = CANONICALIZATION_V2
     payload = {
         "artifact_bytes_hash": hashlib.sha256(snapshot.artifact_bytes).hexdigest(),
         "artifact_hash": claims.artifact_hash,
@@ -95,6 +109,18 @@ def _evidence_fingerprint(snapshot: _V3Snapshot) -> str:
         "generated_at_utc": claims.generated_at_utc.isoformat(),
         "diagnostics": asdict(claims.diagnostics),
         "validation_policy": asdict(snapshot.validation_policy),
+        "field_payload_hash": field_payload_hash,
+        "field_canonicalization": field_canonicalization,
+        "migration_manifest_hash": (
+            hashlib.sha256(snapshot.migration_manifest_bytes).hexdigest()
+            if snapshot.migration_manifest_bytes is not None
+            else None
+        ),
+        "migration_source_artifact_hash": (
+            hashlib.sha256(snapshot.migration_source_artifact_bytes).hexdigest()
+            if snapshot.migration_source_artifact_bytes is not None
+            else None
+        ),
     }
     encoded = json.dumps(
         payload, sort_keys=True, separators=(",", ":"), allow_nan=False
@@ -135,6 +161,16 @@ def verify_v4_map_set(
         reverify_v3_evidence(item, reference_time_utc=reference_time_utc)
         for item in (primary, refined, enlarged)
     )
+    if any(
+        snapshot.claims.artifact_schema_version != V4_FIELD_ARTIFACT_SCHEMA
+        or snapshot.validation_policy.current_artifact_schema
+        != V4_FIELD_ARTIFACT_SCHEMA
+        or snapshot.adapter_id != V4_FIELD_ADAPTER_ID
+        for snapshot in snapshots
+    ):
+        raise EvidenceVerificationError(
+            "v4 held-out maps require authoritative canonical field v1.2 evidence"
+        )
     _shared_identity(snapshots)
     base, fine, large = (snapshot.field_map for snapshot in snapshots)
     if (

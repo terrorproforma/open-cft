@@ -2,11 +2,15 @@
 
 from .artifacts import (
     ARTIFACT_SCHEMA_VERSION,
+    LEGACY_ARTIFACT_SCHEMA_VERSION,
+    LEGACY_MANIFEST_SCHEMA_VERSION,
     MANIFEST_SCHEMA_VERSION,
     canonical_payload_sha256,
     design_manifest,
     field_artifact,
+    field_artifact_canonical_bytes,
     manifest_entry,
+    reload_field_artifact_bytes,
     validate_design_manifest,
     validate_design_manifest_file,
     validate_field_artifact,
@@ -43,9 +47,16 @@ from .verification import (
     run_manufactured_convergence,
 )
 from .warp_solver import device_available, solve_problem_warp
+from .serialization import (
+    canonical_field_artifact_bytes,
+    contains_negative_zero,
+    normalize_field_artifact_value,
+)
 
 __all__ = [
     "ARTIFACT_SCHEMA_VERSION",
+    "LEGACY_ARTIFACT_SCHEMA_VERSION",
+    "LEGACY_MANIFEST_SCHEMA_VERSION",
     "MANIFEST_SCHEMA_VERSION",
     "MU0_H_PER_M",
     "AxisymmetricDomain",
@@ -62,13 +73,18 @@ __all__ = [
     "SolverConfig",
     "SolverDiagnostics",
     "canonical_payload_sha256",
+    "canonical_field_artifact_bytes",
+    "contains_negative_zero",
     "current_density_grid",
     "design_manifest",
     "device_available",
     "field_artifact",
+    "field_artifact_canonical_bytes",
     "manifest_entry",
     "manufactured_values",
     "max_field_difference",
+    "normalize_field_artifact_value",
+    "reload_field_artifact_bytes",
     "run_manufactured_convergence",
     "resolved_span_in_grid_spacings",
     "solve_problem_cpu",

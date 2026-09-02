@@ -295,7 +295,9 @@ def test_payload_and_file_hashes_detect_tampering(tmp_path) -> None:
 
 
 def test_huge_artifact_and_manifest_numbers_raise_typed_validation() -> None:
-    with pytest.raises(FieldArtifactValidationError, match="canonical payload"):
+    with pytest.raises(
+        FieldArtifactValidationError, match="JSON interoperability range"
+    ):
         canonical_payload_sha256({"huge": 10**5000})
 
     artifact = _artifact()
@@ -324,7 +326,10 @@ def test_huge_artifact_and_manifest_numbers_raise_typed_validation() -> None:
             },
         }
     ]
-    with pytest.raises(FieldArtifactValidationError, match="finite binary64"):
+    with pytest.raises(
+        FieldArtifactValidationError,
+        match="finite binary64|JSON interoperability range",
+    ):
         design_manifest(entries)
 
 

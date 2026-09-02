@@ -102,3 +102,32 @@
 - Opposed-cusp parity spot: Warp CPU `1.79e-14`, RTX 5090 CUDA `1.35e-14`
   maximum scale-relative field difference; both completed 259 iterations with
   true relative residual below `8.98e-11`.
+
+## 2026-09-02 — Signed-zero serialization correction
+
+- Added the authoritative recursive field-artifact normalizer and canonical
+  bytes API. New schema 1.2 maps every nested floating signed zero to `+0.0`
+  before payload sealing, hashing, writing, or reload comparison, while
+  preserving signed subnormals and all finite binary64 boundaries.
+- New writes reject booleans in numeric fields, NaN variants, infinities,
+  exponent overflow, unsafe integers, duplicate keys, and noncanonical v1.2
+  file bytes before creating output.
+- Writers now persist exactly the validated canonical bytes whose raw SHA-256
+  is sidecar-bound. The public artifact flow is solve → `field_artifact` →
+  `field_artifact_canonical_bytes` → `reload_field_artifact_bytes` → strict
+  validation.
+- Kept accepted field/manifest 1.1 as an explicit read-only loader branch with
+  its original signed-zero-sensitive payload hashing. Current writers refuse
+  to rewrite legacy objects; old experiments remain immutable evidence.
+- Regenerated only the three current examples and manifest as 1.2. Added
+  `serialization-migration-v1.1-to-v1.2.json` to anchor old and new artifact,
+  manifest payload, and raw-file hashes without changing experiment paths.
+- Added exact regressions for `-0`, `-0.0`, `-0e0`, nested zeros, both minimum
+  subnormals, minimum normal, maximum finite, JSON NaN/infinities, `1e309`,
+  legacy reads, write refusal, and complete solver/manufactured roundtrips.
+- Final serialization-focused module: 19 passed. Full fields suite: 62 passed
+  in normal and importlib modes. Fields plus physics: 148 passed in both modes.
+- Compileall and all fields spec JSON passed; native CTest passed 1/1; FYP
+  diff remained clean. A repository-wide ordinary-mode collection probe still
+  encounters seven duplicate-basename errors in unowned experiment/hybrid/
+  optimization tests, so the compatible suite remains the scoped result.

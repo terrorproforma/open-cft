@@ -35,6 +35,8 @@ def test_record_schema_is_closed_and_matches_runtime_version() -> None:
     assert {
         "validation_registration",
         "evidence_fingerprints",
+        "field_migration_manifest_hashes",
+        "field_migration_source_artifact_hashes",
         "orbit_identity",
     } <= set(schema["required"])
     assert "three_map_evidence_fingerprints" in (
@@ -58,6 +60,7 @@ def test_equation_ledger_has_unique_traceable_relations_and_prohibitions() -> No
         "CPL-004-016",
         "CPL-004-017",
         "CPL-004-018",
+        "CPL-004-019",
     } <= set(identifiers)
     assert any("fixed axial windows" in item for item in ledger["prohibited_shortcuts"])
     assert ledger["coordinate_convention"]["coordinate_unit"] == "m"

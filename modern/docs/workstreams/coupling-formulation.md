@@ -48,6 +48,21 @@ mirror probability and solver projection. The guiding-centre basis is Cary
 and Brizard, *Rev. Mod. Phys.* 81 (2009) 693,
 https://doi.org/10.1103/RevModPhys.81.693.
 
+V4.2 accepts field maps only from the authoritative field artifact
+`1.2.0` byte path. `reload_field_artifact_bytes(...,
+allow_legacy_v1_1=False)` must return the map and
+`field_artifact_canonical_bytes` must reproduce the exact input bytes.
+Canonicalization maps both IEEE-754 zero signs to `+0.0` while preserving every
+finite nonzero binary64 value, including subnormals. Coupling applies the same
+zero normalization to its labelled binary map hash, then binds the field
+payload hash and canonicalization ID into each evidence fingerprint.
+
+Field artifact `1.1.0` remains historical/read-only and cannot directly enter
+a new held-out map set. If a current canonical v1.2 artifact was regenerated
+from v1.1, exact legacy bytes and a canonical serialization-migration manifest
+must uniquely match the old/new file and payload hashes. Their hashes are
+retained in the map fingerprint and v4.2 record.
+
 The assessed 56-case characterization is frozen as an immutable development
 manifest of its exact case IDs, geometry-family ID, and recomputed manifest
 hash. It remains `development_non_validation`: its IDs or hash cannot promote

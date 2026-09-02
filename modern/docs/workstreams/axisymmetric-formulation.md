@@ -121,15 +121,30 @@ divergence. Outer-boundary sensitivity still requires domain-size convergence.
 The field-map and manifest contracts are closed at every represented object:
 unknown keys, wrong scalar/list types, nonfinite or nonmonotonic coordinates,
 shape errors, failed/excess-residual solves, and inconsistent serialized
-`|B|=hypot(B_r,B_z)` are rejected. Each artifact and manifest contains a
-canonical payload SHA-256 over compact sorted-key UTF-8 JSON excluding only
-its own top-level `integrity` object. Raw file bytes are separately protected
-by filename-bound `.sha256` sidecars. Manifest entries anchor both hashes for
-each plain-filename artifact, avoiding recursive hashes and path substitution.
+`|B|=hypot(B_r,B_z)` are rejected. Serialization contract 1.2 uses one
+recursive normalizer before sealing, hashing, persistence, and reload:
+floating `-0.0` becomes `+0.0`, while both signs of every finite nonzero
+binary64 value (including subnormals, the minimum normal, and maximum finite)
+remain unchanged. Booleans cannot satisfy numeric schema fields; NaN spellings,
+infinities, exponent overflow, unsafe integers, duplicate keys, and
+noncanonical raw v1.2 JSON are rejected before publication.
+
+Each artifact and manifest contains a payload SHA-256 over normalized compact
+sorted-key UTF-8 JSON excluding only its own top-level `integrity` object.
+The writer persists normalized pretty canonical bytes directly; raw file bytes
+are separately protected by filename-bound `.sha256` sidecars. Manifest
+entries anchor both hashes for each plain-filename artifact, avoiding recursive
+hashes and path substitution.
 Every runtime contract failure raises `FieldArtifactValidationError`, a
 documented `FieldValidationError`/`ValueError` subclass. This includes Python
 `float()` overflow from huge JSON integers and JSON decoder integer-limit
 failures; raw `OverflowError` is never exposed.
+
+Accepted v1.1 files are an explicit read-only branch: their original
+`json-sort-keys-compact-utf8-v1` payload hash and raw bytes are checked without
+signed-zero migration. They cannot be rewritten by current writers. Old
+experiments remain immutable historical evidence rather than being silently
+resealed under v1.2.
 
 Topology uses `max(1e-15 T, 1e-10*|B|max, 32 ulp(|B|max))` as its candidate
 tolerance. A map with `|B|max <= 1e-14 T` is explicitly

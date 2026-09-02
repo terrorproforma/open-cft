@@ -19,10 +19,19 @@ from .models import (
     span_meets_minimum_grid_spacings,
 )
 from .numerics import current_density_grid, source_discretization_diagnostics
+from .serialization import (
+    CANONICALIZATION_V2,
+    canonical_field_artifact_bytes,
+    normalize_field_artifact_value,
+    parse_field_json_bytes,
+)
 
-ARTIFACT_SCHEMA_VERSION = "cft-axisymmetric-field-map/1.1.0"
-MANIFEST_SCHEMA_VERSION = "cft-axisymmetric-design-manifest/1.1.0"
-CANONICALIZATION = "json-sort-keys-compact-utf8-v1"
+ARTIFACT_SCHEMA_VERSION = "cft-axisymmetric-field-map/1.2.0"
+MANIFEST_SCHEMA_VERSION = "cft-axisymmetric-design-manifest/1.2.0"
+LEGACY_ARTIFACT_SCHEMA_VERSION = "cft-axisymmetric-field-map/1.1.0"
+LEGACY_MANIFEST_SCHEMA_VERSION = "cft-axisymmetric-design-manifest/1.1.0"
+LEGACY_CANONICALIZATION = "json-sort-keys-compact-utf8-v1"
+CANONICALIZATION = CANONICALIZATION_V2
 DEGENERATE_FIELD_ABS_T = 1.0e-14
 
 # Every explicit contract failure in this module uses the documented typed
@@ -31,7 +40,7 @@ DEGENERATE_FIELD_ABS_T = 1.0e-14
 ValueError = FieldArtifactValidationError
 
 
-def _canonical_payload_bytes(payload: dict[str, object]) -> bytes:
+def _legacy_canonical_payload_bytes(payload: dict[str, object]) -> bytes:
     try:
         return json.dumps(
             payload,
@@ -47,35 +56,24 @@ def _canonical_payload_bytes(payload: dict[str, object]) -> bytes:
 
 
 def canonical_payload_sha256(payload: dict[str, object]) -> str:
-    return hashlib.sha256(_canonical_payload_bytes(payload)).hexdigest()
+    return hashlib.sha256(
+        canonical_field_artifact_bytes(payload, representation="payload")
+    ).hexdigest()
 
 
 def _pretty_file_bytes(value: dict[str, object]) -> bytes:
-    try:
-        return (
-            json.dumps(
-                value,
-                indent=2,
-                sort_keys=True,
-                ensure_ascii=False,
-                allow_nan=False,
-            )
-            + "\n"
-        ).encode("utf-8")
-    except (builtins.ValueError, TypeError, OverflowError) as error:
-        raise FieldArtifactValidationError(
-            "artifact file contains an unsupported or nonfinite value"
-        ) from error
+    return canonical_field_artifact_bytes(value, representation="file")
 
 
 def _seal(payload: dict[str, object]) -> dict[str, object]:
-    sealed = dict(payload)
+    normalized_payload = normalize_field_artifact_value(payload)
+    sealed = dict(normalized_payload)
     sealed["integrity"] = {
         "algorithm": "sha256",
         "canonicalization": CANONICALIZATION,
-        "payload_sha256": canonical_payload_sha256(payload),
+        "payload_sha256": canonical_payload_sha256(normalized_payload),
     }
-    return sealed
+    return normalize_field_artifact_value(sealed)
 
 
 def _payload_without_integrity(value: dict[str, object]) -> dict[str, object]:
@@ -401,12 +399,28 @@ def _validate_integrity(value: dict[str, object], kind: str) -> None:
         f"{kind}.integrity",
         {"algorithm", "canonicalization", "payload_sha256"},
     )
-    if integrity["algorithm"] != "sha256" or integrity["canonicalization"] != CANONICALIZATION:
+    schema = value.get("schema_version")
+    legacy = schema in {
+        LEGACY_ARTIFACT_SCHEMA_VERSION,
+        LEGACY_MANIFEST_SCHEMA_VERSION,
+    }
+    expected_canonicalization = (
+        LEGACY_CANONICALIZATION if legacy else CANONICALIZATION
+    )
+    if (
+        integrity["algorithm"] != "sha256"
+        or integrity["canonicalization"] != expected_canonicalization
+    ):
         raise ValueError(f"{kind} integrity algorithm/canonicalization is unsupported")
     digest = _string(integrity["payload_sha256"], f"{kind}.integrity.payload_sha256")
     if len(digest) != 64 or any(character not in "0123456789abcdef" for character in digest):
         raise ValueError(f"{kind} payload SHA-256 must be lowercase hexadecimal")
-    expected = canonical_payload_sha256(_payload_without_integrity(value))
+    payload = _payload_without_integrity(value)
+    expected = (
+        hashlib.sha256(_legacy_canonical_payload_bytes(payload)).hexdigest()
+        if legacy
+        else canonical_payload_sha256(payload)
+    )
     if digest != expected:
         raise ValueError(f"{kind} canonical payload SHA-256 mismatch")
 
@@ -494,7 +508,10 @@ def validate_field_artifact(artifact: dict[str, object]) -> None:
             "integrity",
         },
     )
-    if top["schema_version"] != ARTIFACT_SCHEMA_VERSION or top["model_level"] != "L1a":
+    if top["schema_version"] not in {
+        ARTIFACT_SCHEMA_VERSION,
+        LEGACY_ARTIFACT_SCHEMA_VERSION,
+    } or top["model_level"] != "L1a":
         raise ValueError("unsupported artifact schema or model level")
     _string(top["model_description"], "artifact.model_description")
     input_data = _closed(
@@ -890,8 +907,7 @@ def validate_field_artifact(artifact: dict[str, object]) -> None:
     _validate_integrity(artifact, "artifact")
 
 
-def _write_sealed(path: Path, value: dict[str, object]) -> str:
-    data = _pretty_file_bytes(value)
+def _write_canonical_bytes(path: Path, data: bytes) -> str:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_bytes(data)
     digest = hashlib.sha256(data).hexdigest()
@@ -901,9 +917,19 @@ def _write_sealed(path: Path, value: dict[str, object]) -> str:
     return digest
 
 
-def write_field_artifact(path: str | Path, artifact: dict[str, object]) -> str:
+def field_artifact_canonical_bytes(artifact: dict[str, object]) -> bytes:
+    """Validate one current artifact and return its sole persistent bytes."""
+
     validate_field_artifact(artifact)
-    return _write_sealed(Path(path), artifact)
+    if artifact["schema_version"] != ARTIFACT_SCHEMA_VERSION:
+        raise ValueError("legacy v1.1 artifacts are read-only and cannot be rewritten")
+    return canonical_field_artifact_bytes(artifact, representation="file")
+
+
+def write_field_artifact(path: str | Path, artifact: dict[str, object]) -> str:
+    return _write_canonical_bytes(
+        Path(path), field_artifact_canonical_bytes(artifact)
+    )
 
 
 def _validate_file_sidecar(path: Path, expected_digest: str | None = None) -> str:
@@ -919,21 +945,21 @@ def _validate_file_sidecar(path: Path, expected_digest: str | None = None) -> st
     return data_digest
 
 
-def _strict_json_file(path: Path) -> dict[str, object]:
+def _legacy_parse_json_bytes(data: bytes, source: str) -> dict[str, object]:
     def closed_object(pairs):
         result = {}
         for key, value in pairs:
             if key in result:
-                raise ValueError(f"duplicate JSON key {key!r} in {path.name}")
+                raise ValueError(f"duplicate JSON key {key!r} in {source}")
             result[key] = value
         return result
 
     def reject_constant(value):
-        raise ValueError(f"nonfinite JSON constant {value!r} in {path.name}")
+        raise ValueError(f"nonfinite JSON constant {value!r} in {source}")
 
     try:
         loaded = json.loads(
-            path.read_text(encoding="utf-8"),
+            data.decode("utf-8"),
             object_pairs_hook=closed_object,
             parse_constant=reject_constant,
         )
@@ -941,11 +967,41 @@ def _strict_json_file(path: Path) -> dict[str, object]:
         raise
     except (builtins.ValueError, OverflowError) as error:
         raise FieldArtifactValidationError(
-            f"invalid JSON numeric value in {path.name}"
+            f"invalid JSON numeric value in {source}"
         ) from error
     if not isinstance(loaded, dict):
-        raise ValueError(f"{path.name} must contain one JSON object")
+        raise ValueError(f"{source} must contain one JSON object")
     return loaded
+
+
+def _load_document_bytes(data: bytes, source: str) -> dict[str, object]:
+    raw = _legacy_parse_json_bytes(data, source)
+    schema = raw.get("schema_version")
+    if schema in {ARTIFACT_SCHEMA_VERSION, MANIFEST_SCHEMA_VERSION}:
+        return parse_field_json_bytes(
+            data,
+            source=source,
+            require_canonical_file_bytes=True,
+        )
+    return raw
+
+
+def reload_field_artifact_bytes(
+    data: bytes,
+    *,
+    source: str = "<field-artifact-bytes>",
+    allow_legacy_v1_1: bool = True,
+) -> dict[str, object]:
+    """Reload canonical current bytes or explicitly accepted legacy v1.1 bytes."""
+
+    artifact = _load_document_bytes(data, source)
+    if (
+        artifact.get("schema_version") == LEGACY_ARTIFACT_SCHEMA_VERSION
+        and not allow_legacy_v1_1
+    ):
+        raise ValueError("legacy v1.1 artifact reads are disabled")
+    validate_field_artifact(artifact)
+    return artifact
 
 
 def validate_field_artifact_file(
@@ -956,8 +1012,9 @@ def validate_field_artifact_file(
 ) -> dict[str, object]:
     artifact_path = Path(path)
     _validate_file_sidecar(artifact_path, expected_file_sha256)
-    loaded = _strict_json_file(artifact_path)
-    validate_field_artifact(loaded)
+    loaded = reload_field_artifact_bytes(
+        artifact_path.read_bytes(), source=artifact_path.name
+    )
     if expected_payload_sha256 is not None:
         actual = loaded["integrity"]["payload_sha256"]
         if actual != expected_payload_sha256:
@@ -1003,7 +1060,10 @@ def validate_design_manifest(manifest: dict[str, object]) -> None:
         "manifest",
         {"schema_version", "model_level", "runtime_policy", "designs", "integrity"},
     )
-    if top["schema_version"] != MANIFEST_SCHEMA_VERSION or top["model_level"] != "L1a":
+    if top["schema_version"] not in {
+        MANIFEST_SCHEMA_VERSION,
+        LEGACY_MANIFEST_SCHEMA_VERSION,
+    } or top["model_level"] != "L1a":
         raise ValueError("unsupported manifest schema or model level")
     _string(top["runtime_policy"], "manifest.runtime_policy")
     designs = top["designs"]
@@ -1073,13 +1133,18 @@ def validate_design_manifest(manifest: dict[str, object]) -> None:
 
 def write_design_manifest(path: str | Path, manifest: dict[str, object]) -> str:
     validate_design_manifest(manifest)
-    return _write_sealed(Path(path), manifest)
+    if manifest["schema_version"] != MANIFEST_SCHEMA_VERSION:
+        raise ValueError("legacy v1.1 manifests are read-only and cannot be rewritten")
+    data = canonical_field_artifact_bytes(manifest, representation="file")
+    return _write_canonical_bytes(Path(path), data)
 
 
 def validate_design_manifest_file(path: str | Path) -> dict[str, object]:
     manifest_path = Path(path)
     _validate_file_sidecar(manifest_path)
-    loaded = _strict_json_file(manifest_path)
+    loaded = _load_document_bytes(
+        manifest_path.read_bytes(), manifest_path.name
+    )
     validate_design_manifest(loaded)
     root = manifest_path.resolve().parent
     for entry in loaded["designs"]:

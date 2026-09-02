@@ -12,43 +12,85 @@ from hashlib import sha256
 import json
 from math import fsum, hypot, isclose, isfinite, ulp
 from pathlib import Path
+import sys
 from typing import Any, Mapping, Sequence
 
 MODERN = Path(__file__).resolve().parents[1]
+SRC = MODERN / "src"
+if str(SRC) not in sys.path:
+    sys.path.insert(0, str(SRC))
+
+from cft_revival.fields import (  # noqa: E402
+    ARTIFACT_SCHEMA_VERSION,
+    MANIFEST_SCHEMA_VERSION,
+    canonical_field_artifact_bytes,
+    canonical_payload_sha256,
+    contains_negative_zero,
+    field_artifact_canonical_bytes,
+    normalize_field_artifact_value,
+    reload_field_artifact_bytes,
+    validate_design_manifest_file,
+)
+
 RESULTS = MODERN / "examples" / "axisymmetric" / "results"
 DEFAULT_MANIFEST = RESULTS / "manifest-l1a-v1.json"
+DEFAULT_MIGRATION = RESULTS / "serialization-migration-v1.1-to-v1.2.json"
 DEFAULT_OUTPUT = Path(__file__).with_name("axisymmetric-results.html")
 
 EXPECTED_DESIGNS = (
     (
         "hypothetical-compact-mirror",
         "hypothetical-compact-mirror-l1a-v1.json",
-        "6510f6ea687022f358103bba99456e7bf651686e3add29205c0560c933981afb",
-        "92e5535af0492e1697dad2540d8f6e837ba11f28f7a81626673a1c0004183348",
+        "bec5ea78f87e812ab18a7cd242fd41201230df8689f125b1c24daf078c23255c",
+        "36122709c7cbb673907ca594b72f64554deb46d26e0d29ae22439d34b6610601",
         "Compact mirror",
     ),
     (
         "hypothetical-opposed-cusp",
         "hypothetical-opposed-cusp-l1a-v1.json",
-        "dbf05208dc77e694bb40bb3ca82e4ee3e7126bb3036156f7fa1a726eab06b5c6",
-        "c4c7c3dc45466bfa4ba187e925b8e41a1c979b3700a59e185d24897501f97263",
+        "6591950a2966ffef3e0ac80ec0dca04f6f5ac08521d539a6dd39afb5192059a9",
+        "ae63bca441f0a1c32e546904e530e60e6f064681a5ac252d230dbc523778e194",
         "Opposed cusp",
     ),
     (
         "hypothetical-thick-outer-triplet",
         "hypothetical-thick-outer-triplet-l1a-v1.json",
-        "ac5420d9276d3db03adffe548a459706de95593d74c4181af4034ddbd1ce4b7a",
-        "d6ef0a42b0a73cfafc7cad1a3fdca8ca59fff4c13a444f5fe5ee8fae9ebf690b",
+        "86ec001f7209428837a9c4a777f4e9181a1acee8f342d373d8a661d30a2483d4",
+        "ea8b7d8b8a4f61c986f5982825585216e569d1e91d0846c259550350d4462328",
         "Thick outer triplet",
     ),
 )
 EXPECTED_MANIFEST_FILE_SHA256 = (
-    "8444389efc87f89495e34d46ccf2deedcc44ee65614dfdd660beecf84cedc3b4"
+    "462c46d25603cc2168ea8d069f615f0eb6b9e8ba704133426171fd47b7b38479"
 )
 EXPECTED_MANIFEST_PAYLOAD_SHA256 = (
-    "2c912b847702e14223170917850d1ecd5fbdfb45899d96ddb222b5577531d7a6"
+    "c961e56037bef18462c8ab56a9b2221269da5b4a10bdafc3dad7462909ffce99"
 )
-CANONICALIZATION = "json-sort-keys-compact-utf8-v1"
+EXPECTED_MIGRATION_FILE_SHA256 = (
+    "7a9cbea051f0ff2c9743b60bcf2fe52a03c0c9ced7fcefcf0c001399ed7cef65"
+)
+EXPECTED_MIGRATION_PAYLOAD_SHA256 = (
+    "fe9c5375695d6fde3b5ab3b6a876527ce541d1490b98e55ca92742bca408413d"
+)
+LEGACY_V11_IDENTITIES = {
+    "manifest_file_sha256": "8444389efc87f89495e34d46ccf2deedcc44ee65614dfdd660beecf84cedc3b4",
+    "manifest_payload_sha256": "2c912b847702e14223170917850d1ecd5fbdfb45899d96ddb222b5577531d7a6",
+    "artifacts": {
+        "hypothetical-compact-mirror": {
+            "file_sha256": "6510f6ea687022f358103bba99456e7bf651686e3add29205c0560c933981afb",
+            "payload_sha256": "92e5535af0492e1697dad2540d8f6e837ba11f28f7a81626673a1c0004183348",
+        },
+        "hypothetical-opposed-cusp": {
+            "file_sha256": "dbf05208dc77e694bb40bb3ca82e4ee3e7126bb3036156f7fa1a726eab06b5c6",
+            "payload_sha256": "c4c7c3dc45466bfa4ba187e925b8e41a1c979b3700a59e185d24897501f97263",
+        },
+        "hypothetical-thick-outer-triplet": {
+            "file_sha256": "ac5420d9276d3db03adffe548a459706de95593d74c4181af4034ddbd1ce4b7a",
+            "payload_sha256": "d6ef0a42b0a73cfafc7cad1a3fdca8ca59fff4c13a444f5fe5ee8fae9ebf690b",
+        },
+    },
+}
+CANONICALIZATION = "field-json-sorted-utf8-signed-zero-v2"
 DEGENERATE_FIELD_ABS_T = 1.0e-14
 
 
@@ -84,14 +126,8 @@ def _closed(value: Any, label: str, keys: set[str]) -> Mapping[str, Any]:
 
 
 def _canonical_payload_sha256(value: Mapping[str, Any]) -> str:
-    encoded = json.dumps(
-        value,
-        sort_keys=True,
-        separators=(",", ":"),
-        ensure_ascii=False,
-        allow_nan=False,
-    ).encode("utf-8")
-    return sha256(encoded).hexdigest()
+    normalized = normalize_field_artifact_value(dict(value))
+    return canonical_payload_sha256(normalized)
 
 
 def _verify_integrity(value: dict[str, Any], label: str) -> str:
@@ -381,7 +417,7 @@ def _validate_artifact(
     }
     if set(artifact) != required:
         raise ValueError(f"{expected_name} artifact top-level keys do not match the contract")
-    if artifact["schema_version"] != "cft-axisymmetric-field-map/1.1.0":
+    if artifact["schema_version"] != ARTIFACT_SCHEMA_VERSION:
         raise ValueError(f"{expected_name} artifact schema_version is unsupported")
     if artifact["model_level"] != "L1a":
         raise ValueError(f"{expected_name} artifact model_level must be L1a")
@@ -672,17 +708,105 @@ def _validate_artifact(
         _text(limitation, f"{expected_name}.limitations[{index}]")
 
 
-def build_payload(manifest_path: Path = DEFAULT_MANIFEST) -> dict[str, Any]:
+def _validate_migration(path: Path) -> dict[str, Any]:
+    default_migration = path.resolve() == DEFAULT_MIGRATION.resolve()
+    file_digest = _verify_file(
+        path,
+        "serialization migration",
+        EXPECTED_MIGRATION_FILE_SHA256 if default_migration else None,
+    )
+    migration = _load_object(path, "serialization migration")
+    raw = path.read_bytes()
+    if raw != canonical_field_artifact_bytes(migration, representation="file"):
+        raise ValueError("serialization migration does not use canonical v1.2 bytes")
+    if contains_negative_zero(migration):
+        raise ValueError("serialization migration contains noncanonical signed zero")
+    payload_digest = _verify_integrity(migration, "serialization migration")
+    if default_migration and payload_digest != EXPECTED_MIGRATION_PAYLOAD_SHA256:
+        raise ValueError("serialization migration payload SHA-256 is not reviewed")
+    top = _closed(
+        migration,
+        "serialization migration",
+        {"from", "to", "policy", "schema_version", "integrity"},
+    )
+    if top["schema_version"] != "cft-axisymmetric-serialization-migration/1.0.0":
+        raise ValueError("serialization migration schema is unsupported")
+    expected_policy = (
+        "v1.1 is read-only historical serialization; new outputs use v1.2 "
+        "signed-zero normalization; no experiment artifact is migrated in place"
+    )
+    if top["policy"] != expected_policy:
+        raise ValueError("serialization migration policy is unsupported")
+    old = _closed(
+        top["from"],
+        "serialization migration from",
+        {
+            "artifact_schema", "artifacts", "manifest_file_sha256",
+            "manifest_payload_sha256", "manifest_schema",
+        },
+    )
+    new = _closed(
+        top["to"],
+        "serialization migration to",
+        {
+            "artifact_schema", "artifacts", "manifest_file_sha256",
+            "manifest_payload_sha256", "manifest_schema",
+        },
+    )
+    if (
+        old["artifact_schema"] != "cft-axisymmetric-field-map/1.1.0"
+        or old["manifest_schema"] != "cft-axisymmetric-design-manifest/1.1.0"
+        or old["manifest_file_sha256"] != LEGACY_V11_IDENTITIES["manifest_file_sha256"]
+        or old["manifest_payload_sha256"]
+        != LEGACY_V11_IDENTITIES["manifest_payload_sha256"]
+        or old["artifacts"] != LEGACY_V11_IDENTITIES["artifacts"]
+    ):
+        raise ValueError("serialization migration v1.1 historical anchors are invalid")
+    current_artifacts = {
+        item[0]: {"file_sha256": item[2], "payload_sha256": item[3]}
+        for item in EXPECTED_DESIGNS
+    }
+    if (
+        new["artifact_schema"] != ARTIFACT_SCHEMA_VERSION
+        or new["manifest_schema"] != MANIFEST_SCHEMA_VERSION
+        or new["manifest_file_sha256"] != EXPECTED_MANIFEST_FILE_SHA256
+        or new["manifest_payload_sha256"] != EXPECTED_MANIFEST_PAYLOAD_SHA256
+        or new["artifacts"] != current_artifacts
+    ):
+        raise ValueError("serialization migration v1.2 accepted anchors are invalid")
+    return {
+        "file": path.name,
+        "file_sha256": file_digest,
+        "payload_sha256": payload_digest,
+        "policy": top["policy"],
+        "from_schema": old["artifact_schema"],
+        "to_schema": new["artifact_schema"],
+    }
+
+
+def build_payload(
+    manifest_path: Path = DEFAULT_MANIFEST,
+    migration_path: Path = DEFAULT_MIGRATION,
+) -> dict[str, Any]:
     """Load, identity-check, and validate the manifest and all three artifacts."""
 
     manifest_path = manifest_path.resolve()
+    migration = _validate_migration(migration_path.resolve())
     default_manifest = manifest_path == DEFAULT_MANIFEST.resolve()
     manifest_digest = _verify_file(
         manifest_path,
         "manifest",
         EXPECTED_MANIFEST_FILE_SHA256 if default_manifest else None,
     )
-    manifest = _load_object(manifest_path, "manifest")
+    try:
+        manifest = validate_design_manifest_file(manifest_path)
+    except ValueError as exc:
+        raise ValueError(f"authoritative manifest reload rejected input: {exc}") from exc
+    manifest_raw = manifest_path.read_bytes()
+    if manifest_raw != canonical_field_artifact_bytes(manifest, representation="file"):
+        raise ValueError("manifest does not use canonical v1.2 file bytes")
+    if contains_negative_zero(manifest):
+        raise ValueError("manifest contains noncanonical signed zero")
     manifest_payload_digest = _verify_integrity(manifest, "manifest")
     if default_manifest and manifest_payload_digest != EXPECTED_MANIFEST_PAYLOAD_SHA256:
         raise ValueError("manifest payload SHA-256 does not match the reviewed solver manifest")
@@ -690,8 +814,8 @@ def build_payload(manifest_path: Path = DEFAULT_MANIFEST) -> dict[str, Any]:
         "designs", "integrity", "model_level", "runtime_policy", "schema_version"
     }:
         raise ValueError("manifest top-level keys do not match the contract")
-    if manifest["schema_version"] != "cft-axisymmetric-design-manifest/1.1.0":
-        raise ValueError("manifest schema_version is unsupported or superseded")
+    if manifest["schema_version"] != MANIFEST_SCHEMA_VERSION:
+        raise ValueError("manifest schema_version is not accepted v1.2")
     if manifest["model_level"] != "L1a":
         raise ValueError("manifest model_level must be L1a")
     _text(manifest["runtime_policy"], "manifest.runtime_policy")
@@ -749,7 +873,21 @@ def build_payload(manifest_path: Path = DEFAULT_MANIFEST) -> dict[str, Any]:
         file_digest = _verify_file(
             artifact_path, f"{name} artifact", entry["artifact_file_sha256"]
         )
-        artifact = _load_object(artifact_path, f"{name} artifact")
+        raw_artifact = artifact_path.read_bytes()
+        try:
+            artifact = reload_field_artifact_bytes(
+                raw_artifact,
+                source=artifact_path.name,
+                allow_legacy_v1_1=False,
+            )
+        except ValueError as exc:
+            raise ValueError(f"authoritative artifact reload rejected {name}: {exc}") from exc
+        if artifact["schema_version"] != ARTIFACT_SCHEMA_VERSION:
+            raise ValueError(f"{name} artifact is legacy v1.1 read-only data")
+        if raw_artifact != field_artifact_canonical_bytes(artifact):
+            raise ValueError(f"{name} artifact canonical reload bytes are not identical")
+        if contains_negative_zero(artifact):
+            raise ValueError(f"{name} artifact contains noncanonical signed zero")
         payload_digest = _verify_integrity(artifact, f"{name} artifact")
         if payload_digest != entry["artifact_payload_sha256"]:
             raise ValueError(f"{name} artifact payload SHA-256 does not match manifest anchor")
@@ -792,7 +930,7 @@ def build_payload(manifest_path: Path = DEFAULT_MANIFEST) -> dict[str, Any]:
             }
         )
     payload = {
-        "schema": "cft-axisymmetric-visualization/1.1.0",
+        "schema": "cft-axisymmetric-visualization/1.2.0",
         "manifest": {
             "file": manifest_path.name,
             "file_sha256": manifest_digest,
@@ -800,6 +938,7 @@ def build_payload(manifest_path: Path = DEFAULT_MANIFEST) -> dict[str, Any]:
             "schema_version": manifest["schema_version"],
             "runtime_policy": manifest["runtime_policy"],
         },
+        "migration": migration,
         "warning": (
             "Linear-vacuum equivalent-current L1a evidence only—not permanent magnets, "
             "nonlinear iron, plasma, experimental validation, or a validated design."
@@ -813,8 +952,12 @@ def build_payload(manifest_path: Path = DEFAULT_MANIFEST) -> dict[str, Any]:
 def validate_payload(payload: Mapping[str, Any]) -> None:
     """Validate the visualization-specific envelope and embedded identities."""
 
-    _closed(payload, "visualization payload", {"schema", "manifest", "warning", "designs"})
-    if payload.get("schema") != "cft-axisymmetric-visualization/1.1.0":
+    _closed(
+        payload,
+        "visualization payload",
+        {"schema", "manifest", "migration", "warning", "designs"},
+    )
+    if payload.get("schema") != "cft-axisymmetric-visualization/1.2.0":
         raise ValueError("visualization payload schema is unsupported")
     manifest = _closed(
         payload.get("manifest"),
@@ -824,9 +967,24 @@ def validate_payload(payload: Mapping[str, Any]) -> None:
     if (
         manifest["file_sha256"] != EXPECTED_MANIFEST_FILE_SHA256
         or manifest["payload_sha256"] != EXPECTED_MANIFEST_PAYLOAD_SHA256
-        or manifest["schema_version"] != "cft-axisymmetric-design-manifest/1.1.0"
+        or manifest["schema_version"] != MANIFEST_SCHEMA_VERSION
     ):
         raise ValueError("embedded manifest identity is invalid or superseded")
+    migration = _closed(
+        payload.get("migration"),
+        "visualization migration identity",
+        {
+            "file", "file_sha256", "payload_sha256", "policy",
+            "from_schema", "to_schema",
+        },
+    )
+    if (
+        migration["file_sha256"] != EXPECTED_MIGRATION_FILE_SHA256
+        or migration["payload_sha256"] != EXPECTED_MIGRATION_PAYLOAD_SHA256
+        or migration["from_schema"] != "cft-axisymmetric-field-map/1.1.0"
+        or migration["to_schema"] != ARTIFACT_SCHEMA_VERSION
+    ):
+        raise ValueError("embedded serialization migration identity is invalid")
     designs = payload.get("designs")
     if not isinstance(designs, list) or [item.get("id") for item in designs] != [
         item[0] for item in EXPECTED_DESIGNS
@@ -873,7 +1031,7 @@ header,main,footer{width:min(1500px,calc(100% - 2rem));margin:auto}header{paddin
 </style>
 </head>
 <body>
-<header><div class="eyebrow">Solver artifact viewer · L1a</div><h1>Axisymmetric field evidence</h1><p id="warning" class="warning"></p>
+<header><div class="eyebrow">Solver artifact viewer · L1a · accepted v1.2 serialization</div><h1>Axisymmetric field evidence</h1><p id="warning" class="warning"></p>
 <div class="controls">
 <div class="control"><label for="design">Field design</label><select id="design"></select></div>
 <div class="control"><label for="component">Heatmap component</label><select id="component"><option value="b_magnitude_t">|B| magnitude</option><option value="b_r_t">Br signed</option><option value="b_z_t">Bz signed</option></select></div>
@@ -891,7 +1049,7 @@ header,main,footer{width:min(1500px,calc(100% - 2rem));margin:auto}header{paddin
 <div class="panel wide"><h2>Convergence history</h2><canvas class="plot" id="residual" role="img" aria-label="Log-scale solver residual history"></canvas><p class="small">History samples use the declared residual stride; the final point is placed at the reported final iteration. Flux-reconstruction identity is an internal reconstruction check, not independent divergence or PDE validation.</p><p id="residualLimits" class="small limits"></p></div>
 </section>
 <section class="panel" style="margin:1rem 0"><h2>Artifact identity and parity status</h2><div id="identity"></div></section>
-</main><footer>Self-contained offline visualization. Timings are intentionally not presented as benchmark evidence.</footer>
+</main><footer>Self-contained offline visualization. v1.2 is the accepted signed-zero canonical serialization; v1.1 remains historical/read-only. Timings are intentionally not presented as benchmark evidence.</footer>
 <script id="axisymmetric-data" type="application/json">__DATA__</script>
 <script>
 "use strict";
@@ -909,7 +1067,7 @@ d.input.sources.forEach(s=>{html+=`<div class="source ${s.polarity<0?"neg":""}">
 const nulls=top.axis_nulls.length?top.axis_nulls.map(n=>`${nullNames[n.kind]} at z ${fmt(n.z_m)} m`).join("<br>"):"none classified";const plateaus=top.axis_plateaus.length?top.axis_plateaus.map(p=>`z ${fmt(p.z_start_m)}–${fmt(p.z_end_m)} m (${p.sample_count} samples)`).join("<br>"):"none classified";
 html+=`<h2 style="margin-top:1rem">Topology classification</h2><div class="topology"><strong>${topologyNames[top.status]}</strong><br>Axis nulls: ${nulls}<br>Near-zero plateaus: ${plateaus}<br>Null tolerance: ${top.null_tolerance_t.toExponential(2)} T</div><p class="small">The reported ${fmt(d.summary.outer_boundary_b_magnitude_min_t*1e3)} mT outer-boundary minimum is a finite-box boundary sample, not an interior physical null.</p><p class="small"><strong>Artifact provenance:</strong> ${d.parity.artifact_statement}<br><strong>Runtime tests:</strong> ${d.parity.runtime_statement}</p>`;$("detailTitle").textContent=d.label;$("details").innerHTML=html;
 const limitations="Limitations: "+d.limitations.join(" · ");for(const id of ["mapLimits","centreLimits","wallLimits","residualLimits"])$(id).textContent=limitations;
-$("identity").innerHTML=`<p><span class="badge">manifest file SHA-256</span> <code>${DATA.manifest.file_sha256}</code></p><p><span class="badge">manifest payload SHA-256</span> <code>${DATA.manifest.payload_sha256}</code></p><p><span class="badge">artifact file SHA-256</span> <code>${d.file_sha256}</code></p><p><span class="badge">artifact payload SHA-256</span> <code>${d.payload_sha256}</code></p><p><span class="badge">schema</span> ${DATA.manifest.schema_version}</p><p><span class="badge">implementation</span> ${d.provenance.implementation}</p><p><span class="badge">scalar</span> ${d.provenance.scalar}</p><p><span class="badge">Accepted CPU/CUDA artifact parity</span> <strong>not recorded</strong> — ${d.parity.artifact_statement}</p><p><span class="badge">Runtime parity tests</span> ${d.parity.runtime_statement}</p>`}
+$("identity").innerHTML=`<p><span class="badge">Accepted serialization</span> <strong>${DATA.migration.to_schema}</strong> · signed-zero canonical bytes</p><p><span class="badge">Legacy serialization</span> ${DATA.migration.from_schema} · historical/read-only, never rewritten in place</p><p class="small">${DATA.migration.policy}</p><p><span class="badge">migration file SHA-256</span> <code>${DATA.migration.file_sha256}</code></p><p><span class="badge">migration payload SHA-256</span> <code>${DATA.migration.payload_sha256}</code></p><p><span class="badge">manifest file SHA-256</span> <code>${DATA.manifest.file_sha256}</code></p><p><span class="badge">manifest payload SHA-256</span> <code>${DATA.manifest.payload_sha256}</code></p><p><span class="badge">artifact file SHA-256</span> <code>${d.file_sha256}</code></p><p><span class="badge">artifact payload SHA-256</span> <code>${d.payload_sha256}</code></p><p><span class="badge">manifest schema</span> ${DATA.manifest.schema_version}</p><p><span class="badge">implementation</span> ${d.provenance.implementation}</p><p><span class="badge">scalar</span> ${d.provenance.scalar}</p><p><span class="badge">Accepted CPU/CUDA artifact parity</span> <strong>not recorded</strong> — ${d.parity.artifact_statement}</p><p><span class="badge">Runtime parity tests</span> ${d.parity.runtime_statement}</p>`}
 function setup(canvas){const r=canvas.getBoundingClientRect(),dpr=Math.max(1,window.devicePixelRatio||1),w=Math.max(1,Math.round(r.width*dpr)),h=Math.max(1,Math.round(r.height*dpr));if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h}const c=canvas.getContext("2d");c.setTransform(dpr,0,0,dpr,0,0);return {c,w:r.width,h:r.height,dpr}}
 const themeColor=name=>getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 function color(v,lo,hi,signed){let t=(v-lo)/(hi-lo||1);t=Math.max(0,Math.min(1,t));if(signed){if(t<.5){const q=t*2;return `rgb(${Math.round(35+220*q)},${Math.round(92+163*q)},255)`}const q=(t-.5)*2;return `rgb(255,${Math.round(255-210*q)},${Math.round(255-215*q)})`}return `rgb(${Math.round(12+240*t)},${Math.round(28+190*Math.sqrt(t))},${Math.round(90+100*(1-t))})`}
@@ -950,19 +1108,26 @@ def render_html(payload: Mapping[str, Any]) -> str:
 
 
 def generate(
-    output_path: Path = DEFAULT_OUTPUT, manifest_path: Path = DEFAULT_MANIFEST
+    output_path: Path = DEFAULT_OUTPUT,
+    manifest_path: Path = DEFAULT_MANIFEST,
+    migration_path: Path = DEFAULT_MIGRATION,
 ) -> Path:
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_path.write_text(render_html(build_payload(manifest_path)), encoding="utf-8", newline="\n")
+    output_path.write_text(
+        render_html(build_payload(manifest_path, migration_path)),
+        encoding="utf-8",
+        newline="\n",
+    )
     return output_path
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST)
+    parser.add_argument("--migration", type=Path, default=DEFAULT_MIGRATION)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     args = parser.parse_args()
-    path = generate(args.output, args.manifest)
+    path = generate(args.output, args.manifest, args.migration)
     print(path)
     return 0
 

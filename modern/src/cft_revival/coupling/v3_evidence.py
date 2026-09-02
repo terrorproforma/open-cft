@@ -23,6 +23,17 @@ from .v3_models import (
     ValidatedPsiMap,
 )
 from .surfaces import magnetic_null_geometry
+from ..fields import (
+    ARTIFACT_SCHEMA_VERSION as FIELD_ARTIFACT_SCHEMA_V12,
+    LEGACY_ARTIFACT_SCHEMA_VERSION as FIELD_ARTIFACT_SCHEMA_V11,
+    canonical_payload_sha256 as field_canonical_payload_sha256,
+    field_artifact_canonical_bytes,
+    reload_field_artifact_bytes,
+)
+from ..fields.serialization import (
+    CANONICALIZATION_V2 as FIELD_CANONICALIZATION_V2,
+    parse_field_json_bytes,
+)
 from .validation import (
     _validate_adapter_contract,
     _validate_diagnostics,
@@ -42,6 +53,8 @@ class _V3Snapshot:
     adapter_code_hash: str
     adapter_contract: AdapterVersionContract
     validation_policy: MapValidationPolicy
+    migration_manifest_bytes: bytes | None
+    migration_source_artifact_bytes: bytes | None
 
 
 _V3_FACTORY_KEY = object()
@@ -80,11 +93,18 @@ class AcceptedV3FieldEvidence:
 
 
 def canonical_psi_map_bytes(field: object) -> bytes:
+    def canonical_float(value: object) -> float:
+        converted = float(value)
+        return 0.0 if converted == 0.0 else converted
+
     try:
-        r = tuple(float(value) for value in field.r_m)  # type: ignore[attr-defined]
-        z = tuple(float(value) for value in field.z_m)  # type: ignore[attr-defined]
+        r = tuple(canonical_float(value) for value in field.r_m)  # type: ignore[attr-defined]
+        z = tuple(canonical_float(value) for value in field.z_m)  # type: ignore[attr-defined]
         arrays = tuple(
-            tuple(tuple(float(value) for value in row) for row in getattr(field, name))
+            tuple(
+                tuple(canonical_float(value) for value in row)
+                for row in getattr(field, name)
+            )
             for name in ("psi_wb", "b_r_t", "b_z_t")
         )
     except (AttributeError, TypeError, ValueError) as error:
@@ -191,6 +211,134 @@ def _validate_map(field: object, policy: MapValidationPolicy) -> ValidatedPsiMap
     return ValidatedPsiMap(r, z, psi, br, bz, hash_psi_map(field))
 
 
+def _field_map_payload(artifact: dict[str, object]) -> dict[str, object]:
+    value = artifact.get("field_map")
+    if not isinstance(value, dict):
+        raise EvidenceVerificationError("field v1.2 artifact has no field_map")
+    return value
+
+
+def _verify_authoritative_field_v12(snapshot: _V3Snapshot) -> None:
+    if snapshot.claims.artifact_schema_version != FIELD_ARTIFACT_SCHEMA_V12:
+        return
+    try:
+        artifact = reload_field_artifact_bytes(
+            snapshot.artifact_bytes,
+            source="coupling-field-v1.2",
+            allow_legacy_v1_1=False,
+        )
+        if field_artifact_canonical_bytes(artifact) != snapshot.artifact_bytes:
+            raise EvidenceVerificationError(
+                "field v1.2 bytes differ from authoritative canonical bytes"
+            )
+    except (TypeError, ValueError, OverflowError) as error:
+        if isinstance(error, EvidenceVerificationError):
+            raise
+        raise EvidenceVerificationError(
+            "field v1.2 artifact failed authoritative canonical reload"
+        ) from error
+    field = _field_map_payload(artifact)
+    if (
+        artifact.get("model_level") != snapshot.claims.model_level
+        or tuple(field.get("r_m", ())) != snapshot.field_map.r_m
+        or tuple(field.get("z_m", ())) != snapshot.field_map.z_m
+        or tuple(tuple(row) for row in field.get("psi_wb", ()))
+        != snapshot.field_map.psi_wb
+        or tuple(tuple(row) for row in field.get("b_r_t", ()))
+        != snapshot.field_map.b_r_t
+        or tuple(tuple(row) for row in field.get("b_z_t", ()))
+        != snapshot.field_map.b_z_t
+    ):
+        raise EvidenceVerificationError(
+            "adapter claims differ from authoritative field v1.2 reload"
+        )
+
+
+def _verify_field_migration(snapshot: _V3Snapshot) -> None:
+    manifest_bytes = snapshot.migration_manifest_bytes
+    source_bytes = snapshot.migration_source_artifact_bytes
+    if manifest_bytes is None and source_bytes is None:
+        return
+    if (
+        snapshot.claims.artifact_schema_version != FIELD_ARTIFACT_SCHEMA_V12
+        or manifest_bytes is None
+        or source_bytes is None
+    ):
+        raise EvidenceVerificationError(
+            "field migration must bind v1.1 source, manifest, and v1.2 target"
+        )
+    try:
+        source = reload_field_artifact_bytes(
+            source_bytes,
+            source="coupling-field-v1.1-source",
+            allow_legacy_v1_1=True,
+        )
+        manifest = parse_field_json_bytes(
+            manifest_bytes,
+            source="coupling-field-migration-manifest",
+            require_canonical_file_bytes=True,
+        )
+    except (TypeError, ValueError, OverflowError) as error:
+        raise EvidenceVerificationError(
+            "field migration source/manifest failed canonical reload"
+        ) from error
+    if source.get("schema_version") != FIELD_ARTIFACT_SCHEMA_V11:
+        raise EvidenceVerificationError(
+            "field migration source is not legacy v1.1"
+        )
+    payload = {key: value for key, value in manifest.items() if key != "integrity"}
+    integrity = manifest.get("integrity")
+    if (
+        manifest.get("schema_version")
+        != "cft-axisymmetric-serialization-migration/1.0.0"
+        or not isinstance(integrity, dict)
+        or integrity.get("algorithm") != "sha256"
+        or integrity.get("canonicalization") != FIELD_CANONICALIZATION_V2
+        or integrity.get("payload_sha256")
+        != field_canonical_payload_sha256(payload)
+    ):
+        raise EvidenceVerificationError("field migration manifest is invalid")
+    source_file_hash = hashlib.sha256(source_bytes).hexdigest()
+    target_file_hash = hashlib.sha256(snapshot.artifact_bytes).hexdigest()
+    source_payload_hash = source.get("integrity", {}).get("payload_sha256")
+    target = reload_field_artifact_bytes(
+        snapshot.artifact_bytes,
+        source="coupling-field-v1.2-target",
+        allow_legacy_v1_1=False,
+    )
+    target_payload_hash = target.get("integrity", {}).get("payload_sha256")
+    before = manifest.get("from")
+    after = manifest.get("to")
+    if not isinstance(before, dict) or not isinstance(after, dict):
+        raise EvidenceVerificationError("field migration manifest endpoints are invalid")
+    before_artifacts = before.get("artifacts")
+    after_artifacts = after.get("artifacts")
+    if (
+        before.get("artifact_schema") != FIELD_ARTIFACT_SCHEMA_V11
+        or after.get("artifact_schema") != FIELD_ARTIFACT_SCHEMA_V12
+        or not isinstance(before_artifacts, dict)
+        or not isinstance(after_artifacts, dict)
+    ):
+        raise EvidenceVerificationError("field migration schemas are invalid")
+    matches = 0
+    for name in set(before_artifacts) & set(after_artifacts):
+        old = before_artifacts[name]
+        new = after_artifacts[name]
+        if (
+            isinstance(old, dict)
+            and isinstance(new, dict)
+            and old.get("file_sha256") == source_file_hash
+            and old.get("payload_sha256") == source_payload_hash
+            and new.get("file_sha256") == target_file_hash
+            and new.get("payload_sha256") == target_payload_hash
+        ):
+            matches += 1
+    if matches != 1:
+        raise EvidenceVerificationError(
+            "field migration manifest does not uniquely bind source and target"
+        )
+
+
 def _invariant_hash(snapshot: _V3Snapshot) -> str:
     claims = snapshot.claims
     payload = {
@@ -216,6 +364,16 @@ def _invariant_hash(snapshot: _V3Snapshot) -> str:
         "adapter_code_hash": snapshot.adapter_code_hash,
         "adapter_contract": asdict(snapshot.adapter_contract),
         "validation_policy": asdict(snapshot.validation_policy),
+        "migration_manifest_hash": (
+            hashlib.sha256(snapshot.migration_manifest_bytes).hexdigest()
+            if snapshot.migration_manifest_bytes is not None
+            else None
+        ),
+        "migration_source_artifact_hash": (
+            hashlib.sha256(snapshot.migration_source_artifact_bytes).hexdigest()
+            if snapshot.migration_source_artifact_bytes is not None
+            else None
+        ),
     }
     encoded = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()
     return hashlib.sha256(b"cft-v3-evidence-invariant\0" + encoded).hexdigest()
@@ -239,6 +397,8 @@ def _verify_snapshot(
     )
     if contract.is_migration:
         raise EvidenceVerificationError("v3 coupling requires direct current-schema evidence")
+    _verify_authoritative_field_v12(snapshot)
+    _verify_field_migration(snapshot)
     if claims.model_level not in policy.accepted_model_levels:
         raise EvidenceVerificationError("v3 model level is not accepted")
     if (
@@ -296,6 +456,8 @@ def verify_v3_field_artifact(
     policy: MapValidationPolicy = MapValidationPolicy(),
     *,
     reference_time_utc: datetime | None = None,
+    migration_manifest_bytes: bytes | None = None,
+    migration_source_artifact_bytes: bytes | None = None,
 ) -> AcceptedV3FieldEvidence:
     if not isinstance(artifact_bytes, bytes) or not artifact_bytes:
         raise EvidenceVerificationError("non-empty v3 artifact bytes are required")
@@ -312,6 +474,16 @@ def verify_v3_field_artifact(
         _validate_hash("adapter_code_hash", adapter.adapter_code_hash),
         adapter.version_contract,
         policy,
+        (
+            bytes(migration_manifest_bytes)
+            if migration_manifest_bytes is not None
+            else None
+        ),
+        (
+            bytes(migration_source_artifact_bytes)
+            if migration_source_artifact_bytes is not None
+            else None
+        ),
     )
     _verify_snapshot(snapshot, reference_time_utc=reference_time_utc)
     return AcceptedV3FieldEvidence(

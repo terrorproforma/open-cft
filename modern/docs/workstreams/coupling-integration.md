@@ -2,13 +2,21 @@
 
 ## Current v4 workflow
 
-All three maps must first pass `verify_v3_field_artifact`: exact non-empty
-artifact bytes, current direct schema `cft-axisymmetric-field-map/1.1.0`,
-model level `L1a`, SI `m/Wb/T`, canonical ψ/Br/Bz hash, complete
+All three maps must first pass `verify_canonical_field_v12_artifact`: exact
+non-empty artifact bytes, current direct schema
+`cft-axisymmetric-field-map/1.2.0`, authoritative canonical-byte/reload
+round trip under `field-json-sorted-utf8-signed-zero-v2`, model level `L1a`,
+SI `m/Wb/T`, canonical ψ/Br/Bz hash, complete
 source/geometry/material/mesh/domain/model/code/config/backend/adapter
 identity, fresh timestamp, and converged residual diagnostics.
 
 ```python
+primary = verify_canonical_field_v12_artifact(
+    primary_bytes,
+    primary_binding,
+    reference_time_utc=evaluation_time,
+)
+# Repeat for refined and enlarged.
 maps = verify_v4_map_set(primary, refined, enlarged)
 development = build_cft_coupling_record(
     maps,
@@ -80,6 +88,14 @@ geometry, material, field model, implementation, configuration, backend,
 adapter contract/code, and validation policy. Mesh, domain, artifact, binding,
 and full-map hashes remain map-specific and are all retained.
 
+Schema v1.1 remains an explicit historical read-only format. It cannot enter a
+new v4 map set directly. A separately generated canonical v1.2 target may
+declare its v1.1 origin only by passing both exact legacy bytes and a canonical
+`cft-axisymmetric-serialization-migration/1.0.0` manifest. Coupling recomputes
+both file/payload identities, requires one unique source-to-target entry, and
+binds migration-manifest and source-artifact hashes into the evidence
+fingerprint, record, held-out outcome, and projection rows.
+
 Freeze both development and held-out manifests, evaluated case/family, exact
 three-map hashes and complete role-ordered evidence fingerprints, required
 outcome count and case-to-family registrations,
@@ -107,7 +123,11 @@ The adapter-verified validation artifact must provide:
 7. exact validation artifact, code, and configuration SHA-256 identities;
 8. finite converged diagnostics; and
 9. a timezone-aware timestamp under the preregistered maximum age and future
-   skew.
+   skew;
+10. three direct canonical v1.2 fingerprints using normalized signed-zero and
+    preserved finite-subnormal semantics; and
+11. for any declared migration, exact v1.1 source bytes and a uniquely matching
+    canonical migration manifest.
 
 Coupling recomputes both manifest hashes and case/family set disjointness;
 there are no trusted `disjoint` or `all_passed` booleans. The 56 characterized
@@ -230,7 +250,7 @@ topology type. No accepted search should use the proxy as fallback.
 
 ## Historical v2 evidence workflow
 
-## Current accepted-evidence workflow
+## Frozen v2 accepted-evidence workflow
 
 Record construction is deliberately two-stage:
 
@@ -270,13 +290,13 @@ hash, all field/artifact/source identities, profile roles/radii, backend/
 adapter identity, provenance/freshness, diagnostics, probability interval,
 covariance/correlation, and confidence.
 
-## Exact L1a 1.1 adapter requirements
+## Historical exact L1a 1.1 adapter requirements
 
-The supported/default artifact schema is now
-`cft-axisymmetric-field-map/1.1.0`. The future exact loader should live in its
-owning integration workstream. It may depend on the stable artifact parser,
-but coupling must continue to depend only on `AcceptedArtifactAdapter`,
-`AdapterVersionContract`, and `AcceptedArtifactClaims`.
+The frozen v2 accepted-evidence schema remains
+`cft-axisymmetric-field-map/1.1.0`. These requirements are historical and do
+not authorize new v4.2 held-out promotion. V2 continues to depend only on
+`AcceptedArtifactAdapter`, `AdapterVersionContract`, and
+`AcceptedArtifactClaims`.
 
 The adapter must:
 

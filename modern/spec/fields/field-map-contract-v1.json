@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "cft-axisymmetric-field-map/1.1.0",
+  "$id": "cft-axisymmetric-field-map/1.2.0",
   "title": "CFT L1a closed axisymmetric field-map contract",
   "type": "object",
   "required": [
@@ -18,7 +18,7 @@
   ],
   "properties": {
     "schema_version": {
-      "const": "cft-axisymmetric-field-map/1.1.0"
+      "const": "cft-axisymmetric-field-map/1.2.0"
     },
     "model_level": {
       "const": "L1a"
@@ -239,7 +239,7 @@
       "required": ["algorithm", "canonicalization", "payload_sha256"],
       "properties": {
         "algorithm": {"const": "sha256"},
-        "canonicalization": {"const": "json-sort-keys-compact-utf8-v1"},
+        "canonicalization": {"const": "field-json-sorted-utf8-signed-zero-v2"},
         "payload_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
       },
       "additionalProperties": false
@@ -395,6 +395,8 @@
     "converged true, non-stagnant, and true residual within configured tolerance",
     "b_magnitude_t agrees with hypot(b_r_t,b_z_t) to eight binary64 ULPs",
     "canonical payload SHA-256 and external file SHA-256 sidecar both verify",
+    "one recursive normalizer maps every floating signed zero to +0.0 before sealing and writing, preserves finite nonzero binary64 values, and canonical reload bytes must match exactly",
+    "v1.1 artifacts are accepted only by the explicit legacy read path and cannot be rewritten",
     "all failures raise FieldArtifactValidationError; huge JSON integer conversion never leaks OverflowError",
     "source widths use a summed half-ULP endpoint/target envelope at the two-spacing boundary"
   ]

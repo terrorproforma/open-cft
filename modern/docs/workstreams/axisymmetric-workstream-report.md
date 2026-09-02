@@ -55,11 +55,12 @@ exhaustion, degenerate topology, all closed-schema/type/coordinate/shape/
 residual/`|B|` corruptions, payload/file tampering, traversal, and artifact
 path substitution. Results:
 
-- focused fields after final solver boundary corrections: 42 passed;
-- fields plus physics: 125 passed in normal and importlib modes;
+- focused fields after serialization 1.2: 62 passed in normal and importlib
+  modes, including 19 exact serialization regressions;
+- fields plus physics: 148 passed in normal and importlib modes;
 - fields plus all 21 Git-tracked prior test modules: 287 passed, one unchanged
   optional-extension skip, in normal and importlib modes;
-- compileall and all three field JSON ledgers/contracts: passed;
+- compileall and all four field JSON ledgers/contracts: passed;
 - native CTest: 1/1 passed; FYP diff: clean.
 
 The final source-width boundary is ULP-aware in both coordinates. It accepts
@@ -73,10 +74,12 @@ All strict artifact/manifest failures now raise
 `ValueError`. Huge JSON integers, overflow during binary64 conversion, and
 decoder integer-digit limits are wrapped in that type.
 
-The whole current workspace reached 664 passed and one skip, with failures
-only in unowned concurrent work: the visualization parser pinned to the old
-manifest/schema (six failures and ten setup errors) plus one coupling and one
-plasma test. No out-of-scope files were changed.
+The earlier audit workspace reached 664 passed and one skip, with failures
+only in unowned concurrent work. During the serialization correction, a fresh
+ordinary-mode repository probe stopped at seven duplicate-basename collection
+errors in unowned experiment/hybrid/optimization tests. Scoped normal and
+importlib results above are therefore the current compatible evidence. No
+out-of-scope source was changed.
 
 Python versus Warp CPU and RTX 5090 CUDA parity was run over every published
 design. All backends took identical iteration counts per design. The largest
@@ -145,17 +148,28 @@ and a raw-file SHA-256 sidecar. The manifest anchors both artifact payload and
 file hashes and has its own non-recursive payload hash and file sidecar.
 `spec/fields/field-map-contract-v1.json` and
 `spec/fields/design-manifest-contract-v1.json` are closed consumer contracts.
+Both are serialization 1.2: one recursive normalizer canonicalizes every
+nested floating signed zero to `+0.0` before sealing and writing, preserves
+finite nonzero binary64 boundaries, and rejects nonfinite/overflow values.
+Accepted 1.1 bytes remain read-only under their original hash contract.
 
 Final deterministic integrity anchors:
 
-- manifest payload: `2c912b847702e14223170917850d1ecd5fbdfb45899d96ddb222b5577531d7a6`;
-- manifest file: `8444389efc87f89495e34d46ccf2deedcc44ee65614dfdd660beecf84cedc3b4`;
-- compact artifact file/payload: `6510f6ea687022f358103bba99456e7bf651686e3add29205c0560c933981afb` /
-  `92e5535af0492e1697dad2540d8f6e837ba11f28f7a81626673a1c0004183348`;
-- opposed artifact file/payload: `dbf05208dc77e694bb40bb3ca82e4ee3e7126bb3036156f7fa1a726eab06b5c6` /
-  `c4c7c3dc45466bfa4ba187e925b8e41a1c979b3700a59e185d24897501f97263`;
-- triplet artifact file/payload: `ac5420d9276d3db03adffe548a459706de95593d74c4181af4034ddbd1ce4b7a` /
-  `d6ef0a42b0a73cfafc7cad1a3fdca8ca59fff4c13a444f5fe5ee8fae9ebf690b`.
+- manifest payload: `c961e56037bef18462c8ab56a9b2221269da5b4a10bdafc3dad7462909ffce99`;
+- manifest file: `462c46d25603cc2168ea8d069f615f0eb6b9e8ba704133426171fd47b7b38479`;
+- compact artifact file/payload: `bec5ea78f87e812ab18a7cd242fd41201230df8689f125b1c24daf078c23255c` /
+  `36122709c7cbb673907ca594b72f64554deb46d26e0d29ae22439d34b6610601`;
+- opposed artifact file/payload: `6591950a2966ffef3e0ac80ec0dca04f6f5ac08521d539a6dd39afb5192059a9` /
+  `ae63bca441f0a1c32e546904e530e60e6f064681a5ac252d230dbc523778e194`;
+- triplet artifact file/payload: `86ec001f7209428837a9c4a777f4e9181a1acee8f342d373d8a661d30a2483d4` /
+  `ea8b7d8b8a4f61c986f5982825585216e569d1e91d0846c259550350d4462328`.
+
+`serialization-migration-v1.1-to-v1.2.json` records these beside the accepted
+v1.1 anchors; its payload/file hashes are
+`fe9c5375695d6fde3b5ab3b6a876527ce541d1490b98e55ca92742bca408413d` /
+`7a9cbea051f0ff2c9743b60bcf2fe52a03c0c9ced7fcefcf0c001399ed7cef65`.
+It is evidence of a serialization transition, not permission to rewrite
+preregistered experiment artifacts.
 
 Dashboard integration should:
 
@@ -177,10 +191,11 @@ v1.0 manifest and its reviewed raw-file hash, so repository-wide visualization
 tests intentionally fail until that consumer is migrated. Its integration
 owner must:
 
-1. accept only `cft-axisymmetric-design-manifest/1.1.0` and
-   `cft-axisymmetric-field-map/1.1.0`;
+1. accept new records only as `cft-axisymmetric-design-manifest/1.2.0` and
+   `cft-axisymmetric-field-map/1.2.0`; route accepted 1.1 records through the
+   explicit read-only loader and label them historical;
 2. update the reviewed manifest raw-file SHA-256 to
-   `8444389efc87f89495e34d46ccf2deedcc44ee65614dfdd660beecf84cedc3b4`;
+   `462c46d25603cc2168ea8d069f615f0eb6b9e8ba704133426171fd47b7b38479`;
 3. verify manifest/field payload integrity, raw-file sidecars, and both
    manifest artifact anchors before interpreting scientific fields;
 4. consume `summary.topology` rather than the removed top-level
@@ -191,6 +206,13 @@ owner must:
    discretization diagnostics;
 7. update tamper tests to permit hash/integrity rejection before deeper
    semantic rejection, since fail-fast integrity is now intentional.
+
+For coupling-v4, store the schema version plus both manifest-anchored hashes,
+call `validate_design_manifest_file`, and never call `json.dumps` to reseal an
+artifact. For validation-v4, obtain bytes only from
+`field_artifact_canonical_bytes`, reload with
+`reload_field_artifact_bytes`, reject 1.1 for new evidence, and preserve any
+accepted 1.1 experiment bytes unchanged.
 
 ## Gates before “L1 production”
 

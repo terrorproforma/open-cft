@@ -4,12 +4,12 @@ import hashlib
 import json
 from dataclasses import dataclass, replace
 from datetime import timedelta
+from functools import lru_cache
 from math import erf, exp, pi, sin, sqrt
 
 import pytest
 
 from cft_revival.coupling.models import (
-    AdapterVersionContract,
     CouplingValidationError,
     EvidenceVerificationError,
     MapValidationPolicy,
@@ -18,11 +18,14 @@ from cft_revival.coupling.models import (
 )
 from cft_revival.coupling.v3_evidence import (
     hash_psi_map,
-    v3_evidence_binding_hash,
-    verify_v3_field_artifact,
+    reverify_v3_evidence,
 )
-from cft_revival.coupling.v3_models import V3ArtifactClaims
 from cft_revival.coupling.v4_evidence import verify_v4_map_set
+from cft_revival.coupling.v4_field_artifacts import (
+    CanonicalFieldV12Binding,
+    V4_FIELD_MAP_POLICY,
+    verify_canonical_field_v12_artifact,
+)
 from cft_revival.coupling.v4_models import (
     AxialDominancePolicy,
     CFT_V4_DEVELOPMENT_MANIFEST,
@@ -52,6 +55,20 @@ from cft_revival.coupling.v4_records import (
     cft_solver_inputs,
 )
 from cft_revival.coupling.v4_validation import verify_held_out_validation
+from cft_revival.fields import (
+    LEGACY_ARTIFACT_SCHEMA_VERSION,
+    canonical_field_artifact_bytes,
+    AxisymmetricDomain,
+    AxisymmetricProblem,
+    FieldArtifactValidationError,
+    FieldMap,
+    SolverConfig,
+    SolverDiagnostics,
+    canonical_payload_sha256,
+    field_artifact,
+    field_artifact_canonical_bytes,
+    reload_field_artifact_bytes,
+)
 from tests.coupling.evidence_helpers import NOW
 
 
@@ -74,10 +91,11 @@ def hemp_map(
     ripple_amplitude_t: float = 0.0,
     extra_wall_peak_t: float = 0.0,
 ) -> PsiMap:
-    radii = tuple(radius_m * index / (radial_points - 1) for index in range(radial_points))
+    radial_spacing = radius_m / (radial_points - 1)
+    axial_spacing = 2.0 * axial_half_width_m / (axial_points - 1)
+    radii = tuple(radial_spacing * index for index in range(radial_points))
     axial = tuple(
-        -axial_half_width_m
-        + 2.0 * axial_half_width_m * index / (axial_points - 1)
+        -axial_half_width_m + axial_spacing * index
         for index in range(axial_points)
     )
     amplitude, width, b0 = 1.5, 0.25, 0.5
@@ -106,61 +124,206 @@ def hemp_map(
     )
 
 
-class Adapter:
-    adapter_id = "tests.v4.psi-adapter"
-    adapter_code_hash = "a" * 64
-    version_contract = AdapterVersionContract(
-        "cft-v4-psi-direct",
-        "1.0.0",
-        "cft-axisymmetric-field-map/1.1.0",
-        "cft-axisymmetric-field-map/1.1.0",
-        "L1a",
+def _canonical_artifact_bytes(
+    field: PsiMap,
+    role: str,
+    substitute_model: bool,
+    substitute_config: bool,
+) -> bytes:
+    domain = AxisymmetricDomain(
+        field.r_m[-1],
+        field.z_m[0],
+        field.z_m[-1],
+        len(field.r_m) - 1,
+        len(field.z_m) - 1,
     )
+    diagnostics = SolverDiagnostics(
+        converged=True,
+        iterations=20,
+        initial_residual_l2=1.0,
+        final_residual_l2=1.0e-12,
+        relative_residual_l2=1.0e-12,
+        residual_history_l2=(1.0, 1.0e-12),
+        max_flux_reconstruction_identity_t_per_m=0.0,
+        true_residual_restarts=0,
+        stagnation_detected=False,
+        backend="manufactured-python",
+    )
+    artifact = field_artifact(
+        AxisymmetricProblem(role, domain),
+        SolverConfig(),
+        FieldMap(
+            field.r_m,
+            field.z_m,
+            field.psi_wb,
+            field.b_r_t,
+            field.b_z_t,
+            diagnostics,
+        ),
+        map_stride=1,
+        wall_radius_m=min(1.0, field.r_m[-1]),
+    )
+    if substitute_model:
+        artifact["model_description"] += " substituted-model"
+    if substitute_config:
+        artifact["input"]["solver"]["max_iterations"] += 1
+    payload = {key: value for key, value in artifact.items() if key != "integrity"}
+    artifact["integrity"]["payload_sha256"] = canonical_payload_sha256(payload)
+    return field_artifact_canonical_bytes(artifact)
 
-    def __init__(self, claims: V3ArtifactClaims) -> None:
-        self.claims = claims
 
-    def verify_v3_artifact(self, artifact_bytes: bytes) -> V3ArtifactClaims:
-        return self.claims
+def _legacy_artifact_bytes(current_bytes: bytes) -> bytes:
+    legacy = reload_field_artifact_bytes(
+        current_bytes,
+        allow_legacy_v1_1=False,
+    )
+    legacy["schema_version"] = LEGACY_ARTIFACT_SCHEMA_VERSION
+    legacy["integrity"]["canonicalization"] = "json-sort-keys-compact-utf8-v1"
+    payload = {key: value for key, value in legacy.items() if key != "integrity"}
+    legacy["integrity"]["payload_sha256"] = hashlib.sha256(
+        json.dumps(
+            payload,
+            sort_keys=True,
+            separators=(",", ":"),
+            ensure_ascii=False,
+            allow_nan=False,
+        ).encode("utf-8")
+    ).hexdigest()
+    return (
+        json.dumps(
+            legacy,
+            indent=2,
+            sort_keys=True,
+            ensure_ascii=False,
+            allow_nan=False,
+        )
+        + "\n"
+    ).encode("utf-8")
+
+
+def _migration_manifest_bytes(
+    legacy_bytes: bytes,
+    current_bytes: bytes,
+    role: str,
+) -> bytes:
+    legacy = reload_field_artifact_bytes(legacy_bytes)
+    current = reload_field_artifact_bytes(
+        current_bytes,
+        allow_legacy_v1_1=False,
+    )
+    payload = {
+        "schema_version": "cft-axisymmetric-serialization-migration/1.0.0",
+        "policy": (
+            "v1.1 is historical; this manifest binds a separately generated "
+            "canonical v1.2 target"
+        ),
+        "from": {
+            "artifact_schema": LEGACY_ARTIFACT_SCHEMA_VERSION,
+            "artifacts": {
+                role: {
+                    "file_sha256": hashlib.sha256(legacy_bytes).hexdigest(),
+                    "payload_sha256": legacy["integrity"]["payload_sha256"],
+                }
+            },
+            "manifest_schema": "cft-axisymmetric-design-manifest/1.1.0",
+            "manifest_file_sha256": "1" * 64,
+            "manifest_payload_sha256": "2" * 64,
+        },
+        "to": {
+            "artifact_schema": "cft-axisymmetric-field-map/1.2.0",
+            "artifacts": {
+                role: {
+                    "file_sha256": hashlib.sha256(current_bytes).hexdigest(),
+                    "payload_sha256": current["integrity"]["payload_sha256"],
+                }
+            },
+            "manifest_schema": "cft-axisymmetric-design-manifest/1.2.0",
+            "manifest_file_sha256": "3" * 64,
+            "manifest_payload_sha256": "4" * 64,
+        },
+    }
+    manifest = {
+        **payload,
+        "integrity": {
+            "algorithm": "sha256",
+            "canonicalization": "field-json-sorted-utf8-signed-zero-v2",
+            "payload_sha256": canonical_payload_sha256(payload),
+        },
+    }
+    return canonical_field_artifact_bytes(manifest, representation="file")
+
+
+@lru_cache(maxsize=None)
+def _accepted_cached(
+    field: PsiMap,
+    role: str,
+    policy: MapValidationPolicy,
+    substitute_model: bool,
+    substitute_config: bool,
+    code_hash: str,
+):
+    artifact_bytes = _canonical_artifact_bytes(
+        field,
+        role,
+        substitute_model,
+        substitute_config,
+    )
+    return verify_canonical_field_v12_artifact(
+        artifact_bytes,
+        CanonicalFieldV12Binding(
+            geometry_hash="2" * 64,
+            code_hash=code_hash,
+            backend_version="1.0",
+            generated_at_utc=NOW,
+        ),
+        policy,
+        reference_time_utc=NOW,
+    )
 
 
 def accepted(
     field: PsiMap,
     role: str,
     *,
-    policy: MapValidationPolicy = MapValidationPolicy(),
+    policy: MapValidationPolicy = V4_FIELD_MAP_POLICY,
     **claim_changes,
 ):
-    artifact = f'{{"accepted":"hemp-v4","role":"{role}"}}'.encode()
-    artifact_hash = hashlib.sha256(artifact).hexdigest()
-    map_hash = hash_psi_map(field)
-    mesh_hash = hashlib.sha256(f"mesh-{role}".encode()).hexdigest()
-    domain_hash = hashlib.sha256(f"domain-{role}".encode()).hexdigest()
-    claims = V3ArtifactClaims(
-        field, "cft-axisymmetric-field-map/1.1.0", "L1a",
-        artifact_hash, map_hash, "1" * 64, "2" * 64, "3" * 64,
-        mesh_hash, domain_hash,
-        v3_evidence_binding_hash(
-            map_hash, "1" * 64, "2" * 64, "3" * 64,
-            mesh_hash, domain_hash, artifact_hash,
-        ),
-        "manufactured-python", "1.0", "source-backed-hemp-wall-cusp",
-        "4" * 64, "5" * 64, "6" * 64, NOW,
-        SolverDiagnosticsEvidence(True, 1e-12, 1e-10, 1e-12, 1e-10, 20),
-    )
-    claims = replace(claims, **claim_changes)
-    return verify_v3_field_artifact(
-        artifact,
-        Adapter(claims),
+    return _accepted_cached(
+        field,
+        role,
         policy,
+        "field_model_hash" in claim_changes,
+        "config_hash" in claim_changes,
+        claim_changes.get("code_hash", "5" * 64),
+    )
+
+
+def migrated_accepted(field: PsiMap, role: str):
+    current_bytes = _canonical_artifact_bytes(field, role, False, False)
+    legacy_bytes = _legacy_artifact_bytes(current_bytes)
+    manifest_bytes = _migration_manifest_bytes(
+        legacy_bytes,
+        current_bytes,
+        role,
+    )
+    return verify_canonical_field_v12_artifact(
+        current_bytes,
+        CanonicalFieldV12Binding(
+            geometry_hash="2" * 64,
+            code_hash="5" * 64,
+            backend_version="1.0",
+            generated_at_utc=NOW,
+        ),
         reference_time_utc=NOW,
+        migration_manifest_bytes=manifest_bytes,
+        migration_source_artifact_bytes=legacy_bytes,
     )
 
 
 def map_set(
     *,
     enlarged_shift: float = 0.0,
-    policy: MapValidationPolicy = MapValidationPolicy(),
+    policy: MapValidationPolicy = V4_FIELD_MAP_POLICY,
     **claim_changes,
 ):
     return verify_v4_map_set(
@@ -411,7 +574,7 @@ def test_wall_cusps_define_inter_cusp_cell_without_o_point_requirement() -> None
         )
     )
     record = build()
-    assert record.schema_version.endswith("/4.1.0")
+    assert record.schema_version.endswith("/4.2.0")
     assert record.status is V4Status.RESOLVED
     assert len(record.stability.primary.cusps) == 2
     assert all(
@@ -436,6 +599,171 @@ def test_wall_cusps_define_inter_cusp_cell_without_o_point_requirement() -> None
         path.wall_endpoint_rz_m[0] == pytest.approx(GEOMETRY.channel_wall_radius_m)
         for path in (outcome.negative_path, outcome.positive_path)
     )
+
+
+def test_v4_accepts_authoritative_canonical_field_v12_directly() -> None:
+    evidence = accepted(hemp_map(21, 41), "direct-v1.2")
+    snapshot = reverify_v3_evidence(evidence, reference_time_utc=NOW)
+    assert snapshot.claims.artifact_schema_version.endswith("/1.2.0")
+    assert snapshot.adapter_id == "cft.coupling.authoritative-field-v1.2"
+    assert snapshot.validation_policy.current_artifact_schema.endswith("/1.2.0")
+    assert snapshot.migration_manifest_bytes is None
+
+
+def test_coupling_map_hash_canonicalizes_signed_zero_only() -> None:
+    positive = hemp_map(21, 41)
+    negative_rows = [list(row) for row in positive.psi_wb]
+    negative_rows[0][0] = -0.0
+    negative = replace(
+        positive,
+        psi_wb=tuple(tuple(row) for row in negative_rows),
+    )
+    assert hash_psi_map(negative) == hash_psi_map(positive)
+
+
+def test_authoritative_v12_preserves_subnormal_map_values() -> None:
+    minimum_subnormal = float.fromhex("0x0.0000000000001p-1022")
+    field = hemp_map(21, 41)
+    rows = [list(row) for row in field.psi_wb]
+    rows[0][0] = minimum_subnormal
+    subnormal_field = replace(
+        field,
+        psi_wb=tuple(tuple(row) for row in rows),
+    )
+    evidence = accepted(subnormal_field, "subnormal-v1.2")
+    snapshot = reverify_v3_evidence(evidence, reference_time_utc=NOW)
+    assert snapshot.field_map.psi_wb[0][0] == minimum_subnormal
+    assert hash_psi_map(subnormal_field) != hash_psi_map(field)
+
+
+def test_v11_is_quarantined_but_declared_migration_is_bound() -> None:
+    current_bytes = _canonical_artifact_bytes(
+        hemp_map(21, 41),
+        "migration-v1.2",
+        False,
+        False,
+    )
+    legacy_bytes = _legacy_artifact_bytes(current_bytes)
+    binding = CanonicalFieldV12Binding(
+        geometry_hash="2" * 64,
+        code_hash="5" * 64,
+        backend_version="1.0",
+        generated_at_utc=NOW,
+    )
+    with pytest.raises(FieldArtifactValidationError, match="disabled"):
+        verify_canonical_field_v12_artifact(
+            legacy_bytes,
+            binding,
+            reference_time_utc=NOW,
+        )
+    from tests.coupling.test_v3_flux_contract import evidence_and_study
+
+    _, historical_v3, _ = evidence_and_study()
+    with pytest.raises(EvidenceVerificationError, match="field v1.2"):
+        verify_v4_map_set(
+            historical_v3,
+            historical_v3,
+            historical_v3,
+            reference_time_utc=NOW,
+        )
+    manifest_bytes = _migration_manifest_bytes(
+        legacy_bytes,
+        current_bytes,
+        "migration-v1.2",
+    )
+    migrated = verify_canonical_field_v12_artifact(
+        current_bytes,
+        binding,
+        reference_time_utc=NOW,
+        migration_manifest_bytes=manifest_bytes,
+        migration_source_artifact_bytes=legacy_bytes,
+    )
+    snapshot = reverify_v3_evidence(migrated, reference_time_utc=NOW)
+    assert hashlib.sha256(snapshot.migration_manifest_bytes).hexdigest()
+    assert hashlib.sha256(snapshot.migration_source_artifact_bytes).hexdigest()
+
+
+def test_migration_hashes_are_bound_into_v42_record_and_fingerprints() -> None:
+    migrated_maps = verify_v4_map_set(
+        migrated_accepted(hemp_map(21, 41), "primary"),
+        migrated_accepted(hemp_map(41, 81), "refined"),
+        migrated_accepted(
+            hemp_map(
+                31,
+                61,
+                radius_m=1.5,
+                axial_half_width_m=3.0,
+            ),
+            "enlarged",
+        ),
+        reference_time_utc=NOW,
+    )
+    migrated_record = build(evidence=migrated_maps)
+    direct_record = build()
+    assert all(migrated_record.field_migration_manifest_hashes)
+    assert all(migrated_record.field_migration_source_artifact_hashes)
+    assert migrated_record.evidence_fingerprints != (
+        direct_record.evidence_fingerprints
+    )
+    assert (
+        migrated_record.stability.primary.identity.full_map_hash
+        == direct_record.stability.primary.identity.full_map_hash
+    )
+
+
+def test_v12_canonical_bytes_and_migration_manifest_tampering_fail() -> None:
+    current_bytes = _canonical_artifact_bytes(
+        hemp_map(21, 41),
+        "tamper-v1.2",
+        False,
+        False,
+    )
+    binding = CanonicalFieldV12Binding(
+        geometry_hash="2" * 64,
+        code_hash="5" * 64,
+        backend_version="1.0",
+        generated_at_utc=NOW,
+    )
+    signed_zero_tamper = current_bytes.replace(b": 0.0", b": -0.0", 1)
+    with pytest.raises(
+        FieldArtifactValidationError,
+        match="canonical",
+    ):
+        verify_canonical_field_v12_artifact(
+            signed_zero_tamper,
+            binding,
+            reference_time_utc=NOW,
+        )
+    legacy_bytes = _legacy_artifact_bytes(current_bytes)
+    manifest_bytes = _migration_manifest_bytes(
+        legacy_bytes,
+        current_bytes,
+        "tamper-v1.2",
+    )
+    tampered_manifest = json.loads(manifest_bytes)
+    tampered_manifest["to"]["artifacts"]["tamper-v1.2"][
+        "file_sha256"
+    ] = "0" * 64
+    tampered_payload = {
+        key: value
+        for key, value in tampered_manifest.items()
+        if key != "integrity"
+    }
+    tampered_manifest["integrity"]["payload_sha256"] = (
+        canonical_payload_sha256(tampered_payload)
+    )
+    tampered_manifest_bytes = canonical_field_artifact_bytes(
+        tampered_manifest,
+        representation="file",
+    )
+    with pytest.raises(EvidenceVerificationError, match="uniquely bind"):
+        verify_canonical_field_v12_artifact(
+            current_bytes,
+            binding,
+            reference_time_utc=NOW,
+            migration_manifest_bytes=tampered_manifest_bytes,
+            migration_source_artifact_bytes=legacy_bytes,
+        )
 
 
 def test_orbit_failure_atomically_suppresses_cell_and_probability() -> None:
@@ -767,7 +1095,10 @@ def test_canonical_rehash_cannot_authorize_provenance_or_timestamp_changes(
 
 
 def test_projection_rechecks_stale_maps_with_fresh_held_out_wrapper() -> None:
-    short_map_policy = MapValidationPolicy(maximum_age_s=3600.0)
+    short_map_policy = replace(
+        V4_FIELD_MAP_POLICY,
+        maximum_age_s=3600.0,
+    )
     source_maps = map_set(policy=short_map_policy)
     development = build(evidence=source_maps)
     evidence = held_out_evidence(development)
@@ -801,7 +1132,7 @@ def test_projection_rechecks_held_out_freshness_at_each_clock() -> None:
         ),
     )
     source_maps = map_set(
-        policy=MapValidationPolicy(maximum_age_s=None),
+        policy=replace(V4_FIELD_MAP_POLICY, maximum_age_s=None),
     )
     development = build(
         evidence=source_maps,
@@ -1189,12 +1520,14 @@ def test_v4_dictionary_carries_complete_held_out_identity() -> None:
         held_out_validation_evidence=held_out_evidence(development)
     )
     payload = cft_coupling_record_dict(validated)
-    assert payload["schema_version"].endswith("/4.1.0")
+    assert payload["schema_version"].endswith("/4.2.0")
     assert payload["held_out_validation"]["development_manifest"]["manifest_id"] == (
         "assessed-56-case-characterization"
     )
     assert payload["orbit_identity"]["adapter_version"] == "2.1.0"
     assert payload["orbit_identity"]["orbit_config_hash"] == "d" * 64
+    assert payload["field_migration_manifest_hashes"] == [None, None, None]
+    assert payload["field_migration_source_artifact_hashes"] == [None, None, None]
     changed_registration = replace(
         VALIDATION_REGISTRATION,
         validation_config_hash="a" * 64,

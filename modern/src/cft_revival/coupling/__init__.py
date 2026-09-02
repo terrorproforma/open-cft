@@ -104,9 +104,17 @@ from .v3_records import (
 from .records import COUPLING_SCHEMA_VERSION as COUPLING_V2_SCHEMA_VERSION
 from .v4_evidence import (
     AcceptedV4MapSet,
+    V4_FIELD_ARTIFACT_SCHEMA,
     reverify_v4_map_set,
     v4_map_set_evidence_fingerprints,
     verify_v4_map_set,
+)
+from .v4_field_artifacts import (
+    CanonicalFieldV12Adapter,
+    CanonicalFieldV12Binding,
+    V4_FIELD_CANONICALIZATION,
+    V4_FIELD_MAP_POLICY,
+    verify_canonical_field_v12_artifact,
 )
 from .v4_models import (
     AxialDominanceMetrics,
@@ -198,6 +206,8 @@ __all__ = [
     "ValidatedAxisymmetricMap",
     "AcceptedV3FieldEvidence",
     "AcceptedV4MapSet",
+    "CanonicalFieldV12Adapter",
+    "CanonicalFieldV12Binding",
     "AcceptedCFTProjection",
     "AcceptedHeldOutValidationEvidence",
     "AcceptedTopologyStabilityEvidence",
@@ -265,6 +275,7 @@ __all__ = [
     "verify_v3_topology_stability",
     "v3_evidence_binding_hash",
     "verify_v4_map_set",
+    "verify_canonical_field_v12_artifact",
     "v4_map_set_evidence_fingerprints",
     "reverify_v4_map_set",
     "AxialDominanceMetrics",
@@ -291,6 +302,9 @@ __all__ = [
     "OrbitVerificationIdentity",
     "SeedPathOutcome",
     "V4CouplingRecord",
+    "V4_FIELD_ARTIFACT_SCHEMA",
+    "V4_FIELD_CANONICALIZATION",
+    "V4_FIELD_MAP_POLICY",
     "V4Criterion",
     "V4MapAssessment",
     "V4StabilityAssessment",

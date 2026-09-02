@@ -1,11 +1,11 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "cft-field-plasma-coupling/4.1.0",
+  "$id": "cft-field-plasma-coupling/4.2.0",
   "title": "Frozen HEMP/CFT wall-cusp and inter-cusp-cell coupling record",
   "type": "object",
-  "required": ["schema_version", "record_hash", "status", "reason", "criterion", "geometry", "cusp_policy", "trace_policy", "axial_policy", "stability_policy", "uncertainty_model", "registrations", "validation_registration", "evidence_fingerprints", "stability", "orbit_identity", "held_out_validation"],
+  "required": ["schema_version", "record_hash", "status", "reason", "criterion", "geometry", "cusp_policy", "trace_policy", "axial_policy", "stability_policy", "uncertainty_model", "registrations", "validation_registration", "evidence_fingerprints", "field_migration_manifest_hashes", "field_migration_source_artifact_hashes", "stability", "orbit_identity", "held_out_validation"],
   "properties": {
-    "schema_version": {"const": "cft-field-plasma-coupling/4.1.0"},
+    "schema_version": {"const": "cft-field-plasma-coupling/4.2.0"},
     "record_hash": {"$ref": "#/$defs/hash"},
     "status": {"$ref": "#/$defs/status"},
     "reason": {"$ref": "#/$defs/nonempty"},
@@ -25,6 +25,8 @@
       "minItems": 3,
       "maxItems": 3
     },
+    "field_migration_manifest_hashes": {"$ref": "#/$defs/nullableHashTriple"},
+    "field_migration_source_artifact_hashes": {"$ref": "#/$defs/nullableHashTriple"},
     "stability": {"$ref": "#/$defs/stability"},
     "orbit_identity": {"anyOf": [{"$ref": "#/$defs/orbitIdentity"}, {"type": "null"}]},
     "held_out_validation": {"anyOf": [{"$ref": "#/$defs/heldOutValidation"}, {"type": "null"}]}
@@ -36,6 +38,17 @@
     "nullableNonempty": {"anyOf": [{"$ref": "#/$defs/nonempty"}, {"type": "null"}]},
     "finite": {"type": "number"},
     "nullableFinite": {"anyOf": [{"$ref": "#/$defs/finite"}, {"type": "null"}]},
+    "nullableHashTriple": {
+      "type": "array",
+      "prefixItems": [
+        {"anyOf": [{"$ref": "#/$defs/hash"}, {"type": "null"}]},
+        {"anyOf": [{"$ref": "#/$defs/hash"}, {"type": "null"}]},
+        {"anyOf": [{"$ref": "#/$defs/hash"}, {"type": "null"}]}
+      ],
+      "items": false,
+      "minItems": 3,
+      "maxItems": 3
+    },
     "status": {"enum": ["resolved", "ambiguous", "invalid", "nonadiabatic", "orbit_unverified", "uncertainty_dominated"]},
     "point": {
       "type": "array",

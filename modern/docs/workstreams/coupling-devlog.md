@@ -288,6 +288,39 @@
 - No installs, commits, experiment execution, or out-of-scope writes were
   performed.
 
+## 2026-09-02 — V4.2 field artifact policy
+
+### Corrected
+
+- Added the coupling-owned `CanonicalFieldV12Adapter` and
+  `verify_canonical_field_v12_artifact` boundary. New v4 evidence is accepted
+  only after the field workstream's strict v1.2 reload and canonical-byte APIs
+  reproduce exact bytes; adapter-supplied arrays no longer establish v4 map
+  authority.
+- Versioned the record schema to `cft-field-plasma-coupling/4.2.0`. Complete
+  fingerprints now bind the field payload hash,
+  `field-json-sorted-utf8-signed-zero-v2`, and optional migration manifest plus
+  v1.1 source-artifact hashes.
+- Canonical coupling map bytes normalize `-0.0` to `+0.0` without flushing
+  finite nonzero subnormals. Direct v1.1 artifacts are quarantined from v4;
+  declared migration requires exact old/new file and payload hashes to match
+  one unique entry in a canonical migration manifest.
+- Projection-time evidence reverification reopens current field bytes and any
+  bound migration source/manifest before reproducing a record or solver rows.
+
+### Validation
+
+- Added direct v1.2, signed-zero hash stability, subnormal preservation, v1.1
+  quarantine/declared migration, canonical-byte tampering, and migration
+  tampering tests. Existing caller-rehash, path/probability, diagnostics,
+  freshness, provenance-substitution, and orbit attacks remain active.
+- Coupling default and importlib modes: 143 passed each.
+- Field artifact compatibility in default and importlib modes: 62 passed each.
+- Coupling compileall, coupling JSON parsing, coupling diff check, and
+  `git diff --exit-code -- FYP`: passed.
+- No installs, commits, experiment execution, or out-of-scope writes were
+  performed.
+
 ## 2026-09-02 — V4 projection authority closure
 
 ### Corrected
