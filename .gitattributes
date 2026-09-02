@@ -1,0 +1,27 @@
+# Reproducibility contract: this repository is hash-bound (SHA-256 sidecars,
+# canonical JSON bytes, source code hashes). The index stores LF everywhere.
+# Never let the platform (core.autocrlf on Windows) rewrite bytes on checkout.
+* text=auto eol=lf
+
+# Explicit binaries (never normalised, never diffed as text).
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.npz binary
+*.npy binary
+*.mat binary
+*.pyc binary
+*.pyd binary
+*.dll binary
+*.so binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+
+# Legacy MATLAB/FEMM inputs are preserved byte-for-byte as archived.
+FYP/*.fem binary
+FYP/*.ans binary
