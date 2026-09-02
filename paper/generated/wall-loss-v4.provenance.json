@@ -1,0 +1,155 @@
+{
+  "artifact_id": "TAB-WALL-LOSS-V4",
+  "bundle_manifest": {
+    "git_blob": "ccb9e85cc48b72bdb3dde44ae9c8e3187c3ac0f2",
+    "path": "modern/experiments/cft_orbit_wall_loss_v4/results/manifest.json",
+    "sha256": "ef3863b0a3ba0a1d74187b05daf81d5d94d3838a7e33ecf82c485dccd162929f"
+  },
+  "claim_ids": [],
+  "claim_status": "draft; no claims.json entry authorizes manuscript prose yet",
+  "document_type": "paper-generated-artifact-provenance",
+  "evidence_revision": "6922a3cf97d261735266aa1a5a0c0c9683e021ca",
+  "generator": {
+    "command": "python paper/scripts/generate_wall_loss_v4_evidence.py",
+    "path": "paper/scripts/generate_wall_loss_v4_evidence.py",
+    "sha256": "7b72649a9c4b0eeedaed55dbe2b50a6ddff640ca89f94f875cced30a8012abd6"
+  },
+  "inputs": [
+    {
+      "bytes": 1677,
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/results/artifacts/authorities.json",
+      "sha256": "c6951cc2a804cd0db0bced9158b5526f0769198b0760e10690dfb5d701d84e36"
+    },
+    {
+      "bytes": 9306,
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/results/artifacts/campaign-result.json",
+      "sha256": "a962de40bb91f3a4a1506520df7bc0c44c4e7ca2dd049f7a23060251452600b4"
+    },
+    {
+      "bytes": 886,
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/results/artifacts/coupling-export-only.json",
+      "sha256": "45ff2d9e37f22db3f37d5212b05e05daa26daa70cc8ff0cbecf28486e3e20270"
+    },
+    {
+      "bytes": 1198,
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/results/artifacts/field-evidence/primary.json",
+      "sha256": "79ca097f59878853c862e3f484867f32babb27d3a592e449857f9ec7dfcbe148"
+    },
+    {
+      "bytes": 1197,
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/results/artifacts/field-evidence/refined.json",
+      "sha256": "348382983191ed540bcbd723459808cc755ffc4a76b213d4f1f6287260998db1"
+    },
+    {
+      "bytes": 454,
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/results/artifacts/field-map-convergence.json",
+      "sha256": "80630326d6637262417e0185e2d6fc70443ace4663fc03314738cd7d288c924a"
+    },
+    {
+      "bytes": 1443,
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/results/artifacts/gates.json",
+      "sha256": "4606ea083c64a03ce9562293783e6aa6de55f6c98d48244e4caf6f940fc5e866"
+    },
+    {
+      "bytes": 1637,
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/results/artifacts/manufactured-gates.json",
+      "sha256": "e8dd651099c605a0d6e9f193213ca01a1aa321823f81783870f9646fe6642a2e"
+    },
+    {
+      "bytes": 262,
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/results/artifacts/p2-input-authority.json",
+      "sha256": "656e92a2e24574881cbc7007e57cb4a87e35b5257996fcbb780f1601520e916e"
+    },
+    {
+      "bytes": 1053,
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/results/artifacts/probability-convergence.json",
+      "sha256": "b5560f234edde7dca624f796ea71143819d5042ff6eb8f44595a946703f7119a"
+    },
+    {
+      "bytes": 17122,
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/results/artifacts/protocol.json",
+      "sha256": "4fedcfe4b421a3b4dca1cde3be11460a23bb28c359d2e55460d86a1c06402ead"
+    },
+    {
+      "bytes": 52491,
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/results/artifacts/shakedown.json",
+      "sha256": "0f0058119d7d58ec39ebcfaf273dcdcc1c4c3ea38a423036341f5dd62a9bdcd2"
+    },
+    {
+      "bytes": 29510,
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/results/artifacts/summaries/enlarged-2N.json",
+      "sha256": "f2b6fa6a0329f74c8d6cca385f625cbcdfc7952b56863fdb3991c0bb23a84740"
+    },
+    {
+      "bytes": 29511,
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/results/artifacts/summaries/enlarged-4N.json",
+      "sha256": "97a42753bec64fa16a32f4681f332ad29ba73f5e4586394dd199bcf952a265c1"
+    },
+    {
+      "bytes": 29508,
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/results/artifacts/summaries/enlarged-N.json",
+      "sha256": "1fb27de1c89ea12718bb174c0ad42597f20ad36359e065bf816b40b43e0a4b32"
+    },
+    {
+      "bytes": 29509,
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/results/artifacts/summaries/primary-2N.json",
+      "sha256": "471e58ff08ba5cca604a3fff6a60ec835fbfe631f17dd34ed548c35a8174ac91"
+    },
+    {
+      "bytes": 29512,
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/results/artifacts/summaries/primary-4N.json",
+      "sha256": "7b8d5010e4f4d41443645fc1fb2bdcbc66c7ddff7c65898f6dca8bb73c7df954"
+    },
+    {
+      "bytes": 29504,
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/results/artifacts/summaries/primary-N.json",
+      "sha256": "783142a951e191ac54189863b8f4c77168a21cf931cef456bf29571768af1055"
+    },
+    {
+      "bytes": 29511,
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/results/artifacts/summaries/refined-2N.json",
+      "sha256": "cd2d396f963d68674dcd442f3985ef3ca961b5ebd183c2340ff9ebeb7a3bd18a"
+    },
+    {
+      "bytes": 29510,
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/results/artifacts/summaries/refined-4N.json",
+      "sha256": "701f5b7c936965597d1b0b98a6b1dfb05999985200533ff4c011b508b2300884"
+    },
+    {
+      "bytes": 29505,
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/results/artifacts/summaries/refined-N.json",
+      "sha256": "576225a7027e118c6f9786c7629d8705f8b3b9d27d105f383d3d0e2fcbc4d985"
+    },
+    {
+      "bytes": 533,
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/results/execution-lock.json",
+      "sha256": "6232324add3ecfa3b4b400026dc15825e5df89ee9388e1ee0f3cca961f493952"
+    },
+    {
+      "bytes": 9611,
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/results/terminal.json",
+      "sha256": "6d23c4af9d1645aa8983054b9d8bc3b40d773ae088f7b1987d77cf77736921f1"
+    },
+    {
+      "bytes": 284,
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/results/transitions/0001-lock-acquired.json",
+      "sha256": "0ea817df8c820f1f0bceae8d9b5c0df54c3f566f4ca3564baddc625500620dea"
+    },
+    {
+      "bytes": 229,
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/results/transitions/0009-terminal.json",
+      "sha256": "72f73d30aa60e726b0de23ef30b3118af766285a2e9c0397dee0fd36f6f58e24"
+    }
+  ],
+  "manifest": {
+    "manifest_id": "WALL-LOSS-V4-20260902-4608-V1",
+    "path": "paper/evidence/wall-loss-v4.json",
+    "sha256": "d0579cc93258abce7bf0b709ed0a9fd56ce2f3d7f8de930d597d3336e0927044"
+  },
+  "output": {
+    "path": "paper/generated/wall-loss-v4.tex",
+    "sha256": "3d1e4c8af7bfc43d7a86a7ca112b08c0d0bcadb70a15784525ad2d96505608a7"
+  },
+  "schema_version": "1.0",
+  "source_date_epoch": 1788270043
+}

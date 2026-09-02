@@ -80,3 +80,22 @@ it does not modify the environment.
 5. Replace the closed `\EvidenceGate{...}{...}` only after acceptance.
 6. Regenerate display artifacts, run policy/adversarial tests, and require two
    byte-identical clean PDF builds.
+## Draft evidence pending integration: wall-loss v4
+
+`paper/scripts/generate_wall_loss_v4_evidence.py` reads the sealed results
+bundle of `modern/experiments/cft_orbit_wall_loss_v4` (verified against
+`results/manifest.json`, bound to the committed results revision) and writes
+`paper/evidence/wall-loss-v4.json` (every macro value with its artifact path,
+JSON pointer, formatter and SHA-256), `paper/generated/wall-loss-v4.tex`
+(`\Wlf...` macros plus two generated tables) and
+`paper/generated/wall-loss-v4.provenance.json`. The draft subsection
+`paper/sections/wall-loss-v4.tex` cites those macros only and is compiled on
+its own by `paper/sections/wall-loss-v4-standalone.tex`; it is **not**
+`\input` into `manuscript.tex`, whose evidence boundary and claim matrix do
+not yet admit the campaign. Integration follows the steps above: a claim
+record, a gate or manifest entry, and only then the manuscript binding.
+
+```powershell
+python paper/scripts/generate_wall_loss_v4_evidence.py
+python -m unittest discover -s paper/tests -p "test_wall_loss*" -v
+```

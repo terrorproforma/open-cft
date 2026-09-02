@@ -1,0 +1,16 @@
+% Standalone dry-parse driver for the draft wall-loss v4 subsection.
+% Compile from the paper/ directory, for example:
+%   pdflatex -interaction=nonstopmode -halt-on-error -output-directory=<scratch> sections/wall-loss-v4-standalone.tex
+% (twice, so the table references resolve). paper/tests/test_wall_loss_v4_evidence.py
+% runs exactly this when pdflatex is available.
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\ifdefined\pdfinfoomitdate\pdfinfoomitdate=1\fi
+\ifdefined\pdftrailerid\pdftrailerid{}\fi
+\ifdefined\pdfsuppressptexinfo\pdfsuppressptexinfo=15\fi
+\input{generated/wall-loss-v4.tex}
+\begin{document}
+\input{sections/wall-loss-v4.tex}
+\end{document}
