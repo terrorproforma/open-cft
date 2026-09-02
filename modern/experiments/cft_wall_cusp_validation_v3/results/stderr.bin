@@ -1,0 +1,24 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "C:\Users\Angus\AppData\Local\Temp\cft-wall-cusp-validation-v3-run\modern\experiments\cft_wall_cusp_validation_v3\worker.py", line 14, in <module>
+    main()
+  File "C:\Users\Angus\AppData\Local\Temp\cft-wall-cusp-validation-v3-run\modern\experiments\cft_wall_cusp_validation_v3\worker.py", line 9, in main
+    result = run_experiment(Path(__file__).resolve().parent / "results")
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Angus\AppData\Local\Temp\cft-wall-cusp-validation-v3-run\modern\experiments\cft_wall_cusp_validation_v3\experiment.py", line 1960, in run_experiment
+    item = solve_map(built, role, closure, runtime)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Angus\AppData\Local\Temp\cft-wall-cusp-validation-v3-run\modern\experiments\cft_wall_cusp_validation_v3\experiment.py", line 899, in solve_map
+    evidence = verify_v3_field_artifact(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Angus\AppData\Local\Temp\cft-wall-cusp-validation-v3-run\modern\src\cft_revival\coupling\v3_evidence.py", line 304, in verify_v3_field_artifact
+    claims = adapter.verify_v3_artifact(artifact_bytes)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Angus\AppData\Local\Temp\cft-wall-cusp-validation-v3-run\modern\experiments\cft_wall_cusp_validation_v3\experiment.py", line 700, in verify_v3_artifact
+    validate_field_artifact(artifact)
+  File "C:\Users\Angus\AppData\Local\Temp\cft-wall-cusp-validation-v3-run\modern\src\cft_revival\fields\artifacts.py", line 890, in validate_field_artifact
+    _validate_integrity(artifact, "artifact")
+  File "C:\Users\Angus\AppData\Local\Temp\cft-wall-cusp-validation-v3-run\modern\src\cft_revival\fields\artifacts.py", line 411, in _validate_integrity
+    raise ValueError(f"{kind} canonical payload SHA-256 mismatch")
+cft_revival.fields.models.FieldArtifactValidationError: artifact canonical payload SHA-256 mismatch
