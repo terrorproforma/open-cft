@@ -1,0 +1,1 @@
+{"__cft_type__":"dataclass","class":"cft_revival.experiment_runtime.lifecycle.Decision","fields":{"accepted":true,"payload":{"held_out_map_access_count":0,"threshold_freeze_sha256":"fd7291c2128f05107b9e9b85054df6e0f18ccd1b592a9a3c5aac8ef4b67c4fc8"}}}
