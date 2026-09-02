@@ -94,6 +94,54 @@
   affects checkpoint completion and resume semantics, its hash must come from
   outside the artifact at replay, sealing, verified load, finalization, and
   handoff. Internal coherent rehashing cannot substitute for that authority.
+- [numerics] A geometrically valid crossing can round to fraction zero even
+  when the attempted timestep is positive. Multiplying the timestep by that
+  fraction erases the motion evidence and can create a boundary stall. Preserve
+  the attempted step, type the tolerance-close resolution, snap the endpoint,
+  and terminate before another field query.
+- [evidence] Fraction zero is not sufficient event evidence. The start must be
+  strictly inside and within tolerance, attempted motion must point outward,
+  the snapped endpoint must lie on the claimed surface, and earlier candidates
+  must remain absent or later under the frozen priority.
+- [operations] Campaign preflight should reject invalid launch geometry,
+  launch-field states, max-B declarations, and timestep policy before batch
+  scheduling. It is a readiness check, not a substitute for deterministic
+  result replay.
+- [numerics] (2026-09-02, v3 post-mortem) The zero-step stall is not
+  triggered by the obvious case. A launch one ulp inside the wall with purely
+  radial velocity terminated correctly on v1.4 because the one-ulp corrected
+  step landed exactly on the wall. The stall needs a grazing approach angle,
+  or a non-uniform field in which the midpoint-corrected segment repeatedly
+  lands just inside the wall and converges to it. Reproduce by sweeping angles
+  and offsets, not by a single hand-picked launch.
+- [numerics] Zero-step failure has two faces in v1.4: the geometric stall
+  (`step_limit` witness with `step_dt_s = 0`, rejected by the validator) and
+  an unhandled `ZeroDivisionError` when the elapsed time lands exactly on the
+  deadline by rounding. Any fix must keep every step's attempted timestep
+  positive, not just the geometric candidates.
+- [evidence] Snapping the endpoint onto a boundary moves the particle without
+  adding path. Every derived ratio whose denominator is path length must bound
+  the denominator by the displacement itself, otherwise a first-step snap
+  produces an out-of-range `transit_fraction` that the schema rejects. The
+  real campaign never showed this because every real orbit had accumulated
+  millimetres of path before its snap; only the synthetic step-1 regression
+  exposed it.
+- [evidence] Roughly 40% of real primary-N orbits (202/512) ended through the
+  tolerance-close path. The v3 failure was not a rare edge case; the fix is on
+  the campaign's main path and must stay covered by real-field shakedowns.
+- [protocol] Energy conservation of completed Boris steps is exact, but the
+  linearly interpolated event velocity is a chord of the rotation and reports
+  up to 6e-4 relative energy loss at a 0.16 rad rotation policy. A gate of
+  1e-10 on `maximum_relative_energy_error` will reject every fractional event;
+  decide whether to renormalize interpolated speed or gate on completed steps
+  before preregistering v4.
+- [operations] A source edit while a campaign is running invalidates later
+  checkpoints through `code_identity()`. Treat this as a feature and finish
+  all code edits before starting a shakedown or campaign.
+- [performance] The Warp backend launches one kernel per push for one
+  particle; on CUDA it is ~18x slower than numpy for this workload. The CPU
+  reference at ~90 ms/orbit (primary-N) and ~380 ms/orbit (4N) is the campaign
+  path; 9 cases × 512 launches is ~30-40 CPU minutes.
 
 ## Follow-up risks
 

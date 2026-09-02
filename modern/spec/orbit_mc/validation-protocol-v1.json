@@ -1,5 +1,5 @@
 {
-  "schema_version": "cft-revival-orbit-mc-validation-protocol/1.4.0",
+  "schema_version": "cft-revival-orbit-mc-validation-protocol/1.5.0",
   "protocol_id": "cft-wall-loss-full-orbit-preregistered-v1",
   "authority": {
     "primary": "direct_first-event_full-orbit_ensemble",
@@ -46,7 +46,11 @@
     "require_external_batch_manifest_sha256_for_artifact_write": true,
     "require_external_batch_manifest_sha256_for_verified_load": true,
     "require_external_batch_manifest_sha256_for_checkpoint_finalization": true,
-    "require_external_batch_manifest_sha256_for_coupling_handoff": true
+    "require_external_batch_manifest_sha256_for_coupling_handoff": true,
+    "require_tolerance_close_fraction_zero_event_witness": true,
+    "require_positive_attempted_step_dt_for_physical_events": true,
+    "require_zero_progress_detection_before_next_field_query": true,
+    "require_campaign_launch_preflight": true
   },
   "adiabatic_comparator_gates": {
     "maximum_rho_over_field_scale": 0.05,

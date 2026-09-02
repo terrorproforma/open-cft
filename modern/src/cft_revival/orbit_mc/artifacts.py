@@ -28,8 +28,8 @@ from .models import (
     Termination,
 )
 
-SCHEMA_VERSION = "cft-revival-orbit-mc-result/1.4.0"
-CHECKPOINT_VERSION = "cft-revival-orbit-mc-checkpoint/1.4.0"
+SCHEMA_VERSION = "cft-revival-orbit-mc-result/1.5.0"
+CHECKPOINT_VERSION = "cft-revival-orbit-mc-checkpoint/1.5.0"
 HANDOFF_VERSION = "cft-revival-orbit-mc-coupling-v4.2/1.3.0"
 CLASSIFICATION = "test_particle_wall_loss_not_self_consistent_plasma"
 REPLAY_REQUIREMENT = "deterministic_full_result_replay_required"
@@ -417,8 +417,10 @@ def _validate_event_witness(
     witness = result["event_witness"]
     witness_keys = {
         "kind", "config", "step_start_position_m", "step_end_position_m",
+        "event_position_m",
         "step_start_velocity_m_per_s", "step_end_velocity_m_per_s",
-        "event_fraction", "candidate_fractions", "reflection_bracket",
+        "event_fraction", "event_resolution", "candidate_fractions",
+        "reflection_bracket",
         "start_elapsed_time_s", "start_path_length_m", "step_dt_s",
         "step_segment_length_m", "step_index", "condition",
         "observed_gamma", "observed_speed2_over_c2",
@@ -461,7 +463,7 @@ def _validate_event_witness(
         raise OrbitValidationError("event witness policy differs from result")
     vectors: dict[str, np.ndarray] = {}
     for name in (
-        "step_start_position_m", "step_end_position_m",
+        "step_start_position_m", "step_end_position_m", "event_position_m",
         "step_start_velocity_m_per_s", "step_end_velocity_m_per_s",
     ):
         value = witness[name]
@@ -481,6 +483,14 @@ def _validate_event_witness(
         "event witness fraction", witness["event_fraction"],
         minimum=0.0, maximum=1.0,
     )
+    event_resolution = witness["event_resolution"]
+    if event_resolution not in {
+        "failure",
+        "interpolated",
+        "tolerance_close_fraction_zero",
+        "completed_step",
+    }:
+        raise OrbitValidationError("event witness resolution is invalid")
     start_time = _real(
         "event witness start time", witness["start_elapsed_time_s"], minimum=0.0
     )
@@ -520,6 +530,8 @@ def _validate_event_witness(
         Termination.EXTREME_RELATIVITY.value,
     }
     if termination in failure_kinds:
+        if event_resolution != "failure":
+            raise OrbitValidationError("failure witness resolution is inconsistent")
         if any(value is not None for value in parsed_candidates.values()):
             raise OrbitValidationError("failure witness cannot claim event candidates")
         if termination in {
@@ -569,12 +581,31 @@ def _validate_event_witness(
         raise OrbitValidationError("physical event witness requires a positive step")
     start = vectors["step_start_position_m"]
     end = vectors["step_end_position_m"]
+    event_position = vectors["event_position_m"]
+    start_velocity = vectors["step_start_velocity_m_per_s"]
+    end_velocity = vectors["step_end_velocity_m_per_s"]
     measured_segment = float(np.linalg.norm(end - start))
-    tolerance = max(config.event_tolerance_m, 256.0*np.finfo(float).eps)
+    geometry_scale = max(
+        1.0,
+        config.wall_radius_m,
+        config.domain_radius_m,
+        abs(config.domain_z_min_m),
+        abs(config.domain_z_max_m),
+    )
+    tolerance = max(
+        config.event_tolerance_m,
+        256.0*np.finfo(float).eps*geometry_scale,
+    )
     if abs(segment - measured_segment) > tolerance:
         raise OrbitValidationError("event witness segment length is inconsistent")
     from .integrator import _geometry_event_candidates
-    geometric = _geometry_event_candidates(start, end, config)
+    attempted_displacement = 0.5 * (start_velocity + end_velocity) * step_dt
+    geometric = _geometry_event_candidates(
+        start,
+        end,
+        config,
+        attempted_displacement=attempted_displacement,
+    )
     expected_geometry = {"wall_hit": None, "domain_escape": None}
     for candidate_fraction, _, kind, _, _ in geometric:
         current = expected_geometry[kind.value]
@@ -649,9 +680,111 @@ def _validate_event_witness(
         raise OrbitValidationError("termination has no supporting event candidate")
     elif step_index != config.max_steps or fraction != 1.0:
         raise OrbitValidationError("step-limit witness does not reach max_steps")
-    expected_position = start + fraction*(end-start)
-    start_velocity = vectors["step_start_velocity_m_per_s"]
-    end_velocity = vectors["step_end_velocity_m_per_s"]
+    if event_resolution == "tolerance_close_fraction_zero":
+        if (
+            fraction != 0.0
+            or termination
+            not in {
+                Termination.WALL_HIT.value,
+                Termination.DOMAIN_ESCAPE.value,
+            }
+            or not str(witness["condition"]).startswith("tolerance_close_")
+        ):
+            raise OrbitValidationError(
+                "tolerance-close witness type is inconsistent"
+            )
+        radius = float(np.hypot(start[0], start[1]))
+        radial_direction = (
+            float(
+                start[0] * attempted_displacement[0]
+                + start[1] * attempted_displacement[1]
+            )
+            / radius
+            if radius > 0.0
+            else 0.0
+        )
+        condition = str(witness["condition"])
+        if condition == "tolerance_close_wall_radial":
+            distance = config.wall_radius_m - radius
+            geometry_valid = (
+                0.0 < distance <= tolerance
+                and radial_direction > 0.0
+                and config.wall_z_min_m - tolerance
+                <= start[2]
+                <= config.wall_z_max_m + tolerance
+                and abs(
+                    float(np.hypot(event_position[0], event_position[1]))
+                    - config.wall_radius_m
+                )
+                <= tolerance
+            )
+        elif condition == "tolerance_close_domain_radial":
+            distance = config.domain_radius_m - radius
+            geometry_valid = (
+                0.0 < distance <= tolerance
+                and radial_direction > 0.0
+                and abs(
+                    float(np.hypot(event_position[0], event_position[1]))
+                    - config.domain_radius_m
+                )
+                <= tolerance
+            )
+        elif condition in {
+            "tolerance_close_domain_z_min",
+            "tolerance_close_domain_z_max",
+        }:
+            lower = condition.endswith("_z_min")
+            plane = (
+                config.domain_z_min_m
+                if lower
+                else config.domain_z_max_m
+            )
+            distance = (
+                start[2] - plane if lower else plane - start[2]
+            )
+            geometry_valid = (
+                0.0 < distance <= tolerance
+                and (
+                    attempted_displacement[2] < 0.0
+                    if lower
+                    else attempted_displacement[2] > 0.0
+                )
+                and abs(event_position[2] - plane) <= tolerance
+                and float(np.hypot(event_position[0], event_position[1]))
+                <= config.domain_radius_m + tolerance
+            )
+        else:
+            geometry_valid = False
+        if not geometry_valid:
+            raise OrbitValidationError(
+                "tolerance-close witness geometry/direction is false"
+            )
+        expected_position = event_position
+    else:
+        if event_resolution == "failure":
+            raise OrbitValidationError(
+                "physical event cannot use failure resolution"
+            )
+        if (
+            termination == Termination.STEP_LIMIT.value
+            and event_resolution != "completed_step"
+        ) or (
+            termination != Termination.STEP_LIMIT.value
+            and event_resolution != "interpolated"
+        ):
+            raise OrbitValidationError(
+                "physical event resolution is inconsistent"
+            )
+        expected_position = start + fraction*(end-start)
+        if not np.allclose(
+            event_position,
+            expected_position,
+            rtol=0.0,
+            atol=tolerance,
+        ):
+            raise OrbitValidationError(
+                "event witness position is inconsistent"
+            )
     expected_velocity = start_velocity + fraction*(end_velocity-start_velocity)
     if (
         not np.allclose(expected_position, result["final_position_m"], rtol=0.0, atol=tolerance)
@@ -1641,6 +1774,7 @@ def validate_checkpoint(
         expected_config_sha256=authority["config_sha256"],
         expected_policy_sha256=authority["policy_sha256"],
         require_complete=False,
+        allow_replay_dependent_failures=True,
     )
     launch_ids = [str(item["launch_id"]) for item in launches]
     manifest = value.get("batch_manifest")

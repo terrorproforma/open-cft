@@ -55,6 +55,12 @@ Before inspecting outcomes, freeze:
   outcome thresholds; and
 - one genuinely held-out geometry family.
 
+Before scheduling any batches, call `preflight_campaign(launches, field,
+config)`. It fails closed on empty/duplicate launch authority, initial
+wall/domain violations, invalid launch fields, underdeclared field maxima, and
+timestep rotation violations. Passing preflight does not run particles or
+authorize a campaign outcome.
+
 For the first campaign, every declared gyrophase and both parallel directions
 within the campaign estimand are equal-weight samples. Counts, proportions, and
 Wilson intervals therefore use the unweighted binomial contract directly.
@@ -117,6 +123,13 @@ field/config/policy identities. Runtime validation recomputes wall/domain,
 time/path, reflection, priority, endpoint, and counter semantics.
 `validate_result_replay` additionally reruns each deterministic orbit against
 externally bound launch/config/field objects when those artifacts are available.
+
+The v1.5 result/checkpoint contracts add the snapped `event_position_m` and a
+closed `event_resolution`. A `tolerance_close_fraction_zero` wall/domain
+witness is accepted only for a positive attempted timestep, a strictly-inside
+start within tolerance, outward attempted motion, the correct snapped surface,
+and unchanged zero-fraction counters. Initial boundary/outside states remain
+`INITIAL_STATE_INVALID`.
 
 No self-consistent E, collision, space-charge, sheath, plasma-response or PIC
 claim may be inferred from a successful handoff.

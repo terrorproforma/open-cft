@@ -71,6 +71,18 @@ fraction wins, with deadline/path priority on exact ties. Thus a later wall
 crossing cannot mask an earlier timeout and no timeout overshoot is retained.
 Launches outside the plasma bore/domain return `INITIAL_STATE_INVALID`.
 
+The v1.5 resolver treats a positive attempted step from strictly inside a
+boundary differently from an invalid boundary launch. If the start is within
+the frozen event tolerance, motion is outward, and the computed crossing or
+corrected endpoint has zero representable progress, the orbit terminates on
+that attempted step. The witness records
+`event_resolution=tolerance_close_fraction_zero`, a zero event fraction, the
+positive attempted `step_dt_s`, the attempted endpoint/direction, and the
+boundary-snapped event position. No midpoint, reflection, or next-step field
+query is made beyond that boundary. An interior corrected segment with no
+representable progress fails immediately before another field query rather
+than spinning to the step limit.
+
 Each v1.2 result retains the complete final-step witness. Impact/escape records
 contain the segment and frozen wall/domain geometry; reflection records contain
 the signed-\(v_\parallel\) bracket and root; deadline/path/step records contain

@@ -6,7 +6,7 @@
   "additionalProperties": false,
   "required": ["schema_version", "campaign_id", "previous_checkpoint_sha256", "authority", "launches", "batch_manifest", "completed_batch_ids", "partial_current_batch", "pending_launch_ids", "coverage", "results", "payload_sha256"],
   "properties": {
-    "schema_version": {"const": "cft-revival-orbit-mc-checkpoint/1.4.0"},
+    "schema_version": {"const": "cft-revival-orbit-mc-checkpoint/1.5.0"},
     "campaign_id": {"type": "string", "minLength": 1},
     "previous_checkpoint_sha256": {"$ref": "#/$defs/hash"},
     "authority": {

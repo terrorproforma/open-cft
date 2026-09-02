@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from math import hypot, isfinite, pi, sqrt
-from typing import Callable
+from typing import Callable, Iterable
 
 import numpy as np
 
@@ -18,6 +18,7 @@ from .models import (
     OrbitConfig,
     OrbitNumericsError,
     OrbitResult,
+    OrbitValidationError,
     Termination,
     kinetic_energy_j_from_velocity,
     velocity_from_energy_ev,
@@ -127,11 +128,66 @@ def _segment_event(
 
 
 def _geometry_event_candidates(
-    start: np.ndarray, end: np.ndarray, config: OrbitConfig
+    start: np.ndarray,
+    end: np.ndarray,
+    config: OrbitConfig,
+    *,
+    attempted_displacement: np.ndarray | None = None,
 ) -> list[tuple[float, int, Termination, np.ndarray, str]]:
     candidates: list[tuple[float, int, Termination, np.ndarray, str]] = []
+    delta = end - start
+    direction = (
+        delta
+        if attempted_displacement is None
+        else np.asarray(attempted_displacement, dtype=np.float64)
+    )
+    start_radius = hypot(float(start[0]), float(start[1]))
+    scale = max(
+        1.0,
+        config.wall_radius_m,
+        config.domain_radius_m,
+        abs(config.domain_z_min_m),
+        abs(config.domain_z_max_m),
+    )
+    close_tolerance = max(
+        config.event_tolerance_m,
+        256.0 * np.finfo(float).eps * scale,
+    )
+
+    def radial_outward() -> bool:
+        if start_radius <= 0.0:
+            return False
+        return (
+            float(start[0] * direction[0] + start[1] * direction[1])
+            / start_radius
+            > 0.0
+        )
+
+    def radial_snap(radius_m: float) -> np.ndarray:
+        point = start.copy()
+        point[0] = radius_m * float(start[0]) / start_radius
+        point[1] = radius_m * float(start[1]) / start_radius
+        return point
+
+    wall_close = (
+        0.0 < config.wall_radius_m - start_radius <= close_tolerance
+        and radial_outward()
+        and config.wall_z_min_m - close_tolerance
+        <= float(start[2])
+        <= config.wall_z_max_m + close_tolerance
+    )
+    if wall_close:
+        candidates.append(
+            (
+                0.0,
+                2,
+                Termination.WALL_HIT,
+                radial_snap(config.wall_radius_m),
+                "tolerance_close_wall_radial",
+            )
+        )
     wall_fraction = _first_cylinder_crossing(start, end, config.wall_radius_m)
-    if wall_fraction is not None:
+    if wall_fraction is not None and not (wall_close and wall_fraction == 0.0):
         point = start + wall_fraction * (end - start)
         if (
             config.wall_z_min_m - config.event_tolerance_m
@@ -144,13 +200,29 @@ def _geometry_event_candidates(
                     2,
                     Termination.WALL_HIT,
                     point,
-                    "first dielectric wall intersection",
+                    "interpolated_wall_radial",
                 )
             )
+    domain_radial_close = (
+        0.0 < config.domain_radius_m - start_radius <= close_tolerance
+        and radial_outward()
+    )
+    if domain_radial_close:
+        candidates.append(
+            (
+                0.0,
+                4,
+                Termination.DOMAIN_ESCAPE,
+                radial_snap(config.domain_radius_m),
+                "tolerance_close_domain_radial",
+            )
+        )
     domain_fraction = _first_cylinder_crossing(
         start, end, config.domain_radius_m
     )
-    if domain_fraction is not None:
+    if domain_fraction is not None and not (
+        domain_radial_close and domain_fraction == 0.0
+    ):
         point = start + domain_fraction * (end - start)
         candidates.append(
             (
@@ -158,9 +230,42 @@ def _geometry_event_candidates(
                 4,
                 Termination.DOMAIN_ESCAPE,
                 point,
-                "first computational-domain crossing",
+                "interpolated_domain_radial",
             )
         )
+    for plane, condition, outward in (
+        (
+            config.domain_z_min_m,
+            "tolerance_close_domain_z_min",
+            float(direction[2]) < 0.0,
+        ),
+        (
+            config.domain_z_max_m,
+            "tolerance_close_domain_z_max",
+            float(direction[2]) > 0.0,
+        ),
+    ):
+        distance = (
+            float(start[2]) - plane
+            if plane == config.domain_z_min_m
+            else plane - float(start[2])
+        )
+        if (
+            0.0 < distance <= close_tolerance
+            and outward
+            and start_radius <= config.domain_radius_m + close_tolerance
+        ):
+            point = start.copy()
+            point[2] = plane
+            candidates.append(
+                (
+                    0.0,
+                    4,
+                    Termination.DOMAIN_ESCAPE,
+                    point,
+                    condition,
+                )
+            )
     dz = float(end[2] - start[2])
     if dz != 0.0:
         for plane in (config.domain_z_min_m, config.domain_z_max_m):
@@ -174,7 +279,7 @@ def _geometry_event_candidates(
                             4,
                             Termination.DOMAIN_ESCAPE,
                             point,
-                            "first computational-domain crossing",
+                            "interpolated_domain_axial",
                         )
                     )
     return candidates
@@ -216,9 +321,11 @@ def _failure_witness(
         "config": _witness_config(config),
         "step_start_position_m": point,
         "step_end_position_m": point,
+        "event_position_m": point,
         "step_start_velocity_m_per_s": [0.0, 0.0, 0.0],
         "step_end_velocity_m_per_s": [0.0, 0.0, 0.0],
         "event_fraction": 0.0,
+        "event_resolution": "failure",
         "candidate_fractions": {
             "time_timeout": None,
             "path_timeout": None,
@@ -394,6 +501,88 @@ def _mu(velocity: np.ndarray, magnetic: np.ndarray) -> float | None:
     return float(np.dot(perpendicular, perpendicular) / (2.0 * ELECTRON_MASS_KG * magnitude))
 
 
+def preflight_campaign(
+    launches: Iterable[ElectronLaunch],
+    field: AxisymmetricField,
+    config: OrbitConfig,
+) -> dict[str, object]:
+    """Fail closed before a campaign if launches or timestep are not runnable."""
+
+    ordered = sorted(tuple(launches), key=lambda item: item.launch_id)
+    if not ordered or len({item.launch_id for item in ordered}) != len(ordered):
+        raise OrbitValidationError(
+            "campaign preflight requires nonempty unique launches"
+        )
+    if not isfinite(field.max_b_t) or field.max_b_t <= 0.0:
+        raise OrbitValidationError(
+            "campaign preflight requires a finite positive field bound"
+        )
+    magnetic_dt = (
+        config.max_rotation_rad
+        * ELECTRON_MASS_KG
+        / (abs(ELECTRON_CHARGE_C) * field.max_b_t)
+    )
+    dt = config.fixed_dt_s if config.fixed_dt_s is not None else magnetic_dt
+    if (
+        not isfinite(dt)
+        or dt <= 0.0
+        or dt > magnetic_dt * (1.0 + 1.0e-14)
+    ):
+        raise OrbitValidationError(
+            "campaign preflight timestep violates the max-B rotation bound"
+        )
+    maximum_launch_b_t = 0.0
+    for launch in ordered:
+        position = np.asarray(launch.position_m, dtype=np.float64)
+        radius = hypot(float(position[0]), float(position[1]))
+        if (
+            radius >= config.domain_radius_m
+            or not config.domain_z_min_m
+            < position[2]
+            < config.domain_z_max_m
+            or (
+                config.wall_z_min_m
+                <= position[2]
+                <= config.wall_z_max_m
+                and radius >= config.wall_radius_m
+            )
+        ):
+            raise OrbitValidationError(
+                f"campaign preflight launch {launch.launch_id} is outside "
+                "the valid plasma domain"
+            )
+        try:
+            magnetic = np.asarray(
+                field.magnetic_cartesian(position), dtype=np.float64
+            )
+            launch_velocity(launch, field)
+        except Exception as error:
+            raise OrbitValidationError(
+                f"campaign preflight launch {launch.launch_id} field/state "
+                f"is invalid: {type(error).__name__}: {error}"
+            ) from error
+        magnitude = float(np.linalg.norm(magnetic))
+        if (
+            magnetic.shape != (3,)
+            or not np.isfinite(magnetic).all()
+            or magnitude <= 0.0
+            or magnitude
+            > field.max_b_t * (1.0 + 64.0 * np.finfo(float).eps)
+        ):
+            raise OrbitValidationError(
+                f"campaign preflight launch {launch.launch_id} violates "
+                "the field contract"
+            )
+        maximum_launch_b_t = max(maximum_launch_b_t, magnitude)
+    return {
+        "status": "passed",
+        "launch_count": len(ordered),
+        "timestep_s": dt,
+        "maximum_declared_b_t": float(field.max_b_t),
+        "maximum_launch_b_t": maximum_launch_b_t,
+    }
+
+
 def integrate_orbit(
     launch: ElectronLaunch,
     field: AxisymmetricField,
@@ -504,11 +693,17 @@ def integrate_orbit(
             predicted_position = (
                 position + 0.5 * (velocity + predicted_velocity) * dt
             )
+            attempted_displacement = (
+                0.5 * (velocity + predicted_velocity) * dt
+            )
             predicted_segment = float(
                 np.linalg.norm(predicted_position - position)
             )
             preliminary = _geometry_event_candidates(
-                position, predicted_position, config
+                position,
+                predicted_position,
+                config,
+                attempted_displacement=attempted_displacement,
             )
             remaining_time = config.max_time_s - time_s
             if remaining_time <= dt:
@@ -532,48 +727,71 @@ def integrate_orbit(
                         "physical path-length deadline reached",
                     )
                 )
-            trial_fraction = (
-                min(item[0] for item in preliminary) if preliminary else 1.0
+            preliminary_selected = (
+                min(preliminary, key=lambda item: (item[0], item[1]))
+                if preliminary
+                else None
             )
-            step_dt = dt * trial_fraction
-            if trial_fraction < 1.0:
-                predicted_velocity = push(
-                    velocity, electric_start, magnetic_start, step_dt
+            immediate_zero_fraction = (
+                preliminary_selected is not None
+                and preliminary_selected[0] == 0.0
+            )
+            if immediate_zero_fraction:
+                # Preserve the positive attempted timestep and do not query a
+                # midpoint that may lie beyond a tolerance-close boundary.
+                step_dt = dt
+                new_velocity = predicted_velocity
+                new_position = predicted_position
+                magnetic_midpoint = magnetic_start
+                midpoint_b_t = actual_b_t
+            else:
+                trial_fraction = (
+                    preliminary_selected[0]
+                    if preliminary_selected is not None
+                    else 1.0
                 )
-                predicted_position = (
-                    position
-                    + 0.5 * (velocity + predicted_velocity) * step_dt
+                step_dt = dt * trial_fraction
+                if trial_fraction < 1.0:
+                    predicted_velocity = push(
+                        velocity, electric_start, magnetic_start, step_dt
+                    )
+                    predicted_position = (
+                        position
+                        + 0.5 * (velocity + predicted_velocity) * step_dt
+                    )
+                    attempted_displacement = (
+                        0.5 * (velocity + predicted_velocity) * step_dt
+                    )
+                midpoint_position = 0.5 * (position + predicted_position)
+                midpoint_time = time_s + 0.5 * step_dt
+                magnetic_midpoint = np.asarray(
+                    field.magnetic_cartesian(midpoint_position), dtype=np.float64
                 )
-            midpoint_position = 0.5 * (position + predicted_position)
-            midpoint_time = time_s + 0.5 * step_dt
-            magnetic_midpoint = np.asarray(
-                field.magnetic_cartesian(midpoint_position), dtype=np.float64
-            )
-            electric_midpoint = np.asarray(
-                field.electric_cartesian(midpoint_position, midpoint_time),
-                dtype=np.float64,
-            )
-            if (
-                magnetic_midpoint.shape != (3,)
-                or electric_midpoint.shape != (3,)
-                or not np.isfinite(magnetic_midpoint).all()
-                or not np.isfinite(electric_midpoint).all()
-            ):
-                raise OrbitNumericsError("midpoint field is invalid")
-            midpoint_b_t = float(np.linalg.norm(magnetic_midpoint))
-            maximum_b_seen = max(maximum_b_seen, midpoint_b_t)
-            if midpoint_b_t > field.max_b_t * (
-                1.0 + 64.0 * np.finfo(float).eps
-            ):
-                raise OrbitNumericsError(
-                    "midpoint field exceeds declared/certified maximum"
+                electric_midpoint = np.asarray(
+                    field.electric_cartesian(midpoint_position, midpoint_time),
+                    dtype=np.float64,
                 )
-            new_velocity = push(
-                velocity, electric_midpoint, magnetic_midpoint, step_dt
-            )
-            new_position = (
-                position + 0.5 * (velocity + new_velocity) * step_dt
-            )
+                if (
+                    magnetic_midpoint.shape != (3,)
+                    or electric_midpoint.shape != (3,)
+                    or not np.isfinite(magnetic_midpoint).all()
+                    or not np.isfinite(electric_midpoint).all()
+                ):
+                    raise OrbitNumericsError("midpoint field is invalid")
+                midpoint_b_t = float(np.linalg.norm(magnetic_midpoint))
+                maximum_b_seen = max(maximum_b_seen, midpoint_b_t)
+                if midpoint_b_t > field.max_b_t * (
+                    1.0 + 64.0 * np.finfo(float).eps
+                ):
+                    raise OrbitNumericsError(
+                        "midpoint field exceeds declared/certified maximum"
+                    )
+                new_velocity = push(
+                    velocity, electric_midpoint, magnetic_midpoint, step_dt
+                )
+                new_position = (
+                    position + 0.5 * (velocity + new_velocity) * step_dt
+                )
         except Exception as error:
             termination = Termination.FIELD_FAILURE
             reason = f"{type(error).__name__}: {error}"
@@ -645,7 +863,15 @@ def integrate_orbit(
             )
             break
         segment = float(np.linalg.norm(new_position - position))
-        candidates = _geometry_event_candidates(position, new_position, config)
+        attempted_displacement = (
+            0.5 * (velocity + new_velocity) * step_dt
+        )
+        candidates = _geometry_event_candidates(
+            position,
+            new_position,
+            config,
+            attempted_displacement=attempted_displacement,
+        )
         remaining_time = config.max_time_s - time_s
         if remaining_time <= step_dt:
             fraction = max(0.0, min(1.0, remaining_time / step_dt))
@@ -671,17 +897,41 @@ def integrate_orbit(
                 )
             )
 
-        try:
-            reflection_evidence = _reflection_fraction(
+        if not candidates and (
+            step_dt <= 0.0
+            or segment == 0.0
+            or np.array_equal(position, new_position)
+        ):
+            termination = Termination.FIELD_FAILURE
+            reason = "corrected orbit segment made no representable progress"
+            event_witness = _failure_witness(
+                termination,
+                config,
                 position,
-                new_position,
-                velocity,
-                new_velocity,
-                field,
-                initial_parallel_sign,
+                step=step,
+                elapsed_s=time_s,
+                path_m=path_m,
+                condition="zero_progress_corrected_segment",
             )
-        except Exception:
+            break
+
+        if any(
+            fraction == 0.0 and condition.startswith("tolerance_close_")
+            for fraction, _, _, _, condition in candidates
+        ):
             reflection_evidence = None
+        else:
+            try:
+                reflection_evidence = _reflection_fraction(
+                    position,
+                    new_position,
+                    velocity,
+                    new_velocity,
+                    field,
+                    initial_parallel_sign,
+                )
+            except Exception:
+                reflection_evidence = None
         if reflection_evidence is not None:
             reflection_fraction = reflection_evidence[0]
             candidates.append(
@@ -739,9 +989,23 @@ def integrate_orbit(
             "config": _witness_config(config),
             "step_start_position_m": tuple(map(float, position)),
             "step_end_position_m": tuple(map(float, new_position)),
+            "event_position_m": tuple(
+                map(
+                    float,
+                    selected[3] if selected is not None else event_position,
+                )
+            ),
             "step_start_velocity_m_per_s": tuple(map(float, velocity)),
             "step_end_velocity_m_per_s": tuple(map(float, new_velocity)),
             "event_fraction": event_fraction,
+            "event_resolution": (
+                "tolerance_close_fraction_zero"
+                if selected is not None
+                and selected[4].startswith("tolerance_close_")
+                else "interpolated"
+                if selected is not None
+                else "completed_step"
+            ),
             "candidate_fractions": candidate_fractions,
             "reflection_bracket": reflection_bracket,
             "start_elapsed_time_s": time_s,
@@ -802,12 +1066,19 @@ def integrate_orbit(
         mean_mu = float(np.mean(mu_values))
         if mean_mu > 0.0:
             mu_variation = max(abs(value - mean_mu) for value in mu_values) / mean_mu
+    # Net axial displacement over accumulated path. A tolerance-close boundary
+    # snap (<= close tolerance) is not part of the accumulated path, so bound
+    # the denominator by the displacement itself to keep the ratio in [0, 1].
+    axial_displacement = abs(float(position[2] - initial_position[2]))
+    transit_fraction = axial_displacement / max(
+        path_m, axial_displacement, np.finfo(float).tiny
+    )
     return OrbitResult(
         launch.launch_id, termination, reason, tuple(map(float, position)),
         tuple(map(float, velocity)), wall_endpoint, time_s, path_m, steps,
         gyro.phase, len(gyro.averages), tuple(gyro.averages), initial_energy,
         final_energy, energy_error, mu_variation,
-        abs(float(position[2] - initial_position[2])) / max(path_m, np.finfo(float).tiny),
+        transit_fraction,
         maximum_b_seen,
         config.max_time_s,
         config.max_path_m,

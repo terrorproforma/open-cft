@@ -40,7 +40,12 @@ from .fields import (
     PsiBicubicField,
     compare_maps,
 )
-from .integrator import integrate_orbit, launch_velocity, relativistic_boris_push
+from .integrator import (
+    integrate_orbit,
+    launch_velocity,
+    preflight_campaign,
+    relativistic_boris_push,
+)
 from .models import (
     ELECTRON_CHARGE_C,
     ELECTRON_MASS_KG,
@@ -76,7 +81,8 @@ __all__ = [
     "OrbitNumericsError", "OrbitResult", "OrbitValidationError", "Termination",
     "AnalyticField", "CertificateTightness", "InterpolationErrorReport",
     "PsiBicubicField", "compare_maps",
-    "integrate_orbit", "launch_velocity", "relativistic_boris_push",
+    "integrate_orbit", "launch_velocity", "preflight_campaign",
+    "relativistic_boris_push",
     "EnsembleSummary", "ProbabilityEstimate", "asymptotic_loss_cone_comparator",
     "build_launch_ensemble", "deterministic_gyrophases", "probability_convergence",
     "reduce_results", "run_ensemble", "wilson_interval",

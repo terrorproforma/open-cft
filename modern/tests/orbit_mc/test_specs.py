@@ -53,6 +53,13 @@ def test_validation_protocol_preregisters_authority_and_convergence() -> None:
     assert protocol["numerical_gates"][
         "require_external_batch_manifest_sha256_for_artifact_write"
     ]
+    assert protocol["numerical_gates"][
+        "require_tolerance_close_fraction_zero_event_witness"
+    ]
+    assert protocol["numerical_gates"][
+        "require_zero_progress_detection_before_next_field_query"
+    ]
+    assert protocol["numerical_gates"]["require_campaign_launch_preflight"]
     assert protocol["integration"]["status"] == (
         "export_only_pending_consumer_integration"
     )
@@ -69,8 +76,12 @@ def test_result_and_checkpoint_schemas_expose_runtime_authority_fields() -> None
     } <= result_required
     assert "event_witness" in result_required
     assert result_schema["properties"]["schema_version"]["const"].endswith(
-        "/1.4.0"
+        "/1.5.0"
     )
+    witness_required = set(
+        result_schema["$defs"]["eventWitness"]["required"]
+    )
+    assert {"event_position_m", "event_resolution"} <= witness_required
     assert result_schema["$defs"]["result"]["properties"]["transit_fraction"][
         "maximum"
     ] == 1

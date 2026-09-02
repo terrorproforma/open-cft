@@ -18,6 +18,7 @@ from cft_revival.orbit_mc import (
     PsiBicubicField,
     Termination,
     integrate_orbit,
+    preflight_campaign,
     varying_e_convergence,
     wilson_interval,
 )
@@ -208,3 +209,184 @@ def test_all_orbit_policy_scalars_and_types_fail_closed(overrides) -> None:
     values.update(overrides)
     with pytest.raises(OrbitValidationError):
         OrbitConfig(**values)
+
+
+class _BoundaryGuardField:
+    max_b_t = 1.0e-6
+
+    def __init__(self, radius_limit_m: float) -> None:
+        self.radius_limit_m = radius_limit_m
+        self.queries = 0
+
+    def magnetic_cartesian(self, position_m: np.ndarray) -> np.ndarray:
+        self.queries += 1
+        if np.hypot(position_m[0], position_m[1]) >= self.radius_limit_m:
+            raise OrbitNumericsError("query crossed guarded boundary")
+        return np.array([0.0, 0.0, self.max_b_t])
+
+    def electric_cartesian(
+        self, position_m: np.ndarray, _time_s: float
+    ) -> np.ndarray:
+        if np.hypot(position_m[0], position_m[1]) >= self.radius_limit_m:
+            raise OrbitNumericsError("query crossed guarded boundary")
+        return np.zeros(3)
+
+
+@pytest.mark.parametrize(
+    ("kind", "start_radius", "start_z", "wall_radius", "domain_radius"),
+    [
+        (Termination.WALL_HIT, np.nextafter(1.0, 0.0), 0.0, 1.0, 2.0),
+        (
+            Termination.DOMAIN_ESCAPE,
+            np.nextafter(2.0, 0.0),
+            0.2,
+            1.0,
+            2.0,
+        ),
+    ],
+)
+def test_synthetic_v3_near_boundary_geometry_snaps_without_outside_query(
+    kind: Termination,
+    start_radius: float,
+    start_z: float,
+    wall_radius: float,
+    domain_radius: float,
+) -> None:
+    boundary = wall_radius if kind is Termination.WALL_HIT else domain_radius
+    field = _BoundaryGuardField(boundary)
+    launch = ElectronLaunch(
+        f"close-{kind.value}",
+        0,
+        10.0,
+        pi / 2,
+        (start_radius, 0.0, start_z),
+        1,
+        1.5 * pi,
+        "near-boundary",
+    )
+    config = OrbitConfig(
+        wall_radius,
+        -0.1,
+        0.1,
+        domain_radius,
+        -1.0,
+        1.0,
+        1.0e-6,
+        10.0,
+        max_steps=200_000,
+        event_tolerance_m=1.0e-9,
+        fixed_dt_s=1.0e-9,
+    )
+    result = integrate_orbit(launch, field, config)
+    assert result.termination is kind
+    assert result.termination is not Termination.FIELD_FAILURE
+    assert result.steps == 1
+    assert result.steps < 200_000
+    assert result.event_witness["event_fraction"] == 0.0
+    assert result.event_witness["event_resolution"] == (
+        "tolerance_close_fraction_zero"
+    )
+    assert result.event_witness["step_dt_s"] == config.fixed_dt_s
+    assert np.hypot(*result.final_position_m[:2]) == pytest.approx(
+        boundary, abs=0.0
+    )
+
+
+def test_boundary_launch_remains_initial_state_invalid() -> None:
+    field = AnalyticField(
+        lambda _x: np.array([0.0, 0.0, 1.0e-6]), None, 1.0e-6
+    )
+    launch = ElectronLaunch(
+        "on-wall", 0, 10.0, pi / 2, (1.0, 0.0, 0.0), 1, 1.5*pi, "wall"
+    )
+    config = OrbitConfig(
+        1.0, -0.1, 0.1, 2.0, -1.0, 1.0, 1.0e-6, 10.0
+    )
+    result = integrate_orbit(launch, field, config)
+    assert result.termination is Termination.INITIAL_STATE_INVALID
+    assert result.steps == 0
+    assert result.event_witness["event_resolution"] == "failure"
+
+
+def test_campaign_preflight_exposes_launch_and_timestep_checks() -> None:
+    field = AnalyticField(
+        lambda _x: np.array([0.0, 0.0, 0.1]), None, 0.1
+    )
+    launch = ElectronLaunch(
+        "preflight", 0, 10.0, 0.2, (0.0, 0.0, 0.0), 1, 0.0, "axis"
+    )
+    config = OrbitConfig(
+        1.0, -1.0, 1.0, 2.0, -2.0, 2.0, 1.0e-8, 1.0
+    )
+    report = preflight_campaign((launch,), field, config)
+    assert report["status"] == "passed"
+    assert report["launch_count"] == 1
+    with pytest.raises(OrbitValidationError, match="outside"):
+        preflight_campaign(
+            (
+                ElectronLaunch(
+                    "outside-preflight",
+                    1,
+                    10.0,
+                    0.2,
+                    (2.0, 0.0, 0.0),
+                    1,
+                    0.0,
+                    "outside",
+                ),
+            ),
+            field,
+            config,
+        )
+
+
+def test_corrected_zero_progress_stops_before_reflection_field_query() -> None:
+    class CountingField:
+        max_b_t = 0.1
+
+        def __init__(self) -> None:
+            self.magnetic_queries = 0
+
+        def magnetic_cartesian(self, _position_m: np.ndarray) -> np.ndarray:
+            self.magnetic_queries += 1
+            return np.array([0.0, 0.0, self.max_b_t])
+
+        def electric_cartesian(
+            self, _position_m: np.ndarray, _time_s: float
+        ) -> np.ndarray:
+            return np.zeros(3)
+
+    field = CountingField()
+    launch = ElectronLaunch(
+        "zero-progress",
+        0,
+        10.0,
+        pi / 2,
+        (0.0, 0.0, 0.0),
+        1,
+        0.0,
+        "axis",
+    )
+    config = OrbitConfig(
+        1.0,
+        -1.0,
+        1.0,
+        2.0,
+        -2.0,
+        2.0,
+        1.0e-6,
+        10.0,
+        fixed_dt_s=1.0e-12,
+    )
+    result = integrate_orbit(
+        launch,
+        field,
+        config,
+        velocity_pusher=lambda velocity, *_args: -velocity,
+    )
+    assert result.termination is Termination.FIELD_FAILURE
+    assert result.event_witness["condition"] == (
+        "zero_progress_corrected_segment"
+    )
+    # launch, step start, and midpoint only; no reflection/end query occurs.
+    assert field.magnetic_queries == 3

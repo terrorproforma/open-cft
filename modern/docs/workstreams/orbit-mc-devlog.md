@@ -183,3 +183,107 @@ physical CFT campaign, or wall-loss probability was produced.
   permutations retain the exact frozen manifest/hash.
 - Bumped result/checkpoint/validation contracts to v1.4 and handoff to v1.3.
 - Final focused verification passed `93/93`.
+
+## 2026-09-02 — v1.5 boundary no-progress closure
+
+- Reproduced the near-wall stall synthetically from strictly inside the
+  dielectric radius. A zero-rounded crossing previously reduced the corrected
+  timestep to zero, lost the geometric candidate, and could repeat until the
+  step limit or query a snapped boundary as a field failure.
+- Added typed `tolerance_close_fraction_zero` wall/domain events. They preserve
+  the positive attempted timestep, retain attempted before/after geometry and
+  direction, snap the event endpoint to the selected surface, and terminate
+  before midpoint/reflection/outside field queries.
+- Added an immediate corrected-segment no-progress guard before reflection or
+  the next field evaluation. Interior no-progress is a typed numerical
+  failure; tolerance-close outward wall/domain approaches remain physical
+  events.
+- Added `preflight_campaign` for launch geometry, field, max-B, and timestep
+  checks without running campaign particles.
+- Added production results and checkpoint semantic validation covering all ten
+  termination classes, plus radial wall/domain zero-fraction regressions and
+  initial-boundary separation. Result/checkpoint/validation contracts are now
+  v1.5; estimator, replay, batch-manifest, and coupling authorities are
+  unchanged.
+- Final verification passed `102/102` orbit tests and `4/4` explicit Warp
+  CPU/RTX parity tests. The interpolated wall witness retained exactly zero
+  fraction and endpoint error; synthetic tolerance-close wall/domain cases
+  terminated on step 1 (below the 200,000-step guard) without field failure.
+  Compileall, four JSON parses, owned-path diff checks, and the FYP no-diff
+  guard passed. No install, commit, or physical campaign was performed.
+
+## 2026-09-02 — v1.5 promotion, v3 root cause, real-field shakedown
+
+- Branch `feat/orbit-mc-v1.5` (worktree `uni-project-orbit-v15`, base
+  `25dbeaaf` = `origin/feat/sota-foundation`) carries the v1.5 package, tests,
+  specs, and docs. The frozen `exp/cft-orbit-wall-loss-v3` worktree was used
+  read-only as the data source; no `exp/*` branch was modified.
+- v3 root cause reproduced out-of-tree on v1.4 (`25dbeaaf`). With v3 geometry
+  (wall 2 mm, tolerance 1e-9 m, rotation 0.16 rad) and uniform 0.2 T:
+  starting 1 ulp inside the wall with a grazing outward angle
+  (`phase = 1.5π + 0.289π`) spun to `max_steps` with
+  `event_witness.step_dt_s == 0.0`, `step_segment_length_m == 0.0`, elapsed
+  time frozen at 2.5e-25 s, and `_validate_event_witness` rejecting with
+  exactly the v3 terminal message `physical event witness requires a positive
+  step`. 6/64 grazing angles spun. In a non-uniform bottle field, 50/240
+  near-wall launches (0.5 µm to 1 ulp inside) converged to the wall over up to
+  1.3e-4 m of path and then spun identically; the midpoint-corrected segment
+  repeatedly lands just inside the wall so `_first_cylinder_crossing` rounds
+  to fraction 0 and `step_dt = dt * 0 = 0`.
+- Second v1.4 defect found by the same sweep: when the time deadline lands
+  exactly on `max_time_s` through rounding one step early, the next step's
+  preliminary deadline fraction is 0, `step_dt = 0`, and
+  `remaining_time / step_dt` raises an unhandled `ZeroDivisionError`
+  (18/72 near-tangent uniform-B launches). v1.5 resolves the same launches as
+  `time_timeout` at fraction 0 with `step_dt_s = dt`.
+- v1.5 on the identical launches: every roundoff/grazing case ends at step 1
+  as `wall_hit` (`tolerance_close_wall_radial`, snapped radius exactly
+  2.000e-3 m, `step_dt_s = dt`), all 240 bottle launches end `wall_hit`, all
+  72 near-tangent launches end `wall_hit`/`time_timeout`, zero validator
+  rejections.
+- Added `test_v3_zero_step_wall_convergence_regression` (5 cases: grazing
+  wall roundoff, bottle-field wall convergence, domain-radius roundoff, and
+  both z-plane roundoff cases). Each asserts prompt termination, positive
+  `step_dt_s`, endpoint on the boundary within tolerance, witness validation,
+  checkpoint, sealed artifact with deterministic replay, and verified reload.
+- The z-plane cases exposed a v1.5 defect: a first-step `tolerance_close_
+  domain_z_*` snap moves `z` by one ulp with zero accumulated path, so
+  `transit_fraction = |Δz| / max(path, tiny)` overflowed to ~1e300 and the
+  validator rejected `result transit_fraction must lie in [0,1]`. Fixed by
+  bounding the denominator with `|Δz|` itself (ratio unchanged whenever
+  `path >= |Δz|`, which holds for every non-snapped orbit).
+- Real-field shakedown against the frozen v3 P2→ψ adapter fields and the
+  byte-authoritative launch manifests (512 launches per case), through the
+  campaign path (`preflight_campaign`, `integrate_orbit`, per-batch
+  `checkpoint`/`write_checkpoint`/`merge_checkpoint_results`,
+  `result_artifact`, `write_artifact` with deterministic replay,
+  `load_and_verify_artifact`):
+  - primary-N: 352 `wall_hit` / 160 `domain_escape`; 202 events resolved as
+    `tolerance_close_fraction_zero` (132 wall radial, 37 domain radial, 16
+    z-min, 17 z-max), 310 interpolated; steps 112/395/1203 (min/median/max);
+    48-60 s for 512 orbits on CPU (90-110 ms/orbit, ~4-5k steps/s); 512/512 witness
+    accepted, 9/9 checkpoints accepted, sealed artifact replay+verify OK in
+    94 s; wall endpoint error 4.3e-19 m; runtime max |B| 0.2184 T within the
+    declared 0.2316 T; no `field_failure`, no zero-step witness.
+  - refined-N: 352/160; 201 tolerance-close; steps 110/389/1183; 49 s;
+    512/512, 9/9, artifact OK.
+  - enlarged-N: 352/160; 201 tolerance-close; steps 112/396/1204; 53 s;
+    512/512, 9/9, artifact OK. (A first run's last two checkpoints were
+    rejected only because the integrator source was edited mid-run and
+    `code_identity()` detected the drift; the numbers above are the rerun on
+    the final source.)
+  - primary-4N: 352/160; 204 tolerance-close; steps 445/1573/4801; 195 s
+    (376 ms/orbit); 512/512, 9/9.
+- Energy finding (not a validator failure, inherited from v1.4): completed
+  Boris steps conserve energy to 0.0e0, but the linearly interpolated event
+  velocity on the final fractional step shortens the chord, so
+  `maximum_relative_energy_error` reaches 6.1e-4 (primary-N), 2.3e-4
+  (refined-N), 1.7e-5 (primary-4N). 309/512 primary-N orbits exceed the v3
+  protocol gate of 1e-10; only fraction-0 and fraction-1 events pass it. A v4
+  protocol must either renormalize the interpolated speed (a replay-contract
+  change in integrator and validator) or gate on completed-step energy.
+- Warp backend timing on the real field (4 orbits): CPU 140 ms/orbit, CUDA
+  (RTX 5090) 1.6 s/orbit vs numpy 90 ms/orbit; velocity parity 1e-14. The
+  kernel is a per-push single-particle parity path, not a throughput backend.
+- Verification: `tests/orbit_mc` 107/107 and `tests/experiment_runtime`
+  132 passed / 1 skipped (Windows symlink privilege) in the new worktree.
