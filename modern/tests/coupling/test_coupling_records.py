@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 from dataclasses import replace
 from datetime import timedelta
+from functools import partial
 
 import pytest
 
@@ -21,13 +22,20 @@ from cft_revival.coupling.records import (
     global_solver_inputs,
 )
 from tests.coupling.evidence_helpers import (
+    NOW,
     AnalyticMap,
     accepted_evidence,
     claims_for,
     two_cusp_map,
 )
 
-build_coupling_record = build_screening_proxy
+# The fixtures claim ``generated_at_utc == NOW`` (a fixed instant), so every
+# freshness check in this module must be evaluated at that same instant rather
+# than at the wall clock; otherwise the default ``maximum_age_s`` (86400 s)
+# expires 24 h after the fixture time and the tests fail forever.  Binding the
+# sanctioned ``reference_time_utc`` injection point here keeps the call sites
+# unchanged; an explicit ``reference_time_utc=`` at a call site still wins.
+build_coupling_record = partial(build_screening_proxy, reference_time_utc=NOW)
 pytestmark = pytest.mark.filterwarnings(
     "ignore:.*deprecated screening_proxy.*:DeprecationWarning"
 )
