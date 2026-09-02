@@ -67,13 +67,39 @@
 - GPU throughput (RTX 5090, host direct solve): 6–8 ms/step at 31×241 nodes
   with 2e5–1e6 macro-particles.
 
-### Snapshot runs
+### Snapshot runs (commit `d58fdca1`)
 
 - Operating point: 300 V / 0 V, n_g 5e20 m⁻³, 0.1 A at 2 eV injected,
-  5e16 m⁻³ seed, Δt 2 ps. All cases were stopped fail-closed by the runtime
-  `ω_pe Δt` gate at ~55–60 ns as the peak electron density passed ~1.3e18 m⁻³
-  (the discharge current was still rising at ~60 mA; the exit ion beam had not
-  formed). Numbers per case are in `results/*/summary.json` and the dashboard.
+  5e16 m⁻³ seed, Δt 2 ps, RTX 5090 (`warp-cuda:0`, host direct field solve),
+  two or three cases sharing the GPU at a time (nvidia-smi 99 % utilisation
+  in every sample). All four cases were stopped fail-closed by the runtime
+  `ω_pe Δt ≤ 0.2` gate at 49–60 ns as the peak node electron density passed
+  ~1.4–1.6e18 m⁻³. No plateau was reached: the discharge current was still
+  rising and the exit ion beam had not formed. Window = last complete 10 %
+  segment (15 000 steps) or the half-full trailing partial.
+
+| case | grid | W | steps | t (ns) | wall (s) | steps/s | final e⁻/Xe⁺ macro | I_d (mA) | I_beam,i (mA) | peak n_e (m⁻³) | ⟨n_e⟩ | φ range (V) | ⟨T_e⟩_n (eV) |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| coarse-w1e5 | 30×240 | 1e5 | 27 800 | 55.6 | 283 | 98 | 0.70 M / 0.73 M | 67.2 | 0.20 | 1.55e18 | 2.52e17 | −29.5 … 314 | 17.9 |
+| coarse-w5e4 | 30×240 | 5e4 | 30 100 | 60.2 | 351 | 86 | 1.66 M / 1.72 M | 73.7 | 0.22 | 1.63e18 | 2.79e17 | −29.6 … 312 | 17.5 |
+| fine-w5e4 | 60×480 | 5e4 | 24 500 | 49.0 | 380 | 64 | 1.10 M / 1.15 M | 57.7 | 0.14 | 1.41e18 | 2.08e17 | −23.4 … 314 | 18.4 |
+| fine-w2.5e4 | 60×480 | 2.5e4 | 26 800 | 53.6 | 575 | 47 | 2.59 M / 2.70 M | 64.0 | 0.23 | 1.52e18 | 2.36e17 | −23.6 … 313 | 18.0 |
+
+- Between-case relative spread of window averages (manifest): φ_max 0.5 %,
+  ⟨T_e⟩ 5 %, peak n_e 8 %, ⟨n_e⟩ 29 %, exit ion current 36 %, discharge
+  current 58–74 mA. Wall fluxes: electrons 2.2–2.9e21 m⁻² s⁻¹ peak, ions
+  5.2–6.4e20 m⁻² s⁻¹ peak, concentrated near the cusp lines; ionisation rate
+  peaks ~1e26 m⁻³ s⁻¹.
+- Energy ledger: per 200-step interval the residual is ~5e-9 J against a
+  total (K+U) of 2.6–3.8e-7 J (≈ 1.5–2 %) and ~70 % of the interval field work;
+  it is dominated by the untracked electrode/injection electrostatic work.
+- Debye resolution at the observed peak density (T_e ≈ 18 eV → λ_D ≈ 26 µm)
+  is violated on both grids (100 µm, 50 µm cells); the gate that stopped the
+  runs is the ω_pe Δt gate, and the Debye ratio is reported, not enforced at
+  runtime.
+- Dashboard: `modern/visualization/pic2d-cft-snapshot.html` (2.0 MB, 8 tests).
+- P2-field orbit vs orbit_mc at Δx = 250/125/62 µm: 8.0e-3, 2.0e-3, 2.8e-4
+  gyroradii (600 steps, θ = 0.02).
 
 ### Deliberate exclusions
 
