@@ -7,6 +7,16 @@ checkpointed, resumable background job until the discharge plateaus.
 **Status: development/screening. Not preregistered, not validated against
 experiment, not a thruster performance prediction.**
 
+**Outcome (no-ignition reference):** at n_g = 1.5e19 m⁻³ the 3 mA beam mirrors back to
+the exit plane (≈ 2.9 of 3 mA returned) before it collides; the seed plasma decays and
+the discharge current settles at a trivial beam-driven floor. This run is kept as the
+static-neutral **no-ignition reference** for model v1.3 (`pic2d_cft_steady_state_v2`,
+quasi-steady neutral inventory). It was closed with the runner's `finalize` command
+(artifacts from the last checkpoint; the maps are instantaneous checkpoint maps).
+
+`run.py` here is the shared runner: `pic2d_cft_steady_state_v2/run.py` calls it with
+its own protocol. Commands: `run` (start/resume), `status`, `finalize`.
+
 ## Why the operating point moved (v1.1 → v1.2)
 
 The v2 fine cases (n_g = 1e20 m⁻³, 3 mA) never plateaued because the discharge was
@@ -46,6 +56,7 @@ Progress:
 Get-Content results\status.jsonl -Tail 1
 python -m experiments.pic2d_cft_steady_state_v1.run status   # last line + ETA to 3/5/10 transit times
 Get-Content results\run.pid                                    # PID of the running process
+python -m experiments.pic2d_cft_steady_state_v1.run finalize   # close a stopped run from its checkpoint (no stepping)
 ```
 
 ## Files under `results/`
@@ -57,7 +68,7 @@ Get-Content results\run.pid                                    # PID of the runn
 | `checkpoint/checkpoint-latest.*` | resumable state, rewritten atomically after every 40 000-step chunk |
 | `run_state.json` | cumulative wall time, sessions, last checkpoint step |
 | `run.pid`, `run.log`, `run.err` | process id and logs |
-| `summary.json`, `series.npz`, `maps.npz`, `checkpoint-final.*` | written on any stop |
+| `summary.json`, `series.npz`, `maps.npz`, `checkpoint-final.*` | written on any stop (or by `finalize`; then `maps_kind = instantaneous_checkpoint`) |
 
 ## Stopping rule
 

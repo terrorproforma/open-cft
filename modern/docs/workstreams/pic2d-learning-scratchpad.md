@@ -211,3 +211,42 @@ File policy: `COMMITTED` workstream evidence (`modern/docs/workstreams/pic2d-*`)
   with ~8000 samples in the trailing window the drift noise is ~0.6 %, so a
   false plateau from noise is unlikely, but a slow drift below 5 %/2.4 µs
   would be accepted as "plateau" — the summary reports the drifts.
+
+## 2026-09-03 phase 3b — neutral inventory, finalize
+
+### Learned
+
+- A "quasi-steady" 0-D neutral model with a fast artificial relaxation is NOT a
+  conservation law unless the artificial term is booked explicitly. Writing the ODE as
+  V dn/dt = Q − S − c n − (V/τ_g)(n − n*) and integrating the relaxation term into its
+  own ledger makes the atom balance close to round-off while keeping the fixed point
+  independent of τ_g. The test then checks closure AND that the artificial ledger
+  vanishes at the fixed point — that is what makes "only the fixed point is
+  physical" a checkable statement instead of a disclaimer.
+- Solve the per-interval linear ODE exactly (expm1 for 1 − e^{−rΔt}); an explicit
+  Euler step with τ_g = 100 intervals would have been fine numerically, but the exact
+  solution makes the ledgers exact integrals and the test tolerance 1e-9 instead of
+  "small".
+- Null-collision MCC with a time-varying density: keep ν_max at the ceiling and scale
+  the real frequencies — the candidate fraction stays constant, only the null share
+  changes. Cheap, exact, and the fail-closed bound is a one-line check (scale ≤ 1).
+  The Warp kernel already took the density as a per-launch scalar, so nothing in the
+  kernel changed.
+- Adding an optional key to `PIC2DConfig.to_dict()` changes every config identity and
+  would have invalidated the checkpoint of the run in flight. Emit the key only when
+  the feature is on.
+- The device-side window accumulators die with the process; a `finalize` command can
+  only produce instantaneous checkpoint maps. Label them (`maps_kind`) rather than
+  pretending they are window averages.
+- The v2-derived linear coefficients (beam ionisation ∝ n_g) overpredict at low n_g:
+  the beam mirrors back before colliding, so the ionisation per injected electron
+  collapses faster than linearly. Treat linear projections as bounds and bracket.
+
+### Guardrails
+
+- Never terminate a GPU run between a sync and its checkpoint without checking
+  `run_state.json.checkpoint_step` — the runner's resume drops stray series records
+  past the checkpoint, so the state is consistent, but the finalize step then
+  reflects the checkpoint step, not the last status line.
+- Keep `series_interval_steps == device_sync_steps` when the inventory is on (the
+  update uses the interval ionisation count); validated in `build_config`.

@@ -87,6 +87,19 @@ def test_trailing_drift_undefined_on_short_records():
     assert _series(t, np.ones(5))["reached"] is False
 
 
+def test_plateau_tracks_neutral_density_when_present():
+    t = np.linspace(0.0, 10.0, 5000)
+    flat = np.ones_like(t)
+    ramp = 1.0 + 0.5 * t
+    without = runner.evaluate_plateau(t, flat, flat, RULE, TRANSIT)
+    assert without["reached"] and without["tracked"] == ["discharge_current_drift", "electron_count_drift"]
+    with_ramp = runner.evaluate_plateau(t, flat, flat, RULE, TRANSIT, neutral_density=ramp)
+    assert not with_ramp["reached"] and with_ramp["neutral_density_drift"] > 0.05
+    assert with_ramp["tracked"] == ["discharge_current_drift", "electron_count_drift", "neutral_density_drift"]
+    with_flat = runner.evaluate_plateau(t, flat, flat, RULE, TRANSIT, neutral_density=3.4e19 * flat)
+    assert with_flat["reached"] and abs(with_flat["neutral_density_drift"]) < 1e-9
+
+
 # -- cadence and resume ------------------------------------------------------
 
 def _tiny_protocol(tmp_path: Path) -> dict:
@@ -202,3 +215,73 @@ def test_load_state_rebases_interval_bookkeeping():
     assert resumed.series[-1].currents_a == reference.series[-1].currents_a
     assert resumed.series[-1].ledger["cumulative"] == reference.series[-1].ledger["cumulative"]
     assert resumed.series[-1].ledger["interval_electrode_work_j"] == 0.0  # no previous sample in this session
+
+
+def test_finalize_writes_artifacts_from_checkpoint_without_stepping(tiny, tmp_path: Path):
+    protocol, config, field, xs = tiny
+    results = tmp_path / "killed"
+    runner.run_steady_state(protocol, results, backend="cpu", field_map=field, cross_sections=xs, max_steps=80, log=lambda _: None)
+    # pretend the process died after the step-80 checkpoint: remove the stop artifacts and add a stray record
+    for name in ("summary.json", "summary.json.sha256.json", "maps.npz", "series.npz"):
+        (results / name).unlink()
+    stray = json.loads((results / "series.jsonl").read_text(encoding="utf-8").splitlines()[-1])
+    stray["step"] = 100
+    with (results / "series.jsonl").open("a", encoding="utf-8", newline="\n") as handle:
+        handle.write(json.dumps(stray) + "\n")
+    checkpoint_before = (results / "checkpoint" / "checkpoint-latest.npz").read_bytes()
+    summary_path = runner.finalize(protocol, results, backend="cpu", field_map=field, cross_sections=xs,
+                                   stop_reason="finalized_no_ignition_reference", log=lambda _: None)
+    summary = artifacts.read_canonical_json(summary_path)
+    assert summary["steps_completed"] == 80 and summary["stop_reason"] == "finalized_no_ignition_reference"
+    assert summary["maps_kind"] == "instantaneous_checkpoint" and summary["averaging_window_steps"] == 1
+    assert summary["final_counts"]["electrons"] == artifacts.read_canonical_json(results / "checkpoint" / "checkpoint-latest.json")["electron_count"]
+    assert summary["window_maps_summary"]["n_e_peak_per_m3"] > 0.0
+    assert summary["sessions"][-1]["finalize_only"] is True
+    series = np.load(results / "series.npz")
+    assert series["step"].tolist() == list(range(20, 81, 20))          # stray record dropped
+    assert (results / "checkpoint" / "checkpoint-latest.npz").read_bytes() == checkpoint_before   # nothing stepped
+    final = np.load(results / "checkpoint-final.npz")
+    latest = np.load(results / "checkpoint" / "checkpoint-latest.npz")
+    for key in latest.files:
+        assert np.array_equal(final[key], latest[key]), key
+    state = json.loads((results / "run_state.json").read_text(encoding="utf-8"))
+    assert state["finished"] and state["finalized_from_step"] == 80
+    status_lines = [json.loads(l) for l in (results / "status.jsonl").read_text(encoding="utf-8").splitlines()]
+    assert status_lines[-1]["event"] == "stop" and status_lines[-1]["stop_reason"] == "finalized_no_ignition_reference"
+
+
+def test_v13_run_records_neutral_inventory_in_status_series_and_summary(tiny, tmp_path: Path):
+    protocol, _, field, xs = tiny
+    protocol = copy.deepcopy(protocol)
+    from cft_revival.pic2d.neutrals import feed_for_density
+
+    n_g0 = protocol["operating_point"]["neutral_density_per_m3"]
+    feed = feed_for_density(n_g0 / 2.0, np.pi * protocol["geometry"]["exit_radius_m"] ** 2, protocol["operating_point"]["neutral_temperature_k"])
+    protocol["operating_point"]["neutral_inventory"] = {"feed_atoms_per_s": feed, "relaxation_time_s": 1.0e-9}
+    config = runner.build_config(protocol, backend="cpu")
+    assert config.neutral_inventory is not None and config.neutral_inventory.feed_atoms_per_s == feed
+    results = tmp_path / "v13"
+    runner.run_steady_state(protocol, results, backend="cpu", field_map=field, cross_sections=xs, max_steps=120, log=lambda _: None)
+    samples = [json.loads(l) for l in (results / "status.jsonl").read_text(encoding="utf-8").splitlines()]
+    samples = [s for s in samples if "event" not in s]
+    assert all("n_g_per_m3" in s and "n_g_fixed_point_per_m3" in s and "effusion_rate_per_s" in s for s in samples)
+    n_g = [s["n_g_per_m3"] for s in samples]
+    assert n_g[0] < n_g0 and all(a > b for a, b in zip(n_g, n_g[1:]))       # relaxing toward n_g0/2 - S/c
+    assert "neutral_density_drift" in samples[-1]["plateau"]
+    series = np.load(results / "series.npz")
+    for key in ("neutral_density_per_m3", "neutral_fixed_point_per_m3", "neutral_ledger_fed", "neutral_ledger_artificial"):
+        assert key in series.files and series[key].size == 6
+    summary = artifacts.read_canonical_json(results / "summary.json")
+    neutral = summary["neutral_inventory"]
+    assert neutral["transient_is_artificial"] is True
+    assert abs(neutral["cumulative_ledger_closure_relative_to_inventory"]) < 1e-12
+    assert neutral["final_density_per_m3"] == n_g[-1]
+    assert summary["plateau"]["tracked"] == ["discharge_current_drift", "electron_count_drift", "neutral_density_drift"]
+    assert summary["provenance"]["config"]["neutral_inventory"]["feed_atoms_per_s"] == feed
+    # the checkpoint carries n_g: a resume continues from the same density
+    checkpoint = artifacts.read_canonical_json(results / "checkpoint" / "checkpoint-latest.json")
+    assert checkpoint["neutral_keys"][0] == "density_per_m3"
+    with pytest.raises(runner.PIC2DValidationError):
+        bad = copy.deepcopy(protocol)
+        bad["numerics"]["series_interval_steps"] = 40
+        runner.build_config(bad, backend="cpu")

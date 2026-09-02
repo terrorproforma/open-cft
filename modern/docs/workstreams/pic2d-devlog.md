@@ -317,3 +317,95 @@
   v2 protocol still references a non-existent
   `operating-point-v1.1.json` (its actual spec is `pic2d-model-v1.1.json`) and
   is left untouched because its hash is bound into the v2 summaries.
+
+## 2026-09-03 — phase 3b: model v1.3 (quasi-steady neutral inventory), finalize command
+
+### Why
+
+The v1.2 reference run (n_g = 1.5e19 static) did not ignite: 2.9 of 3 mA of injected
+electrons mirror back to the exit plane before colliding, the seed decays and I_d
+settles at a beam-driven floor (~0.02–0.08 mA). The v2 cases at 1e20 avalanched
+(ν_iz τ = 2.9). A static neutral background therefore either runs away or never
+lights; the physical saturation channel — neutral depletion — has to be in the model
+before a plateau is meaningful.
+
+### Model v1.3 — `cft_revival.pic2d.neutrals`
+
+- State: one scalar n_g(t), uniform in space, plus four cumulative atom ledgers
+  (fed, ionized, effused, artificial).
+- Balance: V dn_g/dt = Q_in − S(t) − c n_g − (V/τ_g)(n_g − n_g*), n_g* = (Q_in − S)/c.
+  S is the MCC ionisation tally over the series interval × W / interval (measured,
+  not modelled). c = v̄ A_exit/4 with v̄ = √(8kT/πm) = 220.0 m/s at the documented
+  300 K (the same temperature that sets the born-ion Maxwellian) and
+  A_exit = π(3 mm)² → c = 1.5547e-3 m³/s. Physical time constant V/c = 221 µs.
+- The relaxation toward n_g* with τ_g = 30 ns is **artificial** (≪ the 2.4 µs ion
+  transit so n_g is quasi-steady on plasma time scales; ≪ 221 µs; 100 series
+  intervals so the shot noise of S is averaged). Only the fixed point is physical.
+  The artificial term is integrated into its own ledger, so
+  fed − ionized − effused − artificial = V Δn_g holds to round-off (test: 1e-9 of
+  the inventory per update; the GPU smoke run closed to 7e-17 relative).
+- Integration: the linear ODE is solved exactly per interval (S held at its interval
+  mean): n₁ = n_∞ + (n₀ − n_∞) e^{−r Δt}, r = c/V + 1/τ_g; the ledgers are the exact
+  interval integrals.
+- MCC coupling: real collision frequencies use n_g, the null ceiling stays at
+  n_g0 = the configured density (the candidate fraction is unchanged; the
+  per-candidate real probability scales with n_g/n_g0). `set_neutral_scale` on both
+  backends; the Warp kernel already took the density as a per-launch scalar, so the
+  GPU path is one multiplication. Scale > 1, feed above the ceiling (Q_in/c > n_g0)
+  and exhaustion (n_g < 0) fail closed.
+- State plumbing: `SimulationState.neutral`, checkpoint array `neutral`
+  (hash-bound; `neutral_keys` in the metadata), `SeriesRecord.neutral`,
+  `Simulation.load_state` restores n_g and re-applies the scale; a static checkpoint
+  cannot load into an inventory config and vice versa. The config identity carries
+  the inventory block only when it is on, so v1.0–v1.2 identities (and the running
+  reference run's checkpoint) are unchanged.
+- `instantaneous_maps(config, masks, state)`: single-sample n_e/n_i/φ/T_e maps
+  deposited from a state (used by `finalize`).
+
+### Runner changes (shared `pic2d_cft_steady_state_v1/run.py`)
+
+- Generic protocol handling (`protocol_budget`, optional
+  `operating_point.neutral_inventory`, `protocol_path`), so
+  `pic2d_cft_steady_state_v2/run.py` is a thin wrapper.
+- Status lines gain n_g, its fixed point, S and the effusion rate; `series.npz`
+  gains `neutral_*` arrays; the summary gains a `neutral_inventory` block (final
+  density, fixed point, trailing means, ledgers, closure, utilisation).
+- Plateau: with the inventory on, n_g drift < 5 % over the trailing 20 % is a third
+  tracked quantity (`tracked` lists what was checked).
+- `finalize`: summary/maps/series from `checkpoint-latest` and the series history
+  without stepping (code-identity check relaxed — nothing is computed;
+  `maps_kind = instantaneous_checkpoint`, flux maps zero, stray records dropped,
+  `run_state.finalized_from_step`, stop event appended).
+
+### Sizing v1.3 (`pic2d-model-v1.3.json`, v2 protocol)
+
+- n_g0 = 5e19 (top of the 4.5–5e19 range: more margin for ignition) →
+  Q_in = 7.77e16 atoms/s = **0.0170 mg/s** (tiny because the exit is a 3 mm hole at
+  300 K with no plume region).
+- Expected fixed point: the user's ν_iz τ = 1 point n_g ≈ 3.4e19 gives
+  S = 2.5e16/s (32 % utilisation) and n_eq ≈ 1.1–1.7e17; the linear v2 coefficients
+  (a = 6.03e16·x, ν_iz = 6.12e5·x, τ = 2.4 µs, x = n_g/1e20) give the other end,
+  n_g* = 2.3e19, n_e = 2.9e17 (0.73 n_max). Since the reference run showed the
+  beam-ionisation coefficient collapsing at low n_g, the linear projection is an
+  upper bound on n_e: bracket n_g* ∈ [2.3, 3.4]e19, n_e ∈ [1.1, 2.9]e17.
+- W = 6e4 → 1.26 M / 1.72 M / 3.2 M macro-particles at 1.1 / 1.5 / 2.9e17.
+- 300 V, 3 mA @ 2 eV kept: the run starts at 5e19 where ν_iz τ = 1.45 > 1, so
+  ignition is expected without a hotter seed.
+- GPU smoke (2000 steps, sharing the card with the reference run): 1.6 ms/step at
+  0.1 M particles, ω_pe Δt 0.065, n_g 5.00e19 → 4.98e19 with S = 4e15/s, ledger
+  closure 7e-17.
+
+### Tests
+
+- `test_pic2d_neutral_inventory.py` (9): numbers (v̄, c, feed, mg/s); ledger closure
+  per update and cumulative with a varying prescribed S; analytic fixed point,
+  approach rate 1/τ_g + c/V, artificial term → 0 at the fixed point; fail-closed
+  paths; MCC candidate count unchanged and all three real channels halve at scale
+  0.5 within 5σ; Simulation records the inventory and its ledger equals the tally × W;
+  checkpoint carries n_g, resume bitwise, tamper breaks the hash; static ↔ inventory
+  mismatch rejected; GPU backend receives the scale.
+- `test_pic2d_steady_state_runner.py` (+3 → 11): plateau tracks n_g; finalize from a
+  "killed" run (checkpoint bytes unchanged, stray record dropped, final == latest);
+  v1.3 protocol run (status/series/summary neutral fields, closure < 1e-12, n_g in
+  the checkpoint, series ≠ sync interval rejected).
+- Full run: `tests/pic2d tests/pic tests/orbit_mc tests/visualization` → 388 passed.
