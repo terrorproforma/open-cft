@@ -83,6 +83,58 @@ query is made beyond that boundary. An interior corrected segment with no
 representable progress fails immediately before another field query rather
 than spinning to the step limit.
 
+### Event velocity (v1.6)
+
+Event *detection* is geometric and operates on the chord of the corrected
+step: the candidate fraction \(f\in[0,1]\) is solved on the segment
+\(x_0\to x_1\) and the event position is the chord point
+\(x_e = x_0 + f\,(x_1-x_0)\) (snapped onto the boundary for tolerance-close
+events). This is unchanged from v1.5.
+
+The event *velocity* is no longer the chord \(v_0 + f\,(v_1-v_0)\). In a pure
+magnetic field the Boris update is an exact rotation of the relativistic
+momentum, so the chord of that rotation is shorter than the arc by
+\(\approx(f\theta)^2/12\) in \(|v|\) (\(\theta\) = rotation over the step);
+on the real campaign field this reported up to \(6.1\times10^{-4}\) relative
+energy loss on a step-conserving integrator. v1.6 defines
+
+\[
+v_e =
+\begin{cases}
+v_0, & f = 0 \ (\text{tolerance-close snap}),\\
+v_1, & f = 1 \ (\text{completed step}),\\
+\mathrm{Boris}\big(v_0;\,E_{\mathrm{mid}},B_{\mathrm{mid}};\,f\,\Delta t\big), & 0<f<1,
+\end{cases}
+\]
+
+where \(E_{\mathrm{mid}},B_{\mathrm{mid}}\) are exactly the midpoint fields
+the full step was pushed with (for the zero-fraction path these are the start
+fields, because the attempted step was predicted with them). The two endpoint
+cases are special-cased bit-for-bit rather than relying on
+\(\mathrm{Boris}(v_0;\,\cdot;\,0)=v_0\) (false to roundoff through the
+\(u/\gamma\) round trip) or \(1.0\,\Delta t=\Delta t\) (true, but a property of
+the pusher rather than the contract). \(v_e\) is the result's
+`final_velocity_m_per_s` and feeds the energy bookkeeping, the μ diagnostic
+and the gyro-phase accumulator of the final partial step. Consequently the
+pure-B `maximum_relative_energy_error` is a genuine integrator diagnostic
+(≤ 1e-12 by test; 0.0 on the campaign field), and with \(E\neq0\) the final
+partial step changes energy by exactly the Boris amount. A side effect: for
+completed steps the carried velocity is now \(v_1\) itself rather than
+\(v_0 + 1.0\,(v_1-v_0)\), which differed from \(v_1\) by one ulp whenever a
+component changed sign or by more than 2× within a step.
+
+The witness records \(v_e\) (`event_velocity_m_per_s`), \(B_{\mathrm{mid}}\)
+(`step_magnetic_midpoint_t`) and \(E_{\mathrm{mid}}\)
+(`step_electric_midpoint_v_per_m`). Validation replays
+\(\mathrm{Boris}(v_0;E_{\mathrm{mid}},B_{\mathrm{mid}};\Delta t)\) against
+\(v_1\) and the case split above against \(v_e\) and the final velocity, with
+absolute tolerance \(64\,\varepsilon\,|v|\) (≈1.4e-14 relative): the numpy
+reference replays bit-for-bit, a conforming float64 alternate pusher (Warp,
+observed ≤ 1e-14) passes, and any chord velocity with \(f\theta\gtrsim
+3.5\times10^{-5}\) rad is rejected. The midpoint field must be finite and
+\(|B_{\mathrm{mid}}|\le\) the result's recorded maximum |B|, which the
+integrator itself bounds by the certified map maximum.
+
 Each v1.2 result retains the complete final-step witness. Impact/escape records
 contain the segment and frozen wall/domain geometry; reflection records contain
 the signed-\(v_\parallel\) bracket and root; deadline/path/step records contain

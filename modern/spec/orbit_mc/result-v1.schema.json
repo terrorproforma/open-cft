@@ -6,7 +6,7 @@
   "additionalProperties": false,
   "required": ["schema_version", "classification", "campaign_id", "identities", "estimator", "verification", "launches", "batch_manifest", "results", "summary", "interpolation_evidence", "convergence_evidence", "preregistration", "limitations", "integrity"],
   "properties": {
-    "schema_version": {"const": "cft-revival-orbit-mc-result/1.5.0"},
+    "schema_version": {"const": "cft-revival-orbit-mc-result/1.6.0"},
     "classification": {"const": "test_particle_wall_loss_not_self_consistent_plasma"},
     "campaign_id": {"$ref": "#/$defs/nonempty"},
     "identities": {
@@ -129,7 +129,7 @@
     },
     "eventWitness": {
       "type": "object", "additionalProperties": false,
-      "required": ["kind", "config", "step_start_position_m", "step_end_position_m", "event_position_m", "step_start_velocity_m_per_s", "step_end_velocity_m_per_s", "event_fraction", "event_resolution", "candidate_fractions", "reflection_bracket", "start_elapsed_time_s", "start_path_length_m", "step_dt_s", "step_segment_length_m", "step_index", "condition", "observed_gamma", "observed_speed2_over_c2", "field_identity_sha256", "config_identity_sha256", "policy_identity_sha256"],
+      "required": ["kind", "config", "step_start_position_m", "step_end_position_m", "event_position_m", "step_start_velocity_m_per_s", "step_end_velocity_m_per_s", "event_velocity_m_per_s", "step_magnetic_midpoint_t", "step_electric_midpoint_v_per_m", "event_fraction", "event_resolution", "candidate_fractions", "reflection_bracket", "start_elapsed_time_s", "start_path_length_m", "step_dt_s", "step_segment_length_m", "step_index", "condition", "observed_gamma", "observed_speed2_over_c2", "field_identity_sha256", "config_identity_sha256", "policy_identity_sha256"],
       "properties": {
         "kind": {"enum": ["wall_hit", "reflected", "domain_escape", "path_timeout", "time_timeout", "step_limit", "nonfinite_state", "extreme_relativity", "field_failure", "initial_state_invalid"]},
         "config": {"$ref": "#/$defs/witnessConfig"},
@@ -138,6 +138,9 @@
         "event_position_m": {"$ref": "#/$defs/vec3"},
         "step_start_velocity_m_per_s": {"$ref": "#/$defs/vec3"},
         "step_end_velocity_m_per_s": {"$ref": "#/$defs/vec3"},
+        "event_velocity_m_per_s": {"$ref": "#/$defs/vec3"},
+        "step_magnetic_midpoint_t": {"$ref": "#/$defs/vec3"},
+        "step_electric_midpoint_v_per_m": {"$ref": "#/$defs/vec3"},
         "event_fraction": {"type": "number", "minimum": 0, "maximum": 1},
         "event_resolution": {"enum": ["failure", "interpolated", "tolerance_close_fraction_zero", "completed_step"]},
         "candidate_fractions": {"$ref": "#/$defs/candidateFractions"},

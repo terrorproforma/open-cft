@@ -1,5 +1,7 @@
 """Verified full-orbit test-particle Monte Carlo for CFT wall-loss evidence."""
 
+__version__ = "1.6.0"
+
 from .artifacts import (
     CHECKPOINT_VERSION,
     CLASSIFICATION,
@@ -75,6 +77,7 @@ from .verification import (
 from .warp_backend import WarpStatus, integrate_orbit_warp, warp_boris_push_batch, warp_status
 
 __all__ = [
+    "__version__",
     "CHECKPOINT_VERSION", "CLASSIFICATION", "HANDOFF_VERSION", "SCHEMA_VERSION",
     "ELECTRON_CHARGE_C", "ELECTRON_MASS_KG", "LIGHT_SPEED_M_PER_S", "EV_J",
     "ElectronLaunch", "EstimatorPolicy", "GyroAverage", "OrbitConfig", "OrbitMCError",

@@ -1,5 +1,5 @@
 {
-  "schema_version": "cft-revival-orbit-mc-validation-protocol/1.5.0",
+  "schema_version": "cft-revival-orbit-mc-validation-protocol/1.6.0",
   "protocol_id": "cft-wall-loss-full-orbit-preregistered-v1",
   "authority": {
     "primary": "direct_first-event_full-orbit_ensemble",
@@ -50,7 +50,11 @@
     "require_tolerance_close_fraction_zero_event_witness": true,
     "require_positive_attempted_step_dt_for_physical_events": true,
     "require_zero_progress_detection_before_next_field_query": true,
-    "require_campaign_launch_preflight": true
+    "require_campaign_launch_preflight": true,
+    "event_velocity_definition": "boris_push_of_event_fraction_times_step_dt_with_step_midpoint_fields",
+    "require_witness_midpoint_fields": true,
+    "require_boris_replayed_event_velocity": true,
+    "maximum_event_velocity_replay_relative_difference": 1.4210854715202004e-14
   },
   "adiabatic_comparator_gates": {
     "maximum_rho_over_field_scale": 0.05,

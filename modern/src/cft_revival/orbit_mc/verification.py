@@ -165,11 +165,27 @@ def analytic_magnetic_bottle(
     result = integrate_orbit(launch, field, config)
     observed = result.final_position_m[2]
     final_magnetic = magnetic(np.asarray(result.final_position_m))
+    final_velocity = np.asarray(result.final_velocity_m_per_s)
     final_parallel = float(
-        np.dot(
-            np.asarray(result.final_velocity_m_per_s),
-            final_magnetic / np.linalg.norm(final_magnetic),
-        )
+        np.dot(final_velocity, final_magnetic / np.linalg.norm(final_magnetic))
+    )
+    # v1.6: the reflection ROOT is still located on the chord velocity (event
+    # detection is unchanged) and is reported from the witness bracket; the
+    # returned event velocity is the Boris state at that fraction, so its
+    # parallel component differs from the chord root by at most the chord/arc
+    # sagitta |v| theta^2/8, theta being the rotation over the last step.
+    witness = result.event_witness
+    bracket = witness["reflection_bracket"]
+    chord_root_parallel = (
+        float(bracket["root_parallel_m_per_s"]) if bracket is not None else float("nan")
+    )
+    speed = float(np.linalg.norm(final_velocity))
+    gamma = 1.0/sqrt(1.0 - speed**2/LIGHT_SPEED_M_PER_S**2)
+    last_step_rotation = (
+        abs(ELECTRON_CHARGE_C)
+        * float(np.linalg.norm(witness["step_magnetic_midpoint_t"]))
+        * float(witness["step_dt_s"])
+        / (gamma*ELECTRON_MASS_KG)
     )
     return {
         "termination": result.termination.value,
@@ -179,6 +195,9 @@ def analytic_magnetic_bottle(
         "relative_error": abs(observed-expected_z)/expected_z,
         "mu_relative_variation": result.maximum_instantaneous_mu_relative_variation or 0.0,
         "final_parallel_velocity_m_per_s": final_parallel,
+        "chord_root_parallel_velocity_m_per_s": chord_root_parallel,
+        "event_velocity_parallel_bound_m_per_s": speed*last_step_rotation**2/8.0,
+        "relative_energy_error": result.maximum_relative_energy_error,
     }
 
 

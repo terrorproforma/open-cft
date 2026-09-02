@@ -60,6 +60,15 @@ def test_validation_protocol_preregisters_authority_and_convergence() -> None:
         "require_zero_progress_detection_before_next_field_query"
     ]
     assert protocol["numerical_gates"]["require_campaign_launch_preflight"]
+    assert protocol["schema_version"].endswith("/1.6.0")
+    assert protocol["numerical_gates"]["require_witness_midpoint_fields"]
+    assert protocol["numerical_gates"]["require_boris_replayed_event_velocity"]
+    assert protocol["numerical_gates"]["event_velocity_definition"] == (
+        "boris_push_of_event_fraction_times_step_dt_with_step_midpoint_fields"
+    )
+    assert protocol["numerical_gates"][
+        "maximum_event_velocity_replay_relative_difference"
+    ] <= 1.0e-13
     assert protocol["integration"]["status"] == (
         "export_only_pending_consumer_integration"
     )
@@ -76,12 +85,25 @@ def test_result_and_checkpoint_schemas_expose_runtime_authority_fields() -> None
     } <= result_required
     assert "event_witness" in result_required
     assert result_schema["properties"]["schema_version"]["const"].endswith(
-        "/1.5.0"
+        "/1.6.0"
     )
     witness_required = set(
         result_schema["$defs"]["eventWitness"]["required"]
     )
     assert {"event_position_m", "event_resolution"} <= witness_required
+    # v1.6 replayable event-velocity contract.
+    assert {
+        "event_velocity_m_per_s",
+        "step_magnetic_midpoint_t",
+        "step_electric_midpoint_v_per_m",
+    } <= witness_required
+    witness_properties = result_schema["$defs"]["eventWitness"]["properties"]
+    for name in (
+        "event_velocity_m_per_s",
+        "step_magnetic_midpoint_t",
+        "step_electric_midpoint_v_per_m",
+    ):
+        assert witness_properties[name] == {"$ref": "#/$defs/vec3"}
     assert result_schema["$defs"]["result"]["properties"]["transit_fraction"][
         "maximum"
     ] == 1

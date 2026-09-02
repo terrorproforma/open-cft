@@ -28,8 +28,8 @@ from .models import (
     Termination,
 )
 
-SCHEMA_VERSION = "cft-revival-orbit-mc-result/1.5.0"
-CHECKPOINT_VERSION = "cft-revival-orbit-mc-checkpoint/1.5.0"
+SCHEMA_VERSION = "cft-revival-orbit-mc-result/1.6.0"
+CHECKPOINT_VERSION = "cft-revival-orbit-mc-checkpoint/1.6.0"
 HANDOFF_VERSION = "cft-revival-orbit-mc-coupling-v4.2/1.3.0"
 CLASSIFICATION = "test_particle_wall_loss_not_self_consistent_plasma"
 REPLAY_REQUIREMENT = "deterministic_full_result_replay_required"
@@ -419,6 +419,8 @@ def _validate_event_witness(
         "kind", "config", "step_start_position_m", "step_end_position_m",
         "event_position_m",
         "step_start_velocity_m_per_s", "step_end_velocity_m_per_s",
+        "event_velocity_m_per_s", "step_magnetic_midpoint_t",
+        "step_electric_midpoint_v_per_m",
         "event_fraction", "event_resolution", "candidate_fractions",
         "reflection_bracket",
         "start_elapsed_time_s", "start_path_length_m", "step_dt_s",
@@ -465,6 +467,8 @@ def _validate_event_witness(
     for name in (
         "step_start_position_m", "step_end_position_m", "event_position_m",
         "step_start_velocity_m_per_s", "step_end_velocity_m_per_s",
+        "event_velocity_m_per_s", "step_magnetic_midpoint_t",
+        "step_electric_midpoint_v_per_m",
     ):
         value = witness[name]
         if (
@@ -534,6 +538,17 @@ def _validate_event_witness(
             raise OrbitValidationError("failure witness resolution is inconsistent")
         if any(value is not None for value in parsed_candidates.values()):
             raise OrbitValidationError("failure witness cannot claim event candidates")
+        if any(
+            np.any(vectors[name] != 0.0)
+            for name in (
+                "event_velocity_m_per_s",
+                "step_magnetic_midpoint_t",
+                "step_electric_midpoint_v_per_m",
+            )
+        ):
+            raise OrbitValidationError(
+                "failure witness must carry zero event velocity and midpoint fields"
+            )
         if termination in {
             Termination.FIELD_FAILURE.value,
             Termination.NONFINITE_STATE.value,
@@ -785,10 +800,63 @@ def _validate_event_witness(
             raise OrbitValidationError(
                 "event witness position is inconsistent"
             )
-    expected_velocity = start_velocity + fraction*(end_velocity-start_velocity)
+    # v1.6 replay contract: the recorded midpoint fields must reproduce both the
+    # full-step velocity and the event velocity through the reference Boris
+    # push. The tolerance is ULP-scale relative to the speed (64 eps |v|,
+    # ~1.4e-14 relative): the numpy backend replays bit-for-bit, a conforming
+    # alternate float64 pusher (Warp parity observed <= 1e-14 relative) is
+    # admitted, and a chord-interpolated velocity (error ~(f*theta)^2/12, i.e.
+    # >= 1e-10 relative for any f*theta >= 3.5e-5 rad) is rejected. This is
+    # ~3500x tighter than the protocol's 1e-10 relative energy gate.
+    from .integrator import _event_velocity, relativistic_boris_push
+    magnetic_midpoint = vectors["step_magnetic_midpoint_t"]
+    electric_midpoint = vectors["step_electric_midpoint_v_per_m"]
+    event_velocity = vectors["event_velocity_m_per_s"]
+    maximum_b_t = _real("result maximum B", result["maximum_b_t"], minimum=0.0)
+    if float(np.linalg.norm(magnetic_midpoint)) > maximum_b_t * (
+        1.0 + 64.0 * np.finfo(float).eps
+    ):
+        raise OrbitValidationError(
+            "event witness midpoint field exceeds the result maximum B"
+        )
+    replayed_end_velocity = np.asarray(
+        relativistic_boris_push(
+            start_velocity, electric_midpoint, magnetic_midpoint, step_dt
+        ),
+        dtype=np.float64,
+    )
+    velocity_tolerance = (
+        64.0 * np.finfo(float).eps * float(np.linalg.norm(replayed_end_velocity))
+    )
+    if not np.allclose(
+        replayed_end_velocity, end_velocity, rtol=0.0, atol=velocity_tolerance
+    ):
+        raise OrbitValidationError(
+            "event witness step-end velocity does not replay from the midpoint fields"
+        )
+    expected_velocity = _event_velocity(
+        relativistic_boris_push,
+        start_velocity,
+        end_velocity,
+        electric_midpoint,
+        magnetic_midpoint,
+        step_dt,
+        fraction,
+    )
+    if not np.allclose(
+        expected_velocity, event_velocity, rtol=0.0, atol=velocity_tolerance
+    ):
+        raise OrbitValidationError(
+            "event witness event velocity does not replay from the midpoint fields"
+        )
+    if tuple(map(float, result["final_velocity_m_per_s"])) != tuple(
+        map(float, event_velocity)
+    ):
+        raise OrbitValidationError(
+            "result final velocity differs from the witnessed event velocity"
+        )
     if (
         not np.allclose(expected_position, result["final_position_m"], rtol=0.0, atol=tolerance)
-        or not np.allclose(expected_velocity, result["final_velocity_m_per_s"], rtol=0.0, atol=1.0e-9)
         or abs(start_time + fraction*step_dt - float(result["elapsed_time_s"]))
         > max(1.0e-18, 64.0*np.spacing(config.max_time_s))
         or abs(start_path + fraction*segment - float(result["path_length_m"]))

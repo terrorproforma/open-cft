@@ -303,6 +303,40 @@ def _witness_config(config: OrbitConfig) -> dict[str, object]:
     }
 
 
+def _event_velocity(
+    push: Callable[[np.ndarray, np.ndarray, np.ndarray, float], np.ndarray],
+    start_velocity: np.ndarray,
+    end_velocity: np.ndarray,
+    electric_midpoint: np.ndarray,
+    magnetic_midpoint: np.ndarray,
+    step_dt: float,
+    fraction: float,
+) -> np.ndarray:
+    """Velocity at fraction ``fraction`` of a step (v1.6 contract).
+
+    * ``fraction == 0`` returns the step-start velocity bit-for-bit (the
+      tolerance-close snap path; no time elapses).
+    * ``fraction == 1`` returns the full-step velocity bit-for-bit. The Boris
+      push is deterministic so ``push(v0, E, B, 1.0*dt)`` would reproduce it
+      anyway, but the special case removes any dependence on pusher internals.
+    * interior fractions run one extra push of duration ``fraction*step_dt``
+      from the start velocity with the same midpoint fields the full step used.
+
+    The validator (``artifacts._validate_event_witness``) replays exactly this
+    function with :func:`relativistic_boris_push`, so any change here is a
+    contract change.
+    """
+
+    if fraction <= 0.0:
+        return np.array(start_velocity, dtype=np.float64, copy=True)
+    if fraction >= 1.0:
+        return np.array(end_velocity, dtype=np.float64, copy=True)
+    return np.asarray(
+        push(start_velocity, electric_midpoint, magnetic_midpoint, fraction * step_dt),
+        dtype=np.float64,
+    )
+
+
 def _failure_witness(
     kind: Termination,
     config: OrbitConfig,
@@ -324,6 +358,9 @@ def _failure_witness(
         "event_position_m": point,
         "step_start_velocity_m_per_s": [0.0, 0.0, 0.0],
         "step_end_velocity_m_per_s": [0.0, 0.0, 0.0],
+        "event_velocity_m_per_s": [0.0, 0.0, 0.0],
+        "step_magnetic_midpoint_t": [0.0, 0.0, 0.0],
+        "step_electric_midpoint_v_per_m": [0.0, 0.0, 0.0],
         "event_fraction": 0.0,
         "event_resolution": "failure",
         "candidate_fractions": {
@@ -742,7 +779,10 @@ def integrate_orbit(
                 step_dt = dt
                 new_velocity = predicted_velocity
                 new_position = predicted_position
+                # The full-step prediction above was pushed with the start
+                # fields, so those are the "midpoint" fields this step used.
                 magnetic_midpoint = magnetic_start
+                electric_midpoint = electric_start
                 midpoint_b_t = actual_b_t
             else:
                 trial_fraction = (
@@ -961,7 +1001,22 @@ def integrate_orbit(
             previous = candidate_fractions[candidate_kind.value]
             if previous is None or candidate_fraction < previous:
                 candidate_fractions[candidate_kind.value] = candidate_fraction
-        event_velocity = velocity + event_fraction * (new_velocity - velocity)
+        # v1.6: the event velocity is the Boris state at the event time, i.e. a
+        # push of duration ``event_fraction * step_dt`` from the step-start
+        # velocity with the SAME midpoint fields the full step used. The former
+        # chord interpolation ``v0 + f*(v1 - v0)`` shortened |v| by ~(f*theta)^2/12
+        # per event, which is a spurious energy error in a pure-B field. The
+        # event POSITION stays on the chord because that is the geometric
+        # definition the crossing candidates were solved on.
+        event_velocity = _event_velocity(
+            push,
+            velocity,
+            new_velocity,
+            electric_midpoint,
+            magnetic_midpoint,
+            step_dt,
+            event_fraction,
+        )
         event_position = position + event_fraction * (new_position - position)
         event_time = event_fraction * step_dt
         event_path = event_fraction * segment
@@ -997,6 +1052,11 @@ def integrate_orbit(
             ),
             "step_start_velocity_m_per_s": tuple(map(float, velocity)),
             "step_end_velocity_m_per_s": tuple(map(float, new_velocity)),
+            "event_velocity_m_per_s": tuple(map(float, event_velocity)),
+            "step_magnetic_midpoint_t": tuple(map(float, magnetic_midpoint)),
+            "step_electric_midpoint_v_per_m": tuple(
+                map(float, electric_midpoint)
+            ),
             "event_fraction": event_fraction,
             "event_resolution": (
                 "tolerance_close_fraction_zero"

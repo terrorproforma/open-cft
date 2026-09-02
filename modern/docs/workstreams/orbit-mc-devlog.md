@@ -287,3 +287,89 @@ physical CFT campaign, or wall-loss probability was produced.
   kernel is a per-push single-particle parity path, not a throughput backend.
 - Verification: `tests/orbit_mc` 107/107 and `tests/experiment_runtime`
   132 passed / 1 skipped (Windows symlink privilege) in the new worktree.
+
+## 2026-09-03 — v1.6 energy-consistent event velocity, replayable midpoint fields
+
+- Branch `feat/orbit-mc-v1.6` from `origin/feat/sota-foundation` (`7cf65053`,
+  same worktree). Closes the v1.5 energy finding: the final event velocity
+  was the chord `v0 + f*(v1 - v0)` of an exact Boris rotation, so
+  `maximum_relative_energy_error` reported up to 6.1e-4 on a step-conserving
+  integrator and 309/512 primary-N orbits failed the v3 gate of 1e-10.
+- Integrator: new `_event_velocity(push, v0, v1, E_mid, B_mid, step_dt, f)`
+  returns `v0` for `f == 0`, `v1` (bit-for-bit) for `f == 1`, and otherwise
+  `push(v0, E_mid, B_mid, f*step_dt)` with the same midpoint fields the full
+  step used. Event position stays the chord point; candidate detection and
+  reflection bisection are untouched. The zero-fraction path now binds
+  `electric_midpoint = electric_start` (it previously only bound the magnetic
+  midpoint; the attempted step was pushed with the start fields). The new
+  velocity feeds `final_velocity`, `_mu`, the gyro accumulator and the
+  energy bookkeeping. Verified `push(v, E, B, 1.0*dt)` is bit-identical to
+  the full step (200/200) and that `push(v, E, B, 0.0)` is not bit-identical
+  to `v` (165/200), so both endpoint cases stay special-cased.
+- Witness contract: three required 3-vectors `event_velocity_m_per_s`,
+  `step_magnetic_midpoint_t`, `step_electric_midpoint_v_per_m` (zeros in
+  `_failure_witness`). `_validate_event_witness` replays
+  `relativistic_boris_push(v0, E_mid, B_mid, step_dt)` against
+  `step_end_velocity_m_per_s` and `_event_velocity(...)` against
+  `event_velocity_m_per_s`, both to `64·eps·|v|` (~1.4e-14 relative: exact for
+  the numpy backend, admits Warp parity ≤ 1e-14, rejects any chord with
+  `f·θ ≳ 3.5e-5` rad); requires `final_velocity_m_per_s ==
+  event_velocity_m_per_s` exactly, finite midpoint vectors,
+  `|B_mid| ≤ result.maximum_b_t·(1+64 eps)`, and exact zero vectors on
+  failure witnesses. Contracts bumped to `result/1.6.0`,
+  `checkpoint/1.6.0`, `validation-protocol/1.6.0` (new gates
+  `event_velocity_definition`, `require_witness_midpoint_fields`,
+  `require_boris_replayed_event_velocity`,
+  `maximum_event_velocity_replay_relative_difference`); handoff stays
+  `coupling-v4.2/1.3.0`; `orbit_mc.__version__ = "1.6.0"` added.
+- `verification.analytic_magnetic_bottle` now also reports the witnessed
+  chord root `chord_root_parallel_velocity_m_per_s`, the sagitta bound
+  `event_velocity_parallel_bound_m_per_s = |v| θ²/8`, and the energy error;
+  the reflection test asserts the chord root < 1e-9 m/s (detection unchanged),
+  the Boris event velocity within the bound (observed 0.048 m/s at 50 eV,
+  1.1e-8 relative) and energy ≤ 1e-12.
+- New `tests/orbit_mc/test_event_velocity_replay.py` (13 tests): 88 random
+  200 eV launches in a divergence-free pure-B mirror ending `wall_hit` /
+  `reflected` / `domain_escape` with ≥ 60 interior fractions, every orbit
+  `maximum_relative_energy_error ≤ 1e-12` (observed 0.0) and bit-exact
+  replay, while the pre-v1.6 chord would have failed the 1e-10 gate on ≥ half
+  of them; `f == 1` (STEP_LIMIT) and `f == 0` (tolerance-close) bit-exact
+  endpoint cases; seven tamper cases (event velocity ×(1+1e-12), chord
+  substitution, B_mid ×(1−1e-9), spurious E_mid, B_mid above the result
+  maximum, final velocity off by one ulp, non-finite midpoint) all rejected
+  with the intended message; missing-key closure; failure-witness zero
+  vectors; a 1e5 V/m E-field domain escape at an interior fraction whose last
+  partial-step energy change replays the push and matches `qE·Δx` to 10%.
+- Real-field shakedown (same frozen v3 P2→ψ adapter fields, byte-authoritative
+  512-launch manifests, full campaign path incl. per-batch checkpoints, sealed
+  artifact deterministic replay and verified reload), each diffed per launch
+  against the v1.5 final checkpoint of the previous session:
+  - primary-N: 352 `wall_hit` / 160 `domain_escape` (unchanged); 202
+    tolerance-close / 310 interpolated; steps 112/395/1203; energy error
+    6.130e-4 → 0.0; gate 1e-10 pass 203/512 → 512/512; μ variation
+    min/median/max 2.00e-2 / 1.19e-1 / 6.84e-1 (217/512 ≤ 0.1); event
+    velocity replay residual 0.0 m/s; 57.5 s / 512 orbits (105 ms/orbit),
+    artifact write+replay+verify 108 s; 512/512 witnesses, 9/9 checkpoints;
+    max |Δfinal_velocity| vs v1.5 1.05e3 m/s.
+  - refined-N: 352/160 (unchanged); 201/311; steps 110/389/1183; 2.285e-4 →
+    0.0; gate 204 → 512/512; μ 2.00e-2 / 1.09e-1 / 6.85e-1 (226 ≤ 0.1);
+    63.3 s; 512/512, 9/9, artifact OK 104 s; max |Δv| 3.66e2 m/s.
+  - enlarged-N: 352/160 (unchanged); 201/311; steps 112/396/1204; 2.086e-4 →
+    0.0; gate 205 → 512/512; μ 2.10e-2 / 1.17e-1 / 6.87e-1 (218 ≤ 0.1);
+    61.9 s; 512/512, 9/9, artifact OK 106 s; max |Δv| 3.34e2 m/s.
+  - primary-4N: 352/160 (unchanged); 204/308; steps 445/1573/4801;
+    1.655e-5 → 0.0; gate 211 → 512/512; μ 2.01e-2 / 1.18e-1 / 6.90e-1
+    (216 ≤ 0.1); 214 s (412 ms/orbit); 512/512, 9/9, artifact
+    write+replay+verify OK 454 s; max |Δv| 1.26e1 m/s (θ is 4× smaller, so
+    the chord error fell ~16×–80× as expected).
+- Per-launch diff versus v1.5: terminations and step counts identical for
+  every launch in every case, but 47–148 event fractions (≤ 1.5e-11),
+  126–328 event positions (≤ 3.1e-17 m) and 64–186 elapsed times
+  (≤ 3.1e-23 s) differ at roundoff. Cause: v1.5 carried
+  `velocity + 1.0*(new_velocity - velocity)` into the next step, which is one
+  ulp off `new_velocity` whenever a component crosses zero or changes by more
+  than 2× within a step (most gyration steps); v1.6 carries `new_velocity`
+  itself. Result hashes therefore change across the version even for orbits
+  with no interior-fraction event; nothing physical moved.
+- Verification: `tests/orbit_mc` 120/120 (107 existing + 13 new),
+  `tests/experiment_runtime` 132 passed / 1 skipped.

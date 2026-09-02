@@ -43,7 +43,15 @@ def test_analytic_magnetic_bottle_reflects_near_first_invariant_prediction() -> 
     assert report["termination"] == Termination.REFLECTED.value
     assert report["relative_error"] < 0.03
     assert report["mu_relative_variation"] < 0.02
-    assert abs(report["final_parallel_velocity_m_per_s"]) < 1.0e-9
+    # Reflection detection is unchanged: the chord root is converged to 1e-9 m/s.
+    assert abs(report["chord_root_parallel_velocity_m_per_s"]) < 1.0e-9
+    # v1.6: the event velocity is the Boris state at the root fraction; its
+    # parallel component is bounded by the chord/arc sagitta |v| theta^2 / 8
+    # and the pure-B event velocity conserves energy to roundoff.
+    assert abs(report["final_parallel_velocity_m_per_s"]) <= (
+        report["event_velocity_parallel_bound_m_per_s"]
+    )
+    assert report["relative_energy_error"] <= 1.0e-12
 
 
 def test_wall_event_is_first_intersection_and_exact_for_linear_segment() -> None:

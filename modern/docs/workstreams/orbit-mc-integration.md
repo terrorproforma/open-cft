@@ -131,5 +131,42 @@ start within tolerance, outward attempted motion, the correct snapped surface,
 and unchanged zero-fraction counters. Initial boundary/outside states remain
 `INITIAL_STATE_INVALID`.
 
+### v1.6 witness fields (2026-09-03)
+
+Contract versions: `cft-revival-orbit-mc-result/1.6.0`,
+`cft-revival-orbit-mc-checkpoint/1.6.0`,
+`cft-revival-orbit-mc-validation-protocol/1.6.0`;
+`cft-revival-orbit-mc-coupling-v4.2/1.3.0` is unchanged;
+`cft_revival.orbit_mc.__version__ == "1.6.0"`.
+
+The `eventWitness` object gains three required 3-vectors (the key set is
+closed, so a 1.5 witness is rejected as "event witness is not closed"):
+
+| key | meaning | failure witness |
+| --- | --- | --- |
+| `event_velocity_m_per_s` | Boris velocity at the event fraction; identical to `result.final_velocity_m_per_s` | `[0,0,0]` |
+| `step_magnetic_midpoint_t` | B used by the final step's push (start B on the zero-fraction path) | `[0,0,0]` |
+| `step_electric_midpoint_v_per_m` | E used by the final step's push | `[0,0,0]` |
+
+Validator additions in `_validate_event_witness` for physical events:
+`relativistic_boris_push(v_start, E_mid, B_mid, step_dt)` must reproduce
+`step_end_velocity_m_per_s`; `_event_velocity(...)` (f=0 → start, f=1 → end,
+else push of `f*step_dt`) must reproduce `event_velocity_m_per_s`; both to
+`64·eps·|v|` absolute; `final_velocity_m_per_s` must equal
+`event_velocity_m_per_s` exactly; midpoint vectors must be finite and
+`|B_mid| <= result.maximum_b_t·(1+64 eps)`. Failure witnesses must carry
+exact zero vectors in the three new keys. Protocol gates added:
+`event_velocity_definition`, `require_witness_midpoint_fields`,
+`require_boris_replayed_event_velocity`,
+`maximum_event_velocity_replay_relative_difference` (64 eps).
+
+Downstream consumers (v4 experiment) must: expect the 1.6.0 schema constants
+from `SCHEMA_VERSION`/`CHECKPOINT_VERSION`; not hand-build witnesses without
+the three keys; expect `maximum_relative_energy_error` to be a real
+integrator diagnostic (0.0 on the pure-B campaign field, so a 1e-10 gate is
+now satisfiable); and expect `final_velocity_m_per_s` to differ from a 1.5
+artifact by O(θ²|v|) (up to ~1e3 m/s on primary-N) while terminations, step
+counts, event fractions and event positions agree to roundoff.
+
 No self-consistent E, collision, space-charge, sheath, plasma-response or PIC
 claim may be inferred from a successful handoff.

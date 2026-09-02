@@ -134,10 +134,40 @@
   up to 6e-4 relative energy loss at a 0.16 rad rotation policy. A gate of
   1e-10 on `maximum_relative_energy_error` will reject every fractional event;
   decide whether to renormalize interpolated speed or gate on completed steps
-  before preregistering v4.
+  before preregistering v4. (Resolved in v1.6 by defining the event velocity
+  as the Boris push of `f*step_dt`; the 1e-10 gate now passes 512/512.)
 - [operations] A source edit while a campaign is running invalidates later
   checkpoints through `code_identity()`. Treat this as a feature and finish
   all code edits before starting a shakedown or campaign.
+- [numerics, v1.6] The chord velocity was the only thing between an exactly
+  conserving integrator and a 1e-10 energy gate. Replacing it with a Boris
+  push of `f*step_dt` using the step's own midpoint fields costs one extra
+  push per orbit and takes the campaign-field energy error from 6.1e-4 to
+  0.0 (512/512 pass the gate). Any interpolated kinematic quantity that is
+  later compared against a conserved invariant must be produced by the
+  conserving map itself, not by linear interpolation of its endpoints.
+- [numerics, v1.6] `relativistic_boris_push(v, E, B, 0.0)` is not bit-equal
+  to `v` (35/200 random cases differ through the `u/gamma` round trip), while
+  `push(v, E, B, 1.0*dt)` is bit-equal to the full step. Both endpoint
+  fractions are special-cased anyway so the contract never leans on pusher
+  arithmetic.
+- [numerics, v1.6] Carrying `v0 + 1.0*(v1 - v0)` instead of `v1` for every
+  completed step differed from `v1` by one ulp whenever a component crossed
+  zero or changed by more than 2x (Sterbenz), i.e. on most gyration steps.
+  v1.6 therefore shifts every real trajectory at the 1e-17 m level relative
+  to v1.5 with identical terminations and step counts. Expect bitwise result
+  hashes to change across this version even for orbits that never see an
+  interior-fraction event.
+- [testing, v1.6] The bottle-reflection test asserted `|v_par| < 1e-9` on the
+  final velocity; that only held because the final velocity was the chord the
+  bisection root was solved on. Detection is unchanged, so the assertion moved
+  to the witnessed chord root; the Boris event velocity is bounded by the
+  chord/arc sagitta `|v| theta^2 / 8`. Tests that encode "which vector the
+  root finder used" must read the witness, not the result.
+- [testing, v1.6] At 10 eV the relative-energy quantum is
+  `ulp(1 - beta^2)/beta^2 ~ 2.8e-12`, above a 1e-12 assertion; the pure-B
+  replay test therefore runs at 200 eV (quantum 1.4e-13). Choose test energies
+  so the invariant's float quantisation sits below the asserted bound.
 - [performance] The Warp backend launches one kernel per push for one
   particle; on CUDA it is ~18x slower than numpy for this workload. The CPU
   reference at ~90 ms/orbit (primary-N) and ~380 ms/orbit (4N) is the campaign
