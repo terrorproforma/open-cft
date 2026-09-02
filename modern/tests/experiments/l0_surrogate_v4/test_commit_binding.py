@@ -1,7 +1,13 @@
-"""Synthetic Git identity tests; no real L0 assessment labels are accessed."""
+"""Synthetic Git identity tests; no real L0 assessment labels are accessed.
+
+The preflight/execute tests are lifecycle-aware: once ``results/run-manifest.json``
+exists they assert that both entry points refuse to run again without touching
+the immutable bundle.
+"""
 
 from __future__ import annotations
 
+import hashlib
 import subprocess
 from pathlib import Path
 
@@ -111,8 +117,20 @@ def test_intervening_protocol_commit_is_rejected(tmp_path: Path) -> None:
         bind_execution_identity(repository)
 
 
+def _tree_digest(root: Path) -> dict[str, str]:
+    return {
+        path.relative_to(root).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
+        for path in sorted(root.rglob("*"))
+        if path.is_file()
+    }
+
+
+EXECUTED = (v4.RESULTS / "run-manifest.json").is_file()
+
+
 def test_preflight_does_not_load_real_rows(
     monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
 ) -> None:
     monkeypatch.setattr(
         science,
@@ -121,6 +139,28 @@ def test_preflight_does_not_load_real_rows(
             AssertionError("preflight accessed real L0 rows")
         ),
     )
+    if EXECUTED:
+        # After the single execution the real path is occupied: preflight must
+        # refuse before any synthetic work, and must not touch the bundle.
+        before = _tree_digest(v4.RESULTS)
+        with pytest.raises(ValueError, match="results path already exists"):
+            v4.preflight(record=False)
+        assert _tree_digest(v4.RESULTS) == before
+        # The blind-preflight property itself is still checked against an
+        # unoccupied scratch results path.
+        monkeypatch.setattr(v4, "RESULTS", tmp_path / "results")
     result = v4.preflight(record=False)
     assert result["passed"] is True
     assert result["real_assessment_labels_accessed"] is False
+
+
+def test_execute_refuses_to_run_again_once_results_exist() -> None:
+    if not EXECUTED:
+        pytest.skip("the single authorised v4 execution has not happened")
+    before = _tree_digest(v4.RESULTS)
+    # Either the Git identity binding refuses (the protocol paths have gained
+    # post-execution commits) or the single-shot guard does; both are
+    # RuntimeErrors raised before any byte is written.
+    with pytest.raises(RuntimeError):
+        v4.execute()
+    assert _tree_digest(v4.RESULTS) == before

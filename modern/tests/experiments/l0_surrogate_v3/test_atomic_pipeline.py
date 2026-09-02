@@ -1,7 +1,14 @@
-"""Pre-execution tests for v3 atomic serialization and protocol inheritance."""
+"""Lifecycle-aware tests for v3 atomic serialization and protocol inheritance.
+
+Before the single authorised execution these tests assert the pre-execution
+state (no ``results/``). Once ``results/run-manifest.json`` exists they assert
+instead that the recorded bundle is bound to the frozen preregistration and
+that ``preflight``/``execute`` refuse to run again without touching it.
+"""
 
 from __future__ import annotations
 
+import hashlib
 import json
 import copy
 from pathlib import Path
@@ -16,6 +23,21 @@ from experiments.l0_surrogate_v3.serialization import (
     ArtifactWriteError,
     AtomicArtifactStore,
 )
+
+RUN_MANIFEST = v3.RESULTS / "run-manifest.json"
+EXECUTED = RUN_MANIFEST.is_file()
+
+
+def _load(path: Path) -> dict:
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _tree_digest(root: Path) -> dict[str, str]:
+    return {
+        path.relative_to(root).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
+        for path in sorted(root.rglob("*"))
+        if path.is_file()
+    }
 
 
 def test_missing_and_deep_parents_are_created_atomically(tmp_path: Path) -> None:
@@ -90,11 +112,22 @@ def test_three_replicate_synthetic_pipeline_writes_complete_layout(
 
 def test_preflight_never_loads_real_v3_rows_or_assessment(
     monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
 ) -> None:
     def forbidden_real_rows(declaration: object) -> object:
         raise AssertionError("real L0 rows must not be loaded by preflight")
 
     monkeypatch.setattr(v2, "load_l0_rows", forbidden_real_rows)
+    if EXECUTED:
+        # After the single execution the real path is occupied: preflight must
+        # refuse before any synthetic work, and must not touch the bundle.
+        before = _tree_digest(v3.RESULTS)
+        with pytest.raises(ValueError, match="results path already exists"):
+            v3.preflight(record=False)
+        assert _tree_digest(v3.RESULTS) == before
+        # The blind-preflight property itself is still checked against an
+        # unoccupied scratch results path.
+        monkeypatch.setattr(v3, "RESULTS", tmp_path / "results")
     result = v3.preflight(record=False)
     assert result["passed"] is True
     assert result["real_v3_assessment_labels_accessed"] is False
@@ -199,13 +232,70 @@ def test_v3_partitions_are_input_only_and_hash_valid() -> None:
     assert "output" not in serialized_replicates
 
 
-def test_real_result_path_and_placeholder_are_empty_before_freeze() -> None:
+def test_real_result_path_placeholder_and_lifecycle() -> None:
     placeholder = json.loads(
         (v3.ROOT / "results-placeholder.json").read_text(encoding="utf-8")
     )
     assert placeholder["status"] == "not-executed"
     assert placeholder["results"] == []
-    assert not v3.RESULTS.exists()
+    if not EXECUTED:
+        assert not v3.RESULTS.exists()
+        return
+    # Executed: the immutable bundle must be bound to the frozen preregistration.
+    declaration = v3.load_predeclaration()
+    partitions = _load(v3.PARTITIONS)
+    preflight = _load(v3.PREFLIGHT_RECORD)
+    manifest = _load(RUN_MANIFEST)
+    lock = _load(v3.RESULTS / "execution-lock.json")
+    declared = manifest.pop("run_manifest_hash")
+    assert canonical_hash(manifest) == declared
+    for record in (manifest, lock):
+        assert record["predeclaration_hash"] == declaration["predeclaration_hash"]
+        assert record["partitions_hash"] == partitions["partitions_hash"]
+        assert record["preflight_hash"] == preflight["preflight_hash"]
+        assert record["preregistration_commit_sha"] == lock["preregistration_commit_sha"]
+    assert lock["single_execution"] is True
+    assert manifest["v2_failure_manifest_hash"] == v3.V2_FAILURE_HASH
+    assert manifest["status"] in {"accepted", "failed-predeclared-gates"}
+    assert manifest["all_active_replicates_passed"] == all(
+        item["active_passed"] for item in manifest["replicates"]
+    )
+    assert [item["replicate_id"] for item in manifest["replicates"]] == [
+        item["replicate_id"] for item in partitions["replicates"]
+    ]
+    for item in manifest["replicates"]:
+        declared_result = dict(item)
+        assert canonical_hash(
+            {key: value for key, value in declared_result.items() if key != "replicate_result_hash"}
+        ) == declared_result["replicate_result_hash"]
+        frozen = _load(v3.RESULTS / item["replicate_id"] / "frozen-before-assessment.json")
+        assert frozen["frozen_hash"] == item["frozen_hash"]
+        assert canonical_hash(
+            {key: value for key, value in frozen.items() if key != "frozen_hash"}
+        ) == item["frozen_hash"]
+        for campaign in ("active", "fixed-baseline"):
+            assessment = _load(v3.RESULTS / item["replicate_id"] / f"{campaign}.assessment.json")
+            assert assessment["frozen_hash"] == item["frozen_hash"]
+            for output in v2.OUTPUT_NAMES:
+                model_path = v3.RESULTS / item["replicate_id"] / campaign / "models" / f"{output}.model.json"
+                assert ExactGP.load(model_path).model_hash == frozen["model_hashes"][campaign][output]
+    # v3 is recorded as a provenance failure: the supplied SHA was not a commit.
+    provenance = _load(v3.RESULTS / "provenance-failure.json")
+    assert provenance["run_manifest_hash"] == declared
+    assert provenance["scientific_acceptance"] is False
+    assert provenance["rerun_performed"] is False
+    assert provenance["supplied_preregistration_commit_sha"] == lock["preregistration_commit_sha"]
+    assert provenance["actual_preregistration_commit_sha"] != provenance["supplied_preregistration_commit_sha"]
+    assert AtomicArtifactStore(v3.RESULTS).temporary_files() == ()
+
+
+def test_execute_refuses_to_run_again_once_results_exist() -> None:
+    if not EXECUTED:
+        pytest.skip("the single authorised v3 execution has not happened")
+    before = _tree_digest(v3.RESULTS)
+    with pytest.raises(RuntimeError, match="single-shot and results already exist"):
+        v3.execute("a" * 40)
+    assert _tree_digest(v3.RESULTS) == before
 
 
 def test_recorded_preflight_is_hash_valid_and_assessment_blind() -> None:
