@@ -1,0 +1,275 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cft-revival.local/spec/orbit-mc-result-v1.schema.json",
+  "title": "CFT test-particle full-orbit wall-loss result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "classification", "campaign_id", "identities", "estimator", "verification", "launches", "batch_manifest", "results", "summary", "interpolation_evidence", "convergence_evidence", "preregistration", "limitations", "integrity"],
+  "properties": {
+    "schema_version": {"const": "cft-revival-orbit-mc-result/1.4.0"},
+    "classification": {"const": "test_particle_wall_loss_not_self_consistent_plasma"},
+    "campaign_id": {"$ref": "#/$defs/nonempty"},
+    "identities": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["field_sha256", "config_sha256", "policy_sha256", "code_sha256", "launches_sha256", "results_sha256", "batch_manifest_sha256", "estimator_sha256"],
+      "properties": {
+        "field_sha256": {"$ref": "#/$defs/hash"},
+        "config_sha256": {"$ref": "#/$defs/hash"},
+        "policy_sha256": {"$ref": "#/$defs/hash"},
+        "code_sha256": {"$ref": "#/$defs/hash"},
+        "launches_sha256": {"$ref": "#/$defs/hash"},
+        "results_sha256": {"$ref": "#/$defs/hash"},
+        "batch_manifest_sha256": {"$ref": "#/$defs/hash"},
+        "estimator_sha256": {"$ref": "#/$defs/hash"}
+      }
+    },
+    "estimator": {"$ref": "#/$defs/estimator"},
+    "verification": {"$ref": "#/$defs/verification"},
+    "launches": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/launch"}},
+    "batch_manifest": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/batch"}},
+    "results": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/result"}},
+    "summary": {"$ref": "#/$defs/summary"},
+    "interpolation_evidence": {"$ref": "#/$defs/interpolationEvidence"},
+    "convergence_evidence": {"$ref": "#/$defs/convergenceEvidence"},
+    "preregistration": {"$ref": "#/$defs/preregistration"},
+    "limitations": {"type": "array", "minItems": 4, "items": {"$ref": "#/$defs/nonempty"}},
+    "integrity": {"$ref": "#/$defs/integrity"}
+  },
+  "$defs": {
+    "nonempty": {"type": "string", "minLength": 1},
+    "hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "finite": {"type": "number"},
+    "vec3": {"type": "array", "prefixItems": [{"$ref": "#/$defs/finite"}, {"$ref": "#/$defs/finite"}, {"$ref": "#/$defs/finite"}], "items": false, "minItems": 3, "maxItems": 3},
+    "estimator": {
+      "type": "object", "additionalProperties": false,
+      "required": ["policy", "estimand_id", "equal_launch_weights_required"],
+      "properties": {
+        "policy": {"const": "unweighted_binomial"},
+        "estimand_id": {"const": "campaign_wall_loss_probability"},
+        "equal_launch_weights_required": {"const": true}
+      }
+    },
+    "verification": {
+      "type": "object", "additionalProperties": false,
+      "required": ["requirement", "structural_status"],
+      "properties": {
+        "requirement": {"const": "deterministic_full_result_replay_required"},
+        "structural_status": {"const": "unverified_pending_deterministic_replay"}
+      }
+    },
+    "launch": {
+      "type": "object", "additionalProperties": false,
+      "required": ["launch_id", "seed_id", "kinetic_energy_ev", "pitch_angle_rad", "position_m", "parallel_direction", "gyrophase_rad", "flux_surface_id"],
+      "properties": {
+        "launch_id": {"$ref": "#/$defs/nonempty"}, "seed_id": {"type": "integer", "minimum": 0},
+        "kinetic_energy_ev": {"type": "number", "exclusiveMinimum": 0},
+        "pitch_angle_rad": {"type": "number", "minimum": 0, "maximum": 1.5707963267948966},
+        "position_m": {"$ref": "#/$defs/vec3"}, "parallel_direction": {"enum": [-1, 1]},
+        "gyrophase_rad": {"type": "number", "minimum": 0, "exclusiveMaximum": 6.283185307179586},
+        "flux_surface_id": {"$ref": "#/$defs/nonempty"}
+      }
+    },
+    "batchLaunch": {
+      "type": "object", "additionalProperties": false,
+      "required": ["launch_id", "order", "weight"],
+      "properties": {
+        "launch_id": {"$ref": "#/$defs/nonempty"},
+        "order": {"type": "integer", "minimum": 0},
+        "weight": {"type": "number", "exclusiveMinimum": 0}
+      }
+    },
+    "batch": {
+      "type": "object", "additionalProperties": false,
+      "required": ["batch_id", "launches"],
+      "properties": {
+        "batch_id": {"type": "integer", "minimum": 0},
+        "launches": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/batchLaunch"}}
+      }
+    },
+    "witnessConfig": {
+      "type": "object", "additionalProperties": false,
+      "required": ["wall_radius_m", "wall_z_min_m", "wall_z_max_m", "domain_radius_m", "domain_z_min_m", "domain_z_max_m", "max_time_s", "max_path_m", "max_steps", "max_rotation_rad", "event_tolerance_m", "maximum_gamma", "fixed_dt_s"],
+      "properties": {
+        "wall_radius_m": {"type": "number", "exclusiveMinimum": 0},
+        "wall_z_min_m": {"type": "number"}, "wall_z_max_m": {"type": "number"},
+        "domain_radius_m": {"type": "number", "exclusiveMinimum": 0},
+        "domain_z_min_m": {"type": "number"}, "domain_z_max_m": {"type": "number"},
+        "max_time_s": {"type": "number", "exclusiveMinimum": 0},
+        "max_path_m": {"type": "number", "exclusiveMinimum": 0},
+        "max_steps": {"type": "integer", "minimum": 1},
+        "max_rotation_rad": {"type": "number", "exclusiveMinimum": 0, "maximum": 0.5},
+        "event_tolerance_m": {"type": "number", "minimum": 0},
+        "maximum_gamma": {"type": "number", "exclusiveMinimum": 1},
+        "fixed_dt_s": {"oneOf": [{"type": "number", "exclusiveMinimum": 0}, {"type": "null"}]}
+      }
+    },
+    "candidateFractions": {
+      "type": "object", "additionalProperties": false,
+      "required": ["time_timeout", "path_timeout", "wall_hit", "reflected", "domain_escape"],
+      "properties": {
+        "time_timeout": {"oneOf": [{"type": "number", "minimum": 0, "maximum": 1}, {"type": "null"}]},
+        "path_timeout": {"oneOf": [{"type": "number", "minimum": 0, "maximum": 1}, {"type": "null"}]},
+        "wall_hit": {"oneOf": [{"type": "number", "minimum": 0, "maximum": 1}, {"type": "null"}]},
+        "reflected": {"oneOf": [{"type": "number", "minimum": 0, "maximum": 1}, {"type": "null"}]},
+        "domain_escape": {"oneOf": [{"type": "number", "minimum": 0, "maximum": 1}, {"type": "null"}]}
+      }
+    },
+    "reflectionBracket": {
+      "type": "object", "additionalProperties": false,
+      "required": ["low_fraction", "high_fraction", "low_parallel_m_per_s", "high_parallel_m_per_s", "root_fraction", "root_parallel_m_per_s"],
+      "properties": {
+        "low_fraction": {"type": "number", "minimum": 0, "maximum": 1},
+        "high_fraction": {"type": "number", "minimum": 0, "maximum": 1},
+        "low_parallel_m_per_s": {"type": "number"},
+        "high_parallel_m_per_s": {"type": "number"},
+        "root_fraction": {"type": "number", "minimum": 0, "maximum": 1},
+        "root_parallel_m_per_s": {"type": "number"}
+      }
+    },
+    "eventWitness": {
+      "type": "object", "additionalProperties": false,
+      "required": ["kind", "config", "step_start_position_m", "step_end_position_m", "step_start_velocity_m_per_s", "step_end_velocity_m_per_s", "event_fraction", "candidate_fractions", "reflection_bracket", "start_elapsed_time_s", "start_path_length_m", "step_dt_s", "step_segment_length_m", "step_index", "condition", "observed_gamma", "observed_speed2_over_c2", "field_identity_sha256", "config_identity_sha256", "policy_identity_sha256"],
+      "properties": {
+        "kind": {"enum": ["wall_hit", "reflected", "domain_escape", "path_timeout", "time_timeout", "step_limit", "nonfinite_state", "extreme_relativity", "field_failure", "initial_state_invalid"]},
+        "config": {"$ref": "#/$defs/witnessConfig"},
+        "step_start_position_m": {"$ref": "#/$defs/vec3"},
+        "step_end_position_m": {"$ref": "#/$defs/vec3"},
+        "step_start_velocity_m_per_s": {"$ref": "#/$defs/vec3"},
+        "step_end_velocity_m_per_s": {"$ref": "#/$defs/vec3"},
+        "event_fraction": {"type": "number", "minimum": 0, "maximum": 1},
+        "candidate_fractions": {"$ref": "#/$defs/candidateFractions"},
+        "reflection_bracket": {"oneOf": [{"$ref": "#/$defs/reflectionBracket"}, {"type": "null"}]},
+        "start_elapsed_time_s": {"type": "number", "minimum": 0},
+        "start_path_length_m": {"type": "number", "minimum": 0},
+        "step_dt_s": {"type": "number", "minimum": 0},
+        "step_segment_length_m": {"type": "number", "minimum": 0},
+        "step_index": {"type": "integer", "minimum": 0},
+        "condition": {"$ref": "#/$defs/nonempty"},
+        "observed_gamma": {"oneOf": [{"type": "number", "minimum": 1}, {"type": "null"}]},
+        "observed_speed2_over_c2": {"oneOf": [{"type": "number", "minimum": 0}, {"type": "null"}]},
+        "field_identity_sha256": {"$ref": "#/$defs/hash"},
+        "config_identity_sha256": {"$ref": "#/$defs/hash"},
+        "policy_identity_sha256": {"$ref": "#/$defs/hash"}
+      }
+    },
+    "gyroAverage": {
+      "type": "object", "additionalProperties": false,
+      "required": ["cycle_index", "phase_start_rad", "phase_end_rad", "mu_j_per_t"],
+      "properties": {
+        "cycle_index": {"type": "integer", "minimum": 0}, "phase_start_rad": {"$ref": "#/$defs/finite"},
+        "phase_end_rad": {"$ref": "#/$defs/finite"}, "mu_j_per_t": {"type": "number", "minimum": 0}
+      }
+    },
+    "result": {
+      "type": "object", "additionalProperties": false,
+      "required": ["launch_id", "termination", "reason", "final_position_m", "final_velocity_m_per_s", "wall_endpoint_m", "elapsed_time_s", "path_length_m", "steps", "accumulated_gyro_phase_rad", "complete_gyrocycles", "gyro_averages", "initial_energy_j", "final_energy_j", "maximum_relative_energy_error", "maximum_instantaneous_mu_relative_variation", "transit_fraction", "maximum_b_t", "configured_max_time_s", "configured_max_path_m", "event_tolerance_m", "dt_s", "backend", "event_witness"],
+      "properties": {
+        "launch_id": {"$ref": "#/$defs/nonempty"},
+        "termination": {"enum": ["wall_hit", "reflected", "domain_escape", "path_timeout", "time_timeout", "step_limit", "nonfinite_state", "extreme_relativity", "field_failure", "initial_state_invalid"]},
+        "reason": {"$ref": "#/$defs/nonempty"}, "final_position_m": {"$ref": "#/$defs/vec3"},
+        "final_velocity_m_per_s": {"$ref": "#/$defs/vec3"},
+        "wall_endpoint_m": {"oneOf": [{"$ref": "#/$defs/vec3"}, {"type": "null"}]},
+        "elapsed_time_s": {"type": "number", "minimum": 0}, "path_length_m": {"type": "number", "minimum": 0},
+        "steps": {"type": "integer", "minimum": 0}, "accumulated_gyro_phase_rad": {"type": "number", "minimum": 0},
+        "complete_gyrocycles": {"type": "integer", "minimum": 0},
+        "gyro_averages": {"type": "array", "items": {"$ref": "#/$defs/gyroAverage"}},
+        "initial_energy_j": {"type": "number", "exclusiveMinimum": 0}, "final_energy_j": {"type": "number", "minimum": 0},
+        "maximum_relative_energy_error": {"type": "number", "minimum": 0},
+        "maximum_instantaneous_mu_relative_variation": {"oneOf": [{"type": "number", "minimum": 0}, {"type": "null"}]},
+        "transit_fraction": {"type": "number", "minimum": 0, "maximum": 1},
+        "maximum_b_t": {"type": "number", "minimum": 0},
+        "configured_max_time_s": {"type": "number", "exclusiveMinimum": 0},
+        "configured_max_path_m": {"type": "number", "exclusiveMinimum": 0},
+        "event_tolerance_m": {"type": "number", "minimum": 0},
+        "dt_s": {"type": "number", "exclusiveMinimum": 0}, "backend": {"$ref": "#/$defs/nonempty"},
+        "event_witness": {"$ref": "#/$defs/eventWitness"}
+      }
+    },
+    "interpolationEvidence": {
+      "type": "object", "additionalProperties": false,
+      "required": ["certified_max_b_t", "reference_max_b_t", "runtime_max_seen_t", "dense_diagnostic_max_b_t", "certificate_tightness_ratio", "minimum_certificate_tightness_ratio", "certificate_preflight_passed", "material_map_sha256", "field_error_report", "passed"],
+      "properties": {
+        "certified_max_b_t": {"type": "number", "exclusiveMinimum": 0},
+        "reference_max_b_t": {"oneOf": [{"type": "number", "exclusiveMinimum": 0}, {"type": "null"}]},
+        "runtime_max_seen_t": {"type": "number", "minimum": 0},
+        "dense_diagnostic_max_b_t": {"type": "number", "minimum": 0},
+        "certificate_tightness_ratio": {"type": "number", "minimum": 0, "maximum": 1},
+        "minimum_certificate_tightness_ratio": {"type": "number", "minimum": 0, "maximum": 1},
+        "certificate_preflight_passed": {"const": true},
+        "material_map_sha256": {"$ref": "#/$defs/hash"},
+        "field_error_report": {"$ref": "#/$defs/interpolationError"},
+        "passed": {"const": true}
+      }
+    },
+    "interpolationError": {
+      "type": "object", "additionalProperties": false,
+      "required": ["sample_count", "psi_node_max_abs_wb", "br_max_abs_t", "bz_max_abs_t", "b_rms_t", "b_relative_rms"],
+      "properties": {
+        "sample_count": {"type": "integer", "minimum": 1},
+        "psi_node_max_abs_wb": {"type": "number", "minimum": 0},
+        "br_max_abs_t": {"type": "number", "minimum": 0},
+        "bz_max_abs_t": {"type": "number", "minimum": 0},
+        "b_rms_t": {"type": "number", "minimum": 0},
+        "b_relative_rms": {"type": "number", "minimum": 0}
+      }
+    },
+    "convergenceEvidence": {
+      "type": "object", "additionalProperties": false,
+      "required": ["timestep_passed", "cross_map_passed", "backend_parity_passed"],
+      "properties": {
+        "timestep_passed": {"const": true},
+        "cross_map_passed": {"const": true},
+        "backend_parity_passed": {"const": true}
+      }
+    },
+    "preregistration": {
+      "type": "object", "additionalProperties": false,
+      "required": ["protocol_id", "frozen_before_outcomes", "held_out_geometry_status"],
+      "properties": {
+        "protocol_id": {"$ref": "#/$defs/nonempty"},
+        "frozen_before_outcomes": {"const": true},
+        "held_out_geometry_status": {"enum": ["pending", "passed"]}
+      }
+    },
+    "probability": {
+      "type": "object", "additionalProperties": false,
+      "required": ["successes", "trials", "probability", "lower", "upper", "method"],
+      "properties": {
+        "successes": {"type": "integer", "minimum": 0}, "trials": {"type": "integer", "minimum": 1},
+        "probability": {"type": "number", "minimum": 0, "maximum": 1},
+        "lower": {"type": "number", "minimum": 0, "maximum": 1},
+        "upper": {"type": "number", "minimum": 0, "maximum": 1}, "method": {"const": "wilson-95"}
+      }
+    },
+    "summary": {
+      "type": "object", "additionalProperties": false,
+      "required": ["ensemble_id", "trial_count", "wall_hit", "reflected", "escaped", "incomplete", "termination_counts", "result_identity_sha256"],
+      "properties": {
+        "ensemble_id": {"$ref": "#/$defs/nonempty"}, "trial_count": {"type": "integer", "minimum": 1},
+        "wall_hit": {"$ref": "#/$defs/probability"}, "reflected": {"$ref": "#/$defs/probability"},
+        "escaped": {"$ref": "#/$defs/probability"}, "incomplete": {"$ref": "#/$defs/probability"},
+        "termination_counts": {
+          "type": "object", "additionalProperties": false,
+          "required": ["wall_hit", "reflected", "domain_escape", "path_timeout", "time_timeout", "step_limit", "nonfinite_state", "extreme_relativity", "field_failure", "initial_state_invalid"],
+          "properties": {
+            "wall_hit": {"type": "integer", "minimum": 0}, "reflected": {"type": "integer", "minimum": 0},
+            "domain_escape": {"type": "integer", "minimum": 0}, "path_timeout": {"type": "integer", "minimum": 0},
+            "time_timeout": {"type": "integer", "minimum": 0}, "step_limit": {"type": "integer", "minimum": 0},
+            "nonfinite_state": {"type": "integer", "minimum": 0}, "extreme_relativity": {"type": "integer", "minimum": 0},
+            "field_failure": {"type": "integer", "minimum": 0}, "initial_state_invalid": {"type": "integer", "minimum": 0}
+          }
+        },
+        "result_identity_sha256": {"$ref": "#/$defs/hash"}
+      }
+    },
+    "integrity": {
+      "type": "object", "additionalProperties": false,
+      "required": ["algorithm", "canonicalization", "payload_sha256"],
+      "properties": {
+        "algorithm": {"const": "sha256"}, "canonicalization": {"const": "json-sort-keys-compact-utf8-v1"},
+        "payload_sha256": {"$ref": "#/$defs/hash"}
+      }
+    }
+  }
+}

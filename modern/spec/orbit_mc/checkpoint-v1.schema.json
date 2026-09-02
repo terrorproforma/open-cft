@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cft-revival.local/spec/orbit-mc-checkpoint-v1.schema.json",
+  "title": "Deterministic orbit Monte Carlo batch checkpoint",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "campaign_id", "previous_checkpoint_sha256", "authority", "launches", "batch_manifest", "completed_batch_ids", "partial_current_batch", "pending_launch_ids", "coverage", "results", "payload_sha256"],
+  "properties": {
+    "schema_version": {"const": "cft-revival-orbit-mc-checkpoint/1.4.0"},
+    "campaign_id": {"type": "string", "minLength": 1},
+    "previous_checkpoint_sha256": {"$ref": "#/$defs/hash"},
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["field_sha256", "config_sha256", "policy_sha256", "code_sha256", "launches_sha256", "results_sha256", "batch_manifest_sha256", "estimator_sha256", "campaign_identity_sha256", "minimum_certificate_tightness_ratio", "estimator_policy", "replay_requirement", "result_verification_status"],
+      "properties": {
+        "field_sha256": {"$ref": "#/$defs/hash"},
+        "config_sha256": {"$ref": "#/$defs/hash"},
+        "policy_sha256": {"$ref": "#/$defs/hash"},
+        "code_sha256": {"$ref": "#/$defs/hash"},
+        "launches_sha256": {"$ref": "#/$defs/hash"},
+        "results_sha256": {"$ref": "#/$defs/hash"},
+        "batch_manifest_sha256": {"$ref": "#/$defs/hash"},
+        "estimator_sha256": {"$ref": "#/$defs/hash"},
+        "campaign_identity_sha256": {"$ref": "#/$defs/hash"},
+        "minimum_certificate_tightness_ratio": {"type": "number", "minimum": 0.001, "maximum": 1},
+        "estimator_policy": {"const": "unweighted_binomial"},
+        "replay_requirement": {"const": "deterministic_full_result_replay_required"},
+        "result_verification_status": {"const": "witness_validated_replay_required_for_final_artifact"}
+      }
+    },
+    "launches": {"type": "array", "minItems": 1, "items": {"$ref": "result-v1.schema.json#/$defs/launch"}},
+    "batch_manifest": {"type": "array", "minItems": 1, "items": {"$ref": "result-v1.schema.json#/$defs/batch"}},
+    "completed_batch_ids": {"type": "array", "uniqueItems": true, "items": {"type": "integer", "minimum": 0}},
+    "partial_current_batch": {"oneOf": [{"$ref": "#/$defs/partialBatch"}, {"type": "null"}]},
+    "pending_launch_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "coverage": {"$ref": "#/$defs/coverage"},
+    "results": {"type": "array", "items": {"$ref": "result-v1.schema.json#/$defs/result"}},
+    "payload_sha256": {"$ref": "#/$defs/hash"}
+  },
+  "$defs": {
+    "hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "partialBatch": {
+      "type": "object", "additionalProperties": false,
+      "required": ["batch_id", "completed_launch_ids"],
+      "properties": {
+        "batch_id": {"type": "integer", "minimum": 0},
+        "completed_launch_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+      }
+    },
+    "coverage": {
+      "type": "object", "additionalProperties": false,
+      "required": ["total_launches", "completed_launches", "pending_launches", "completed_batches"],
+      "properties": {
+        "total_launches": {"type": "integer", "minimum": 1},
+        "completed_launches": {"type": "integer", "minimum": 0},
+        "pending_launches": {"type": "integer", "minimum": 0},
+        "completed_batches": {"type": "integer", "minimum": 0}
+      }
+    }
+  }
+}

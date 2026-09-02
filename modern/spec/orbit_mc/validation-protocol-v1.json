@@ -1,0 +1,71 @@
+{
+  "schema_version": "cft-revival-orbit-mc-validation-protocol/1.4.0",
+  "protocol_id": "cft-wall-loss-full-orbit-preregistered-v1",
+  "authority": {
+    "primary": "direct_first-event_full-orbit_ensemble",
+    "asymptotic_comparator": "loss_cone_only_when_adiabatic_gates_pass",
+    "excluded_claims": ["self_consistent_electric_field", "collisions", "space_charge", "sheath", "plasma_response", "pic"]
+  },
+  "launch_strata": {
+    "required_dimensions": ["kinetic_energy_ev", "pitch_angle_rad", "position_or_flux_surface", "parallel_direction", "gyrophase_rad", "seed_id"],
+    "minimum_deterministic_gyrophases": 8,
+    "require_both_parallel_directions": true,
+    "weights_preregistered_before_outcomes": true
+  },
+  "numerical_gates": {
+    "field_maps": ["primary", "refined_resolution", "enlarged_domain"],
+    "timestep_levels": ["N", "2N", "4N"],
+    "maximum_successive_wall_probability_change": 0.01,
+    "require_95_percent_binomial_interval_overlap": true,
+    "maximum_uniform_b_relative_energy_error": 1e-10,
+    "minimum_uniform_b_position_order": 1.8,
+    "maximum_mirror_point_relative_error": 0.03,
+    "maximum_wall_endpoint_error_m": 1e-8,
+    "maximum_cpu_cuda_relative_velocity_difference": 1e-11,
+    "require_certified_cellwise_max_b_bound": true,
+    "require_runtime_rotation_bound": true,
+    "require_relativistic_phase_gamma": true,
+    "minimum_varying_e_position_order": 1.8,
+    "require_earliest_fraction_event_ordering": true,
+    "require_homogeneous_plasma_interpolation_cells": true,
+    "minimum_certificate_dense_to_bound_ratio": 0.001,
+    "require_certificate_tightness_preflight": true,
+    "require_external_checkpoint_campaign_and_launch_authority": true,
+    "require_runtime_schema_semantic_equivalence": true,
+    "require_replayable_event_witnesses": true,
+    "require_frozen_weighted_batch_manifest": true,
+    "allow_partial_checkpoint_prefix": true,
+    "require_exact_pending_complement": true,
+    "require_deterministic_result_replay_when_artifacts_available": true,
+    "estimator_policy": "unweighted_binomial",
+    "require_equal_launch_weights": true,
+    "reject_weighted_or_stratified_estimators": true,
+    "artifact_sealing_requires_deterministic_replay": true,
+    "structural_load_status": "unverified_pending_deterministic_replay",
+    "require_external_batch_manifest_sha256_for_replay": true,
+    "require_external_batch_manifest_sha256_for_artifact_write": true,
+    "require_external_batch_manifest_sha256_for_verified_load": true,
+    "require_external_batch_manifest_sha256_for_checkpoint_finalization": true,
+    "require_external_batch_manifest_sha256_for_coupling_handoff": true
+  },
+  "adiabatic_comparator_gates": {
+    "maximum_rho_over_field_scale": 0.05,
+    "maximum_mu_relative_variation": 0.1,
+    "minimum_complete_gyrocycles": 5
+  },
+  "publication_gates": {
+    "no_incomplete_or_numerical_failure_outcomes": true,
+    "report_all_termination_counts": true,
+    "report_wilson_95_interval": true,
+    "bind_field_config_code_launch_result_hashes": true,
+    "held_out_geometry_family_required": true,
+    "minimum_held_out_geometry_families": 1,
+    "minimum_independent_repeats_per_stratum": 1
+  },
+  "integration": {
+    "coupling_contract": "cft-field-plasma-coupling/4.2.0",
+    "status": "export_only_pending_consumer_integration",
+    "plasma_network_quantity": "not_consumed_until_public_adapter_exists",
+    "handoff_schema": "cft-revival-orbit-mc-coupling-v4.2/1.3.0"
+  }
+}
