@@ -1,0 +1,1 @@
+{"details":{"error":{"message":"physical event witness requires a positive step","type":"OrbitValidationError"},"phase":"assessment"},"recorded_at_utc":{"__cft_type__":"aware-utc-datetime","value":"2026-09-02T13:02:34.051588Z"},"schema_version":"cft-revival.experiment-transition/1.0.0","sequence":8,"transition":"runtime-failed"}
