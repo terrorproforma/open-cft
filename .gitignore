@@ -84,3 +84,13 @@ CFTOpt-sensitivity_*.csv
 # Local presentation/source decks with unverified redistribution rights
 *.ppt
 *.pptx
+
+# PIC-2D development snapshot: hash-bound summaries, series and small maps are
+# tracked (negations must follow the generic results/ and *.npz rules above);
+# particle checkpoints (50-200 MB) are not.
+!modern/experiments/pic2d_cft_snapshot_v1/results/
+!modern/experiments/pic2d_cft_snapshot_v1/results/**
+!modern/experiments/pic2d_cft_snapshot_v1/results/**/maps.npz
+!modern/experiments/pic2d_cft_snapshot_v1/results/**/series.npz
+modern/experiments/pic2d_cft_snapshot_v1/results/**/checkpoint-*.npz
+modern/experiments/pic2d_cft_snapshot_v1/results/**/checkpoint-latest.*

@@ -1,0 +1,3 @@
+# Particle checkpoints are 10-130 MB per case; their metadata JSON (hash-bound) is kept.
+checkpoint-*.npz
+checkpoint-latest.*
