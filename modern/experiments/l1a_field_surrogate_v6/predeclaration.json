@@ -1,0 +1,144 @@
+{
+  "schema_version": "cft-revival.l1a-field-surrogate-v6.protocol/6.0.0",
+  "classification": "L1a_NUMERICAL_EMULATION_ONLY_NOT_MATERIAL_PLASMA_OR_HARDWARE_ACCURACY",
+  "branch": "exp/l1a-field-surrogate-v6",
+  "execution": {
+    "accepted_experiment_runtime_commit": "231873d23fa242b15d0c085447a3d34ad55162a7",
+    "lifecycle": "cft_revival.experiment_runtime.ExperimentRuntime callbacks",
+    "attestation_order": "detached/commit/dependency/remote/global-clean verification before runtime construction; prebundle consumes immutable verification",
+    "runtime_drift_policy": "tracked or staged changes forbidden globally; untracked entries allowed only under exact results and .runtime-cache roots",
+    "terminal_states": ["prebundle_failure", "runtime_failure", "development_rejection", "assessment_rejection", "accepted_result"],
+    "maximum_lock_claims": 1,
+    "device": "cuda:0",
+    "required_gpu": "NVIDIA GeForce RTX 5090",
+    "clean_detached_pushed_preregistration": true,
+    "direct_parent_child_commits": true,
+    "no_patch_or_rerun_after_lock": true
+  },
+  "sampling": {
+    "seed": 20260907,
+    "raw_rows": 512,
+    "frozen_rows": 240,
+    "zero_v1_v2_v3_v4_v5_coordinate_overlap": true,
+    "roles": {
+      "candidate": [0, 128],
+      "method": [128, 144],
+      "calibration": [144, 192],
+      "assessment": [192, 240]
+    },
+    "calibration_strata": {
+      "interpolation": [144, 160],
+      "boundary": [160, 176],
+      "ood": [176, 192]
+    },
+    "assessment_strata": {
+      "interpolation": [192, 208],
+      "boundary": [208, 224],
+      "ood": [224, 240]
+    },
+    "high_budgets": [64, 96, 128],
+    "geometry_selection": "actual geometry-v1.1 constructor and preview over all raw rows; first 144 valid then input-only interpolation/boundary/OOD selections for calibration and assessment"
+  },
+  "geometry": {
+    "nextafter_steps": 4096,
+    "requested_radius_first": true,
+    "rebuild_all_frozen": true,
+    "zero_rebuild_hash_failures": true
+  },
+  "staging": {
+    "candidate_method_before_method_freeze": true,
+    "calibration_after_method_freeze": true,
+    "assessment_after_calibration_freeze_once": true,
+    "future_field_materialization_forbidden": true,
+    "read_counters_increment_before_checkpoint_read": true,
+    "materialized_and_read_counters_separate_by_role": true,
+    "phase_records_sidecar_protected": true,
+    "working_cache_owned_and_deleted_by_shared_runtime": true
+  },
+  "fidelities": {
+    "low_shape": [41, 73],
+    "high_shape": [81, 145],
+    "domain": {"radius_m": 0.03, "z_min_m": -0.015, "z_max_m": 0.05},
+    "physical_source_smear_m": 0.0008,
+    "coarse_source_transfer": "conservative integration of unchanged physical bands over coarse dual cells",
+    "solver": {
+      "relative_tolerance": 1e-10,
+      "absolute_tolerance": 1e-13,
+      "max_iterations": 20000,
+      "residual_history_stride": 10,
+      "max_true_residual_restarts": 2
+    }
+  },
+  "models": {
+    "qois": [
+      "centreline_mid_abs_bz_t",
+      "centreline_abs_bz_peak_t",
+      "minimum_mirror_ratio",
+      "maximum_mirror_ratio",
+      "stage_gradient_rms_t_per_m",
+      "stage_gradient_max_abs_t_per_m",
+      "field_energy_j",
+      "boundary_to_peak_ratio",
+      "source_representation_error"
+    ],
+    "scalar_families": ["high_only_log_gp", "observed_coarse_log_ratio_gp"],
+    "field_families": ["high_only_aligned_pod_gp", "observed_coarse_residual_aligned_pod_gp"],
+    "length_scales": [0.18, 0.3, 0.5],
+    "ridge": 1e-8,
+    "pod_retained_energy_min": 0.995,
+    "pod_rank_cap": 64,
+    "alignment": "input-only chamber and stage-centre axial landmarks",
+    "pod": "cylindrical energy weighted and coarse-norm normalized",
+    "topology_from_reconstructed_fields_only": true
+  },
+  "gates": {
+    "scalar_nrmse_max": 0.05,
+    "scalar_worst_max": 0.15,
+    "field_l2_max": 0.05,
+    "field_energy_max": 0.05,
+    "topology_exact": true,
+    "conformal_nominal": 0.8,
+    "group_coverage_min": 0.6,
+    "median_width_max": 0.3,
+    "p95_width_max": 0.6,
+    "latency_median_speedup_min": 3.0,
+    "residual_max": 1e-10,
+    "boundary_max": 0.05,
+    "source_error_max": 0.25,
+    "flux_identity_max": 1e-8
+  },
+  "synthetic_preflight": {
+    "all_five_runtime_terminal_states": true,
+    "shared_runtime_callback_matrix": true,
+    "real_production_runner_paths": true,
+    "real_field_solver_calls": 0,
+    "static_undefined_name_check": true,
+    "required_path_groups": [
+      "npz-save-load-qoi",
+      "snapshot-high-residual",
+      "align-unalign",
+      "scalar-high-ratio",
+      "all-budgets-lengths-families",
+      "shared-kernel-fit-predict-serialize",
+      "pod-fit-project-reconstruct-serialize-rank-fail",
+      "field-predict-projection-oracle",
+      "baseline-oracle-coefficient-metrics",
+      "selection-pass-fail-none",
+      "calibration-conformal-assessment-topology-latency"
+    ]
+  },
+  "integrity": {
+    "protocol_subject": "preregister L1a field surrogate v6 experiment",
+    "results_subject": "record L1a field surrogate v6 results",
+    "remote_branch": "origin/exp/l1a-field-surrogate-v6",
+    "dependency_lock": true,
+    "full_git_blob_closure_before_solver": true,
+    "line_endings": "experiment-local .gitattributes pins LF text and binary NPZ",
+    "strict_success_failure_loader": true
+  },
+  "claim_limits": [
+    "Accepted L1a discretization emulation only; not physical truth.",
+    "No material, plasma, thermal, structural, propulsion or hardware accuracy.",
+    "Prior experiments are immutable development evidence and provide no v6 labels."
+  ]
+}
