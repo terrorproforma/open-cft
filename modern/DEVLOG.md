@@ -354,3 +354,20 @@ and `docs/workstreams/optimization-devlog.md`.
   excitation peak 2.95e-20 m² vs 0.9–3.7e-20 m² across sets.
 - Only non-tabulated content is a one-point power-law tail from 965–977 eV to
   1000 eV.
+
+## 2026-09-03 - Test health after the LF pin
+
+- Resolved every red directory left by the CRLF-era checkout without editing
+  any `results/` byte or frozen preregistration file; details, root causes and
+  audits in `docs/workstreams/test-health-devlog.md`.
+- Sweep v2: posthoc EOL audit and a tolerance bound to exactly `protocol.json`
+  in `protocol.py` and the v2 dashboard generator.
+- Sweep v1: force-added the ignore-masked `results/` that the committed
+  dashboard renders.
+- Material fields: audit anchored to the `8603a905` blobs, then re-bound the
+  v1.4 example artifacts with the workstream's replay-guarded refresh script
+  (only hash-binding leaves changed).
+- L0 surrogate v3/v4: pre-execution tests made lifecycle-aware.
+- `--import-mode=importlib` in `pyproject.toml`; one invocation of
+  `python -m pytest tests` gives 1619 passed, 5 documented skips;
+  `paper/tests` 19 passed.

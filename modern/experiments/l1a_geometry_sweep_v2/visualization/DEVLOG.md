@@ -41,3 +41,17 @@
   checks passed.
 - Regenerated HTML SHA-256:
   `3c3f5aeab98006b864c8a3a56fcb1ec0b65128ad107d778e0aeceb7fcf1cde86`.
+
+## 2026-09-03 — protocol sidecar EOL tolerance (bound to the audit)
+
+- `build_payload` failed with `protocol file SHA-256 mismatch` on LF
+  checkouts: the frozen `protocol.json.sha256` and the bundle record the CRLF
+  digest `64b2c58c…`; Git stores the LF form (`2a5ba9e4…`). See
+  `../POSTHOC_AUDIT.md`.
+- `_verify_file` now accepts, for `protocol.json` only
+  (`AUDITED_PROTOCOL_LF_SHA256`), the pinned digest iff the file is CR-free,
+  hashes to the audited LF digest and its CRLF transform reproduces the pinned
+  one; every other mismatch still raises. The embedded identity keeps the
+  recorded `protocol_file_sha256`, so the committed HTML is unchanged
+  (`3c3f5aea…`). Covered by
+  `tests/experiments/l1a_geometry_sweep_v2/test_posthoc_audit.py`.

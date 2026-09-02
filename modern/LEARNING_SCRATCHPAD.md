@@ -184,3 +184,19 @@ Detailed derivations and review history remain in
   uncertainty rather than presenting one set as authoritative.
 - [self] Round resampled tables to fixed significant figures before hashing so
   the integrity hash survives numpy/platform differences.
+
+## 2026-09-03 test-health guardrails
+
+- [tool] A hash frozen from working-tree bytes under `core.autocrlf=true` is a
+  hash of the platform, not of the content. Prove EOL-only equivalence with a
+  read-only audit (`sha256(bytes.replace(LF, CRLF)) == recorded`) and bind any
+  tolerance to exactly the audited files; never rewrite the evidence.
+- [self] A tolerance cannot live inside files that are themselves hashed: it
+  changes the bytes being hashed. For source-identity bindings the only honest
+  moves are the workstream's replay-guarded re-bind or leaving the test red.
+- [self] Tests asserting "not executed yet" must become lifecycle-aware the
+  moment results are committed: check the bundle's bindings and that the
+  entry points refuse, instead of asserting absence.
+- [tool] `--import-mode=importlib` removes duplicate-basename collisions
+  without renaming tests or adding `__init__.py`; it is the least invasive fix
+  for per-experiment `test_protocol.py`-style layouts.
