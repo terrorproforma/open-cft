@@ -97,6 +97,16 @@
       "evidence_revision": "3ce6c546194e1d3e943d0b3d0951d03e15e354d9",
       "preregistration_revision": "af88470b86fd95882ae7fddc48e2860cbfba1219",
       "evidence_file": "paper/evidence/topology-characterization-v1.json"
+    },
+    "MDO-L0-V1-20260903-864-V1": {
+      "path": "paper/evidence/manifests/mdo-l0-v1.json",
+      "document_type": "paper-mdo-campaign-manifest",
+      "schema_version": "1.0",
+      "gate_id": "GATE-MDO-L0-V1",
+      "evidence_revision": "c553124b7393890d8ee9c6fc022e536c8a1fd35e",
+      "preregistration_revision": "4898d0fd3decddc5f308072e724d1936660c00e9",
+      "dashboard_revision": "e642f38cd613e3d687c32777080d8aefae93c7b3",
+      "evidence_file": "paper/evidence/mdo-l0-v1.json"
     }
   },
   "claims": [
@@ -612,6 +622,211 @@
       ]
     },
     {
+      "id": "CLM-029",
+      "status": "verified",
+      "claim_class": "campaign-summary",
+      "authorized_tex": "A preregistered one-shot robust multi-objective optimisation campaign of the L0 model under a declared cusp-survival closure is admitted as optimiser evidence: with \\MdoEvaluationsPerRun{} evaluations per run, constrained qLogNEHVI reached \\MdoAttainedBoMeanTwo{} of the \\MdoDenseCount-design reference hypervolume and exceeded the random baseline in \\MdoBoBeatsRandomWins{} of \\MdoBoBeatsRandomSeeds{} seeds and NSGA-III in \\MdoBoBeatsNsgaWins{} of \\MdoBoBeatsNsgaSeeds, the robust front is materially more conservative than the nominal front, and no thruster-performance claim follows.",
+      "allowed_locations": [
+        "Abstract"
+      ],
+      "manifest_ids": [
+        "MDO-L0-V1-20260903-864-V1"
+      ],
+      "classification": "l0_model_robust_multiobjective_optimisation_under_declared_input_uncertainty_not_thruster_performance",
+      "permitted_scope": [
+        "existence and preregistered one-shot status of the admitted optimisation campaign",
+        "macro-bound budget, attained fraction of the dense reference and paired-comparison counts",
+        "qualitative robust-versus-nominal statement as detailed by CLM-032",
+        "the no-thruster-performance boundary"
+      ],
+      "prohibited_inferences": [
+        "thruster, plasma or physical-device performance",
+        "optimiser superiority beyond the recorded budget, seeds and model",
+        "a design recommendation, calibration or validation",
+        "a derived or validated cusp-survival closure"
+      ]
+    },
+    {
+      "id": "CLM-030",
+      "status": "verified",
+      "claim_class": "quantitative-campaign-result",
+      "authorized_tex": "The single execution terminated in state \\texttt{\\MdoTerminalState} with \\MdoGatesPassed{} of \\MdoGateCount{} binding gates passed, \\MdoRuns{} runs of \\MdoEvaluationsPerRun{} evaluations each (\\MdoTotalEvaluations{} model evaluations, \\MdoInfeasibleEvaluations{} of them constraint-violating, \\MdoFailedRuns{} failed runs) and every evaluation replayed bit-exactly (\\MdoReplayed{} replayed, \\MdoReplayMismatches{} mismatches). Within the model classified as \\texttt{\\MdoClassification}, the final robust hypervolume of constrained qLogNEHVI was \\MdoHvBoA, \\MdoHvBoB{} and \\MdoHvBoC{} for seeds \\MdoSeeds{} (mean \\MdoHvBoMean, sample standard deviation \\MdoHvBoStd), against \\MdoHvNsgaA, \\MdoHvNsgaB{} and \\MdoHvNsgaC{} for NSGA-III (mean \\MdoHvNsgaMean, standard deviation \\MdoHvNsgaStd) and \\MdoHvLhsA, \\MdoHvLhsB{} and \\MdoHvLhsC{} for the Latin-hypercube baseline (mean \\MdoHvLhsMean, standard deviation \\MdoHvLhsStd). Paired by seed, qLogNEHVI exceeded the baseline in \\MdoBoBeatsRandomWins{} of \\MdoBoBeatsRandomSeeds{} seeds and NSGA-III in \\MdoBoBeatsNsgaWins{} of \\MdoBoBeatsNsgaSeeds{} seeds against a predeclared requirement of \\MdoBoBeatsRandomRequired{} (outcomes \\MdoBoBeatsRandomPassed{} and \\MdoBoBeatsNsgaPassed); with \\MdoEvaluationsPerRun{} evaluations it reached \\MdoAttainedBoMin{} to \\MdoAttainedBoMax{} of the \\MdoDenseCount-design dense-reference robust hypervolume \\MdoDenseRobustHv{} (mean \\MdoAttainedBoMeanTwo{} of the reference from a \\MdoDenseToBudgetRatio-fold smaller evaluation count), against \\MdoAttainedNsgaMin{} to \\MdoAttainedNsgaMax{} for NSGA-III and \\MdoAttainedLhsMin{} to \\MdoAttainedLhsMax{} for the baseline. Final Pareto-set sizes were \\MdoParetoBoMin{} to \\MdoParetoBoMax{} for qLogNEHVI, \\MdoParetoNsgaMin{} to \\MdoParetoNsgaMax{} for NSGA-III and \\MdoParetoLhsMin{} to \\MdoParetoLhsMax{} for the baseline, with \\MdoInfeasibleBoMin{} to \\MdoInfeasibleBoMax, \\MdoInfeasibleNsgaMin{} to \\MdoInfeasibleNsgaMax{} and \\MdoInfeasibleLhsMin{} to \\MdoInfeasibleLhsMax{} constraint-violating evaluations per run.",
+      "allowed_locations": [
+        "Robust optimiser comparison on the operating-point model under declared cusp-probability uncertainty"
+      ],
+      "manifest_ids": [
+        "MDO-L0-V1-20260903-864-V1"
+      ],
+      "gate_id": "GATE-MDO-L0-V1",
+      "classification": "l0_model_robust_multiobjective_optimisation_under_declared_input_uncertainty_not_thruster_performance",
+      "closure": "CL-1-multiplicative-cusp-survival",
+      "evidence_level": "numerical-campaign",
+      "evidence_level_justification": "The campaign is one accepted, preregistered, single-execution numerical campaign about a declared component model: the accepted L0 conservation model evaluated under the declared multiplicative cusp-survival closure CL-1 and declared uniform priors. That is the object the numerical-campaign gate kind was defined for (one accepted campaign on a declared component model), so the kind is reused through GATE-MDO-L0-V1 with the same mechanism as the wall-loss campaign: a typed committed manifest, artifacts bound by Git blob and SHA-256 at a resolvable revision, exact registered claim text, generated artifacts with provenance sidecars, and a campaign-specific checker. Its estimands are properties of the optimisers (hypervolume per budget, paired comparisons, seed variance, Pareto sizes) and of the declared evaluation chain (robust-versus-nominal fronts, sensitivity to the cusp prior); it is optimiser evidence, not performance evidence. It is not the L1 field-resolved reduction (no field solve, geometry variable or L0 mapping), not L2 (no plasma coupling; the corrected four-cell solver was probed and not used) and not L3, so it opens none of GATE-L1, GATE-L2 or GATE-L3, and it does not populate the F3-verified benchmark field of the committed campaign policy.",
+      "bindings": {
+        "evidence_file": "paper/evidence/mdo-l0-v1.json",
+        "evidence_macros": "every \\Mdo... macro in the authorized text is defined in paper/generated/mdo-l0-v1.tex and bound in the evidence file to an artifact path, JSON pointer, formatter and SHA-256, or to a stated derivation over such inputs",
+        "results_commit": "c553124b7393890d8ee9c6fc022e536c8a1fd35e",
+        "preregistration_commit": "4898d0fd3decddc5f308072e724d1936660c00e9",
+        "dashboard_commit": "e642f38cd613e3d687c32777080d8aefae93c7b3"
+      },
+      "non_claims": [
+        "makes no thruster-performance, plasma or physical-device claim",
+        "none of its fronts is a design recommendation, calibration or validation",
+        "every number is conditional on that closure and on those priors",
+        "no statement that any optimiser is better beyond the recorded budget",
+        "says nothing about geometry",
+        "opens none of the field-resolved, coupled or experimental gates"
+      ],
+      "permitted_scope": [
+        "terminal state, binding-gate, replay, run and budget counts of the single execution",
+        "final robust hypervolume per optimiser and seed with mean and sample standard deviation",
+        "paired optimiser comparisons exactly as predeclared and recorded (reported, not binding)",
+        "fraction of the dense-reference robust hypervolume attained at the recorded budget",
+        "Pareto-set sizes and constraint-violating evaluation counts per run"
+      ],
+      "prohibited_inferences": [
+        "thruster, plasma or physical-device performance",
+        "optimiser superiority beyond the recorded budget, seeds and model",
+        "any design recommendation, calibration or validation",
+        "a derived or validated cusp-survival closure",
+        "hardware or experimental validation",
+        "generalization to other models, closures, priors, budgets or seeds"
+      ]
+    },
+    {
+      "id": "CLM-031",
+      "status": "verified",
+      "claim_class": "quantitative-generated-table",
+      "authorized_artifact_ids": [
+        "TAB-MDO-L0-V1"
+      ],
+      "allowed_locations": [
+        "Robust optimiser comparison on the operating-point model under declared cusp-probability uncertainty"
+      ],
+      "manifest_ids": [
+        "MDO-L0-V1-20260903-864-V1"
+      ],
+      "permitted_scope": [
+        "final hypervolume, attained fraction, Pareto-set size, infeasible count and wall time per run and per optimiser as sealed in metrics.json",
+        "robust and nominal pooled fronts (sizes, hypervolumes, shared designs, objective ranges) as sealed in pooled-fronts.json",
+        "alternative-prior and fixed-scenario responses of the pooled robust-Pareto designs as sealed in sensitivity.json"
+      ],
+      "prohibited_inferences": [
+        "thruster or plasma performance",
+        "design recommendation",
+        "optimiser superiority beyond the recorded budget, seeds and model"
+      ]
+    },
+    {
+      "id": "CLM-032",
+      "status": "verified",
+      "claim_class": "quantitative-campaign-result",
+      "authorized_tex": "Pooled over the \\MdoUniqueDesigns{} unique designs evaluated by all runs, the robust front holds \\MdoRobustFront{} designs (hypervolume \\MdoPooledRobustHv{} over \\MdoRobustCandidates{} robust-feasible designs) and the nominal front, a re-evaluation of the same designs at the prior midpoints under the nominal constraint, holds \\MdoNominalFront{} designs (hypervolume \\MdoPooledNominalHv{} over \\MdoNominalCandidates{} nominally feasible designs); the two fronts share \\MdoSharedDesigns{} designs (Jaccard index \\MdoJaccard) and \\MdoNominalRobustFeasible{} of the \\MdoNominalFront{} nominal-front designs are robust-feasible. The nominal front reaches an electrical-to-beam efficiency of \\MdoNominalEffMax{} and a specific impulse of \\MdoNominalIspMax{}~s, whereas the robust front reaches \\MdoRobustEffMax{} and \\MdoRobustIspMax{}~s, both over anode powers from \\MdoRobustPowerMin{} to \\MdoRobustPowerMax{}~W. The predeclared separability expectation held on the dense reference (largest relative spread of the robust-to-nominal objective ratio \\MdoSeparabilitySpreadMax{} against a tolerance of \\MdoSeparabilityTolerance; passed: \\MdoSeparabilityPassed): under the declared closure the cusp probabilities rescale thrust, specific impulse and efficiency uniformly, so the two fronts differ through the feasible set that the worst-case constraint restricts and not through the ranking of designs feasible under both constraints.",
+      "allowed_locations": [
+        "Robust optimiser comparison on the operating-point model under declared cusp-probability uncertainty"
+      ],
+      "manifest_ids": [
+        "MDO-L0-V1-20260903-864-V1"
+      ],
+      "classification": "l0_model_robust_multiobjective_optimisation_under_declared_input_uncertainty_not_thruster_performance",
+      "closure": "CL-1-multiplicative-cusp-survival",
+      "permitted_scope": [
+        "pooled robust and nominal front sizes, hypervolumes, candidate counts, shared designs and Jaccard index",
+        "objective ranges over the members of each pooled front",
+        "the recorded separability check on the dense reference and the predeclared expectation it tested"
+      ],
+      "prohibited_inferences": [
+        "thruster, plasma or physical-device performance",
+        "a design recommendation from either front",
+        "validity of the closure or of the priors"
+      ]
+    },
+    {
+      "id": "CLM-033",
+      "status": "verified",
+      "claim_class": "quantitative-sensitivity-result",
+      "authorized_tex": "Re-evaluating every recorded design under alternative uniform cusp priors with upper bounds \\MdoPriorUppers{} and the same frozen sample rows, the robust nondominated design set restricted to the designs feasible under both the alternative and the campaign prior was identical to the campaign set for \\MdoInvarianceIdenticalCount{} of \\MdoPriorCount{} priors (\\MdoInvarianceExactCount{} in exact arithmetic; predeclared design-set invariance \\MdoInvariancePassed), while the feasible set itself moved from \\MdoPriorFeasibleMin{} to \\MdoPriorFeasibleMax{} designs and the unrestricted fronts from \\MdoPriorFrontMin{} to \\MdoPriorFrontMax{} designs (Jaccard index with the campaign front as low as \\MdoPriorJaccardMin). At fixed cusp probabilities the \\MdoRobustFront{} robust-Pareto designs respond as the closure dictates: the scenario \\texttt{\\MdoScenarioJeffreysId}, which sets the per-cell probabilities to the Jeffreys estimates of the wall-loss campaign's per-cell wall-hit counts (\\MdoJeffreysCellOne, \\MdoJeffreysCellTwo, \\MdoJeffreysCellThree{} and \\MdoJeffreysCellFour), gives a survival of \\MdoScenarioJeffreysSurvival{} and a maximum thrust of \\MdoScenarioJeffreysThrustMax{}~N, that is no beam, so the collisionless wall-hit probability of that campaign cannot be the per-cusp loss probability of a sustained discharge in the cusp cascade; the scenario \\texttt{\\MdoScenarioNoWallLossId} (survival \\MdoScenarioNoWallLossSurvival, outside the sampled support whose largest survival is \\MdoSampledSurvivalMax) makes \\MdoScenarioNoWallLossInfeasible{} of the \\MdoRobustFront{} robust-Pareto designs violate the anode-current constraint, because the worst case over a finite sample is the worst sampled case and not the worst case over the prior's support. The frozen protocol also discloses that the corrected four-cell discharge solver closed only for zero cusp probabilities in a probe of \\MdoProbeTotalCases{} cases (\\MdoProbeClosedCases{} converged; residual floors from \\MdoProbeResidualMin{} to \\MdoProbeResidualMax{} for every nonzero probability, about \\MdoProbeSecondsPerSolve{}~s per multistart solve), which is why the campaign evaluates the declared closure and not that solver.",
+      "allowed_locations": [
+        "Robust optimiser comparison on the operating-point model under declared cusp-probability uncertainty"
+      ],
+      "manifest_ids": [
+        "MDO-L0-V1-20260903-864-V1",
+        "WALL-LOSS-V4-20260902-4608-V1"
+      ],
+      "classification": "l0_model_robust_multiobjective_optimisation_under_declared_input_uncertainty_not_thruster_performance",
+      "closure": "CL-1-multiplicative-cusp-survival",
+      "permitted_scope": [
+        "design-set invariance across the declared alternative cusp priors and the movement of the feasible set",
+        "fixed-scenario responses of the pooled robust-Pareto designs, including the Jeffreys and no-wall-loss scenarios",
+        "the model-bounded inference that the collisionless wall-hit probability of the wall-loss campaign is not the per-cusp loss probability of the cusp cascade",
+        "the frozen protocol's disclosure of the corrected four-cell solver probe"
+      ],
+      "prohibited_inferences": [
+        "a physical per-cusp loss probability or electron loss rate",
+        "thruster, plasma or physical-device performance",
+        "validity of the closure or of the priors",
+        "any result of the corrected four-cell solver beyond the recorded probe outcome"
+      ]
+    },
+    {
+      "id": "CLM-034",
+      "status": "verified",
+      "claim_class": "campaign-scope-limitation",
+      "authorized_tex": "This campaign is optimiser evidence about the operating-point model under the declared closure \\texttt{\\MdoClosureId} and the declared priors, classified \\texttt{\\MdoClassification}: it makes no thruster-performance, plasma or physical-device claim, none of its fronts is a design recommendation, calibration or validation, and every number is conditional on that closure and on those priors. It supports no statement that any optimiser is better beyond the recorded budget of \\MdoEvaluationsPerRun{} evaluations, the \\MdoSeedCount{} seeds and this model. The \\MdoExcludedVariableCount{} legacy geometry variables are excluded because no geometry-to-model map survives the audit, so the campaign says nothing about geometry. It is not a physics level: it consumes the accepted operating-point model with a declared closure, opens none of the field-resolved, coupled or experimental gates, and leaves the benchmark field of the committed campaign policy null.",
+      "allowed_locations": [
+        "Robust optimiser comparison on the operating-point model under declared cusp-probability uncertainty"
+      ],
+      "manifest_ids": [
+        "MDO-L0-V1-20260903-864-V1"
+      ],
+      "classification": "l0_model_robust_multiobjective_optimisation_under_declared_input_uncertainty_not_thruster_performance",
+      "closure": "CL-1-multiplicative-cusp-survival",
+      "permitted_scope": [
+        "model-bounded restatement of the campaign's classification, closure conditionality and claim boundary",
+        "the exclusion of the legacy geometry variables as a structural finding",
+        "the not-a-physics-level and null-benchmark-field boundary"
+      ],
+      "prohibited_inferences": [
+        "thruster, plasma or physical-device performance",
+        "optimiser superiority beyond the recorded budget, seeds and model",
+        "any statement about geometry",
+        "opening of GATE-L1, GATE-L2 or GATE-L3"
+      ]
+    },
+    {
+      "id": "CLM-035",
+      "status": "verified",
+      "claim_class": "interpretation",
+      "authorized_tex": "Four readings follow from the admitted optimisation campaign and are bounded to its model and closure. First, constrained qLogNEHVI reached the \\MdoDenseCount-design dense-reference robust hypervolume with \\MdoEvaluationsPerRun{} evaluations per run (\\MdoAttainedBoMin{} to \\MdoAttainedBoMax{} of the reference), a statement about the optimiser on this model at this budget and these seeds, not about any thruster. Second, the robust front is materially more conservative than the nominal one: the nominal front reaches an efficiency of \\MdoNominalEffMaxTwo{} and a specific impulse of \\MdoNominalIspMax{}~s against \\MdoRobustEffMax{} and \\MdoRobustIspMax{}~s on the robust front, and the two share \\MdoSharedDesigns{} designs, so a design chosen at the prior midpoints is not the design chosen under the worst sampled cusp losses. Third, the collisionless wall-hit probability of the wall-loss campaign and the per-cusp loss probability of the cusp cascade are different quantities: inserting the former as the latter gives a survival of \\MdoScenarioJeffreysSurvival{} and no beam, whereas the legacy chain conflated them through the mirror formula. Fourth, the link from geometry to performance is open: no geometry-to-model map survives the audit, the \\MdoExcludedVariableCount{} legacy radii were therefore excluded, and the corrected four-cell solver closed only at zero cusp probability in the recorded probe.",
+      "allowed_locations": [
+        "Discussion"
+      ],
+      "manifest_ids": [
+        "MDO-L0-V1-20260903-864-V1",
+        "WALL-LOSS-V4-20260902-4608-V1"
+      ],
+      "evidence": [
+        "SRC-AUDIT",
+        "SRC-PROVENANCE"
+      ],
+      "bibliography": [
+        "Muffatti2017",
+        "Daulton2021"
+      ],
+      "permitted_scope": [
+        "model-bounded interpretation of the recorded optimiser estimands, robust-versus-nominal fronts and scenario responses",
+        "identification of the legacy mirror-formula cusp-probability step documented by the audit and provenance records",
+        "the open status of the geometry-to-performance link as recorded in the frozen protocol"
+      ],
+      "prohibited_inferences": [
+        "thruster, plasma or physical-device performance",
+        "optimiser superiority beyond the recorded budget, seeds and model",
+        "a physical per-cusp loss probability",
+        "any outcome of the planned geometry screening",
+        "opening of GATE-L1, GATE-L2 or GATE-L3"
+      ]
+    },
+    {
       "id": "GATE-L1",
       "status": "evidence-gate",
       "gate_registry_id": "GATE-L1"
@@ -660,6 +875,14 @@
       "gate_status": "accepted",
       "recorded_outcome": "recorded-characterization",
       "manifest_id": "TOPOLOGY-CHAR-V1-20260902-56-V1"
+    },
+    {
+      "id": "GATE-MDO-L0-V1",
+      "status": "evidence-gate",
+      "gate_registry_id": "GATE-MDO-L0-V1",
+      "kind": "numerical-campaign",
+      "gate_status": "accepted",
+      "manifest_id": "MDO-L0-V1-20260903-864-V1"
     }
   ]
 }

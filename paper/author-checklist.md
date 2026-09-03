@@ -49,6 +49,17 @@
   `four-cell-v2.tex` or `topology-characterization-v1.tex`.
 - [ ] Quote the superseded four-cell proxy search and the failed coupling-v4
   validations only inside the registered lineage non-claim.
+- [ ] Describe the optimisation campaign only as
+  `l0_model_robust_multiobjective_optimisation_under_declared_input_uncertainty_not_thruster_performance`:
+  optimiser evidence on the L0 model under the declared closure CL-1 and
+  declared priors; no thruster-performance, plasma or physical-device claim,
+  no design recommendation, no optimiser-superiority claim beyond the recorded
+  budget, seeds and model, geometry excluded, benchmark field still null.
+- [ ] Keep every number of the optimisation section a `\Mdo...` macro; never
+  type a digit into `paper/sections/mdo-l0-v1.tex`.
+- [ ] Keep the four Discussion readings of the optimisation campaign labelled
+  as interpretation and phrase the geometry-to-performance bridge as future
+  work, never as evidence.
 
 ## Methods and uncertainty
 
@@ -71,6 +82,8 @@
   `git status` shows no change to the three generated wall-loss files.
 - [ ] Run `python paper/scripts/generate_topology_screening_evidence.py` and
   confirm `git status` shows no change to the nine generated screening files.
+- [ ] Run `python paper/scripts/generate_mdo_l0_v1_evidence.py` and confirm
+  `git status` shows no change to the three generated optimisation files.
 - [ ] Run `python paper/scripts/check_paper.py`.
 - [ ] Run `python -m unittest discover -s paper/tests -v`.
 - [ ] Run `python paper/scripts/verify_reproducible_build.py` and require two

@@ -212,3 +212,58 @@
 - [tool] Long `\texttt{}` table cells without break points overflow `p{}`
   columns silently until the log is read; `>{\raggedright\arraybackslash}p{}`
   columns remove the underfull noise so the one real overfull stands out.
+
+## 2026-09-03 — Admitting the MDO L0 campaign v1
+
+- [self] Reusing a gate kind is a definitional test, not a convenience: the
+  `numerical-campaign` definition ("one accepted, preregistered numerical
+  campaign about a declared component model") fits the optimisation campaign
+  because L0 + the declared closure CL-1 is the component model; the
+  screening studies did not fit it because they screen a design space and two
+  are nulls. Record the fit in a `kind_justification` field on the gate and in
+  the gate-kind description rather than leaving it implicit.
+- [self] "Optimiser evidence, not performance evidence" has to be carried by
+  the artifacts, not only by prose: the manifest's policy metrics
+  (`thruster_performance_claim_forbidden`, `design_recommendation_forbidden`,
+  `optimiser_superiority_beyond_recorded_budget_forbidden`,
+  `geometry_variables_excluded`, `closure_declared_not_derived`,
+  `campaign_policy_benchmark_results_populated: false`) are fixed values the
+  checker refuses to see changed, and the scope claim's `non_claims` must
+  appear verbatim in the section.
+- [self] A bundle whose frozen files are pretty-printed while the sealed copies
+  are canonical JSON is not a byte match; compare the parsed payloads and say
+  so in the manifest (`frozen_files_equal_sealed_copies`) instead of relaxing
+  the blob binding of the frozen files at the preregistration commit.
+- [self] An independent extraction of the same bundle (the results dashboard)
+  is worth binding: pin its revision, require its embedded payload to equal
+  the sealed artifacts before writing any macro, and bind its files by
+  LF-normalised SHA-256 equal to the blob at that revision. It costs one
+  fail-closed dependency and buys a second reader of every headline number.
+- [self] Numbers that live only inside a protocol's free-text disclosure (the
+  four-cell solver probe: 13/80, residual floors, seconds per solve) can still
+  be macro-bound: parse them with a fixed regular expression as derived
+  macros whose derivation names the pattern and the pointer, and fail closed
+  if the text stops matching.
+- [self] The literal-digit rule shapes the prose: "L0", "CL-1", "v4",
+  "Xe$^{2+}$", "$p_1..p_4$", "16 of 64" and "U[0, 0.45]" are all digits.
+  Render identifiers through `ident` macros (`\MdoFidelity`, `\MdoClosureId`),
+  refer to the wall-loss campaign by `\ref`, count things with macros
+  (`\MdoCellCount`, `\MdoTailCount{} of \MdoSampleCount`) and put the closure
+  formula in the manuscript's section intro, where digits are allowed and the
+  quantitative heuristic sees no unit after them.
+- [self] The claim text must report the artifact, not the task brief: the
+  Jeffreys scenario gives a maximum thrust of 2.70e-9 N, not "zero thrust";
+  the lifecycle took 27.3 min, not "28 min". Keep the words ("that is no
+  beam") and let the macro carry the number.
+- [self] A statement that was true at the previous admission can become false
+  at the next one: the Limitations sentence "no admitted hypervolume result or
+  baseline comparison" had to be rewritten, and a test now asserts its
+  absence. Re-read every boundary sentence of the manuscript when a new gate
+  opens.
+- [tool] `pdflatex` reports an overfull table as "lines N--N" of the *section*
+  file at the macro-invocation line, not of the generated file that holds the
+  tabular; look for the `(sections/...)` context in the log to find the file.
+- [tool] Eight-column tables with `\times10^{}` cells overflow `\footnotesize`
+  by ~230 pt on a 468 pt text width; `>{\raggedright\arraybackslash}p{}` for
+  the two text columns, `\shortstack` two-line headers and `\scriptsize`
+  bring them under width without shortening any value.

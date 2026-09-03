@@ -28,7 +28,13 @@ definition) and the developmental characterization
 `3ce6c546194e1d3e943d0b3d0951d03e15e354d9`, preregistration `af88470b…`;
 `GATE-TOPOLOGY-CHAR-V1`, `recorded-characterization`: 0 stable eligible cusps
 or cells over 56 designs). A null is admitted as a null under its frozen
-definitions, never as proof that no such design exists. The checked evidence is
+definitions, never as proof that no such design exists. One further
+`numerical-campaign` gate, `GATE-MDO-L0-V1`, admits the preregistered robust
+multi-objective optimisation campaign of the L0 model
+`modern/experiments/mdo_l0_campaign_v1` (results
+`c553124b7393890d8ee9c6fc022e536c8a1fd35e`, preregistration `4898d0fd…`,
+dashboard `e642f38c…`) as optimiser evidence under the declared closure CL-1:
+it makes no thruster-performance claim. The checked evidence is
 enumerated in `evidence/claims.json`. Concurrent or later work is not
 publishable merely because files exist in a working tree: a planned section
 opens only when its gate in `evidence/result-gates.json` names an accepted,
@@ -46,7 +52,14 @@ topology-screening studies use linear-vacuum L1a equivalent-current fields
 (no permanent-magnet or nonlinear-iron material model); their axis cusps are
 sampled-axis descriptors, their mirror ratios are screening QoIs, and none of
 them demonstrates a stable multi-cell wall-cusp topology, claims plasma or
-performance content, or opens `GATE-L1`.
+performance content, or opens `GATE-L1`. The optimisation campaign is
+classified
+`l0_model_robust_multiobjective_optimisation_under_declared_input_uncertainty_not_thruster_performance`:
+its estimands are properties of the optimisers (hypervolume per budget, paired
+comparisons, seed variance, Pareto sizes) and of the declared evaluation chain
+(robust-versus-nominal fronts, sensitivity to the cusp prior); every number is
+conditional on the declared closure and priors; geometry is excluded because no
+geometry-to-L0 map survives the audit; it opens none of L1--L3.
 
 ## Reproduce checks and build
 
@@ -83,10 +96,19 @@ it does not modify the environment.
 - `evidence/manifest-schemas.json` — recognized manifest types, versions,
   file roles, and required metrics.
 - `evidence/result-gates.json` — explicit L1/L2/L3 admission criteria
-  (`physics-level` gates), the accepted `numerical-campaign` gate
-  `GATE-WALL-LOSS-V4`, and the three `numerical-screening` gates
-  `GATE-L1A-SWEEP-V2`, `GATE-FOUR-CELL-V2` and `GATE-TOPOLOGY-CHAR-V1`, each
-  carrying its `recorded_outcome`.
+  (`physics-level` gates), the accepted `numerical-campaign` gates
+  `GATE-WALL-LOSS-V4` and `GATE-MDO-L0-V1`, and the three
+  `numerical-screening` gates `GATE-L1A-SWEEP-V2`, `GATE-FOUR-CELL-V2` and
+  `GATE-TOPOLOGY-CHAR-V1`, each carrying its `recorded_outcome`.
+- `evidence/manifests/mdo-l0-v1.json` — typed campaign manifest
+  (`paper-mdo-campaign-manifest` 1.0) binding every consumed bundle file by
+  Git blob and SHA-256 at the results revision, the frozen preregistration
+  files, the results dashboard at its own revision, and the metrics the
+  checker compares with the raw artifact values behind the `\Mdo...` macros.
+- `evidence/mdo-l0-v1.json`, `generated/mdo-l0-v1.tex`,
+  `sections/mdo-l0-v1.tex` — hash-bound evidence file, generated macros with
+  three `\ArtifactClaim` tables, and the admitted macro-only subsection bound
+  once by `\input` from Section 9 of `manuscript.tex`.
 - `evidence/manifests/{l1a-sweep-v2,four-cell-v2,topology-characterization-v1}.json`
   — typed screening manifests (`paper-l1a-screening-manifest` 1.0) binding
   every bundle file by Git blob and SHA-256 at the results revision, the frozen
@@ -204,4 +226,42 @@ Discussion claim on the multi-cell topology to be macro-bound.
 ```powershell
 python paper/scripts/generate_topology_screening_evidence.py
 python -m unittest discover -s paper/tests -p "test_topology_screening*" -v
+```
+
+## Admitted numerical campaign: MDO L0 campaign v1
+
+`paper/scripts/generate_mdo_l0_v1_evidence.py` reads the sealed results bundle
+of `modern/experiments/mdo_l0_campaign_v1` (137 files verified byte for byte
+against `results/manifest.json`; no end-of-line tolerance exists or is
+granted), requires the frozen `protocol.json`, `authorities.json` and
+`shakedown.json` to equal the sealed copies, cross-checks the committed results
+dashboard (`modern/visualization/mdo-l0-campaign-v1.html` and its generator,
+bound at `e642f38c`) against the same bundle, and writes
+`paper/evidence/mdo-l0-v1.json` (every `\Mdo...` macro with its artifact path,
+JSON pointer, formatter and SHA-256, or its derivation and inputs),
+`paper/generated/mdo-l0-v1.tex` (macros plus three tables wrapped in
+`\ArtifactClaim`: hypervolume per optimiser and seed, robust versus nominal
+fronts, alternative priors and fixed scenarios) and the provenance sidecar.
+The subsection `paper/sections/mdo-l0-v1.tex` renders numbers only through
+macros; its results, robust-versus-nominal, sensitivity and scope statements
+are exact `\EvidenceClaim` bodies (CLM-030, CLM-032, CLM-033, CLM-034), the
+abstract sentence is CLM-029 and the labelled Discussion interpretation is
+CLM-035. The gate reuses the `numerical-campaign` kind because the campaign is
+one accepted campaign on a declared component model (L0 under the declared
+closure CL-1); it is optimiser evidence, not performance evidence, and
+`opens_level` is null.
+
+`check_paper.py` regenerates the three generated files at every run and fails
+closed on any byte difference, any artifact hash mismatch, any manifest metric
+that differs (in value or type) from the raw artifact value behind its macro,
+any policy metric off its fixed value, a dashboard checkout that differs from
+the blob bound at the dashboard revision, a results tree changed since the
+evidence revision, a frozen file changed since preregistration, a literal digit
+or undefined macro in the section, a classification or closure macro that does
+not render its string, a missing registered non-claim, or a
+`\MdoEvidenceRevision` macro that does not spell the manifest revision.
+
+```powershell
+python paper/scripts/generate_mdo_l0_v1_evidence.py
+python -m unittest discover -s paper/tests -p "test_mdo*" -v
 ```
