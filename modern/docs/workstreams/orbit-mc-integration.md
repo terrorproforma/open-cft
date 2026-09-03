@@ -170,3 +170,27 @@ counts, event fractions and event positions agree to roundoff.
 
 No self-consistent E, collision, space-charge, sheath, plasma-response or PIC
 claim may be inferred from a successful handoff.
+
+## First consumer of the coupling v4.2 export (geometry screening v1)
+
+`modern/experiments/orbit_wall_loss_geometry_screening_v1/consumer.py` is the
+first code that *consumes* the `cft-revival-orbit-mc-coupling-v4.2/1.3.0`
+handoff instead of only producing it. It re-derives every derived quantity
+(success count from `probability * trial_count`, the Wilson 95 % interval, the
+binomial standard uncertainty), enforces the closed key set and constants of
+`spec/orbit_mc/coupling-v4.2-handoff-v1.schema.json`, and binds
+`orbit_result_artifact_sha256` to the sealed artifact's sidecar hash. It runs
+inside the sealing worker for every screening case (196 handoffs consumed) and
+on the accepted v4 export (`cft_orbit_wall_loss_v4/results/artifacts/
+coupling-export-only.json`, byte-verified against the v4 sidecar), which is
+carried as a labelled reference row because the divergent-exit design is not a
+sweep-v2 design. Consumption does not change the handoff's
+`integration_status`; the screening dataset is labelled
+`SCREENING_L1A_FIELD_TEST_PARTICLE_WALL_LOSS` and is not accepted physical-orbit
+evidence.
+
+Contract note learned there: `result_artifact` requires all three
+`convergence_evidence` flags to be true, so a many-design campaign must assess
+each design's N->2N convergence before sealing and may legitimately leave a
+non-converged design unsealed (reported, no handoff). In v1 all 96 designs
+converged and were sealed.

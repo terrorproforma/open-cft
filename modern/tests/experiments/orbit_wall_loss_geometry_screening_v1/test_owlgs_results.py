@@ -7,6 +7,7 @@ import gzip
 import hashlib
 import io
 import json
+from dataclasses import asdict
 from pathlib import Path
 
 import pytest
@@ -102,7 +103,7 @@ def test_dataset_rows_agree_with_sealed_summaries_and_endpoints(dataset: dict) -
         assert row["gates"]["converged"] == convergence["converged"]
         assert row["gates"]["sealed"] == convergence["converged"]
         reported = row["reported"]["wall_hit"]
-        assert reported == {**reported, **json.loads(json.dumps(wilson_interval(reported["successes"], reported["trials"]).__dict__))}
+        assert reported == asdict(wilson_interval(reported["successes"], reported["trials"]))
         total = sum(row["per_stratum"]["accepted-2N"][i]["wall_hit"] for i in range(32))
         assert total == reported["successes"]
 
