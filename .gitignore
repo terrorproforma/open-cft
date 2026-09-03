@@ -115,6 +115,22 @@ modern/experiments/pic2d_cft_steady_state_v1/results/series.jsonl
 modern/experiments/pic2d_cft_steady_state_v1/results/*.pid
 modern/experiments/pic2d_cft_steady_state_v1/results/*.log
 modern/experiments/pic2d_cft_steady_state_v1/results/*.err
-# PIC-2D steady-state v2 (model v1.3, in flight): the live results/ is covered by the
-# generic rule; the archived attempt directories stay untracked until the run ends.
-modern/experiments/pic2d_cft_steady_state_v2/results-*/
+# PIC-2D steady-state v2 (model v1.3): plateau run (results/) and the archived
+# no-ignition attempt 1; same tracked/untracked split as v1.
+!modern/experiments/pic2d_cft_steady_state_v2/results/
+!modern/experiments/pic2d_cft_steady_state_v2/results/maps.npz
+!modern/experiments/pic2d_cft_steady_state_v2/results/series.npz
+!modern/experiments/pic2d_cft_steady_state_v2/results-attempt1-ng0-5e19-seed1e16/
+!modern/experiments/pic2d_cft_steady_state_v2/results-attempt1-ng0-5e19-seed1e16/maps.npz
+!modern/experiments/pic2d_cft_steady_state_v2/results-attempt1-ng0-5e19-seed1e16/series.npz
+modern/experiments/pic2d_cft_steady_state_v2/results*/checkpoint/
+modern/experiments/pic2d_cft_steady_state_v2/results*/checkpoint-tmp/
+modern/experiments/pic2d_cft_steady_state_v2/results*/checkpoint-old/
+modern/experiments/pic2d_cft_steady_state_v2/results*/checkpoint-final.npz*
+modern/experiments/pic2d_cft_steady_state_v2/results*/series.jsonl
+modern/experiments/pic2d_cft_steady_state_v2/results*/*.pid
+modern/experiments/pic2d_cft_steady_state_v2/results*/*.log
+modern/experiments/pic2d_cft_steady_state_v2/results*/*.err
+# convergence pair (seed-b, w-half) results stay untracked until each case ends
+modern/experiments/pic2d_cft_steady_state_v2/results-seed-b/
+modern/experiments/pic2d_cft_steady_state_v2/results-w-half/
