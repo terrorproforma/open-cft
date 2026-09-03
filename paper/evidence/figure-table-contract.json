@@ -197,6 +197,32 @@
       "required_gate": "GATE-MDO-L0-V2"
     },
     {
+      "id": "TAB-CUSP-TOPOLOGY-V3-1",
+      "kind": "table",
+      "status": "verified",
+      "manuscript_label": "tab:cusp-topology-v3-1-histogram",
+      "manuscript_labels": [
+        "tab:cusp-topology-v3-1-histogram",
+        "tab:cusp-topology-v3-1-sweep-stages",
+        "tab:cusp-topology-v3-1-p2",
+        "tab:cusp-topology-v3-1-lineage"
+      ],
+      "manuscript_binding": "\\input{generated/cusp-topology-v3-1.tex}",
+      "claim_ids": [
+        "CLM-063"
+      ],
+      "manifest_id": "CUSP-TOPOLOGY-V3-1-20260903-281-V1",
+      "generator_path": "paper/scripts/generate_cusp_topology_v3_1_evidence.py",
+      "generator_module": "generate_cusp_topology_v3_1_evidence",
+      "generator_command": "python paper/scripts/generate_cusp_topology_v3_1_evidence.py",
+      "output_path": "paper/generated/cusp-topology-v3-1.tex",
+      "sidecar_path": "paper/generated/cusp-topology-v3-1.provenance.json",
+      "artifact_claim_count": 4,
+      "artifact_claim_note": "The generated file defines the evidence macros and four table macros (\\CtvHistogramTable, \\CtvSweepStageTable, \\CtvPTwoTable, \\CtvLineageTable); each table body is wrapped in its own ArtifactClaim bound to CLM-063, so exactly four ArtifactClaim macros are required. The tables report a geometric topology screening of prescribed field maps under the literature cusp definition: the cusp-count histogram per design set, the sweep resolved by stage count with cell descriptors that are field ratios, the P2 row against two recorded ungated references, and the lineage of the recorded predecessor rejection; nothing in them is a plasma, confinement or performance quantity.",
+      "evidence_file": "paper/evidence/cusp-topology-v3-1.json",
+      "required_gate": "GATE-CUSP-TOPOLOGY-V3-1"
+    },
+    {
       "id": "FIG-ARCHITECTURE",
       "kind": "figure",
       "status": "planned-nonresult",

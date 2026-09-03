@@ -11,6 +11,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
+import generate_cusp_topology_v3_1_evidence as cusp_topology
 import generate_four_cell_closure_evidence as four_cell_closure
 import generate_mdo_l0_v1_evidence as mdo_l0_v1
 import generate_mdo_l0_v2_evidence as mdo_l0_v2
@@ -33,6 +34,7 @@ REQUIRED_SECTIONS = (
     "Consistency of the four-cell power balance",
     "Preregistered wall-loss screening across the accepted sweep geometries",
     "Preregistered catalogue optimisation of the L0 model over the screened sweep designs",
+    "Preregistered cusp topology under the literature definition",
     "Planned L1 result: field-resolved reduction",
     "Planned L2 result: coupled hybrid model",
     "Planned L3 result: PIC and experimental comparison",
@@ -46,8 +48,9 @@ REQUIRED_SECTIONS = (
 # preregistered numerical campaign that opens no paper level; numerical-screening
 # gates admit one preregistered, single-execution screening study on L1a
 # linear-vacuum fields at its recorded outcome (accepted screening, preregistered
-# null, recorded characterization, or an accepted test-particle screening dataset
-# over those fields) and open no paper level either; analytic-consistency gates
+# null, recorded characterization, an accepted test-particle screening dataset
+# over those fields, or an accepted separatrix cusp-topology screening of those
+# fields plus one P2-qualified row) and open no paper level either; analytic-consistency gates
 # admit one analytic consistency result about a declared equation set (a
 # derivation whose closed form is verified numerically to a stated tolerance and
 # pinned by committed tests, recomputed by the checker at every run) and open no
@@ -57,7 +60,13 @@ CAMPAIGN_GATE_KIND = "numerical-campaign"
 SCREENING_GATE_KIND = topology_screening.GATE_KIND
 ANALYTIC_GATE_KIND = four_cell_closure.GATE_KIND
 SCREENING_OUTCOMES = frozenset(
-    {"accepted-screening", "preregistered-null", "recorded-characterization", geometry_screening.RECORDED_OUTCOME}
+    {
+        "accepted-screening",
+        "preregistered-null",
+        "recorded-characterization",
+        geometry_screening.RECORDED_OUTCOME,
+        cusp_topology.RECORDED_OUTCOME,
+    }
 )
 KNOWN_GATE_KINDS = frozenset({PHYSICS_GATE_KIND, CAMPAIGN_GATE_KIND, SCREENING_GATE_KIND, ANALYTIC_GATE_KIND})
 PHYSICS_GATE_IDS = frozenset({"GATE-L1", "GATE-L2", "GATE-L3"})
@@ -260,6 +269,154 @@ GEOMETRY_SCREENING_POLICY_METRICS = {
     "field_p2_qualified": False,
     "design_rule_claimed": False,
     "surrogate_or_mdo_input_requires_label": True,
+}
+
+# Cusp topology search v3.1 manifest metric -> evidence macro whose raw artifact value it
+# must equal (type-equal).  The study is a numerical-screening gate at the recorded outcome
+# accepted-topology-screening: the HEMP/DCFT literature cusp definition (axis null ->
+# separatrix -> wall intersection) evaluated on 281 prescribed field maps (three L1a sets
+# and one P2-qualified row), admitted as a geometric field screening whose cells and
+# mirror ratios are descriptors, never plasma quantities.
+CUSP_TOPOLOGY_METRIC_MACROS = {
+    "classification": "CtvClassification",
+    "p2_row_classification": "CtvPTwoClassification",
+    "recorded_outcome": "CtvRecordedOutcome",
+    "screening_model": "CtvScreeningModel",
+    "campaign_status": "CtvCampaignStatus",
+    "terminal_state": "CtvTerminalState",
+    "attempt_count": "CtvAttemptCount",
+    "declared_count": "CtvDeclaredDesigns",
+    "evaluated_count": "CtvDesignCount",
+    "failed_cases_count": "CtvFailedDesigns",
+    "design_set_count": "CtvSetCount",
+    "sweep_design_count": "CtvSweepCount",
+    "four_cell_candidate_count": "CtvFourCellCount",
+    "characterization_case_count": "CtvCharVCount",
+    "p2_row_count": "CtvPTwoCount",
+    "representative_count": "CtvRepresentativeCount",
+    "binding_gate_count": "CtvBindingGateCount",
+    "binding_gates_true": "CtvBindingGatesTrue",
+    "replay_designs": "CtvReplayDesigns",
+    "replays_bit_identical": "CtvReplaysBitIdentical",
+    "stable_design_count": "CtvStableDesigns",
+    "maximum_wall_intersection_shift_m": "CtvMaxWallShiftUm",
+    "maximum_axis_null_shift_m": "CtvMaxAxisShiftUm",
+    "stability_tolerance_m": "CtvStabilityToleranceUm",
+    "held_out_tolerance_m": "CtvHeldOutToleranceUm",
+    "held_out_characterization_passed": "CtvHeldOutCharPassed",
+    "held_out_characterization_designs": "CtvHeldOutCharDesigns",
+    "held_out_characterization_nulls": "CtvHeldOutCharNulls",
+    "held_out_characterization_max_difference_m": "CtvHeldOutCharMaxUm",
+    "held_out_sweep_passed": "CtvHeldOutSweepPassed",
+    "held_out_sweep_designs": "CtvHeldOutSweepDesigns",
+    "held_out_sweep_nulls": "CtvHeldOutSweepNulls",
+    "held_out_sweep_max_difference_m": "CtvHeldOutSweepMaxUm",
+    "wall_cusp_count_histogram": "CtvHistogramText",
+    "designs_with_zero_cusps": "CtvHistZero",
+    "designs_with_one_cusp": "CtvHistOne",
+    "designs_with_two_cusps": "CtvHistTwo",
+    "designs_with_three_cusps": "CtvHistThree",
+    "designs_with_four_cusps": "CtvHistFour",
+    "designs_with_five_cusps": "CtvHistFive",
+    "designs_with_six_cusps": "CtvHistSix",
+    "designs_with_seven_cusps": "CtvHistSeven",
+    "wall_cusp_total": "CtvCuspCountAll",
+    "designs_with_at_least_one_cusp": "CtvWithCuspAll",
+    "designs_with_at_least_two_cusps": "CtvWithTwoCuspsAll",
+    "four_wall_cusp_designs": "CtvFourWallCuspsAll",
+    "four_cell_designs": "CtvFourCellsAll",
+    "sweep_four_wall_cusp_fraction": "CtvSweepFourWallCuspFraction",
+    "sweep_four_cell_fraction": "CtvSweepFourCellFraction",
+    "sweep_four_wall_cusp_designs": "CtvSweepFourWallCusps",
+    "sweep_four_cell_designs": "CtvSweepFourCells",
+    "sweep_two_cusp_designs": "CtvSweepHistTwo",
+    "sweep_three_cusp_designs": "CtvSweepHistThree",
+    "sweep_four_cusp_designs": "CtvSweepHistFour",
+    "sweep_n_minus_one_designs": "CtvSweepNMinusOne",
+    "sweep_n_minus_two_designs": "CtvSweepNMinusTwo",
+    "sweep_n_plus_one_designs": "CtvSweepNPlusOne",
+    "sweep_cusps_equal_channel_nulls": "CtvSweepCuspsEqualChannelNulls",
+    "sweep_gap_distance_median_m": "CtvSweepGapMedianMm",
+    "sweep_gap_distance_maximum_m": "CtvSweepGapMaxMm",
+    "sweep_interior_cell_count": "CtvSweepInteriorCells",
+    "sweep_interior_length_pitch_minimum": "CtvSweepInteriorLengthPitchMin",
+    "sweep_interior_length_pitch_maximum": "CtvSweepInteriorLengthPitchMax",
+    "sweep_interior_wall_mirror_minimum": "CtvSweepInteriorWallMirrorMin",
+    "sweep_interior_wall_mirror_maximum": "CtvSweepInteriorWallMirrorMax",
+    "sweep_interior_axis_mirror_minimum": "CtvSweepInteriorAxisMirrorMin",
+    "sweep_interior_axis_mirror_maximum": "CtvSweepInteriorAxisMirrorMax",
+    "sweep_angle_median_deg": "CtvSweepAngleMedianDeg",
+    "four_cell_one_cusp_designs": "CtvFourCellOneCusp",
+    "four_cell_one_axis_null_designs": "CtvFourCellOneAxisNull",
+    "four_cell_strength_ratio_minimum": "CtvFourCellStrengthRatioMin",
+    "four_cell_strength_ratio_maximum": "CtvFourCellStrengthRatioMax",
+    "four_cell_reference_stable_count": "CtvFourCellReferenceStable",
+    "characterization_reference_eligible_cusps": "CtvCharVReferenceEligibleCusps",
+    "characterization_reference_eligible_cells": "CtvCharVReferenceEligibleCells",
+    "characterization_n_minus_one_designs": "CtvCharVNMinusOne",
+    "characterization_interior_axis_mirror_minimum": "CtvCharVInteriorAxisMirrorMin",
+    "characterization_interior_axis_mirror_maximum": "CtvCharVInteriorAxisMirrorMax",
+    "characterization_channel_roots": "CtvVOneChannelRoots",
+    "characterization_channel_axis_roots": "CtvVOneChannelAxisRoots",
+    "characterization_channel_off_axis_roots": "CtvVOneChannelOffAxisRoots",
+    "characterization_off_axis_radius_fraction_maximum": "CtvVOneOffAxisRadiusFractionMax",
+    "characterization_off_axis_eligible": "CtvVOneOffAxisEligible",
+    "p2_wall_cusp_count": "CtvPTwoCusps",
+    "p2_cell_count": "CtvPTwoCells",
+    "p2_cusp_positions_m": "CtvPTwoCuspPositionsMm",
+    "p2_axis_null_to_pic_plane_maximum_m": "CtvPTwoNullToPicMaxUm",
+    "p2_cusp_to_dashboard_maximum_m": "CtvPTwoToDashboardMaxMm",
+    "p2_cusp_count_equals_reference_count": "CtvPTwoCountEqualsReference",
+    "p2_boundary_ambiguous_cusps": "CtvPTwoAmbiguousCusps",
+    "p2_third_cusp_inside_end_m": "CtvPTwoThirdCuspInsideEndUm",
+    "flux_root_maximum_difference_m": "CtvFluxRootMaxDiff",
+    "wall_trace_count": "CtvWallTraceCount",
+    "lineage_terminal_state": "CtvLineageTerminalState",
+    "lineage_campaign_status": "CtvLineageCampaignStatus",
+    "lineage_failing_gate": "CtvLineageFailingGate",
+    "lineage_failing_designs": "CtvLineageFailingDesigns",
+    "lineage_gates_true": "CtvLineageGatesTrue",
+    "lineage_stable_design_count": "CtvLineageStable",
+    "lineage_histogram_equal": "CtvLineageHistogramEqual",
+    "lineage_sealed_axis_clusters": "CtvLineageSealedAxisClusters",
+    "lineage_dropped_clusters": "CtvLineageDroppedClusters",
+    "lineage_dropped_in_channel": "CtvLineageDroppedInChannel",
+    "lineage_corrected_passed": "CtvLineageCorrectedPassed",
+    "lineage_failures_explained": "CtvLineageFailuresExplained",
+    "lineage_verified_file_count": "CtvLineageVerifiedFiles",
+    "shakedown_passed": "CtvShakedownPassed",
+    "shakedown_evidentiary": "CtvShakedownEvidentiary",
+    "literature_source_count": "CtvLiteratureSourceCount",
+    "mirror_ratios_are_field_descriptors_not_probabilities": "CtvMirrorDescriptorsNotProbabilities",
+    "mirror_probability_publication_forbidden": "CtvForbidMirrorProbability",
+    "plasma_or_performance_claim_forbidden": "CtvForbidPlasmaPerformance",
+    "confinement_cells_demonstrated": "CtvConfinementCellsDemonstrated",
+    "frozen_definition_nulls_remain_true": "CtvFrozenDefinitionNullsRemainTrue",
+    "iron_sensitivity_tested": "CtvIronSensitivityTested",
+    "hardware_or_experimental_validation": "CtvHardwareValidation",
+    "physics_level_opened": "CtvPhysicsLevelOpened",
+    "tolerated_eol_file_count": "CtvToleratedEolFiles",
+    "verified_file_count": "CtvVerifiedFiles",
+}
+# Policy metrics the cusp-topology manifest must carry with exactly these values.  The
+# shared screening flag ``stable_multicell_wall_cusp_topology_demonstrated`` is deliberately
+# not reused here: it was defined against the frozen wall-null definition, which this study
+# does not evaluate; the corresponding statement is carried by the two explicit flags below.
+CUSP_TOPOLOGY_POLICY_METRICS = {
+    "preregistered_one_shot": True,
+    "hardware_or_experimental_validation": False,
+    "l1a_sets_permanent_magnet_material_model": False,
+    "p2_row_iron_present": True,
+    "iron_sensitivity_tested": False,
+    "plasma_or_performance_claim_forbidden": True,
+    "mirror_probability_publication_forbidden": True,
+    "mirror_ratios_are_field_descriptors_not_probabilities": True,
+    "confinement_cells_demonstrated": False,
+    "frozen_definition_nulls_remain_true": True,
+    "multicell_wall_cusp_topology_under_frozen_definition_demonstrated": False,
+    "catalogue_is_consumer_contract_under_label": True,
+    "lineage_cited_for_numbers": False,
+    "physics_level_opened": False,
 }
 
 # Campaign manifest metric -> evidence macro whose raw artifact value it must equal.
@@ -909,6 +1066,40 @@ EXPECTED_MANIFEST_TYPES = {
             ]
         ),
         "required_metrics": sorted({*GEOMETRY_SCREENING_METRIC_MACROS, *GEOMETRY_SCREENING_POLICY_METRICS}),
+    },
+    "paper-separatrix-topology-screening-manifest": {
+        "supported_versions": ["1.0"],
+        "level": "numerical-screening",
+        "required_file_roles": sorted(
+            [
+                "authorities",
+                "binding-gates",
+                "campaign-plan",
+                "campaign-result",
+                "catalogue",
+                "dataset-csv",
+                "design-authorities",
+                "design-failures",
+                "design-record",
+                "execution-lock",
+                "field-grid",
+                "preregistered-authorities",
+                "preregistered-design-authorities",
+                "preregistered-protocol",
+                "preregistered-shakedown",
+                "primary-dataset",
+                "primary-dataset-sidecar",
+                "protocol",
+                "results-manifest",
+                "runtime",
+                "shakedown",
+                "source-binding",
+                "terminal-record",
+                "terminal-record-sidecar",
+                "transition",
+            ]
+        ),
+        "required_metrics": sorted({*CUSP_TOPOLOGY_METRIC_MACROS, *CUSP_TOPOLOGY_POLICY_METRICS}),
     },
 }
 
@@ -3219,10 +3410,503 @@ def _check_geometry_screening(
         errors.append(f"{label}: section heading must appear exactly once in the flattened manuscript")
 
 
+def _committed_blobs(repo: Path, revision: str, paths: list[str]) -> dict[str, tuple[str, str]]:
+    """Path -> (git blob, blob SHA-256) at ``revision`` for many files in two git calls."""
+
+    listing = subprocess.run(
+        ["git", "ls-tree", "-r", "-z", revision, "--", *paths], cwd=repo, check=True, capture_output=True,
+    ).stdout
+    blobs: dict[str, str] = {}
+    for record in listing.split(b"\0"):
+        if not record:
+            continue
+        meta, path = record.split(b"\t", 1)
+        blobs[path.decode("utf-8")] = meta.split(b" ")[2].decode("ascii")
+    ordered = [blobs[path] for path in paths if path in blobs]
+    contents = subprocess.run(
+        ["git", "cat-file", "--batch"], cwd=repo, check=True, capture_output=True, input=("\n".join(ordered) + "\n").encode("ascii"),
+    ).stdout
+    digests: dict[str, str] = {}
+    cursor = 0
+    for blob in ordered:
+        header_end = contents.index(b"\n", cursor)
+        header = contents[cursor:header_end].split(b" ")
+        size = int(header[2])
+        body = contents[header_end + 1:header_end + 1 + size]
+        digests[blob] = sha256_bytes(body)
+        cursor = header_end + 1 + size + 1
+    return {path: (blob, digests[blob]) for path, blob in blobs.items() if path in paths}
+
+
+def _check_bound_files_at_revision(
+    repo: Path, entries: object, expected: dict[str, dict[str, Any]], errors: list[str], label: str, *, role_prefix: str | None = None
+) -> None:
+    """Every manifest entry of a revision-bound file group must match the evidence file's binding."""
+
+    if not isinstance(entries, list):
+        errors.append(f"{label}: file group must be an array")
+        return
+    seen = {entry.get("path") for entry in entries if isinstance(entry, dict)}
+    if seen != set(expected):
+        errors.append(f"{label}: file group differs between manifest and evidence file")
+    head = _run_git(repo, "rev-parse", "HEAD")
+    by_revision: dict[str, list[dict[str, Any]]] = {}
+    resolvable: dict[object, bool] = {}
+    for entry in entries:
+        revision = entry.get("revision") if isinstance(entry, dict) else None
+        if revision not in resolvable:
+            resolvable[revision] = _resolves_to_commit(repo, revision)
+        if not isinstance(entry, dict) or not resolvable[revision]:
+            errors.append(f"{label}: entry lacks a resolvable revision")
+            continue
+        meta = expected.get(str(entry.get("path")))
+        if meta is None:
+            continue
+        if entry.get("revision") != meta.get("revision"):
+            errors.append(f"{label}: revision differs from the evidence file: {entry.get('path')}")
+        if role_prefix is not None and not str(entry.get("role", "")).startswith(role_prefix):
+            errors.append(f"{label}: entry must carry a {role_prefix} role: {entry.get('path')}")
+        if entry.get("role") != meta.get("role"):
+            errors.append(f"{label}: role differs from the evidence file: {entry.get('path')}")
+        for key in ("path", "git_blob", "git_blob_sha256", "role"):
+            if not isinstance(entry.get(key), str):
+                errors.append(f"{label}: entry lacks string {key}: {entry.get('path')}")
+        by_revision.setdefault(str(entry["revision"]), []).append(entry)
+        on_disk = repo / str(entry.get("path"))
+        if not on_disk.is_file():
+            errors.append(f"{label}: bound file missing on disk: {entry.get('path')}")
+        else:
+            raw = on_disk.read_bytes()
+            if sha256_bytes(raw) != meta.get("sha256") or len(raw) != meta.get("bytes"):
+                errors.append(f"{label}: bound file on disk differs from the evidence binding: {entry.get('path')}")
+    for revision, group in by_revision.items():
+        if not _is_ancestor(repo, revision, head):
+            errors.append(f"{label}: revision is not an ancestor of HEAD: {revision}")
+        try:
+            committed = _committed_blobs(repo, revision, [str(entry["path"]) for entry in group if isinstance(entry.get("path"), str)])
+        except (subprocess.CalledProcessError, ValueError, IndexError) as exc:
+            errors.append(f"{label}: cannot resolve committed sources at {revision}: {exc}")
+            continue
+        for entry in group:
+            path = str(entry.get("path"))
+            if path not in committed:
+                errors.append(f"{label}: cannot resolve committed source: {path} at {revision}")
+                continue
+            blob, digest = committed[path]
+            if entry.get("git_blob") != blob:
+                errors.append(f"{label}: Git blob mismatch: {path}")
+            if entry.get("git_blob_sha256") != digest:
+                errors.append(f"{label}: SHA-256 mismatch: {path}")
+
+
+def _check_cusp_topology_screening(
+    repo: Path,
+    gate: dict[str, Any],
+    payload: dict[str, Any],
+    manuscript: str,
+    flattened: str,
+    matrix: dict[str, Any],
+    errors: list[str],
+) -> None:
+    """Verify the admitted cusp topology search v3.1 end to end.
+
+    The fifth ``numerical-screening`` gate admits the separatrix cusp-topology
+    screening of 281 prescribed field maps at its recorded outcome
+    ``accepted-topology-screening``.  Beyond the typed-manifest validation already
+    performed, this check mirrors ``_check_geometry_screening`` and adds the
+    lineage bindings of the recorded ``assessment_rejection`` (whose whole bundle
+    the generator byte-verifies and whose post-hoc audit it reproduces), the
+    reference bindings of the sealed datasets the campaign compared against, and
+    the definition-source binding of the literature review: byte-identical
+    regeneration of evidence/TeX/sidecar (which re-derives the headline and every
+    per-set estimand from the rows and cross-checks every design record, field
+    grid, catalogue entry and CSV row), artifact hashes on disk with no
+    end-of-line tolerance, the dashboard bound at its revision and equal to the
+    checkout, metric == raw macro value with type equality, policy metrics,
+    results trees unchanged, preregistration -> results chains with the frozen
+    files unchanged (both campaigns), the recorded outcome and classification
+    agreeing everywhere, the macro-only section with no literal digit, the four
+    ArtifactClaim tables, the registered non-claims, bindings exactly once, the
+    revision macro and the claim-matrix cross-references.
+    """
+
+    gate_id = str(gate.get("id"))
+    label = f"{gate_id} screening"
+    if payload.get("experiment_id") != cusp_topology.EXPERIMENT_ID:
+        errors.append(f"{label}: manifest experiment_id is not the registered screening study")
+        return
+    try:
+        evidence_bytes, tex_bytes, sidecar_bytes = cusp_topology.render(repo)
+    except (OSError, ValueError, KeyError, TypeError, json.JSONDecodeError) as exc:
+        errors.append(f"{label}: evidence regeneration from the sealed bundle failed: {exc}")
+        return
+    evidence = json.loads(evidence_bytes)
+    evidence_meta = payload.get("paper_evidence_file")
+    if not isinstance(evidence_meta, dict) or evidence_meta.get("path") != cusp_topology.EVIDENCE_PATH.as_posix():
+        errors.append(f"{label}: manifest paper_evidence_file.path differs from the registered evidence file")
+        return
+    for path, expected, name in (
+        (repo / cusp_topology.EVIDENCE_PATH, evidence_bytes, "evidence file"),
+        (repo / cusp_topology.OUTPUT_PATH, tex_bytes, "generated TeX"),
+        (repo / cusp_topology.SIDECAR_PATH, sidecar_bytes, "provenance sidecar"),
+    ):
+        if not path.is_file() or path.read_bytes() != expected:
+            errors.append(f"{label}: committed {name} differs from regeneration")
+    if evidence_meta.get("document_type") != evidence.get("document_type"):
+        errors.append(f"{label}: evidence document_type differs from the manifest")
+    if evidence_meta.get("macro_count") != len(evidence.get("macros", [])):
+        errors.append(f"{label}: evidence macro count differs from the manifest")
+    if evidence_meta.get("macro_prefix") != cusp_topology.MACRO_PREFIX:
+        errors.append(f"{label}: evidence macro prefix differs from the manifest")
+
+    # Artifact hashes on disk (independent of the generator); no tolerance of any kind.
+    results_root = repo / cusp_topology.RESULTS
+    for relative, meta in evidence.get("artifacts", {}).items():
+        artifact = results_root / relative
+        if not artifact.is_file():
+            errors.append(f"{label}: evidence artifact missing on disk: {relative}")
+            continue
+        raw = artifact.read_bytes()
+        if sha256_bytes(raw) != meta.get("sha256") or len(raw) != meta.get("bytes"):
+            errors.append(f"{label}: evidence artifact hash mismatch: {relative}")
+    bundle = payload.get("results_bundle", {})
+    bundle_manifest = results_root / "manifest.json"
+    if not bundle_manifest.is_file():
+        errors.append(f"{label}: results manifest is missing on disk")
+    else:
+        digest = sha256_bytes(bundle_manifest.read_bytes())
+        if digest != evidence["bundle"]["manifest_sha256"] or digest != bundle.get("manifest_sha256"):
+            errors.append(f"{label}: results manifest SHA-256 differs from the evidence bindings")
+    if evidence["bundle"].get("tolerated_eol_files") != [] or bundle.get("tolerated_eol_files") != []:
+        errors.append(f"{label}: an end-of-line tolerance is declared for a bundle that needs none")
+    if bundle.get("verified_file_count") != evidence["bundle"].get("verified_file_count") or bundle.get("artifact_count") != evidence["bundle"].get("artifact_count"):
+        errors.append(f"{label}: bundle file counts differ between manifest and evidence file")
+    lineage_bundle = payload.get("lineage_bundle", {})
+    lineage_manifest = repo / cusp_topology.LINEAGE_RESULTS / "manifest.json"
+    if not lineage_manifest.is_file():
+        errors.append(f"{label}: lineage results manifest is missing on disk")
+    else:
+        digest = sha256_bytes(lineage_manifest.read_bytes())
+        if digest != evidence["lineage_bundle"]["manifest_sha256"] or digest != lineage_bundle.get("manifest_sha256"):
+            errors.append(f"{label}: lineage results manifest SHA-256 differs from the evidence bindings")
+    if lineage_bundle.get("state") != cusp_topology.LINEAGE_TERMINAL_STATE or evidence["lineage_bundle"].get("state") != cusp_topology.LINEAGE_TERMINAL_STATE:
+        errors.append(f"{label}: lineage bundle state is not the recorded rejection")
+    if lineage_bundle.get("verified_file_count") != evidence["lineage_bundle"].get("verified_file_count"):
+        errors.append(f"{label}: lineage bundle file counts differ between manifest and evidence file")
+
+    # Revisions.
+    head = _run_git(repo, "rev-parse", "HEAD")
+    revision = str(payload.get("evidence_revision"))
+    if revision != cusp_topology.RESULTS_COMMIT_SHA or evidence.get("evidence_revision") != revision or gate.get("evidence_revision") != revision:
+        errors.append(f"{label}: evidence revision differs between gate, manifest, evidence file and generator")
+    try:
+        committed_blob = _run_git(repo, "rev-parse", f"{revision}:{evidence['bundle']['manifest_path']}")
+    except RuntimeError as exc:
+        errors.append(f"{label}: results manifest is not committed at the evidence revision: {exc}")
+        committed_blob = None
+    if committed_blob is not None and (
+        committed_blob != evidence["binding"]["manifest_git_blob"]
+        or committed_blob != bundle.get("manifest_git_blob")
+    ):
+        errors.append(f"{label}: results manifest Git blob differs from the evidence bindings")
+    try:
+        results_tree = _run_git(repo, "rev-parse", f"{revision}:{cusp_topology.RESULTS.as_posix()}")
+        head_tree = _run_git(repo, "rev-parse", f"HEAD:{cusp_topology.RESULTS.as_posix()}")
+    except RuntimeError as exc:
+        errors.append(f"{label}: results tree cannot be resolved: {exc}")
+    else:
+        if results_tree != bundle.get("results_tree") or results_tree != evidence["binding"].get("results_tree"):
+            errors.append(f"{label}: results tree differs from the manifest binding")
+        if head_tree != results_tree:
+            errors.append(f"{label}: results tree changed after the evidence revision")
+    prereg = payload.get("preregistration_revision")
+    if not _resolves_to_commit(repo, prereg) or prereg != cusp_topology.PREREGISTRATION_COMMIT_SHA:
+        errors.append(f"{label}: preregistration_revision is not the registered resolvable commit")
+    else:
+        prereg = str(prereg)
+        if evidence["binding"].get("preregistration_commit") != prereg or gate.get("preregistration_revision") != prereg:
+            errors.append(f"{label}: preregistration commit differs between gate, manifest and evidence file")
+        if not _is_ancestor(repo, prereg, revision) or prereg == revision:
+            errors.append(f"{label}: preregistration must strictly precede the results revision")
+        frozen_roles = {"preregistered-protocol", "preregistered-authorities", "preregistered-shakedown", "preregistered-design-authorities"}
+        seen_roles: set[str] = set()
+        for source in payload.get("source_files", []):
+            if isinstance(source, dict) and str(source.get("role", "")).startswith("preregistered-"):
+                seen_roles.add(str(source["role"]))
+                try:
+                    frozen = _run_git(repo, "rev-parse", f"{prereg}:{source['path']}")
+                except RuntimeError as exc:
+                    errors.append(f"{label}: frozen file missing at preregistration: {exc}")
+                    continue
+                if frozen != source.get("git_blob"):
+                    errors.append(f"{label}: {source['path']} changed after preregistration")
+        if seen_roles != frozen_roles:
+            errors.append(f"{label}: frozen preregistration files are not all bound")
+    if payload.get("posthoc_audit") is not None:
+        errors.append(f"{label}: manifest binds a post-hoc audit of the accepted campaign, which needs none (the lineage audit is bound under lineage_files)")
+    # Lineage: the recorded rejection, its preregistration and its read-only audit.
+    lineage = payload.get("lineage")
+    if not isinstance(lineage, dict):
+        errors.append(f"{label}: manifest lacks the lineage block")
+    else:
+        expected_lineage = evidence["binding"]["lineage"]
+        for key in ("experiment_id", "preregistration_commit", "results_commit", "posthoc_audit_commit", "results_tree", "manifest_git_blob"):
+            if lineage.get(key) != expected_lineage.get(key):
+                errors.append(f"{label}: lineage {key} differs from the evidence binding")
+        for key, expected in (
+            ("preregistration_commit", cusp_topology.LINEAGE_PREREGISTRATION_COMMIT_SHA),
+            ("results_commit", cusp_topology.LINEAGE_RESULTS_COMMIT_SHA),
+            ("posthoc_audit_commit", cusp_topology.LINEAGE_AUDIT_COMMIT_SHA),
+        ):
+            if lineage.get(key) != expected or gate.get(f"lineage_{key}") != expected:
+                errors.append(f"{label}: lineage {key} differs between gate, manifest and generator")
+        chain = (
+            cusp_topology.LINEAGE_PREREGISTRATION_COMMIT_SHA,
+            cusp_topology.LINEAGE_RESULTS_COMMIT_SHA,
+            cusp_topology.LINEAGE_AUDIT_COMMIT_SHA,
+            cusp_topology.PREREGISTRATION_COMMIT_SHA,
+        )
+        for earlier, later in zip(chain, chain[1:]):
+            if not _is_ancestor(repo, earlier, later) or earlier == later:
+                errors.append(f"{label}: lineage revisions do not chain preregistration -> rejection -> audit -> corrected preregistration")
+        try:
+            lineage_tree = _run_git(repo, "rev-parse", f"{cusp_topology.LINEAGE_RESULTS_COMMIT_SHA}:{cusp_topology.LINEAGE_RESULTS.as_posix()}")
+            lineage_head_tree = _run_git(repo, "rev-parse", f"HEAD:{cusp_topology.LINEAGE_RESULTS.as_posix()}")
+        except RuntimeError as exc:
+            errors.append(f"{label}: lineage results tree cannot be resolved: {exc}")
+        else:
+            if lineage_tree != lineage.get("results_tree") or lineage_tree != lineage_head_tree:
+                errors.append(f"{label}: lineage results tree differs from the binding or changed after its revision")
+        if lineage.get("cited_for_numbers") is not False:
+            errors.append(f"{label}: lineage must declare cited_for_numbers false")
+    _check_bound_files_at_revision(repo, payload.get("lineage_files"), evidence.get("lineage_artifacts", {}).get("files", {}), errors, f"{label} lineage", role_prefix="lineage-")
+    _check_bound_files_at_revision(repo, payload.get("reference_files"), evidence.get("reference_artifacts", {}).get("files", {}), errors, f"{label} reference", role_prefix="reference-")
+    sources = payload.get("definition_sources")
+    if not isinstance(sources, dict) or sources.get("revision") != cusp_topology.LITERATURE_COMMIT_SHA or gate.get("definition_sources_revision") != cusp_topology.LITERATURE_COMMIT_SHA:
+        errors.append(f"{label}: definition sources must bind the registered literature review revision")
+    else:
+        files = sources.get("files")
+        expected_files = evidence.get("definition_sources", {}).get("files", {})
+        _check_bound_files_at_revision(
+            repo,
+            [dict(entry, revision=sources["revision"]) for entry in files] if isinstance(files, list) else files,
+            expected_files, errors, f"{label} definition sources", role_prefix="definition-source-",
+        )
+        if sources.get("literature_keys") != evidence.get("definition_sources", {}).get("literature_keys"):
+            errors.append(f"{label}: literature keys differ between manifest and evidence file")
+    dashboard = payload.get("dashboard")
+    if not isinstance(dashboard, dict) or not _resolves_to_commit(repo, dashboard.get("revision")):
+        errors.append(f"{label}: dashboard must bind a resolvable revision")
+    else:
+        dashboard_revision = str(dashboard["revision"])
+        if dashboard_revision != cusp_topology.DASHBOARD_COMMIT_SHA or gate.get("dashboard_revision") != dashboard_revision:
+            errors.append(f"{label}: dashboard revision differs between gate, manifest and generator")
+        if evidence["binding"].get("dashboard_commit") != dashboard_revision:
+            errors.append(f"{label}: evidence dashboard commit differs from the manifest")
+        if not _is_ancestor(repo, revision, dashboard_revision) or not _is_ancestor(repo, dashboard_revision, head):
+            errors.append(f"{label}: dashboard revision does not chain results -> dashboard -> HEAD")
+        files = dashboard.get("files")
+        _validate_source_files(
+            repo, dashboard_revision, files, {"dashboard-generator", "dashboard-template", "dashboard-html"}, errors, f"{label} dashboard"
+        )
+        expected_lf = {
+            "dashboard-generator": (cusp_topology.DASHBOARD_GENERATOR.as_posix(), evidence["dashboard"].get("generator_sha256_lf")),
+            "dashboard-template": (cusp_topology.DASHBOARD_TEMPLATE.as_posix(), evidence["dashboard"].get("template_sha256_lf")),
+            "dashboard-html": (cusp_topology.DASHBOARD_HTML.as_posix(), evidence["dashboard"].get("html_sha256_lf")),
+        }
+        for entry in files if isinstance(files, list) else []:
+            if not isinstance(entry, dict):
+                continue
+            role = str(entry.get("role"))
+            if role not in expected_lf:
+                continue
+            path, digest = expected_lf[role]
+            if entry.get("path") != path or entry.get("git_blob_sha256") != digest:
+                errors.append(f"{label}: {role} checkout differs from the blob bound at the dashboard revision")
+        if evidence["dashboard"].get("payload_manifest_sha256") != evidence["bundle"]["manifest_sha256"]:
+            errors.append(f"{label}: dashboard payload names a different results manifest")
+        if evidence["dashboard"].get("payload_lineage_manifest_sha256") != evidence["lineage_bundle"]["manifest_sha256"]:
+            errors.append(f"{label}: dashboard payload names a different lineage manifest")
+
+    # Metrics against the raw artifact values behind the macros (type-equal), then policy.
+    raw = {item["name"]: item["raw"] for item in evidence.get("macros", [])}
+    values = {item["name"]: item["value"] for item in evidence.get("macros", [])}
+    metrics = payload.get("metrics")
+    if not isinstance(metrics, dict):
+        errors.append(f"{label}: metrics must be an object")
+        return
+    for metric, macro in CUSP_TOPOLOGY_METRIC_MACROS.items():
+        if macro not in raw:
+            errors.append(f"{label}: evidence lacks macro {macro}")
+        elif metric not in metrics:
+            errors.append(f"{label}: manifest lacks metric {metric!r}")
+        elif metrics[metric] != raw[macro] or type(metrics[metric]) is not type(raw[macro]):
+            errors.append(f"{label}: metric {metric!r} differs from artifact value")
+    for metric, expected in CUSP_TOPOLOGY_POLICY_METRICS.items():
+        if metrics.get(metric) is not expected:
+            errors.append(f"{label}: policy metric {metric!r} must be {expected!r}")
+    if raw.get("CtvAttemptCount") != 1 or raw.get("CtvFailedDesigns") != 0 or raw.get("CtvStableDesigns") != raw.get("CtvDesignCount"):
+        errors.append(f"{label}: the screening must be a single attempt with every design resolved and stable")
+    if raw.get("CtvBindingGatesTrue") != raw.get("CtvBindingGateCount") or raw.get("CtvHeldOutCharPassed") != raw.get("CtvHeldOutCharDesigns") or raw.get("CtvHeldOutSweepPassed") != raw.get("CtvHeldOutSweepDesigns"):
+        errors.append(f"{label}: the recorded gate and held-out outcomes do not hold in the evidence")
+    if raw.get("CtvFourCellOneCusp") != raw.get("CtvFourCellCount") or raw.get("CtvLineageHistogramEqual") is not True or raw.get("CtvLineageFailuresExplained") is not True:
+        errors.append(f"{label}: the four-cell, lineage-histogram or lineage-explanation findings do not hold in the evidence")
+    if raw.get("CtvToleratedEolFiles") != 0 or raw.get("CtvLineageGatesTrue") != raw.get("CtvBindingGateCount", 0) - 1:
+        errors.append(f"{label}: tolerance count or lineage gate count differs from the admitted record")
+    outcome = gate.get("recorded_outcome")
+    if outcome not in SCREENING_OUTCOMES:
+        errors.append(f"{label}: gate recorded_outcome is not a recognized screening outcome")
+    if not (outcome == payload.get("recorded_outcome") == metrics.get("recorded_outcome") == evidence.get("recorded_outcome") == cusp_topology.RECORDED_OUTCOME):
+        errors.append(f"{label}: recorded_outcome differs between gate, manifest, evidence file and generator")
+    if tex_unescape(values.get("CtvRecordedOutcome", "")) != outcome:
+        errors.append(f"{label}: \\CtvRecordedOutcome macro does not render the recorded outcome")
+    if not (cusp_topology.CAMPAIGN_STATUS == evidence.get("campaign_status") == metrics.get("campaign_status")):
+        errors.append(f"{label}: campaign status differs between generator, evidence file and manifest")
+    if tex_unescape(values.get("CtvCampaignStatus", "")) != cusp_topology.CAMPAIGN_STATUS:
+        errors.append(f"{label}: \\CtvCampaignStatus macro does not render the campaign status")
+    if not (cusp_topology.SCREENING_MODEL == payload.get("screening_model") == metrics.get("screening_model") == evidence.get("screening_model")):
+        errors.append(f"{label}: screening_model differs between manifest, evidence file and generator")
+    classification = payload.get("classification")
+    expected = gate.get("metric_constraints", {}).get("classification", {}).get("equals")
+    if not (classification == cusp_topology.CLASSIFICATION == expected == evidence.get("classification") == metrics.get("classification")):
+        errors.append(f"{label}: classification differs between gate, manifest, evidence and generator")
+    if tex_unescape(values.get("CtvClassification", "")) != classification:
+        errors.append(f"{label}: \\CtvClassification macro does not render the classification string")
+    p2_expected = gate.get("metric_constraints", {}).get("p2_row_classification", {}).get("equals")
+    if not (payload.get("p2_row_classification") == cusp_topology.P2_CLASSIFICATION == p2_expected == evidence.get("p2_row_classification") == metrics.get("p2_row_classification")):
+        errors.append(f"{label}: P2 row classification differs between gate, manifest, evidence and generator")
+    if tex_unescape(values.get("CtvPTwoClassification", "")) != cusp_topology.P2_CLASSIFICATION:
+        errors.append(f"{label}: \\CtvPTwoClassification macro does not render the P2 classification string")
+    if gate.get("opens_level") is not None or payload.get("evidence_level", {}).get("opens_gate") is not None:
+        errors.append(f"{label}: a screening study cannot open a physics level")
+    if payload.get("gate_kind") != SCREENING_GATE_KIND or evidence.get("manuscript_integration", {}).get("gate_kind") != SCREENING_GATE_KIND:
+        errors.append(f"{label}: gate kind differs between manifest and evidence file")
+
+    # Manuscript bindings.
+    binding = gate.get("accepted_manuscript_binding")
+    if binding != cusp_topology.SECTION_BINDING or manuscript.count(binding) != 1:
+        errors.append(f"{label}: section binding must be the registered \\input and occur exactly once in manuscript.tex")
+    generated_binding = cusp_topology.GENERATED_BINDING
+    document_start = manuscript.find("\\begin{document}")
+    if manuscript.count(generated_binding) != 1 or manuscript.find(generated_binding) > document_start:
+        errors.append(f"{label}: generated macro file must be input exactly once in the preamble")
+    macro_name = gate.get("manuscript_revision_macro")
+    if macro_name != cusp_topology.REVISION_MACRO:
+        errors.append(f"{label}: gate manuscript_revision_macro differs from the registration")
+    else:
+        definitions = [
+            macro
+            for macro in extract_macros(manuscript, "newcommand", 2)
+            if macro.arguments[0] == f"\\{macro_name}"
+        ]
+        rendered = ""
+        if len(definitions) == 1:
+            body = re.sub(r"(?m)(?<!\\)%.*$", "", definitions[0].arguments[1])
+            rendered = re.sub(r"\\texttt\{|\}|\s", "", tex_unescape(body))
+        if rendered != revision:
+            errors.append(f"{label}: \\{macro_name} does not spell the manifest revision")
+
+    # Section content.
+    try:
+        section = (repo / cusp_topology.SECTION_PATH).read_text(encoding="utf-8")
+    except OSError as exc:
+        errors.append(f"{label}: section unreadable: {exc}")
+        return
+    heading = gate.get("section_heading")
+    if heading != cusp_topology.SECTION_HEADING or payload.get("section_heading") != heading or f"\\subsection{{{heading}}}" not in section:
+        errors.append(f"{label}: section heading differs between gate, manifest, generator and section")
+    prefix = cusp_topology.MACRO_PREFIX
+    defined = set(re.findall(rf"\\newcommand\{{\\({prefix}[A-Za-z]+)\}}", tex_bytes.decode("utf-8")))
+    used = set(re.findall(rf"\\({prefix}[A-Za-z]+)", section))
+    if not used:
+        errors.append(f"{label}: section uses no evidence macro")
+    for name in sorted(used - defined):
+        errors.append(f"{label}: section uses undefined macro \\{name}")
+    for required in (*cusp_topology.TABLE_MACROS, "CtvClassification", "CtvPTwoClassification", "CtvRecordedOutcome", "CtvCampaignStatus", "CtvFieldModelLevel", "CtvLineageTerminalState"):
+        if required not in used:
+            errors.append(f"{label}: section must use \\{required}")
+    digits = section_literal_digits(section, prefix)
+    if digits:
+        errors.append(f"{label}: section types {len(digits)} literal digit(s); every number must be a macro")
+    if "\\input{" in re.sub(r"(?m)(?<!\\)%.*$", "", section):
+        errors.append(f"{label}: section must not input further files")
+    for finding in find_unregistered_claims(section):
+        errors.append(f"{label}: {finding}")
+    artifact_macros = extract_macros(tex_bytes.decode("utf-8"), "ArtifactClaim", 3)
+    if len(artifact_macros) != len(cusp_topology.TABLE_MACROS) or any(
+        macro.arguments[:2] != (cusp_topology.ARTIFACT_CLAIM_ID, cusp_topology.ARTIFACT_ID) for macro in artifact_macros
+    ):
+        errors.append(f"{label}: generated tables are not each wrapped in the registered ArtifactClaim")
+
+    # Claim-matrix cross-references.
+    integration = evidence.get("manuscript_integration", {})
+    if integration.get("status") != "admitted":
+        errors.append(f"{label}: evidence file does not record admission")
+    if integration.get("gate_id") != gate_id or not (
+        integration.get("manifest_id") == payload.get("manifest_id") == cusp_topology.MANIFEST_ID
+    ):
+        errors.append(f"{label}: evidence file names a different gate or manifest")
+    if integration.get("manifest_path") != gate.get("manifest_path") or integration.get("manifest_path") != cusp_topology.MANIFEST_PATH.as_posix():
+        errors.append(f"{label}: evidence file names a different manifest path")
+    if integration.get("section_binding") != binding or integration.get("section_heading") != heading:
+        errors.append(f"{label}: evidence file names a different section binding or heading")
+    records = {
+        claim.get("id"): claim
+        for claim in matrix.get("claims", [])
+        if isinstance(claim, dict) and isinstance(claim.get("id"), str)
+    }
+    manifest_id = payload.get("manifest_id")
+    section_claims = set(re.findall(r"\\EvidenceClaim\{(CLM-\d+)\}", section))
+    prose_ids = integration.get("prose_claim_ids", [])
+    if not section_claims or not section_claims <= set(prose_ids):
+        errors.append(f"{label}: section claims are not all registered as screening prose claims")
+    normalized_section = _normalize_tex(section)
+    for claim_id in prose_ids:
+        record = records.get(claim_id)
+        if record is None or record.get("status") != "verified":
+            errors.append(f"{label}: prose claim {claim_id} is not a verified claim record")
+            continue
+        if manifest_id not in record.get("manifest_ids", []):
+            errors.append(f"{label}: claim {claim_id} is not bound to manifest {manifest_id}")
+        if not isinstance(record.get("authorized_tex"), str):
+            errors.append(f"{label}: claim {claim_id} must be a prose claim")
+        if "classification" in record and record["classification"] != classification:
+            errors.append(f"{label}: claim {claim_id} names a different classification")
+        if "recorded_outcome" in record and record["recorded_outcome"] != outcome:
+            errors.append(f"{label}: claim {claim_id} names a different recorded outcome")
+        for phrase in record.get("non_claims", []):
+            if _normalize_tex(str(phrase)) not in normalized_section:
+                errors.append(f"{label}: non-claim of {claim_id} is absent from the section: {phrase!r}")
+        if claim_id in section_claims and heading not in record.get("allowed_locations", []):
+            errors.append(f"{label}: claim {claim_id} does not allow the section heading")
+        if record.get("claim_class") == "interpretation" and claim_id in section_claims:
+            errors.append(f"{label}: interpretation claim {claim_id} must not appear inside the results section")
+    if not any(records.get(claim_id, {}).get("non_claims") for claim_id in prose_ids):
+        errors.append(f"{label}: no screening claim registers non_claims")
+    # The Discussion amendments (trigger A of the literature synthesis) must be macro-bound to this manifest.
+    for claim_id, required in (("CLM-028", ("non-standard", "\\CtvSweepNMinusOne", "\\CtvSweepFourWallCusps", "not proof that no such design exists")), ("CLM-044", ("under the literature definition", "\\CtvWithCuspAll", "plasma"))):
+        record = records.get(claim_id, {})
+        if claim_id not in prose_ids or record.get("claim_class") != "interpretation" or manifest_id not in record.get("manifest_ids", []):
+            errors.append(f"{label}: Discussion claim {claim_id} must be an interpretation bound to manifest {manifest_id}")
+        text = str(record.get("authorized_tex", ""))
+        for phrase in required:
+            if phrase not in text:
+                errors.append(f"{label}: Discussion claim {claim_id} lacks the amended wording {phrase!r}")
+    artifact_claim = integration.get("artifact_claim_id")
+    record = records.get(artifact_claim, {})
+    if artifact_claim != cusp_topology.ARTIFACT_CLAIM_ID or integration.get("artifact_id") not in record.get("authorized_artifact_ids", []):
+        errors.append(f"{label}: artifact claim {artifact_claim} does not authorize the generated tables")
+    if manifest_id not in record.get("manifest_ids", []):
+        errors.append(f"{label}: artifact claim {artifact_claim} is not bound to manifest {manifest_id}")
+    if flattened.count(f"\\subsection{{{heading}}}") != 1:
+        errors.append(f"{label}: section heading must appear exactly once in the flattened manuscript")
+
+
 CAMPAIGN_CHECKERS = {
     "paper-test-particle-campaign-manifest": _check_wall_loss_campaign,
     "paper-l1a-screening-manifest": _check_topology_screening,
     "paper-orbit-screening-manifest": _check_geometry_screening,
+    "paper-separatrix-topology-screening-manifest": _check_cusp_topology_screening,
     "paper-mdo-campaign-manifest": _check_mdo_campaign,
     "paper-mdo-catalogue-campaign-manifest": _check_mdo_catalogue_campaign,
     "paper-analytic-consistency-manifest": _check_four_cell_closure,
@@ -3537,6 +4221,15 @@ def _render_geometry_screening_tables(repo: Path, item: dict[str, Any]) -> tuple
     return output, sidecar
 
 
+def _render_cusp_topology_tables(repo: Path, item: dict[str, Any]) -> tuple[bytes, bytes]:
+    if item.get("id") != cusp_topology.ARTIFACT_ID or item.get("required_gate") != cusp_topology.GATE_ID:
+        raise ValueError(f"{item.get('id')}: contract item or gate differs from the generator registration")
+    if item.get("evidence_file") != cusp_topology.EVIDENCE_PATH.as_posix():
+        raise ValueError(f"{item.get('id')}: contract evidence file differs from the generator registration")
+    _evidence, output, sidecar = cusp_topology.render(repo)
+    return output, sidecar
+
+
 # Contract ``generator_module`` -> renderer(repo, item) returning (output bytes, canonical sidecar bytes).
 ARTIFACT_RENDERERS = {
     "generate_tables": _render_l0_table,
@@ -3546,6 +4239,7 @@ ARTIFACT_RENDERERS = {
     "generate_mdo_l0_v2_evidence": _render_mdo_v2_tables,
     "generate_four_cell_closure_evidence": _render_four_cell_closure_tables,
     "generate_wall_loss_geometry_screening_v1_evidence": _render_geometry_screening_tables,
+    "generate_cusp_topology_v3_1_evidence": _render_cusp_topology_tables,
 }
 
 
@@ -3694,6 +4388,11 @@ def _check_submission_and_build_config(repo: Path, manuscript: str, errors: list
         geometry_screening.OUTPUT_PATH.as_posix(),
         geometry_screening.SIDECAR_PATH.as_posix(),
         geometry_screening.SECTION_PATH.as_posix(),
+        cusp_topology.EVIDENCE_PATH.as_posix(),
+        cusp_topology.MANIFEST_PATH.as_posix(),
+        cusp_topology.OUTPUT_PATH.as_posix(),
+        cusp_topology.SIDECAR_PATH.as_posix(),
+        cusp_topology.SECTION_PATH.as_posix(),
     ):
         ignored = subprocess.run(
             ["git", "check-ignore", "-q", trackable],

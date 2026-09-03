@@ -1,0 +1,28 @@
+% Standalone dry-parse driver for the admitted cusp topology search v3.1 subsection.
+% Compile from the paper/ directory, for example:
+%   pdflatex -interaction=nonstopmode -halt-on-error -output-directory=<scratch> sections/cusp-topology-v3-1-standalone.tex
+% (twice, so the table references resolve). paper/tests/test_cusp_topology_v3_1_evidence.py
+% runs exactly this when pdflatex is available. The claim macros mirror manuscript.tex
+% so that the section renders identically on its own.
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{microtype}
+\usepackage{xcolor}
+\ifdefined\pdfinfoomitdate\pdfinfoomitdate=1\fi
+\ifdefined\pdftrailerid\pdftrailerid{}\fi
+\ifdefined\pdfsuppressptexinfo\pdfsuppressptexinfo=15\fi
+\newcommand{\EvidenceClaim}[2]{#2\textsuperscript{\textcolor{blue}{[#1]}}}
+\newcommand{\ArtifactClaim}[3]{#3\par\noindent\textsuperscript{\textcolor{blue}{[#1; #2]}}}
+\input{generated/cusp-topology-v3-1.tex}
+\begin{document}
+% The referenced sections are not compiled here; give their labels a target.
+\section{Geometry sweep (compiled in the manuscript)}\label{sec:l1a-sweep-v2}
+\section{Four-cell search (compiled in the manuscript)}\label{sec:four-cell-v2}
+\section{Characterization (compiled in the manuscript)}\label{sec:topology-char-v1}
+\section{Topology screening (compiled in the manuscript)}\label{sec:topology-screening}
+\section{Wall-loss campaign (compiled in the manuscript)}\label{sec:wall-loss-v4}
+\input{sections/cusp-topology-v3-1.tex}
+\end{document}

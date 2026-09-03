@@ -206,6 +206,56 @@
   design ranking is closure-dependent; and that 77 of 96 designs have
   negligible own hypervolume because a launch cell saturated.
 
+## S4h. Cusp topology search v3.1 (accepted topology screening under the literature definition)
+
+- Typed screening manifest `paper/evidence/manifests/cusp-topology-v3-1.json`
+  (`paper-separatrix-topology-screening-manifest` 1.0) and the hash-bound
+  evidence file `paper/evidence/cusp-topology-v3-1.json`.
+- Preregistration commit `1600cfd3` (frozen protocol, authorities, shakedown,
+  design authorities), record commit `cec47f12` (sealed bundle of 1,211 files:
+  topology dataset in JSON and CSV form, cusp-cell catalogue, 281 design
+  records and accepted field grids, gates, source binding, campaign plan and
+  result, lock and transitions), dashboard commit `9abbd537`.
+- Lineage bound at its own revisions and never cited for a number: the
+  predecessor `cusp_topology_search_v3` (preregistration `69159934`, recorded
+  `assessment_rejection` at `8cbcdbe6`: 8 of 9 binding gates true, the
+  held-out gate false for 14 of 56 characterization cases because the
+  reference kept only sealed axis clusters with centroid radius exactly zero)
+  and its read-only post-hoc audit at `9fa6359a`; the generator byte-verifies
+  the rejected bundle and reproduces the audit's counts (26 of 206 sealed axis
+  clusters dropped, 22 in the channel, 56/56 under the intended filter) from
+  the sealed characterization dataset.
+- References bound at their admitted revisions and required to hash to the
+  sealed-source identities the bundle recorded: the characterization-v1
+  dataset (`3ce6c546`), the four-cell-v2 dataset (`7120e8ed`) and the sweep-v2
+  results manifest (`f30cb42e`); the literature review that fixed the
+  definition bound at `66879e00`.
+- Definition verbatim: axis null (sign change of the on-axis field on the
+  axis-regular bicubic flux interpolant, bisection to 1e-12 m, X-type by the
+  analytic Jacobian and the frozen characterization classification), separatrix
+  (event-aware RK4 field-line trace from the radial eigen-direction to the wall,
+  cross-checked against the flux root within 50 um), wall cusp (intersection
+  inside the straight dielectric), cells (intervals between consecutive cusps
+  plus partials), wall and axis mirror ratios (field ratios), stability on a
+  2x refined map within 0.25 mm, boundary ambiguity within 0.25 mm, two binding
+  held-out references (sealed characterization axis roots, sealed sweep axis
+  nulls) within 0.25 mm.
+- Tables regenerated at every check: cusp-count histogram per design set; the
+  sweep resolved by stage count (N-1, legacy targets, interior cells, mirror
+  ratios, gap distances, angles); the P2 row against the kinetic-workstream
+  axis-null planes and the plasma-topology-dashboard wall maxima (reported,
+  ungated); the lineage table setting the recorded rejection beside the
+  admitted campaign.
+- Explicit statements that cusps and cells are geometric properties of
+  prescribed field maps under a stated definition; that the mirror ratios are
+  field ratios and never probabilities; that no plasma, confinement, wall-loss
+  or performance quantity is published; that the L1a sets are not P2-qualified
+  and the single P2 row's iron sensitivity was not tested; that the
+  frozen-definition nulls of the earlier admissions remain true; that the
+  catalogue is a consumer contract under its labels with no admitted consumer;
+  and that the predecessor's rejection was a recording-layer defect disclosed
+  as lineage.
+
 ## S5. Controlled performance benchmark
 
 This supplement remains closed until a benchmark manifest records kernel

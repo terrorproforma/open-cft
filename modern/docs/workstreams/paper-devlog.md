@@ -943,3 +943,152 @@
   2.5 pt. A protocol text macro ("energy, 4 objectives, 32 points, seed 1")
   tripped the unregistered-quantitative heuristic and was replaced by two
   numeric macros.
+## 2026-09-03 - Cusp topology search v3.1 admitted to the claim matrix and manuscript; topology Discussion amended
+
+### Scope
+
+- Worktree `C:\Users\Angus\Desktop\projects\uni-project-paper-topo31`, branch
+  `paper/topology-v31-claim` from `origin/feat/sota-foundation` (`9abbd537`), LF
+  verified (`git ls-files --eol`: only the three pre-existing `-text` files show
+  `w/crlf`). Paper-owned paths and `modern/docs/workstreams/paper-*` only;
+  `results/**`, the frozen preregistration files and `FYP/` untouched; no GPU
+  work.
+- Evidence: `modern/experiments/cusp_topology_search_v3_1`, preregistered
+  `1600cfd3` (frozen protocol/authorities/shakedown/design-authorities, blobs
+  equal at the record commit and in the checkout), recorded `cec47f12` (1,211
+  files, manifest SHA-256 `1dde073f...`), dashboard `9abbd537`. Terminal
+  `accepted_result`, campaign status `accepted_topology_screening`, 9/9 binding
+  integrity gates, 281/281 stable, held-out 56/56 and 96/96.
+- Lineage (never cited for a number): `cusp_topology_search_v3`, preregistered
+  `69159934`, recorded `assessment_rejection` at `8cbcdbe6` (8/9 gates true;
+  `held_out_correspondence` false for 14/56 characterization cases), read-only
+  audit `9fa6359a`. Definition source: literature review at `66879e00`.
+
+### Evidence level and gate
+
+- Gate `GATE-CUSP-TOPOLOGY-V3-1`, kind `numerical-screening`, `opens_level:
+  null`, at a NEW recorded outcome `accepted-topology-screening` (justification
+  on the gate and manifest: accepted means admitted as recorded; cusps and
+  cells are geometric properties of prescribed field maps under a stated
+  definition, never plasma confinement; the frozen-definition nulls remain
+  true). The kind description in `result-gates.json` names the outcome.
+- New manifest type `paper-separatrix-topology-screening-manifest` 1.0 (25
+  required roles, 125 required metrics = 111 mapped + 14 policy). Manifest
+  `paper/evidence/manifests/cusp-topology-v3-1.json`: 52 source files bound by
+  Git blob and SHA-256 at `cec47f12` (bundle top level, 14 representative
+  design records and 14 field grids, four frozen files), `dashboard` at
+  `9abbd537`, `lineage` block + 65 `lineage_files` (62 rejected-bundle files at
+  `8cbcdbe6`, frozen v3 protocol at `69159934`, audit + script at `9fa6359a`),
+  3 `reference_files` (v1 dataset at `3ce6c546`, v2 dataset at `7120e8ed`,
+  sweep manifest at `f30cb42e`; each must hash to the sealed-source identity in
+  the bundle), `definition_sources` (review at `66879e00`), 125 gate metric
+  constraints. The shared flag `stable_multicell_wall_cusp_topology_demonstrated`
+  is NOT reused (defined against the frozen definition); explicit flags
+  `confinement_cells_demonstrated: false`,
+  `multicell_wall_cusp_topology_under_frozen_definition_demonstrated: false`,
+  `frozen_definition_nulls_remain_true: true`,
+  `mirror_ratios_are_field_descriptors_not_probabilities: true` carry the
+  boundary.
+
+### Added
+
+- `paper/scripts/generate_cusp_topology_v3_1_evidence.py`: byte-verifies both
+  bundles (accepted and rejected) with sidecars; frozen == sealed; re-derives
+  the headline and every per-set estimand from the 281 rows (fail-closed
+  equality; only the bilinear-step comparison is recomputed from the traces);
+  cross-checks every design record (topology, axis nulls, traces clean and
+  flux-consistent, stability, identity), gzipped field grid (payload hash,
+  identity, shape), catalogue entry and CSV row; recomputes boundary-ambiguity
+  flags, gap/stage-centre distances (gap centres include the half-pitch end
+  gaps), cell lengths and kinds; reproduces the v3 post-hoc audit from the
+  sealed v1 dataset (206 sealed axis clusters, 26 dropped by the centroid
+  filter, 22 in-channel in exactly the 14 recorded failing cases, 56/56 at
+  17.6 um under the member-method filter) and requires the audit markdown's
+  documented numbers (fixed regexes) to agree; splits the sealed v1 in-channel
+  roots (200 = 180 axis clusters reproduced + 20 off-axis bilinear roots in 14
+  cases at 0.16-0.54 of the wall radius, all `no_cell_bounding_separatrix`);
+  reads the v2 strength-ratio range (16-42 %); cross-checks the dashboard
+  payload (identity incl. every artifact hash, headline, held-out, P2
+  consistency, gates, execution, every row, catalogue, lineage block). 430
+  `\Ctv...` macros, four `\ArtifactClaim` tables (histogram per set; sweep by
+  stage count; P2 vs the two recorded ungated references; v3 vs v3.1 lineage),
+  evidence file and sidecar (~4 s per run).
+- Claims CLM-061 (abstract), CLM-062 (execution, stability, held-out,
+  histogram, legacy-target fractions, mirror-ratio ranges; `non_claims`),
+  CLM-063 (tables), CLM-064 (sweep: 83/96 N-1, 12 N-2 with an end null outside
+  the straight section, 1 N+1 through two boundary-ambiguous cusps, 95/96
+  cusps == channel nulls, gaps 0.14/0.26 mm, interior cells 0.90-1.12 pitch,
+  wall mirror 1.000-1.017, axis mirror 0.20-1.15, angle median 0.7 deg),
+  CLM-065 (128/128 one cusp; the four-cell null follows from the construction
+  of both its definition and its source policy; characterization 0-7 cusps,
+  42/56 N-1; v1's 200 in-channel roots = 180 axis + 20 off-axis excluded, none
+  at the wall; frozen-definition records remain true), CLM-066 (P2: three cusps
+  6.028/12.000/17.972 mm, axis nulls within 31 um of the kinetic workstream's
+  planes stated as a development record of a workstream not admitted, cusps
+  0.02/0.05/0.18 mm from the dashboard maxima, third cusp 27.9 um inside the
+  straight end and boundary-ambiguous, iron sensitivity untested), CLM-067
+  (lineage disclosure), CLM-068 (boxed scope). CLM-028 and CLM-044 amended per
+  trigger A of `LITERATURE_SYNTHESIS.md` s7 (frozen definition non-standard;
+  N-1 wall cusps and 19/96 exactly four under the literature definition;
+  definition question settled at screening tier, material question open; cells
+  exist as geometric structures whose plasma physics remains undemonstrated);
+  both bound to the new manifest.
+- `manuscript.tex`: `\CuspTopologyEvidenceRevision`, preamble `\input`, eighth
+  date line, abstract sentence, contribution list, evidence-boundary paragraph,
+  Section 8 forward reference (definitions differ from the literature's;
+  records unchanged), Section 11 scope note (launch cells are channel
+  fractions, not catalogue cells; catalogue-launched screening is future work
+  with no result), Section 13 "Preregistered cusp topology under the
+  literature definition" (`\input{sections/cusp-topology-v3-1.tex}`,
+  subsection 13.1, pages 35-40), L1-gate note, Discussion paragraph rewritten
+  (heading, CLM-028, prose: material question is the GATE-L1 question; P2 row
+  is one field, not a sensitivity test), CLM-044, Limitations (topology
+  definitions differ from the literature's; v3.1 sentence), data availability,
+  Conclusion. Bibliography: `Gildea2012`, `Koch2011`, `Lewerentz2023` (verified
+  in the bound review).
+- `paper/sections/cusp-topology-v3-1.tex` (Definition and method; Design sets
+  and execution; Results; Geometry sweep; Four-cell candidates and
+  characterization cases; The P2 row; Lineage; Scope box) with version tokens
+  (`v3.1`, `v3`, `v2`, `v1`) and the field level (`L1a`) as macros so the
+  section types no digit; standalone driver.
+- `check_paper.py`: `_check_cusp_topology_screening` (lineage/reference/
+  definition-source groups validated through the batched
+  `_check_bound_files_at_revision` -> `_committed_blobs` (`git ls-tree -r -z` +
+  `git cat-file --batch`, two git calls per revision instead of two per file);
+  Discussion amendments CLM-028/CLM-044 must be interpretations bound to the
+  manifest with the literature-definition wording), `_render_cusp_topology_tables`,
+  fifth screening outcome, required section, trackable paths, schema type.
+- Tests: `test_cusp_topology_v3_1_admission.py` (20) and
+  `test_cusp_topology_v3_1_evidence.py` (12); `test_wall_loss_geometry_screening_admission.py`
+  (five outcomes) and `test_four_cell_closure_admission.py` (CLM-044 manifest set)
+  updated. README, author checklist, notation, supplementary outline (S4h).
+
+### Validation
+
+- `python paper/scripts/check_paper.py`: before the commit only "accepted
+  manifest is not committed at HEAD"; after the commit green.
+- `python -m unittest discover -s paper/tests -v`: 197 tests OK.
+- `python paper/scripts/verify_reproducible_build.py`: two clean builds
+  byte-identical, `paper/build/manuscript.pdf` 49 pages, 626,275 bytes, SHA-256
+  `34e11c8e8fe07211a8cb6bed48eb57f5485d8e21d8292ece00694d098ef0ef77`; no overfull box, no LaTeX error, no undefined reference.
+- Rendered `%TEMP%\paper-topo31-pages\` (abstract p1; Section 13 pp 35-40;
+  Discussion pp 42-44; Limitations p45; data availability p47) with `pdftoppm`
+  and inspected the four tables and the amended Discussion paragraph.
+- Committed on `paper/topology-v31-claim` (amended with this entry; check,
+  tests and builds rerun before the fast-forward into `feat/sota-foundation`).
+
+### Corrections during validation
+
+- The brief's "every vector null sits on the axis: no wall-side X-type null
+  exists" is not what the sealed v1 dataset records: its whole-map search found
+  200 in-channel X-type roots of which 180 are axis clusters and 20 are
+  off-axis bilinear roots (14 wide-bore cases, r/r_w 0.16-0.54, all excluded
+  by the frozen rule for lacking a cell-bounding separatrix). The claim states
+  that split and "none at the wall" instead; the "by construction" statement
+  rests on the definition (a wall cusp is not a null) and the v2 source policy
+  (weak even stages leave one axis sign change).
+- The recorded `distance_to_nearest_stage_gap_m` includes the half-pitch end
+  gaps beyond the first and last stage; the first recomputation with interior
+  gaps only failed on the N+1 design and was corrected, not tolerated.
+- The first checker version issued ~4 git calls per lineage file (65 files) and
+  took 14 s per invocation; batching by revision brought it to ~6 s.

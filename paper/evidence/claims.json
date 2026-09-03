@@ -145,6 +145,21 @@
       "screening_manifest_id": "WALL-LOSS-GEOMETRY-SCREENING-V1-20260903-96-V1",
       "posthoc_audit": "modern/experiments/mdo_l0_campaign_v1/POSTHOC_AUDIT.md",
       "evidence_file": "paper/evidence/mdo-l0-v2.json"
+    },
+    "CUSP-TOPOLOGY-V3-1-20260903-281-V1": {
+      "path": "paper/evidence/manifests/cusp-topology-v3-1.json",
+      "document_type": "paper-separatrix-topology-screening-manifest",
+      "schema_version": "1.0",
+      "gate_id": "GATE-CUSP-TOPOLOGY-V3-1",
+      "gate_kind": "numerical-screening",
+      "recorded_outcome": "accepted-topology-screening",
+      "evidence_revision": "cec47f12f5909c5886424bf5d46ac20ce06f1ac5",
+      "preregistration_revision": "1600cfd3b102980eeba4b070930667d232a1105c",
+      "dashboard_revision": "9abbd5371b816208d687f1adbf54f31884c8b27f",
+      "lineage_results_revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "lineage_posthoc_audit": "modern/experiments/cusp_topology_search_v3/POSTHOC_AUDIT.md",
+      "definition_sources_revision": "66879e00834b09e2c7f942358b3ae4a51658cb6b",
+      "evidence_file": "paper/evidence/cusp-topology-v3-1.json"
     }
   },
   "claims": [
@@ -643,19 +658,33 @@
       "id": "CLM-028",
       "status": "verified",
       "claim_class": "interpretation",
-      "authorized_tex": "Under the frozen cusp and cell definitions of the admitted screening, the four-cell wall-cusp topology targeted by the original design parameterisation was not shown stable for any of \\FcnEvaluated{} preregistered candidates, and \\TchStableEligibleCusps{} stable eligible cusps and \\TchStableEligibleCells{} stable eligible cells were found across \\TchEvaluated{} characterised designs; within the explored linear-vacuum \\FcnFieldModelLevel{} design space the multi-cell confinement picture of the legacy parameterisation is therefore undemonstrated, which is a null under these definitions and not proof that no such design exists.",
-      "allowed_locations": ["Discussion"],
-      "manifest_ids": ["FOUR-CELL-V2-20260902-128-V1", "TOPOLOGY-CHAR-V1-20260902-56-V1"],
-      "evidence": ["SRC-AUDIT", "SRC-PROVENANCE"],
-      "bibliography": ["Muffatti2017"],
+      "authorized_tex": "Under the frozen cusp and cell definitions of the admitted screening, the four-cell wall-cusp topology targeted by the original design parameterisation was not shown stable for any of \\FcnEvaluated{} preregistered candidates, and \\TchStableEligibleCusps{} stable eligible cusps and \\TchStableEligibleCells{} stable eligible cells were found across \\TchEvaluated{} characterised designs; those nulls hold under those definitions and are not proof that no such design exists. The frozen definition, a wall-side X-type vector null registered at the stage midplanes, was non-standard for a periodic-permanent-magnet stack: the literature places the point cusps on the axis, where each ring-cusp separatrix meets the centreline, and the wall cusp where that separatrix meets the wall, at the magnet ends rather than the stage midplanes. Under the literature definition the same linear-vacuum fields carry the multi-cell wall-cusp topology as a geometric property (Section~\\ref{sec:cusp-topology}): \\CtvSweepNMinusOne{} of \\CtvSweepCount{} sweep designs carry one wall cusp fewer than magnet stages, \\CtvSweepFourWallCusps{} carry exactly four wall cusps (fraction \\CtvSweepFourWallCuspFraction) and \\CtvSweepFourCells{} carry exactly four cells, with the cusps at the inter-magnet gaps (median distance \\CtvSweepGapMedianMm{}~mm), so the sweep's axis descriptors are the point cusps whose separatrices bound the cells. The definition question is thereby settled at screening tier by a numerical-screening gate rather than by \\texttt{GATE-L1}; whether the topology survives a material-aware field model remains open, and whether any cell confines a plasma is not a topology question and is not decided here.",
+      "allowed_locations": [
+        "Discussion"
+      ],
+      "manifest_ids": [
+        "FOUR-CELL-V2-20260902-128-V1",
+        "TOPOLOGY-CHAR-V1-20260902-56-V1",
+        "CUSP-TOPOLOGY-V3-1-20260903-281-V1"
+      ],
+      "evidence": [
+        "SRC-AUDIT",
+        "SRC-PROVENANCE"
+      ],
+      "bibliography": [
+        "Muffatti2017"
+      ],
       "permitted_scope": [
         "model-bounded inference from the two recorded nulls under their frozen definitions",
-        "identification of the legacy multi-cell parameterisation documented by the audit and provenance records"
+        "identification of the legacy multi-cell parameterisation documented by the audit and provenance records",
+        "the labelled statement that the frozen wall-null definition was non-standard for a periodic-permanent-magnet stack, against the literature definition bound by the topology-screening manifest",
+        "the macro-bound topology-screening counts under the literature definition (N-1, four wall cusps, four cells, gap placement) read as the settled definition question at screening tier"
       ],
       "prohibited_inferences": [
-        "non-existence of a stable multi-cell wall-cusp topology",
-        "behaviour of permanent-magnet or nonlinear-iron fields",
-        "plasma confinement or performance",
+        "non-existence of a stable multi-cell wall-cusp topology under the frozen definition in any unscreened design space",
+        "behaviour of permanent-magnet or nonlinear-iron fields (the material question stays open)",
+        "plasma confinement or performance of any cell",
+        "reading a mirror ratio as a probability",
         "opening of GATE-L1"
       ]
     },
@@ -1108,14 +1137,15 @@
       "id": "CLM-044",
       "status": "verified",
       "claim_class": "interpretation",
-      "authorized_tex": "Three admitted findings now bear on the legacy design chain, each bounded to its own model: the collisionless test-particle campaign recorded \\WlfPooledReflected{} reflections, so the mirror picture of cusp loss is unsupported for the qualified field; the preregistered screening found the four-cell wall-cusp topology of the legacy parameterisation stable for none of \\FcnEvaluated{} candidates under the frozen definitions; and the corrected four-cell power balance has no admissible root for any positive interior cusp probability, with \\FccProbeClosed{} of \\FccProbeTotal{} probe cases closing, all at zero cusp probability. Read together, and as interpretation only, they are the reason the legacy design chain cannot be reproduced from its equations: its cusp probabilities came from a mirror formula the integrated orbits do not support, its cells were never shown to exist in the screened field space, and the balance that turned those probabilities into performance has no solution for them. That is why the rebuild pivoted to declared closures, the operating-point model under the declared survival closure of Section~\\ref{sec:mdo-l0}, and to a kinetic-simulation workstream for the wall-loss and confinement questions, whose results are not admitted here and open no physics level.",
+      "authorized_tex": "Three admitted findings now bear on the legacy design chain, each bounded to its own model: the collisionless test-particle campaign recorded \\WlfPooledReflected{} reflections, so the mirror picture of cusp loss is unsupported for the qualified field; the preregistered screening found the four-cell wall-cusp topology of the legacy parameterisation stable for none of \\FcnEvaluated{} candidates under the frozen definitions, whereas under the literature definition the topology screening of Section~\\ref{sec:cusp-topology} finds separatrix-bounded cells in \\CtvWithCuspAll{} of \\CtvDesignCount{} screened field maps and exactly four cells in \\CtvFourCellsAll{} of them; and the corrected four-cell power balance has no admissible root for any positive interior cusp probability, with \\FccProbeClosed{} of \\FccProbeTotal{} probe cases closing, all at zero cusp probability. Read together, and as interpretation only, they are the reason the legacy design chain cannot be reproduced from its equations: its cusp probabilities came from a mirror formula the integrated orbits do not support, its cells exist under the literature definition as geometric structures of the field whose plasma physics, whether they confine electrons and with what loss probabilities, remains undemonstrated, and the balance that turned those probabilities into performance has no solution for them. That is why the rebuild pivoted to declared closures, the operating-point model under the declared survival closure of Section~\\ref{sec:mdo-l0}, and to a kinetic-simulation workstream for the wall-loss and confinement questions, whose results are not admitted here and open no physics level.",
       "allowed_locations": [
         "Discussion"
       ],
       "manifest_ids": [
         "FOUR-CELL-CLOSURE-20260903-R27-V1",
         "WALL-LOSS-V4-20260902-4608-V1",
-        "FOUR-CELL-V2-20260902-128-V1"
+        "FOUR-CELL-V2-20260902-128-V1",
+        "CUSP-TOPOLOGY-V3-1-20260903-281-V1"
       ],
       "evidence": [
         "SRC-AUDIT",
@@ -1125,12 +1155,13 @@
         "Muffatti2017"
       ],
       "permitted_scope": [
-        "model-bounded synthesis of the three admitted findings (zero reflections, four-cell topology not shown stable, no admissible root for interior cusp probabilities)",
+        "model-bounded synthesis of the three admitted findings (zero reflections, four-cell topology not shown stable under the frozen definition while separatrix-bounded cells exist under the literature definition, no admissible root for interior cusp probabilities)",
         "the labelled interpretation that the legacy design chain cannot be reproduced from its equations",
+        "the statement that the cells' plasma physics (confinement, loss probabilities) remains undemonstrated",
         "the pivot to declared closures and a kinetic-simulation workstream stated as motivation, with the kinetic results explicitly not admitted"
       ],
       "prohibited_inferences": [
-        "non-existence of a stable multi-cell wall-cusp topology",
+        "that any separatrix-bounded cell confines electrons or carries a cusp-loss probability",
         "loss rates of a real electron population",
         "any statement about the physical thruster's performance",
         "any result of the kinetic-simulation workstream",
@@ -1611,6 +1642,251 @@
       ]
     },
     {
+      "id": "CLM-061",
+      "status": "verified",
+      "claim_class": "screening-summary",
+      "authorized_tex": "A preregistered one-shot screening of the HEMP/DCFT literature cusp definition on \\CtvDesignCount{} prescribed field maps is admitted as a topology screening: under that definition the \\CtvSweepCount{} accepted sweep designs carry one wall cusp fewer than magnet stages in \\CtvSweepNMinusOne{} cases, with the cusps at the inter-magnet gaps and exactly four wall cusps in \\CtvSweepFourWallCusps{} designs, every one of the \\CtvDesignCount{} designs was stable under refinement and both held-out references were reproduced; the cusps and cells are geometric properties of the field maps under a stated definition, the mirror ratios are field ratios, and no plasma, confinement or performance claim follows.",
+      "allowed_locations": [
+        "Abstract"
+      ],
+      "manifest_ids": [
+        "CUSP-TOPOLOGY-V3-1-20260903-281-V1"
+      ],
+      "classification": "SCREENING_L1A_FIELD_SEPARATRIX_CUSP_TOPOLOGY",
+      "recorded_outcome": "accepted-topology-screening",
+      "permitted_scope": [
+        "existence, preregistered one-shot status and recorded outcome of the admitted topology screening",
+        "macro-bound design counts, the N-1 count, the four-wall-cusp count, the gap placement, stability and held-out outcomes as detailed by CLM-062 and CLM-064",
+        "the geometric-descriptor boundary of cusps, cells and mirror ratios"
+      ],
+      "prohibited_inferences": [
+        "plasma confinement, cusp-loss probabilities or thruster performance",
+        "reading a mirror ratio as a probability",
+        "permanent-magnet or nonlinear-iron material behaviour of the screening fields",
+        "hardware or experimental validation"
+      ]
+    },
+    {
+      "id": "CLM-062",
+      "status": "verified",
+      "claim_class": "quantitative-screening-result",
+      "authorized_tex": "The single execution terminated in state \\texttt{\\CtvTerminalState} with campaign status \\texttt{\\CtvCampaignStatus}: \\CtvDesignCount{} of \\CtvDeclaredDesigns{} declared designs were rebuilt with their identities proven, solved on both maps and characterised (\\CtvFailedDesigns{} failures), \\CtvBindingGatesTrue{} of \\CtvBindingGateCount{} binding gates held, the \\CtvReplayDesigns{} determinism replays were bit-identical in \\CtvReplaysBitIdentical{} cases, and \\CtvStableDesigns{} of \\CtvDesignCount{} designs were stable under refinement with a largest wall-intersection shift of \\CtvMaxWallShiftUm{}~$\\mu$m and a largest axis-null shift of \\CtvMaxAxisShiftUm{}~$\\mu$m against a tolerance of \\CtvStabilityToleranceUm{}~$\\mu$m. The held-out references were reproduced: \\CtvHeldOutCharPassed{} of \\CtvHeldOutCharDesigns{} characterization cases (\\CtvHeldOutCharNulls{} channel axis nulls, largest difference \\CtvHeldOutCharMaxUm{}~$\\mu$m) and \\CtvHeldOutSweepPassed{} of \\CtvHeldOutSweepDesigns{} sweep designs (\\CtvHeldOutSweepNulls{} axis nulls, largest difference \\CtvHeldOutSweepMaxUm{}~$\\mu$m). Under the literature definition the \\CtvDesignCount{} designs carry \\CtvCuspCountAll{} wall cusps, distributed by count as \\CtvHistogramText{} (designs with zero, one, two and up to seven cusps): \\CtvWithCuspAll{} designs have at least one wall cusp, \\CtvWithTwoCuspsAll{} have at least two and therefore at least one interior cell, \\CtvFourWallCuspsAll{} have exactly four wall cusps (fraction \\CtvFourWallCuspFractionAll) and \\CtvFourCellsAll{} have exactly four cells (fraction \\CtvFourCellFractionAll); the \\CtvInteriorCellsAll{} interior cells have wall mirror ratios from \\CtvInteriorWallMirrorMinAll{} to \\CtvInteriorWallMirrorMaxAll{} and axis mirror ratios from \\CtvInteriorAxisMirrorMinAll{} to \\CtvInteriorAxisMirrorMaxAll, and the separatrices meet the wall at a median \\CtvAngleMedianAll$^\\circ$ to the wall normal (largest \\CtvAngleMaxAll$^\\circ$); \\CtvAmbiguousAll{} cusps are boundary-ambiguous.",
+      "allowed_locations": [
+        "Wall cusps and cells under the literature definition across the screened design sets"
+      ],
+      "manifest_ids": [
+        "CUSP-TOPOLOGY-V3-1-20260903-281-V1"
+      ],
+      "gate_id": "GATE-CUSP-TOPOLOGY-V3-1",
+      "classification": "SCREENING_L1A_FIELD_SEPARATRIX_CUSP_TOPOLOGY",
+      "recorded_outcome": "accepted-topology-screening",
+      "evidence_level": "numerical-screening",
+      "evidence_level_justification": "The study is a preregistered, single-execution numerical screening of prescribed field maps: the literature cusp definition (axis null of the axis-regular bicubic flux interpolant, separatrix traced to the dielectric wall, wall cusp at the intersection cross-checked against the flux root, cells between consecutive cusps) applied to the 96 re-solved L1a sweep designs, the 128 sealed four-cell candidates, the 56 characterization cases and the P2-qualified divergent-exit-stack field, each on its accepted map and a refined map, with two binding held-out references (sealed characterization axis roots, sealed sweep axis nulls). Its recorded outcome is accepted_topology_screening. The framework admits accepted numerical evidence through a typed committed manifest, hashed artifacts at a resolvable revision, exact registered claim text and generated artifacts with provenance sidecars; that pattern is applied here through the numerical-screening gate GATE-CUSP-TOPOLOGY-V3-1 at the recorded outcome accepted-topology-screening, a fifth outcome value added for this study. Three of its four sets are L1a screening fields (not P2-qualified); the single P2 row is one finite-element field whose iron sensitivity was not tested. Nothing here is a plasma, confinement, wall-loss or performance quantity; it is not the L1 field-resolved reduction of GATE-L1 (no manufactured solution, no L0 mapping, no performance model), not L2 and not L3, and it opens none of those gates. The cusp-cell catalogue is a consumer contract under its labels; no consumer of it is admitted here.",
+      "bindings": {
+        "evidence_file": "paper/evidence/cusp-topology-v3-1.json",
+        "evidence_macros": "every \\Ctv... macro in the authorized text is defined in paper/generated/cusp-topology-v3-1.tex and bound in the evidence file to an artifact path, JSON pointer, formatter and SHA-256, or to a stated derivation over such inputs",
+        "results_commit": "cec47f12f5909c5886424bf5d46ac20ce06f1ac5",
+        "preregistration_commit": "1600cfd3b102980eeba4b070930667d232a1105c",
+        "dashboard_commit": "9abbd5371b816208d687f1adbf54f31884c8b27f",
+        "lineage_results_commit": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+        "lineage_posthoc_audit_commit": "9fa6359a2ba87d14635d80147af4857482afc977",
+        "definition_sources_commit": "66879e00834b09e2c7f942358b3ae4a51658cb6b"
+      },
+      "non_claims": [
+        "field ratios by construction",
+        "the mirror ratios are field ratios and not probabilities",
+        "no plasma, confinement, wall-loss or performance quantity is computed or published",
+        "whether a cell confines a plasma is not decided here",
+        "not accepted cusp evidence",
+        "a workstream whose results are not admitted here",
+        "never cited for a number",
+        "the study opens no physics level"
+      ],
+      "permitted_scope": [
+        "terminal state, campaign status, design, failure, gate, replay and stability counts of the single execution with the recorded shifts and tolerances",
+        "held-out correspondence counts and largest differences for the characterization and sweep references",
+        "the wall-cusp count histogram over every design, the designs with at least one and at least two cusps, the legacy-target counts and fractions, the interior mirror-ratio ranges, the separatrix angle distribution and the boundary-ambiguous count"
+      ],
+      "prohibited_inferences": [
+        "plasma confinement, cusp-loss probabilities, wall-loss rates or thruster performance",
+        "reading a mirror ratio as a probability or a loss fraction",
+        "that any cell confines electrons",
+        "permanent-magnet or nonlinear-iron material behaviour of the L1a sets",
+        "hardware or experimental validation",
+        "generalization beyond the screened field maps and the stated definition"
+      ]
+    },
+    {
+      "id": "CLM-063",
+      "status": "verified",
+      "claim_class": "quantitative-generated-table",
+      "authorized_artifact_ids": [
+        "TAB-CUSP-TOPOLOGY-V3-1"
+      ],
+      "allowed_locations": [
+        "Wall cusps and cells under the literature definition across the screened design sets"
+      ],
+      "manifest_ids": [
+        "CUSP-TOPOLOGY-V3-1-20260903-281-V1"
+      ],
+      "permitted_scope": [
+        "the wall-cusp count histogram per design set with the set totals, stable, with-cusp, legacy-target and boundary-ambiguous counts as sealed",
+        "the geometry sweep resolved by stage count: cusp histogram, N-1, legacy targets, interior cells with lengths and mirror ratios, gap distances and angles",
+        "the three P2 cusps against the two recorded, ungated consistency references with their fields, angles and ambiguity flags",
+        "the lineage table setting the recorded rejection beside the admitted campaign, read from the immutable predecessor bundle and its read-only audit"
+      ],
+      "prohibited_inferences": [
+        "plasma or confinement quantities",
+        "reading a mirror ratio as a probability",
+        "any number of the predecessor campaign as a result",
+        "any kinetic-simulation result"
+      ]
+    },
+    {
+      "id": "CLM-064",
+      "status": "verified",
+      "claim_class": "quantitative-screening-result",
+      "authorized_tex": "In the \\CtvSweepCount{} sweep designs the wall-cusp count is \\CtvSweepHistTwo{}, \\CtvSweepHistThree{} and \\CtvSweepHistFour{} designs with two, three and four cusps, so the four-wall-cusp fraction is \\CtvSweepFourWallCuspFraction{} (\\CtvSweepFourWallCusps{} designs) and the four-cell fraction \\CtvSweepFourCellFraction{} (\\CtvSweepFourCells{} designs); \\CtvSweepNMinusOne{} of \\CtvSweepCount{} designs carry exactly one cusp fewer than they have magnet stages, \\CtvSweepNMinusTwo{} carry two fewer because an end null and its separatrix lie outside the straight section (\\CtvSweepNMinusTwoEndNullOutside{} of them with the matching channel-null count), and \\CtvSweepNPlusOne{} design (\\texttt{\\CtvSweepNPlusOneDesign}) carries one more through \\CtvSweepNPlusOneAmbiguous{} boundary-ambiguous cusps generated by nulls outside the channel, so the cusp count equals the channel axis-null count in \\CtvSweepCuspsEqualChannelNulls{} of \\CtvSweepCount{} designs. The \\CtvSweepCuspCount{} cusps sit at the inter-magnet gaps: their distance to the nearest gap centre has a median of \\CtvSweepGapMedianMm{}~mm and a maximum of \\CtvSweepGapMaxMm{}~mm, against at least \\CtvSweepCentreMinMm{}~mm from any stage centre, and each cusp lies within \\CtvSweepAxisToWallMaxMm{}~mm of the axial position of its generating null. The \\CtvSweepInteriorCells{} interior cells are \\CtvSweepInteriorLengthPitchMin{} to \\CtvSweepInteriorLengthPitchMax{} stage pitches long (median \\CtvSweepInteriorLengthPitchMedian), their wall mirror ratios run from \\CtvSweepInteriorWallMirrorMin{} to \\CtvSweepInteriorWallMirrorMax{} and their axis mirror ratios from \\CtvSweepInteriorAxisMirrorMin{} to \\CtvSweepInteriorAxisMirrorMax{} (median \\CtvSweepInteriorAxisMirrorMedian); the separatrix angle to the wall normal has a median of \\CtvSweepAngleMedianDeg$^\\circ$ and a maximum of \\CtvSweepAngleMaxDeg$^\\circ$, and the wall field at the cusps runs from \\CtvSweepWallBMinT{} to \\CtvSweepWallBMaxT{}~T. These are geometric properties of the linear-vacuum screening fields; the mirror ratios are field ratios and not probabilities.",
+      "allowed_locations": [
+        "Wall cusps and cells under the literature definition across the screened design sets"
+      ],
+      "manifest_ids": [
+        "CUSP-TOPOLOGY-V3-1-20260903-281-V1"
+      ],
+      "gate_id": "GATE-CUSP-TOPOLOGY-V3-1",
+      "classification": "SCREENING_L1A_FIELD_SEPARATRIX_CUSP_TOPOLOGY",
+      "recorded_outcome": "accepted-topology-screening",
+      "permitted_scope": [
+        "sweep cusp-count histogram, four-wall-cusp and four-cell fractions and counts",
+        "the N-1, N-2 and N+1 design counts with their recorded explanations (end null outside the straight section; boundary-ambiguous cusps from nulls outside the channel) and the cusp-equals-channel-null count",
+        "cusp placement relative to the inter-magnet gap centres, the stage centres and the generating axis nulls",
+        "interior cell lengths in pitches, wall and axis mirror-ratio ranges and medians, separatrix angles and wall fields at the cusps, stated as geometric properties of the screening fields"
+      ],
+      "prohibited_inferences": [
+        "reading a wall or axis mirror ratio as a loss probability or a confinement prediction",
+        "that a separatrix-bounded cell confines electrons",
+        "a design rule or optimum from the gap placement or the cell descriptors",
+        "permanent-magnet or nonlinear-iron material behaviour or P2 qualification of the sweep fields",
+        "plasma or performance quantities"
+      ]
+    },
+    {
+      "id": "CLM-065",
+      "status": "verified",
+      "claim_class": "quantitative-screening-result",
+      "authorized_tex": "Every one of the \\CtvFourCellCount{} four-cell candidates carries exactly one wall cusp (\\CtvFourCellOneCusp{} of \\CtvFourCellCount) generated by a single axis null (\\CtvFourCellOneAxisNull{} designs with one null in the search window; \\CtvFourCellChannelNullOne{} inside the channel and \\CtvFourCellChannelNullZero{} just outside it), placed at \\CtvFourCellZcOverLengthMin{} to \\CtvFourCellZcOverLengthMax{} of the chamber length with separatrix angles of \\CtvFourCellAngleMinDeg$^\\circ$ to \\CtvFourCellAngleMaxDeg$^\\circ$, so \\CtvFourCellFourWallCusps{} candidates meet the four-wall-cusp target and \\CtvFourCellFourCells{} the four-cell target. The null of Section~\\ref{sec:four-cell-v2} therefore follows from the construction of both its definition and its source policy: its frozen definition required a wall-side X-type vector null, an object the literature definition does not place at the wall (the wall cusp is a separatrix intersection, not a null), and its source policy gives the even stages \\CtvFourCellStrengthRatioMin{} to \\CtvFourCellStrengthRatioMax{} of the odd stages' strength, which leaves one sign change of the axial field and hence one cusp per candidate. In the \\CtvCharVCount{} characterization cases the wall-cusp count ranges from zero (\\CtvCharVHistZero{} cases) to seven (\\CtvCharVHistSeven{} cases), equals the channel axis-null count in \\CtvCharVCuspsEqualChannelNulls{} of \\CtvCharVCount{} cases and equals the stage count minus one in \\CtvCharVNMinusOne{}, with the cusps at the gaps (median distance \\CtvCharVGapMedianMm{}~mm) and interior axis mirror ratios of \\CtvCharVInteriorAxisMirrorMin{} to \\CtvCharVInteriorAxisMirrorMax. The sealed characterization search of Section~\\ref{sec:topology-char-v1} had found \\CtvVOneChannelRoots{} in-channel vector roots on its primary maps: \\CtvVOneChannelAxisRoots{} are axis clusters, all reproduced here as the held-out reference, and \\CtvVOneChannelOffAxisRoots{} are off-axis bilinear roots in \\CtvVOneOffAxisCases{} cases at \\CtvVOneOffAxisRadiusFractionMin{} to \\CtvVOneOffAxisRadiusFractionMax{} of the wall radius, every one excluded by its frozen eligibility rule as \\texttt{\\CtvVOneOffAxisExclusion} (\\CtvVOneOffAxisEligible{} eligible) and none at the wall. The frozen-definition outcomes of Section~\\ref{sec:topology-screening} (\\CtvCharVReferenceEligibleCusps{} stable eligible cusps and \\CtvCharVReferenceEligibleCells{} stable eligible cells; \\CtvFourCellReferenceStable{} stable candidates) therefore remain true under their definitions, and this campaign changes the definition, not those records.",
+      "allowed_locations": [
+        "Wall cusps and cells under the literature definition across the screened design sets"
+      ],
+      "manifest_ids": [
+        "CUSP-TOPOLOGY-V3-1-20260903-281-V1",
+        "FOUR-CELL-V2-20260902-128-V1",
+        "TOPOLOGY-CHAR-V1-20260902-56-V1"
+      ],
+      "gate_id": "GATE-CUSP-TOPOLOGY-V3-1",
+      "classification": "SCREENING_L1A_FIELD_SEPARATRIX_CUSP_TOPOLOGY",
+      "recorded_outcome": "accepted-topology-screening",
+      "permitted_scope": [
+        "the four-cell candidates' single wall cusp, single axis null, placement and angles, and the counts meeting the two legacy targets",
+        "the explanation of the frozen four-cell null by the construction of its definition (a wall-side vector null, which the literature definition does not place at the wall) and of its source policy (weak even stages leaving one axial sign change), bound to the sealed v2 strength ratios",
+        "the characterization cases' cusp counts, N-1 count, cusp-equals-channel-null count, gap placement and interior axis mirror ratios",
+        "the sealed characterization search's in-channel roots split into reproduced axis clusters and off-axis bilinear roots with their radii, exclusion reason and eligibility, and the statement that the frozen-definition records remain true"
+      ],
+      "prohibited_inferences": [
+        "a change to, or a contradiction of, the frozen-definition records of the earlier admissions",
+        "that a wall-side vector null exists or does not exist in any field not screened here",
+        "plasma confinement or cusp-loss probabilities for any cell",
+        "permanent-magnet or nonlinear-iron material behaviour"
+      ]
+    },
+    {
+      "id": "CLM-066",
+      "status": "verified",
+      "claim_class": "quantitative-screening-result",
+      "authorized_tex": "The P2-qualified divergent-exit-stack field carries \\CtvPTwoCusps{} wall cusps at \\CtvPTwoCuspOneMm, \\CtvPTwoCuspTwoMm{} and \\CtvPTwoCuspThreeMm{}~mm, generated by \\CtvPTwoAxisNulls{} channel axis nulls, and \\CtvPTwoCells{} cells whose interior cells are \\CtvPTwoInteriorLengthPitchMin{} pitches long with wall mirror ratios of \\CtvPTwoInteriorWallMirrorMax{} and axis mirror ratios of \\CtvPTwoInteriorAxisMirrorMin{} to \\CtvPTwoInteriorAxisMirrorMax; the wall field at the cusps is \\CtvPTwoWallBMinT{} to \\CtvPTwoWallBMaxT{}~T and the separatrices meet the wall within \\CtvPTwoCuspOneAngleDeg$^\\circ$ of the normal. The third cusp lies \\CtvPTwoThirdCuspInsideEndUm{}~$\\mu$m inside the end of the straight dielectric and is flagged boundary-ambiguous (\\CtvPTwoCuspThreeAmbiguous); the exit partial cell it bounds is \\CtvPTwoExitPartialLengthUm{}~$\\mu$m long. Across the level-one and level-two finite-element maps the intersections moved by at most \\CtvPTwoMaxShiftM{}~m. As a reported, ungated consistency check carried by the frozen protocol (\\CtvPTwoConsistencyRole), the axis nulls lie within \\CtvPTwoNullToPicMaxUm{}~$\\mu$m of the axis-null planes recorded by the kinetic workstream's steady-state dashboard on the same sampled field (\\CtvPTwoPicPlanesMm{}~mm; a development record of a workstream whose results are not admitted here), and the cusps lie \\CtvPTwoCuspOneToDashboardMm, \\CtvPTwoCuspTwoToDashboardMm{} and \\CtvPTwoCuspThreeToDashboardMm{}~mm from the wall $|B_r|$ maxima of the plasma-topology dashboard (\\CtvPTwoDashboardMaximaMm{}~mm; a display diagnostic, not accepted cusp evidence), with the cusp count equal to both reference counts (\\CtvPTwoCountEqualsReference). The row is one field with iron poles and a return yoke; its iron sensitivity was not tested, and nothing about a plasma follows from the agreement.",
+      "allowed_locations": [
+        "Wall cusps and cells under the literature definition across the screened design sets"
+      ],
+      "manifest_ids": [
+        "CUSP-TOPOLOGY-V3-1-20260903-281-V1",
+        "WALL-LOSS-V4-20260902-4608-V1"
+      ],
+      "gate_id": "GATE-CUSP-TOPOLOGY-V3-1",
+      "classification": "SCREENING_L1A_FIELD_SEPARATRIX_CUSP_TOPOLOGY",
+      "recorded_outcome": "accepted-topology-screening",
+      "permitted_scope": [
+        "the P2 row's cusp and cell counts, positions, interior cell descriptors, wall fields, angles, boundary-ambiguity flag and level-one/level-two stability",
+        "the differences of the P2 axis nulls to the kinetic-workstream axis-null planes and of the cusps to the plasma-topology-dashboard wall maxima, stated as a reported, ungated consistency check against development records",
+        "the statement that the row is one field with iron whose sensitivity was not tested and that nothing about a plasma follows"
+      ],
+      "prohibited_inferences": [
+        "any kinetic-simulation or particle-in-cell result (the axis-null planes are a development record of a workstream whose results are not admitted)",
+        "acceptance of the plasma-topology dashboard's wall maxima as cusp evidence",
+        "iron sensitivity or material behaviour of the P2 field",
+        "plasma confinement, wall flux or performance at the cusps",
+        "generalization of the P2 row to the L1a sets or to hardware"
+      ]
+    },
+    {
+      "id": "CLM-067",
+      "status": "verified",
+      "claim_class": "lineage-disclosure",
+      "authorized_tex": "The campaign is the corrected re-preregistration of \\texttt{\\CtvLineageExperimentId} (preregistration \\texttt{\\CtvLineagePreregCommit}, result \\texttt{\\CtvLineageResultsCommit}), whose single execution ended in the recorded terminal state \\texttt{\\CtvLineageTerminalState} with campaign status \\texttt{\\CtvLineageCampaignStatus}: \\CtvLineageGatesTrue{} of \\CtvBindingGateCount{} binding gates held for its \\CtvLineageDesigns{} designs (\\CtvLineageStable{} stable), and the gate \\texttt{\\CtvLineageFailingGate} failed for \\CtvLineageFailingDesigns{} of \\CtvHeldOutCharDesigns{} characterization cases because its held-out reference kept a sealed axis root only when the cluster centroid radius was exactly zero, whereas the characterization merges an axis detection with a neighbouring bilinear root and reports the centroid. Reproduced here from the sealed characterization dataset and the predecessor's own records, \\CtvLineageDroppedClusters{} of \\CtvLineageSealedAxisClusters{} sealed axis clusters were dropped by that filter (largest centroid radius \\CtvLineageMaxDroppedCentroidR{}~m), \\CtvLineageDroppedInChannel{} of them inside the channel and in exactly the \\CtvLineageFailingDesigns{} failing cases (explained: \\CtvLineageFailuresExplained), and under the intended filter the correspondence holds for \\CtvLineageCorrectedPassed{} of \\CtvHeldOutCharDesigns{} cases with a largest difference of \\CtvLineageCorrectedMaxUm{}~$\\mu$m, equal to the numbers its read-only post-hoc audit (commit \\texttt{\\CtvLineageAuditCommit}) documents (\\CtvLineageAuditDropped{} of \\CtvLineageAuditClusters{} dropped; \\CtvLineageAuditCorrectedPassed{} in correspondence at \\CtvLineageAuditCorrectedMaxUm{}~$\\mu$m). The corrected campaign changed the reference extraction and nothing else, added the failing design to its shakedown, and records the same wall-cusp histogram (equal: \\CtvLineageHistogramEqual). The rejection is a defect of the recording layer, not of the topology; the predecessor's bundle is disclosed as lineage and is never cited for a number.",
+      "allowed_locations": [
+        "Wall cusps and cells under the literature definition across the screened design sets"
+      ],
+      "manifest_ids": [
+        "CUSP-TOPOLOGY-V3-1-20260903-281-V1"
+      ],
+      "gate_id": "GATE-CUSP-TOPOLOGY-V3-1",
+      "classification": "SCREENING_L1A_FIELD_SEPARATRIX_CUSP_TOPOLOGY",
+      "recorded_outcome": "accepted-topology-screening",
+      "lineage": {
+        "experiment": "cusp-topology-search-v3",
+        "preregistration_commit": "691599340355818ff64d3834d45110768a751589",
+        "results_commit": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+        "posthoc_audit_commit": "9fa6359a2ba87d14635d80147af4857482afc977",
+        "terminal_state": "assessment_rejection",
+        "rule": "disclosed as lineage; byte-verified and its audit reproduced by the generator; never cited for a number"
+      },
+      "permitted_scope": [
+        "the predecessor's identity, recorded terminal state, campaign status, gate outcomes and failing-design count as sealed",
+        "the root cause of the held-out failure reproduced from the sealed characterization dataset and the predecessor's records (dropped clusters, in-channel drops, largest centroid radius, explanation flag) and the correspondence under the intended filter, equal to the read-only audit's documented numbers",
+        "what the corrected campaign changed and that its histogram equals the predecessor's"
+      ],
+      "prohibited_inferences": [
+        "any number of the predecessor as a result of this paper",
+        "that the recorded rejection reflects the topology rather than the recording layer's reference extraction",
+        "that any other gate of the predecessor failed"
+      ]
+    },
+    {
+      "id": "CLM-068",
+      "status": "verified",
+      "claim_class": "screening-scope-limitation",
+      "authorized_tex": "The study is a magnetic-topology screening of prescribed field maps, classified \\texttt{\\CtvClassification} for its three \\CtvFieldModelLevel{} linear-vacuum sets (not P2-qualified, no permanent-magnet or nonlinear-iron material model) and \\texttt{\\CtvPTwoClassification} for its single P2 row, and admitted at the recorded outcome \\texttt{\\CtvRecordedOutcome}. Wall cusps and cells are geometric properties of the field maps under the literature definition; the mirror ratios are field ratios and never probabilities (\\CtvMirrorDescriptorsNotProbabilities), no plasma, confinement, wall-loss or performance quantity is computed or published (forbidden: \\CtvForbidPlasmaPerformance; mirror-probability publication forbidden: \\CtvForbidMirrorProbability), whether a cell confines a plasma is not decided here (demonstrated: \\CtvConfinementCellsDemonstrated), the iron sensitivity of the P2 row was not tested (\\CtvIronSensitivityTested), and no hardware or experimental validation is claimed (\\CtvHardwareValidation). The frozen-definition nulls of the earlier admissions remain true under their definitions (\\CtvFrozenDefinitionNullsRemainTrue). The cusp-cell catalogue is a consumer contract under its labels, usable as \\CtvUsableAs, and every consumer must carry the label; the study opens no physics level (\\CtvPhysicsLevelOpened).",
+      "allowed_locations": [
+        "Wall cusps and cells under the literature definition across the screened design sets"
+      ],
+      "manifest_ids": [
+        "CUSP-TOPOLOGY-V3-1-20260903-281-V1"
+      ],
+      "gate_id": "GATE-CUSP-TOPOLOGY-V3-1",
+      "classification": "SCREENING_L1A_FIELD_SEPARATRIX_CUSP_TOPOLOGY",
+      "recorded_outcome": "accepted-topology-screening",
+      "permitted_scope": [
+        "model-bounded restatement of the classification strings, recorded outcome, field levels and sealed claim boundary",
+        "the geometric-descriptor status of cusps, cells and mirror ratios, the untested iron sensitivity, the frozen-definition records remaining true, and the catalogue's status as a consumer contract under its labels with its permitted uses exactly as sealed"
+      ],
+      "prohibited_inferences": [
+        "plasma confinement, cusp-loss probabilities, wall-loss rates or performance",
+        "reading a mirror ratio as a probability",
+        "permanent-magnet or nonlinear-iron material behaviour, or iron sensitivity of the P2 row",
+        "hardware or experimental validation",
+        "opening of GATE-L1, GATE-L2 or GATE-L3"
+      ]
+    },
+    {
       "id": "GATE-L1",
       "status": "evidence-gate",
       "gate_registry_id": "GATE-L1"
@@ -1692,6 +1968,15 @@
       "kind": "numerical-campaign",
       "gate_status": "accepted",
       "manifest_id": "MDO-L0-V2-20260903-1440-V1"
+    },
+    {
+      "id": "GATE-CUSP-TOPOLOGY-V3-1",
+      "status": "evidence-gate",
+      "gate_registry_id": "GATE-CUSP-TOPOLOGY-V3-1",
+      "kind": "numerical-screening",
+      "gate_status": "accepted",
+      "recorded_outcome": "accepted-topology-screening",
+      "manifest_id": "CUSP-TOPOLOGY-V3-1-20260903-281-V1"
     }
   ]
 }
