@@ -234,6 +234,30 @@ def test_fail_closed_feed_above_ceiling_scale_and_exhaustion():
         inventory.advance(NeutralState.initial(1.0e17), 1e3 * inventory.config.feed_atoms_per_s, 1e-9)
 
 
+def test_v20_artificial_relaxation_is_suspended_when_ionisation_exceeds_the_sources():
+    """Plume run attempt 4 (2026-09-04): S peaked at 1.26 x Q for two 30 ns intervals; relaxing toward the NEGATIVE fixed
+    point emptied the channel (5.5e19 -> 4e18) in one interval and the discharge collapsed. Without a fixed point the
+    relaxation is suspended and the inventory follows the conservative balance (decay by (S - Q) dt / V only)."""
+
+    n_g0 = 5.5e19
+    feed = feed_for_density(n_g0, EXIT_AREA, 300.0)
+    inventory = _inventory(feed, tau=3.0e-8, ceiling=2.0 * n_g0)
+    state = NeutralState.initial(n_g0)
+    dt = 3.0e-8
+    burst = inventory.advance(state, 1.26 * feed, dt)
+    assert burst.artificial_relaxation_suspended and burst.fixed_point_per_m3 < 0.0 and burst.artificial_rate_per_s == 0.0
+    expected_loss = ((1.26 * feed - feed) * dt + inventory.effusion_coefficient * n_g0 * dt) / VOLUME
+    assert burst.state.density_per_m3 == pytest.approx(n_g0 - expected_loss, rel=1e-3)
+    assert burst.state.density_per_m3 > 0.99 * n_g0            # ~0.1 ms to empty the channel, not 30 ns
+    assert burst.state.ledger["artificial"] == 0.0
+    assert abs(burst.ledger_residual_atoms) < 1e-6 * feed * dt
+    # below the sources the relaxation acts as before
+    calm = inventory.advance(burst.state, 0.5 * feed, dt)
+    assert not calm.artificial_relaxation_suspended and calm.artificial_rate_per_s != 0.0
+    # the old behaviour: with the relaxation toward n* < 0 the density would have collapsed in one interval
+    assert (1.0 - exp(-dt / 3.0e-8)) > 0.6
+
+
 def test_v20_recycling_transient_above_q_over_c_needs_ceiling_headroom():
     """Plume run launch 1 (2026-09-03): with recycling on and the ceiling AT Q/c, the seeded ions returning as atoms
     before the ionisation catches up (R > S) push n_g above Q/c and the run stops fail-closed. A ceiling with declared

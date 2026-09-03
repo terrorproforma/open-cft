@@ -32,6 +32,7 @@
     "neutral_inventory": {
       "feed_atoms_per_s": 8.551102004120011e+16,
       "relaxation_time_s": 3e-08,
+      "relaxation_suspension_note": "attempt 5: the artificial relaxation is suspended in any interval where S > Q + R (no fixed point, n* < 0) and the inventory then follows the conservative balance only. Attempt 4 ignited (S 1.4e16 -> 7.3e16 /s, I_d 1.5 -> 7.0 mA, T_e 6.7 -> 12.9 eV in 0.39 us) until S reached 1.26 x the feed; relaxing toward the negative fixed point emptied the channel (n_g 5.5e19 -> 4.2e18) within one 30 ns interval, S collapsed x17 in the next frame, the 7 mA of cathode electrons then charged the cone negative (phi -70 V at z = 21 mm) and the discharge did not recover when n_g refilled (S 3e15 /s at n_g 5.9e19, T_e 11 eV): the ignition gate stopped it at 0.75 us. Physically the channel holds 1.65e13 atoms, so S - Q = 2e16 /s empties it in ~1 ms, not 30 ns.",
       "wall_recycling": true,
       "recombination_coefficient": 1.0,
       "wall_temperature_k": 400.0,
