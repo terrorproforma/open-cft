@@ -1,0 +1,1 @@
+{"__cft_type__":"dataclass","class":"cft_revival.experiment_runtime.lifecycle.Decision","fields":{"accepted":false,"payload":{"failed_design_count":2,"resolved_design_count":13,"stage_wall_s":2738.1153885000094}}}
