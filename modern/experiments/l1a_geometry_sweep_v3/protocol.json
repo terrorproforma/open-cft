@@ -1,0 +1,230 @@
+{
+  "schema_version": "cft-revival.l1a-geometry-sweep-v3.protocol/1.0.0",
+  "experiment_id": "l1a-geometry-sweep-v3",
+  "status": "preregistered_pending_single_execution",
+  "classification": "L1a_FIELD_ONLY_SCREENING_NOT_HARDWARE_VALID",
+  "classification_statement": "L1a linear-vacuum equivalent-current screening of axisymmetric PPM-stack geometries (geometry schema v1.1, the sweep-v2 builder rules on a wider box) with the cusp topology search v3.1 wall-cusp definition imported unchanged and the HEMP design ratio rho of Koch et al. reported per cusp. Nothing here is a plasma, mirror-probability, wall-loss, thrust or performance claim; rho and every mirror descriptor are field ratios of a screening field. The L1a field omits the soft-iron pole pieces and yoke that the geometry declares; for r_w / L > 0.5 the TWT/PPM review recommends an L1b (material-aware) or P2 confirmation before any absolute-field or rho-based design claim - that confirmation is queued, not run here.",
+  "purpose": "Extend the L1a design space into the HEMP-like regime in which the wall cusp is a genuine field maximum of its cell relative to the adjacent axis peak (Koch design ratio rho >= 1.5), by varying the wall-radius-to-pitch ratio x_w = pi r_w / L (short pitch relative to bore) and the magnet radial thickness / inner radius, with 3-5 full-strength alternating stages. The TWT/PPM review (modern/docs/literature/twt-ppm-physics-for-hemp.md, commit beb4772c, sections 2.2, 4.4, 5.3 and the summary table row 5) established that every recorded field is a single-harmonic PPM field whose wall-cusp |B| is only I_1(x_w) = 0.45-0.61 of the axis peak, so in the sweep-v2 catalogue (x_w = 0.72-1.55) the cusp is the |B| minimum of its cell and rho = 1.5-10.6 (Koch et al. IEPC-2011-236 / IEPC-2007-110) is unreachable: the original study's parameterisation never varied r_w / L into the HEMP regime.",
+  "relation_to_prior_work": "sweep v2 (modern/experiments/l1a_geometry_sweep_v2, preregistration 092f5fae, 96 accepted designs, r_w / L = 0.215-0.579) is reproduced here as a held-out set through the identity-proven pipeline of the wall-loss geometry screening v1 and is a strict subset of the v3 box; cusp topology search v3.1 (result cec47f12, 281/281 stable) supplies the wall-cusp definition and its code is imported, never re-implemented; no prior results/ directory, frozen preregistration file, cft_revival.plasma module or FYP/ file is modified.",
+  "descriptors_v3": {
+    "koch_rho": {
+      "citation": "Koch, N., Harmann, H.-P., Kornfeld, G., Status of the THALES High Efficiency Multi Stage Plasma Thruster Development for HEMP-T 3050 and HEMP-T 30250, IEPC-2007-110 (2007), Table 1 (rho = 1.53 / 1.70 / 3.07 for DM9-1 and 4.07 / 4.2 / 10.57 for DM10); Koch et al., The HEMPT Concept - A Survey on Theoretical Considerations and Experimental Evidences, IEPC-2011-236 (2011)",
+      "quotation": "High reflection of electrons in the cusp-mirror situation is achieved for a high ratio of the (predominantly radial) magnetic field strength at the inner discharge tube radius at the cusp middle plane to the (predominantly axial) magnetic field strength downstream the cusp.",
+      "radius_of_downstream_field": "not stated in the paper (review section 8); the axis reading is used here, the wall reading is reported alongside",
+      "rho_downstream": "|B|(r_w, z_c) / max |B_z(0, z)| over the axis interval from the cusp's axis null to the next axis null downstream (larger z) - Koch's wording, axis reading",
+      "rho_upstream": "the same ratio with the upstream axis interval",
+      "rho_conservative": "|B|(r_w, z_c) / max(upstream axis peak, downstream axis peak) - the binding HEMP-like classifier",
+      "rho_permissive": "|B|(r_w, z_c) / min(upstream axis peak, downstream axis peak) - reported",
+      "rho_wall": "|B|(r_w, z_c) / max |B|(r_w, z) over the two wall cells adjacent to the cusp - the 'cusp is the wall maximum' reading; PPM fundamental-only prediction I_1(x_w) / I_0(x_w) < 1 for every x_w",
+      "cusp_is_wall_maximum": "rho_wall >= 1 - 1e-9",
+      "axis_intervals": "adjacent axis nulls of the definition-v3 null list (the null list includes nulls outside the straight section inside the search window); when no neighbouring null exists the window edge / grid edge bounds the interval"
+    },
+    "hemp_like_rule": "a design is HEMP-like iff it has at least one wall cusp inside the straight dielectric and every such cusp has rho_conservative >= 1.5 (the lower end of the DM9-1 anode cusp value 1.53 in Koch's Table 1, rounded)",
+    "ppm_prediction": {
+      "statement": "for an infinite single-harmonic PPM stack of pitch L, wall radius r_w, x_w = pi r_w / L: |B|(r_w, z_c) / b_1 = I_1(x_w); |B|(r_w, z_c) / |B|(r_w, stage centre) = I_1(x_w) / I_0(x_w); review section 2.2",
+      "i1_threshold": "I_1(x*) = 1.5 at x* = 1.937318 (r_w / L = 0.616668), computed by bisection on the power series in descriptors.py; the review quotes r_w / L = 0.62 for 1.5x, 0.96 for 4x and 1.30 for 10.6x (I_1 = 4 at x = 3.0130, r_w / L = 0.9591; I_1 = 10.6 at x = 4.0909, r_w / L = 1.3022)",
+      "why_i1_not_the_realised_ratio": "the realised rho divides by the finite-stack axis peak (end effects raise the interior peak above the fitted b_1 by a few percent) and the L1a field has small end-effect harmonics, so rho / I_1(x_w) was 0.88-0.94 for the four sweep-v2 representatives and P2 in the review's Table D"
+    },
+    "hypothesis": {
+      "statement": "H1: over every wall cusp of the 128 Sobol designs, rho_conservative tracks the PPM prediction I_1(x_w): the least-squares slope of rho on I_1(x_w) through the origin lies in [0.80, 1.00] and at least 80 % of the cusps have rho_conservative / I_1(x_w) within the agreement band. H2: the I_1 threshold predicts the HEMP-like classification: a design with x_w >= x* = 1.937318 (I_1(x_w) >= 1.5) is HEMP-like and a design with x_w < x* is not, with prediction accuracy >= 0.85 over the Sobol designs that have at least one wall cusp. Both are REPORTED tests, not binding gates; the numbers are what the campaign measures.",
+      "agreement_band_relative": 0.25,
+      "expected_direction_if_true": "rho rises monotonically with x_w and crosses 1.5 near x_w = 1.94 (r_w / L = 0.62); designs inside the sweep-v2 box (x_w <= 1.55, I_1 <= 1.03) never reach 1.5",
+      "what_would_falsify": "slope outside [0.80, 1.00], fewer than 80 % of cusps in the band, accuracy below 0.85, or HEMP-like designs appearing inside the sweep-v2 box",
+      "statistics": "slope through the origin, R^2 against that line, median / min / max of rho / I_1, fraction in band, 2x2 confusion table of predicted (I_1 >= 1.5) vs realised (all cusps rho >= 1.5), prediction accuracy, smallest realised HEMP-like x_w and largest non-HEMP-like x_w, x* implied by the fitted slope (I_1(x) = 1.5 / slope)"
+    },
+    "wall_harmonics": "B_r(r_w, z) sampled at 401 points between the first and last stage centre (inside the straight dielectric) and fitted by linear least squares to sin/cos pairs at k = 1, 3, 5 times pi / L with the geometric pitch; reported |b_3 / b_1| and |b_5 / b_1| are wall amplitudes (never axis-fitted harmonics extrapolated to the wall; the review documents a 1.7-2.1x error for that shortcut)",
+    "separatrix_angle": "angle_to_wall_normal_deg of definition v3 at every wall cusp (reported)",
+    "resolution_sensitivity": "rho_conservative is computed on the accepted map and on the 2x refined map; the maximum per-design |rho_acc - rho_ref| / rho_ref is reported (the refinement-stability gate on z_c is binding, this is not)",
+    "profiles": "wall |B|, wall B_r, wall B_z and axis B_z on 241 points of the plot window (channel extended by one pitch, clipped to the grid) are stored per design from the accepted map for the dashboard's cusp maps"
+  },
+  "sampling": {
+    "algorithm": "scrambled Sobol (Joe-Kuo new-joe-kuo-6.21201 direction numbers, Gray-code generation, Matousek linear-matrix scramble + digital shift with SHA-256-derived bits) in experiments.l1a_geometry_sweep_v3.sampling; the first 128 points (a (t, 7, 11)-net) scaled to the variable box",
+    "design_count": 128,
+    "seed": 20260903,
+    "scramble": true,
+    "variables": [
+      {"name": "stage_count_selector", "lower": 0.0, "upper": 1.0, "units": "1"},
+      {"name": "stage_pitch_m", "lower": 0.0034, "upper": 0.0065, "units": "m"},
+      {"name": "magnet_axial_fraction", "lower": 0.48, "upper": 0.72, "units": "1"},
+      {"name": "chamber_outer_radius_m", "lower": 0.0014, "upper": 0.0042, "units": "m"},
+      {"name": "dielectric_thickness_m", "lower": 0.0005, "upper": 0.0009, "units": "m"},
+      {"name": "radial_clearance_m", "lower": 0.00035, "upper": 0.0016, "units": "m"},
+      {"name": "magnet_radial_thickness_m", "lower": 0.0022, "upper": 0.005, "units": "m"},
+      {"name": "source_strength_scale", "lower": 0.75, "upper": 1.3, "units": "1"},
+      {"name": "exit_length_fraction", "lower": 0.0, "upper": 0.28, "units": "1"},
+      {"name": "exit_expansion_descriptor", "lower": 0.0, "upper": 1.0, "units": "1"},
+      {"name": "first_polarity_selector", "lower": 0.0, "upper": 1.0, "units": "1"}
+    ],
+    "sweep_v2_box": {
+      "stage_pitch_m": [0.0038, 0.0065],
+      "chamber_outer_radius_m": [0.0014, 0.0022],
+      "radial_clearance_m": [0.00035, 0.0008],
+      "magnet_radial_thickness_m": [0.0022, 0.004],
+      "other_variables": "identical bounds",
+      "statement": "every sweep-v2 variable interval is contained in the v3 interval, so the sweep-v2 region is a subset of the v3 box; Sobol designs that fall inside the sweep-v2 box are flagged inside_sweep_v2_box and pooled with the 96 held-out sweep-v2 designs as the 'sweep-v2 region'"
+    },
+    "regime_coverage": {
+      "wall_radius_over_pitch": [0.2154, 1.2353],
+      "x_w": [0.6767, 3.8808],
+      "hemp_like_predicted_where": "x_w >= 1.937318, i.e. r_w >= 0.616668 L; with the box above this is r_w >= 2.10 mm at L = 3.4 mm and r_w >= 4.01 mm at L = 6.5 mm (about 37 % of the box volume in (L, r_w))",
+      "why_not_shorter_pitch": "the accepted map has dz = 0.4514 mm; 3.4 mm keeps >= 7.5 axial samples per pitch (the review's fits used 8-14) and the 2x refined map >= 15"
+    },
+    "bounds_provenance": "the upper bounds of chamber_outer_radius_m (4.2 mm), radial_clearance_m (1.6 mm) and magnet_radial_thickness_m (5.0 mm) and the lower bound of stage_pitch_m (3.4 mm) were fixed after six corner solves on 2026-09-03 (largest magnets with and without exit taper at 3 and 5 stages, shortest pitch at largest and smallest radius) that all passed the six sweep-v2 metric gates with margin (boundary_to_peak_ratio <= 0.0212 vs 0.05, topology_confidence >= 0.868 vs 0.5, manufacturing margins >= 50 um); no rho value was looked at when fixing the bounds"
+  },
+  "geometry": {
+    "schema_version": "cft_revival.geometry.axisymmetric_cft/1.1.0",
+    "builder": "experiments.l1a_geometry_sweep_v3.designs.build_case: the sweep-v2 derivation rules (stage_count = min(5, 3 + int(selector*3)); pitch moved inward by <= 64 ULPs until the v1.1 pitch identity passes; chamber length = stage_count * pitch; injector 8 % of the chamber; exit taper when exit_length_fraction * chamber >= 0.25 mm with exit radius r_w * (1.15 + 0.35 * descriptor) moved inward by <= 128 ULPs for taper continuity; magnet inner radius = max(r_w, exit radius) + dielectric + clearance; magnet axial thickness = pitch * magnet_axial_fraction; shield +0.75 mm, yoke +1.75 mm outside the magnets; alternating full-strength polarity starting with first_polarity)",
+    "stage_count_mapping": "min(5, 3 + int(selector*3)) -> 3, 4, 5 stages with equal probability thirds",
+    "length_binary64_policy": "the pitch and the four radial variables (chamber_outer_radius_m, dielectric_thickness_m, radial_clearance_m, magnet_radial_thickness_m) and the requested exit radius are represented by their nearest multiple of 2^-40 m (0.91 pm) before the sweep-v2 rules are applied, so every radial sum and stage-centre product is exact in binary64 and the geometry v1.1 ULP identities hold with zero error; the sweep-v2 inward-ULP walks are kept as verification and return at their first iteration. Reason (found on the raw Sobol sample before the shakedown): 22 of 128 raw value sets violate (r_w + d) - r_w == d within 2 ULP purely by rounding once r_w + d exceeds 2^-8 m, which no exit-radius walk can repair; requested and represented values are both recorded",
+    "polarity": "alternating full-strength (every stage the same |ampere-turns|); never the weak even stages of four-cell topology search v2",
+    "exit_minimum_length_m": 0.00025,
+    "radial_tolerance_m": 0.000025,
+    "axial_tolerance_m": 0.000025,
+    "minimum_thickness_m": 0.00025,
+    "minimum_clearance_m": 0.0001,
+    "thermal_clearance_m": 0.00025,
+    "manufacturability_limits_assumed": {
+      "magnet_material": "cft_revival.magnetics.checked_synthetic_smco_like_magnet: synthetic SmCo-like example, remanence 1.05 T at 293.15 K, recoil mu_r 1.05, intrinsic coercivity 1.6 MA/m; NOT a vendor grade; the L1a source is the two equivalent current sheets (Br / mu0 times the magnet axial thickness) smeared over 0.8 mm, scaled by source_strength_scale in [0.75, 1.3] (harmless for topology and rho, which are scale-invariant)",
+      "minimum_manufacturable_thickness_m": 0.00025,
+      "radial_and_axial_tolerance_m": 0.000025,
+      "magnet_to_dielectric_thermal_clearance_m": 0.00025,
+      "inter_magnet_axial_clearance_m": 0.0001,
+      "pole_pieces": "soft-iron-assumed regions (mu_r 4000) fill the inter-magnet gaps in the geometry but are source-free vacuum in the L1a field (linear vacuum, no material response)",
+      "feasibility_by_construction": "every variable box corner satisfies the geometry v1.1 manufacturing rules (checked in designs.feasibility_report and recorded per design); no design is rejected or resampled"
+    }
+  },
+  "field": {
+    "domain": {"radius_m": 0.03, "z_min_m": -0.015, "z_max_m": 0.05, "radial_intervals": 80, "axial_intervals": 144},
+    "solver": {"relative_tolerance": 1e-10, "absolute_tolerance": 1e-13, "max_iterations": 20000, "residual_history_stride": 10, "max_true_residual_restarts": 2},
+    "preview": {"authoritative": false, "radial_smear_thickness_m": 0.0008, "description": "geometry v1.1 thin-volume current-equivalent preview; not material-aware"},
+    "refinement": 2,
+    "statement": "the accepted map is the sweep-v2 domain and resolution solved with cft_revival.fields.solve_problem_cpu (the CPU solver whose parity with the sweep-v2 CUDA solves was recorded at 1e-15); the refined map is the same discrete problem at 2x radial and axial intervals; both use the sweep-v2 solver configuration",
+    "why_the_sweep_v2_domain": "the sweep-v2 QoIs (nearest-node samples on this grid) must be reproducible verbatim for the held-out set and comparable across the v2 region and the new designs; a finer accepted grid would cost 8-10x per design and break the 1 h budget"
+  },
+  "definition_v3_import": {
+    "source": "experiments.cusp_topology_search_v3_1.topology (characterize_map, compare_resolutions, axis_window, bicubic_field) imported unchanged; protocol.json#definition_v3 of that experiment (result commit cec47f12) is the definition authority and is bound by hash in dependency_source_sha256",
+    "numerical_parameters": {
+      "axis_root_bracket_tolerance_m": 1e-12,
+      "axis_root_max_bisections": 200,
+      "axis_window_margin_mesh_factor": 2.5,
+      "axis_window_pitch_factor": 1.0,
+      "seed_radius_cell_fraction": 0.25,
+      "trace_step_cell_fraction": 0.1,
+      "trace_max_steps": 400000,
+      "wall_tolerance_m": 1e-09,
+      "wall_event_max_halvings": 64,
+      "null_field_floor_relative": 1e-13,
+      "flux_root_search_half_width_cells": 2.0,
+      "trace_flux_root_tolerance_m": 5e-05,
+      "boundary_ambiguity_tolerance_m": 0.00025,
+      "wall_samples_per_cell": 400,
+      "axis_samples_per_interval": 400,
+      "jacobian_step_cell_fraction": 0.001,
+      "path_subsample_stride": 8,
+      "path_max_points": 400
+    },
+    "stability_tolerance_m": 0.00025,
+    "held_out_tolerance_m": 0.00025,
+    "minimum_certificate_dense_to_bound_ratio": 0.001,
+    "must_equal_v3_1": "experiment.policy_from raises if these parameters differ from the v3.1 protocol"
+  },
+  "design_sets": {
+    "sobol_v3": {
+      "included": true,
+      "design_count": 128,
+      "why": "the new space-filling sample of the v3 box; the object of every estimand",
+      "representative_indices": [0, 30, 79, 106],
+      "keep_paths": "every Sobol design stores its separatrix paths (execution.keep_paths_for_sets) so the dashboard can draw the cusp maps of whichever designs turn out HEMP-like"
+    },
+    "sweep_v2": {
+      "included": true,
+      "design_count": 96,
+      "why": "held-out reproduction: the 96 accepted sweep-v2 designs rebuilt and re-solved through the wall-loss geometry screening's identity-proven pipeline (rebuilt hashes == sealed raw record, QoIs replay within the sweep-v2 tolerances, four stored representatives reproduce node-wise, sealed axis nulls match the v3 nulls); they also give the v2-region overlay of the rho vs x_w scatter",
+      "source": "modern/experiments/l1a_geometry_sweep_v2/results (bound through modern/experiments/orbit_wall_loss_geometry_screening_v1/protocol.json#field_source)",
+      "stored_map_node_tolerance": {"psi_max_abs_wb": 1e-15, "b_max_abs_t": 1e-09}
+    }
+  },
+  "estimands": {
+    "binding_none": "no estimand is a gate; all estimands are reported at whatever value the campaign measures",
+    "per_design": ["x_w, r_w / L, x_m", "axis nulls (count, positions)", "wall cusps (z_c, |B|, angle) and cells (v3.1 catalogue entry)", "rho_downstream / rho_upstream / rho_conservative / rho_wall per cusp", "I_1(x_w) prediction and rho / I_1", "hemp_like_all_cusps, five_stage_four_cusp_hemp_like", "wall |b_3 / b_1|, |b_5 / b_1|", "stable (2x refinement), rho resolution sensitivity", "the sweep-v2 QoIs and the six sweep-v2 metric gates"],
+    "campaign": [
+      "fraction of Sobol designs with all interior cusps at rho_conservative >= 1.5 (and among designs with at least one cusp)",
+      "rho vs x_w scatter against I_1(x_w): slope, R^2, band fraction, confusion table, accuracy, realised threshold band",
+      "the feasible HEMP-like sub-region: ranges of x_w, r_w / L, x_m and the stage / cusp histograms of the HEMP-like designs",
+      "count of five-stage designs with exactly four wall cusps that are HEMP-like",
+      "count of sweep-v2-region designs (held-out 96 + Sobol designs inside the v2 box) reaching rho >= 1.5 and their maximum rho",
+      "wall-cusp count histogram and the fraction with N - 1 cusps for N stages",
+      "pooled rho_wall and the number of cusps that are the wall |B| maximum of their neighbourhood",
+      "wall harmonic content ranges",
+      "held-out reproduction counts for the sweep-v2 set"
+    ]
+  },
+  "gates": {
+    "binding_integrity": {
+      "all_declared_designs_resolved": "every declared design (128 Sobol + 96 sweep-v2) built / rebuilt, solved on both maps and characterized (no exclusions)",
+      "identity_proven": "every design's geometry / source / config / case hashes equal the frozen design authorities; sweep-v2 designs additionally equal the sealed raw record",
+      "sweep_v2_gates_verbatim": "every design passes the six sweep-v2 metric gates with their recorded definitions: boundary_to_peak_ratio <= 0.05, relative_residual_l2 <= 1e-10, flux_reconstruction_identity_t_per_m <= 1e-8, source_representation_error <= 0.25, topology_confidence >= 0.5, min(radial, axial manufacturing margin) >= 0; the seventh sweep-v2 gate (cpu_cuda_parity) has no CUDA solve to compare in this CPU-only campaign and is replaced by determinism_replay",
+      "solver_converged_both_maps": "the accepted and the refined CPU solves report converged = true",
+      "every_null_converged": "definition v3: every axis null in every map converged, X-type, classifications agree",
+      "every_trace_terminates_cleanly": "definition v3: every separatrix terminates as wall or domain_z",
+      "every_wall_trace_flux_consistent": "definition v3: every wall-reaching trace agrees with the flux root within 5e-5 m",
+      "refinement_stability": "catalogue stability: same axis-null count, same wall-reaching count, |dz_k| and |dz_c| <= 0.25 mm between the accepted and the 2x refined map for every design",
+      "held_out_sweep_v2_reproduction": "for every sweep-v2 design: rebuilt hashes equal the sealed record, the re-solved QoIs replay within the sweep-v2 scale-aware tolerances, the four stored representatives reproduce node-wise, and the sealed axis nulls inside the v3 window are in bijection with the v3 nulls within 0.25 mm",
+      "determinism_replay": "re-solving and re-characterizing the replay designs in the main process reproduces the worker's canonical topology/descriptor payload bytes exactly and the accepted psi grid node-for-node",
+      "hash_bindings": "protocol, experiment code, dependency sources, field pipeline sources and sealed-source identities equal the preregistered authorities"
+    },
+    "reported_not_binding": ["hypothesis tests H1 and H2", "HEMP-like fraction and counts", "rho ranges", "wall harmonic content", "resolution sensitivity of rho", "L1b/P2 confirmation queue"]
+  },
+  "shakedown": {
+    "evidentiary": false,
+    "outcomes_enter_estimand": false,
+    "purpose": "Exercise the complete production path (Sobol sampling, v3 builder, sweep-v2 rebuild with identity proof, CPU solves at both resolutions, sweep-v2 QoIs and gates, tracing grids, definition-v3 characterization import, stability, held-out correspondence, Koch rho and PPM descriptors, wall harmonics, profiles, gates, dataset, CSV, v3 catalogue, publication through the shared ExperimentRuntime into a temporary root, validate_bundle) on REAL designs of both sets before the preregistration freeze.",
+    "designs": {
+      "sobol_v3": ["l1a-gs-v3-030-f474b3d75a", "l1a-gs-v3-079-9a64521785", "l1a-gs-v3-106-ccec1c8b2f", "l1a-gs-v3-011-fa2db560b1", "l1a-gs-v3-000-78dcc2bb4c", "l1a-gs-v3-127-547cbdf9e2"],
+      "sweep_v2": ["l1a-gs-v2-000-48d2ccedd5", "l1a-gs-v2-065-9e98f08f3b", "l1a-gs-v2-095-27f6ceb96c"]
+    },
+    "design_rule": "Sobol: the design with the largest x_w, the design with the smallest x_w, the five-stage design with the largest x_w, one design inside the sweep-v2 box, the first and the last of the sequence (duplicates removed); sweep-v2: 000 (representative with stored map, lowest field energy), 065 (five-stage strongest-centreline representative), 095 (last of the sorted list)",
+    "record_path": "shakedown.json",
+    "prepare_requires": ["shakedown.json exists", "passed == true", "protocol_semantic_sha256 equals the current protocol", "experiment_code_sha256, dependency_source_sha256 and field_pipeline_source_sha256 equal the current sources", "timing projection recorded"]
+  },
+  "execution": {
+    "shared_experiment_runtime_only": true,
+    "real_field_shakedown_before_prepare": true,
+    "clean_detached_pushed_preregistration_required": true,
+    "git_common_lock": "l1a-geometry-sweep-v3.execution.lock",
+    "attempt": 1,
+    "single_execution": true,
+    "no_patch_or_rerun": true,
+    "parallel_designs": true,
+    "max_design_workers": 6,
+    "cpu_budget_note": "at most 6 of the 24 logical CPUs (a screening campaign uses 12 and the GPU runs PIC); every solve is cft_revival.fields.solve_problem_cpu; wall-clock budget 1 h",
+    "keep_paths_for_sets": ["sobol_v3"],
+    "replay_designs": {
+      "sobol_v3": ["l1a-gs-v3-000-78dcc2bb4c", "l1a-gs-v3-106-ccec1c8b2f"],
+      "sweep_v2": ["l1a-gs-v2-000-48d2ccedd5"]
+    },
+    "parallel_determinism_rule": "each design's record is a pure function of (protocol, design identity); workers return canonical payloads with their SHA-256; the main process re-solves and re-characterizes the replay designs and requires byte-identical canonical payloads"
+  },
+  "publication_policy": {
+    "per_design": ["artifacts/designs/<set>/<design_id>.json (identity, solver evidence, sweep QoIs and gates, both characterizations, stability, held-out comparison, descriptors on both maps, profiles; separatrix paths for Sobol designs and sweep-v2 representatives)", "artifacts/fields/<set>/<design_id>.json.gz (accepted psi grid as gzip of canonical JSON; payload SHA-256 recorded in the design record)"],
+    "campaign": ["artifacts/protocol.json", "artifacts/design-authorities.json", "artifacts/authorities.json + artifacts/shakedown.json (evidentiary run)", "artifacts/source-binding.json", "artifacts/sweep-dataset.json", "artifacts/sweep-dataset.csv", "artifacts/cusp-cell-catalogue-v3.json", "artifacts/gates.json", "artifacts/campaign-result.json"]
+  },
+  "catalogue": {
+    "path": "artifacts/cusp-cell-catalogue-v3.json",
+    "schema_version": "cft-revival.cusp-cell-catalogue/1.1.0",
+    "label": "SCREENING_L1A_FIELD_SEPARATRIX_CUSP_TOPOLOGY",
+    "consumer_contract": "one entry per design (set_id, design_id, label, geometry, design values, x_w, axis nulls, wall cusps with z_c / |B| / angle, cells with mirror descriptors, per-cusp Koch rho readings, hemp_like_all_cusps, inside_sweep_v2_box, stable flag) so a future wall-loss screening can stratify its launch design by regime (sweep-v2 region vs HEMP-like) and define cells by actual separatrix intersections; consumers must carry the label SCREENING_L1A_FIELD_SEPARATRIX_CUSP_TOPOLOGY and must not read rho or the mirror descriptors as probabilities",
+    "loader": "experiments.l1a_geometry_sweep_v3.catalogue.load_catalogue (validates the v3.1 structure through the imported validator plus the v3 extension against the bundle manifest)"
+  },
+  "claim_boundary": {
+    "field_level": "L1a linear-vacuum equivalent-current FDM (not P2, not hardware-valid); the declared soft-iron pole pieces and yoke are source-free vacuum in the field",
+    "definition_source": "cusp topology search v3.1 (HEMP/DCFT literature definition) for cusps and cells; Koch et al. IEPC-2007-110 for rho",
+    "iron_sensitivity": "not tested; the review (section 5.3) finds iron changes the amplitude, not the cusp positions or wall-field shape, at x_w ~ 1, and recommends a material-aware check before any absolute field, mirror ratio or rho-based claim for r_w / L > 0.5",
+    "l1b_p2_confirmation": {"status": "queued_not_run", "statement": "for every design with r_w / L > 0.5 the TWT/PPM review recommends an L1b (cft_revival.material_fields, screening-only) or P2 (adaptive FEM with iron) confirmation of rho before it is used in a design decision; this campaign records the recommendation and runs no material-aware solve", "consumer": "a future L1b/P2 confirmation campaign on the HEMP-like representatives of the v3 catalogue"},
+    "forbid_plasma_performance_publication": true,
+    "forbid_mirror_probability_publication": true,
+    "mirror_ratios_are_field_descriptors_not_probabilities": true,
+    "shakedown_outcomes_are_not_evidence": true,
+    "usable_as": ["regime-stratified cell definitions for a future wall-loss screening (labelled)", "evidence about the original study's design space (which regime it covered and which it did not)", "the design list for an L1b/P2 confirmation of rho in the HEMP-like regime"]
+  }
+}
