@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wall-loss vs geometry screening v2 (catalogue cells) — SCREENING_L1A_FIELD_TEST_PARTICLE_WALL_LOSS</title>
+<style>
+:root { --ink:#1b1f24; --muted:#5b6470; --line:#d6dbe1; --bg:#ffffff; --panel:#f6f8fa; --warn:#8a4b00; --warnbg:#fff4e0; --ok:#1d6f3f; --bad:#a12d2d; --acc:#2456a4; --acc2:#c2571b; --acc3:#6a4c93; --anode:#c2571b; --interior:#2456a4; --exit:#1d6f3f; }
+* { box-sizing: border-box; }
+body { margin:0; font: 14px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color:var(--ink); background:var(--bg); overflow-wrap: anywhere; }
+main { max-width: 1320px; margin: 0 auto; padding: 16px 20px 48px; }
+h1 { font-size: 22px; margin: 8px 0 4px; }
+h2 { font-size: 17px; margin: 28px 0 8px; border-bottom: 1px solid var(--line); padding-bottom: 4px; }
+h3 { font-size: 14px; margin: 14px 0 6px; color: var(--muted); font-weight: 600; }
+p { margin: 6px 0; }
+code, .mono { font-family: ui-monospace, Consolas, "SFMono-Regular", monospace; font-size: 12px; }
+.banner { border: 2px solid var(--warn); background: var(--warnbg); color: var(--warn); padding: 10px 14px; border-radius: 6px; margin: 10px 0 14px; }
+.banner strong { display:block; font-size: 15px; margin-bottom: 4px; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 10px 0; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; }
+.card .v { font-size: 22px; font-weight: 700; }
+.card .l { color: var(--muted); font-size: 12px; }
+.row { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 10px; flex: 1 1 420px; min-width: 0; overflow-x: auto; }
+svg { width: 100%; height: auto; display: block; }
+svg text { font: 11px system-ui, sans-serif; fill: var(--ink); }
+.axis line, .axis path { stroke: #98a2ad; stroke-width: 1; fill: none; }
+.grid line { stroke: #e3e7eb; stroke-width: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 12px; }
+th, td { border-bottom: 1px solid var(--line); padding: 3px 6px; text-align: right; white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; }
+th { background: var(--panel); position: sticky; top: 0; cursor: pointer; }
+.ok { color: var(--ok); font-weight: 600; } .bad { color: var(--bad); font-weight: 600; }
+.tablewrap { max-height: 520px; overflow: auto; border: 1px solid var(--line); border-radius: 6px; }
+select { font: inherit; padding: 2px 6px; }
+.legend span { display:inline-block; margin-right: 12px; }
+.sw { display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:4px; vertical-align:middle; }
+footer { margin-top: 30px; color: var(--muted); font-size: 12px; border-top: 1px solid var(--line); padding-top: 10px; }
+footer .mono { word-break: break-all; }
+.small { font-size: 12px; color: var(--muted); }
+ul { margin: 4px 0 4px 18px; padding: 0; }
+</style>
+</head>
+<body>
+<main>
+<h1>Wall-loss vs geometry screening v2 — catalogue cells, scrambled Sobol, two-stage allocation</h1>
+<div class="banner" id="banner"></div>
+<p id="lead" class="small"></p>
+
+<h2>Headline</h2>
+<div class="cards" id="cards"></div>
+<p class="small" id="headline-notes"></p>
+
+<h2>Per-cell P(wall) along the channel — representatives and the P2 row</h2>
+<div class="row">
+  <div class="panel" style="flex:2 1 640px">
+    <div style="margin-bottom:6px">design: <select id="rep-select"></select>
+      <span class="legend" style="margin-left:14px"><span><i class="sw" style="background:#c2571b"></i>anode-side partial</span><span><i class="sw" style="background:#2456a4"></i>interior</span><span><i class="sw" style="background:#1d6f3f"></i>exit-side partial</span><span>dashed = wall cusp (v3.1 catalogue)</span><span>grey = v1 fixed-fraction cells (128 launches each)</span></span>
+    </div>
+    <div id="channel"></div>
+    <p class="small">Points: pooled N-step P(wall) of each catalogue cell at its launch plane (cell midpoint) with 95 % Wilson bars; filled = topped up to 512, hollow = saturated at 128. Grey squares: v1's per-cell values on the same field (different cells and launch distribution; not directly comparable). Lower strip: axis B<sub>z</sub> (blue) and wall |B| (orange) of the accepted bore grid.</p>
+  </div>
+  <div class="panel" style="flex:1 1 320px">
+    <h3>Per-cell P(wall) by position class (sweep designs)</h3>
+    <div id="position"></div>
+    <div id="position-table"></div>
+  </div>
+</div>
+
+<h2>Allocation outcome and the surrogate-v3 floor gate</h2>
+<div class="row">
+  <div class="panel"><h3>Per-cell Jeffreys floor vs the 0.02 readiness gate</h3><div id="floors"></div><p class="small" id="floor-note"></p></div>
+  <div class="panel"><h3>Stage-1 Wilson width vs P(wall) — the frozen top-up rule</h3><div id="rule"></div><p class="small">Every cell starts at 128 launches; the rule tops a cell up to 512 iff its stage-1 Wilson width exceeds 0.10 (grey line), i.e. iff 12 ≤ k ≤ 116 of 128. The rule was evaluated by code inside the execution and replayed by the main process from the endpoint terminations.</p></div>
+</div>
+
+<h2>v1 vs v2 pooled comparison and the N → 2N control</h2>
+<div class="row">
+  <div class="panel"><h3>Pooled P(wall): v1 (fixed cells, 2N) vs v2 (catalogue cells, N)</h3><div id="v1v2"></div><p class="small" id="v1v2-note"></p></div>
+  <div class="panel"><h3>Paired N → 2N control per design</h3><div id="control"></div><p class="small" id="control-note"></p></div>
+</div>
+
+<h2>All cells</h2>
+<div class="tablewrap"><table id="cells"></table></div>
+
+<h2>All designs</h2>
+<div class="tablewrap"><table id="designs"></table></div>
+
+<h2>Gates, validators and execution</h2>
+<div class="row">
+  <div class="panel" id="gates"></div>
+  <div class="panel" id="consumer"></div>
+</div>
+
+<h2>Claim boundary</h2>
+<div class="panel" id="claims"></div>
+
+<footer id="footer"></footer>
+</main>
+<script id="payload" type="application/json">__PAYLOAD_JSON__</script>
+<script>
+(function () {
+  "use strict";
+  var P = JSON.parse(document.getElementById("payload").textContent);
+  var D = P.designs.slice();
+  var CELLS = P.cells.slice();
+  var byId = function (id) { return document.getElementById(id); };
+  var esc = function (s) { return String(s).replace(/[&<>"']/g, function (c) { return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); };
+  var fmt = function (x, d) { return (x === null || x === undefined) ? "–" : Number(x).toFixed(d === undefined ? 3 : d); };
+  var pct = function (x) { return (x === null || x === undefined) ? "–" : (100 * Number(x)).toFixed(1) + " %"; };
+  var KIND = { anode_partial: "#c2571b", interior: "#2456a4", exit_partial: "#1d6f3f", unbounded: "#6a4c93" };
+  var POS = { anode_side: "#c2571b", interior: "#2456a4", exit_side: "#1d6f3f", unbounded: "#6a4c93" };
+
+  byId("banner").innerHTML = "<strong>" + esc(P.classification) + " (sweep rows) · " + esc(P.label_p2) + " (one row)" + (P.evidentiary ? "" : " — NON-EVIDENTIARY " + esc(P.plan_kind).toUpperCase() + " BUNDLE (development render; outcomes enter no estimand)") + "</strong>" + esc(P.classification_statement);
+  byId("lead").textContent = "Field source: " + P.field_source.experiment + " (" + P.field_source.field_status + "; refined re-solve " + P.field_source.refined_diagnostic_coverage.split(":")[0] + "). Cells: " + P.catalogue.experiment + " (" + P.catalogue.result_commit + "). " + P.launch_design.launch_plane_statement;
+
+  var H = P.headline;
+  var sweepCells = CELLS.filter(function (c) { return c.set_id === "sweep_v2"; });
+  var cards = [
+    ["designs / cells", P.design_count + " / " + P.cell_count, H.sweep_design_count + " sweep designs (" + H.sweep_cell_count + " cells) + " + (H.p2_row_present ? "1 P2 row" : "no P2 row")],
+    ["cells topped up to 512", H.cells_topped_up + " / " + H.cell_count, pct(1 - H.fraction_cells_saturated) + " of cells; " + H.cells_saturated_after_stage1 + " saturated at 128"],
+    ["surrogate-v3 ready", H.cells_surrogate_ready + " / " + H.cell_count, "Jeffreys floor ≤ 0.02: " + pct(H.fraction_cells_surrogate_ready) + " (sweep cells " + pct(H.fraction_sweep_cells_surrogate_ready) + ")"],
+    ["floor median / max", fmt(H.jeffreys_floor_median, 4) + " / " + fmt(H.jeffreys_floor_max, 4), "per-cell Jeffreys floor after the top-up"],
+    ["N → 2N bias (paired control)", fmt(H.control.estimated_bias_2N_minus_N, 4), H.control.n_control + " control orbits, " + H.control.discordant + " discordant (" + pct(H.control.discordance_rate) + "); gate ≤ 0.02: " + (H.control.passed ? "PASS" : "FAIL")],
+    ["sealed designs", H.sealed_design_count + " / " + P.design_count, H.control_flag_true_design_count + " designs pass their own control flag"],
+    ["reflections", H.total_reflections_final_n, pct(H.reflection_fraction_final_n) + " of final launches; " + H.designs_with_reflections.length + " designs reflect"],
+    ["v1 vs v2 (pooled)", "ρ = " + fmt(H.v1_comparison.spearman_rank_correlation.launches, 2), "launch-weighted; mean Δ " + fmt(H.v1_comparison.mean_difference_v2_minus_v1.launches, 3) + ", |Δ| " + fmt(H.v1_comparison.mean_absolute_difference.launches, 3)],
+    ["orbits integrated", P.execution.orbit_count, P.execution.case_count + " cases (" + H.stage1_launches + " stage 1, " + H.stage2_launches + " stage 2, " + H.control_launches + " control), " + P.execution.worker_pool_size + " workers"]
+  ];
+  byId("cards").innerHTML = cards.map(function (c) { return '<div class="card"><div class="v">' + esc(c[1]) + '</div><div class="l">' + esc(c[0]) + '</div><div class="l">' + esc(c[2]) + '</div></div>'; }).join("");
+  byId("headline-notes").textContent = (P.excluded_designs.length ? "Excluded designs: " + P.excluded_designs.map(function (e) { return e.design_key; }).join(", ") + ". " : "No design was excluded. ") + "Structural gates for all designs: " + (H.structural_gates_all_passed ? "PASS" : "FAIL") + "; allocation-rule replay: " + (H.allocation_replay_all_passed ? "PASS" : "FAIL") + ". Final launches per cell: " + Object.keys(H.final_n_per_cell_counts).map(function (n) { return n + " × " + H.final_n_per_cell_counts[n]; }).join(", ") + ".";
+
+  // ---- SVG helpers -------------------------------------------------------
+  function svgOpen(w, h) { return '<svg viewBox="0 0 ' + w + ' ' + h + '" xmlns="http://www.w3.org/2000/svg" role="img">'; }
+  function scale(dom, rng) { var d0 = dom[0], d1 = dom[1] === dom[0] ? dom[0] + 1 : dom[1]; return function (v) { return rng[0] + (v - d0) / (d1 - d0) * (rng[1] - rng[0]); }; }
+  function ticks(dom, n) { var span = dom[1] - dom[0]; if (span <= 0) { return [dom[0]]; } var step = Math.pow(10, Math.floor(Math.log10(span / n))); var err = span / n / step; step *= err >= 7.5 ? 10 : err >= 3.5 ? 5 : err >= 1.5 ? 2 : 1; var out = []; for (var t = Math.ceil(dom[0] / step) * step; t <= dom[1] + 1e-12; t += step) { out.push(+t.toFixed(12)); } return out; }
+  function axes(x, y, xdom, ydom, box, xlabel, ylabel, xfmt, yfmt) {
+    var s = '<g class="grid">';
+    ticks(ydom, 5).forEach(function (t) { s += '<line x1="' + box.l + '" x2="' + box.r + '" y1="' + y(t) + '" y2="' + y(t) + '"/>'; });
+    s += '</g><g class="axis"><path d="M' + box.l + ' ' + box.t + 'V' + box.b + 'H' + box.r + '" style="fill:none"/>';
+    ticks(xdom, 6).forEach(function (t) { s += '<line x1="' + x(t) + '" x2="' + x(t) + '" y1="' + box.b + '" y2="' + (box.b + 4) + '"/><text x="' + x(t) + '" y="' + (box.b + 15) + '" text-anchor="middle">' + (xfmt ? xfmt(t) : t) + '</text>'; });
+    ticks(ydom, 5).forEach(function (t) { s += '<line x1="' + (box.l - 4) + '" x2="' + box.l + '" y1="' + y(t) + '" y2="' + y(t) + '"/><text x="' + (box.l - 6) + '" y="' + (y(t) + 4) + '" text-anchor="end">' + (yfmt ? yfmt(t) : t) + '</text>'; });
+    s += '</g><text x="' + (box.l + box.r) / 2 + '" y="' + (box.b + 30) + '" text-anchor="middle">' + esc(xlabel) + '</text>';
+    s += '<text transform="translate(12 ' + (box.t + box.b) / 2 + ') rotate(-90)" text-anchor="middle">' + esc(ylabel) + '</text>';
+    return s;
+  }
+
+  // ---- channel view -------------------------------------------------------
+  var reps = D.filter(function (d) { return d.representative; });
+  var sel = byId("rep-select");
+  reps.forEach(function (d, i) { var o = document.createElement("option"); o.value = i; o.textContent = d.design_key + (d.set_id === "p2_divergent_exit" ? " (P2 field)" : ""); sel.appendChild(o); });
+  var profileByKey = {};
+  P.axis_profiles.forEach(function (p) { profileByKey[p.design_key] = p; });
+  function drawChannel() {
+    var d = reps[+sel.value];
+    var L = d.geometry.chamber_length_m;
+    var W = 760, Hh = 360, box = { l: 50, r: W - 20, t: 20, b: 200 };
+    var x = scale([0, L], [box.l, box.r]), y = scale([0, 1], [box.b, box.t]);
+    var s = svgOpen(W, Hh);
+    d.cells.forEach(function (c) { s += '<rect x="' + x(c.z0) + '" y="' + box.t + '" width="' + Math.max(1, x(c.z1) - x(c.z0)) + '" height="' + (box.b - box.t) + '" fill="' + KIND[c.kind] + '" opacity="0.08"/>'; });
+    s += axes(x, y, [0, L], [0, 1], box, "axial position z (m) — straight dielectric ends at " + fmt(d.geometry.exit_start_m, 4) + " m", "P(wall) per cell", function (t) { return t.toFixed(3); }, function (t) { return t.toFixed(1); });
+    d.cusps_z_m.forEach(function (z) { s += '<line x1="' + x(z) + '" x2="' + x(z) + '" y1="' + box.t + '" y2="' + box.b + '" stroke="#333" stroke-dasharray="4 3"/>'; });
+    s += '<line x1="' + x(d.geometry.exit_start_m) + '" x2="' + x(d.geometry.exit_start_m) + '" y1="' + box.t + '" y2="' + box.b + '" stroke="#98a2ad"/>';
+    if (d.v1) { d.v1.cells_z_m.forEach(function (z, i) { var yy = y(d.v1.per_cell[i]); s += '<rect x="' + (x(z) - 4) + '" y="' + (yy - 4) + '" width="8" height="8" fill="#9aa4ad" opacity="0.85"/>'; }); }
+    d.cells.forEach(function (c) {
+      var cx = x(c.zl), col = KIND[c.kind];
+      s += '<line x1="' + cx + '" x2="' + cx + '" y1="' + y(c.wall.lo) + '" y2="' + y(c.wall.hi) + '" stroke="' + col + '" stroke-width="2"/>';
+      s += '<circle cx="' + cx + '" cy="' + y(c.wall.p) + '" r="5.5" fill="' + (c.topped ? col : "#fff") + '" stroke="' + col + '" stroke-width="2"/>';
+      s += '<text x="' + cx + '" y="' + (y(c.wall.p) - 10) + '" text-anchor="middle">' + esc(c.cell_id.replace("cell-", "c")) + " n=" + c.n + '</text>';
+    });
+    var prof = profileByKey[d.design_key];
+    if (prof) {
+      var pb = { l: box.l, r: box.r, t: 250, b: 340 };
+      var bmax = Math.max.apply(null, prof.axis_bz_t.map(Math.abs).concat(prof.wall_b_t));
+      var yb = scale([-bmax, bmax], [pb.b, pb.t]);
+      var px = scale([0, L], [pb.l, pb.r]);
+      s += '<g class="axis"><path d="M' + pb.l + ' ' + pb.t + 'V' + pb.b + 'H' + pb.r + '" style="fill:none"/><line x1="' + pb.l + '" x2="' + pb.r + '" y1="' + yb(0) + '" y2="' + yb(0) + '"/></g>';
+      s += '<text x="' + (pb.l - 6) + '" y="' + (pb.t + 4) + '" text-anchor="end">' + bmax.toFixed(2) + ' T</text><text x="' + (pb.l - 6) + '" y="' + (pb.b + 4) + '" text-anchor="end">-' + bmax.toFixed(2) + ' T</text>';
+      var pa = "", pw = "";
+      prof.z_m.forEach(function (z, i) { if (z < 0 || z > L) { return; } var cmd = (pa === "" ? "M" : "L"); pa += cmd + px(z).toFixed(1) + " " + yb(prof.axis_bz_t[i]).toFixed(1) + " "; pw += (pw === "" ? "M" : "L") + px(z).toFixed(1) + " " + yb(prof.wall_b_t[i]).toFixed(1) + " "; });
+      s += '<path d="' + pa + '" fill="none" stroke="#2456a4" stroke-width="1.5"/><path d="' + pw + '" fill="none" stroke="#c2571b" stroke-width="1.5"/>';
+      d.cusps_z_m.forEach(function (z) { s += '<line x1="' + px(z) + '" x2="' + px(z) + '" y1="' + pb.t + '" y2="' + pb.b + '" stroke="#333" stroke-dasharray="4 3"/>'; });
+      s += '<text x="' + pb.l + '" y="' + (pb.t - 4) + '">axis Bz (blue) and wall |B| at r = ' + (1000 * prof.wall_r_m).toFixed(3) + ' mm (orange)</text>';
+    }
+    s += "</svg>";
+    byId("channel").innerHTML = s;
+  }
+  sel.addEventListener("change", drawChannel);
+  drawChannel();
+
+  // ---- position class strip plot -------------------------------------------
+  (function () {
+    var groups = ["anode_side", "interior", "exit_side"];
+    var W = 420, Hh = 260, box = { l: 44, r: W - 12, t: 16, b: 220 };
+    var x = scale([0, groups.length], [box.l, box.r]), y = scale([0, 1], [box.b, box.t]);
+    var s = svgOpen(W, Hh) + axes(x, y, [0, groups.length], [0, 1], box, "", "per-cell P(wall)", function () { return ""; }, function (t) { return t.toFixed(1); });
+    groups.forEach(function (g, gi) {
+      var rows = sweepCells.filter(function (c) { return c.position === g; });
+      var cx = x(gi + 0.5);
+      s += '<text x="' + cx + '" y="' + (box.b + 15) + '" text-anchor="middle">' + esc(g.replace("_", "-")) + " (" + rows.length + ")</text>";
+      rows.forEach(function (c, i) { var jitter = ((i * 37) % 23) / 23 - 0.5; s += '<circle cx="' + (cx + jitter * 60) + '" cy="' + y(c.wall.p) + '" r="3" fill="' + (c.topped ? POS[g] : "#fff") + '" stroke="' + POS[g] + '" stroke-width="1.2" opacity="0.8"/>'; });
+      var st = H.per_cell_by_position[g];
+      if (st && st.cell_count) { [st.p_wall_q1, st.p_wall_median, st.p_wall_q3].forEach(function (v, k) { s += '<line x1="' + (cx - 34) + '" x2="' + (cx + 34) + '" y1="' + y(v) + '" y2="' + y(v) + '" stroke="#333" stroke-width="' + (k === 1 ? 2 : 1) + '"/>'; }); }
+    });
+    s += "</svg>";
+    byId("position").innerHTML = s;
+    var t = '<table><tr><th>class</th><th>cells</th><th>median</th><th>mean</th><th>topped up</th><th>saturated</th><th>at 0</th><th>at 1</th><th>ready</th><th>mean P(refl)</th></tr>';
+    groups.forEach(function (g) { var st = H.per_cell_by_position[g]; if (!st || !st.cell_count) { return; } t += '<tr><td>' + esc(g) + '</td><td>' + st.cell_count + '</td><td>' + fmt(st.p_wall_median) + '</td><td>' + fmt(st.p_wall_mean) + '</td><td>' + st.topped_up_count + '</td><td>' + st.saturated_count + '</td><td>' + st.saturated_at_zero + '</td><td>' + st.saturated_at_one + '</td><td>' + st.surrogate_ready_count + '</td><td>' + fmt(st.p_reflected_mean) + '</td></tr>'; });
+    byId("position-table").innerHTML = t + "</table>";
+  })();
+
+  // ---- floors -----------------------------------------------------------------
+  (function () {
+    var W = 560, Hh = 260, box = { l: 50, r: W - 16, t: 16, b: 215 };
+    var xmax = Math.max(0.03, Math.max.apply(null, CELLS.map(function (c) { return c.jfloor; })) * 1.05);
+    var x = scale([0, xmax], [box.l, box.r]), y = scale([0, 1], [box.b, box.t]);
+    var s = svgOpen(W, Hh) + axes(x, y, [0, xmax], [0, 1], box, "per-cell Jeffreys floor sqrt(p~(1-p~)/n)", "P(wall)", function (t) { return t.toFixed(3); }, function (t) { return t.toFixed(1); });
+    s += '<line x1="' + x(0.02) + '" x2="' + x(0.02) + '" y1="' + box.t + '" y2="' + box.b + '" stroke="#a12d2d" stroke-dasharray="5 3"/><text x="' + (x(0.02) + 4) + '" y="' + (box.t + 12) + '" fill="#a12d2d">readiness gate 0.02</text>';
+    CELLS.forEach(function (c) { s += '<circle cx="' + x(c.jfloor) + '" cy="' + y(c.wall.p) + '" r="' + (c.n === c.n1 ? 3 : 4.5) + '" fill="' + (c.topped ? POS[c.position] : "#fff") + '" stroke="' + POS[c.position] + '" stroke-width="1.2" opacity="0.85"/>'; });
+    s += "</svg>";
+    byId("floors").innerHTML = s;
+    var ready = CELLS.filter(function (c) { return c.ready; }).length;
+    var readyTopped = CELLS.filter(function (c) { return c.ready && c.topped; }).length;
+    var readySat = ready - readyTopped;
+    byId("floor-note").textContent = "Large filled = 512 launches (topped up), small hollow = 128 (saturated). " + ready + " of " + CELLS.length + " cells are surrogate-v3 ready (" + readySat + " saturated cells with tiny floors, " + readyTopped + " topped-up cells). A cell with p ≈ 0.5 at n = 512 has floor 0.022 and is not ready by the frozen rule; the surrogate must carry the per-cell floor as label noise.";
+  })();
+
+  // ---- rule view ---------------------------------------------------------------
+  (function () {
+    var W = 560, Hh = 260, box = { l: 50, r: W - 16, t: 16, b: 215 };
+    var x = scale([0, 1], [box.l, box.r]), y = scale([0, 0.2], [box.b, box.t]);
+    var s = svgOpen(W, Hh) + axes(x, y, [0, 1], [0, 0.2], box, "stage-1 P(wall) (k / 128)", "stage-1 Wilson 95 % width", function (t) { return t.toFixed(1); }, function (t) { return t.toFixed(2); });
+    s += '<line x1="' + box.l + '" x2="' + box.r + '" y1="' + y(0.1) + '" y2="' + y(0.1) + '" stroke="#98a2ad" stroke-dasharray="5 3"/><text x="' + (box.r - 4) + '" y="' + (y(0.1) - 4) + '" text-anchor="end">top-up threshold 0.10</text>';
+    CELLS.forEach(function (c) { s += '<circle cx="' + x(c.k1 / c.n1) + '" cy="' + y(c.width1) + '" r="3.5" fill="' + (c.topped ? POS[c.position] : "#fff") + '" stroke="' + POS[c.position] + '" stroke-width="1.2" opacity="0.85"/>'; });
+    s += "</svg>";
+    byId("rule").innerHTML = s;
+  })();
+
+  // ---- v1 vs v2 -------------------------------------------------------------------
+  (function () {
+    var rows = D.filter(function (d) { return d.v1; });
+    var W = 560, Hh = 300, box = { l: 50, r: W - 16, t: 16, b: 255 };
+    var x = scale([0, 1], [box.l, box.r]), y = scale([0, 1], [box.b, box.t]);
+    var s = svgOpen(W, Hh) + axes(x, y, [0, 1], [0, 1], box, "v1 pooled P(wall) (accepted-2N, 4 fixed cells × 128)", "v2 pooled P(wall)", function (t) { return t.toFixed(1); }, function (t) { return t.toFixed(1); });
+    s += '<line x1="' + x(0) + '" x2="' + x(1) + '" y1="' + y(0) + '" y2="' + y(1) + '" stroke="#98a2ad" stroke-dasharray="4 3"/>';
+    rows.forEach(function (d) {
+      s += '<circle cx="' + x(d.v1.p) + '" cy="' + y(d.pooled.launches.p) + '" r="4" fill="#2456a4" opacity="0.8"/>';
+      s += '<rect x="' + (x(d.v1.p) - 3) + '" y="' + (y(d.pooled.wall_area.p) - 3) + '" width="6" height="6" fill="#c2571b" opacity="0.8"/>';
+    });
+    s += '<text x="' + (box.l + 8) + '" y="' + (box.t + 12) + '">● launch-weighted ρ = ' + fmt(P.v1_comparison.spearman_rank_correlation.launches, 3) + '   ■ area-weighted ρ = ' + fmt(P.v1_comparison.spearman_rank_correlation.wall_area, 3) + '</text>';
+    s += "</svg>";
+    byId("v1v2").innerHTML = s;
+    byId("v1v2-note").textContent = P.v1_comparison.statement + " Mean Δ (v2 − v1): launch-weighted " + fmt(P.v1_comparison.mean_difference_v2_minus_v1.launches) + ", area-weighted " + fmt(P.v1_comparison.mean_difference_v2_minus_v1.wall_area) + "; interval overlap fraction (launch-weighted) " + pct(P.v1_comparison.interval_overlap_fraction.launches) + ".";
+  })();
+
+  // ---- control -----------------------------------------------------------------------
+  (function () {
+    var W = 560, Hh = 300, box = { l: 50, r: W - 16, t: 16, b: 255 };
+    var nmax = Math.max.apply(null, D.map(function (d) { return d.control.n_control; })) * 1.05;
+    var x = scale([0, nmax], [box.l, box.r]), y = scale([-0.05, 0.05], [box.b, box.t]);
+    var s = svgOpen(W, Hh) + axes(x, y, [0, nmax], [-0.05, 0.05], box, "control launches per design (1/8 of the final launches)", "ΔP(wall) = P_2N − P_N (paired)", function (t) { return t.toFixed(0); }, function (t) { return t.toFixed(2); });
+    s += '<rect x="' + box.l + '" y="' + y(0.02) + '" width="' + (box.r - box.l) + '" height="' + (y(-0.02) - y(0.02)) + '" fill="#1d6f3f" opacity="0.08"/>';
+    D.forEach(function (d) { s += '<circle cx="' + x(d.control.n_control) + '" cy="' + y(Math.max(-0.05, Math.min(0.05, d.control.delta_p_wall))) + '" r="4" fill="' + (d.timestep_passed ? "#2456a4" : "#a12d2d") + '" opacity="0.8"/>'; });
+    s += '<line x1="' + box.l + '" x2="' + box.r + '" y1="' + y(P.control_gate.estimated_bias_2N_minus_N) + '" y2="' + y(P.control_gate.estimated_bias_2N_minus_N) + '" stroke="#c2571b" stroke-width="2"/>';
+    s += "</svg>";
+    byId("control").innerHTML = s;
+    var G = P.control_gate;
+    byId("control-note").textContent = "Green band: ±0.02. Orange line: pooled paired bias " + fmt(G.estimated_bias_2N_minus_N, 4) + (G.estimated_bias_standard_error === null ? "" : " ± " + fmt(G.estimated_bias_standard_error, 4)) + " over " + G.n_control + " control orbits (" + G.discordant + " discordant, rate " + pct(G.discordance_rate) + "); campaign gate |bias| ≤ 0.02: " + (G.passed ? "PASS" : "FAIL") + ". Red points: designs whose own control flag failed (" + G.designs_with_control_flag_false.length + "; their cases are reported but not sealed). The quantum of one design's ΔP is 1/n_control, so one discordant orbit in a 48-launch control reads 0.021.";
+  })();
+
+  // ---- tables ------------------------------------------------------------------------------
+  function table(el, cols, rows) {
+    var state = { key: null, dir: 1 };
+    function render() {
+      var data = rows.slice();
+      if (state.key !== null) { data.sort(function (a, b) { var va = cols[state.key].v(a), vb = cols[state.key].v(b); if (va === vb) { return 0; } if (va === null || va === undefined) { return 1; } if (vb === null || vb === undefined) { return -1; } return (va > vb ? 1 : -1) * state.dir; }); }
+      var h = "<tr>" + cols.map(function (c, i) { return '<th data-i="' + i + '">' + esc(c.h) + (state.key === i ? (state.dir > 0 ? " ▲" : " ▼") : "") + "</th>"; }).join("") + "</tr>";
+      h += data.map(function (r) { return "<tr>" + cols.map(function (c) { return "<td>" + (c.f ? c.f(c.v(r), r) : esc(c.v(r))) + "</td>"; }).join("") + "</tr>"; }).join("");
+      el.innerHTML = h;
+      Array.prototype.forEach.call(el.querySelectorAll("th"), function (th) { th.addEventListener("click", function () { var i = +th.getAttribute("data-i"); if (state.key === i) { state.dir = -state.dir; } else { state.key = i; state.dir = 1; } render(); }); });
+    }
+    render();
+  }
+  var okf = function (v) { return v ? '<span class="ok">yes</span>' : '<span class="bad">no</span>'; };
+  table(byId("cells"), [
+    { h: "design", v: function (r) { return r.design_key; } },
+    { h: "cell", v: function (r) { return r.cell_id; } },
+    { h: "kind", v: function (r) { return r.kind; } },
+    { h: "z0 (mm)", v: function (r) { return 1000 * r.z_start_m; }, f: function (v) { return fmt(v, 2); } },
+    { h: "z1 (mm)", v: function (r) { return 1000 * r.z_end_m; }, f: function (v) { return fmt(v, 2); } },
+    { h: "L/pitch", v: function (r) { return r.length_over_pitch; }, f: function (v) { return fmt(v, 2); } },
+    { h: "k1/128", v: function (r) { return r.k1; } },
+    { h: "width1", v: function (r) { return r.width1; }, f: function (v) { return fmt(v, 3); } },
+    { h: "topped", v: function (r) { return r.topped; }, f: okf },
+    { h: "n", v: function (r) { return r.n; } },
+    { h: "P(wall)", v: function (r) { return r.wall.p; }, f: function (v, r) { return fmt(v) + " [" + fmt(r.wall.lo, 2) + "," + fmt(r.wall.hi, 2) + "]"; } },
+    { h: "P(refl)", v: function (r) { return r.refl.p; }, f: function (v) { return fmt(v); } },
+    { h: "P(esc)", v: function (r) { return r.esc.p; }, f: function (v) { return fmt(v); } },
+    { h: "floor (Jeffreys)", v: function (r) { return r.jfloor; }, f: function (v) { return fmt(v, 4); } },
+    { h: "ready", v: function (r) { return r.ready; }, f: okf },
+    { h: "control n / disc.", v: function (r) { return r.control.n; }, f: function (v, r) { return v + " / " + r.control.discordant; } },
+    { h: "flags", v: function (r) { return (r.short_cell ? "short " : "") + (r.injector_flag ? "injector " : "") + (r.boundary_ambiguous ? "boundary" : ""); } }
+  ], CELLS);
+  table(byId("designs"), [
+    { h: "design", v: function (r) { return r.design_key; } },
+    { h: "label", v: function (r) { return r.set_id === "sweep_v2" ? "L1a screening" : "P2 field, screening launches"; } },
+    { h: "cells", v: function (r) { return r.cell_count; } },
+    { h: "topped", v: function (r) { return r.topped_cells; } },
+    { h: "final launches", v: function (r) { return r.launches.final_launches; } },
+    { h: "P(wall) area-wt", v: function (r) { return r.pooled.wall_area.p; }, f: function (v) { return fmt(v); } },
+    { h: "P(wall) launch-wt", v: function (r) { return r.pooled.launches.p; }, f: function (v) { return fmt(v); } },
+    { h: "v1 P(wall) 2N", v: function (r) { return r.v1 ? r.v1.p : null; }, f: function (v) { return fmt(v); } },
+    { h: "Δ launch-wt", v: function (r) { return r.v1 ? r.v1.diff_launch : null; }, f: function (v) { return fmt(v); } },
+    { h: "reflections", v: function (r) { return r.reflections; } },
+    { h: "control n", v: function (r) { return r.control.n_control; } },
+    { h: "ΔP control", v: function (r) { return r.control.delta_p_wall; }, f: function (v) { return fmt(v, 4); } },
+    { h: "control flag", v: function (r) { return r.timestep_passed; }, f: okf },
+    { h: "sealed", v: function (r) { return r.sealed; }, f: okf },
+    { h: "structural gates", v: function (r) { return r.gates.structural_passed; }, f: okf },
+    { h: "cross-res rms", v: function (r) { return r.field.cross_resolution_b_relative_rms; }, f: function (v) { return fmt(v, 4); } }
+  ], D);
+
+  // ---- gates, consumer, claims, footer ----------------------------------------------------------
+  var G = P.gates;
+  byId("gates").innerHTML = "<h3>Gates</h3><ul>" +
+    "<li>binding gates passed: " + okf(G.passed) + " (structural all designs " + okf(G.structural_all_passed) + ", allocation replay " + okf(G.allocation_replay_all_passed) + ", pooled control " + okf(G.control_gate.passed) + ")</li>" +
+    "<li>manufactured checks: " + Object.keys(G.manufactured).map(function (k) { return esc(k) + " " + okf(G.manufactured[k]); }).join(", ") + "</li>" +
+    "<li>cases sealed with exact deterministic replay: " + G.exact_authority_replay_count + " / " + G.sealed_case_count + " sealed of " + G.case_count + " cases</li>" +
+    "<li>validators: " + G.validators.passed + " passed, " + G.validators.failed + " failed</li>" +
+    "<li>execution: " + P.execution.orbit_count + " orbits, cases wall " + fmt(P.execution.cases_wall_s / 60, 1) + " min, assessment wall " + fmt(P.execution.assessment_wall_s / 60, 1) + " min, " + P.execution.worker_pool_size + " CPU workers (no GPU)</li>" +
+    "<li class=\"small\">" + esc(P.known_defect) + "</li></ul>";
+  var C = P.consumer;
+  byId("consumer").innerHTML = "<h3>Coupling consumer and catalogue</h3><ul>" +
+    "<li>consumer id: <code>" + esc(C.consumer_id) + "</code></li>" +
+    "<li>v4 reference row (accepted evidence, P2 field, NOT in this set): P(wall) " + fmt(C.v4_reference.probability) + " [" + fmt(C.v4_reference.confidence_interval_95[0]) + ", " + fmt(C.v4_reference.confidence_interval_95[1]) + "], n = " + C.v4_reference.trial_count + "</li>" +
+    "<li>screening case handoffs consumed: " + C.cases_consumed + " (unsealed: " + C.cases_unsealed + ")</li>" +
+    "<li>catalogue consumed: " + C.catalogue_consumed.designs + " designs, " + C.catalogue_consumed.cells + " cells, <code>" + esc(C.catalogue_consumed.catalogue_file_sha256.slice(0, 16)) + "…</code></li>" +
+    "<li class=\"small\">" + esc(C.per_cell_statement) + "</li><li class=\"small\">" + esc(C.absence_statement) + "</li></ul>";
+  var B = P.claim_boundary;
+  byId("claims").innerHTML = "<ul>" + Object.keys(B).map(function (k) { var v = B[k]; return "<li><strong>" + esc(k) + "</strong>: " + (Array.isArray(v) ? "<ul>" + v.map(function (i) { return "<li>" + esc(i) + "</li>"; }).join("") + "</ul>" : esc(v)) + "</li>"; }).join("") + "</ul>";
+  var I = P.identity;
+  byId("footer").innerHTML = "<div>Bundle <code>" + esc(I.experiment_id) + "</code>, preregistration commit <code class=\"mono\">" + esc(I.preregistration_commit_sha) + "</code>, command <code>" + esc(I.execution_command) + "</code>, " + I.verified_file_count + " files byte-verified against manifest <code class=\"mono\">" + esc(I.manifest_file_sha256) + "</code>.</div>" +
+    "<div>protocol <code class=\"mono\">" + esc(I.protocol_semantic_sha256) + "</code> · orbit_mc source <code class=\"mono\">" + esc(I.orbit_mc_source_sha256) + "</code> · field pipeline <code class=\"mono\">" + esc(I.field_pipeline_source_sha256) + "</code> · catalogue <code class=\"mono\">" + esc(I.catalogue_file_sha256) + "</code></div>" +
+    "<div>generator <code class=\"mono\">" + esc(I.generator_sha256) + "</code> · template <code class=\"mono\">" + esc(I.template_sha256) + "</code>. No network resources; rendered offline from the sealed bundle.</div>";
+})();
+</script>
+</body>
+</html>
