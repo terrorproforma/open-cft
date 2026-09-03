@@ -169,3 +169,16 @@ modern/experiments/pic2d_cft_plume_v1/results-attempt4-neutral-crash/series.json
 modern/experiments/pic2d_cft_plume_v1/results-attempt4-neutral-crash/*.pid
 modern/experiments/pic2d_cft_plume_v1/results-attempt4-neutral-crash/*.log
 modern/experiments/pic2d_cft_plume_v1/results-attempt4-neutral-crash/*.err
+# attempt 6 (ignited cleanly; stopped at 2.466 us by the plume-boundary gate reading one macro-ion on the
+# axis corner node of the far plane - the gate observable, not the plasma): same record contract
+!modern/experiments/pic2d_cft_plume_v1/results-attempt6-gate-shot-noise/
+!modern/experiments/pic2d_cft_plume_v1/results-attempt6-gate-shot-noise/maps.npz
+!modern/experiments/pic2d_cft_plume_v1/results-attempt6-gate-shot-noise/series.npz
+modern/experiments/pic2d_cft_plume_v1/results-attempt6-gate-shot-noise/checkpoint/
+modern/experiments/pic2d_cft_plume_v1/results-attempt6-gate-shot-noise/frames/
+modern/experiments/pic2d_cft_plume_v1/results-attempt6-gate-shot-noise/video/
+modern/experiments/pic2d_cft_plume_v1/results-attempt6-gate-shot-noise/checkpoint-final.npz*
+modern/experiments/pic2d_cft_plume_v1/results-attempt6-gate-shot-noise/series.jsonl
+modern/experiments/pic2d_cft_plume_v1/results-attempt6-gate-shot-noise/*.pid
+modern/experiments/pic2d_cft_plume_v1/results-attempt6-gate-shot-noise/*.log
+modern/experiments/pic2d_cft_plume_v1/results-attempt6-gate-shot-noise/*.err
