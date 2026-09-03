@@ -730,7 +730,7 @@ if wp is not None:
     def mcc_kernel(
         vr: wp.array(dtype=F64), vt: wp.array(dtype=F64), vz: wp.array(dtype=F64), alive: wp.array(dtype=wp.int32),
         slots: wp.array(dtype=wp.int32), seed_table: wp.array(dtype=wp.int32), counter: wp.array(dtype=wp.int32),
-        probability: F64, nu_max: F64, neutral_density: F64,
+        probability: F64, nu_max: F64, neutral_density_ctrl: wp.array(dtype=F64),
         table: wp.array(dtype=F64), points: int, step_ev: F64, max_ev: F64,
         threshold_exc: F64, threshold_ion: F64, b_ev: F64, ion_thermal: F64,
         ionize: wp.array(dtype=wp.int32), sec_vr: wp.array(dtype=F64), sec_vt: wp.array(dtype=F64), sec_vz: wp.array(dtype=F64),
@@ -769,6 +769,9 @@ if wp is not None:
                 m_e = F64(9.1093837139e-31)
                 ev = F64(1.602176634e-19)
                 energy = F64(0.5) * m_e * speed2 / ev
+                # the instantaneous n_g (n_g0 x scale) is device-resident so the CUDA-graph replay
+                # sees every inventory update (a captured scalar would freeze it at capture time)
+                neutral_density = neutral_density_ctrl[0]
                 density = neutral_density
                 if has_plume != 0:
                     ci = wp.clamp(int(wp.floor(r[p] / dr)), 0, nr - 1)
@@ -1583,8 +1586,11 @@ class WarpBackend:
             self.table = f64(self.mcc.table.table_m2)
             self.table_points = self.mcc.table.point_count
             self.probability = self.mcc.collision_probability(config.dt_s)
+            # device-resident instantaneous neutral density (graph-safe; see set_neutral_scale)
+            self.neutral_density_ctrl = wp.array(np.array([self.mcc.neutral_density_per_m3]), dtype=wp.float64, device=dev)
         else:
             self.probability = 0.0
+            self.neutral_density_ctrl = wp.zeros(1, dtype=wp.float64, device=dev)
         self.sync_count = 0
         self.steps_since_sync = 0
         self.injected_since_sync = 0
@@ -1727,11 +1733,20 @@ class WarpBackend:
 
     # ------------------------------------------------------------------ state exchange
     def set_neutral_scale(self, scale: float) -> None:
-        """v1.3: the MCC kernel receives ``n_g0 * scale`` as its density at every launch."""
+        """v1.3: the MCC kernel receives ``n_g0 * scale`` as its density at every launch.
+
+        The density lives in a one-element device array read by the kernel, so the
+        captured step graph (v1.4) sees every update.  Until 2026-09-04 it was a kernel
+        scalar and therefore frozen at the value of the last graph capture (a particle
+        array reallocation): plume attempt 4 captured during the inventory trough and
+        kept ionising at n_g ~ 7e17 after n_g had refilled to 5.9e19 (S x100 low at an
+        unchanged T_e).  The v1.3 records predate the graph and are unaffected.
+        """
 
         if self.mcc is None:
             raise PIC2DValidationError("neutral scale requires MCC")
         self.mcc.set_neutral_scale(scale)
+        wp.copy(self.neutral_density_ctrl, wp.array(np.array([self.mcc.neutral_density_per_m3]), dtype=wp.float64, device=self.device))
 
     def set_emission_rate(self, rate_per_step: float) -> None:
         """v2.0: cathode emission rate (macro-electrons per step) for the coming steps; device-resident, graph-safe."""
@@ -1989,7 +2004,7 @@ class WarpBackend:
             wp.launch(
                 mcc_kernel, dim=padded_dim(e_dim, PARTICLE_BLOCK), block_dim=PARTICLE_BLOCK,
                 inputs=[electrons.vr, electrons.vt, electrons.vz, electrons.alive_flags, self.slots, self.seed_table, self.step_counter,
-                        self.probability, mcc.nu_max, mcc.neutral_density_per_m3,  # scaled by n_g/n_g0 (v1.3); ceiling fixed
+                        self.probability, mcc.nu_max, self.neutral_density_ctrl,  # n_g0 x scale, device-resident (graph-safe); ceiling fixed
                         self.table, self.table_points, mcc.table.energy_step_ev, mcc.table.energy_max_ev,
                         mcc.table.thresholds_ev[1], mcc.table.thresholds_ev[2], 8.7, ion_thermal,
                         self.ionize, self.sec[0], self.sec[1], self.sec[2], self.ionv[0], self.ionv[1], self.ionv[2],
