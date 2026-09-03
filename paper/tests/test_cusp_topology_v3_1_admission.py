@@ -334,7 +334,8 @@ class CuspTopologyAdmissionTests(unittest.TestCase):
             self.assertIn(phrase, clm028["authorized_tex"])
         self.assertNotIn("undemonstrated, which is a null", clm028["authorized_tex"])
         clm044 = records["CLM-044"]
-        self.assertEqual(set(clm044["manifest_ids"]), {CLOSURE_MANIFEST_ID, V4_MANIFEST_ID, FOUR_CELL_MANIFEST_ID, MANIFEST_ID})
+        # The sweep-v3 admission added its manifest (the zero-reflection finding is a launch-position result).
+        self.assertEqual(set(clm044["manifest_ids"]), {CLOSURE_MANIFEST_ID, V4_MANIFEST_ID, FOUR_CELL_MANIFEST_ID, MANIFEST_ID, "L1A-SWEEP-V3-20260903-128-V1"})
         self.assertIn("under the literature definition", clm044["authorized_tex"])
         self.assertIn("\\CtvWithCuspAll", clm044["authorized_tex"])
         self.assertIn("plasma physics", clm044["authorized_tex"])

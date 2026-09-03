@@ -299,12 +299,18 @@ class GeometryScreeningAdmissionTests(unittest.TestCase):
         for claim_id in geo.PROSE_CLAIM_IDS:
             record = next(c for c in self.matrix["claims"] if c["id"] == claim_id)
             self.assertIn(MANIFEST_ID, record["manifest_ids"])
-        # The reflection contrast, the consumer and the Discussion interpretation are also bound to the wall-loss manifest.
-        for claim_id in ("CLM-048", "CLM-050", "CLM-052"):
+        # The reflection contrast and the consumer are also bound to the wall-loss manifest.
+        for claim_id in ("CLM-048", "CLM-050"):
             record = next(c for c in self.matrix["claims"] if c["id"] == claim_id)
             self.assertEqual(set(record["manifest_ids"]), {MANIFEST_ID, V4_MANIFEST_ID})
+        # The Discussion interpretation re-scopes the wall-loss campaign's zero reflections as a
+        # launch-position result through the analysis bound with the sweep-v3 manifest.
         discussion = next(c for c in self.matrix["claims"] if c["id"] == "CLM-052")
+        self.assertEqual(set(discussion["manifest_ids"]), {MANIFEST_ID, V4_MANIFEST_ID, "L1A-SWEEP-V3-20260903-128-V1"})
         self.assertIn("\\WlfPooledReflected", discussion["authorized_tex"])
+        self.assertIn("launch-position result", discussion["authorized_tex"])
+        self.assertIn("mirror reflections toward the magnet centres", discussion["authorized_tex"])
+        self.assertNotIn("scoped to the field it was made in", discussion["authorized_tex"])
         # The consuming optimisation is admitted (Section 12); the "future work" boundary is gone.
         self.assertNotIn("future work", discussion["authorized_tex"])
         self.assertIn("sec:mdo-l0-v2", discussion["authorized_tex"])
@@ -359,7 +365,9 @@ class GeometryScreeningAdmissionTests(unittest.TestCase):
         self.assertNotIn("its coupling export has not been consumed", self.manuscript)
         self.assertNotIn("none of its outputs is admitted here, and until an accepted\nmanifest exists", self.manuscript)
         self.assertNotIn("no consumer model has ingested it", self.flattened)
-        self.assertIn("statement is field-specific", self.manuscript)
+        self.assertNotIn("statement is field-specific", self.manuscript)
+        self.assertIn("zero reflections are a launch-position\nresult", self.manuscript)
+        self.assertIn("stratifies its launches\nby catalogue cell is planned; no result of it exists", self.manuscript)
         self.assertIn("planned bridge", self.manuscript)
         self.assertIn("refined-field diagnostic exists\nfor four representative designs only", self.manuscript)
         self.assertIn("wall-loss geometry screening at Git revision \\GeometryScreeningEvidenceRevision", self.manuscript)

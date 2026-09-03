@@ -98,7 +98,43 @@ definition, the mirror ratios are field ratios and never probabilities, no
 plasma, confinement or performance claim follows, and the frozen-definition
 nulls of Section 8 remain true; the Discussion (CLM-028, CLM-044) now says the
 frozen wall-null definition was non-standard and that the cells exist under the
-literature definition while their plasma physics stays undemonstrated. The
+literature definition while their plasma physics stays undemonstrated. A sixth
+`numerical-screening` gate, `GATE-L1A-SWEEP-V3`, admits the geometry sweep
+`modern/experiments/l1a_geometry_sweep_v3` (results
+`2cfe8223630fbef6bfe8099a5dcecaf4eb8c6b44`, preregistration `1923ef76…`,
+dashboard `44d0c63c…`) at the recorded outcome `accepted-screening`, the outcome
+of the sweep v2 whose box it widens: 128 scrambled-Sobol designs on a box that
+extends the wall-radius-to-pitch ratio to r_w/L = 1.24 (x_w = πr_w/L up to 3.88)
+plus the 96 accepted sweep-v2 designs re-solved as a held-out set, 224/224
+resolved and stable, 11/11 binding gates, the six sweep-v2 metric gates verbatim,
+the literature wall-cusp definition of the cusp topology search imported unchanged
+and the Koch design ratio ρ reported at every wall cusp as a field ratio. 15 of 128
+Sobol designs are HEMP-like (ρ ≥ 1.5 at every cusp; 0 of 77 below the
+single-harmonic threshold x* = 1.937, 5/30, 4/13 and 6/8 in the three bands above
+it), none of the 102 designs of the sweep-v2 region is (largest ρ 0.993), and the
+preregistered hypothesis did not hold as preregistered (slope 0.689, R² 0.39, 70 %
+in band, accuracy 0.72): I₁(x_w) is an upper envelope of the realised ratio
+(ρ/I₁ median 0.80 at the 256 end cusps, 0.87 at the 109 interior cusps; realised
+threshold x_w 2.34, r_w/L 0.745). The manifest binds the TWT/PPM literature review
+(`beb4772c…`) with its read-only check script and committed output as the
+definition and hypothesis source (the launch-position analysis of the geometry
+screening's sealed orbits is read from that output in the Discussion), and the
+sealed sweep-v2 manifest, the frozen topology-v3.1 protocol, the topology P2
+record and the frozen wall-loss protocol as references. The declared iron pole
+pieces are vacuum in the field, the material-aware confirmation the protocol
+queues was not run, no HEMP-like design is a design recommendation, and the
+Discussion (CLM-076) reads the result as interpretation: the legacy design space
+could not contain a HEMP-like cusp because its parameterisation never varied the
+ratio the HEMP criterion depends on. The same bound analysis re-scopes the
+wall-loss campaign's zero reflections (CLM-016, CLM-017, CLM-044, CLM-052): the
+P2 field is a PPM mirror field, the campaign's launch planes sit 0.5 mm from the
+magnet centres where mirroring is impossible (the review's 7 launch cells within
+0.17 pitch of a magnet centre produced 0–1 reflections per 128 against 32–88 for
+the 9 cells 0.22–0.48 pitch away), so the zero count is a launch-position result
+and the screening's reflections are the mirror reflections the field predicts;
+the Limitations add that every electron of these fields is non-adiabatic at the
+wall cusps (Mendel α 9.93–1190, ε 0.05–0.75, μ-variation medians ordered by ε),
+so a per-cusp loss probability cannot be a loss-cone number. The
 checked evidence is enumerated in `evidence/claims.json`. Concurrent or later work is not
 publishable merely because files exist in a working tree: a planned section
 opens only when its gate in `evidence/result-gates.json` names an accepted,
@@ -181,11 +217,25 @@ it does not modify the environment.
   file roles, and required metrics.
 - `evidence/result-gates.json` — explicit L1/L2/L3 admission criteria
   (`physics-level` gates), the accepted `numerical-campaign` gates
-  `GATE-WALL-LOSS-V4`, `GATE-MDO-L0-V1` and `GATE-MDO-L0-V2`, the five
+  `GATE-WALL-LOSS-V4`, `GATE-MDO-L0-V1` and `GATE-MDO-L0-V2`, the six
   `numerical-screening` gates `GATE-L1A-SWEEP-V2`, `GATE-FOUR-CELL-V2`,
-  `GATE-TOPOLOGY-CHAR-V1`, `GATE-WALL-LOSS-GEOMETRY-SCREENING-V1` and
-  `GATE-CUSP-TOPOLOGY-V3-1`, each carrying its `recorded_outcome`, and the
-  `analytic-consistency` gate `GATE-FOUR-CELL-CLOSURE-V1`.
+  `GATE-TOPOLOGY-CHAR-V1`, `GATE-WALL-LOSS-GEOMETRY-SCREENING-V1`,
+  `GATE-CUSP-TOPOLOGY-V3-1` and `GATE-L1A-SWEEP-V3`, each carrying its
+  `recorded_outcome`, and the `analytic-consistency` gate
+  `GATE-FOUR-CELL-CLOSURE-V1`.
+- `evidence/manifests/l1a-sweep-v3.json` — typed screening manifest
+  (`paper-l1a-regime-screening-manifest` 1.0) binding the sealed bundle's
+  top-level artifacts, the HEMP-like and representative designs' records and
+  field grids and the frozen preregistration files at the record commit, the
+  results dashboard at its revision, the sealed sweep-v2 manifest, the frozen
+  topology-v3.1 protocol, the topology P2 record and the frozen wall-loss
+  protocol as references at their revisions, the TWT/PPM review with its check
+  script and output as the definition and hypothesis source, plus the metrics
+  the checker compares with the raw artifact values behind the `\Swt...` macros.
+- `evidence/l1a-sweep-v3.json`, `generated/l1a-sweep-v3.tex`,
+  `sections/l1a-sweep-v3.tex` — hash-bound evidence file, generated macros with
+  four `\ArtifactClaim` tables, and the admitted macro-only subsection bound
+  once by `\input` from Section 14 of `manuscript.tex`.
 - `evidence/manifests/cusp-topology-v3-1.json` — typed screening manifest
   (`paper-separatrix-topology-screening-manifest` 1.0) binding the sealed
   bundle's top-level artifacts, the 14 representatives' design records and
@@ -532,8 +582,11 @@ numbers only through macros; its results, reflection/escape/cell,
 geometry-association, consumer and scope statements are exact
 `\EvidenceClaim` bodies (CLM-046, CLM-048, CLM-049, CLM-050, CLM-051), the
 abstract sentence is CLM-045 and the labelled Discussion interpretation (the
-wall-loss campaign's mirror-picture statement is field-specific; the
-screening is the geometry-to-wall-loss bridge at screening tier) is CLM-052.
+wall-loss campaign's zero reflections are a launch-position result and the
+screening's reflections are the mirror reflections toward the magnet centres
+that the PPM field predicts, per the recorded analysis bound with the sweep-v3
+manifest; the screening is the geometry-to-wall-loss bridge at screening tier)
+is CLM-052.
 The gate reuses the `numerical-screening` kind at a fourth outcome value,
 `accepted-screening-dataset`, because the study screens a design space on
 linear-vacuum fields that are not P2-qualified and its sealed status is a
@@ -632,4 +685,78 @@ to the manifest or lacking its literature-definition wording, or a
 ```powershell
 python paper/scripts/generate_cusp_topology_v3_1_evidence.py
 python -m unittest discover -s paper/tests -p "test_cusp_topology*" -v
+```
+
+## Admitted design-space screening: L1a geometry sweep v3 (HEMP-like regime)
+
+`paper/scripts/generate_l1a_sweep_v3_evidence.py` reads the sealed results bundle
+of `modern/experiments/l1a_geometry_sweep_v3` (979 files verified byte for byte
+against `results/manifest.json`, every artifact paired with a manifest-bound
+sidecar; no end-of-line tolerance exists or is granted), requires the frozen
+`protocol.json`, `authorities.json`, `shakedown.json` and `design-authorities.json`
+to equal the sealed copies and to carry the same blob at the preregistration and
+record commits, re-derives the headline and every per-set estimand (Sobol,
+held-out, pooled and sweep-v2 region) including the preregistered hypothesis
+statistics from the 224 per-design rows (counts, histograms and medians exactly;
+numpy sums recomputed with `math.fsum` within a relative tolerance of 1e-9),
+recomputes x_w, every Bessel prediction, every ρ reading and every flag from
+their inputs, cross-checks every design record, gzipped field grid, catalogue
+entry and CSV row against its row, requires the sealed sweep-v2 manifest to hash
+to the identity the bundle recorded and the imported definition parameters to
+equal the frozen cusp-topology-v3.1 protocol, cross-checks the committed results
+dashboard (`modern/visualization/l1a-geometry-sweep-v3.html`, its generator and
+template at `44d0c63c`) against the same bundle, binds the TWT/PPM literature
+review, its read-only check script and its committed output at `beb4772c` (the
+commit at which the shakedown ran) and derives from that output the
+launch-position classes of the geometry screening's launch cells, the wall-loss
+campaign's launch offset from the P2 magnet centres (frozen wall-loss protocol
+plus the topology screening's P2 record), the Mendel and adiabaticity parameters
+and the magnetic-moment medians, and writes `paper/evidence/l1a-sweep-v3.json`
+(every `\Swt...` macro with its artifact path, JSON pointer, formatter and
+SHA-256, or its derivation and inputs), `paper/generated/l1a-sweep-v3.tex`
+(macros plus four tables wrapped in `\ArtifactClaim`: the sweep-v2 box against
+the sweep-v3 box; ρ by x_w band against I₁(x_w); the preregistered hypothesis
+thresholds beside the observed statistics; the HEMP-like designs) and the
+provenance sidecar. Derived macros include the end- and interior-cusp medians of
+ρ/I₁, the x_w band counts and the predicted-only designs that fail at end cusps
+only.
+
+The subsection `paper/sections/l1a-sweep-v3.tex` renders numbers only through
+macros (version tokens, the field level and digit-bearing symbols such as `I_1`
+and `R^2` included, through a whitelisted `symbol` formatter); its execution,
+HEMP-like-regime, hypothesis, earlier-box and scope statements are exact
+`\EvidenceClaim` bodies (CLM-070, CLM-072, CLM-073, CLM-074, CLM-075), the
+abstract sentence is CLM-069 and the labelled Discussion interpretation (the
+legacy design space could not contain a HEMP-like cusp because the
+parameterisation never varied r_w/L into the HEMP band; the material-aware
+confirmation is queued and unreported) is CLM-076. The gate reuses the
+`numerical-screening` kind at the existing outcome `accepted-screening`, the
+outcome of the sweep v2 whose box it widens, because the object is the same kind
+of study; the hypothesis is admitted at its recorded outcome (not held as
+preregistered; I₁ an upper envelope). The shared flag
+`stable_multicell_wall_cusp_topology_demonstrated` is not reused (it was defined
+against the frozen definition); the boundary is carried by explicit flags
+(`hypothesis_h1_held`/`hypothesis_h2_held` false, `material_aware_confirmation_run`
+false, `hemp_like_designs_are_design_recommendations` false, `iron_in_field`
+false, `rho_is_probability` false).
+
+`check_paper.py` regenerates the three generated files at every run and fails
+closed on any byte difference, any artifact hash mismatch, any manifest metric
+that differs (in value or type) from the raw artifact value behind its macro, any
+policy metric off its fixed value, a dashboard checkout that differs from the
+blob bound at the dashboard revision, a results tree changed since the evidence
+revision, a frozen file changed since preregistration, a reference or
+definition-source file that differs from its bound blob or from the evidence
+binding, a recorded outcome that disagrees anywhere, a hypothesis recorded as
+held or a confirmation recorded as run, a literal digit or undefined macro in the
+section, a classification, catalogue-label, recorded-outcome, campaign-status,
+field-level, confirmation-status or hypothesis-outcome macro that does not render
+its string, a missing registered non-claim, an interpretation claim inside the
+results section, a hypothesis or earlier-box claim lacking its as-recorded
+wording, a Discussion interpretation (CLM-076) not bound to the manifest, or a
+`\SweepThreeEvidenceRevision` macro that does not spell the manifest revision.
+
+```powershell
+python paper/scripts/generate_l1a_sweep_v3_evidence.py
+python -m unittest discover -s paper/tests -p "test_l1a_sweep_v3*" -v
 ```

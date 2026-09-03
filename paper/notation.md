@@ -101,12 +101,25 @@
   on L1a linear-vacuum equivalent-current fields (no permanent-magnet or
   nonlinear-iron material model; not P2-qualified) admitted by a
   `numerical-screening` gate at exactly its `recorded_outcome`:
-  `accepted-screening` (`GATE-L1A-SWEEP-V2`), `preregistered-null`
-  (`GATE-FOUR-CELL-V2`), `recorded-characterization`
+  `accepted-screening` (`GATE-L1A-SWEEP-V2` and `GATE-L1A-SWEEP-V3`),
+  `preregistered-null` (`GATE-FOUR-CELL-V2`), `recorded-characterization`
   (`GATE-TOPOLOGY-CHAR-V1`), `accepted-screening-dataset`
   (`GATE-WALL-LOSS-GEOMETRY-SCREENING-V1`) or `accepted-topology-screening`
   (`GATE-CUSP-TOPOLOGY-V3-1`). Gate status `accepted` means admitted as
   recorded, never that a positive finding is accepted; it opens no L gate.
+- **Koch design ratio \(\rho\)** — the HEMP design criterion of Koch, Harmann
+  and Kornfeld (IEPC-2007-110): the wall field at the cusp plane over the
+  adjacent axial field; in the sweep v3 (`GATE-L1A-SWEEP-V3`) the binding
+  reading is the conservative one, \(|B|(r_w, z_c)\) over the larger of the two
+  adjacent axis peaks, and a design is **HEMP-like** when every wall cusp has
+  \(\rho \ge 1.5\). \(x_w = \pi r_w / L\) is the wall-radius-to-pitch parameter,
+  \(I_1(x_w)\) the single-harmonic PPM prediction of \(\rho\) for an infinite
+  stack and \(x^* = 1.937318\) the threshold at which \(I_1 = 1.5\). The
+  campaign recorded \(I_1(x_w)\) as an upper envelope of the realised ratio
+  (the finite stack's end field raises the axis peaks adjacent to the end
+  cusps), not as its value; every reading is a field ratio of a linear-vacuum
+  screening field, never a probability, and no HEMP-like design is a design
+  recommendation (the material-aware confirmation is queued, not run).
 - **Wall cusp (literature definition)** — the intersection of the separatrix of
   an axis null (the point on the axis where \(B_z\) changes sign; X-type by the
   analytic Jacobian) with the straight dielectric wall; the cusps sit at the

@@ -1,0 +1,2405 @@
+{
+  "artifact_id": "TAB-L1A-SWEEP-V3",
+  "bundle_manifest": {
+    "git_blob": "19b2e1a194e56dbca2b7ad2fbc314bb3e9e7224c",
+    "path": "modern/experiments/l1a_geometry_sweep_v3/results/manifest.json",
+    "sha256": "b8670c488ebccd69569525437ab2c8a13af9ea14c4be4e56f1ed651c8057abf3"
+  },
+  "claim_ids": [
+    "CLM-071"
+  ],
+  "claim_status": "authorized by CLM-071 (quantitative-generated-table) in paper/evidence/claims.json; admitted through GATE-L1A-SWEEP-V3 (numerical-screening, recorded outcome accepted-screening)",
+  "dashboard": {
+    "generator_path": "modern/visualization/generate_l1a_geometry_sweep_v3_dashboard.py",
+    "generator_sha256_lf": "84d819d6ca037b5d0bc82f33e0d036c3594b5be3d623f8264b27a127332b1d14",
+    "html_path": "modern/visualization/l1a-geometry-sweep-v3.html",
+    "html_schema": "cft-revival.l1a-geometry-sweep-v3-dashboard/1.0.0",
+    "html_sha256_lf": "7b43971c09c3fba2b3bfff3b35679c584fda3654b35df254a6792df6ea0d363d",
+    "payload_manifest_sha256": "b8670c488ebccd69569525437ab2c8a13af9ea14c4be4e56f1ed651c8057abf3",
+    "rule": "the committed dashboard byte-verifies the accepted bundle, embeds its own extraction and pins the manifest SHA-256 and the preregistration commit; the generator requires that extraction (identity incl. the sealed sources, headline, held-out, hypothesis block, estimands, gates, execution, confirmation queue, every per-design row and the catalogue counts) to equal the sealed artifacts before writing any macro",
+    "template_path": "modern/visualization/l1a-geometry-sweep-v3.template.html",
+    "template_sha256_lf": "2761d0a8d49dd4de6af3e782ed6196e6b2aaf1e2b7766aacd2c24e8d2b9cfd6b"
+  },
+  "definition_source_inputs": [
+    {
+      "bytes": 73515,
+      "path": "modern/docs/literature/twt-ppm-physics-for-hemp.md",
+      "revision": "beb4772c9afc04be5c2c04d3e8a4fc8c16bb771e",
+      "sha256": "af87bdddc6977bc64c4bf0c5336ca87f01fefe38e454dab7660dfb80943d60a0"
+    },
+    {
+      "bytes": 41293,
+      "path": "modern/docs/literature/scripts/ppm_axis_field_check.py",
+      "revision": "beb4772c9afc04be5c2c04d3e8a4fc8c16bb771e",
+      "sha256": "bee6672fcfcbc515596e810615aa17f00752e8fceef45e884783eb83a39fc021"
+    },
+    {
+      "bytes": 32610,
+      "path": "modern/docs/literature/scripts/ppm_axis_field_check.output.json",
+      "revision": "beb4772c9afc04be5c2c04d3e8a4fc8c16bb771e",
+      "sha256": "c0b06eda793d732f41e309f48990a6bd32a40766ec479e42505194ca40c131e4"
+    }
+  ],
+  "document_type": "paper-generated-artifact-provenance",
+  "evidence_revision": "2cfe8223630fbef6bfe8099a5dcecaf4eb8c6b44",
+  "generator": {
+    "command": "python paper/scripts/generate_l1a_sweep_v3_evidence.py",
+    "path": "paper/scripts/generate_l1a_sweep_v3_evidence.py",
+    "sha256": "22e02e39c8ce77cd57fb1ffe9c5a18f92067f53263decb916d95ee2c6366d3f2"
+  },
+  "inputs": [
+    {
+      "bytes": 2488,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/authorities.json",
+      "sha256": "fac661d308f77264375ade24468b153a819de6ff38bf1c49408e3f76f157d56b"
+    },
+    {
+      "bytes": 8123,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/campaign-plan.json",
+      "sha256": "35bd08352b0664f387f64dfbc587230a2c7909c5c95b6159eaf8e1d42feee416"
+    },
+    {
+      "bytes": 3760,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/campaign-result.json",
+      "sha256": "fafa66b20746fda862a64934087814b6a01458c6bb4a6e927769b994eeb5e009"
+    },
+    {
+      "bytes": 1701733,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/cusp-cell-catalogue-v3.json",
+      "sha256": "583bd039d33fc7158ff03424a9d75426072c933e339d9a7660d84b2e7eaef2a9"
+    },
+    {
+      "bytes": 170503,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/design-authorities.json",
+      "sha256": "d8aaed8c1893ad10dd608c3b2ac3f66ebede61ecf97d916e30755aa221b40e4b"
+    },
+    {
+      "bytes": 216,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/design-failures.json",
+      "sha256": "d365088f20482affd17e5569f325ba2fb8636af8fa9c05b1ef9a82daebe78fd8"
+    },
+    {
+      "bytes": 75814,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-000-78dcc2bb4c.json",
+      "sha256": "d64a18d5acfe76870e4b4c3bf31999785acee60483370aeac5b062230dbe1431"
+    },
+    {
+      "bytes": 102893,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-001-5ec0e3ac02.json",
+      "sha256": "468c1d386296e52b40170cbc9118251f2d7289f686c2fc7275173ec62d8d0e43"
+    },
+    {
+      "bytes": 106042,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-002-e9169adb3a.json",
+      "sha256": "65a05877c877572bae8d23bce4511c7b9350eb6519bd1591711cc663f3080b02"
+    },
+    {
+      "bytes": 93443,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-003-02641201e5.json",
+      "sha256": "a43a16e5e963b0dba1b429bc6228b479d0ed630dad5b9841a4337d43e0d81d8c"
+    },
+    {
+      "bytes": 94072,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-004-d109201128.json",
+      "sha256": "692a545253aa26e9667d2013ee85659bb6aeca0cb33690cb3f6e0b842e34d17f"
+    },
+    {
+      "bytes": 112633,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-005-0e7f21e31d.json",
+      "sha256": "965d55bb84126ec7e3e34b8facf1d4e3213eb246077312021a3fb3ca88d223be"
+    },
+    {
+      "bytes": 120803,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-006-ea26a32ff8.json",
+      "sha256": "74b162aca9a9dbe17500f2ee8c6d17c89223a822e05c43f34a17a9b63c1468ef"
+    },
+    {
+      "bytes": 113716,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-007-a79ca5265f.json",
+      "sha256": "ca247f8ab9bdc5472edb3d865a2984667b88eff4db8f76c3ab83dd7bf48395ee"
+    },
+    {
+      "bytes": 94453,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-008-3cba38f11c.json",
+      "sha256": "1cdff1ccbb9f27af3eb7bb4318f5f6a33e4e11807f6f63e271b1754228f28355"
+    },
+    {
+      "bytes": 110461,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-009-d0c686b4aa.json",
+      "sha256": "0cfc4fe7e0517791445d0e83183366136a2e6c04fbca2f2adccc243fff658fff"
+    },
+    {
+      "bytes": 109525,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-010-f916331aa3.json",
+      "sha256": "87c6f0bec203e760fa1a7503df4888fa4baf51778cfdf09d48896491b8dbea0a"
+    },
+    {
+      "bytes": 90363,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-011-fa2db560b1.json",
+      "sha256": "be03b80cc49f4ece71949ea76fb3bc6118fb3b3c8ce0dd201fe76df7bb83f93c"
+    },
+    {
+      "bytes": 89622,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-012-1f995ec7b9.json",
+      "sha256": "faeece7f6b85ccf4d7b815ebb23a2492bd9d3cbeeccce59b7ac59d3f981aee9d"
+    },
+    {
+      "bytes": 127694,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-013-860dbf9e4c.json",
+      "sha256": "30d6b62ac8df8ae90edd779618a15e2688e4b3c85a8b52faa16ca2bf36896942"
+    },
+    {
+      "bytes": 103350,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-014-9178fbb0be.json",
+      "sha256": "2e68e6118fd00f0f33899252216120ae0c23e01db8b871f52461dd876477380b"
+    },
+    {
+      "bytes": 117779,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-015-3ce63a512e.json",
+      "sha256": "33bd1dc02a325ecba3657d4e11408f188acca8dcae85a7c94681356ad2b61075"
+    },
+    {
+      "bytes": 106646,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-016-fedd3041d7.json",
+      "sha256": "746d4ffa7efffedc5940f6dde19bc6cf2deff1f60c14025181dda83254051832"
+    },
+    {
+      "bytes": 113615,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-017-a4f1b9e02f.json",
+      "sha256": "664e6b288cfe26a7de51909aad705cde67d52e913803904a1f516a90b377c35c"
+    },
+    {
+      "bytes": 120926,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-018-2ad21545c3.json",
+      "sha256": "71999e086141b3c524861118d47358ca024f6c2264c707d176f6d5ea1cbaf681"
+    },
+    {
+      "bytes": 101748,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-019-f7417044f8.json",
+      "sha256": "d06fa9e5e6e0bde973fc7c42199e79cb3222376f74d1330e1dff41037bf870fb"
+    },
+    {
+      "bytes": 77551,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-020-b6aa9b10ad.json",
+      "sha256": "223751cf562fb06640b5a97d5c2f86193936df8338ea784e087b0ebbe744df83"
+    },
+    {
+      "bytes": 123228,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-021-914fa357fa.json",
+      "sha256": "f08c94a48af0bb875c0e8e2dba80c5ed643d0787c360173062ef71d90ae0c53e"
+    },
+    {
+      "bytes": 112345,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-022-ec48527abb.json",
+      "sha256": "7b2e79c3b3383a7e9bf17dabd980b5d03ebd5893ed04949cc89c8da444fa8e76"
+    },
+    {
+      "bytes": 99422,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-023-d9c047ae80.json",
+      "sha256": "9a8dd00b2088d1f7d3707c45c0953bfa399f582b247316d029ef13beb7ac6ce7"
+    },
+    {
+      "bytes": 98521,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-024-26dc7e7f16.json",
+      "sha256": "a71296a5f260fc94a345d5d86a2622440c93a6fc6f36cca7a040736cac77d072"
+    },
+    {
+      "bytes": 132903,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-025-fb8626ce16.json",
+      "sha256": "1a9007cea2028ded2dd012724988dbe35b4ed5158ada2e001cfd84e0a98d8201"
+    },
+    {
+      "bytes": 118414,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-026-5f401b6867.json",
+      "sha256": "0b9e97fb753ce2e62dc39dc8d37bb29ee8a9bbeca2a1752f8971fd98405e1f5f"
+    },
+    {
+      "bytes": 95991,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-027-313053aa90.json",
+      "sha256": "1457a9a21f2778a3d8d4c8e58c464b755c52b87ce8c952e3fa293959b524552e"
+    },
+    {
+      "bytes": 98621,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-028-f012c0bf33.json",
+      "sha256": "fadbcdae57d2ffac68d72dc8889d92c101663a993230db7504a5026ce0f538e9"
+    },
+    {
+      "bytes": 115347,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-029-782c077bce.json",
+      "sha256": "0275fc0a9323349f46d7864a71733ee6002d040fd292b91a4ea14bf2b21bae6b"
+    },
+    {
+      "bytes": 95308,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-030-f474b3d75a.json",
+      "sha256": "ae3c4ae96abd594d834410f977eae79028f3b6556450e8b4fa064b33763dc30d"
+    },
+    {
+      "bytes": 95439,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-031-879a361b99.json",
+      "sha256": "c1b6054fbeaaa8b224c6320aebc835ddd8d297e917222ab5fdd9280ef5b1f4fc"
+    },
+    {
+      "bytes": 89371,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-032-cafcbc23f9.json",
+      "sha256": "12f6cacc0e42679b257650e21a9ee2bccc3adcbd4e4fb37b15c47b92da61266f"
+    },
+    {
+      "bytes": 112607,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-033-59d7f20227.json",
+      "sha256": "9bc03fb18ec17adb525b229937f7fed8fde5a667be01bb6b798eaf74dd1371a3"
+    },
+    {
+      "bytes": 124457,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-034-4020da54d1.json",
+      "sha256": "59d3a4f7b0f4f411a4df35f56a5ee699dd9dbaf7714faa645a07f0ba44413469"
+    },
+    {
+      "bytes": 98951,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-035-50b53fb366.json",
+      "sha256": "75356eccc25a7dd0dd0b6ebb8be6df307ba7d933fbb8886a28fec75eb038c31b"
+    },
+    {
+      "bytes": 78425,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-036-4a814065a1.json",
+      "sha256": "a97af8d1c0d44912a60ddc7dce7126f93faeba5b0d3a3ffb9c0eec2b8c07f300"
+    },
+    {
+      "bytes": 124981,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-037-069301d974.json",
+      "sha256": "e2fe42ab6c510704c3667a121f70baf2d4fda359b2918d3c0266821f3e90c7b5"
+    },
+    {
+      "bytes": 125538,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-038-6421894f58.json",
+      "sha256": "a7896595835222ade993fa32a0b2f5c8e25aedee323792f21624ac93432c429a"
+    },
+    {
+      "bytes": 106408,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-039-f02c223f23.json",
+      "sha256": "52153d51b0db68edbcf567efa5b5bf1c6dc3e60b0df7cde0d1798b108dadbe37"
+    },
+    {
+      "bytes": 90495,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-040-da0e94aee4.json",
+      "sha256": "f1c8d55793772dd7ec272d4defc72e563b40ece168141a51ae184e531fcf34eb"
+    },
+    {
+      "bytes": 117879,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-041-4e55324c67.json",
+      "sha256": "827c844953566a8ae25a777b0dc76412c5339f7e9e30ab1c06c2de349464696a"
+    },
+    {
+      "bytes": 116121,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-042-8a82cde7f6.json",
+      "sha256": "6c9cb8c56a49d5e9c27d1f40d6fc945fd6a9e79597a5c3b8e26844ccbcabe6d7"
+    },
+    {
+      "bytes": 98330,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-043-7d9826fb35.json",
+      "sha256": "eee7a897d729b886450bbe76ca521e2fe902c3a63712bdee3c7b8b4cf1669fd1"
+    },
+    {
+      "bytes": 95918,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-044-64be7eac33.json",
+      "sha256": "0840e8a2c14af64ffa2b5581a3b59b9efad28002b76fa15577b77adefddbed9b"
+    },
+    {
+      "bytes": 118501,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-045-081b3f238d.json",
+      "sha256": "03a9f35acca98a9e87a88e12be867fc923c36263456848b06a1c3f0c0b241d1a"
+    },
+    {
+      "bytes": 94104,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-046-ccb9a53998.json",
+      "sha256": "27460c73f630b200d3ef280d429d55112277267da25378c8a67e1e59907fff1c"
+    },
+    {
+      "bytes": 107533,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-047-cd76eb49a3.json",
+      "sha256": "46dbea19475b51510aa5bdb0fbba55fa9f783d764fed129df95b65da02f92943"
+    },
+    {
+      "bytes": 76293,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-048-aabacb3a59.json",
+      "sha256": "5e5a1722c59eb31516f0458a4d85cc7d800a077da9571d8d50360f26f9ce5bee"
+    },
+    {
+      "bytes": 105731,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-049-3de2aa2602.json",
+      "sha256": "54e0120201700542a737ee47bf720f41196177bb9a1d8e113a54d6aea8434a74"
+    },
+    {
+      "bytes": 112436,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-050-92f4c6240a.json",
+      "sha256": "3d549e36455dd0143e3c8800f009519aa90c5bee0902fff59dea9dc12ea96a96"
+    },
+    {
+      "bytes": 94125,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-051-2b7294690d.json",
+      "sha256": "bcf7fcbba12cb3c0c32c26862978c83e821207a570eba8592c95e7f46e09c514"
+    },
+    {
+      "bytes": 93059,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-052-f35c9fb590.json",
+      "sha256": "25c7a607eeaba1211c2a0ad805a40f0e4a33c75e4ff56e2da2b32ef4f1fdcc2e"
+    },
+    {
+      "bytes": 128766,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-053-b79a4cc488.json",
+      "sha256": "fa3c92e3b77baf96cc17094960182af2c69cef53fb89b2f1b300c0cec99bb797"
+    },
+    {
+      "bytes": 116479,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-054-e06a697b6f.json",
+      "sha256": "ddfa0062f8d896471bc84d52fac516c51ea4e9a67e17fd364991a1cafdaf139d"
+    },
+    {
+      "bytes": 112953,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-055-8ce395048a.json",
+      "sha256": "2f51bdf31d635746dee9f4dc2052a50f564c6a58af34d3d7d9baa742436a46bd"
+    },
+    {
+      "bytes": 93484,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-056-effcbc8686.json",
+      "sha256": "6cdc6f802e0ec8b373aa8058312c6fac25e20e76879f065b41442ab35fedfb08"
+    },
+    {
+      "bytes": 117828,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-057-8529337e4e.json",
+      "sha256": "d78da06d3c85cea79173d938a44eb719732e83c833db9086229ded72fca8e477"
+    },
+    {
+      "bytes": 102595,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-058-c229506088.json",
+      "sha256": "6689969017b21e3413eaa45285a0f3c2ce6803a9638a7721adcfa30a8c8e36c6"
+    },
+    {
+      "bytes": 89921,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-059-ae8f1343e5.json",
+      "sha256": "e743927701b0ad626e66eb4d7c21965a3770cd46d103c30f7de45ef5ebbe79ae"
+    },
+    {
+      "bytes": 90842,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-060-80b56789fc.json",
+      "sha256": "49189dc64b3fc366d1f953674dc1269222a3762b06fa2bbc3b94615e34e4cfe1"
+    },
+    {
+      "bytes": 131465,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-061-e5e97a1ae7.json",
+      "sha256": "8464b76d1fff16bb609434645f4b11acdd883a54451e91e0475def2f474bb467"
+    },
+    {
+      "bytes": 110042,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-062-81850fa8a5.json",
+      "sha256": "f8876860e0d632acafa258f6452e45a846ff08d1a60becf61f22f18f1a58c1bb"
+    },
+    {
+      "bytes": 101893,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-063-f3fd134978.json",
+      "sha256": "07f0e70402159d25a5fb95abbd0705897f1deb4a814a8c2586d6bdb602b82546"
+    },
+    {
+      "bytes": 92475,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-064-6e18d1e081.json",
+      "sha256": "0aed7af2f85a269d0b4778ddda46a49ce7f01a327d5ce38449a0046af9eec44c"
+    },
+    {
+      "bytes": 94075,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-065-e22bb55558.json",
+      "sha256": "8ed004eb27709c4ccc8b29741b1b95853d61751b100b825cb2eb096de07a3d42"
+    },
+    {
+      "bytes": 118203,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-066-3598d97d03.json",
+      "sha256": "3c8e22c11e4e1da8c19dd558446c6676d04450be8c3031ff6af9799c2361e08a"
+    },
+    {
+      "bytes": 96164,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-067-e767fdb545.json",
+      "sha256": "e62e1df5f450e7255db64097bea25d43c8c30189985cafbd88cb41b25bfc2910"
+    },
+    {
+      "bytes": 76616,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-068-71057b61d4.json",
+      "sha256": "7c9506370e1a5eaf39dcb400629751eb6c6b36572dd001e40bf21720978da296"
+    },
+    {
+      "bytes": 115613,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-069-522efe7079.json",
+      "sha256": "76af1eb1dbac9b02c018da39db28a9b745c3be39b684386af126ce9dca37c96f"
+    },
+    {
+      "bytes": 112076,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-070-1f66c7240f.json",
+      "sha256": "bd9c72a20961c8a63ddad8df85273705fde865ee1b401ec121c983352a86b541"
+    },
+    {
+      "bytes": 109925,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-071-8f56d9cef7.json",
+      "sha256": "38836948db9c15fee8f9af62d981781004bd6c0d3db83b6d4c8b970379c7da80"
+    },
+    {
+      "bytes": 106100,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-072-25ea9b94b4.json",
+      "sha256": "c163c7e4f92429546ee3a179bb997636e6a16c1c41d8ac3a0f284dac5ddfa27e"
+    },
+    {
+      "bytes": 126142,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-073-09992ae4a8.json",
+      "sha256": "727080b83f10125f2e575cd3c9b5b0c3322a4d37f60b9796fb9e646ef3bd44d0"
+    },
+    {
+      "bytes": 124587,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-074-494f36f8f8.json",
+      "sha256": "8465def33679f03c26016ceebc295cb0dd15347aa1189f87170d09fdd89c543f"
+    },
+    {
+      "bytes": 78090,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-075-0cef147584.json",
+      "sha256": "115629f9c2883a2e3d3e35e8935768411c3478ac83913bda3b951144670a7d47"
+    },
+    {
+      "bytes": 99762,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-076-c57391dd35.json",
+      "sha256": "09d102b9064aa3015c0cff0f2d7868a861cfa588f562a2b5257b3778db529129"
+    },
+    {
+      "bytes": 122783,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-077-3c00df76f8.json",
+      "sha256": "b3900c6f74d74c193dc7b6ee20880aa346cc97771c1e558c26942ca66a7b4d32"
+    },
+    {
+      "bytes": 92326,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-078-9093dedf85.json",
+      "sha256": "60ac7fcbd70cc1d73d28959d4b6fe0ed471df0c311d6757574c3f9d6895419e3"
+    },
+    {
+      "bytes": 88651,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-079-9a64521785.json",
+      "sha256": "f5fe092aaf9fd338743727439b7b3560338e8f2e20c29c5a1be60474630f2376"
+    },
+    {
+      "bytes": 95201,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-080-7a794142cd.json",
+      "sha256": "4b528d656f6e5c9ac81e875769d0912e8cee8462f3ca88f690b059e5be7f994a"
+    },
+    {
+      "bytes": 110820,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-081-cf38b8a52e.json",
+      "sha256": "3c322c72f543c15f25a1a96cd6263f5e1caf2b90adaa3d2e4f3f38311ace7641"
+    },
+    {
+      "bytes": 130322,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-082-c69bbb1332.json",
+      "sha256": "ff655045e458d2e60462dbbe76fdc3999ed89b0d8eba43f7efffe83bf6c137f7"
+    },
+    {
+      "bytes": 91073,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-083-8b69e29368.json",
+      "sha256": "85d47292431736e2a16f87c0a7385573b9165d898831ac6c0096cb69ebccabb5"
+    },
+    {
+      "bytes": 90285,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-084-23ca9346d2.json",
+      "sha256": "e05111f81749e7c3d8c8ad33fe352252ea471b64446816591ceb621f5bbe665f"
+    },
+    {
+      "bytes": 126935,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-085-58c2113ce0.json",
+      "sha256": "31ad6653702f546409cc3a6d2f00d7309386efe31dd1c63ded69fa93b50e1833"
+    },
+    {
+      "bytes": 107432,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-086-b6f3459391.json",
+      "sha256": "5c62314dd2a5df7b3c8e75a96eca90d56e62b0a175aac5d1cec2d8ab02cfcdba"
+    },
+    {
+      "bytes": 116943,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-087-6feabaefc2.json",
+      "sha256": "379be076bb9b2be3dae0e21f68f7fdda5a1e20606e99da66364f98a8fa9a21c4"
+    },
+    {
+      "bytes": 91336,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-088-13a5597adc.json",
+      "sha256": "67b73c67a2d42ca0b1a167e2b9dfa0eb9049b2be0af858bd7a80d4a85d65ead1"
+    },
+    {
+      "bytes": 113123,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-089-ee6be003b7.json",
+      "sha256": "7a90cb290bc7ded71b9b1ae4f93f1be00797035f422a9e19eb12dff99baf769a"
+    },
+    {
+      "bytes": 105600,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-090-c761e36e9c.json",
+      "sha256": "37e4efcb4046dbda7c2670653f0a44011330343a7ec53845657cf192b4f03430"
+    },
+    {
+      "bytes": 93772,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-091-7b2293aae6.json",
+      "sha256": "4f9dc3518270101b124f118916d98a8f0bb6eb6eccfb07288e4ee416359f143b"
+    },
+    {
+      "bytes": 74833,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-092-a6151c1f36.json",
+      "sha256": "2495018e9426b890cea46637b037fcde6c6ae04394308ca464c4c65e9a9a73f7"
+    },
+    {
+      "bytes": 135524,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-093-235ce735bd.json",
+      "sha256": "91359055006f382db911350b1fb88f507a88f7a06dfdf2964583f765d470c032"
+    },
+    {
+      "bytes": 106404,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-094-43860a4208.json",
+      "sha256": "e736c9735076adf239f974174a47086d8280d6ee221746cec7b8e46ec8622d34"
+    },
+    {
+      "bytes": 97834,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-095-9e3065721e.json",
+      "sha256": "b71e7a4bb562e07da0369b5628fc5e01408006aa56231a008bc79a4c34d57742"
+    },
+    {
+      "bytes": 77271,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-096-da479b0445.json",
+      "sha256": "7551db3d570b20558dffdea6f4973687804a1764becefb1dc755cead9b6b1764"
+    },
+    {
+      "bytes": 104060,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-097-9d6876b91c.json",
+      "sha256": "ed102e5dbff957abdf6a95b479658a467d3e43ed69d42c1afde87b9acf6122df"
+    },
+    {
+      "bytes": 127037,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-098-ec7f642479.json",
+      "sha256": "e2ac167ee6f52b2612a0fa613d60d9fd2b0e50830e3a51e80f74893f95f5b5e1"
+    },
+    {
+      "bytes": 90081,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-099-206617ea44.json",
+      "sha256": "d8ea45afbca0600c044128f3bbce37f35f59cd594eba172668016862fc0306f0"
+    },
+    {
+      "bytes": 91093,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-100-fb14c9c621.json",
+      "sha256": "44204bab5d57e0bfff8c4d0eb0b5398cd80ea2979b5b675c97e14794701b79f1"
+    },
+    {
+      "bytes": 130948,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-101-bd3a3b42a0.json",
+      "sha256": "f2bbda1f3a1d48104e8a0084a43332752e614d86abf4d4ac188619fbfb0674b0"
+    },
+    {
+      "bytes": 106217,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-102-93af9c6f85.json",
+      "sha256": "c1a948a68ef1188b1420313c8acd0deb1ca3fe4d0129c5bb8cee87f1818b712d"
+    },
+    {
+      "bytes": 117917,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-103-7c6448be3e.json",
+      "sha256": "68f6250b291bfe701aedc20e372a87fc2df4fb35e5b95cd58f20145b2c33cc83"
+    },
+    {
+      "bytes": 92088,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-104-c24b30e526.json",
+      "sha256": "b03edf540ac3229af29ebcfe1e6702243250d0a3fc6d4e3d597501f0ef7d0363"
+    },
+    {
+      "bytes": 106574,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-105-f9ed86dad9.json",
+      "sha256": "68a6f64e0c04e8f941496f3f9481ed45a6f77395040e3c4e9b6e04cd32865bb2"
+    },
+    {
+      "bytes": 111713,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-106-ccec1c8b2f.json",
+      "sha256": "e9828c879ba76a8ff8313a3991f17102f99d475e805b3e109de3ca25a2654674"
+    },
+    {
+      "bytes": 94590,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-107-7f1889d131.json",
+      "sha256": "914cf0cc523897887a0b2cc689a2fe71d9134df1a74ec5e7b39df5be3814816c"
+    },
+    {
+      "bytes": 74062,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-108-5bd8ef72c6.json",
+      "sha256": "02c242e0badd5f1a2e740a4375931136787e1e5c2db9e98c62bc17bb3e78b574"
+    },
+    {
+      "bytes": 128286,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-109-8e214a9f34.json",
+      "sha256": "c45d5018488a7f97dfa77e2c1520509cda88989075893bf342b8deab4f63c6d1"
+    },
+    {
+      "bytes": 103436,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-110-e5d3908605.json",
+      "sha256": "088c40da56f92aaac0a16b341b54bb85a9ed7bb3d85377fd7c850ac33aef64f8"
+    },
+    {
+      "bytes": 112311,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-111-9a2eef943f.json",
+      "sha256": "fcc22f2c23cded86b0621293f55a078a806a61203c6c5ccad6349690c14b7c0b"
+    },
+    {
+      "bytes": 95359,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-112-6ca0ee18a5.json",
+      "sha256": "eaafe18106278d89ae9ecfb786327ea14028e8f236681eb8dc4533f0e07c937d"
+    },
+    {
+      "bytes": 94497,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-113-237fa9e685.json",
+      "sha256": "9bab7f3d612552cc0feff6e1fa9046d6603d8008b90040954bae0c6fb9651b11"
+    },
+    {
+      "bytes": 115019,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-114-5e917c6292.json",
+      "sha256": "b3a1b092d2f49ee3987ad94c8d0c95134c1ede093edad930929f2f47757de920"
+    },
+    {
+      "bytes": 98981,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-115-e4c70809c0.json",
+      "sha256": "7fbbbf629aa03a76b4548406753074d781243dc73fdf69a4462f4b07607b28df"
+    },
+    {
+      "bytes": 96460,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-116-7865daa491.json",
+      "sha256": "1e5eda4052c9d0e412a89a09b5f5e9bda0e52e05095c1f59593003500cae9fbd"
+    },
+    {
+      "bytes": 117693,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-117-1005eaeb2b.json",
+      "sha256": "39dfc0c6e6aa08f92d9936fe3ab232d46868a46acf70540ce2177ac74cb96edd"
+    },
+    {
+      "bytes": 94459,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-118-7f30c1a381.json",
+      "sha256": "a80919cc901e74cd8448f841315460a27b8ca3f29e5259941ab861a42f2737dd"
+    },
+    {
+      "bytes": 106989,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-119-94713a1e75.json",
+      "sha256": "94541a2a23950087724d44e6cb5131c3e75835f70b67f65d6314f930825fede9"
+    },
+    {
+      "bytes": 99236,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-120-60c34b6bff.json",
+      "sha256": "4d6e31430910f5541f1d583951632edec885560fe72aad69717827e383ec8af4"
+    },
+    {
+      "bytes": 128307,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-121-db8d3e98af.json",
+      "sha256": "b9183738f49178277dc6e995ed6a6e7b319b1ab0a1655bd50a3310f1c71d5cc1"
+    },
+    {
+      "bytes": 123487,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-122-1b72e30f3a.json",
+      "sha256": "5ad61610b719770a6c7f2884fdc1b7ba206f118f7476251791815b40dd13318b"
+    },
+    {
+      "bytes": 99546,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-123-4985ac7d79.json",
+      "sha256": "5a097cf0c7b8545f957e68e5113a641521e5cfc9ba2f6d48233343cc772ff965"
+    },
+    {
+      "bytes": 78377,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-124-f740cfc79a.json",
+      "sha256": "5d4bc58370d7c3ac1df9a1034f903b36cac27841ecdef29dd6ed7d1c76212f61"
+    },
+    {
+      "bytes": 123991,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-125-460b460c34.json",
+      "sha256": "5be1ef1f93b51796cdf13f3d02757de4ff941dcb6a981a504a25b0963b71fd00"
+    },
+    {
+      "bytes": 92411,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-126-1de66cdc26.json",
+      "sha256": "45ecf3c4fa69091dac801e830fe9f8882242f58cd8bb8486105f5274a4f27b59"
+    },
+    {
+      "bytes": 91627,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-127-547cbdf9e2.json",
+      "sha256": "4fd5f3c75898ad470206589c7a20a7014f1fe2b90d39502b10d52735b8619745"
+    },
+    {
+      "bytes": 88817,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-000-48d2ccedd5.json",
+      "sha256": "985a2322b198b46155f7a46f029a091d4506e08ac7515a91b39ff306b4ca420c"
+    },
+    {
+      "bytes": 98102,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-001-0830ddda40.json",
+      "sha256": "d936f6f29f9019e62f9ee02511c3418aa32a797e7e86ebe28146e650dddb831c"
+    },
+    {
+      "bytes": 90484,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-002-48c4d2e317.json",
+      "sha256": "80fe21945c497228480f35f7b5caab0a0490cdc099164591a9d60ee9720d6c29"
+    },
+    {
+      "bytes": 79001,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-003-b98d8da7bf.json",
+      "sha256": "2b74fd87b8100deba332cb859ae9746ebc577de10c1635b7125b35c1f3266ee0"
+    },
+    {
+      "bytes": 99098,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-004-72b1c5ba70.json",
+      "sha256": "844815105d619d8b57d7a91180bab9647327f78a88809ab7361927a76b0bb94c"
+    },
+    {
+      "bytes": 79152,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-005-942c2d458e.json",
+      "sha256": "0876818730aac886499d6ab7f1d4fcf2db3215d540709acd9d77c0f4ac12ad6d"
+    },
+    {
+      "bytes": 102516,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-006-110b30a28a.json",
+      "sha256": "e362f9ce937eb1f4d4fbc4d8302f7cd77d088cddeeac138b380a6d216eed016c"
+    },
+    {
+      "bytes": 89750,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-007-9ea145255a.json",
+      "sha256": "1d58f5ef37a80cf0a07aa6049e1e7e6e32c070a33a05ca5bc2973dbedbe01fee"
+    },
+    {
+      "bytes": 89681,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-008-b45d1d67d2.json",
+      "sha256": "2a648585f6a216964b6c85734a003e0c10e48d2c6e6260ee334f054e9297dba1"
+    },
+    {
+      "bytes": 90463,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-009-4d592518ca.json",
+      "sha256": "bab5dfb57ba302c9efe8db92f8e0296e0d5ebfabf59bff88fb7ccac9d67dedac"
+    },
+    {
+      "bytes": 90423,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-010-7aa8cd8bce.json",
+      "sha256": "e8d9fb5294a70eeaef9be6905aea3d3fcfe4d5e6e1e79523110d5e1c4ff068cb"
+    },
+    {
+      "bytes": 90569,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-011-eabda2c05f.json",
+      "sha256": "b9d52c0e16655c067961301558b06d7337c45c35182b1698b14b4a138cb795d6"
+    },
+    {
+      "bytes": 90695,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-012-861e265ea9.json",
+      "sha256": "67c5c7923ad35d8d6ed4ecd2399d9ebed7a219a45c1751bcf821f0b2bb819634"
+    },
+    {
+      "bytes": 90530,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-013-1a5f2faf5b.json",
+      "sha256": "8a8a6f45fb9ba0bf07eb3a711da59b8b4167ddfc0e0663b5e21f29c8c32ec3fc"
+    },
+    {
+      "bytes": 90580,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-014-454d5ec089.json",
+      "sha256": "621def5a71c7eceae1ce44a67a4c916d34cb158d1821f55e8021dd17963d6197"
+    },
+    {
+      "bytes": 90551,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-015-691452be4d.json",
+      "sha256": "79ca796d850af3cb0c96dcd7c22dd040d0ca1721b372c8c14ee84f91d888b1a2"
+    },
+    {
+      "bytes": 90483,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-016-9e4e222280.json",
+      "sha256": "273bf41bcd98e7bd56afd8ff6ca684a6b6e8424186b1491152101817ea5158b7"
+    },
+    {
+      "bytes": 90740,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-017-55712611a0.json",
+      "sha256": "31d8ab3236aff3ea9e11ec433bd22c0052a625fe3db39c3e680749872ebcbdc2"
+    },
+    {
+      "bytes": 90426,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-018-99a8ddb38f.json",
+      "sha256": "c359b0c49d051d142b2d3d202f3ee173d21a26da61dcfe21e0ae2ade02d896d8"
+    },
+    {
+      "bytes": 90612,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-019-9166fdf853.json",
+      "sha256": "9b757b7df52ce8d9c14da4f93e37a2a4be0448eafc4a5ebb4a72a9469a2cdca2"
+    },
+    {
+      "bytes": 90472,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-020-b517ae2748.json",
+      "sha256": "73248175cddacae56ce52abc284b1201b389d9cdce8aaf8a519a46b7c5ead5d7"
+    },
+    {
+      "bytes": 90162,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-021-5e0b38a851.json",
+      "sha256": "899d05f9422fc6b0d1ff3bc85fca05760afb1292e6d102834c0c55ab933f1582"
+    },
+    {
+      "bytes": 86574,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-022-4a12458d8a.json",
+      "sha256": "a99eda1ea314966422bbe716c53249260708ac3c15f748fb5ebc2f65a80315eb"
+    },
+    {
+      "bytes": 90485,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-023-09c1438b40.json",
+      "sha256": "84711bb31bc5035c1986d2e83797552818d9a7c97fb2ff7d7e57a7c22f4bf580"
+    },
+    {
+      "bytes": 90517,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-024-8ebc8e6892.json",
+      "sha256": "143dbc17ca0c044ae2523b33cb84f9e44a3bbf59544cf22c025a4bcec86bb9ed"
+    },
+    {
+      "bytes": 90415,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-025-7bfbfbb365.json",
+      "sha256": "4969e02cf99c5133a02058ef0de69538f299075f6829f7ba0c599dd248bcb6f7"
+    },
+    {
+      "bytes": 90481,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-026-c5d09bfafa.json",
+      "sha256": "5d686d462f496aad194a27f2600fa198c961f607252a990a96e39f1f17b34f5c"
+    },
+    {
+      "bytes": 91937,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-027-56d238c396.json",
+      "sha256": "3cbf9f17522ddc8666a17caa8aeba9069338b5d0ccb5e1b5fc88a725cc2323ba"
+    },
+    {
+      "bytes": 80367,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-028-8c0a501d9c.json",
+      "sha256": "2dc04f3f966ca94bfcc82773afafeecbcfdf6e8fc30d9cf4e30146bc57198bb6"
+    },
+    {
+      "bytes": 92189,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-029-3940e2552f.json",
+      "sha256": "203fdf1206267d9ff7be1b1fee2c2b2e6873896b27f4ef4d147217e9948ee37d"
+    },
+    {
+      "bytes": 103689,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-030-5f0cd58497.json",
+      "sha256": "bd46967bbea3c47ac1a09a11bf36af7240898d04b00aeba6a86162f0400c3d69"
+    },
+    {
+      "bytes": 92305,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-031-3e7a3b3509.json",
+      "sha256": "3b1dbb57f73795ef31f76f9a2e9e31ae62fcef64bcc2e80964fd0e428ed9b54a"
+    },
+    {
+      "bytes": 90335,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-032-570ad83ba6.json",
+      "sha256": "9285e112f19fc9dad2a364959fecb5fe0993e4193ee467ef6c4d0befd0ff7b25"
+    },
+    {
+      "bytes": 103854,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-033-1f293d6cb7.json",
+      "sha256": "72878635566af7d9fee59fc8747c21e5bd7ac00fba5def98dc531c5a3419abe6"
+    },
+    {
+      "bytes": 103769,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-034-13a1a432e0.json",
+      "sha256": "1e10f2e9c68af3183f1159c479350c72c5d97108f5c562a2135255a824804a42"
+    },
+    {
+      "bytes": 92224,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-035-6ca4a7f3c2.json",
+      "sha256": "b0beab1b324812b6f4e174c1d5859e40653f3faa6c558b4ba407b1ea1aa189b2"
+    },
+    {
+      "bytes": 80429,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-036-b84b580964.json",
+      "sha256": "f320a0efda89d0273d560ddbec58b491fb1a26aed3b78ce3078b266cbf42d902"
+    },
+    {
+      "bytes": 92294,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-037-4de0233d45.json",
+      "sha256": "bdc4d238ca8504dac9b837eac639fba1399a6330fd00bd8574a31f0559098642"
+    },
+    {
+      "bytes": 80531,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-038-474b968ed6.json",
+      "sha256": "c47b8e239d06e3ebe8a695b58c9165d69d2e48162222bb7b7847791b82d55953"
+    },
+    {
+      "bytes": 88236,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-039-df1626ab7e.json",
+      "sha256": "04015784aa2888097b94263de4c4c5074faa8ffb11b2f10a0926773e8244dd46"
+    },
+    {
+      "bytes": 80410,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-040-827cdb9c2a.json",
+      "sha256": "655915016ea5983d25fce0bf49e48d2fb698b49dba1da2bd21b86edf7390fc1f"
+    },
+    {
+      "bytes": 100024,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-041-b62c5d7163.json",
+      "sha256": "87b596667d401be66dfd3560a5b69f7e849342639c6fa4c0a22c091dba88246a"
+    },
+    {
+      "bytes": 103775,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-042-ae9a80d120.json",
+      "sha256": "f8324724364ea9f841620a9608d2985305bdba03228758885a1d508426e3e81e"
+    },
+    {
+      "bytes": 80496,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-043-b585cd28ea.json",
+      "sha256": "1dd56d636fa9cce4cb9898ed9181680aab1dfbdf729c78d7cdaf925058bb6444"
+    },
+    {
+      "bytes": 80533,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-044-2f03fc2fb5.json",
+      "sha256": "3017af9d4a77766a80eb1d1278ad0172ec3efd159aa69c147578c8b14c8f408a"
+    },
+    {
+      "bytes": 92195,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-045-d52f4d6a1a.json",
+      "sha256": "bfc339b7f6e41a76b9e9b0a91eb9e82f9c33d39129b3fb1a19911e50e3caf4dc"
+    },
+    {
+      "bytes": 103862,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-046-1d0bed7f4c.json",
+      "sha256": "15c0f1fb2fe47c433b3a0066992bfe07d0cd07be93edc633bbfdab78d9cbc865"
+    },
+    {
+      "bytes": 92042,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-047-e3196a8aa5.json",
+      "sha256": "7d777adc4cbfa6b462b456bcbb4a0d233d407472b26a089faf048f42e7e0aaad"
+    },
+    {
+      "bytes": 80342,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-048-9e4abaf530.json",
+      "sha256": "9d1a28cacb9b66c71fb4e8ca4e92a0e9efb6cd5186fd8af2e163ea663099f7a9"
+    },
+    {
+      "bytes": 103631,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-049-cf0a7d1028.json",
+      "sha256": "d4877a9d171d2603ed81c002c1a8ea32f7855794544b31d8e998bd212b4d25d1"
+    },
+    {
+      "bytes": 103872,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-050-012aa2a74e.json",
+      "sha256": "c39f12ffbc1c0b09f26942c0c9ae8aa48e80f3baf0efed690814573d464066b9"
+    },
+    {
+      "bytes": 92289,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-051-d243e11351.json",
+      "sha256": "e52548495c3ab4337baf7be511ced575cf2c3fa711831ffea701d36980882f4f"
+    },
+    {
+      "bytes": 80827,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-052-e117399e75.json",
+      "sha256": "e26f5964e7cf89ce4cdbdce97e8520406b9b00a7a91eafd8462cd6afe06cd2ab"
+    },
+    {
+      "bytes": 92489,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-053-e22999f79a.json",
+      "sha256": "89c8fac102d2d02f0a67e08d6f567d66af19e830da9b97303d8525e64b0f8267"
+    },
+    {
+      "bytes": 80458,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-054-58f94d4676.json",
+      "sha256": "8ef64aefbeaf8188bab662e2a54042eda9768e4e3bc49ad1eda72c834023bf7e"
+    },
+    {
+      "bytes": 92174,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-055-a7ac306811.json",
+      "sha256": "fc3d1ab7a93840ffff50a205cb1e00dcf017a07cf5803a4c4e5a7ce87cd26005"
+    },
+    {
+      "bytes": 80706,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-056-87997ee6f2.json",
+      "sha256": "3091b37c67a6c23fc5a677e8c21aac75d0564eedd0edde00189b24ce1d2cf178"
+    },
+    {
+      "bytes": 103946,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-057-68965a0576.json",
+      "sha256": "c844e3508cf71fd6ae26d3b3f9ffd8ee9b635b943d2c959873d2985e12e81949"
+    },
+    {
+      "bytes": 99824,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-058-132b3d1a44.json",
+      "sha256": "7c9478ab53f11f55301e0534b96b1db38a86d3a632a5b63e8d00f04be613ec2e"
+    },
+    {
+      "bytes": 92199,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-059-06306f4e8d.json",
+      "sha256": "5f39cf213c882d3c0e5813393a69f3c85eb57d5d4fd17ab4821c2086eebc7ea2"
+    },
+    {
+      "bytes": 80464,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-060-c3bf7e5c98.json",
+      "sha256": "289acbf5d5b34f9b073c40a4b4a9bd4fa22b380cc57f548222dc44171e5a6f27"
+    },
+    {
+      "bytes": 91907,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-061-d8ebe65ef1.json",
+      "sha256": "a023faa8697bd7bcd864b73c7eb70e124199c94c64fb37fab8eeba39b4afc791"
+    },
+    {
+      "bytes": 100060,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-062-70a6b2f959.json",
+      "sha256": "621a1871dcf1742367208e17d6af0a656397482473fd238edd42afd988c59acd"
+    },
+    {
+      "bytes": 88227,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-063-eaf6bef4a4.json",
+      "sha256": "81fa9d0d8614a487f63a05f803500d019bcc85a2677f91ebf02da9b1b2668b37"
+    },
+    {
+      "bytes": 80403,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-064-9f6ecd1a94.json",
+      "sha256": "3e3fd3a1465c1831214cc2d4ef53a45c77e3b2f70341ab7c21d37fb9072ab37e"
+    },
+    {
+      "bytes": 121504,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-065-9e98f08f3b.json",
+      "sha256": "c9933858f6eca7157f8e194d4d35904c2baf9a4006728c6f01b51d0865ec8188"
+    },
+    {
+      "bytes": 103780,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-066-d58df2fb43.json",
+      "sha256": "b3f96fc52d301077e46bb05b0bb6e5bef835bf4c75621c640c07ea8228f586a9"
+    },
+    {
+      "bytes": 92024,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-067-dd5a30270f.json",
+      "sha256": "e0a4bd01cd1905dd4e559ec6a30e5c6575f14e27a77456cd12138bf16fa3f9cd"
+    },
+    {
+      "bytes": 90615,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-068-375d1b1b13.json",
+      "sha256": "1fa8659b50af5425af7f0da6a66485f0c17526bdda889d1a5e6d38eb958b65f4"
+    },
+    {
+      "bytes": 104213,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-069-9ae4602904.json",
+      "sha256": "1ce68b08442d4bd4f27073db73fb6611a68f41d963c2496edadac31ac4219a76"
+    },
+    {
+      "bytes": 80647,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-070-5b284f066b.json",
+      "sha256": "1fb1ab16133ea2e54344526d625a0d643581508f8a6ab4af259bec583c10a516"
+    },
+    {
+      "bytes": 92502,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-071-f0c9ebbd40.json",
+      "sha256": "ef6bf4f70b1b5964846d6407ad1ec050739c3ed7b3190d8945376bfac6002ade"
+    },
+    {
+      "bytes": 80740,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-072-79cfa36e3a.json",
+      "sha256": "65477d04b5fee5dc42d21939b3e2970c5a76c5e97cbe84d4e2561c3728894e8b"
+    },
+    {
+      "bytes": 104087,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-073-274491a725.json",
+      "sha256": "271a418264835a36b7e5945f3150bc90e46fc4df5c59a53d7e5e39dc9b989818"
+    },
+    {
+      "bytes": 103822,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-074-e2365d7a87.json",
+      "sha256": "cdc58f6a1612dc6f063d981f539a6baf984f85108c7799e3bd2bbd3fc47d542a"
+    },
+    {
+      "bytes": 80569,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-075-a6696084a4.json",
+      "sha256": "4b9f98dbabdd1d0fe0c693350c07f2a6c98c6805db53089a52a62a1e5eea2d91"
+    },
+    {
+      "bytes": 80524,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-076-900f037a8c.json",
+      "sha256": "9009ca27ae221d33a00ec543041426ee9f060844b977ad3a6da2c02f16d0f4d3"
+    },
+    {
+      "bytes": 92204,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-077-44d74d05d4.json",
+      "sha256": "c72381691fbebf059fe0c78e065f1e9a93097fb0a10acdf1cdbc95d1db67ca14"
+    },
+    {
+      "bytes": 103825,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-078-28bf64f2bb.json",
+      "sha256": "8d91d0909815d2814298a6b72fb7c20405e86428ed662cc2ac71068ba973e86f"
+    },
+    {
+      "bytes": 92175,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-079-62792322e0.json",
+      "sha256": "b729b12dc952fb60f591563d9104276a68d89718d2f927f2ea18c80a843bf2d1"
+    },
+    {
+      "bytes": 80449,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-080-b666fbf97d.json",
+      "sha256": "8f5c28027642c9324cc3f00fe78545d23f404ef727332ec9a8167ed6069a72ea"
+    },
+    {
+      "bytes": 99868,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-081-601159d2a0.json",
+      "sha256": "301b59b563c3af73f624bb6449c43090c736bcc76cdcd2cb28d769009f396299"
+    },
+    {
+      "bytes": 99911,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-082-ec510a5bdb.json",
+      "sha256": "25c536eb6510478852d30bb83a9f31af11c057be7d69924a814573abe908417e"
+    },
+    {
+      "bytes": 92271,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-083-4c9976a050.json",
+      "sha256": "9ee61303096382e07244b4fec605472968caff88f3ae95df9d5b7d3f837f904f"
+    },
+    {
+      "bytes": 80189,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-084-7fbadd6e3c.json",
+      "sha256": "968715bc143df99df5dd94173016d688501cc3dfcbba09e5f471b9772737039f"
+    },
+    {
+      "bytes": 88044,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-085-3164dd7be8.json",
+      "sha256": "efeb7a9af5c881bd967f4aa4248af75abe35a3847089b99efc22137b30480ccb"
+    },
+    {
+      "bytes": 80572,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-086-fbb26d4705.json",
+      "sha256": "45c3b2907bf94495e0f4921cab2e7c4209ea0cb2cd7367cdb110810edf91230f"
+    },
+    {
+      "bytes": 88201,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-087-8428d611f2.json",
+      "sha256": "2e897a94ec1cd42830130e741f44249e00b627348e2ce1e88e63ac4ac6ffd39e"
+    },
+    {
+      "bytes": 88394,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-088-54d047707b.json",
+      "sha256": "e9ea2a61f284b4c2e3c8e502a9d5febbf56e930f796fdb9d04c81a41c055de3d"
+    },
+    {
+      "bytes": 103899,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-089-8275bc9272.json",
+      "sha256": "0da225389dfae42ff324eeb263d95788732e49141285ee87dd3450768e0547d9"
+    },
+    {
+      "bytes": 103898,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-090-7ab4ba4fd8.json",
+      "sha256": "3a131804a6e40176abbee2fdd4cbedf29c46f8ae28b527fcc8a192842d51ad49"
+    },
+    {
+      "bytes": 92249,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-091-1aab0b78cb.json",
+      "sha256": "f8c53b7ea09e9dc87d04217b532bc94723e18f34d3a07c8ce4ec42b524c14df4"
+    },
+    {
+      "bytes": 80481,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-092-d532fb20ca.json",
+      "sha256": "6d09799cddd1cb81030a7994465a1947cd29cb90326c55dadd07000b944ee64e"
+    },
+    {
+      "bytes": 92254,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-093-27025a655c.json",
+      "sha256": "8f5eb69963e142c83d588cdbf36d295bd21c791d2ddc8e9c52cad6a1b210e116"
+    },
+    {
+      "bytes": 103987,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-094-ba60c4fe8b.json",
+      "sha256": "d035f4a14d8e7b1db3fd6a4b274b75f9b7ea3b42de643e3fa43cf76864af9efb"
+    },
+    {
+      "bytes": 92086,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-095-27f6ceb96c.json",
+      "sha256": "92c908d7ad4dcb4500bd1c05a5ae55588ec12f370ad52d1cd8a97e9acf684f15"
+    },
+    {
+      "bytes": 109834,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-000-78dcc2bb4c.json.gz",
+      "sha256": "d754b826f628edb383e55ea9ec9c4f4d6932495056566b8d0f7285bdbb7264d4"
+    },
+    {
+      "bytes": 110717,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-001-5ec0e3ac02.json.gz",
+      "sha256": "9c6ac0158fc59337719ca5134b072d0c140365316398ef999ca54e4059f0895f"
+    },
+    {
+      "bytes": 108763,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-002-e9169adb3a.json.gz",
+      "sha256": "2f117f685da7b9bec2781110fa6c71da5c2024b853c8a464e62351b968d4b72e"
+    },
+    {
+      "bytes": 109534,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-003-02641201e5.json.gz",
+      "sha256": "22621e1bc7f0571fc38fe68049e432f0282934ab888640e8e3e3e52d7ada90fd"
+    },
+    {
+      "bytes": 109082,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-004-d109201128.json.gz",
+      "sha256": "b5208476fcc20131572f29b9dee1f9c77560b803c948a9cf44e45670954a1061"
+    },
+    {
+      "bytes": 109292,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-005-0e7f21e31d.json.gz",
+      "sha256": "34aa23b5794c5df86e889cb3f8097a37f99cebb5701c4327d3bbd6d55cd22553"
+    },
+    {
+      "bytes": 109177,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-006-ea26a32ff8.json.gz",
+      "sha256": "4ec1b60e8cb8227f1609800987273cf44cf134ceacd9e36984dedf9ad71aeffe"
+    },
+    {
+      "bytes": 110959,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-007-a79ca5265f.json.gz",
+      "sha256": "94ffc1fb22796b02fb5c18d64512792c21c06bbcb026aaf56fe0e4cfe8434831"
+    },
+    {
+      "bytes": 111039,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-008-3cba38f11c.json.gz",
+      "sha256": "64bd0f25bb331adb8612dea21cf5593d086e1a7f810d44349f8f4ff5af7243df"
+    },
+    {
+      "bytes": 110759,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-009-d0c686b4aa.json.gz",
+      "sha256": "489d0d5f2ac6f66957d120f3291447e1e69046a6f220bbf87de3f1baf19297ca"
+    },
+    {
+      "bytes": 109486,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-010-f916331aa3.json.gz",
+      "sha256": "35840a4f1108812114474ab9b6b4046fe10beafa065bae2133bc9ca7994921c5"
+    },
+    {
+      "bytes": 108544,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-011-fa2db560b1.json.gz",
+      "sha256": "0052bba95ac31c77d0d7f79ee29233eee7dd0ea15cf8bfafd0f09eb0e23f5994"
+    },
+    {
+      "bytes": 109651,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-012-1f995ec7b9.json.gz",
+      "sha256": "a7717a086b65f030fa24657a5f81ddc0d5aa8634d6ae978db2929d5316339f16"
+    },
+    {
+      "bytes": 108545,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-013-860dbf9e4c.json.gz",
+      "sha256": "0f507d219dd06524ef143943e9230e43b806d1bbb02ab88729c506724cc83f9b"
+    },
+    {
+      "bytes": 110962,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-014-9178fbb0be.json.gz",
+      "sha256": "c671382dd3786e2eea70a889bb6b5a52908da18753b79006632d225242db0464"
+    },
+    {
+      "bytes": 110806,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-015-3ce63a512e.json.gz",
+      "sha256": "d6f183308a7a5c71330c2fe20ab88689aef698009a0efdf3f59cc6c216da4b72"
+    },
+    {
+      "bytes": 110758,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-016-fedd3041d7.json.gz",
+      "sha256": "d10686e2311b985ca8670346660f3d328058b7994302145fe213f55d77c71fd5"
+    },
+    {
+      "bytes": 111059,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-017-a4f1b9e02f.json.gz",
+      "sha256": "6ec9e145887747b4fcc182d1c46f6c4e932f3aed2d6b96af7cab2372aa23ae4b"
+    },
+    {
+      "bytes": 108483,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-018-2ad21545c3.json.gz",
+      "sha256": "285355ca2480159165b653dc93d66e9b522ef9f0a73f5716d3eb90af480357b4"
+    },
+    {
+      "bytes": 109777,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-019-f7417044f8.json.gz",
+      "sha256": "a480cd35c1149d1b072ee9f345f7369a883bd822ae658eb68c1800f16d59d742"
+    },
+    {
+      "bytes": 109172,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-020-b6aa9b10ad.json.gz",
+      "sha256": "e03f6ce3d4709ee0aa86e5d0b5ebcc1cfff6184d80bbbc19d66302f69620103d"
+    },
+    {
+      "bytes": 108938,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-021-914fa357fa.json.gz",
+      "sha256": "779ae94a73f12e3f92d06e35d475875842af60264ce137bd73b89382adfbc116"
+    },
+    {
+      "bytes": 110769,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-022-ec48527abb.json.gz",
+      "sha256": "0304bb9b665889d1f73a35bed6d08b9409b7f059ebd4810e52653f202c19d986"
+    },
+    {
+      "bytes": 110787,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-023-d9c047ae80.json.gz",
+      "sha256": "ae4643935c905795ef2d18a7731c057db51c98e1a97162b7fe8ac99d3363d78a"
+    },
+    {
+      "bytes": 111045,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-024-26dc7e7f16.json.gz",
+      "sha256": "ae8753f8674fe5dda8115d666c0544c8b13135aed44586bf09e64ca68ba89a5b"
+    },
+    {
+      "bytes": 109286,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-025-fb8626ce16.json.gz",
+      "sha256": "115f52455e3ece78cac01fd13f16b02cf22a10445a398ad45e7dc8ec3578ddd1"
+    },
+    {
+      "bytes": 109069,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-026-5f401b6867.json.gz",
+      "sha256": "5efd3be0ce2a4c4483b3d49d2c0e9b92c0aa259b7f1dc00817e4d374e82157f4"
+    },
+    {
+      "bytes": 108899,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-027-313053aa90.json.gz",
+      "sha256": "acb931fb57b866a76364244c0055dddf1fed89cbaf77190a78728759b708d2ef"
+    },
+    {
+      "bytes": 109773,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-028-f012c0bf33.json.gz",
+      "sha256": "2d590466a855b156c5a68e8fe485a2271277711bd7f9260d17ca117af744e48b"
+    },
+    {
+      "bytes": 108114,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-029-782c077bce.json.gz",
+      "sha256": "66aed0583ae330a7aba57ac2c6547e5c28f031ee0ecea21506ca51c37524635b"
+    },
+    {
+      "bytes": 111298,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-030-f474b3d75a.json.gz",
+      "sha256": "16f259057b7d99bfff5cbb4a46ac53a548a45d93737411bc94be672a8c4a65b4"
+    },
+    {
+      "bytes": 109606,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-031-879a361b99.json.gz",
+      "sha256": "6ce2871b24deb6907dcc9324f942a94d83044f7acdb421c5b3114a968ebe4631"
+    },
+    {
+      "bytes": 109520,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-032-cafcbc23f9.json.gz",
+      "sha256": "5487098a0fd0cf89405798f8ba990ef3a99082b2fdcdbc6edaf8f3bf9e96a1db"
+    },
+    {
+      "bytes": 110887,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-033-59d7f20227.json.gz",
+      "sha256": "117a59a27c60b98c4baebf8747b3b1ae46abc9b6bf3c5c8d6f49cac56a2f2919"
+    },
+    {
+      "bytes": 108617,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-034-4020da54d1.json.gz",
+      "sha256": "8d41c79b30fcace6573f905aa1588b45ed0aebeb0f2c963a3b48e423fceea860"
+    },
+    {
+      "bytes": 109665,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-035-50b53fb366.json.gz",
+      "sha256": "3caeb30daf1478f7dbff98fa6b09f464a2ad15268660a84d7a3746f391a954c9"
+    },
+    {
+      "bytes": 109197,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-036-4a814065a1.json.gz",
+      "sha256": "dbe0bf23ecca8de7bb46f0032840fc8b094b80093fbb4e956d13b5550ae3079e"
+    },
+    {
+      "bytes": 108856,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-037-069301d974.json.gz",
+      "sha256": "3364505b3c75a60fcb8d7c2c1de0960f0ec480050490523ab210da12e35f6631"
+    },
+    {
+      "bytes": 109056,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-038-6421894f58.json.gz",
+      "sha256": "e65bde7260f3b1ade809939b4fc1ff054b2783a74c0b5d0da768e385f0370d02"
+    },
+    {
+      "bytes": 111040,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-039-f02c223f23.json.gz",
+      "sha256": "8932c5299c39e9099804a22c7ca42f9964303b3c7559f552985fd04f77b5c664"
+    },
+    {
+      "bytes": 111096,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-040-da0e94aee4.json.gz",
+      "sha256": "f0c2d0115051af7087dd45f1512f934d1c3bf121a4bf2cd53783bb56b878ebfb"
+    },
+    {
+      "bytes": 110730,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-041-4e55324c67.json.gz",
+      "sha256": "74839ca8a62f53b3db983427912ef1458efa8de42ce0c854f88073aab013687d"
+    },
+    {
+      "bytes": 108763,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-042-8a82cde7f6.json.gz",
+      "sha256": "eeae235e1d58efcc8922c921be17f4bbf4d9f3f5f82eee70742e6294e8abd19f"
+    },
+    {
+      "bytes": 109000,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-043-7d9826fb35.json.gz",
+      "sha256": "3899e032e00c7f961a4eba4cc7e918e09091b122bcd0a298142061d5240c9c47"
+    },
+    {
+      "bytes": 109667,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-044-64be7eac33.json.gz",
+      "sha256": "e7ef29a1460ffb3ff22ce347a038ed40b983fd441a60b58ad7e1ae31e8cd1ded"
+    },
+    {
+      "bytes": 108236,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-045-081b3f238d.json.gz",
+      "sha256": "b7ef838264efb81ded4976f7e96b5a4f846e4a1b8a5fdca1fb47ca9f72d57b9f"
+    },
+    {
+      "bytes": 111018,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-046-ccb9a53998.json.gz",
+      "sha256": "ee1ec27326fdc148ce5fc594515b66db9a09f8e942ce9b60c58353ed609a0c3a"
+    },
+    {
+      "bytes": 110714,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-047-cd76eb49a3.json.gz",
+      "sha256": "f3260d40e3bb59293d633b0ab0b005d457d6acc1466a70150838c5b09a3ee912"
+    },
+    {
+      "bytes": 109833,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-048-aabacb3a59.json.gz",
+      "sha256": "5e216eaf9387cfe7ac12bdd87bf4c928c6b9d900131ecad28108d7e9d2840713"
+    },
+    {
+      "bytes": 110757,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-049-3de2aa2602.json.gz",
+      "sha256": "0fbe837cb7c37df75dabe8269abb32447bf446addf0d218dd8347887175405b2"
+    },
+    {
+      "bytes": 108792,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-050-92f4c6240a.json.gz",
+      "sha256": "f45151fa67e4b13542ce223ffb82dab8f84b66a3d5865c74ad81203075efd531"
+    },
+    {
+      "bytes": 109619,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-051-2b7294690d.json.gz",
+      "sha256": "52f4a08939b67470e7edab97beb69483d14fa05bc0a703c02685f57f5609001b"
+    },
+    {
+      "bytes": 108797,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-052-f35c9fb590.json.gz",
+      "sha256": "2dc845044a0f72f2f450ad2377cb369372a6277f5377197d15e76d21ae0316aa"
+    },
+    {
+      "bytes": 109131,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-053-b79a4cc488.json.gz",
+      "sha256": "89bcf97080795fb97d18ae3456c6176aca0847d9fa1f772117b16cf888dd1485"
+    },
+    {
+      "bytes": 109147,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-054-e06a697b6f.json.gz",
+      "sha256": "cc8fb85fd48edba4b49fabf9b6e8bc90a107e69857c72ebb4a30d822e63472d3"
+    },
+    {
+      "bytes": 111062,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-055-8ce395048a.json.gz",
+      "sha256": "887e9fc6e748ebaaba320a6e4e51352e672e281b71fe215df9cd4f77ad9441b5"
+    },
+    {
+      "bytes": 110900,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-056-effcbc8686.json.gz",
+      "sha256": "95367e66d206b006038b839d769df6cc90ec97e6d6fbccc7a8811f7af285719d"
+    },
+    {
+      "bytes": 108974,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-057-8529337e4e.json.gz",
+      "sha256": "d4f19025a48c169db62e8c306776a3a898fafd2375097f21ee7e43b5c48ef47b"
+    },
+    {
+      "bytes": 109333,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-058-c229506088.json.gz",
+      "sha256": "b511c392b5c6a02458f553011705e1778fa5d23e378d2e9b1b9ddcfa30ac7c2a"
+    },
+    {
+      "bytes": 108490,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-059-ae8f1343e5.json.gz",
+      "sha256": "92a85a5bb63ba348666d70c76a42af8604219c7c29b3e3fe08d29f62054f90c0"
+    },
+    {
+      "bytes": 109664,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-060-80b56789fc.json.gz",
+      "sha256": "1935407bc0b78cdb2d7126f2669702d9e9ecfcc16f06ad7d0239baba895ab56b"
+    },
+    {
+      "bytes": 108556,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-061-e5e97a1ae7.json.gz",
+      "sha256": "5559207657360193be8deb8707cce66500e1ed41f38423b8e9e1d343d03940e6"
+    },
+    {
+      "bytes": 111111,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-062-81850fa8a5.json.gz",
+      "sha256": "f1eaf1075c5f34884e51c60ece91d41fb95bd3349269dfc604d92947aaf39362"
+    },
+    {
+      "bytes": 109483,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-063-f3fd134978.json.gz",
+      "sha256": "0c3dc5fda3e596403782df53bb4b8de2e01935c52e8ce18274ae591b18613a29"
+    },
+    {
+      "bytes": 109049,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-064-6e18d1e081.json.gz",
+      "sha256": "3477a894022f5180afe84e86bdf0ba8fddbfec7f45893b1c2e9286dc20fc3f27"
+    },
+    {
+      "bytes": 110806,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-065-e22bb55558.json.gz",
+      "sha256": "d2e1485433b969b576f419679759300719f3c9a4bdbdaadfa28a3ef612609905"
+    },
+    {
+      "bytes": 109237,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-066-3598d97d03.json.gz",
+      "sha256": "aababdbe4bf01d337292dd4240cd029351c8e8c5462733691e4d15f709f6cba1"
+    },
+    {
+      "bytes": 108834,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-067-e767fdb545.json.gz",
+      "sha256": "4580e1a98c51c6354d4a827cb6688de055595283cdf5ca2de22b231e5f6d78dc"
+    },
+    {
+      "bytes": 109804,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-068-71057b61d4.json.gz",
+      "sha256": "943a3a6a372c3a9a5ef81f83c62ac73dc86ebf23baa66dccabd5d1009812808e"
+    },
+    {
+      "bytes": 108266,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-069-522efe7079.json.gz",
+      "sha256": "99a4ec2e660c3b076f3267b6ee15891775a04ec0fd4f4efc4118d3f213e89b2c"
+    },
+    {
+      "bytes": 108751,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-070-1f66c7240f.json.gz",
+      "sha256": "fbdaa2ae8060f57581e449de8c2a7d3ac12269ea486ded756632cc561338326c"
+    },
+    {
+      "bytes": 110682,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-071-8f56d9cef7.json.gz",
+      "sha256": "4dfdf5c19be5e77edf4590e6c25f745c770db1728fdba9f28e8c08c252372a11"
+    },
+    {
+      "bytes": 110735,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-072-25ea9b94b4.json.gz",
+      "sha256": "d021ca727d1a2f3ed8a7303e0a3d081e855f4a30fb6e2a49c217463460d61c2f"
+    },
+    {
+      "bytes": 108483,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-073-09992ae4a8.json.gz",
+      "sha256": "886c0d75940866e910b56b845ffe4d59d8804cf3646c134275bf9f559420b638"
+    },
+    {
+      "bytes": 108273,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-074-494f36f8f8.json.gz",
+      "sha256": "58a062d070051d3637348a3f7fff5c1d9577eccd3599651bc15e9cf5dc32e996"
+    },
+    {
+      "bytes": 109932,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-075-0cef147584.json.gz",
+      "sha256": "6a2f762b3c395103096839ea05bcf93b4c857673638aed0f9637b5046fbcfe7a"
+    },
+    {
+      "bytes": 108981,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-076-c57391dd35.json.gz",
+      "sha256": "77d7e930b05330e02a641c2c9eee95a2c3839a916fa5fac5c404b8c9b899cbd0"
+    },
+    {
+      "bytes": 108987,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-077-3c00df76f8.json.gz",
+      "sha256": "48e3f317c102bd6c072d00a5d2732001f5baa5c806f0fec87d960581d4dfdfa1"
+    },
+    {
+      "bytes": 110910,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-078-9093dedf85.json.gz",
+      "sha256": "b5c76ec3553b6a2ff9304f081bf7af01267ba47298136f7e23433ce3c121c26b"
+    },
+    {
+      "bytes": 108567,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-079-9a64521785.json.gz",
+      "sha256": "893d6aa82e758616b01e094f4619366b11865751254a076fae6bc88f62ab1b45"
+    },
+    {
+      "bytes": 111167,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-080-7a794142cd.json.gz",
+      "sha256": "51dc5957f82af09a7b1834554f8f0f2c85564465f8234b2f0ad66b1832f763dd"
+    },
+    {
+      "bytes": 110603,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-081-cf38b8a52e.json.gz",
+      "sha256": "fa9568e984ff97ae8e2239dc4387d36758c86e549cac90d8aa5cec9f28a9674a"
+    },
+    {
+      "bytes": 109130,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-082-c69bbb1332.json.gz",
+      "sha256": "b3026cefdcdac1ae38205c1546facfe28703e0845bb0642c34802e52853125d5"
+    },
+    {
+      "bytes": 108698,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-083-8b69e29368.json.gz",
+      "sha256": "d16b24d3b43e0885d004556e29c0e2e939368baf3748f4e95ffcc511a8dfeb5f"
+    },
+    {
+      "bytes": 109499,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-084-23ca9346d2.json.gz",
+      "sha256": "73623f9d117110652b89f6ac6d552612f5b624d3656a02780a80597214ad44b5"
+    },
+    {
+      "bytes": 108340,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-085-58c2113ce0.json.gz",
+      "sha256": "38de55e58d0f679abe84d586eee59d2af4941b9f1345793fc4b561c310372d4d"
+    },
+    {
+      "bytes": 111060,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-086-b6f3459391.json.gz",
+      "sha256": "ab692e2c5ca5ac258335f22d4381a82cb7b970b1fa97e9c59b0a38f373e195d2"
+    },
+    {
+      "bytes": 110718,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-087-6feabaefc2.json.gz",
+      "sha256": "b08cdf9605be1c8c6830dc5cf9f8338e7670a92dae0a539cc967f3cb6d7c26b9"
+    },
+    {
+      "bytes": 110831,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-088-13a5597adc.json.gz",
+      "sha256": "902f6a8d8ff5d18f1c09140fd61c75e4cac8991bdf19a3af444f3898a31e0c10"
+    },
+    {
+      "bytes": 108104,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-089-ee6be003b7.json.gz",
+      "sha256": "bda447a0864ef78b4c28062063c9554f7924cbcc5e30962b73cafe35db107fa5"
+    },
+    {
+      "bytes": 108724,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-090-c761e36e9c.json.gz",
+      "sha256": "249d536496cb21385af98007254ee82a6ceae97295f277773d690075b83f0219"
+    },
+    {
+      "bytes": 109266,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-091-7b2293aae6.json.gz",
+      "sha256": "d9089988fbaaec4f8271dafead360b90ee0437fe027f972e509094b1c7aca5e5"
+    },
+    {
+      "bytes": 109189,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-092-a6151c1f36.json.gz",
+      "sha256": "3bb726ac2b0200b99e1dbbc60d4c4cdbe7992ddce26197d571c855000a8c87bd"
+    },
+    {
+      "bytes": 109205,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-093-235ce735bd.json.gz",
+      "sha256": "74c6a71cc785032480e70f05aabb98b261fc03b8322a53cbefdc9b4eb5c80dcd"
+    },
+    {
+      "bytes": 110717,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-094-43860a4208.json.gz",
+      "sha256": "723e1e824385130e707c1156cacaa77eafd001e36b7a9facd2fdb05454722607"
+    },
+    {
+      "bytes": 108938,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-095-9e3065721e.json.gz",
+      "sha256": "6fda0717156a427c0f18ed6dbba0906f6020f1463a4b8f6bbadc76aba2432e85"
+    },
+    {
+      "bytes": 109221,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-096-da479b0445.json.gz",
+      "sha256": "6016f6ba7bcb5da9ed1b7e20b7d4f15bc2cc34e1adbdb38e6e328ade04e2e6df"
+    },
+    {
+      "bytes": 110693,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-097-9d6876b91c.json.gz",
+      "sha256": "4e7d0320d6ca79e401ab4e2a015c8bfa93beeec477dd9d7a077d64b09512d701"
+    },
+    {
+      "bytes": 109062,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-098-ec7f642479.json.gz",
+      "sha256": "8e1bc9783c2bff8bfe5b360aaf2517ed21d3be9b2ca6ae6780e9d90402833116"
+    },
+    {
+      "bytes": 108873,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-099-206617ea44.json.gz",
+      "sha256": "e00d699af0981824d5c6c1807f9b76d601b2b584013a67a37f13b37c3fb13006"
+    },
+    {
+      "bytes": 109519,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-100-fb14c9c621.json.gz",
+      "sha256": "8faac595a501406d4eed54a02b2466cef20c38575ecfca556cceb71a939cec64"
+    },
+    {
+      "bytes": 108316,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-101-bd3a3b42a0.json.gz",
+      "sha256": "e4ae77b4ef93984260314f3ecd2972bd38ab66588bd6018bceb5e830fc21c98a"
+    },
+    {
+      "bytes": 108718,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-102-93af9c6f85.json.gz",
+      "sha256": "7a10f0b27473ff04ca39059908c5f65ba6bc5aa8aa79da6dd34229be8958b2f9"
+    },
+    {
+      "bytes": 110833,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-103-7c6448be3e.json.gz",
+      "sha256": "6633e8b14a2237bb72eb252a98c59895e59acdcdd41130ab2e276f52fa9ac3d6"
+    },
+    {
+      "bytes": 110819,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-104-c24b30e526.json.gz",
+      "sha256": "e7bcd66c646a10ba4706953501d8486ea479b247ee6425a800e7405d440745ea"
+    },
+    {
+      "bytes": 110869,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-105-f9ed86dad9.json.gz",
+      "sha256": "9f383e2b71f28e0d9606b1e850f51acdf85bd75c9a10a104e707458e015dfd3f"
+    },
+    {
+      "bytes": 108594,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-106-ccec1c8b2f.json.gz",
+      "sha256": "001080145816cf952108dcddb732c619121a1e1237710a505df57367e720e71a"
+    },
+    {
+      "bytes": 109403,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-107-7f1889d131.json.gz",
+      "sha256": "b71520323030b07fa52b51e3d06c66cc3579447fe20ae71149f12f404d969427"
+    },
+    {
+      "bytes": 109165,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-108-5bd8ef72c6.json.gz",
+      "sha256": "5ff535a39ffb6483a58b7c6762fc441593021c712ac4d233f68bdbcb2ecbf689"
+    },
+    {
+      "bytes": 109022,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-109-8e214a9f34.json.gz",
+      "sha256": "23317c8cef7bb8e1883b37f7a38815dee34062e0b4fae57822286253a9b50b0b"
+    },
+    {
+      "bytes": 110543,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-110-e5d3908605.json.gz",
+      "sha256": "671a0477129f8f91c7af39d39d6a8131dcb03437acbab4d2487ea81219ab301d"
+    },
+    {
+      "bytes": 110948,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-111-9a2eef943f.json.gz",
+      "sha256": "c2a9e7ef8f0ca33cd389fcd7598239c21f10485432a22bf3b027066b783834dd"
+    },
+    {
+      "bytes": 108801,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-112-6ca0ee18a5.json.gz",
+      "sha256": "215d2e7e7a0cf25ab639844d5682a67e408968e814b460fab1aa90c0b93d28ae"
+    },
+    {
+      "bytes": 110876,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-113-237fa9e685.json.gz",
+      "sha256": "3cc6702b8abf9e4d1af3e30360ffa2665320b7158f0875724a09432766bfc34d"
+    },
+    {
+      "bytes": 109187,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-114-5e917c6292.json.gz",
+      "sha256": "b35b89246e3e36d214da446196310f8f3e8f80ebb5f11815cadb64d834cabf2b"
+    },
+    {
+      "bytes": 108810,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-115-e4c70809c0.json.gz",
+      "sha256": "b783425c5f9a2f81a8ebc811f34be8f54f04fb8343e648e60ebb3048461fb33c"
+    },
+    {
+      "bytes": 109660,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-116-7865daa491.json.gz",
+      "sha256": "ea1035de1197edfea7200ef69571805539893de871ac0b583c05647e4e7c88d3"
+    },
+    {
+      "bytes": 108025,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-117-1005eaeb2b.json.gz",
+      "sha256": "bbcd2d2c41b2cb500b90876c12edb579eec15b1e055ece85b3b537b424f98a72"
+    },
+    {
+      "bytes": 111281,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-118-7f30c1a381.json.gz",
+      "sha256": "7376ae5a78960e9dc889688f6d5b27e8df0c124e754706f10738c43ae40de57d"
+    },
+    {
+      "bytes": 110533,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-119-94713a1e75.json.gz",
+      "sha256": "34bb3e66b62f5a271cfc1ee05e3f48866cc30f14b716b8d7b62c908036ddb8fd"
+    },
+    {
+      "bytes": 110738,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-120-60c34b6bff.json.gz",
+      "sha256": "5e12441efe3c198385b895a8736ee6792921fd1639479bd57ecb666f80dc1fb1"
+    },
+    {
+      "bytes": 108236,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-121-db8d3e98af.json.gz",
+      "sha256": "83c65b172e18331ef907130ce93e6b519d350d5e37ae9c59ddf45f7db2d4889d"
+    },
+    {
+      "bytes": 108327,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-122-1b72e30f3a.json.gz",
+      "sha256": "d26fe6acc083572f0cf978504f1d352de0e30e38db10d2962019e74af30e1ca1"
+    },
+    {
+      "bytes": 109611,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-123-4985ac7d79.json.gz",
+      "sha256": "5409a3cd0e674021812e9e4b3e61800c9df989454da71e10c68d1ad25c31b478"
+    },
+    {
+      "bytes": 109016,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-124-f740cfc79a.json.gz",
+      "sha256": "33acb5311d4012657295f6887b46950543140bde33d9f3985c4146b5dd16fd60"
+    },
+    {
+      "bytes": 109078,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-125-460b460c34.json.gz",
+      "sha256": "21ed8e102490023e2310a32bf123c9d20e79bfc26229a54ea868efc0cef03327"
+    },
+    {
+      "bytes": 110885,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-126-1de66cdc26.json.gz",
+      "sha256": "5a5dc057537400f3e8b437c23296b811bf9598ffc752d06cbb80cec28cb745aa"
+    },
+    {
+      "bytes": 108533,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-127-547cbdf9e2.json.gz",
+      "sha256": "cb6ab030532ddb0c83f7a5e024d341fea1e89f4e8223c131e0cb5840e7f6bd92"
+    },
+    {
+      "bytes": 109033,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-000-48d2ccedd5.json.gz",
+      "sha256": "2115defb68daa787c35ef21a90c63d7076f8d9bc0cf284593bf842595f9b6328"
+    },
+    {
+      "bytes": 108805,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-001-0830ddda40.json.gz",
+      "sha256": "8b1d592558a0debbe6ba853213b468a11863ede21e031563a2cb111a6465a07c"
+    },
+    {
+      "bytes": 110537,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-002-48c4d2e317.json.gz",
+      "sha256": "053b48908b368d9f68f1f60c244852f59d98d68db64c9609190db7c479089a01"
+    },
+    {
+      "bytes": 108495,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-003-b98d8da7bf.json.gz",
+      "sha256": "1fc0214785342937af34a80e18d69212170fa3159790164f61d6e17e543aaf84"
+    },
+    {
+      "bytes": 108930,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-004-72b1c5ba70.json.gz",
+      "sha256": "963a434d679b8b4243bd3bade8b1ef13126203e4acbbbccf92aec86875026eab"
+    },
+    {
+      "bytes": 109400,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-005-942c2d458e.json.gz",
+      "sha256": "38f93b31ba972f81d0882cbe0bca880dbb7b6a588a868618ea16b1d926fc529a"
+    },
+    {
+      "bytes": 108861,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-006-110b30a28a.json.gz",
+      "sha256": "c3ae49141a4e79c171c5ff055bb5489e64f405b7cbac2737d1da756929e58c7d"
+    },
+    {
+      "bytes": 110734,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-007-9ea145255a.json.gz",
+      "sha256": "98fd474a190c6f4f3be9172e576eaed014119c039a5ce787e870f45f6d990720"
+    },
+    {
+      "bytes": 110646,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-008-b45d1d67d2.json.gz",
+      "sha256": "e89f36c322b4332e8d6bd444f89db16ff6901f2a21658892531e25d9bc089948"
+    },
+    {
+      "bytes": 110616,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-009-4d592518ca.json.gz",
+      "sha256": "ebfcc650f648cd2676c120776d0fe25042fef6373ae50a1dd0022a706d64b332"
+    },
+    {
+      "bytes": 110563,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-010-7aa8cd8bce.json.gz",
+      "sha256": "65b464dbd0f68c39d11f272b6eb643084241f0bcb534b16f1c642988ae9a0c61"
+    },
+    {
+      "bytes": 110695,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-011-eabda2c05f.json.gz",
+      "sha256": "af2abc97603ae80d62afca574de3264485aa2ef108dc53f56a381c6d39a11a6d"
+    },
+    {
+      "bytes": 110653,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-012-861e265ea9.json.gz",
+      "sha256": "01ce8d2ed874fa55eb1df7143a0760642c10d3d1e5fbc9f2791a4a99128d9b5c"
+    },
+    {
+      "bytes": 110630,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-013-1a5f2faf5b.json.gz",
+      "sha256": "9153b5707a22e537553ce0b1d2671b01b9be8dd53dd55e365e93cc1f285217a6"
+    },
+    {
+      "bytes": 110670,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-014-454d5ec089.json.gz",
+      "sha256": "b4ad12a77702dc66fdb84b4432c503492bef4528d10953c5bb1d8cfa8c16dc81"
+    },
+    {
+      "bytes": 110689,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-015-691452be4d.json.gz",
+      "sha256": "99e706fe6d50c5c6d5f3515bb2c39b8d86bc7340fcf77183d4dc15cb9d294286"
+    },
+    {
+      "bytes": 110757,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-016-9e4e222280.json.gz",
+      "sha256": "8d3ed70ef2fb627e5d97fab6ff8d0350e12a2ff07a3a1e4f319adf508f887673"
+    },
+    {
+      "bytes": 110736,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-017-55712611a0.json.gz",
+      "sha256": "b9ee498167984901abb42b84bc1666646692946ba8f8b3af9438e639ec0ab67e"
+    },
+    {
+      "bytes": 110711,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-018-99a8ddb38f.json.gz",
+      "sha256": "a78773f9861295164008417d6efd55ff7de2d40411678a0cf35993de14bc4d48"
+    },
+    {
+      "bytes": 110783,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-019-9166fdf853.json.gz",
+      "sha256": "a6eebf765f4a81bf21f21d1140ad013cd844a73741111c047cc66ae322757bdf"
+    },
+    {
+      "bytes": 110639,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-020-b517ae2748.json.gz",
+      "sha256": "21d0ecac5211ed045f8828c3d3e1ab99a224042a682fafde98950fe27b29314c"
+    },
+    {
+      "bytes": 110719,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-021-5e0b38a851.json.gz",
+      "sha256": "898c11ecd733025b0c77ad97e7897ab443862313f236b67f27161d134d0287a3"
+    },
+    {
+      "bytes": 110560,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-022-4a12458d8a.json.gz",
+      "sha256": "34748d2363fb902227dcf4f50c627db7432f12386fa8c2ff94fc327dd90b640a"
+    },
+    {
+      "bytes": 110729,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-023-09c1438b40.json.gz",
+      "sha256": "895070515e84fe824436e81ec652a6f1c9bc03d3e6fd90f87bbe24b81b788d38"
+    },
+    {
+      "bytes": 110756,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-024-8ebc8e6892.json.gz",
+      "sha256": "63f23991a892cc2aca38e3170711b46729f0f4aa2cf5107138f55eb60d98c3ee"
+    },
+    {
+      "bytes": 110756,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-025-7bfbfbb365.json.gz",
+      "sha256": "d8e8d04edcbca37037e4cce4c5bcf0ec4d6bf11eb6b9c5e3b1d100677c977bb9"
+    },
+    {
+      "bytes": 110550,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-026-c5d09bfafa.json.gz",
+      "sha256": "7f0959cc65b69f0bfcdd96f6abe6ebafecc1c131b9f1e857dd814dd85b7290e2"
+    },
+    {
+      "bytes": 110743,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-027-56d238c396.json.gz",
+      "sha256": "bd6b0e58998e016f1e357652124e587f4a91c3eb628efb295289be557a35828d"
+    },
+    {
+      "bytes": 108495,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-028-8c0a501d9c.json.gz",
+      "sha256": "0226af34593fedbe81bbd63f21962fb2e696ce1d58f7056da2f32efbecf05218"
+    },
+    {
+      "bytes": 110926,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-029-3940e2552f.json.gz",
+      "sha256": "ca2d20b3ecdb6e6be4eb50b21afabebf2b1b2cfcc16e95d2427cd6f17d4595de"
+    },
+    {
+      "bytes": 107984,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-030-5f0cd58497.json.gz",
+      "sha256": "d435e9b26a8f5a71dc7c5dd7956ec321498e5b5f7a13f5056434897f0d995ffd"
+    },
+    {
+      "bytes": 110834,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-031-3e7a3b3509.json.gz",
+      "sha256": "8369da868340876369dade8d5a483160f3524ec19727eac0b3b11291a363efef"
+    },
+    {
+      "bytes": 108876,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-032-570ad83ba6.json.gz",
+      "sha256": "37f4dcee157f1dd41dde4f37c2dc17ca99b1ee471d63c6a647fe29bf9c003b23"
+    },
+    {
+      "bytes": 108166,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-033-1f293d6cb7.json.gz",
+      "sha256": "6c5188bd6e6d2fd49bdd49c949a5f1f3855591316aae275b35b98fe0f897dcf6"
+    },
+    {
+      "bytes": 108076,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-034-13a1a432e0.json.gz",
+      "sha256": "ebd1b1b67b2f15a991dd2dcbfec3b5eedea382b0e16d61ca2b96b9131012fca7"
+    },
+    {
+      "bytes": 110802,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-035-6ca4a7f3c2.json.gz",
+      "sha256": "733d814896a661b23be2929012336cfebb37c0900e610ab6ed1c394e391e3bdd"
+    },
+    {
+      "bytes": 108575,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-036-b84b580964.json.gz",
+      "sha256": "700e082e3ba388d0b72bb75b6d36f164574ff98cc3d1abf9cce02c156ffbbbae"
+    },
+    {
+      "bytes": 110908,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-037-4de0233d45.json.gz",
+      "sha256": "e2b75efec3828c1ee7e1d2cc93e1c692787ae3dcf74de77e434e60d509e48590"
+    },
+    {
+      "bytes": 108602,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-038-474b968ed6.json.gz",
+      "sha256": "389d89fafc14869a1b6074daf68f0ac23e1c7215b5c8c7370f65ec1c721b0c5c"
+    },
+    {
+      "bytes": 110910,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-039-df1626ab7e.json.gz",
+      "sha256": "287d5b5edc1b876f9367942cbf2aa3503046ebda51780fe95cdff21943e9da30"
+    },
+    {
+      "bytes": 108545,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-040-827cdb9c2a.json.gz",
+      "sha256": "157c6036df0f19c3be0e169773d249461a9ab93f29180e1a5513b83f0229a2da"
+    },
+    {
+      "bytes": 108404,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-041-b62c5d7163.json.gz",
+      "sha256": "1cbf039f7cf758773383a3e621e3d56058ec9c10ee225524c622d31611f66c19"
+    },
+    {
+      "bytes": 108816,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-042-ae9a80d120.json.gz",
+      "sha256": "1d6aea989ba6be5de5b9d232232155ae2b9151cb77159c9678b6cd20fa44ac33"
+    },
+    {
+      "bytes": 109105,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-043-b585cd28ea.json.gz",
+      "sha256": "d2e1136b7e84ae2d49be6a0ea75a9590d07b06071c54ef73a82775232fa526e1"
+    },
+    {
+      "bytes": 109533,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-044-2f03fc2fb5.json.gz",
+      "sha256": "d1c6a3f3dcc2af9630da15ed7efe51e991a97f9f2b9022f6ada3f3b73da2518e"
+    },
+    {
+      "bytes": 110655,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-045-d52f4d6a1a.json.gz",
+      "sha256": "1e5d831c7aab6ccb60bd7b2507e355dac0d0d1601d93bacc3eebcaedb396aa79"
+    },
+    {
+      "bytes": 108870,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-046-1d0bed7f4c.json.gz",
+      "sha256": "6ba1f7f840ef1cfc35c4d35eff15a94033823382d7168fa118662552907ae4f3"
+    },
+    {
+      "bytes": 110681,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-047-e3196a8aa5.json.gz",
+      "sha256": "520adeab37843cb677f30f4b847418bc6df3ffc057597a958178d3370b70a883"
+    },
+    {
+      "bytes": 109571,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-048-9e4abaf530.json.gz",
+      "sha256": "5ba4b60c6ddeacc56f0e1ba8a5068083090a046f2651ee6b19913f502312f4c2"
+    },
+    {
+      "bytes": 108638,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-049-cf0a7d1028.json.gz",
+      "sha256": "bf9f7d661f9d2389248883fa8d61c15e90e17056d7ee14b2b868144ab1b49c27"
+    },
+    {
+      "bytes": 108897,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-050-012aa2a74e.json.gz",
+      "sha256": "09d1815f7ecb4459334a89e8364d3419be15805c2b0f82e93a69dd1c52c962a0"
+    },
+    {
+      "bytes": 110736,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-051-d243e11351.json.gz",
+      "sha256": "96cca0f82c662cea915f35ddab8773e30038dbf88b9760049c0dfe8fb499c0d0"
+    },
+    {
+      "bytes": 109341,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-052-e117399e75.json.gz",
+      "sha256": "3e87432cb990388f007fe8e84b690e80b79be943b562f9cbf656b524972d84cd"
+    },
+    {
+      "bytes": 110782,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-053-e22999f79a.json.gz",
+      "sha256": "ca62fc7729d43ec4d302b5c63ed2bbba2aa9ca77739560e8bfd03332fd59640c"
+    },
+    {
+      "bytes": 109381,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-054-58f94d4676.json.gz",
+      "sha256": "fe42781c0d040fedf1ccf2f3ed9dd3ecf23b229cf7c8dbfa377b878c28237629"
+    },
+    {
+      "bytes": 110578,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-055-a7ac306811.json.gz",
+      "sha256": "a7d57a4f675484418d7bd39824d1d61d05db68c3442109b2db76aa3f766bf620"
+    },
+    {
+      "bytes": 109727,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-056-87997ee6f2.json.gz",
+      "sha256": "4fe25b7a073a0feed808907869f3c3f1fdd3f7b1e4113f95b52070cae63bce90"
+    },
+    {
+      "bytes": 108833,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-057-68965a0576.json.gz",
+      "sha256": "183a170f9428392a87ac99e9dd403a34f9945c7a09398c73081ceca58fe12945"
+    },
+    {
+      "bytes": 108054,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-058-132b3d1a44.json.gz",
+      "sha256": "81a1f377af525e11a286ab760e5c0e231d9a2f688f2b82dde70a6d9f357aa2c0"
+    },
+    {
+      "bytes": 110882,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-059-06306f4e8d.json.gz",
+      "sha256": "3b2fa3165bb161fd5c8872396f991828f75ca6311da590e9505d3c07deaf957c"
+    },
+    {
+      "bytes": 108816,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-060-c3bf7e5c98.json.gz",
+      "sha256": "74d676e4e24cea59f43432d5c565e9dbd8a2593a7edbfa35e5fe3b7980403f59"
+    },
+    {
+      "bytes": 110676,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-061-d8ebe65ef1.json.gz",
+      "sha256": "8abcb5bbf9cd808dad59153fb6a8f65ec1fa93abd7b40b1efeeb54bcb492a165"
+    },
+    {
+      "bytes": 108278,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-062-70a6b2f959.json.gz",
+      "sha256": "a1afefb642a949b4895644c45a3ea2338e69c90425d8585e70e09094537377d5"
+    },
+    {
+      "bytes": 110857,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-063-eaf6bef4a4.json.gz",
+      "sha256": "cf3aba4e525b6b916e904a6432e833c3dc495e323eb089ef19c9026fdd798e02"
+    },
+    {
+      "bytes": 108688,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-064-9f6ecd1a94.json.gz",
+      "sha256": "344bde8236e8ab2b205a1c8a993aba6d5b0b566268655b18e3a4a80666242a82"
+    },
+    {
+      "bytes": 107866,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-065-9e98f08f3b.json.gz",
+      "sha256": "aad342aa132c4060a2db7975d917376627b5085ffc74bc11f8c70997374e4d8f"
+    },
+    {
+      "bytes": 108190,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-066-d58df2fb43.json.gz",
+      "sha256": "328dccff13b6447a3cf1bb57d263b1516c3da58766fc8f83fd7ed437f4e6b8cb"
+    },
+    {
+      "bytes": 110819,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-067-dd5a30270f.json.gz",
+      "sha256": "e39a6ea3aed84b1a763289fbe0b6d22abd720b9e4ecb8d1782972b6e330c33d3"
+    },
+    {
+      "bytes": 108997,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-068-375d1b1b13.json.gz",
+      "sha256": "11898b54c6f1ad06458b07789bd8181b8e2884acdcd40f99e4b60ba714edf92c"
+    },
+    {
+      "bytes": 108163,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-069-9ae4602904.json.gz",
+      "sha256": "1a8ce712e64d9dadfde7e23f1deea832aaee31f0e38ff28160a1a1986f734cde"
+    },
+    {
+      "bytes": 108568,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-070-5b284f066b.json.gz",
+      "sha256": "f8c79c34e7a1a51a2f8aa655454b7f6830e8d71d61952c486f04cbca61aae4c4"
+    },
+    {
+      "bytes": 110962,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-071-f0c9ebbd40.json.gz",
+      "sha256": "5a37d5051e9528981833e5183d70595f1b4888e42301202e4e8d24d23f40e65f"
+    },
+    {
+      "bytes": 108740,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-072-79cfa36e3a.json.gz",
+      "sha256": "212259ee63cd3f8dd4ef834002e90a41db872503127a45f05be31b9fa6d98333"
+    },
+    {
+      "bytes": 108894,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-073-274491a725.json.gz",
+      "sha256": "a8bd9fa9d7390e2b2ab1417f6e58dc6d7ef10af89b1a7ac3172a484e0703ceb2"
+    },
+    {
+      "bytes": 109166,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-074-e2365d7a87.json.gz",
+      "sha256": "db2f0fb5ad780281072fe92460619bcacb9b587628e1d058ff970841932d0c70"
+    },
+    {
+      "bytes": 109438,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-075-a6696084a4.json.gz",
+      "sha256": "38b48bf8a54aac2349db6e60ab06fdba17603565b59bb4b38f6cce8b89d064dc"
+    },
+    {
+      "bytes": 109246,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-076-900f037a8c.json.gz",
+      "sha256": "5863abd11861ba1212dba2ed55dc940627642500ba8dfcf5c368df1ad098aba9"
+    },
+    {
+      "bytes": 110816,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-077-44d74d05d4.json.gz",
+      "sha256": "e7fa661686f28fe5603124e4bced74f5a150823804cfc902bb210f71dc1e443b"
+    },
+    {
+      "bytes": 108717,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-078-28bf64f2bb.json.gz",
+      "sha256": "8cac663d0f91e774d6f7188b61466ba9b33a2d77597b9e34490ceb8ec4e5fa90"
+    },
+    {
+      "bytes": 110585,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-079-62792322e0.json.gz",
+      "sha256": "7331ec7d2d8c910e34b0f6f256dc7b796da2fa5f503b3f9287c362a9c52435e7"
+    },
+    {
+      "bytes": 109528,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-080-b666fbf97d.json.gz",
+      "sha256": "d37f1ea148b25bab0cebaa803121075acf6bdd2432e171b6cf9625a29b9bbe5e"
+    },
+    {
+      "bytes": 108824,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-081-601159d2a0.json.gz",
+      "sha256": "0ca477926c8d0b638e22c923b4ecebdae6ed3c8d23e094f4b6a74838cc55ae1c"
+    },
+    {
+      "bytes": 108654,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-082-ec510a5bdb.json.gz",
+      "sha256": "42f612750afdd1aace8d3a6a772a7e8d1405a3c3e6db6e8a71939e07c6a8061b"
+    },
+    {
+      "bytes": 110842,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-083-4c9976a050.json.gz",
+      "sha256": "757029806607d90c9a6afe1c45c833e1590bbcf0dd4e49d741923639a01c1d6a"
+    },
+    {
+      "bytes": 109486,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-084-7fbadd6e3c.json.gz",
+      "sha256": "6dfcf13e31ad780beb689d2c0d02fae79a39b5e11ea82d884085191de3fcc80d"
+    },
+    {
+      "bytes": 110648,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-085-3164dd7be8.json.gz",
+      "sha256": "ac1914006d2f17acfd8c7524120f15eb8acfc78fb073aba8d94964036574733b"
+    },
+    {
+      "bytes": 109519,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-086-fbb26d4705.json.gz",
+      "sha256": "92294ec8f8829094a80d11109dabe10a1f362199fec1d44e3a8a5748f68684f5"
+    },
+    {
+      "bytes": 110692,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-087-8428d611f2.json.gz",
+      "sha256": "71cf107ca50b4a48c001fe7ef099bb6eafe61907bb29759fdcf279cdaa5e112b"
+    },
+    {
+      "bytes": 109289,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-088-54d047707b.json.gz",
+      "sha256": "82294215bc82ae68d20cdce05ea791b373d5e007f8174cb6c530a4e783b2aa40"
+    },
+    {
+      "bytes": 108304,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-089-8275bc9272.json.gz",
+      "sha256": "12599b8bf49b352486b74d699926351d3def96aeab00c910c10a178f199640ac"
+    },
+    {
+      "bytes": 107989,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-090-7ab4ba4fd8.json.gz",
+      "sha256": "bc4826f2df192f88e649231b43f957def91075a82fde314d54f0369e810cbe1a"
+    },
+    {
+      "bytes": 110853,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-091-1aab0b78cb.json.gz",
+      "sha256": "cd56e91703ec881cf408021ef4b95d8682918d523a0b5752dba6c8e16d06d7af"
+    },
+    {
+      "bytes": 108570,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-092-d532fb20ca.json.gz",
+      "sha256": "67bee48917a4fa0d13ce06852c466d6e45a40727a2da144e37c5f9034262743d"
+    },
+    {
+      "bytes": 110926,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-093-27025a655c.json.gz",
+      "sha256": "06adf5d5d3d074f20b5fc8b400881a78e6e599f374353a22d400c051059d0300"
+    },
+    {
+      "bytes": 108109,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-094-ba60c4fe8b.json.gz",
+      "sha256": "afc688ab6dbe4207880b77edb03843b7b6aee4ff25a66f6fdd1a19b62d1b253c"
+    },
+    {
+      "bytes": 111089,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-095-27f6ceb96c.json.gz",
+      "sha256": "7317c565a3d50a714f81e533bad8f33f18f967cb04af3b38654cc1c55d394180"
+    },
+    {
+      "bytes": 71736,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/gates.json",
+      "sha256": "07847a73c183316535fc49c46ae360babf0949669533e9b2d78f88066b744172"
+    },
+    {
+      "bytes": 25720,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/protocol.json",
+      "sha256": "2d5cd25c0460dd00761805e4f68e0f587d2b22b16915d1a6533b32f535ed2ee1"
+    },
+    {
+      "bytes": 381,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/runtime.json",
+      "sha256": "44936a05a038fcda27ae08e149c38c500a5c58afcdeb126492342d53cd91e569"
+    },
+    {
+      "bytes": 11620,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/shakedown.json",
+      "sha256": "0a6de079ad99c87cf2a7bed16dfb028de4dff66cbfebfd930bd9b08a49796845"
+    },
+    {
+      "bytes": 4274,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/source-binding.json",
+      "sha256": "1a96b9322d021ce9112cf88d56a2208cacd14b125704c65d3a0255289b373753"
+    },
+    {
+      "bytes": 162651,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/sweep-dataset.csv",
+      "sha256": "7966787ae4a06d778affc82ebdd016d988a2059f9f6184110d31d7ca0d34365f"
+    },
+    {
+      "bytes": 1880576,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/sweep-dataset.json",
+      "sha256": "4027399e86d0a62e4c9a7f5cb91e3e27d0af589dddfcdbeef9d98731738d27d0"
+    },
+    {
+      "bytes": 572,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/execution-lock.json",
+      "sha256": "40e3a1607ab1c85810a3e28124be5e0df88e4548fcfd5b1820b7e89c90a9115b"
+    },
+    {
+      "bytes": 737,
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/terminal.json",
+      "sha256": "d334c693172ef105a67e0f4be07272034747821b37f2a416ceab1f8317521164"
+    }
+  ],
+  "manifest": {
+    "gate_manifest_path": "paper/evidence/manifests/l1a-sweep-v3.json",
+    "manifest_id": "L1A-SWEEP-V3-20260903-128-V1",
+    "path": "paper/evidence/l1a-sweep-v3.json",
+    "sha256": "2c31758465a2f7720e65589ceaf7c2014fe7095d10bd385082dd121b9bed0ce5"
+  },
+  "output": {
+    "path": "paper/generated/l1a-sweep-v3.tex",
+    "sha256": "1446eb2faee34335c5d2b44564fb28d3c98e4fe893f893d4f76c5ea72866551a"
+  },
+  "reference_inputs": [
+    {
+      "bytes": 10185,
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/manifest.json",
+      "revision": "f30cb42ec4a8633bf634a3d32ffa5b11f66be97a",
+      "sha256": "768b345e946a45e623f83aaa18e01f8ec5bc7f823e81858a0a8c3a3e2e448754"
+    },
+    {
+      "bytes": 26743,
+      "path": "modern/experiments/cusp_topology_search_v3_1/protocol.json",
+      "revision": "cec47f12f5909c5886424bf5d46ac20ce06f1ac5",
+      "sha256": "f6077edde3a4e4326f2dda9df4429452d88cb8c7145a620f0243ae48795090f8"
+    },
+    {
+      "bytes": 56156,
+      "path": "modern/experiments/cusp_topology_search_v3_1/results/artifacts/designs/p2_divergent_exit/divergent-exit-stack.json",
+      "revision": "cec47f12f5909c5886424bf5d46ac20ce06f1ac5",
+      "sha256": "43fedee0057f2851a7282cd4c4ab9e33aaf620cdceca351d65d602a6fa78b9e9"
+    },
+    {
+      "bytes": 19757,
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/protocol.json",
+      "revision": "757e365f9f667620c7610663574294c3b71e1f51",
+      "sha256": "27dac88359b7985487c72877fa63a74d658a439cb844272a89c5afa7e0ea8a38"
+    }
+  ],
+  "schema_version": "1.0",
+  "source_date_epoch": 1788270043
+}

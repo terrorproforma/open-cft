@@ -1092,3 +1092,207 @@
   gaps only failed on the N+1 design and was corrected, not tolerated.
 - The first checker version issued ~4 git calls per lineage file (65 files) and
   took 14 s per invocation; batching by revision brought it to ~6 s.
+
+## 2026-09-03 - L1a geometry sweep v3 (HEMP-like regime) admitted to the claim matrix and manuscript
+
+### Scope
+
+- Worktree `C:\Users\Angus\Desktop\projects\uni-project-paper-sweep3`, branch
+  `paper/sweep-v3-and-twt-amendments` from `origin/feat/sota-foundation`
+  (`13d8ac6a`), LF verified (`.gitattributes` `* text=auto eol=lf`; every new
+  file checked with a CRLF scan). Paper-owned paths and
+  `modern/docs/workstreams/paper-*` only; `results/**`, the frozen
+  preregistration files and `FYP/` untouched; no GPU work.
+- Evidence: `modern/experiments/l1a_geometry_sweep_v3`, preregistered
+  `1923ef76` (frozen protocol/authorities/shakedown/design-authorities, blobs
+  equal at the record commit and in the checkout), recorded `2cfe8223` (979
+  files, manifest SHA-256 `b8670c48...`), dashboard `44d0c63c`. Terminal
+  `accepted_result`, campaign status `accepted_l1a_sweep_v3`, 11/11 binding
+  integrity gates, 224/224 resolved and stable, held-out 96/96 (479 axis nulls
+  in bijection, largest difference 27.3 um), six sweep-v2 metric gates verbatim
+  on every design.
+- Definition and hypothesis source: the TWT/PPM review
+  `modern/docs/literature/twt-ppm-physics-for-hemp.md` at `beb4772c` (also the
+  shakedown commit) with its read-only check script and committed output JSON.
+  References: sweep-v2 manifest at `f30cb42e` (hashes to the sealed source),
+  frozen cusp-topology-v3.1 protocol and P2 record at `cec47f12`, frozen
+  wall-loss v4 protocol at `757e365f`.
+
+### Evidence level and gate
+
+- Gate `GATE-L1A-SWEEP-V3`, kind `numerical-screening`, `opens_level: null`, at
+  the EXISTING recorded outcome `accepted-screening` (the sweep-v2 outcome): the
+  study is the same kind of object (field-only design-space screening on L1a
+  fields with the sweep-v2 rules and gates verbatim) with the literature cusp
+  definition imported and one more descriptor; a sixth outcome value would not
+  name a different kind of study. Justification on the gate and manifest.
+- New manifest type `paper-l1a-regime-screening-manifest` 1.0 (25 required
+  roles, 118 required metrics = 106 mapped + 15 policy, three shared). Manifest
+  `paper/evidence/manifests/l1a-sweep-v3.json`: 66 source files at `2cfe8223`
+  (bundle top level, 17 HEMP-like/representative design records and grids, four
+  frozen files), `dashboard` at `44d0c63c`, 4 `reference_files`,
+  `definition_sources` (review + script + output at `beb4772c`), 118 gate metric
+  constraints. The shared flag `stable_multicell_wall_cusp_topology_demonstrated`
+  is not reused; explicit flags `hypothesis_h1_held`/`hypothesis_h2_held: false`,
+  `material_aware_confirmation_run: false`,
+  `hemp_like_designs_are_design_recommendations: false`, `iron_in_field: false`,
+  `rho_is_probability: false` carry the boundary.
+
+### Added
+
+- `paper/scripts/generate_l1a_sweep_v3_evidence.py` (351 `\Swt...` macros):
+  byte-verifies the bundle with sidecars; frozen == sealed; re-derives the
+  headline and the four estimand sets (Sobol, held-out, pooled, sweep-v2 region)
+  including the hypothesis statistics from the 224 rows (counts/histograms/
+  medians exact, numpy sums via `math.fsum` within 1e-9); recomputes x_w, the
+  Bessel prediction (the experiment's series, x* = 1.937318 by bisection), every
+  rho reading and every flag; cross-checks every design record, gzipped field
+  grid (full 81x145 psi map), catalogue entry, CSV row and frozen design
+  authority; derives the x_w band counts (0/77 below x*, 5/30, 4/13, 6/8), the
+  end/interior rho/I_1 medians (0.80 at 256 end cusps, 0.87 at 109 interior),
+  the 28 predicted-only designs failing at end cusps only; binds the review's
+  output and derives the launch-position classes (7 cells within 0.17 pitch of
+  a magnet centre: 0-1 reflections per 128; 9 cells 0.22-0.48 pitch away:
+  32-88), the wall-loss launch offset (0.5 mm = 0.083 pitch from the P2 stage
+  centres, read from the frozen v4 protocol and the topology P2 record), Mendel
+  alpha 9.93-1190, epsilon 0.05-0.75, mu medians 0.11-0.42 ordered by epsilon;
+  cross-checks the dashboard payload; four `\ArtifactClaim` tables (design box
+  v2 vs v3; rho by x_w band; hypothesis thresholds vs observed; the 15
+  HEMP-like designs with 005/106 flagged).
+- `paper/sections/l1a-sweep-v3.tex` (Design space and method; Execution and
+  integrity; Results: the HEMP-like regime; The preregistered hypothesis; The
+  earlier design box; Scope box), digit-free through version, field-level and
+  whitelisted symbol macros (`I_1`, `b_3/b_1`, `R^2`, `H1`, `H2`, `x^*`);
+  standalone driver.
+- `claims.json`: CLM-069 (abstract), CLM-070/072/073/074/075 (section),
+  CLM-071 (tables), CLM-076 (Discussion interpretation: the legacy
+  parameterisation never varied r_w/L into the HEMP band, so its design space
+  could not contain a HEMP-like cusp; material-aware confirmation pending);
+  manifest entry and gate record. `result-gates.json`, `manifest-schemas.json`,
+  `figure-table-contract.json` (`TAB-L1A-SWEEP-V3`).
+- `manuscript.tex`: `\SweepThreeEvidenceRevision`, preamble `\input`, ninth date
+  line, abstract sentence, contribution list, evidence-boundary paragraph,
+  Section 14 "Preregistered geometry sweep into the HEMP-like regime" (pages
+  41-46), L1-gate note, Discussion paragraph (CLM-076), Limitations sentence,
+  data availability, Conclusion. Bibliography: `Koch2007` (IEPC-2007-110).
+- `check_paper.py`: `_check_l1a_sweep_v3_screening` (reference and
+  definition-source groups through `_check_bound_files_at_revision`; the
+  hypothesis claim must read "did not hold as preregistered" / "upper envelope",
+  the earlier-box claim must be bounded to the field model, CLM-076 must be an
+  interpretation bound to the manifest), `_render_sweep_v3_tables`, required
+  section, trackable paths, schema type.
+- Tests: `test_l1a_sweep_v3_admission.py` (20) and
+  `test_l1a_sweep_v3_evidence.py` (10). README, notation, author checklist,
+  supplementary outline (S4i).
+
+### Numbers verified against the bundle
+
+- 15/128 HEMP-like (11.7 %); Sobol rho 0.34-15.4 (median 1.01, 365 cusps);
+  held-out rho 0.20-0.99 (277 cusps); HEMP-like region x_w 2.25-3.24, r_w/L
+  0.715-1.032, stages 10/2/3, cusps 10/3/2; five-stage four-cusp HEMP-like 2/42
+  (005, 106); sweep-v2 region 0/102, max rho 0.993; rho_wall < 1 at all 642
+  cusps (max 0.942); wall b3/b1 median 0.030; slope 0.689, R^2 0.39, 70 % in
+  band, accuracy 0.72 (15/36/0/77), realised x* 2.34 (r_w/L 0.745, +21 %);
+  rho resolution sensitivity median 0.9 %, max 8.0 %; 28.0 min wall.
+
+### Validation
+
+- `python paper/scripts/check_paper.py`: before the commit only "accepted
+  manifest is not committed at HEAD"; after the commit green (about 100 s: the
+  sweep-v3 generator adds ~18 s).
+- `python -m unittest discover -s paper/tests`: 227 tests OK (197 + 30).
+- `python paper/scripts/verify_reproducible_build.py`: two clean builds
+  byte-identical, `paper/build/manuscript.pdf` 55 pages, 676,795 bytes,
+  SHA-256 `8d171857d5bccaeef0f4cea30ae2604d0d2496669deb72309a286a7eefabc3e5`; no overfull box, no LaTeX error, no undefined reference (the
+  pre-existing `sec:mdo-l0-v2` duplicate label is unchanged).
+- Rendered `%TEMP%\paper-sweep3-pages\` (abstract p1; Section 14 pp 41-46;
+  Discussion pp 47-49; Limitations pp 50-51; data availability p52) with
+  `pdftoppm` and inspected the four tables.
+
+### Corrections during validation
+
+- A row that begins with `[` directly after `\midrule` is swallowed by
+  booktabs as an optional argument ("Paragraph ended before \@BTrule was
+  complete"); the band intervals are rendered as one math group.
+- The protocol's sampling-algorithm text carries "the first 128 points", which
+  `find_unregistered_claims` flags as a quantitative claim once it is a macro
+  value; the macro binds the first clause only.
+- The record's `hemp_like_threshold` is a dict (rho, x*, r_w/L*), the field grid
+  is the full accepted psi map (81x145, not the bore tracing grid) and the
+  frozen design authorities carry per-design entries keyed by `key`; each
+  equality check was corrected to the recorded structure, not tolerated.
+- `\label{sec:l1a-sweep-v3}` was defined twice (section and subsection); the
+  subsection label is `sec:l1a-sweep-v3-screening`.
+
+## 2026-09-03 - Wall-loss reflection statements re-scoped per the PPM launch-position analysis
+
+### Scope
+
+- Trigger: the TWT/PPM review (`beb4772c`, section 3.3 and Table G2) and the
+  sweep-v3 admission that binds it. The review re-read the sealed orbits of the
+  geometry screening by launch cell: the seven cells within 0.17 pitch of a
+  magnet centre produced 0-1 reflections per 128, the nine cells 0.22-0.48
+  pitch away produced 32-88; the wall-loss campaign launched 0.5 mm (0.083
+  pitch) from the P2 magnet centres (frozen v4 protocol launch planes 3.5, 9.5,
+  15.5, 21.5 mm against the topology P2 record's stage centres 3, 9, 15, 21 mm),
+  and along the ten launch field lines the review traced from the magnet
+  centres at the campaign's launch radii the field never rises above its launch
+  value. Verified from the artifacts inside the generator, which fails closed if
+  any of it changes.
+- No number changed anywhere; every changed sentence is macro-bound (`\Swt`,
+  `\Wlf`, `\Wlg`) or labelled interpretation.
+
+### Changed
+
+- Discussion paragraph "Wall loss is not a mirror process in the qualified
+  field, and that statement is field-specific" -> "The wall-loss campaign's
+  zero reflections are a launch-position result: its launch planes sit at the
+  field maxima of a periodic-permanent-magnet mirror field". CLM-017 now says
+  the campaign could not test the mirror picture (launch planes, offset in mm
+  and pitch, stage centres, field-line maximum ratio and wall/launch ratios as
+  macros; zero count = launch-position result, not a property of the topology).
+  CLM-052 now states the launch-cell classes and their reflection counts, the
+  turning-point field ratios and mirror-condition fractions, that the wall-loss
+  launches fall in the near-centre class, and that the screening's reflections
+  are the mirror reflections toward the magnet centres the PPM field predicts.
+  CLM-044's first finding re-scoped the same way; its "mirror formula the
+  integrated orbits do not support" became a loss-cone formula the orbits could
+  not test at their launch planes and that the non-adiabatic electrons do not
+  satisfy. CLM-016 (wall-loss section scope box) now says the mirror description
+  does not apply "at the launch planes of this campaign" (planes as `\WlfCell..ZMm`
+  macros) and defers the reading to the Discussion. Section 9 intro: the mirror
+  formula's loss-cone reading "could not be tested at the launch planes" instead
+  of "does not support". CLM-017, CLM-044 and CLM-052 are bound to the sweep-v3
+  manifest; the generator lists them as prose claims.
+- Limitations: every electron of the admitted orbit campaigns is non-adiabatic at
+  the wall cusps (Mendel alpha 9.93-1190 against the TWT regime below 0.66,
+  epsilon 0.05-0.75 against the Leffel-Gray boundary near 0.03, mu-variation
+  medians 0.11-0.42 ordered by epsilon), so a per-cusp loss probability cannot be
+  a loss-cone number for these fields; pointed at the kinetic workstream.
+- Section 11 intro: the reflection count of a launch cell depends on where its
+  plane sits relative to the nearest magnet centre; a second screening that
+  stratifies its launches by catalogue cell is planned, no result exists.
+- `check_paper.py` (`_check_l1a_sweep_v3_screening`): CLM-017/044/052 must be
+  interpretations bound to the sweep-v3 manifest with the launch-position
+  wording and macros; the Limitations must carry the non-adiabaticity macros;
+  the superseded wording ("field-specific", "not supported for this field",
+  "unsupported for the qualified field", "mirror formula the integrated orbits
+  do not support") must be absent from the flattened manuscript.
+- Generator: ten field-line macros (`\SwtPpmLine...`, `\SwtVFourLaunchRadiiFraction`)
+  derived from the review's output and the frozen v4 protocol; 361 macros.
+- Tests: `test_l1a_sweep_v3_admission.py` +1 (re-scoping enforced, stale
+  wording rejected, launch-offset macros recompute);
+  `test_wall_loss_geometry_screening_admission.py`,
+  `test_cusp_topology_v3_1_admission.py`, `test_four_cell_closure_admission.py`
+  updated for the new manifest sets and wording. README, author checklist.
+
+### Validation
+
+- `python paper/scripts/check_paper.py`: green.
+- `python -m unittest discover -s paper/tests`: 228 tests OK.
+- `python paper/scripts/verify_reproducible_build.py`: two clean builds
+  byte-identical, `paper/build/manuscript.pdf` 56 pages, 681,141 bytes,
+  SHA-256 `b2440f6e5a3b543d5dd7dee88e5b81cf2646518059cdf23e3ddf4268afa2e8b9`; no overfull box, no LaTeX error, no undefined reference.
+- Rendered the Discussion, Limitations and Section 11 pages to
+  `%TEMP%\paper-sweep3-pages\` (`B-p*.png`) with `pdftoppm` and read the two
+  re-scoped claims.
