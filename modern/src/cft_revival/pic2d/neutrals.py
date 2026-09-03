@@ -26,7 +26,15 @@ replaces) obeys the atom balance of the channel volume ``V``::
   relaxation) the inventory relaxes on the physical effusion time ``V / c`` (~0.2 ms for
   the CFT channel), ~100x longer than a feasible run, so a plateau then needs >> 1 us.
   With it, the transient is not physical; only the fixed point (where the artificial
-  term vanishes and ``Q_in + R = S + c n_g``) is.
+  term vanishes and ``Q_in + R = S + c n_g``) is.  When ``S > Q_in + R`` no fixed point
+  exists (``n_g* < 0``): the relaxation is then SWITCHED OFF for the interval and the
+  inventory follows the conservative balance alone (it decays at the physical rate,
+  ``S - Q_in - R`` atoms per second, ~0.1 ms to empty the CFT channel at S = 1e17 /s).
+  Relaxing toward a negative density emptied the channel in one 30 ns interval in the
+  plume development run attempt 4 (S peaked at 1.26 x the feed for 60 ns) and the
+  ionisation collapsed with it; the depletion the term produced there was not the
+  transient it was declared to accelerate.  ``artificial_relaxation_suspended`` in the
+  advance record marks such intervals.
 
 The linear ODE is integrated exactly over each update interval (``S`` and ``R`` held at
 their measured interval means), and the five atom ledgers (fed, recycled, ionised,
@@ -161,6 +169,7 @@ class NeutralAdvance:
     ledger_residual_atoms: float
     recycled_rate_per_s: float = 0.0
     effusion_coefficient_m3_per_s: float = 0.0
+    artificial_relaxation_suspended: bool = False
 
 
 class NeutralInventory:
@@ -247,6 +256,10 @@ class NeutralInventory:
         v, tau = self.volume_m3, self.config.relaxation_time_s
         n0 = state.density_per_m3
         n_star = (q + rec - s) / c
+        # no fixed point when S > Q + R: the artificial relaxation is suspended for this interval (conservative balance only)
+        suspended = tau is not None and n_star < 0.0
+        if suspended:
+            tau = None
         # dn/dt = a - r n with a = (Q + R - S)/V + n*/tau  (= r n* when n* is the unclamped fixed point)
         r = c / v + (0.0 if tau is None else 1.0 / tau)
         a = (q + rec - s) / v + (0.0 if tau is None else n_star / tau)
@@ -274,7 +287,7 @@ class NeutralInventory:
         }
         residual = (fed + recycled - ionized - effused - artificial) - v * (n1 - n0)
         return NeutralAdvance(
-            NeutralState(n1, ledger), n_star, s, c * n1, 0.0 if tau is None else (v / tau) * (n1 - n_star), residual, rec, c,
+            NeutralState(n1, ledger), n_star, s, c * n1, 0.0 if tau is None else (v / tau) * (n1 - n_star), residual, rec, c, suspended,
         )
 
     def to_dict(self) -> dict[str, Any]:

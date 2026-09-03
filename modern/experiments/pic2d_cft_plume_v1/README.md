@@ -106,9 +106,23 @@ steady-state v3 (model v1.4) is deferred until after this run (devlog).
   reference while the axis sat at 105 V (z = 27 mm) and 239 V (exit). The seed (5e16, 5 eV,
   channel) was present (N_e(0) = 241 k). Artifacts kept as the development record
   (`results-attempt3-no-ignition/`, video in its `video/`).
-* **Launch 4 (attempt 4)** — cathode region moved onto the channel-connected flux tube
-  (r 0.5–2.0 mm, z 24.3–25.0 mm), launch-time connectivity gate and the ignition gate added
-  (see the table); frames ON; this is the plume development run.
+* **Launch 4 (00:07 AEST 2026-09-04, PID 53756; attempt 4)** — cathode region moved onto the
+  channel-connected flux tube (r 0.5–2.0 mm, z 24.3–25.0 mm), launch-time connectivity gate
+  (24/24 samples connected) and the ignition gate added; frames ON. **Ignited, then the
+  neutral inventory crashed**: S 1.4e16 → 7.3e16 s⁻¹, I_d 1.5 → 7.0 mA (the continuity
+  cathode followed it 3.0 → 7.05 mA), T_e 6.7 → 12.9 eV, N_e 248 k → 512 k in 0.39 µs — until
+  S reached 1.26 × the feed (utilisation 1.26). The artificial 30 ns relaxation then drove
+  n_g toward its *negative* fixed point: 5.5e19 → 4.2e18 within one interval, S collapsed
+  ×17 in the next frame, the 7 mA of cathode electrons charged the cone to −70 V (z = 21 mm)
+  and the discharge did not recover when n_g refilled (S 3e15 at n_g 5.9e19, T_e 11 eV,
+  N_e 484 k). Ignition gate at 0.75 µs: S/S_ref 0.11 (min 0.8), N_e/N_ref 1.75 → stopped
+  `no_ignition` at step 520 000 (0.78 µs, 40 min, 26 frames). Kept as
+  `results-attempt4-neutral-crash/` (video in its `video/`). Fix: the relaxation is
+  suspended whenever S > Q + R (no fixed point); the inventory then follows the conservative
+  balance (the channel holds 1.65e13 atoms — ~1 ms to empty at S − Q = 2e16 s⁻¹, not 30 ns).
+  The v1.3/v1.4 channel runs never had S > Q + R, so their closure is unchanged.
+* **Launch 5 (00:52 AEST, PID 40140; attempt 5)** — attempt 4 plus the relaxation
+  suspension; frames ON; this is the plume development run.
 
 ## Time-series frames and video
 

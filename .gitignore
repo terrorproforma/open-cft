@@ -157,3 +157,15 @@ modern/experiments/pic2d_cft_plume_v1/results-attempt3-no-ignition/series.jsonl
 modern/experiments/pic2d_cft_plume_v1/results-attempt3-no-ignition/*.pid
 modern/experiments/pic2d_cft_plume_v1/results-attempt3-no-ignition/*.log
 modern/experiments/pic2d_cft_plume_v1/results-attempt3-no-ignition/*.err
+# attempt 4 (ignited, then the neutral inventory crashed): same record contract
+!modern/experiments/pic2d_cft_plume_v1/results-attempt4-neutral-crash/
+!modern/experiments/pic2d_cft_plume_v1/results-attempt4-neutral-crash/maps.npz
+!modern/experiments/pic2d_cft_plume_v1/results-attempt4-neutral-crash/series.npz
+modern/experiments/pic2d_cft_plume_v1/results-attempt4-neutral-crash/checkpoint/
+modern/experiments/pic2d_cft_plume_v1/results-attempt4-neutral-crash/frames/
+modern/experiments/pic2d_cft_plume_v1/results-attempt4-neutral-crash/video/
+modern/experiments/pic2d_cft_plume_v1/results-attempt4-neutral-crash/checkpoint-final.npz*
+modern/experiments/pic2d_cft_plume_v1/results-attempt4-neutral-crash/series.jsonl
+modern/experiments/pic2d_cft_plume_v1/results-attempt4-neutral-crash/*.pid
+modern/experiments/pic2d_cft_plume_v1/results-attempt4-neutral-crash/*.log
+modern/experiments/pic2d_cft_plume_v1/results-attempt4-neutral-crash/*.err
