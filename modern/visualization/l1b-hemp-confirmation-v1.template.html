@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>L1b HEMP confirmation v1 - material-aware P2 check of the 15 HEMP-like designs - offline dashboard</title>
+<title>L1b HEMP confirmation (v1.1 accepted, v1 rejection recorded) - material-aware P2 check of the 15 HEMP-like designs - offline dashboard</title>
 <style>
   :root { --ink: #1c2430; --muted: #5d6b7a; --line: #d6dde6; --bg: #f7f9fb; --panel: #ffffff; --accent: #0b5cad; --warn: #b7560b; --ok: #1e7f4b; --bad: #a92626; --s3: #0b5cad; --s4: #1e7f4b; --s5: #7a3ea1; --l1a: #8a94a0; --p2: #b7560b; }
   * { box-sizing: border-box; }
@@ -50,13 +50,14 @@
 </head>
 <body>
 <header>
-  <h1>L1b HEMP confirmation v1 - do the 15 HEMP-like L1a designs keep their cusps and their Koch &rho; under a material-aware (iron) P2 field?</h1>
+  <h1>L1b HEMP confirmation (v1.1) - do the 15 HEMP-like L1a designs keep their cusps and their Koch &rho; under a material-aware (iron) P2 field?</h1>
   <div id="labels"></div>
   <p class="small" id="statement"></p>
   <div id="jserrors"></div>
 </header>
 <main>
   <section class="panel" id="verdict"></section>
+  <section class="panel" id="predecessor"></section>
   <section class="panel" id="claim"></section>
   <section class="panel" id="headline"></section>
   <section class="panel" id="agreement"></section>
@@ -105,6 +106,20 @@
     <li><b>REPORTED (d) HEMP-like preserved:</b> ${D.preserved_count}/${D.design_count} designs keep &rho;<sub>cons</sub> &ge; 1.5 at every cusp under P2 (${pct(D.fraction)}); &rho;<sub>cons</sub> P2/L1a per cusp ${num(D.rho_conservative_ratio_p2_over_l1a.min, 3)}-${num(D.rho_conservative_ratio_p2_over_l1a.max, 3)} (median ${num(D.rho_conservative_ratio_p2_over_l1a.median, 3)}); P2 min &rho;<sub>cons</sub> ${num(D.p2_min_rho_conservative.min, 3)}-${num(D.p2_min_rho_conservative.max, 3)} vs L1a ${num(D.l1a_min_rho_conservative.min, 3)}-${num(D.l1a_min_rho_conservative.max, 3)}${D.lost_designs.length ? "; lost: " + D.lost_designs.map(esc).join(", ") : ""}</li>
     <li><b>Wall |B| at the cusps, P2/L1a at equal magnet strength:</b> ${num(D.wall_b_ratio_p2_over_l1a_per_cusp.min, 3)}-${num(D.wall_b_ratio_p2_over_l1a_per_cusp.max, 3)} (median ${num(D.wall_b_ratio_p2_over_l1a_per_cusp.median, 3)}); peak wall |B| ratio ${num(D.peak_wall_b_ratio_p2_over_l1a.min, 3)}-${num(D.peak_wall_b_ratio_p2_over_l1a.max, 3)}; axis |B<sub>z</sub>| peak ratio ${num(D.axis_peak_b_ratio_p2_over_l1a.min, 3)}-${num(D.axis_peak_b_ratio_p2_over_l1a.max, 3)}; ${D.peak_wall_b_ratio_in_band_count}/${D.design_count} inside the descriptive band [0.5, 2.0]</li>
   </ul></div>`;
+
+  // ------------------------------------------------------------- recorded v1 rejection + angle gate
+  const PR = DATA.predecessor, AG = DATA.angle_gate;
+  const sliverRows = Object.keys(AG.per_design_levels).map((id) => { const lv = AG.per_design_levels[id]; return `<tr><td><code>${esc(id)}</code></td>${lv.map((l) => `<td>${num(l.min_angle_deg, 1)}&deg; / ${l.below_10deg} of ${l.elements.toLocaleString("en")}${l.below_10deg ? " (" + Object.keys(l.regions).map((r) => `${esc(r)} ${l.regions[r]}`).join(", ") + ")" : ""}</td>`).join("")}</tr>`; }).join("");
+  $("predecessor").innerHTML = `<h2>Recorded predecessor: v1 development rejection, and the v1.1 angle gate</h2>
+  <div class="box bad"><ul class="tight">
+    <li><b>v1</b> (<code>${esc(PR.experiment_id)}</code>, preregistration <code>${esc(PR.preregistration_commit_sha)}</code>, ${PR.artifact_count} artifacts byte-verified, terminal <code>${esc(PR.state)}</code>): ${PR.resolved_design_count} designs resolved in ${num(PR.stage_wall_s / 60, 1)} min; failed before any solve at the ${PR.reject_below_angle_deg}&deg; level-0 mesh gate: ${PR.failed_designs.map((f) => `<code>${esc(f.design_id)}</code>`).join(", ")}.</li>
+    <li>${esc(PR.statement)}</li>
+    <li><b>v1.1 protocol predecessor block:</b> result commit <code>${esc(PR.protocol_block.result_commit)}</code>; ${esc(PR.protocol_block.statement)}</li>
+  </ul></div>
+  <h3>Angle gate ${AG.reject_below_angle_deg}&deg; (v1.1) and sliver disclosure: minimum angle / elements below the qualification's 10&deg; per level (level 0, level 1)</h3>
+  <p class="small">${esc(AG.disclosure)}</p>
+  <div class="scroll" style="max-height:300px"><table><thead><tr><th>design</th><th>level 0</th><th>level 1</th></tr></thead><tbody>${sliverRows}</tbody></table></div>
+  <p class="small">Designs with elements below 10&deg;: ${AG.designs_with_elements_below_10deg.map(esc).join(", ") || "none"}.</p>`;
 
   // ------------------------------------------------------------- claim boundary
   const cb = DATA.claim_boundary;
