@@ -1,0 +1,189 @@
+{
+  "schema_version": "cft-revival.pic2d-cft-steady-state-v3.protocol/0.1.0",
+  "experiment_id": "pic2d-cft-steady-state-v3",
+  "status": "development_screening_not_preregistered",
+  "classification": "axisymmetric_electrostatic_pic_mcc_development_steady_state_run_with_quasi_steady_neutral_inventory_and_wall_ion_recycling_not_validated",
+  "model_version": "pic2d v1.4 (v1.3 + wall-ion recycling, peak-node Debye gate, grid-heating triad, CUDA-graph step)",
+  "model_spec": "modern/spec/pic2d/pic2d-model-v1.4.json",
+  "design_id": "divergent-exit-stack",
+  "field_authority": "modern/spec/pic2d/p2-field-authority-v1.json (role primary)",
+  "cross_sections": "modern/spec/pic2d/xenon-cross-sections-v1.json",
+  "geometry": {
+    "bore_radius_m": 0.002,
+    "z_min_m": 0.0,
+    "z_max_m": 0.024,
+    "cone_start_z_m": 0.018,
+    "exit_radius_m": 0.003,
+    "source": "P2 mesh regions injector-zone/channel-straight/channel-divergent-exit of divergent-exit-stack.level-1"
+  },
+  "operating_point": {
+    "anode_potential_v": 300.0,
+    "exit_plane_potential_v": 0.0,
+    "neutral_density_per_m3": 5.5e+19,
+    "neutral_density_role": "initial density AND MCC null-collision ceiling n_g0 (= Q_in / c); the recycled fixed point is expected at ~4.1e19 = 0.75 n_g0, so the ceiling margin is smaller than in v2 (n_g > n_g0 fails closed)",
+    "neutral_temperature_k": 300.0,
+    "neutral_inventory": {
+      "feed_atoms_per_s": 8.551102004120011e+16,
+      "relaxation_time_s": 3e-08,
+      "feed_justification": "ATTEMPT 2: Q_in = c n_g0 with c = v_bar A_exit / 4 = 1.5547e-3 m^3/s (xenon at 300 K, v_bar = 220.0 m/s, A_exit = pi (3 mm)^2) and n_g0 = 5.5e19 m^-3: 8.55e16 atoms/s = 0.01864 mg/s. Expected fixed point where nu_iz tau = 1: n_g ~ 3.4e19 with S = Q_in - c n_g = 3.3e16 s^-1 (38 % utilisation) and n_eq = S / (V nu_iz) ~ 2.3e17 (0.58 n_max) if the plasma electrons carry the ionisation; lower if the beam does. Attempt 1 used n_g0 = 5e19 (Q_in = 7.77e16 = 0.01695 mg/s; fixed point at 3.4e19 would have been S = 2.5e16, n_eq ~ 1.8e17) and did not ignite - see 'attempts'",
+      "relaxation_justification": "tau_g = 30 ns is artificial: << ion transit 2.4 us (n_g quasi-steady on plasma time scales), << physical effusion time V/c = 221 us, = 100 series intervals (averages the interval shot noise of S). Only the fixed point is physical; the artificial term has its own ledger so the atom balance closes to round-off",
+      "wall_recycling": true,
+      "recombination_coefficient": 1.0,
+      "wall_temperature_k": 400.0,
+      "recycling_justification": "v1.4 (review blocker 3(d)1): every Xe+ absorbed at the dielectric wall and the anode returns to the 0-D inventory as a thermal neutral (gamma = 1.0: Szabo 2001/2014 'recycled into the flow', Brandt et al. 2016 'recycled after wall contact as neutrals'; the review cites no smaller coefficient for BN/Al2O3). Wall temperature 400 K declared between the 300 K feed and Brandt's 500 K; it enters only through the recycled atoms' effusion speed (source-weighted mixture coefficient). Exit-plane ions are the beam and are not recycled. At the v1.3 plateau 59.9 % of the ionisation (2.36e16 of 3.93e16 s^-1) was absorbed at the walls and removed from the atom balance, inflating utilisation: v1.3's 46 % gross corresponds to ~36 % net.",
+      "relaxation_note": "v1.4 makes the artificial relaxation an explicit option (default OFF in the model: relaxation_time_s = null runs on the physical effusion time V/c = 221 us). This development run keeps it ON (30 ns) so the fixed point is reached inside the budget; the flag is recorded in summary.provenance.v1_4_options.neutral_relaxation. Only the fixed point is physical; a plateau under this closure cannot show breathing (review blocker 5)."
+    },
+    "electron_injection_current_a": 0.003,
+    "electron_injection_temperature_ev": 2.0,
+    "electron_injection_justification": "as v2 attempt 2 (3 mA @ 2 eV): unchanged",
+    "seed_plasma_density_per_m3": 5e+16,
+    "seed_electron_temperature_ev": 5.0,
+    "seed_ion_temperature_ev": 0.0,
+    "seed_justification": "as v2 attempt 2 (5e16 m^-3, 5 eV): the seed that ignited the v1.3 run; unchanged so that the v1.4 result differs from v2 only by the model changes"
+  },
+  "numerics": {
+    "dt_s": 1.5e-12,
+    "dt_justification": "as v1.1/v1.2: omega_pe dt = 0.054 at the design ceiling n_max = 4e17; the runtime gate (0.2 on the instantaneous peak node density) trips at 5.6e18 m^-3",
+    "ion_subcycle": 8,
+    "poisson": "device block-Thomas direct (exact to round-off, true-residual contract 1e-10 |rhs| verified at every host sync)",
+    "device_sync_steps": 200,
+    "series_interval_steps": 200,
+    "neutral_update_note": "the inventory is advanced at every series interval (= sync interval) with the ionisations AND the wall/anode ion absorptions tallied over that interval",
+    "deposition": "bilinear, fixed-point 2^-40 integer accumulation",
+    "stability_limits": {
+      "max_omega_pe_dt": 0.2,
+      "max_omega_ce_dt": 0.2,
+      "max_cell_debye_ratio": 2.0,
+      "max_particle_courant": 1.0,
+      "max_collision_probability": 0.1
+    },
+    "stability_reference": {
+      "density_per_m3": 4e+17,
+      "electron_temperature_ev": 8.0,
+      "max_electron_energy_ev": 400.0
+    },
+    "averaging_window_steps": 400000,
+    "averaging_window_note": "consecutive 400000-step (0.6 us) windows; the reported maps are the last completed window (or the current one if at least half full)",
+    "checkpoint_every_steps": 40000,
+    "checkpoint_note": "checkpoint-latest.{json,npz} rewritten atomically every 40000 steps (60 ns); n_g and the atom ledgers are in the checkpoint arrays; series.jsonl / status.jsonl appended at every 200-step sync",
+    "peak_debye_gate": {
+      "max_cells_per_debye": 4.5,
+      "min_macro_particles_at_peak": 32,
+      "dense_fraction": 0.5,
+      "max_cells_per_debye_note": "v1.4 fail-closed runtime gate on max(dr, dz) / lambda_D at the densest node holding >= 32 macro-electrons (review blocker 1(d)2: resolve the PEAK, not the mean). Expected 3.7 at the recycled fixed point (v1.3 window-average peak 1.64e18 m^-3 / 7.4 eV gave dz/lambda_D = 3.17; x1.37 in density -> 3.7); 4.5 trips at ~1.5x the expected peak density, i.e. against runaway densification, NOT against the declared 3-4 lambda_D shortfall of this 33 x 50 um grid. Brandt et al. 2016 ran 2 lambda_D per cell; the campaign gate is 2.0 on the 30 um grid (pic2d-campaign-v1-proposal.md).",
+      "min_macro_particles_at_peak_note": "axis nodes (volume 4.4e-14 m^3) read 1.4e18 m^-3 per single macro-particle at W = 6e4, so the unrestricted argmax is single-particle noise; the node at the v1.3 peak (r = 0.47 mm) holds ~130 macro-electrons; the raw maximum is recorded too"
+    },
+    "step_graph": true,
+    "step_graph_note": "v1.4: the whole step is replayed as one CUDA graph per (ion-step, injection, MCC) variant; bitwise-identical to the direct launches (tests/pic2d/test_pic2d_warp_parity.py); the ms/step of this run IS the 1-2 M particle measurement that was pending at commit time (v2 ran 2.0 ms/step at 2.0 M with direct launches)",
+    "anomalous_collisions": null,
+    "anomalous_collisions_note": "Bohm hook OFF (base case); campaign block E uses alpha = 1/64 and 1/16"
+  },
+  "case": {
+    "id": "fine-w6e4-ng0-5.5e19-seed5e16-inventory-recycling-v1.4",
+    "radial_cells": 60,
+    "axial_cells": 480,
+    "macro_weight": 60000.0,
+    "seed": 20260903,
+    "seed_note": "seed a of the v2 base case: the comparison with v2 isolates the model change"
+  },
+  "stopping_rule": {
+    "plateau": "relative drift < 5 % over the trailing 20 % of the elapsed simulated time for the discharge current, the plasma electron count AND the neutral density (linear fit over the trailing window, drift = slope x window / |mean|), evaluated at every checkpoint; may only be declared after >= 3 ion transit times (3 x 2.4 us); additionally the grid-heating triad must be inside its soft bounds (plateau.triad_soft_ok)",
+    "plateau_threshold": 0.05,
+    "plateau_window_fraction": 0.2,
+    "min_transit_times": 3,
+    "wall_budget_seconds": 12600,
+    "wall_budget_note": "3.5 h cumulative over resumes (run_state.json); the case is resumable if the budget stops it first",
+    "fail_closed": "runtime omega_pe dt gate, peak-node Debye gate (4.5 cells per lambda_D), grid-heating triad hard bounds after one transit, one-cell Courant crossing, Poisson residual contract, neutral inventory exhaustion or ceiling violation: the run ends with the artifacts written",
+    "ignition_check": "after ~3 minutes: S growing, N_e rising, n_g heading toward the recycled fixed point (~4.1e19, i.e. LESS depletion than v2's 2.97e19), cells/lambda_D at the peak recorded, ms/step with the graph replay; the seed and injection are the ones that ignited v2 attempt 2, so no ignition adjustment is foreseen",
+    "grid_heating_triad": {
+      "energy_residual_over_electrode_work_max": 0.1,
+      "soft_drift_max": 0.05,
+      "hard_drift_max": 0.25,
+      "enforced_after_transit_times": 1.0,
+      "note": "v1.4 grid-heating triad (review blocker 1(d)3; Birdsall and Maron 1980; Ueda et al. 1994; Adams et al. 2025): (i) cumulative energy-ledger residual / electrode work (v1.3 plateau: -4.4 %; bound 10 %), (ii) trailing-window drifts of the dense-cell T_e and of S, (iii) drift of the peak omega_pe dt. Soft (5 %) is a plateau precondition; hard (25 %, or the residual bound) stops the run fail-closed after one transit time with stop_reason grid_heating_triad_gate_stopped_run."
+    }
+  },
+  "simplifications": [
+    "neutrals: 0-D quasi-steady inventory, uniform in space (no neutral flow field, no local depletion where the ionisation is, no local re-emission at the cusp walls); feed prescribed at 300 K, wall/anode ions recycled as 400 K thermal neutrals into the same 0-D inventory, exit-plane effusion; the transient toward the fixed point is artificial (tau_g = 30 ns vs the physical 221 us) and only the fixed point is physical",
+    "no ion-neutral collisions (elastic or charge exchange)",
+    "electron-neutral: isotropic elastic without the 2 m_e/M energy loss, one lumped 8.32 eV excitation, single ionisation with Vahedi-Surendra secondary energy and isotropic emission",
+    "dielectric wall: perfectly absorbing with accumulated surface charge, zero field in the dielectric backing (perfect insulator), no secondary electron emission, no sputtering",
+    "exit plane: Dirichlet 0 V cathode/neutraliser reference; electrons injected there as a flux-weighted half-Maxwellian at fixed current",
+    "anode: perfectly absorbing conductor at fixed potential",
+    "cone wall represented as a one-cell stair-step of the plasma cell mask",
+    "prescribed static B from the P2 solution (no plasma-induced field); bilinear node interpolation of the C1 bicubic psi field",
+    "ions pushed every 8 steps with 8 dt (frozen in between; births added to the ion charge immediately)",
+    "electrostatic only, azimuthally symmetric: no azimuthal instabilities/anomalous transport",
+    "momentum-conserving bilinear scheme: energy is not exactly conserved; the ledger (with electrode work) residual is reported; a resume restarts the interval ledger",
+    "3 mA injection at 0.017 mg/s feed: a real CFT runs at 0.1-1 A and 0.1-1 mg/s; the self-consistent fixed point of the ionisation-depletion balance, not the absolute current or flow, is the object of this run",
+    "single grid (60x480) and weight: the v2 convergence pair (seed-b, w-0.7) bounds variance and W sensitivity at the v1.3 closure only",
+    "development/screening run: not preregistered, no experimental validation, not a performance prediction",
+    "this 33 x 50 um grid resolves the density peak at 3-4 cells per lambda_D (declared, gated at 4.5): a grid claim needs the 30 um campaign grid and the 20 um discriminator"
+  ],
+  "claim_boundary": "development/screening PIC-MCC steady-state run with a 0-D quasi-steady neutral inventory including wall-ion recycling; not preregistered; not validated against experiment; not a thruster performance prediction; the neutral transient is artificial and only the fixed point is physical; the peak is resolved at 3-4 cells per lambda_D on this grid",
+  "literature_basis": "modern/docs/literature/pic-mcc-blockers.md (blockers 1, 2, 3, 5; Brandt et al. 2016 analogue)",
+  "v2_reference": {
+    "results": "modern/experiments/pic2d_cft_steady_state_v2/results (v1.3 plateau, seed a), results-seed-b, results-w-0.7",
+    "use": "the v1.4 run is compared with the v1.3 plateau at the same operating point: the difference is the model change (recycling), not variance (seed-b bounds variance at <= 1.1 % on the plateau quantities)"
+  },
+  "budget_v1_4": {
+    "n_max_per_m3": 4e+17,
+    "n_eq_projected_per_m3": 2.9e+17,
+    "n_eq_projected_range_per_m3": [
+      2.3e+17,
+      3.3e+17
+    ],
+    "n_eq_projected_over_n_max": "0.58-0.83 (0.73 at the self-consistent recycled fixed point)",
+    "particles_at_projected_n_eq": "2 x 2.9e17 x 3.432e-7 / 6e4 = 3.3 M (e- + Xe+)",
+    "t_e_for_lambda_d_ev": 8.0,
+    "lambda_d_min_m": 3.32e-05,
+    "omega_pe_max_rad_per_s": 35700000000.0,
+    "omega_pe_dt": 0.0535,
+    "b_max_t": 0.2914,
+    "omega_ce_dt_at_b_max": 0.0769,
+    "gate_trip_node_density_per_m3": 5.6e+18,
+    "dr_m": 3.33e-05,
+    "dz_m": 5e-05,
+    "cell_over_lambda_d_min": 1.5,
+    "macro_weight": 60000.0,
+    "particles_at_n_eq": "2 n V / W with V = 3.432e-7 m^3: 1.26 M at 1.1e17, 1.72 M at 1.5e17, 3.2 M at 2.9e17 (e- + Xe+)",
+    "ppc_at_n_eq_r_1mm": 27,
+    "ion_transit_time_s": 2.4e-06,
+    "ion_transit_note": "the MEASURED ion residence time N_i / L of the v2 fine cases (2.35-2.43 us after 1 us)",
+    "neutral_fixed_point_per_m3": 4.1e+19,
+    "neutral_fixed_point_range_per_m3": [
+      3.8e+19,
+      4.5e+19
+    ],
+    "neutral_physical_time_constant_s": 0.0002208,
+    "neutral_artificial_relaxation_time_s": 3e-08,
+    "v1_3_plateau_reference": {
+      "n_g_per_m3": 2.973e+19,
+      "s_per_s": 3.93e+16,
+      "wall_plus_anode_ions_per_s": 2.355e+16,
+      "beam_ions_per_s": 1.43e+16,
+      "gross_utilisation": 0.46,
+      "n_e_mean_per_m3": 2.13e+17,
+      "n_e_peak_per_m3": 1.64e+18,
+      "particles": "1.0 M + 1.0 M",
+      "ms_per_step_direct_launches": 2.0
+    },
+    "recycled_fixed_point_estimate": {
+      "frozen_s": "n_g* = (Q_in + R - S)/c = (8.551 + 2.355 - 3.930)e16 / 1.5547e-3 = 4.49e19 m^-3 (+51 %; the review's 'rises ~50 % before S responds')",
+      "self_consistent": "with the ionisation conductance k = S/n_g = 1.32e-3 m^3/s and wall share f_w = 0.60 held at the v1.3 values: n_g* = Q_in / (c + (1 - f_w) k) = 4.10e19 m^-3 (+38 %); S = k n_g* = 5.4e16 s^-1 (gross 63 %), R = 3.2e16, net (S - R)/Q_in = 25 %, beam ~3.5 mA",
+      "n_g_star_per_m3": 4.1e+19,
+      "n_g_star_range_per_m3": [
+        3.8e+19,
+        4.5e+19
+      ],
+      "n_e_mean_per_m3": 2.9e+17,
+      "n_e_peak_node_per_m3": 2.2e+18,
+      "macro_particles_at_fixed_point": "2 x 2.9e17 x 3.432e-7 / 6e4 = 3.3 M (e- + Xe+)",
+      "cells_per_lambda_d_at_expected_peak": 3.7,
+      "omega_pe_dt_at_expected_peak": 0.126,
+      "brandt_2016_context": "Brandt et al. 2016 (different device, static neutrals, Bohm + SEE): net ionisation 24 %, beam 2.5 mA of 4.3 mA anode current; quoted as model-to-model context labelled by closure, never as validation"
+    },
+    "neutral_wall_effusion_coefficient_m3_per_s": 0.001795,
+    "expected_duration": "3 transits = 4.8e6 steps; with the graph replay at ~3.3 M particles the step is expected at 1.5-2.5 ms -> 2.0-3.3 h, inside the 3.5 h budget only if the plateau is declared at the first eligible checkpoint; the case is resumable"
+  }
+}

@@ -31,6 +31,7 @@ from .neutrals import NeutralInventory, NeutralInventoryConfig, NeutralState
 from .models import (
     ELECTRON_MASS_KG,
     ELEMENTARY_CHARGE_C,
+    EPSILON_0_F_PER_M,
     EV_J,
     BoundaryPotentials,
     Grid2D,
@@ -47,6 +48,7 @@ from .models import (
     xenon_ion_species,
 )
 from .poisson import Poisson2D, electric_field_nodes, field_energy_j, induced_electrode_charge_c
+from .sensitivity import AnomalousCollisionConfig, SEEConfig, apply_bohm_scattering
 
 BackendName = Literal["cpu", "warp-cpu", "warp-cuda"]
 
@@ -117,10 +119,20 @@ class PIC2DConfig:
     # relaxation) updated at every series interval; requires ``mcc`` whose density is
     # the initial value and the null-collision ceiling.
     neutral_inventory: NeutralInventoryConfig | None = None
+    # v1.4: fail-closed runtime gate on cells per Debye length at the peak-density node
+    # (evaluated at every series record); None = recorded only when a gate is absent.
+    peak_debye_gate: "PeakDebyeGateConfig | None" = None
+    # v1.4 sensitivity hooks (default OFF): Bohm-type anomalous scattering and the SEE scaffold.
+    anomalous: "AnomalousCollisionConfig | None" = None
+    see: "SEEConfig | None" = None
 
     def __post_init__(self) -> None:
         if not isfinite(self.dt_s) or self.dt_s <= 0.0:
             raise PIC2DValidationError("dt_s must be positive")
+        if self.see is not None and self.see.enabled:
+            raise PIC2DValidationError(
+                "SEE emission is a v1.4 scaffold (yield model + wall diagnostics only); enabled=True is not implemented - fail closed"
+            )
         if self.neutral_inventory is not None and (self.mcc is None or self.mcc.neutral_density_per_m3 <= 0.0):
             raise PIC2DValidationError("neutral_inventory requires an MCC configuration with a positive neutral density")
         if not isfinite(self.macro_weight) or self.macro_weight <= 0.0:
@@ -164,8 +176,11 @@ class PIC2DConfig:
             "runtime_stability_check_steps": self.runtime_stability_check_steps,
             "ion_subcycle": self.ion_subcycle,
             "device_sync_steps": self.sync_steps,
-        } | ({} if self.neutral_inventory is None else {"neutral_inventory": self.neutral_inventory.to_dict()})
-        # (the key is present only when the inventory is on, so v1.0-v1.2 config identities are unchanged)
+        } | ({} if self.neutral_inventory is None else {"neutral_inventory": self.neutral_inventory.to_dict()}) \
+          | ({} if self.peak_debye_gate is None else {"peak_debye_gate": self.peak_debye_gate.to_dict()}) \
+          | ({} if self.anomalous is None else {"anomalous": self.anomalous.to_dict()}) \
+          | ({} if self.see is None else {"see": self.see.to_dict()})
+        # (each key is present only when its option is on, so v1.0-v1.3 config identities are unchanged)
 
     @property
     def sync_steps(self) -> int:
@@ -216,6 +231,98 @@ class StepTally:
     max_electron_speed_m_per_s: float
     electron_count: int
     ion_count: int
+
+
+@dataclass(frozen=True, slots=True)
+class PeakDebyeGateConfig:
+    """v1.4 runtime gate on the *peak-density node* (literature review, blocker 1).
+
+    At every series record the electron density and temperature are evaluated on
+    the node with the highest electron density; ``max(dr, dz) / lambda_D`` there must
+    not exceed ``max_cells_per_debye`` (fail-closed ``PIC2DStabilityError``).  The
+    a-priori gate ``StabilityLimits.max_cell_debye_ratio`` is evaluated once at a
+    reference density; this one follows the plasma (Brandt et al. 2016 ran 2
+    lambda_D per cell at the peak; the v1.3 development plateau reached 3).  Nodes
+    holding fewer than ``min_macro_particles_at_peak`` electrons give an unreliable
+    temperature; the gate is then recorded but not enforced.  ``dense_fraction``
+    defines the "densest cells" (n >= dense_fraction * n_peak) whose density-weighted
+    T_e is recorded for the grid-heating triad.
+    """
+
+    max_cells_per_debye: float
+    min_macro_particles_at_peak: int = 16
+    dense_fraction: float = 0.5
+
+    def __post_init__(self) -> None:
+        if not isfinite(self.max_cells_per_debye) or self.max_cells_per_debye <= 0.0:
+            raise PIC2DValidationError("max_cells_per_debye must be positive")
+        if isinstance(self.min_macro_particles_at_peak, bool) or not isinstance(self.min_macro_particles_at_peak, int) or self.min_macro_particles_at_peak < 1:
+            raise PIC2DValidationError("min_macro_particles_at_peak must be a positive integer")
+        if not 0.0 < self.dense_fraction <= 1.0:
+            raise PIC2DValidationError("dense_fraction must be in (0, 1]")
+
+    def to_dict(self) -> dict[str, Any]:
+        return {"max_cells_per_debye": self.max_cells_per_debye, "min_macro_particles_at_peak": self.min_macro_particles_at_peak,
+                "dense_fraction": self.dense_fraction}
+
+
+def peak_node_debye(
+    masks: MeshMasks, config: "PIC2DConfig", weight: np.ndarray, vr: np.ndarray, vt: np.ndarray, vz: np.ndarray,
+    v2: np.ndarray, *, dense_fraction: float = 0.5, min_particles: int = 16,
+) -> dict[str, Any]:
+    """Peak-node density, temperature, Debye length and cells per Debye length from node moments.
+
+    The moments are bilinear node sums over the electrons at their current positions of
+    macro-particle weight (1 each), velocity components and speed squared; the density is
+    ``weight * W / shape_volume``.  T_e is the thermal temperature
+    ``m_e (<v^2> - |<v>|^2) / (3 e)`` at the node.  The peak node is the densest node
+    holding at least ``min_particles`` macro-electrons (single-particle noise on the small
+    axis nodes would otherwise dominate the argmax; the unrestricted maximum is reported
+    as ``raw_peak``).  Also returns the density-weighted T_e over the densest nodes
+    (n >= dense_fraction * n_peak).
+    """
+
+    plasma = masks.plasma_node
+    with np.errstate(invalid="ignore", divide="ignore"):
+        n_e = np.where(plasma, weight * config.macro_weight / masks.shape_volume_m3, 0.0)
+        mean_v2 = np.where(weight > 0.0, v2 / np.maximum(weight, 1e-300), 0.0)
+        drift2 = np.where(weight > 0.0, (vr**2 + vt**2 + vz**2) / np.maximum(weight, 1e-300) ** 2, 0.0)
+        t_e = np.maximum(mean_v2 - drift2, 0.0) * ELECTRON_MASS_KG / (3.0 * EV_J)
+    raw_flat = int(np.argmax(n_e))
+    qualified = np.where(weight >= float(min_particles), n_e, -1.0)
+    flat = int(np.argmax(qualified)) if np.any(qualified >= 0.0) else raw_flat
+    i, j = np.unravel_index(flat, n_e.shape)
+    n_peak = float(n_e[i, j])
+    t_peak = float(t_e[i, j])
+    particles = float(weight[i, j])
+    grid = masks.grid
+    cell = max(grid.dr_m, grid.dz_m)
+    debye: float | None
+    if n_peak > 0.0 and t_peak > 0.0:
+        debye = sqrt(EPSILON_0_F_PER_M * t_peak * EV_J / (n_peak * ELEMENTARY_CHARGE_C**2))
+        cells_per_debye = cell / debye
+    else:
+        debye, cells_per_debye = None, 0.0      # no plasma at the peak: lambda_D undefined (None keeps the JSON finite)
+    dense = n_e >= dense_fraction * n_peak if n_peak > 0.0 else np.zeros_like(plasma)
+    dense_weight = n_e[dense]
+    t_dense = float(np.sum(t_e[dense] * dense_weight) / dense_weight.sum()) if dense_weight.sum() > 0.0 else 0.0
+    return {
+        "node": [int(i), int(j)],
+        "r_m": float(i * grid.dr_m),
+        "z_m": float(grid.geometry.z_min_m + j * grid.dz_m),
+        "n_e_peak_per_m3": n_peak,
+        "t_e_peak_ev": t_peak,
+        "macro_particles_at_peak": particles,
+        "debye_length_m": debye,
+        "cells_per_debye": cells_per_debye,
+        "dz_per_debye": grid.dz_m / debye if debye is not None else 0.0,
+        "dr_per_debye": grid.dr_m / debye if debye is not None else 0.0,
+        "t_e_dense_ev": t_dense,
+        "dense_node_count": int(dense.sum()),
+        "min_particles_for_peak": int(min_particles),
+        "raw_peak": {"node": [int(k) for k in np.unravel_index(raw_flat, n_e.shape)], "n_e_per_m3": float(n_e.flat[raw_flat]),
+                     "macro_particles": float(weight.flat[raw_flat])},
+    }
 
 
 class DiagnosticAccumulator:
@@ -378,6 +485,22 @@ class CPUBackend:
             "cumulative": dict(state.cumulative),
         }
 
+    def peak_node_sample(self) -> dict[str, Any]:
+        """v1.4: instantaneous electron density and temperature moments on the nodes (for the peak-node Debye gate)."""
+
+        assert self.state is not None
+        electrons = self.state.electrons
+        masks = self.masks
+        shape = masks.grid.node_shape
+        if electrons.count:
+            moments = [kernels.deposit_node_moment(masks, electrons, values) for values in (
+                np.ones(electrons.count), electrons.vr_m_per_s, electrons.vt_m_per_s, electrons.vz_m_per_s, electrons.speed_squared())]
+        else:
+            moments = [np.zeros(shape) for _ in range(5)]
+        gate = self.config.peak_debye_gate
+        return peak_node_debye(masks, self.config, *moments, dense_fraction=gate.dense_fraction if gate is not None else 0.5,
+                               min_particles=gate.min_macro_particles_at_peak if gate is not None else 16)
+
     # -- one cycle --------------------------------------------------------
     def step(self, accumulate: bool) -> StepTally:
         assert self.state is not None
@@ -433,6 +556,17 @@ class CPUBackend:
             else:
                 ions = moved.select(keep)
         state.cumulative["field_work_j"] += field_work
+
+        if config.anomalous is not None and electrons.count:
+            # v1.4 hook: Bohm-type isotropic scattering at nu_an = alpha omega_ce(x) (speed preserved)
+            br = kernels.gather_nodes(grid, self.field.b_r_t, electrons.r_m, electrons.z_m)
+            bz = kernels.gather_nodes(grid, self.field.b_z_t, electrons.r_m, electrons.z_m)
+            rng_an = np.random.default_rng([config.seed, state.step, 3])
+            vr_s, vt_s, vz_s, hits = apply_bohm_scattering(
+                config.anomalous.alpha, electrons.vr_m_per_s, electrons.vt_m_per_s, electrons.vz_m_per_s, np.hypot(br, bz), dt, rng_an,
+            )
+            electrons = ParticleArrays(electrons.r_m, electrons.z_m, vr_s, vt_s, vz_s)
+            state.cumulative["anomalous"] = state.cumulative.get("anomalous", 0.0) + hits
 
         if self.mcc is not None and electrons.count:
             rng = np.random.default_rng([config.seed, state.step, 1])
@@ -622,6 +756,8 @@ class SeriesRecord:
     ledger: dict[str, float]
     # v1.3: neutral inventory sample (None for a static background)
     neutral: dict[str, Any] | None = None
+    # v1.4: peak-node Debye sample (always recorded; gated when the config has a peak_debye_gate)
+    peak_node: dict[str, Any] | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -632,6 +768,7 @@ class SeriesRecord:
             "peak_omega_pe_dt": self.peak_omega_pe_dt, "poisson_iterations": self.poisson_iterations,
             "currents_a": dict(self.currents_a), "ledger": dict(self.ledger),
             "neutral": None if self.neutral is None else dict(self.neutral),
+            "peak_node": None if self.peak_node is None else dict(self.peak_node),
         }
 
 
@@ -646,6 +783,7 @@ class Simulation:
         cross_sections: XenonCrossSections | None = None,
         backend: BackendName = "cpu",
         device: str = "cuda:0",
+        step_graph: bool = True,
     ) -> None:
         if field.grid != config.grid:
             raise PIC2DValidationError("field map grid must equal the configuration grid")
@@ -675,7 +813,8 @@ class Simulation:
         else:
             from .warp_backend import WarpBackend
 
-            self.backend = WarpBackend(config, self.masks, field, cross_sections, device=("cpu" if backend == "warp-cpu" else device))
+            self.backend = WarpBackend(config, self.masks, field, cross_sections, device=("cpu" if backend == "warp-cpu" else device),
+                                       step_graph=step_graph)
         self.backend.load_state(seed_plasma_state(config, self.masks))
         self.series: list[SeriesRecord] = []
         self._last_cumulative = empty_cumulative()
@@ -713,7 +852,9 @@ class Simulation:
         """
 
         self.backend.load_state(state)
-        self._last_cumulative = {key: float(state.cumulative.get(key, 0.0)) for key in CUMULATIVE_KEYS}
+        self._last_cumulative = {key: float(state.cumulative.get(key, 0.0)) for key in CUMULATIVE_KEYS} | {
+            key: float(value) for key, value in state.cumulative.items() if key not in CUMULATIVE_KEYS
+        }
         self._last_energy = None
         self._last_electrode = None
         self._series_base_step = int(state.step)
@@ -795,6 +936,10 @@ class Simulation:
             "injected_electron_a": delta["injected_electrons"] * current_unit,
             "ionization_rate_per_s": delta["ionizations"] * config.macro_weight / interval,
         }
+        if "anomalous" in cumulative:     # v1.4 Bohm-scattering hook tally (macro collisions -> real collisions per second)
+            currents["anomalous_collision_rate_per_s"] = (
+                (cumulative["anomalous"] - self._last_cumulative.get("anomalous", 0.0)) * config.macro_weight / interval
+            )
         total = k_e + k_i + u_e
         sources = (
             delta["ke_injected_j"] - delta["ke_absorbed_anode_j"] - delta["ke_absorbed_exit_j"]
@@ -817,9 +962,13 @@ class Simulation:
             # v1.3: advance the inventory with the ionisation measured over this interval,
             # then hand the new n_g / n_g0 to the MCC for the next interval (fails closed
             # on exhaustion or on exceeding the null-collision ceiling).
-            advance = self.neutrals.advance(self.neutral_state, currents["ionization_rate_per_s"], interval)
+            # v1.4: ions absorbed at the dielectric wall and the anode are recycled as
+            # thermal neutrals (when the inventory has wall_recycling); exit ions are the beam.
+            absorbed_ion_rate = (delta["wall_ions"] + delta["anode_ions"]) * config.macro_weight / interval
+            advance = self.neutrals.advance(self.neutral_state, currents["ionization_rate_per_s"], interval, absorbed_ion_rate)
             self.neutral_state = advance.state
             self.backend.set_neutral_scale(self.neutrals.scale(self.neutral_state))
+            feed = self.neutrals.config.feed_atoms_per_s
             neutral = {
                 "density_per_m3": advance.state.density_per_m3,
                 "fixed_point_per_m3": advance.fixed_point_per_m3,
@@ -827,20 +976,37 @@ class Simulation:
                 "ionization_rate_per_s": advance.ionization_rate_per_s,
                 "effusion_rate_per_s": advance.effusion_rate_per_s,
                 "artificial_rate_per_s": advance.artificial_rate_per_s,
-                "feed_atoms_per_s": self.neutrals.config.feed_atoms_per_s,
+                "recycled_rate_per_s": advance.recycled_rate_per_s,
+                "wall_ion_absorption_rate_per_s": absorbed_ion_rate,
+                "effusion_coefficient_m3_per_s": advance.effusion_coefficient_m3_per_s,
+                "feed_atoms_per_s": feed,
+                "gross_utilisation": advance.ionization_rate_per_s / feed,
+                "net_utilisation": (advance.ionization_rate_per_s - advance.recycled_rate_per_s) / feed,
                 "interval_ledger_residual_atoms": advance.ledger_residual_atoms,
                 "ledger": dict(advance.state.ledger),
             }
+        # v1.4: peak-node Debye sample (blocker 1): the grid must resolve the PEAK, not the mean
+        gate = config.peak_debye_gate
+        peak_node = self.backend.peak_node_sample()
+        if gate is not None:
+            peak_node["gate_max_cells_per_debye"] = gate.max_cells_per_debye
+            enforced = peak_node["macro_particles_at_peak"] >= gate.min_macro_particles_at_peak
+            peak_node["gate_enforced"] = bool(enforced)
         self.series.append(
             SeriesRecord(
                 step, float(sample["time_s"]), int(sample["electrons"]), int(sample["ions"]),
                 float(plasma_phi.mean()), float(plasma_phi.min()), float(plasma_phi.max()),
                 k_e, k_i, u_e, float(sample["surface_charge_c"]), tally.max_omega_pe_dt,
-                tally.poisson_iterations, currents, ledger, neutral,
+                tally.poisson_iterations, currents, ledger, neutral, peak_node,
             )
         )
         self._last_cumulative = dict(cumulative)
         self._last_energy = total
+        if gate is not None and peak_node["gate_enforced"] and peak_node["cells_per_debye"] > gate.max_cells_per_debye:
+            raise PIC2DStabilityError(
+                f"peak-node Debye gate: {peak_node['cells_per_debye']:.3g} cells per lambda_D at node {peak_node['node']} "
+                f"(n_e {peak_node['n_e_peak_per_m3']:.3g} m^-3, T_e {peak_node['t_e_peak_ev']:.3g} eV) exceeds {gate.max_cells_per_debye}"
+            )
 
     def diagnostic_arrays(self) -> dict[str, np.ndarray]:
         return self.backend.diagnostic_arrays()
@@ -859,6 +1025,18 @@ class Simulation:
             record["mcc"] = self.backend.mcc.to_dict()
         if self.neutrals is not None:
             record["neutral_inventory"] = self.neutrals.to_dict()
+        inventory = self.config.neutral_inventory
+        record["v1_4_options"] = {
+            "wall_recycling": bool(inventory is not None and inventory.wall_recycling),
+            "neutral_relaxation": (
+                "no inventory" if inventory is None
+                else ("artificial (development only)" if inventory.relaxation_time_s is not None else "off (physical effusion time scale)")
+            ),
+            "peak_debye_gate": None if self.config.peak_debye_gate is None else self.config.peak_debye_gate.to_dict(),
+            "anomalous": None if self.config.anomalous is None else self.config.anomalous.to_dict(),
+            "see": None if self.config.see is None else self.config.see.to_dict(),
+            "step_graph": bool(getattr(self.backend, "step_graph_active", False)),
+        }
         return record
 
 

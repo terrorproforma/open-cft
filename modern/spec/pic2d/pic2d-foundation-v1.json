@@ -68,7 +68,8 @@
     "gpu_pcg": "device Jacobi-PCG with deterministic reductions and CUDA graphs available via PoissonConfig2D(method='pcg'); verified against the direct solve to 1e-8 relative",
     "gpu_device_direct_v1_1": "device block-Thomas solve (PoissonConfig2D(method='device-direct')), host sync every device_sync_steps, tile-reduced kernels, ion subcycling and electrode-work ledger: see modern/spec/pic2d/pic2d-model-v1.1.json",
     "steady_state_runner_v1_2": "operating point sized from measured kinetics, detached checkpointed resumable single-case runner with a plateau criterion; Simulation.load_state re-bases the interval bookkeeping: see modern/spec/pic2d/pic2d-model-v1.2.json",
-    "neutral_inventory_v1_3": "quasi-steady 0-D neutral inventory (prescribed feed, measured ionisation sink, exit-plane effusion, artificial relaxation with exact atom ledgers; MCC real-collision frequency scaled by n_g/n_g0 under a fixed null ceiling; n_g in checkpoints, series, status and the plateau rule; runner finalize command): see modern/spec/pic2d/pic2d-model-v1.3.json"
+    "neutral_inventory_v1_3": "quasi-steady 0-D neutral inventory (prescribed feed, measured ionisation sink, exit-plane effusion, artificial relaxation with exact atom ledgers; MCC real-collision frequency scaled by n_g/n_g0 under a fixed null ceiling; n_g in checkpoints, series, status and the plateau rule; runner finalize command): see modern/spec/pic2d/pic2d-model-v1.3.json",
+    "recycling_gates_graph_v1_4": "wall-ion recycling in the neutral inventory (fifth ledger, gross/net utilisation, relaxation as an explicit option), fail-closed peak-node Debye gate and grid-heating triad, CUDA-graph replay of the whole step (bitwise vs direct launches), Bohm-scattering and SEE-scaffold sensitivity hooks default OFF: see modern/spec/pic2d/pic2d-model-v1.4.json"
   },
   "artifacts": {
     "canonical_json": "sorted, compact, finite JSON + .sha256.json sidecar (byte and semantic SHA-256)",

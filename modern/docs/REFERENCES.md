@@ -121,3 +121,53 @@ until accepted committed manifests exist.
   `3268.98 W` from Eq. (3). Section 3.2 states `3466 W`. Its nearby ratios are
   consistent with approximately 3269 W, so 3466 W is most likely a prose typo,
   but no source dataset is available to confirm.
+
+## Sheath-closed four-cell model (v2, development) sources
+
+The v2 development model `cft_revival.plasma_v2`
+(`spec/plasma_v2/four-cell-sheath-closure-v2.json`,
+`workstreams/plasma-v2-formulation.md`) is built on the v1 ledger plus the
+following sources. Full records, verification tags and the numbered
+bibliography are in `literature/reduced-models-cusp-topology-blockers.md`
+(entries 1, 2, 4, 18, 44, 54, 57, 58, 59); none of these is truth, and the
+two published four-cell states are reproduction targets only.
+
+- Kornfeld, G., Koch, N., Harmann, H.-P., "Physics and Evolution of
+  HEMP-Thrusters", IEPC-2007-108 (2007), Table 3.1: DM9.2 and DM10 4-stage
+  columns at 1 kV / 1 A, including the printed cusp potentials (which cancel
+  from every printed equation) and component powers (sum 1005.9 W and
+  1003.9 W against 1000 W). Retrieved 2026-09-03 from
+  https://electricrocket.org/IEPC/IEPC-2007-108.pdf; text extracted with
+  `pdftotext -layout`. Transcribed in `cft_revival.plasma_v2.targets`.
+- Puca, N., Panelli, M., Battista, F., "A Methodology for the Preliminary
+  Design of a High-Efficiency Multistage Plasma Thruster", *Aerotecnica
+  Missili & Spazio* 103(4), 321-338 (2024),
+  DOI [10.1007/s42496-024-00203-x](https://doi.org/10.1007/s42496-024-00203-x).
+  Table 1 (33-equation GA minimum for DM9.2 and DM10; cathode current an
+  input, so `j_e0` is not printed) and Table 3 (Goebel-type cusp model:
+  hybrid loss area `sqrt(r_e r_i) L_c`, Boltzmann factor `exp(-q phi_s/kT_e)`,
+  leak-width prefactor 1). Tables read from the publisher's table pages on
+  2026-09-03. Transcribed in `cft_revival.plasma_v2.targets`.
+- Lieberman, M. A., Lichtenberg, A. J., *Principles of Plasma Discharges and
+  Materials Processing*, 2nd ed., Wiley (2005), eq. (6.2.17): floating
+  potential `T_e ln[(M/(2 pi m_e))^(1/2)]` (rows R28-R30, R31).
+- Hobbs, G. D., Wesson, J. A., "Heat flow through a Langmuir sheath in the
+  presence of electron emission", *Plasma Physics* 9, 85-87 (1967),
+  DOI [10.1088/0032-1028/9/1/410](https://doi.org/10.1088/0032-1028/9/1/410):
+  emission-corrected floating potential and the space-charge limit
+  (~1.02 T_e, `gamma_crit = 1 - 8.3 (m_e/M)^(1/2)`).
+- Goebel, D. M., Katz, I., *Fundamentals of Electric Propulsion: Ion and Hall
+  Thrusters*, Wiley (2008), Ch. 4: ring-cusp discharge model, hybrid
+  gyroradius loss area, electron energy to the wall `2 T_e + phi_s` (CL-4;
+  Maxwellian diagnostics). Hershkowitz, N., Leung, K. N., Romesser, T.,
+  *Phys. Rev. Lett.* 35, 277 (1975): leak widths of order four hybrid
+  gyroradii (prefactor range 1-4).
+- Koch, N. et al., IEPC-2011-236 (2011), finding (ii), and Brandt, T. et al.,
+  *Trans. JSASS Aerospace Tech. Japan* 14, Pb_235 (2016),
+  DOI [10.2322/tastj.14.Pb_235](https://doi.org/10.2322/tastj.14.Pb_235):
+  flat interior potential with one exit drop and ~10 V / ~5 V internal
+  steps - the declared `CL-3-potentials` closure.
+- Model-to-model context only: `experiments/pic2d_cft_steady_state_v2`
+  (development plateau, 300 V / 3.44 mA) and `experiments/cft_orbit_wall_
+  loss_v4` (collisionless geometric access fraction 0.6445 on the same P2
+  field; screening label).

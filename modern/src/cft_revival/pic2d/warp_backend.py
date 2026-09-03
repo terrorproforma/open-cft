@@ -51,6 +51,7 @@ from .simulation import (
     PIC2DConfig,
     SimulationState,
     StepTally,
+    peak_node_debye,
 )
 
 try:
@@ -66,6 +67,9 @@ PARTICLE_BLOCK = 256
 # Lanes per output row in the block-Thomas sweeps (one block per unknown).  Warp
 # compiles a module for one block width, so this equals PARTICLE_BLOCK.
 THOMAS_LANES = PARTICLE_BLOCK
+# Per-step RNG streams read from the device seed table (v1.4): 0 = MCC, 1 = injection,
+# 2 = anomalous scattering.  Row = steps since the last host sync.
+SEED_STREAMS = 3
 
 
 def padded_dim(count: int, block: int) -> int:
@@ -665,7 +669,8 @@ if wp is not None:
     @wp.kernel
     def mcc_kernel(
         vr: wp.array(dtype=F64), vt: wp.array(dtype=F64), vz: wp.array(dtype=F64), alive: wp.array(dtype=wp.int32),
-        slots: wp.array(dtype=wp.int32), seed: int, probability: F64, nu_max: F64, neutral_density: F64,
+        slots: wp.array(dtype=wp.int32), seed_table: wp.array(dtype=wp.int32), counter: wp.array(dtype=wp.int32),
+        probability: F64, nu_max: F64, neutral_density: F64,
         table: wp.array(dtype=F64), points: int, step_ev: F64, max_ev: F64,
         threshold_exc: F64, threshold_ion: F64, b_ev: F64, ion_thermal: F64,
         ionize: wp.array(dtype=wp.int32), sec_vr: wp.array(dtype=F64), sec_vt: wp.array(dtype=F64), sec_vz: wp.array(dtype=F64),
@@ -674,6 +679,8 @@ if wp is not None:
     ):
         # No early returns: the five tallies (candidates, elastic, excitation,
         # ionisation, null) are reduced per block with tile sums.
+        # The per-step seed comes from the device seed table (row = steps since the
+        # last host sync, column 0 = MCC stream) so the launch is graph-capturable (v1.4).
         p = wp.tid()
         if p < flag_bound:
             ionize[p] = 0
@@ -684,6 +691,7 @@ if wp is not None:
             if alive[p] != 0:
                 active = 1
         if active != 0:
+            seed = seed_table[SEED_STREAMS * counter[0]]
             state = wp.rand_init(seed, p)
             u0 = F64(wp.randf(state))
             if u0 < probability:
@@ -826,21 +834,43 @@ if wp is not None:
         slots[1] = wp.min(slots[1] + total, i_capacity)
 
     @wp.kernel
-    def add_slots_kernel(slots: wp.array(dtype=wp.int32), slot: int, amount: int):
-        slots[slot] = slots[slot] + amount
+    def add_injected_slots_kernel(slots: wp.array(dtype=wp.int32), ctrl: wp.array(dtype=F64)):
+        slots[0] = slots[0] + int(ctrl[1])
+
+    @wp.kernel
+    def inject_control_kernel(ctrl: wp.array(dtype=F64), rate_per_step: F64, stats: wp.array(dtype=F64), count_slot: int):
+        # ctrl[0] = fractional carry, ctrl[1] = macro-electrons to inject this step.  Same
+        # arithmetic as the v1.0-v1.3 host bookkeeping (expected = rate + carry; floor).
+        expected = rate_per_step + ctrl[0]
+        n = wp.floor(expected)
+        ctrl[0] = expected - n
+        ctrl[1] = n
+        stats[count_slot] = stats[count_slot] + n
+
+    @wp.kernel
+    def tick_kernel(counter: wp.array(dtype=wp.int32)):
+        counter[0] = counter[0] + 1
+
+    @wp.kernel
+    def carry_kernel(ctrl: wp.array(dtype=F64), stats: wp.array(dtype=F64), slot: int):
+        stats[slot] = ctrl[0]      # latest injection carry, read back with the interval statistics
 
     @wp.kernel
     def inject_kernel(
-        seed: int, slots: wp.array(dtype=wp.int32), capacity: int, r_max: F64, z_max: F64, dz: F64, thermal: F64,
+        seed_table: wp.array(dtype=wp.int32), counter: wp.array(dtype=wp.int32), ctrl: wp.array(dtype=F64),
+        slots: wp.array(dtype=wp.int32), capacity: int, r_max: F64, z_max: F64, dz: F64, thermal: F64,
         r: wp.array(dtype=F64), z: wp.array(dtype=F64), vr: wp.array(dtype=F64), vt: wp.array(dtype=F64),
         vz: wp.array(dtype=F64), alive: wp.array(dtype=wp.int32), stats: wp.array(dtype=F64), slot: int, mass_weight: F64,
         overflow_slot: int,
     ):
         k = wp.tid()
+        if F64(k) >= ctrl[1]:
+            return
         base = slots[0]
         if base + k >= capacity:
             wp.atomic_add(stats, overflow_slot, F64(1.0))
             return
+        seed = seed_table[SEED_STREAMS * counter[0] + 1]
         state = wp.rand_init(seed, k)
         u0 = F64(wp.randf(state))
         u1 = F64(wp.randf(state))
@@ -861,6 +891,52 @@ if wp is not None:
         vz[d] = vzk
         alive[d] = 1
         wp.atomic_add(stats, slot, kinetic_energy(vrk, vtk, vzk, mass_weight))
+
+    @wp.kernel
+    def bohm_kernel(
+        r: wp.array(dtype=F64), z: wp.array(dtype=F64), vr: wp.array(dtype=F64), vt: wp.array(dtype=F64), vz: wp.array(dtype=F64),
+        alive: wp.array(dtype=wp.int32), slots: wp.array(dtype=wp.int32),
+        seed_table: wp.array(dtype=wp.int32), counter: wp.array(dtype=wp.int32),
+        b_r: wp.array(dtype=F64), b_z: wp.array(dtype=F64), dr: F64, dz: F64, z_min: F64, nr: int, nz: int,
+        alpha_dt_e_over_m: F64, stats: wp.array(dtype=F64), tally_slot: int,
+    ):
+        # v1.4 sensitivity hook: isotropic speed-preserving redirection with probability
+        # 1 - exp(-alpha omega_ce dt) at the particle's |B| (same map as the CPU reference).
+        p = wp.tid()
+        hit = F64(0.0)
+        active = 0
+        if p < slots[0]:
+            if alive[p] != 0:
+                active = 1
+        if active != 0:
+            fr = r[p] / dr
+            fz = (z[p] - z_min) / dz
+            i = wp.clamp(int(wp.floor(fr)), 0, nr - 1)
+            j = wp.clamp(int(wp.floor(fz)), 0, nz - 1)
+            s = fr - F64(i)
+            t = fz - F64(j)
+            stride = nz + 1
+            n00 = i * stride + j
+            w00 = (F64(1.0) - s) * (F64(1.0) - t)
+            w10 = s * (F64(1.0) - t)
+            w01 = (F64(1.0) - s) * t
+            w11 = s * t
+            bx = w00 * b_r[n00] + w10 * b_r[n00 + stride] + w01 * b_r[n00 + 1] + w11 * b_r[n00 + stride + 1]
+            bz = w00 * b_z[n00] + w10 * b_z[n00 + stride] + w01 * b_z[n00 + 1] + w11 * b_z[n00 + stride + 1]
+            probability = F64(1.0) - wp.exp(-alpha_dt_e_over_m * wp.sqrt(bx * bx + bz * bz))
+            seed = seed_table[SEED_STREAMS * counter[0] + 2]
+            state = wp.rand_init(seed, p)
+            u0 = F64(wp.randf(state))
+            if u0 < probability:
+                speed = wp.sqrt(vr[p] * vr[p] + vt[p] * vt[p] + vz[p] * vz[p])
+                u1 = F64(wp.randf(state))
+                u2 = F64(wp.randf(state))
+                v = isotropic(speed, u1, u2)
+                vr[p] = v[0]
+                vt[p] = v[1]
+                vz[p] = v[2]
+                hit = F64(1.0)
+        wp.tile_atomic_add(stats, wp.tile_sum(wp.tile(hit)), offset=tally_slot)
 
     @wp.kernel
     def compact_kernel(
@@ -1208,6 +1284,11 @@ class WarpBlockThomas:
                 self._solve_sequence(q_e, q_i, surface, phi_out)
             self.graph = capture.graph
 
+    def solve_sequence(self, q_e, q_i, surface, phi_out) -> None:
+        """The raw launch sequence of ``solve`` (for capture inside an enclosing step graph)."""
+
+        self._solve_sequence(q_e, q_i, surface, phi_out)
+
     def solve(self, q_e, q_i, surface, phi_out) -> tuple[int, float, float]:
         if self.graph is not None and self.bound_inputs is not None and all(a is b for a, b in zip(self.bound_inputs, (q_e, q_i, surface, phi_out))):
             wp.capture_launch(self.graph)
@@ -1277,7 +1358,10 @@ STATS_MCC = 16              # candidates, elastic, excitation, ionization, null
 STATS_KE_INJECTED = 21
 STATS_KE_BORN = 22
 STATS_OVERFLOW = 23
-STATS_SIZE = 24
+STATS_INJECTED = 24         # v1.4: injected macro-electrons (device-side injection control)
+STATS_ANOMALOUS = 25        # v1.4: Bohm-scattering hook tally
+STATS_CARRY = 26            # v1.4: injection carry after the latest step (overwritten, not accumulated)
+STATS_SIZE = 27
 
 
 def birth_bound(candidates: int, probability: float) -> int:
@@ -1312,6 +1396,7 @@ class WarpBackend:
         *,
         device: str = "cuda:0",
         use_graph: bool = True,
+        step_graph: bool = True,
     ) -> None:
         if wp is None:
             raise PIC2DDeviceError("NVIDIA Warp is unavailable")
@@ -1371,6 +1456,23 @@ class WarpBackend:
         self.stats = wp.zeros(STATS_SIZE, dtype=wp.float64, device=dev)
         self.slots = wp.zeros(2, dtype=wp.int32, device=dev)
         self.sample_out = wp.zeros(4, dtype=wp.float64, device=dev)
+        # v1.4: device-side per-step state so that a whole step has fixed kernel arguments
+        # (graph-capturable): seed table for the sync interval, steps-since-sync counter,
+        # injection control [carry, count].
+        self.seed_table = wp.zeros(SEED_STREAMS * self.sync_interval, dtype=wp.int32, device=dev)
+        self.step_counter = wp.zeros(1, dtype=wp.int32, device=dev)
+        self.inject_ctrl = wp.zeros(2, dtype=wp.float64, device=dev)
+        self.injection_rate_per_step = (
+            config.injection.electron_current_a * config.dt_s / (ELEMENTARY_CHARGE_C * config.macro_weight)
+            if config.injection is not None and config.injection.electron_current_a > 0.0 else 0.0
+        )
+        self.max_inject_per_step = int(np.floor(self.injection_rate_per_step)) + 1
+        # CUDA-graph capture of the whole step (v1.4): one graph per step variant
+        # (ion push?, ion redeposit?, accumulate?) and per particle-array allocation.
+        self.step_graph = bool(step_graph) and self.device.is_cuda and config.poisson.method == "device-direct"
+        self.step_graph_active = False
+        self.step_graphs: dict[tuple, Any] = {}
+        self.graph_captures = 0
         # diagnostics (device)
         self.d_n_e, self.d_n_i, self.d_phi, self.d_w, self.d_vr, self.d_vt, self.d_vz, self.d_v2, self.d_ion = (zeros() for _ in range(9))
         self.d_wall_e = wp.zeros(self.nz, dtype=wp.float64, device=dev)
@@ -1424,6 +1526,7 @@ class WarpBackend:
             return
         dev = self.device
         self.scratch_capacity = capacity
+        self.step_graphs.clear()     # the scratch arrays are captured by the step graphs
         self.ionize = wp.zeros(capacity, dtype=wp.int32, device=dev)
         self.offsets = wp.zeros(capacity, dtype=wp.int32, device=dev)
         self.sec = [wp.zeros(capacity, dtype=wp.float64, device=dev) for _ in range(3)]
@@ -1441,6 +1544,7 @@ class WarpBackend:
         if minimum <= species.capacity:
             return species
         capacity = max(minimum, int(1.5 * species.capacity), 1024)
+        self.step_graphs.clear()     # captured step graphs are bound to the old arrays
         new = self._alloc_species(capacity)
         if species.bound:
             for src, dst in zip((species.r, species.z, species.vr, species.vt, species.vz, species.alive_flags),
@@ -1532,6 +1636,7 @@ class WarpBackend:
         self.mcc.set_neutral_scale(scale)
 
     def load_state(self, state: SimulationState) -> None:
+        self.step_graphs.clear()
         self.species = {"e": self._upload(state.electrons), "i": self._upload(state.ions)}
         self._set_slots(state.electrons.count, state.ions.count)
         # copy into the existing node arrays so captured graphs stay bound to them
@@ -1551,7 +1656,20 @@ class WarpBackend:
         self.steps_since_sync = 0
         self.injected_since_sync = 0
         self.ions_dirty = True
+        self._begin_interval()
         self._reserve_capacity()
+
+    def _begin_interval(self) -> None:
+        """Upload the seeds of the next sync interval, reset the device step counter, push the injection carry."""
+
+        base = int(self.state_meta["step"])
+        seeds = np.array(
+            [stream_seed(self.config.seed, base + k, stream) for k in range(self.sync_interval) for stream in (1, 2, 3)],
+            dtype=np.int32,
+        )
+        wp.copy(self.seed_table, wp.array(seeds, dtype=wp.int32, device=self.device))
+        self.step_counter.zero_()
+        wp.copy(self.inject_ctrl, wp.array(np.array([float(self.state_meta["injection_carry"]), 0.0]), dtype=wp.float64, device=self.device))
 
     def export_state(self) -> SimulationState:
         self.flush()
@@ -1571,42 +1689,117 @@ class WarpBackend:
         return self.last_tally
 
     # ------------------------------------------------------------------ cycle
-    def _deposit(self, species: DeviceSpecies, slot: int, accumulator, out, per_particle: float, *, redo: bool = True) -> None:
+    def _deposit(self, species: DeviceSpecies, slot: int, accumulator, out, per_particle: float, *, redo: bool = True,
+                 dim: int | None = None) -> None:
         grid = self.masks.grid
+        if dim is None:
+            dim = species.bound
         if redo:
             accumulator.zero_()
-            if species.bound:
-                wp.launch(deposit_fixed_kernel, dim=species.bound,
+            if dim:
+                wp.launch(deposit_fixed_kernel, dim=dim,
                           inputs=[species.r, species.z, species.alive_flags, self.slots, slot, grid.dr_m, grid.dz_m, grid.geometry.z_min_m,
                                   self.nr, self.nz, FIXED_POINT_SCALE, accumulator], device=self.device)
         wp.launch(int_to_charge_kernel, dim=self.node_count, inputs=[accumulator, per_particle / FIXED_POINT_SCALE, out], device=self.device)
 
     def step(self, accumulate: bool) -> StepTally | None:
         config = self.config
-        grid = self.masks.grid
-        dev = self.device
-        dt = config.dt_s
         meta = self.state_meta
         step_index = meta["step"]
         electrons = self.species["e"]
         ions = self.species["i"]
-        mcc = self.mcc
         ion_step = (step_index + 1) % config.ion_subcycle == 0
+        redo_ions = self.ions_dirty
+        n_bound = electrons.bound
+
+        if self.step_graph:
+            self._step_graph_launch(ion_step, redo_ions, accumulate)
+        else:
+            self._launch_step(ion_step, redo_ions, accumulate, fixed_shape=False)
+        if self.device_direct is not None and self.steps_since_sync + 1 >= self.sync_interval:
+            self.device_direct.queue_residual_check()  # read and enforced in _sync (outside the captured step)
+
+        # host bookkeeping: no device reads; the bounds are upper limits on the slots in use
+        self.ions_dirty = ion_step   # ions are frozen between subcycle pushes; a push dirties the ion charge
+        if self.mcc is not None and n_bound:
+            births = birth_bound(n_bound, self.probability)
+            electrons.bound = min(electrons.bound + births, electrons.capacity)
+            ions.bound = min(ions.bound + births, ions.capacity)
+        if self.injection_rate_per_step > 0.0:
+            electrons.bound = min(electrons.bound + self.max_inject_per_step, electrons.capacity)
+        meta["step"] = step_index + 1
+        meta["time_s"] = meta["step"] * config.dt_s
+        if accumulate:
+            self.diag_steps += 1
+        self.steps_since_sync += 1
+        if self.steps_since_sync >= self.sync_interval:
+            return self._sync()
+        return None
+
+    def _step_graph_launch(self, ion_step: bool, redo_ions: bool, accumulate: bool) -> None:
+        """Replay (capturing on first use) the CUDA graph of this step variant for the current particle arrays."""
+
+        electrons = self.species["e"]
+        ions = self.species["i"]
+        key = (ion_step, redo_ions, accumulate, electrons.r.ptr, ions.r.ptr, electrons.capacity, ions.capacity)
+        graph = self.step_graphs.get(key)
+        if graph is None:
+            if not self.step_graphs:
+                import sys
+
+                wp.load_module(module=sys.modules[__name__], device=self.device)   # no module loads inside a capture
+            profile, self.profile = self.profile, None
+            try:
+                with wp.ScopedCapture(device=self.device) as capture:
+                    self._launch_step(ion_step, redo_ions, accumulate, fixed_shape=True)
+            finally:
+                self.profile = profile
+            graph = capture.graph
+            self.step_graphs[key] = graph
+            self.graph_captures += 1
+            self.step_graph_active = True
+        wp.capture_launch(graph)
+        self._mark("graph-step")
+
+    def _launch_step(self, ion_step: bool, redo_ions: bool, accumulate: bool, *, fixed_shape: bool) -> None:
+        """Issue every device operation of one step.
+
+        With ``fixed_shape`` the launch dimensions are the array capacities and nothing
+        depends on host-side counts (all kernels guard on the device slot counts and
+        flags), so the sequence can be captured into a CUDA graph and replayed; without
+        it the dimensions are the host upper bounds (v1.0-v1.3 behaviour).  Both paths
+        run the same kernels with the same device-side seeds and injection control.
+        """
+
+        config = self.config
+        grid = self.masks.grid
+        dev = self.device
+        dt = config.dt_s
+        electrons = self.species["e"]
+        ions = self.species["i"]
+        mcc = self.mcc
+        e_dim = electrons.capacity if fixed_shape else electrons.bound
+        i_dim = ions.capacity if fixed_shape else ions.bound
 
         self._mark("other")
-        self._deposit(electrons, 0, self.acc_e, self.q_e, self.electron.charge_c * config.macro_weight)
+        self._deposit(electrons, 0, self.acc_e, self.q_e, self.electron.charge_c * config.macro_weight, dim=e_dim)
         # Ions are frozen between subcycle pushes; births are added incrementally
         # (exact integer accumulation), so a full redeposit is only needed after a push.
-        self._deposit(ions, 1, self.acc_i, self.q_i, self.ion.charge_c * config.macro_weight, redo=self.ions_dirty)
-        self.ions_dirty = False
+        self._deposit(ions, 1, self.acc_i, self.q_i, self.ion.charge_c * config.macro_weight, redo=redo_ions, dim=i_dim)
         self._mark("deposit")
         if self.gpu_poisson is not None:
+            if fixed_shape:
+                raise PIC2DValidationError("the PCG field solve has a host convergence loop and cannot be graph-captured")
             iterations, _, _ = self.gpu_poisson.solve(self.q_e, self.q_i, self.surface, self.phi)
         elif self.device_direct is not None:
-            iterations, _, _ = self.device_direct.solve(self.q_e, self.q_i, self.surface, self.phi)
-            if self.steps_since_sync + 1 >= self.sync_interval:
-                self.device_direct.queue_residual_check()  # read and enforced in _sync
+            if fixed_shape:
+                self.device_direct.solve_sequence(self.q_e, self.q_i, self.surface, self.phi)   # raw launches inside the capture
+            else:
+                self.device_direct.solve(self.q_e, self.q_i, self.surface, self.phi)
+            iterations = 0
         else:
+            if fixed_shape:
+                raise PIC2DValidationError("the host field solve cannot be graph-captured")
             wp.launch(host_source_kernel, dim=self.node_count, inputs=[self.q_e, self.q_i, self.ratio, self.surface, self.source_dev], device=dev)
             source = self.source_dev.numpy().reshape(grid.node_shape)
             result = self.host_poisson.solve(source, config.potentials)  # type: ignore[union-attr]
@@ -1622,20 +1815,20 @@ class WarpBackend:
             wp.launch(axpy_kernel, dim=self.node_count, inputs=[self.d_phi, 1.0, self.phi], device=dev)
             wp.launch(abs_axpy_kernel, dim=self.node_count, inputs=[self.d_n_e, self.inverse_volume, self.q_e], device=dev)
             wp.launch(abs_axpy_kernel, dim=self.node_count, inputs=[self.d_n_i, self.inverse_volume, self.q_i], device=dev)
-            if electrons.bound:
-                wp.launch(deposit_moment_kernel, dim=electrons.bound,
+            if e_dim:
+                wp.launch(deposit_moment_kernel, dim=e_dim,
                           inputs=[electrons.r, electrons.z, electrons.alive_flags, self.slots, 0, electrons.vr, electrons.vt, electrons.vz,
                                   grid.dr_m, grid.dz_m, grid.geometry.z_min_m, self.nr, self.nz,
                                   self.d_w, self.d_vr, self.d_vt, self.d_vz, self.d_v2], device=dev)
         self._mark("field+diag")
 
-        for slot, (species, particles) in enumerate(((self.electron, electrons), (self.ion, ions))):
+        for slot, (species, particles, dim) in enumerate(((self.electron, electrons, e_dim), (self.ion, ions, i_dim))):
             is_electron = slot == 0
-            if particles.bound == 0 or (not is_electron and not ion_step):
+            if dim == 0 or (not is_electron and not ion_step):
                 continue
             species_dt = dt if is_electron else dt * config.ion_subcycle
             wp.launch(
-                push_kernel, dim=padded_dim(particles.bound, PARTICLE_BLOCK), block_dim=PARTICLE_BLOCK,
+                push_kernel, dim=padded_dim(dim, PARTICLE_BLOCK), block_dim=PARTICLE_BLOCK,
                 inputs=[particles.r, particles.z, particles.vr, particles.vt, particles.vz, particles.alive_flags,
                         self.e_r, self.e_z, self.b_r, self.b_z, grid.dr_m, grid.dz_m, grid.geometry.z_min_m, grid.geometry.z_max_m,
                         self.nr, self.nz, self.plasma_cell, self.top_cell, self.plasma_node, self.slots, slot,
@@ -1648,29 +1841,36 @@ class WarpBackend:
                         self.d_exit_e if is_electron else self.d_exit_i],
                 device=dev,
             )
-            if not is_electron:
-                self.ions_dirty = True
         wp.launch(wall_int_to_charge_kernel, dim=self.node_count,
                   inputs=[self.acc_wall, ELEMENTARY_CHARGE_C * config.macro_weight / FIXED_POINT_SCALE, self.surface], device=dev)
         self._mark("push")
 
-        n_bound = electrons.bound
-        if mcc is not None and n_bound:
+        if config.anomalous is not None and e_dim:
+            # v1.4 hook: Bohm-type scattering after the push, before the MCC (as the CPU reference)
+            wp.launch(
+                bohm_kernel, dim=padded_dim(e_dim, PARTICLE_BLOCK), block_dim=PARTICLE_BLOCK,
+                inputs=[electrons.r, electrons.z, electrons.vr, electrons.vt, electrons.vz, electrons.alive_flags, self.slots,
+                        self.seed_table, self.step_counter, self.b_r, self.b_z, grid.dr_m, grid.dz_m, grid.geometry.z_min_m, self.nr, self.nz,
+                        config.anomalous.alpha * dt * ELEMENTARY_CHARGE_C / ELECTRON_MASS_KG, self.stats, STATS_ANOMALOUS],
+                device=dev,
+            )
+
+        if mcc is not None and e_dim:
             ion_thermal = sqrt(1.380649e-23 * config.mcc.neutral_temperature_k / self.ion.mass_kg)  # type: ignore[union-attr]
             wp.launch(
-                mcc_kernel, dim=padded_dim(n_bound, PARTICLE_BLOCK), block_dim=PARTICLE_BLOCK,
-                inputs=[electrons.vr, electrons.vt, electrons.vz, electrons.alive_flags, self.slots, stream_seed(config.seed, step_index, 1),
+                mcc_kernel, dim=padded_dim(e_dim, PARTICLE_BLOCK), block_dim=PARTICLE_BLOCK,
+                inputs=[electrons.vr, electrons.vt, electrons.vz, electrons.alive_flags, self.slots, self.seed_table, self.step_counter,
                         self.probability, mcc.nu_max, mcc.neutral_density_per_m3,  # scaled by n_g/n_g0 (v1.3); ceiling fixed
                         self.table, self.table_points, mcc.table.energy_step_ev, mcc.table.energy_max_ev,
                         mcc.table.thresholds_ev[1], mcc.table.thresholds_ev[2], 8.7, ion_thermal,
                         self.ionize, self.sec[0], self.sec[1], self.sec[2], self.ionv[0], self.ionv[1], self.ionv[2],
-                        self.stats, STATS_MCC, n_bound],
+                        self.stats, STATS_MCC, e_dim],
                 device=dev,
             )
             self._mark("mcc")
-            wp.utils.array_scan(self.ionize[:n_bound], self.offsets[:n_bound], inclusive=False)
+            wp.utils.array_scan(self.ionize[:e_dim], self.offsets[:e_dim], inclusive=False)
             wp.launch(
-                spawn_kernel, dim=n_bound,
+                spawn_kernel, dim=e_dim,
                 inputs=[self.ionize, self.offsets, self.slots, electrons.capacity, ions.capacity, electrons.r, electrons.z,
                         self.sec[0], self.sec[1], self.sec[2], self.ionv[0], self.ionv[1], self.ionv[2],
                         electrons.r, electrons.z, electrons.vr, electrons.vt, electrons.vz, electrons.alive_flags,
@@ -1683,43 +1883,29 @@ class WarpBackend:
                               self.ion.mass_kg * config.macro_weight, self.partial_particles], device=dev)
             wp.launch(deferred_add_kernel, dim=1, inputs=[self.partial_particles, REDUCTION_THREADS, self.stats, STATS_KE_BORN], device=dev)
             # newly born ions join the frozen ion charge immediately (exact integer add)
-            wp.launch(deposit_fixed_kernel, dim=n_bound,
+            wp.launch(deposit_fixed_kernel, dim=e_dim,
                       inputs=[self.born_r, self.born_z, self.born_flag, self.slots, 0, grid.dr_m, grid.dz_m, grid.geometry.z_min_m,
                               self.nr, self.nz, FIXED_POINT_SCALE, self.acc_i], device=dev)
             if accumulate:
-                wp.launch(deposit_unit_kernel, dim=n_bound, inputs=[self.born_r, self.born_z, self.born_flag, self.slots, 0, grid.dr_m, grid.dz_m,
-                                                                    grid.geometry.z_min_m, self.nr, self.nz, self.d_ion], device=dev)
+                wp.launch(deposit_unit_kernel, dim=e_dim, inputs=[self.born_r, self.born_z, self.born_flag, self.slots, 0, grid.dr_m, grid.dz_m,
+                                                                 grid.geometry.z_min_m, self.nr, self.nz, self.d_ion], device=dev)
             wp.launch(spawn_commit_kernel, dim=1, inputs=[self.ionize, self.offsets, self.slots, electrons.capacity, ions.capacity], device=dev)
-            births = birth_bound(n_bound, self.probability)
-            electrons.bound = min(electrons.bound + births, electrons.capacity)
-            ions.bound = min(ions.bound + births, ions.capacity)
         self._mark("spawn")
 
-        injected = 0
-        if config.injection is not None and config.injection.electron_current_a > 0.0:
-            expected = config.injection.electron_current_a * dt / (ELEMENTARY_CHARGE_C * config.macro_weight) + meta["injection_carry"]
-            injected = int(np.floor(expected))
-            meta["injection_carry"] = expected - injected
-            if injected:
-                r_max = grid.r_m[self.masks.top_plasma_cell[self.nz - 1] + 1]
-                thermal = sqrt(EV_J * config.injection.electron_temperature_ev / ELECTRON_MASS_KG)
-                wp.launch(inject_kernel, dim=injected,
-                          inputs=[stream_seed(config.seed, step_index, 2), self.slots, electrons.capacity, float(r_max), grid.geometry.z_max_m,
-                                  grid.dz_m, thermal, electrons.r, electrons.z, electrons.vr, electrons.vt, electrons.vz, electrons.alive_flags,
-                                  self.stats, STATS_KE_INJECTED, ELECTRON_MASS_KG * config.macro_weight, STATS_OVERFLOW], device=dev)
-                wp.launch(add_slots_kernel, dim=1, inputs=[self.slots, 0, injected], device=dev)
-                electrons.bound = min(electrons.bound + injected, electrons.capacity)
-                self.injected_since_sync += injected
+        if self.injection_rate_per_step > 0.0:
+            # v1.4: injection count and carry live on the device (fixed launch shape)
+            r_max = grid.r_m[self.masks.top_plasma_cell[self.nz - 1] + 1]
+            thermal = sqrt(EV_J * config.injection.electron_temperature_ev / ELECTRON_MASS_KG)  # type: ignore[union-attr]
+            wp.launch(inject_control_kernel, dim=1, inputs=[self.inject_ctrl, self.injection_rate_per_step, self.stats, STATS_INJECTED], device=dev)
+            wp.launch(inject_kernel, dim=self.max_inject_per_step,
+                      inputs=[self.seed_table, self.step_counter, self.inject_ctrl, self.slots, electrons.capacity, float(r_max),
+                              grid.geometry.z_max_m, grid.dz_m, thermal, electrons.r, electrons.z, electrons.vr, electrons.vt, electrons.vz,
+                              electrons.alive_flags, self.stats, STATS_KE_INJECTED, ELECTRON_MASS_KG * config.macro_weight, STATS_OVERFLOW],
+                      device=dev)
+            wp.launch(add_injected_slots_kernel, dim=1, inputs=[self.slots, self.inject_ctrl], device=dev)
+            wp.launch(carry_kernel, dim=1, inputs=[self.inject_ctrl, self.stats, STATS_CARRY], device=dev)
+        wp.launch(tick_kernel, dim=1, inputs=[self.step_counter], device=dev)
         self._mark("inject")
-
-        meta["step"] = step_index + 1
-        meta["time_s"] = meta["step"] * dt
-        if accumulate:
-            self.diag_steps += 1
-        self.steps_since_sync += 1
-        if self.steps_since_sync >= self.sync_interval:
-            return self._sync()
-        return None
 
     def _sync(self) -> StepTally:
         """Read the interval statistics once; update the ledger; compact; gate values."""
@@ -1742,6 +1928,12 @@ class WarpBackend:
                 f"device slot counts {int(slots[0])}/{int(slots[1])} exceed the host bounds {electrons.bound}/{ions.bound}"
             )
         cumulative = self.state_meta["cumulative"]
+        if self.injection_rate_per_step > 0.0:
+            # v1.4: the injection count and carry are device-side (fixed-shape step)
+            self.injected_since_sync = int(stats[STATS_INJECTED])
+            self.state_meta["injection_carry"] = float(stats[STATS_CARRY])
+        if config.anomalous is not None:
+            cumulative["anomalous"] = cumulative.get("anomalous", 0.0) + float(stats[STATS_ANOMALOUS])
         for base, label in ((STATS_E_COUNTS, "electrons"), (STATS_I_COUNTS, "ions")):
             cumulative[f"anode_{label}"] += float(stats[base])
             cumulative[f"exit_{label}"] += float(stats[base + 1])
@@ -1771,6 +1963,7 @@ class WarpBackend:
         self.steps_since_sync = 0
         self.injected_since_sync = 0
         self._reserve_capacity()
+        self._begin_interval()
         omega_pe = sqrt(peak_density * ELEMENTARY_CHARGE_C**2 / (EPSILON_0_F_PER_M * ELECTRON_MASS_KG))
         self.last_tally = StepTally(self.last_iterations, omega_pe * config.dt_s, sqrt(max_speed2), electrons.alive, ions.alive)
         self._mark("sync")
@@ -1816,6 +2009,27 @@ class WarpBackend:
             "surface_charge_c": float(out[2]), "phi_v": phi,
             "cumulative": dict(self.state_meta["cumulative"]),
         }
+
+    def peak_node_sample(self) -> dict[str, Any]:
+        """v1.4: one-shot electron node moments at the current positions (peak-node Debye gate)."""
+
+        self.flush()
+        electrons = self.species["e"]
+        grid = self.masks.grid
+        if not hasattr(self, "gate_moments"):
+            self.gate_moments = [wp.zeros(self.node_count, dtype=wp.float64, device=self.device) for _ in range(5)]
+        for array in self.gate_moments:
+            array.zero_()
+        if electrons.alive:
+            wp.launch(deposit_moment_kernel, dim=electrons.alive,
+                      inputs=[electrons.r, electrons.z, electrons.alive_flags, self.slots, 0, electrons.vr, electrons.vt, electrons.vz,
+                              grid.dr_m, grid.dz_m, grid.geometry.z_min_m, self.nr, self.nz, *self.gate_moments], device=self.device)
+        shape = grid.node_shape
+        moments = [array.numpy().reshape(shape) for array in self.gate_moments]
+        self.sync_count += 1
+        gate = self.config.peak_debye_gate
+        return peak_node_debye(self.masks, self.config, *moments, dense_fraction=gate.dense_fraction if gate is not None else 0.5,
+                               min_particles=gate.min_macro_particles_at_peak if gate is not None else 16)
 
     def diagnostic_arrays(self) -> dict[str, np.ndarray]:
         wp.synchronize_device(self.device)

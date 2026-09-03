@@ -1,0 +1,138 @@
+{
+  "schema": "cft.pic2d.model.v1.4",
+  "package": "cft_revival.pic2d",
+  "version": "0.4.0",
+  "supersedes": "modern/spec/pic2d/pic2d-model-v1.3.json (time step, a-priori gates, runner and artifact contracts unchanged; this file adds wall-ion recycling to the neutral inventory, the fail-closed peak-node Debye gate and grid-heating triad, CUDA-graph replay of the step, and two default-OFF sensitivity hooks)",
+  "model_level": "L3-development",
+  "status": "development-screening-verified-numerics-not-validated-physics",
+  "source_of_the_changes": "modern/docs/literature/pic-mcc-blockers.md (116 verified references, commit ccb22d5d): blocker 1 (Debye resolution at the peak), blocker 2 (cost), blocker 3 (neutrals), 4.2 (SEE), 4.3 (anomalous transport), 5 (plateau/breathing)",
+  "what_changed": [
+    "neutral inventory: every Xe+ absorbed at the dielectric wall and at the anode is returned to the 0-D inventory as a thermal neutral (recombination coefficient 1.0, declared wall temperature); balance fed + recycled - ionised - effused - artificial = V dn_g; fifth ledger 'recycled'; gross AND net utilisation reported (review blocker 3(d)1)",
+    "neutral inventory: the artificial relaxation is an explicit option (relaxation_time_s = null -> physical effusion time scale V/c only); the runner protocol and provenance record which one is in force (review blocker 3(e): no precedent for the relaxation)",
+    "peak-node Debye gate: at every series record the densest node holding >= min_macro_particles_at_peak macro-electrons is located from the current positions and max(dr, dz) / lambda_D there must stay <= max_cells_per_debye, fail-closed PIC2DStabilityError (review blocker 1(d)2: 'make the gate follow the peak'; Brandt et al. 2016 ran 2 lambda_D per cell)",
+    "grid-heating triad recorded at every series record and gated at every checkpoint by the runner: (i) cumulative energy-ledger residual / electrode work, (ii) T_e of the densest cells (n >= dense_fraction n_peak) and the ionisation rate S, (iii) peak omega_pe dt; soft thresholds are plateau preconditions, hard thresholds stop the run fail-closed once enforced (review blocker 1(d)3; Birdsall and Maron 1980; Ueda et al. 1994; Adams et al. 2025)",
+    "Warp/CUDA backend: the whole step (gather, push, boundaries, deposit, MCC, injection, ion sub-cycle, compaction, block-Thomas Poisson, field) is captured once per (ion-step, injection, MCC) variant into a CUDA graph and replayed; particle counts live in fixed-capacity buffers with a device-side live count, RNG seeds in a device seed table indexed by a device step counter, and the injection carry in a device control array so that nothing on the host is read per step; bitwise-identical dynamical state to the uncaptured launches (review blocker 2(d)1; NVIDIA 2019)",
+    "sensitivity hooks, default OFF: Bohm-type anomalous scattering nu_an = alpha omega_ce (alpha 1/64, 1/16 as the campaign block E; Szabo 2001; Brandt et al. 2016; Smirnov, Raitses and Fisch 2004) implemented on both backends and tallied in the cumulative ledger; SEE scaffold with the Vaughan 1989 yield for boron nitride (Dunaevsky, Raitses and Fisch 2003; Tondu, Belhaj and Inguimbert 2011) and the Hobbs and Wesson 1967 space-charge limit as a virtual-wall yield, whose 'enabled = true' fails closed because emission is not implemented in v1.4 (review 4.2, 4.3)",
+    "checkpoint: the neutral array carries five ledgers (v1.3 checkpoints with four load with recycled = 0); a 'cumulative_extra' array carries new integer tallies (anomalous) so v1.3 checkpoints still load; the config identity is unchanged for v1.3 configurations (recycling and gate blocks appear in the identity only when on)"
+  ],
+  "wall_ion_recycling_v1_4": {
+    "balance": "V dn_g/dt = Q_in + R - S(t) - c_mix n_g - (V / tau_g)(n_g - n_g*),  R = gamma (Gamma_wall,i + Gamma_anode,i) x W / interval,  n_g* = (Q_in + R - S)/c_mix",
+    "recombination_coefficient": 1.0,
+    "recombination_coefficient_note": "every absorbed ion neutralises at the surface and re-enters the gas (Szabo 2001, 2014 'recycled into the flow'; Brandt et al. 2016 count ions 'recycled after wall contact as neutrals'); the review cites no smaller value for BN/Al2O3 at HEMP wall temperatures (blocker 3(e)), so 1.0 is declared and exposed as a parameter",
+    "wall_temperature_k": 400.0,
+    "wall_temperature_note": "declared between the 300 K feed and the 500 K Brandt et al. 2016 needed for their neutral thrust match; enters only through the recycled atoms' thermal speed in the effusion coefficient (sqrt(T_w/T_g) = 1.155 on their share): c_wall = 1.795e-3 m^3/s vs c = 1.555e-3 m^3/s; the recycled atoms are otherwise indistinguishable from fed atoms in the 0-D model (the born-ion Maxwellian keeps the 300 K feed temperature: the ionisation source is dominated by fed atoms at the expected fixed point, 62 % / 38 % by rate; documented simplification)",
+    "mixture_effusion": "c_mix = (Q_in c + R c_wall)/(Q_in + R): source-weighted mixture coefficient for the interval; equals c without recycling so v1.3 numbers are reproduced exactly at R = 0",
+    "exit_ions_are_the_beam": "ions crossing the exit plane are not recycled (they leave the domain as beam); only wall and anode absorptions are",
+    "ledgers": "fed, recycled, ionized, effused, artificial: exact interval integrals of the linear ODE; fed + recycled - ionized - effused - artificial = V (n_1 - n_0) to round-off (tests: 1e-9 of the inventory per update and cumulatively)",
+    "utilisation": {
+      "gross": "S / Q_in (ionisations per fed atom; the v1.3 figure, 46 % at the v1.3 plateau)",
+      "net": "(S - R) / Q_in = beam ions per fed atom at the fixed point (the literature's 'net ionisation', Brandt et al. 2016: 24 %); both are recorded in every series record, status line and the summary"
+    },
+    "relaxation_default": "OFF (relaxation_time_s = null) in the model: with it off n_g evolves on the physical time scale V/c = 221 us so a plateau under this closure needs >> 1 us (review blocker 3(d)3 recommends a >= 50 us development case); the v1.4 development run (steady-state v3) keeps the artificial 30 ns relaxation ON explicitly, recorded in protocol.json ('operating_point.neutral_inventory.relaxation_time_s') and in the summary provenance ('v1_4_options.neutral_relaxation')",
+    "artificial_term_at_the_plateau": "with tau_g = 30 ns the artificial rate tracks the interval shot noise of S: at the v1.3 plateau its interval RMS was 3e19 atoms/s (n_g* jumps by dS/c per interval) while its trailing-window mean was 5e16 +- 4e17 atoms/s, consistent with zero; the mean is the physical statement and is now reported with its RMS"
+  },
+  "recomputed_fixed_point_budget_with_recycling": {
+    "v1_3_plateau_inputs": "Q_in = 8.551e16 atoms/s (0.01864 mg/s), c = 1.5547e-3 m^3/s, S = 3.93e16 s^-1, wall ions 3.724 mA + anode ions 0.049 mA = 2.355e16 s^-1 (59.9 % of S), beam ions 2.291 mA = 1.43e16 s^-1 (36 % of S), n_g = 2.973e19 m^-3, gross utilisation 46 %",
+    "step_1_fixed_S": "n_g* = (Q_in + R - S)/c with S, R frozen at the v1.3 plateau values: (8.551 + 2.355 - 3.930)e16 / 1.5547e-3 = 4.49e19 m^-3 (+51 %), which is the review's 'rises to ~4.5e19 before S responds' (blocker 3(d)1)",
+    "step_2_self_consistent": "S responds to the denser gas; with the ionisation conductance k = S / n_g = 1.32e-3 m^3/s of the v1.3 plateau held fixed and the wall share f_w = 0.60 of the ions, Q_in = (1 - gamma f_w) k n_g + c n_g gives n_g* = Q_in / (c + 0.4 k) = 8.551e16 / 2.083e-3 = 4.10e19 m^-3 (+38 %); (k fixed reproduces the v1.3 plateau 2.97e19 at gamma = 0 exactly)",
+    "expected_fixed_point_v1_4": {
+      "n_g_star_per_m3": 4.1e19,
+      "n_g_star_range_per_m3": [3.8e19, 4.5e19],
+      "range_note": "lower edge if k rises with n_g (more electron confinement at higher collisionality), upper edge if S saturates (frozen-S estimate); with the 400 K wall share c_mix = 1.62e-3 lowers the estimate by ~3 %",
+      "s_per_s": 5.4e16,
+      "s_note": "k n_g* = 1.32e-3 x 4.1e19; gross utilisation 63 %",
+      "recycled_per_s": 3.2e16,
+      "net_ionisation_per_s": 2.2e16,
+      "net_utilisation": 0.25,
+      "net_utilisation_note": "(S - R)/Q_in = 0.4 x 5.4e16 / 8.55e16; the same closure-level quantity Brandt et al. 2016 quote as 'net ionisation 24 %' for their device (model-to-model context, labelled by closure, not validation)",
+      "beam_ion_current_a": 3.5e-3,
+      "n_e_mean_per_m3": 2.9e17,
+      "n_e_peak_node_per_m3": 2.2e18,
+      "n_e_note": "scaled from the v1.3 window means 2.13e17 / 1.64e18 by S ratio 1.37 (ion residence time held fixed); peak at r ~ 0.5 mm, z ~ 14.3 mm (between the second and third cusps) in v1.3",
+      "macro_particles": "2 x 2.9e17 x 3.432e-7 / 6e4 = 3.3 M (e- + Xe+) vs 2.0 M at the v1.3 plateau; still inside the 32 GiB device and the fixed-capacity buffers (grown on sync, graph re-captured)"
+    },
+    "resolution_at_the_expected_peak": {
+      "t_e_peak_ev": 7.4,
+      "t_e_note": "window-average T_e at the v1.3 peak node (density-weighted mean over the dense nodes 7.3 eV)",
+      "lambda_d_at_v1_3_peak_um": 15.8,
+      "cells_per_lambda_d_at_v1_3_peak": "dz 3.17, dr 2.11 (window-average maps); the instantaneous peak-node sample is noisier and higher",
+      "lambda_d_at_expected_v1_4_peak_um": 13.6,
+      "cells_per_lambda_d_at_expected_v1_4_peak": "dz 3.7, dr 2.5",
+      "omega_pe_dt_at_expected_peak": 0.126,
+      "omega_pe_dt_note": "56.4 sqrt(2.2e18) x 1.5e-12; the a-priori gate is 0.2 (trip density 5.6e18)",
+      "consequence": "the 60 x 480 development grid does NOT meet the 2 lambda_D per cell of Brandt et al. 2016 at the peak; that is the review's argument for the 30 um campaign grid (blocker 1(d)1) and is why the v1.4 development gate is declared at 4.5 cells per lambda_D (fail-closed against runaway densification) while the campaign gate is 2.0"
+    }
+  },
+  "peak_node_debye_gate_v1_4": {
+    "config": "PIC2DConfig.peak_debye_gate = PeakDebyeGateConfig(max_cells_per_debye, min_macro_particles_at_peak = 16, dense_fraction = 0.5); None = not gated (v1.3 behaviour) but the peak-node sample is still recorded",
+    "sample": "bilinear node moments (count, v_r, v_theta, v_z, v^2) of the electrons at their current positions (CPU: numpy; Warp: deposit_moment_kernel, 5 x 60 x 480 doubles copied per record); n_e = count x W / shape volume, T_e = m_e (<v^2> - |<v>|^2) / 3e; lambda_D = sqrt(eps0 T_e / (n_e e)); cells per lambda_D = max(dr, dz) / lambda_D",
+    "peak_selection": "the densest node among those holding >= min_macro_particles_at_peak macro-electrons; on the axis nodes (volume pi (dr/2)^2 dz = 4.4e-14 m^3) one macro-particle at W = 6e4 already reads 1.4e18 m^-3, so the unrestricted argmax is single-particle noise; the unrestricted maximum is reported as raw_peak",
+    "enforcement": "if the qualified peak has fewer than min_macro_particles_at_peak the gate is recorded but not enforced (gate_enforced = false); otherwise cells_per_debye > max_cells_per_debye raises PIC2DStabilityError after the record is written (the artifacts still close)",
+    "development_value": 4.5,
+    "development_value_note": "expected 3.7 at the v1.4 fixed point (above); 4.5 trips at ~1.5x the expected peak density at fixed T_e, i.e. it protects against the v1 over-densification failure mode, not against the known 3 lambda_D shortfall of this grid, which is declared",
+    "campaign_value": 2.0,
+    "campaign_value_note": "Brandt et al. 2016 (Dx = 2 lambda_D at the peak); requires the 30 um grid of the campaign proposal and the 20 um discriminator case",
+    "citations": "review blocker 1(a)-(d): Birdsall and Langdon 1985 (Dx <~ lambda_D, omega_pe dt <~ 0.2 for the momentum-conserving scheme); Birdsall and Maron 1980 and Ueda et al. 1994 (self-heating measurements and saturation); Adams et al. 2025 (grid heating not removed by a better Poisson solve); Brandt et al. 2016 (2 lambda_D per cell at the peak, no heating diagnostic reported)"
+  },
+  "grid_heating_triad_v1_4": {
+    "where": "experiments/pic2d_cft_steady_state_v1/run.py evaluate_triad, driven by protocol['stopping_rule']['grid_heating_triad']; recorded in every status line and in summary['grid_heating_triad']; absent from v1.2/v1.3 protocols (None)",
+    "members": {
+      "i_energy_residual": "cumulative interval energy-ledger residual / cumulative electrode work (the momentum-conserving scheme's non-conservation; v1.3 plateau: -4.4 %)",
+      "ii_t_e_dense_and_s": "trailing-window relative drifts (plateau window, linear fit) of the density-weighted T_e over the dense nodes (n >= dense_fraction n_peak) and of the ionisation rate S",
+      "iii_omega_pe_dt": "trailing-window relative drift of the peak omega_pe dt (the review's (iii); the v1.3 run passed the plateau while omega_pe dt was still rising, blocker 5(c))"
+    },
+    "thresholds_v3_development": {
+      "energy_residual_over_electrode_work_max": 0.10,
+      "soft_drift_max": 0.05,
+      "hard_drift_max": 0.25,
+      "enforced_after_transit_times": 1.0
+    },
+    "semantics": "soft: all members inside their bounds is a precondition for declaring the plateau (plateau['triad_soft_ok']); hard: after enforced_after_transit_times any drift >= hard_drift_max or the residual bound exceeded stops the run with stop_reason grid_heating_triad_gate_stopped_run and the artifacts written; before that (small electrode work, ignition transient) the triad is recorded only",
+    "why_these_numbers": "residual 0.10 = ~2x the v1.3 plateau value, so a doubling of the grid-heating signature stops the run; 0.05 soft matches the plateau drift threshold; 0.25 hard is the largest drift a linear ramp can show over a 20 % window (0.22) plus margin, so only accelerating (exponential) heating trips it; enforcement after one transit lets the ignition transient through",
+    "cross_variant_members": "the review's (ii) also compares T_e and S across W and grid variants; that is the convergence pair / campaign block C, not an in-run gate"
+  },
+  "cuda_graph_step_v1_4": {
+    "what_is_captured": "one wp.ScopedCapture per variant (ion_step in {0,1}) x (inject in {0,1}) x (mcc in {0,1}) of: seed-table read + electron gather/push/boundary, optional ion gather/push/boundary, compaction (array_scan + scatter; capturable under Warp 1.14 mempools, verified empirically on WDDM), injection (device control array: carry and per-step count via inject_control_kernel/tick_kernel/carry_kernel), MCC with device-side seeds, optional Bohm scattering, charge deposition, block-Thomas Poisson (WarpBlockThomas.solve_sequence: the raw launch sequence without host residual check), field gradient, energy and current tallies into the stats array",
+    "what_is_not_captured": "the host sync every device_sync_steps (D2H of stats, residual contract check, peak-node sample, neutral inventory update, series record), the a-priori and runtime gates, buffer growth (_grow / _ensure_scratch invalidate the cached graphs and the next step re-captures)",
+    "why_bitwise_equal": "identical kernels and launch order; the only per-step host inputs of v1.3 (RNG seed per step, injection count and carry) moved into device arrays that hold the same values; fixed-capacity launches use the live count as the bound so inactive slots are never touched; the injection count per step is floor(rate + carry) exactly as before",
+    "windows_wdd_note": "capture works on this host (Windows 11, WDDM, RTX 5090, Warp 1.14.0, CUDA 12); no fallback to the review's second option (periodic cell sort) was needed",
+    "measured_ms_per_step": {
+      "grid_30x240_9k_particles_gpu_shared_with_w_0_7": {"direct": 7.79, "graph": 1.50, "ratio": 5.2},
+      "grid_60x480_206k_particles_gpu_shared_with_w_0_7": {"direct": 8.19, "graph": 2.99, "ratio": 2.7},
+      "note": "measured while the w-0.7 development case occupied the GPU (its own step went from 2.8 to 4 ms/step under contention), so these are the launch-floor removal under contention, not clean numbers; 1 M and 2 M particle measurements are PENDING until the GPU is free (the v3 run's status lines will give the 1-2 M figure at plateau)"
+    },
+    "flag": "Simulation(..., step_graph = True); protocol numerics.step_graph (default true); provenance v1_4_options.step_graph records whether a graph was actually replayed (false on cpu / warp-cpu / non device-direct Poisson)"
+  },
+  "sensitivity_hooks_v1_4": {
+    "bohm_scattering": {
+      "config": "PIC2DConfig.anomalous = AnomalousCollisionConfig(alpha); default None",
+      "model": "per electron per step P = 1 - exp(-alpha omega_ce dt) with omega_ce = e|B|/m_e at the particle; on collision the velocity is redirected isotropically at constant speed (energy-conserving, momentum-scattering); applied after the push and before MCC on both backends (cft_revival.pic2d.sensitivity.apply_bohm_scattering; bohm_kernel); tallied as cumulative['anomalous'] and recorded as currents_a['anomalous_collision_rate_per_s']",
+      "campaign_values": [0.015625, 0.0625],
+      "citations": "review 4.3: Szabo 2001, 2014 and Brandt et al. 2016 impose Bohm-type scattering (Brandt: D = 0.4 kT_e/eB); Smirnov, Raitses and Fisch 2004 (nu_B ~ omega_c/16); Cho et al. 2015 ((r,z) full PIC without an imposed model); the axisymmetric electrostatic model excludes the drift instability by construction, so the hook is a sensitivity device, reported not binding",
+      "tests": "speed preserved to 1e-12 and collision count within 4 sigma of the binomial expectation at alpha = 1/16; OFF by default and tallied when ON in a Simulation"
+    },
+    "see_scaffold": {
+      "config": "PIC2DConfig.see = SEEConfig(enabled = False, material = 'BN', yield_model = Vaughan...); enabled = True raises PIC2DValidationError in v1.4 (emission is not implemented: fail closed)",
+      "yield": "Vaughan 1989: delta(E, theta) = delta_max(theta) (v e^(1 - v))^k, v = (E - E_0)/(E_max(theta) - E_0), k = 0.56 for v < 1 and 0.25 for 1 <= v <= 3.6, the 1.125 v^-0.35 tail beyond, zero below E_0; angular factors (1 + k_s theta^2 / 2 pi) on E_max and (1 + k_s theta^2 / pi) on delta_max; BN parameters (delta_max 2.9, E_max 350 eV, E_0 12.5 eV, first crossover ~35 eV) are PROVISIONAL Hall-thruster-PIC values flagged in the code and the provenance, to be digitised from Dunaevsky, Raitses and Fisch 2003 / Tondu, Belhaj and Inguimbert 2011 before any SEE-on case (review 4.2)",
+      "space_charge_limit": "Hobbs and Wesson 1967: the classical sheath ceases to exist as delta -> 1; the scaffold's virtual_wall_yield diagnostic reports the Vaughan yield at the mean electron impact energy per wall column, its flux-weighted mean and the number of columns at or above space_charge_limit_yield (1.0), so an SEE-on model must implement the cap or an inverse-sheath treatment (Campanell, Khrabrov and Kaganovich 2012) before it can be enabled",
+      "tests": "yield rises and falls around E_max, first crossover bracketed, enable fails closed"
+    }
+  },
+  "unchanged_from_v1_3": [
+    "operating point (300 V, 3 mA @ 2 eV injection, n_g0 = 5.5e19 ceiling, Q_in = 8.551e16 atoms/s, seed 5e16 @ 5 eV), dt = 1.5 ps, 60 x 480 grid, W = 6e4, ion sub-cycle 8",
+    "a-priori stability gate (omega_pe dt, omega_ce dt, cell/lambda_D at the reference density, Courant, collision probability) and the runtime omega_pe dt gate",
+    "device block-Thomas Poisson with the true-residual contract checked at every host sync (the graph replays the same launches; the residual is checked when the host syncs)",
+    "plateau criterion (I_d, N_e, n_g drifts < 5 % over the trailing 20 %, >= 3 transits) plus the triad soft precondition"
+  ],
+  "tests": [
+    "tests/pic2d/test_pic2d_neutral_inventory.py: v1.4 recycling ledger closes and the fixed point includes the wall source; convergence to the recycled fixed point with gross/net utilisation; wall-temperature mixture effusion and relaxation OFF; state array reads v1.3 (4-ledger) and v1.4 (5-ledger) layouts",
+    "tests/pic2d/test_pic2d_v14_gates_hooks.py: peak-node sample reproduces a uniform seed plasma (n, T_e, lambda_D, cells/lambda_D) and honours the particle floor; gate fails closed and records the threshold; a Simulation recycles wall and anode ions with ledger closure and net <= gross; Bohm scattering preserves speed and matches the rate; hook OFF by default and tallied when ON; Vaughan yield, first crossover, SEE enable fails closed",
+    "tests/pic2d/test_pic2d_warp_parity.py: CUDA-graph step bitwise-identical to the direct launches over 200 steps with ionisation, injection and ion sub-cycling active (positions, velocities, surface charge, phi, injection carry; integer tallies exact), and a resume through the graph path from a direct-path checkpoint is bitwise",
+    "tests/pic2d/test_pic2d_steady_state_runner.py: triad absent without the block, recorded before one transit, soft blocks the plateau, hard stops (residual, T_e dense, S); a v1.4 protocol run records recycling, peak node and triad in status/series/summary with ledger closure < 1e-12 and reads v1.3 series; the peak gate stops a run fail-closed"
+  ],
+  "remaining_simplifications": [
+    "neutrals uniform in space: recycled atoms are added to the same 0-D inventory (no local re-emission at the cusp wall where the ion flux peaks; review blocker 3(d)2 view-factor model is v2.0)",
+    "the artificial relaxation is ON in the v1.4 development run (recorded); only the fixed point is physical; a plateau under this closure cannot show breathing (review blocker 5)",
+    "no ion-neutral elastic or charge-exchange collisions; no SEE emission (scaffold only); no anomalous transport in the base case (hook only); Dirichlet exit plane; prescribed B; electrostatic axisymmetric; momentum-conserving scheme (the triad measures its heating; it does not remove it)"
+  ]
+}

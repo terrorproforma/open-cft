@@ -177,3 +177,57 @@ def test_gpu_run_is_deterministic_and_checkpoint_resumable(device: str, tmp_path
     for key, value in a.cumulative.items():
         assert value == pytest.approx(b.cumulative[key], rel=1e-9, abs=1e-300), key
     assert a.cumulative["ionizations"] > 0 and a.cumulative["injected_electrons"] > 0
+
+
+def _assert_same_state(a, b) -> None:
+    for name in ("r_m", "z_m", "vr_m_per_s", "vt_m_per_s", "vz_m_per_s"):
+        assert np.array_equal(getattr(a.electrons, name), getattr(b.electrons, name)), name
+        assert np.array_equal(getattr(a.ions, name), getattr(b.ions, name)), name
+    assert np.array_equal(a.surface_charge_c, b.surface_charge_c)
+    assert np.array_equal(a.phi_v, b.phi_v)
+    assert a.injection_carry == b.injection_carry
+    for key, value in a.cumulative.items():
+        # integer tallies are exact; the float sums are atomically reduced (round-off, as between two direct runs)
+        assert value == pytest.approx(b.cumulative[key], rel=1e-9, abs=1e-300), key
+
+
+@pytest.mark.skipif("cuda:0" not in DEVICES, reason="CUDA graphs need a CUDA device")
+def test_cuda_graph_step_is_bitwise_identical_to_the_direct_launches_for_200_steps(tmp_path: Path):
+    """v1.4 blocker-2 change: the whole step replayed as one CUDA graph equals the uncaptured step.
+
+    Dynamical state (positions, velocities, surface charge, potential, injection carry) bitwise;
+    integer tallies exact; ionisation, injection and ion sub-cycling all active; a resume through
+    the graph path is also bitwise.
+    """
+
+    grid = Grid2D(CFT_GEOMETRY, 12, 96)
+    field = uniform_field_map(grid, 0.05)
+    xs = XenonCrossSections.from_file()
+    config = PIC2DConfig(
+        grid=grid, potentials=BoundaryPotentials(300.0, 0.0), dt_s=5e-12, macro_weight=2e6, seed=7,
+        injection=InjectionConfig(0.05, 2.0), seed_plasma=SeedPlasmaConfig(1e16, 5.0), mcc=MCCConfig(1e21),
+        poisson=PoissonConfig2D(method="device-direct", relative_tolerance=1e-10),
+        reference_density_per_m3=1e16, reference_electron_temperature_ev=5.0,
+        limits=StabilityLimits(max_cell_debye_ratio=2.0), series_interval_steps=25, ion_subcycle=4, device_sync_steps=25,
+    )
+    direct = Simulation(config, field, cross_sections=xs, backend="warp-cuda", step_graph=False)
+    graph = Simulation(config, field, cross_sections=xs, backend="warp-cuda", step_graph=True)
+    assert direct.backend.step_graph is False and graph.backend.step_graph is True
+    direct.run(200)
+    graph.run(200)
+    assert graph.backend.step_graph_active and graph.backend.graph_captures >= 2      # ion-push and electron-only variants
+    a, b = direct.state, graph.state
+    assert a.step == b.step == 200 and a.cumulative["ionizations"] > 0 and a.cumulative["injected_electrons"] > 0
+    _assert_same_state(a, b)
+    assert [r.to_dict()["currents_a"] for r in direct.series] == pytest.approx([r.to_dict()["currents_a"] for r in graph.series], rel=1e-9)
+    # a resume through the graph path from a mid-run checkpoint of the direct path is bitwise too
+    half = Simulation(config, field, cross_sections=xs, backend="warp-cuda", step_graph=False)
+    half.run(125)
+    json_path, _ = artifacts.save_checkpoint(tmp_path, "g", half.state, config, field_sha256=field.sha256,
+                                             cross_section_sha256=xs.payload_sha256, backend="warp-cuda")
+    loaded = artifacts.load_checkpoint(json_path, config, field_sha256=field.sha256, cross_section_sha256=xs.payload_sha256)
+    resumed = Simulation(config, field, cross_sections=xs, backend="warp-cuda", step_graph=True)
+    resumed.load_state(loaded)
+    resumed.run(75)
+    _assert_same_state(a, resumed.state)
+    assert graph.to_provenance()["v1_4_options"]["step_graph"] is True
