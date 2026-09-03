@@ -255,10 +255,10 @@ def test_variants_load_from_sibling_file_and_keep_the_protocol_frozen(tiny, tmp_
     # the checked-in v2 variants are consistent with the frozen v2 protocol
     v2 = Path(__file__).resolve().parents[2] / "experiments" / "pic2d_cft_steady_state_v2" / "protocol.json"
     v2_variants = runner.load_variants(v2)
-    assert set(v2_variants) == {"seed-b", "w-half"}
+    assert set(v2_variants) == {"seed-b", "w-0.7"}
     base = runner.load_protocol(v2)
     seed_b, _ = runner.apply_case(base, "seed-b", v2_variants)
-    w_half, _ = runner.apply_case(base, "w-half", v2_variants)
+    w_half, _ = runner.apply_case(base, "w-0.7", v2_variants)
     assert seed_b["case"]["seed"] != base["case"]["seed"] and seed_b["case"]["macro_weight"] == base["case"]["macro_weight"]
     assert w_half["case"]["seed"] == base["case"]["seed"] and w_half["case"]["macro_weight"] == pytest.approx(0.7 * base["case"]["macro_weight"])
     assert seed_b["stopping_rule"]["wall_budget_seconds"] == w_half["stopping_rule"]["wall_budget_seconds"] == 12600
@@ -268,6 +268,11 @@ def test_finalize_writes_artifacts_from_checkpoint_without_stepping(tiny, tmp_pa
     protocol, config, field, xs = tiny
     results = tmp_path / "killed"
     runner.run_steady_state(protocol, results, backend="cpu", field_map=field, cross_sections=xs, max_steps=80, log=lambda _: None)
+    # a run the runner finished itself keeps its window-average maps: re-finalizing is refused
+    summary_before = (results / "summary.json").read_bytes()
+    with pytest.raises(runner.PIC2DValidationError, match="already finished"):
+        runner.finalize(protocol, results, backend="cpu", field_map=field, cross_sections=xs, log=lambda _: None)
+    assert (results / "summary.json").read_bytes() == summary_before
     # pretend the process died after the step-80 checkpoint: remove the stop artifacts and add a stray record
     for name in ("summary.json", "summary.json.sha256.json", "maps.npz", "series.npz"):
         (results / name).unlink()

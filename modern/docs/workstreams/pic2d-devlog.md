@@ -590,3 +590,116 @@ before a plateau is meaningful.
   labels showed log10 values, and n_g(t) was hidden under the fixed-point trace
   (they coincide to 0.02 %; the fixed point is now drawn first).
 - Campaign proposal drafted: `docs/workstreams/pic2d-campaign-v1-proposal.md`.
+
+## 2026-09-03 (Phase 4, part 2): seed-b finished; comparison; w-0.7 launched
+
+### seed-b outcome
+
+- `results-seed-b/`: `wall_clock_budget_reached` at step 4,040,000, t = 6.06 µs =
+  2.53 ion transits, wall 12,751 s (3.99 ms/step under heavy CPU contention from
+  concurrent agents, vs 2.0 ms/step for the base run). No plateau declaration is
+  possible (< 3 transits); its own trailing-20 % drifts were I_d +1.3 %, N_e +7.6 %
+  (fails the 5 % gate, still densifying), n_g −1.8 %.
+- `finalize --case seed-b` was NOT run: the runner's graceful budget stop already wrote
+  the full artifact set with *window-average* maps (steps 3.6–4.0 M = 5.4–6.0 µs);
+  `finalize` would have replaced them with instantaneous checkpoint maps (flux and
+  ionisation maps zero) and rewritten the stop reason. The runner now refuses to
+  re-finalize a run it finished itself unless `--allow-refinalize` is passed (test
+  added). `finalize` is for killed/crashed runs only.
+- Committed small artifacts: `chore(pic2d): steady-state v2 seed-b results
+  (development)` (41ccb1ef); `.gitignore` tracks `results-seed-b/` with the same
+  split as the base run.
+
+### seed-b vs base (dashboard `comparisons` block; computed from the hash-verified series)
+
+Window A — common window 4.848–6.06 µs (seed-b's trailing 20 %, the same simulated time
+in both runs; both at 2.0–2.5 transits, still slowly densifying):
+
+| quantity | base | seed-b | Δ rel. | SE base / seed-b (30 ns batch means) | z | pure shot-noise σ_rel |
+| --- | --- | --- | --- | --- | --- | --- |
+| I_d | 3.409 mA | 3.422 mA | +0.40 % | 7.9e-6 / 6.4e-6 A | 1.35 | 0.15 % |
+| I_beam,i | 2.268 mA | 2.283 mA | +0.64 % | 5.4e-6 / 7.0e-6 A | 1.64 | 0.19 % |
+| I_wall,i | 3.328 mA | 3.350 mA | +0.65 % | 1.5e-5 / 1.6e-5 A | 0.99 | 0.15 % |
+| I_wall,e | 3.333 mA | 3.356 mA | +0.72 % | 1.5e-5 / 1.5e-5 A | 1.12 | 0.15 % |
+| I_exit,e (returned) | 1.856 mA | 1.856 mA | +0.01 % | 6.3e-6 / 6.2e-6 A | 0.02 | 0.21 % |
+| S | 3.858e16 /s | 3.899e16 /s | +1.05 % | 5.7e13 / 5.3e13 | 5.2 | 0.11 % |
+| n_g | 3.020e19 | 2.994e19 m⁻³ | −0.83 % | 2.9e16 / 2.8e16 | −6.2 | – |
+| N_e (macro) | 915.3 k | 920.5 k | +0.57 % | 3.1e3 / 3.2e3 | 1.18 | 0.10 % |
+| N_i (macro) | 923.3 k | 928.8 k | +0.60 % | 3.1e3 / 3.3e3 | 1.23 | 0.10 % |
+| ⟨T_e⟩ = (2/3)K/N | 7.635 eV | 7.676 eV | +0.53 % | 0.005 / 0.006 | 5.0 | – |
+| φ_max | 339.1 V | 338.5 V | −0.18 % | 0.21 / 0.17 V | −2.2 | – |
+| φ_mean | 175.0 V | 175.1 V | +0.06 % | 0.21 / 0.33 V | 0.27 | – |
+| φ_min | −9.79 V | −9.64 V | +1.5 % (0.15 V) | 0.09 / 0.11 V | 1.04 | – |
+| peak ω_pe Δt | 0.1096 | 0.1094 | −0.15 % | | −0.46 | – |
+
+Reading: every plateau quantity agrees to < 1.1 %; the discharge, beam, wall and returned
+currents, the particle counts and the potential range are consistent with the
+within-run fluctuation statistics (|z| ≤ 1.6; φ_max marginal at 2.2). S (+1.05 %),
+n_g (−0.83 %) and ⟨T_e⟩ (+0.53 %) differ by 5–6 of their batch-means SEs: these are
+smooth, integrated quantities whose 30-ns-block SE is tiny (0.1–0.15 %), so the
+difference is a genuine small seed-to-seed trajectory offset, not counting noise —
+seed-b is ~0.6 % denser and ~0.5 % hotter at the same time, which gives ~1.1 % more
+ionisation (dS/S ≈ dN/N + dT/T), and the neutral inventory answers with
+Δn_g = −ΔS/c = −2.6e17 (−0.87 %) — exactly the observed −0.83 %. The pure shot-noise
+expectation for ~1 M macro-particles (0.10 % for counts, 0.15–0.2 % for a current
+averaged over 1.2 µs, 0.11 % for S) is a lower bound the observed spread exceeds by
+3–7×: the run-to-run variance is dominated by correlated plasma fluctuations and by
+the slow densification phase, not by counting statistics. Conclusion: the two seeds
+are statistically consistent at the ≤ 1 % level; the seed-to-seed spread of the
+headline quantities is ≈ 0.5–1 %, well inside the 5 % plateau tolerance. With n = 2
+this is a spread estimate, not a variance.
+
+Window B — base plateau window 7.2–7.68 µs vs seed-b 4.85–6.06 µs (time-offset, because
+seed-b stopped 1.6 µs before the base window): I_d −0.64 %, I_beam −0.38 %, S −0.89 %,
+n_g +0.85 %, but N_e −7.4 %, I_wall,i/e −10 %, φ_mean +4.9 %, φ_min +8.4 %,
+ω_pe Δt −4.3 %. That is the base run's continued densification between 6 and 7.7 µs:
+the discharge and beam currents saturate first (set by the injected 3 mA and the beam
+fraction), while the density keeps growing with the extra ionisation going to the
+walls (wall currents +10 %) and the bulk potential settling 8 V lower.
+
+Maps (base 7.2–7.68 µs vs seed-b 5.4–6.0 µs, time-offset): n_e mean −4.6 %, peak
+−8.2 % (consistent with N_e −7.4 %), rel. L2 10 %; T_e density-weighted +2.7 %, peak
+65 vs 59 eV; φ RMS difference 9.5 V; wall ion/electron flux peaks at the same node
+(z = 12.175 mm, the downstream cusp plane) with −12.6 % amplitude and 14 % L2 shape
+difference; exit ion j_z on axis 306 vs 462 A/m² (−34 %) with the total I_beam agreeing to
+0.6 % — the axis cell has the smallest area and is shot-noise dominated (the exit profile
+L2 difference of 24 % is concentrated in the inner cells).
+
+### w-0.7 (convergence pair b) launched
+
+- `variants.json`: the case was renamed `w-half` → `w-0.7` before launch (it is
+  W × 0.7 = 4.2e4, not W/2; the W/2 projection exceeded the 3.5 h budget). README,
+  `.gitignore`, and both test files follow.
+- Launched 2026-09-03T07:04:41Z, PID 9856, `results-w-0.7/` (run.log/run.err/launch.pid
+  next to the runner's own status.jsonl/series.jsonl/checkpoint/). Config identity
+  `fine-w4.2e4-ng0-5.5e19-seed5e16-inventory-w0.7`, seed 20260903, wall budget 12,600 s.
+- 3-minute check (step 120,600, t = 0.181 µs): 357 k e⁻ / 384 k ions (base at the same
+  step: 249 k / 269 k — the 1/0.7 particle ratio as designed), I_d 1.44 mA, S 1.68e16 /s,
+  n_g 4.355e19 (base 4.353e19), ⟨T_e⟩ 8.53 eV (base 8.57), ω_pe Δt 0.070 (base 0.086:
+  the peak-cell density estimate is smoother with more particles), 2.41–2.47 ms/step
+  (GPU otherwise idle). Ignition trajectory matches the base run.
+- ETA: at 2.44 ms/step, 3 transits (4.8 M steps) need 3.17 h more against 3.42 h of budget
+  left — reachable (3.27 transits) only if the throughput holds. It will not fully hold:
+  the base run ran 2.0 ms/step at 1.0 M particles under contention and w-0.7 will carry
+  ≈ 1.4 M; at 2.8–3.0 ms/step the 3-transit mark needs 3.6–3.9 h > budget. Expect a
+  budget stop at ≈ 2.6–2.9 transits; it will then be compared over the common window like
+  seed-b (the comparison block handles that automatically). Resumable if a budget
+  extension is decided.
+
+### Dashboard
+
+- `generate_pic2d_cft_steady_state.py`: `build_case(raw_out=…)` hands the full-resolution
+  series/maps to `build_comparison`, which writes the `comparisons` payload block: window
+  A (variant trailing 20 % in both runs), window B (base plateau window vs variant
+  trailing window when they do not overlap), map comparison (mean/peak/L2, wall-flux peak
+  position, exit j_z on axis), method text. Statistics: batch means over 30 ns blocks
+  (100 series intervals; longer than the ns fluctuation correlation time), z-scores, pure
+  shot-noise reference 1/√(macro events in the window). `validate_payload` requires
+  exactly one comparison per finished variant. The convergence panel renders the tables
+  with |z| colour coding (green < 2, amber < 3, red); the variant status table shows
+  transits and plateau declaration.
+- Tests: 10 dashboard tests (new: common-window comparison exists, per-cent agreement,
+  shot-noise reference below the observed difference, window B offset, same wall-flux
+  peak node) + 13 runner tests (new: re-finalize refused). Screenshot:
+  `%TEMP%\pic2d-steady-state-seedb-full.png` (1400×9000) and the convergence crop
+  `%TEMP%\pic2d-steady-state-seedb-convergence.png`.

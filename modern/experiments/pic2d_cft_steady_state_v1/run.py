@@ -713,6 +713,7 @@ def finalize(
     stop_reason: str = "finalized_from_checkpoint",
     protocol_path: Path = PROTOCOL_PATH,
     log: Callable[[str], None] = lambda text: print(text, flush=True),
+    allow_refinalize: bool = False,
 ) -> Path:
     """Write summary/maps/series from the latest checkpoint and the series history without stepping.
 
@@ -722,11 +723,24 @@ def finalize(
     is loaded with the code-identity check relaxed (no dynamics are computed);
     ``backend`` must be the one the run used (the Poisson method is part of the
     config identity).
+
+    A run that the runner itself ended (plateau, wall budget, stability gate) already
+    has its window-average artifacts; finalizing it again would *downgrade* the maps
+    to instantaneous ones and rewrite the stop reason, so that is refused unless
+    ``allow_refinalize`` is set.
     """
 
     checkpoint = find_checkpoint(results)
     if checkpoint is None:
         raise PIC2DValidationError(f"no checkpoint to finalize under {results}")
+    state_path = results / "run_state.json"
+    if state_path.is_file() and (results / "summary.json").is_file() and not allow_refinalize:
+        previous = json.loads(state_path.read_text(encoding="utf-8"))
+        if previous.get("finished") and "finalized_from_step" not in previous:
+            raise PIC2DValidationError(
+                f"{results.name} was already finished by the runner ({previous.get('stop_reason')}) with window-average "
+                "maps; finalize would replace them with instantaneous checkpoint maps (use --allow-refinalize to override)"
+            )
     config = build_config(protocol, backend=backend)
     t0 = time.perf_counter()
     field_map, cross_sections = load_inputs(config, field_map, cross_sections)
@@ -793,6 +807,7 @@ def main(argv: list[str] | None = None, *, protocol_path: Path = PROTOCOL_PATH, 
     fin = sub.add_parser("finalize")
     fin.add_argument("--backend", default="warp-cuda", help="the backend the run used (part of the config identity)")
     fin.add_argument("--stop-reason", default="finalized_from_checkpoint")
+    fin.add_argument("--allow-refinalize", action="store_true", help="re-finalize a run the runner already finished (downgrades the maps)")
     sub.add_parser("status")
     args = parser.parse_args(argv)
     protocol, results_name = apply_case(load_protocol(protocol_path), args.case, load_variants(protocol_path))
@@ -801,7 +816,7 @@ def main(argv: list[str] | None = None, *, protocol_path: Path = PROTOCOL_PATH, 
         run_steady_state(protocol, results, backend=args.backend, max_steps=args.max_steps, wall_budget_seconds=args.wall_budget_seconds,
                          require_same_code=not args.ignore_code_identity, protocol_path=protocol_path)
     elif args.command == "finalize":
-        finalize(protocol, results, backend=args.backend, stop_reason=args.stop_reason, protocol_path=protocol_path)
+        finalize(protocol, results, backend=args.backend, stop_reason=args.stop_reason, protocol_path=protocol_path, allow_refinalize=args.allow_refinalize)
     else:
         print(json.dumps(status(results, protocol), indent=1))
     return 0

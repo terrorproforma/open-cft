@@ -58,8 +58,34 @@ def test_payload_is_hash_bound_and_claim_bounded(payload) -> None:
     assert len(headline["axial_peak_n_e_per_m3"]) == len(headline["grid_z_m"])
     assert headline["cusps"]["cusp_z_m"], "cusp planes must be located from the P2 field map"
     assert headline["resolvability_at_peak"]["dz_over_lambda_d_at_peak"] > 0
-    assert {v["name"] for v in payload["variants"]} == {"seed-b", "w-half"}
+    assert {v["name"] for v in payload["variants"]} == {"seed-b", "w-0.7"}
     GENERATOR.validate_payload(payload)
+
+
+def test_seed_b_is_compared_to_the_headline_over_a_common_window(payload) -> None:
+    seed_b = next(v for v in payload["variants"] if v["name"] == "seed-b")
+    assert seed_b["state"] == "finished" and seed_b["reached_plateau"] is False and seed_b["transit_times"] < 3
+    comparison = next(c for c in payload["comparisons"] if c["other_label"] == "variant seed-b")
+    assert comparison["other_stop_reason"] == "wall_clock_budget_reached"
+    common = comparison["windows"][0]
+    assert common["t_end_s"] == pytest.approx(6.06e-6) and common["t_start_s"] == pytest.approx(0.8 * 6.06e-6)
+    rows = {r["quantity"]: r for r in common["rows"]}
+    for name in ("I_d", "I_beam,i", "S", "n_g", "N_e (macro)", "<T_e> (2/3 K/N)", "phi_max", "phi_min"):
+        assert name in rows
+    # same operating point, same time window: the seed-to-seed spread of the plateau quantities is at the per-cent level
+    for name in ("I_d", "I_beam,i", "S", "n_g", "N_e (macro)"):
+        assert abs(rows[name]["rel_diff"]) < 0.02, name
+        assert rows[name]["samples_base"] > 1000 and rows[name]["samples_other"] > 1000
+    assert rows["I_d"]["shot_noise_rel"] < abs(rows["I_d"]["rel_diff"]) < 0.01     # currents agree to < 1 %, above pure counting noise
+    assert rows["n_g"]["shot_noise_rel"] is None
+    # window B exists because seed-b stopped before the base plateau window
+    offset = comparison["windows"][1]
+    assert offset["t_start_s"] >= common["t_end_s"] and offset["other_t_end_s"] == common["t_end_s"]
+    maps = comparison["maps"]["rows"]
+    assert maps["wall ion flux"]["peak_z_base_m"] == maps["wall ion flux"]["peak_z_other_m"]   # same cusp-plane wall-flux peak
+    assert 0 < maps["n_e"]["relative_l2_diff"] < 0.5
+    html = GENERATOR.render_html(payload)
+    assert '"other_label":"variant seed-b"' in html and "vs headline" in html and "shot-noise" in html
 
 
 def test_history_panels_keep_predecessors(payload) -> None:

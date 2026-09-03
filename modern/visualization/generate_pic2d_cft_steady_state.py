@@ -137,8 +137,13 @@ def cusp_positions(maps: Mapping[str, np.ndarray], grid: Grid2D, grid_dict: Mapp
         return {"source": f"field map unavailable ({type(exc).__name__}); cusps not marked", "cusp_z_m": [], "magnet_midplane_z_m": []}
 
 
-def build_case(case_dir: Path, protocol_path: Path, *, label: str, role: str, protocol_sha_expected: str | None = None) -> dict[str, Any]:
-    """Hash-verified digest of one finished steady-state case directory (maps + series embedded)."""
+def build_case(case_dir: Path, protocol_path: Path, *, label: str, role: str, protocol_sha_expected: str | None = None,
+               raw_out: dict[str, Any] | None = None) -> dict[str, Any]:
+    """Hash-verified digest of one finished steady-state case directory (maps + series embedded).
+
+    ``raw_out`` (if given) receives the full-resolution ``series``/``maps`` arrays and the
+    plasma mask for the between-case comparison; they are not embedded.
+    """
 
     summary_path = case_dir / "summary.json"
     if not summary_path.is_file():
@@ -160,6 +165,9 @@ def build_case(case_dir: Path, protocol_path: Path, *, label: str, role: str, pr
     z = float(grid_dict["geometry"]["z_min_m"]) + np.arange(nz + 1) * float(grid_dict["dz_m"])
     stride = 1 if nz <= 256 else 2
     plasma = build_mesh_masks(grid).plasma_node
+    if raw_out is not None:
+        raw_out.update({"series": {k: np.asarray(v) for k, v in series.items()}, "maps": {k: np.asarray(v) for k, v in maps.items()},
+                        "plasma": plasma, "summary": summary, "dz_m": float(grid_dict["dz_m"])})
     embedded_maps = {key: _matrix(np.where(plasma, maps[key], np.nan)[:, ::stride]) for key in MAP_KEYS}
     # peak-density location (node) and the axial profile of the radial maximum
     n_e = np.where(plasma, maps["n_e_per_m3"], 0.0)
@@ -245,6 +253,183 @@ def build_case(case_dir: Path, protocol_path: Path, *, label: str, role: str, pr
         "series_samples": n_samples,
         "series": embedded_series,
         "final_series": summary["final_series"],
+    }
+
+
+# -- between-case comparison (statistical consistency) ---------------------------
+
+BLOCK_SECONDS = 3.0e-8   # batch-means block (100 series intervals of 0.3 ns): longer than the ~ns fluctuation correlation time
+
+
+def _window_stats(t: np.ndarray, y: np.ndarray, t_start: float, t_end: float) -> tuple[float, float, int]:
+    """Window mean, its batch-means standard error (accounts for autocorrelated fluctuations), sample count."""
+
+    sel = (t > t_start) & (t <= t_end) & np.isfinite(y)
+    values = np.asarray(y[sel], dtype=np.float64)
+    if values.size == 0:
+        return float("nan"), float("nan"), 0
+    mean = float(values.mean())
+    times = t[sel]
+    blocks = np.floor((times - times[0]) / BLOCK_SECONDS).astype(int)
+    means = np.array([values[blocks == b].mean() for b in np.unique(blocks)])
+    se = float(means.std(ddof=1) / sqrt(means.size)) if means.size > 1 else float("nan")
+    return mean, se, int(values.size)
+
+
+def _series_quantities(raw: Mapping[str, Any]) -> dict[str, tuple[np.ndarray, str, str]]:
+    """Name -> (values, unit, shot-noise kind) derived from a full-resolution series."""
+
+    s = raw["series"]
+    w = float(raw["summary"]["provenance"]["config"]["macro_weight"])
+    n_e = np.maximum(s["electrons"].astype(np.float64), 1.0)
+    t_e = (2.0 / 3.0) * s["kinetic_electron_j"] / (n_e * w * E_CHARGE)
+    return {
+        "I_d": (s["current_discharge_a"], "A", "current"),
+        "I_beam,i": (s["current_exit_ion_beam_a"], "A", "current"),
+        "I_wall,i": (s["current_wall_ion_a"], "A", "current"),
+        "I_wall,e": (s["current_wall_electron_a"], "A", "current"),
+        "I_exit,e (returned)": (s["current_exit_electron_a"], "A", "current"),
+        "S": (s["neutral_ionization_rate_per_s"], "1/s", "rate"),
+        "n_g": (s["neutral_density_per_m3"], "1/m^3", "none"),
+        "N_e (macro)": (s["electrons"].astype(np.float64), "", "count"),
+        "N_i (macro)": (s["ions"].astype(np.float64), "", "count"),
+        "<T_e> (2/3 K/N)": (t_e, "eV", "count"),
+        "phi_max": (s["phi_max_v"], "V", "none"),
+        "phi_mean": (s["phi_mean_v"], "V", "none"),
+        "phi_min": (s["phi_min_v"], "V", "none"),
+        "peak omega_pe dt": (s["peak_omega_pe_dt"], "", "none"),
+    }
+
+
+def _shot_noise_relative(kind: str, mean: float, window_seconds: float, w: float, samples: int) -> float | None:
+    """Pure counting-noise relative sigma of the window mean (no correlations): 1/sqrt(macro events)."""
+
+    if not isfinite(mean) or mean == 0:
+        return None
+    if kind == "current":
+        events = abs(mean) * window_seconds / (E_CHARGE * w)
+    elif kind == "rate":
+        events = abs(mean) * window_seconds / w
+    elif kind == "count":
+        events = abs(mean)  # one snapshot of N macro-particles (per-sample sigma; the window mean is not more precise if N is conserved)
+    else:
+        return None
+    return 1.0 / sqrt(events) if events > 0 else None
+
+
+def compare_series(base: Mapping[str, Any], other: Mapping[str, Any], t_start: float, t_end: float) -> list[dict[str, Any]]:
+    """Window means of the two runs over [t_start, t_end] with batch-means errors and z-scores."""
+
+    rows = []
+    qb, qo = _series_quantities(base), _series_quantities(other)
+    tb, to = base["series"]["time_s"], other["series"]["time_s"]
+    w = float(base["summary"]["provenance"]["config"]["macro_weight"])
+    for name, (yb, unit, kind) in qb.items():
+        mb, sb, nb = _window_stats(tb, yb, t_start, t_end)
+        mo, so, no = _window_stats(to, qo[name][0], t_start, t_end)
+        diff = mo - mb
+        denom = sqrt(sb**2 + so**2) if isfinite(sb) and isfinite(so) and (sb > 0 or so > 0) else float("nan")
+        rows.append({
+            "quantity": name, "unit": unit, "base": mb, "other": mo, "abs_diff": diff,
+            "rel_diff": diff / abs(mb) if mb else None,
+            "se_base": sb, "se_other": so, "samples_base": nb, "samples_other": no,
+            "z": diff / denom if isfinite(denom) else None,
+            "shot_noise_rel": _shot_noise_relative(kind, mb, t_end - t_start, w, nb),
+        })
+    return [{k: (float(f"{v:.6g}") if isinstance(v, float) and isfinite(v) else (None if isinstance(v, float) else v)) for k, v in r.items()} for r in rows]
+
+
+def compare_maps(base: Mapping[str, Any], other: Mapping[str, Any]) -> dict[str, Any]:
+    """Plateau-window map comparison (windows may differ in time; the caller labels that)."""
+
+    pb, po = base["plasma"], other["plasma"]
+    mb, mo = base["maps"], other["maps"]
+    out: dict[str, Any] = {}
+
+    def rel(a: float, b: float) -> float | None:
+        return float(f"{(b - a) / abs(a):.4g}") if a else None
+
+    for key, label in (("n_e_per_m3", "n_e"), ("t_e_ev", "T_e"), ("phi_v", "phi"), ("ionization_rate_per_m3_s", "ionisation rate")):
+        a = np.where(pb, mb[key], np.nan)
+        b = np.where(po, mo[key], np.nan)
+        wa = np.where(pb, mb["n_e_per_m3"], 0.0)
+        wb = np.where(po, mo["n_e_per_m3"], 0.0)
+        mean_a = float(np.nanmean(a)) if key != "t_e_ev" else float(np.nansum(a * wa) / wa.sum())
+        mean_b = float(np.nanmean(b)) if key != "t_e_ev" else float(np.nansum(b * wb) / wb.sum())
+        peak_a, peak_b = float(np.nanmax(a)), float(np.nanmax(b))
+        both = np.isfinite(a) & np.isfinite(b)
+        l2 = float(np.sqrt(np.nansum((b[both] - a[both]) ** 2) / np.nansum(a[both] ** 2))) if key != "phi_v" else float(np.sqrt(np.nanmean((b[both] - a[both]) ** 2)))
+        out[label] = {"mean_base": mean_a, "mean_other": mean_b, "mean_rel_diff": rel(mean_a, mean_b), "peak_base": peak_a, "peak_other": peak_b,
+                      "peak_rel_diff": rel(peak_a, peak_b), ("relative_l2_diff" if key != "phi_v" else "rms_diff_v"): float(f"{l2:.4g}")}
+    dz = base["dz_m"]
+    for key, label in (("wall_ion_flux_per_m2_s", "wall ion flux"), ("wall_electron_flux_per_m2_s", "wall electron flux")):
+        a, b = mb[key], mo[key]
+        za, zb = (int(np.argmax(a)) + 0.5) * dz, (int(np.argmax(b)) + 0.5) * dz
+        out[label] = {"peak_base": float(a.max()), "peak_other": float(b.max()), "peak_rel_diff": rel(float(a.max()), float(b.max())),
+                      "peak_z_base_m": float(f"{za:.5g}"), "peak_z_other_m": float(f"{zb:.5g}"),
+                      "relative_l2_diff": float(f"{np.sqrt(((b - a) ** 2).sum() / (a ** 2).sum()):.4g}"),
+                      "total_rel_diff": rel(float(a.sum()), float(b.sum()))}
+    for key, label in (("exit_ion_current_density_a_per_m2", "exit ion j_z"), ("exit_electron_current_density_a_per_m2", "exit electron j_z")):
+        a, b = mb[key], mo[key]
+        out[label] = {"axis_base": float(a[0]), "axis_other": float(b[0]), "axis_rel_diff": rel(float(a[0]), float(b[0])),
+                      "relative_l2_diff": float(f"{np.sqrt(((b - a) ** 2).sum() / (a ** 2).sum()):.4g}")}
+    return out
+
+
+def build_comparison(base: Mapping[str, Any], other: Mapping[str, Any], base_case: Mapping[str, Any], other_case: Mapping[str, Any]) -> dict[str, Any]:
+    """Statistical comparison of a variant against the headline run.
+
+    Window A: the variant's trailing-20 % window evaluated in BOTH runs (same simulated
+    time; both runs are at the same stage).  Window B: the base run's plateau window vs
+    the variant's trailing window when they do not overlap (time-offset; the variant may
+    still be drifting).  Maps are compared as written (their windows are listed).
+    """
+
+    t_end_other = float(other_case["simulated_time_s"])
+    frac = (other_case["plateau"] or {}).get("window_fraction", 0.2)
+    a_start, a_end = (1.0 - frac) * t_end_other, t_end_other
+    base_window = base_case["averaging_window_step_range"]
+    dt = float(base_case["config"]["dt_s"])
+    b_start, b_end = base_window[0] * dt, base_window[1] * dt
+    windows = [{
+        "label": "A: common window (variant's trailing 20 %, same simulated time in both runs)",
+        "t_start_s": a_start, "t_end_s": a_end, "rows": compare_series(base, other, a_start, a_end),
+    }]
+    if b_start >= a_end:
+        base_rows = {r["quantity"]: r for r in compare_series(base, base, b_start, b_end)}
+        other_rows = {r["quantity"]: r for r in compare_series(other, other, a_start, a_end)}
+        rows = []
+        for name, rb in base_rows.items():
+            ro = other_rows[name]
+            mb, mo, sb, so = rb["base"], ro["base"], rb["se_base"], ro["se_base"]
+            diff = None if mb is None or mo is None else mo - mb
+            denom = sqrt(sb**2 + so**2) if sb is not None and so is not None and (sb > 0 or so > 0) else None
+            rows.append({"quantity": name, "unit": rb["unit"], "base": mb, "other": mo, "abs_diff": diff,
+                         "rel_diff": None if diff is None or not mb else float(f"{diff / abs(mb):.6g}"),
+                         "se_base": sb, "se_other": so, "samples_base": rb["samples_base"], "samples_other": ro["samples_base"],
+                         "z": None if diff is None or denom is None else float(f"{diff / denom:.6g}"), "shot_noise_rel": rb["shot_noise_rel"]})
+        windows.append({
+            "label": "B: base plateau window vs variant trailing window (time-offset: the variant had not reached the base window)",
+            "t_start_s": b_start, "t_end_s": b_end, "other_t_start_s": a_start, "other_t_end_s": a_end, "rows": rows,
+        })
+    other_window = other_case["averaging_window_step_range"]
+    return {
+        "base_id": base_case["id"], "other_id": other_case["id"], "other_label": other_case["label"],
+        "other_stop_reason": other_case["stop_reason"], "other_transit_times": other_case["ion_transit_times"],
+        "windows": windows,
+        "maps": {
+            "base_window_s": [b_start, b_end],
+            "other_window_s": [other_window[0] * dt, other_window[1] * dt] if other_window else None,
+            "note": "window-average maps as written by each run; the windows differ in simulated time when the variant stopped early",
+            "rows": compare_maps(base, other),
+        },
+        "block_seconds": BLOCK_SECONDS,
+        "method": (
+            "Window means; standard errors by batch means over 30 ns blocks (captures autocorrelated plasma fluctuations, not only "
+            "counting noise); z = difference / sqrt(SE_a^2 + SE_b^2); |z| < 2 is consistent at the 95 % level. shot_noise_rel is the "
+            "pure counting-noise sigma 1/sqrt(macro events in the window) for reference: the real run-to-run spread is larger because "
+            "the fluctuations are correlated and both runs are still drifting."
+        ),
     }
 
 
@@ -334,8 +519,10 @@ def build_payload(results: Path = RESULTS, protocol_path: Path = PROTOCOL, varia
                   snapshot_v1_protocol: Path | None = snapshot_dashboard.HISTORY_PROTOCOL) -> dict[str, Any]:
     protocol = json.loads(protocol_path.read_text(encoding="utf-8"))
     protocol_sha = _file_sha256(protocol_path)
-    headline = build_case(results, protocol_path, label="v1.3 plateau (attempt 2)", role="headline")
+    raw_headline: dict[str, Any] = {}
+    headline = build_case(results, protocol_path, label="v1.3 plateau (attempt 2)", role="headline", raw_out=raw_headline)
     cases = [headline]
+    comparisons: list[dict[str, Any]] = []
     variants: dict[str, Any] = {}
     variant_status: list[dict[str, Any]] = []
     if variants_path is not None and variants_path.is_file():
@@ -348,7 +535,12 @@ def build_payload(results: Path = RESULTS, protocol_path: Path = PROTOCOL, varia
             entry = {"name": name, "results_dir": case_dir.name, "note": spec.get("note"), "overrides": {k: v for k, v in spec.items() if k not in ("note",)},
                      "state": "finished" if finished else ("running_or_pending" if case_dir.is_dir() else "not_started")}
             if finished:
-                cases.append(build_case(case_dir, protocol_path, label=f"variant {name}", role="variant", protocol_sha_expected=protocol_sha))
+                raw_variant: dict[str, Any] = {}
+                case = build_case(case_dir, protocol_path, label=f"variant {name}", role="variant", protocol_sha_expected=protocol_sha, raw_out=raw_variant)
+                cases.append(case)
+                comparisons.append(build_comparison(raw_headline, raw_variant, headline, case))
+                entry["reached_plateau"] = bool((case["plateau"] or {}).get("reached"))
+                entry["transit_times"] = case["ion_transit_times"]
             variant_status.append(entry)
     # convergence table across finished cases (window-averaged quantities)
     convergence: dict[str, Any] = {}
@@ -425,6 +617,7 @@ def build_payload(results: Path = RESULTS, protocol_path: Path = PROTOCOL, varia
             "exit_area_m2": neutral.get("exit_area_m2", pi * protocol["geometry"].get("exit_radius_m", 3e-3) ** 2 if isinstance(protocol.get("geometry"), dict) else None),
         },
         "convergence": convergence,
+        "comparisons": comparisons,
         "variants": variant_status,
         "cases": cases,
         "history": {
@@ -449,7 +642,7 @@ def build_payload(results: Path = RESULTS, protocol_path: Path = PROTOCOL, varia
 def validate_payload(payload: Mapping[str, Any]) -> None:
     required = {
         "schema", "experiment_id", "model_version", "status", "claim_boundary", "claim_statement", "simplifications", "protocol",
-        "budget", "operating_point_summary", "convergence", "variants", "cases", "history",
+        "budget", "operating_point_summary", "convergence", "comparisons", "variants", "cases", "history",
     }
     if set(payload) != required:
         raise ValueError("payload keys do not match the closed schema")
@@ -490,6 +683,15 @@ def validate_payload(payload: Mapping[str, Any]) -> None:
     for entry in payload["variants"]:
         if entry["state"] not in ("finished", "running_or_pending", "not_started"):
             raise ValueError(f"variant {entry['name']}: unknown state")
+    case_ids = {case["id"] for case in payload["cases"]}
+    finished = [case["id"] for case in payload["cases"] if case["role"] == "variant"]
+    if [c["other_id"] for c in payload["comparisons"]] != finished:
+        raise ValueError("every finished variant needs exactly one comparison against the headline")
+    for comparison in payload["comparisons"]:
+        if comparison["base_id"] != payload["cases"][0]["id"] or comparison["other_id"] not in case_ids:
+            raise ValueError("comparison ids must reference embedded cases")
+        if not comparison["windows"] or not comparison["windows"][0]["rows"]:
+            raise ValueError("comparison must carry the common-window rows")
 
 
 HTML_TEMPLATE = r"""<!doctype html>
@@ -571,8 +773,10 @@ html+=`<h2 style="margin-top:1rem">Stability gate (configured reference)</h2><di
 if(c.stability_gate_message)html+=`<p class="small"><strong>Fail-closed stop:</strong> ${c.stability_gate_message}</p>`;
 $("detailTitle").textContent=c.label;$("details").innerHTML=html;$("mapTitle").textContent=`${$("map").selectedOptions[0].textContent} — ${c.label}`;
 const cv=DATA.convergence,rows=Object.entries(cv).map(([k,v])=>`<tr><td>${k}</td>${DATA.cases.map(cc=>`<td>${sci(v.values[cc.id])}</td>`).join("")}<td>${v.relative_spread==null?"–":pct(v.relative_spread,3)}</td></tr>`).join("");
-const vs=DATA.variants.map(v=>`<tr><td>${v.name}</td><td>${v.state.replaceAll("_"," ")}</td><td><code>${v.results_dir}</code></td><td>${Object.entries(v.overrides).map(([k,x])=>`${k} = ${typeof x==="number"?sci(x,3):x}`).join(", ")}</td></tr>`).join("");
-$("convergence").innerHTML=`<p class="small">Window-averaged quantities across the finished cases at the same operating point. Relative spread = (max−min)/|mean|. With a single finished case the spread is undefined: the plateau is a <em>single-seed</em> development result until seed-b (statistical variance) and the reduced-weight case (particle-resolution sensitivity) finish; they are then embedded here by regenerating the page.</p><table aria-label="Convergence between cases"><thead><tr><th>quantity</th>${DATA.cases.map(cc=>`<th>${cc.label}</th>`).join("")}<th>spread</th></tr></thead><tbody>${rows}</tbody></table><h3 style="margin:.8rem 0 .3rem">Convergence-pair status</h3><table aria-label="Variant status"><thead><tr><th>variant</th><th>state</th><th>results</th><th>overrides</th></tr></thead><tbody>${vs||'<tr><td colspan="4">no variants declared</td></tr>'}</tbody></table>${DATA.variants.map(v=>v.note?`<p class="small"><strong>${v.name}:</strong> ${v.note}</p>`:"").join("")}`;
+const vs=DATA.variants.map(v=>`<tr><td>${v.name}</td><td>${v.state.replaceAll("_"," ")}${v.state==="finished"?` · ${fmt(v.transit_times,3)} τ_i · plateau ${v.reached_plateau?"declared":"not declared"}`:""}</td><td><code>${v.results_dir}</code></td><td>${Object.entries(v.overrides).map(([k,x])=>`${k} = ${typeof x==="number"?sci(x,3):x}`).join(", ")}</td></tr>`).join("");
+const zc=z=>z==null?"–":`<span class="${Math.abs(z)<2?"ok":Math.abs(z)<3?"marginal":"bad"}">${fmt(z,3)}</span>`;
+const cmpHtml=DATA.comparisons.map(cp=>`<h3 style="margin:.8rem 0 .3rem">${cp.other_label} vs headline — ${cp.other_stop_reason.replaceAll("_"," ")} at ${fmt(cp.other_transit_times,3)} τ_i${cp.other_transit_times<3?" (no plateau declaration possible: &lt; 3 transits)":""}</h3>${cp.windows.map(w=>`<p class="small"><strong>${w.label}</strong> — ${fmt(w.t_start_s*1e6,4)}–${fmt(w.t_end_s*1e6,4)} µs${w.other_t_start_s!=null?` (variant ${fmt(w.other_t_start_s*1e6,4)}–${fmt(w.other_t_end_s*1e6,4)} µs)`:""}</p><table aria-label="${w.label}"><thead><tr><th>quantity</th><th>headline</th><th>variant</th><th>Δ</th><th>Δ rel.</th><th>SE (batch means) head. / var.</th><th>z</th><th>shot-noise σ_rel (ref.)</th></tr></thead><tbody>${w.rows.map(r=>`<tr><td>${r.quantity}${r.unit?" ("+r.unit+")":""}</td><td>${sci(r.base,4)}</td><td>${sci(r.other,4)}</td><td>${sci(r.abs_diff,3)}</td><td>${pct(r.rel_diff,3)}</td><td>${sci(r.se_base,2)} / ${sci(r.se_other,2)}</td><td>${zc(r.z)}</td><td>${r.shot_noise_rel==null?"–":pct(r.shot_noise_rel,2)}</td></tr>`).join("")}</tbody></table>`).join("")}<p class="small"><strong>Maps</strong> (headline window ${fmt(cp.maps.base_window_s[0]*1e6,4)}–${fmt(cp.maps.base_window_s[1]*1e6,4)} µs vs variant window ${cp.maps.other_window_s?fmt(cp.maps.other_window_s[0]*1e6,4)+"–"+fmt(cp.maps.other_window_s[1]*1e6,4):"–"} µs): ${cp.maps.note}.</p><table aria-label="Map comparison"><thead><tr><th>field</th><th>mean head. / var. (Δ rel.)</th><th>peak head. / var. (Δ rel.)</th><th>shape difference</th></tr></thead><tbody>${Object.entries(cp.maps.rows).map(([k,m])=>`<tr><td>${k}</td><td>${m.mean_base!=null?`${sci(m.mean_base,3)} / ${sci(m.mean_other,3)} (${pct(m.mean_rel_diff,3)})`:m.axis_base!=null?`axis ${sci(m.axis_base,3)} / ${sci(m.axis_other,3)} (${pct(m.axis_rel_diff,3)})`:m.total_rel_diff!=null?`total Δ ${pct(m.total_rel_diff,3)}`:"–"}</td><td>${m.peak_base!=null?`${sci(m.peak_base,3)} / ${sci(m.peak_other,3)} (${pct(m.peak_rel_diff,3)})${m.peak_z_base_m!=null?` at z ${fmt(m.peak_z_base_m*1e3,4)} / ${fmt(m.peak_z_other_m*1e3,4)} mm`:""}`:"–"}</td><td>${m.relative_l2_diff!=null?"rel. L2 "+pct(m.relative_l2_diff,3):m.rms_diff_v!=null?"RMS "+fmt(m.rms_diff_v,3)+" V":"–"}</td></tr>`).join("")}</tbody></table><p class="small">${cp.method}</p>`).join("");
+$("convergence").innerHTML=`<p class="small">Window-averaged quantities across the finished cases at the same operating point (each over its own final window). Relative spread = (max−min)/|mean|. The plateau is a <em>single-seed</em> development result until the convergence pair — seed-b (statistical variance) and the reduced-weight case (particle-resolution sensitivity) — finishes; finished variants are embedded here with a same-time-window statistical comparison.</p><table aria-label="Convergence between cases"><thead><tr><th>quantity</th>${DATA.cases.map(cc=>`<th>${cc.label}</th>`).join("")}<th>spread</th></tr></thead><tbody>${rows}</tbody></table>${cmpHtml}<h3 style="margin:.8rem 0 .3rem">Convergence-pair status</h3><table aria-label="Variant status"><thead><tr><th>variant</th><th>state</th><th>results</th><th>overrides</th></tr></thead><tbody>${vs||'<tr><td colspan="4">no variants declared</td></tr>'}</tbody></table>${DATA.variants.map(v=>v.note?`<p class="small"><strong>${v.name}:</strong> ${v.note}</p>`:"").join("")}`;
 const B=DATA.budget,ni=c.neutral_inventory||{},L=ni.cumulative_ledger_atoms||{};$("budget").innerHTML=`<div class="kv" style="grid-template-columns:repeat(auto-fit,minmax(230px,1fr))"><span>atoms fed</span><span>${sci(L.fed,4)}</span><span>atoms ionised</span><span>${sci(L.ionized,4)}</span><span>atoms effused (physical)</span><span>${sci(L.effused,4)}</span><span>atoms removed by the artificial relaxation</span><span>${sci(L.artificial,4)}</span><span>closure (fed − ionised − effused − artificial − ΔN)</span><span>${sci(ni.cumulative_ledger_closure_atoms,3)} atoms</span><span>trailing artificial rate (should → 0 at the fixed point)</span><span>${sci(ni.trailing_20pct_mean_artificial_rate_per_s,3)} s⁻¹ (${pct(ni.trailing_20pct_mean_artificial_rate_per_s/ops.feed_atoms_per_s,2)} of Q_in; = n_g − n_g* of ${sci(ni.trailing_20pct_mean_artificial_rate_per_s*ops.relaxation_time_s/c.mesh.plasma_volume_m3,2)} m⁻³)</span></div><p class="small">The artificial ledger equals the inventory drop from n_g0 to the fixed point (5.5e19 → 2.97e19 m⁻³ × V): physically that depletion would take ~V/c = 221 µs of effusion; τ_g = 30 ns does it in ~100 ns so the plasma sees a quasi-steady n_g. Only the fixed point (Q_in = S + c n_g) is physical, and the window mean sits on it to ${pct((ni.trailing_20pct_mean_density_per_m3-ni.trailing_20pct_analytic_fixed_point_per_m3)/ni.trailing_20pct_mean_density_per_m3,2)}.</p>${B?`<h3 style="margin:.8rem 0 .3rem">v1.3 a-priori budget vs outcome</h3><table aria-label="Budget versus outcome"><thead><tr><th>quantity</th><th>a priori</th><th>outcome (window)</th></tr></thead><tbody><tr><td>n_max (design ceiling, 2 λ_D per cell at 8 eV)</td><td>${sci(B.n_max_per_m3,2)} m⁻³</td><td>peak ${sci(c.window_maps_summary.n_e_peak_per_m3,3)} (${fmt(c.resolvability_at_peak.n_e_peak_over_n_max,3)} ×), mean ${sci(c.window_maps_summary.n_e_mean_per_m3,3)}</td></tr><tr><td>projected 0-D n_eq</td><td>${sci(B.n_eq_projected_per_m3,2)} (range ${sci(B.n_eq_projected_range_per_m3[0],2)}–${sci(B.n_eq_projected_range_per_m3[1],2)})</td><td>${sci(c.window_maps_summary.n_e_mean_per_m3,3)} m⁻³</td></tr><tr><td>neutral fixed point</td><td>${sci(B.neutral_fixed_point_per_m3,2)} (range ${sci(B.neutral_fixed_point_range_per_m3[0],2)}–${sci(B.neutral_fixed_point_range_per_m3[1],2)})</td><td>${sci(ni.trailing_20pct_mean_density_per_m3,4)} m⁻³</td></tr><tr><td>particles at n_eq</td><td>${B.particles_at_projected_n_eq}</td><td>${c.final_counts.electrons} + ${c.final_counts.ions}</td></tr><tr><td>ω_pe Δt at n_max</td><td>${fmt(B.omega_pe_dt,3)}</td><td>max observed ${fmt(c.resolvability_at_peak.max_observed_omega_pe_dt,3)}</td></tr><tr><td>cell / λ_D,min</td><td>${fmt(B.cell_over_lambda_d_min,3)}</td><td>${fmt(c.resolvability_at_peak.dz_over_lambda_d_at_peak,3)} (Δz at the peak node)</td></tr><tr><td>ion transit time</td><td>${sci(B.ion_transit_time_s,2)} s (${B.ion_transit_note})</td><td>${fmt(c.ion_transit_times,3)} transits elapsed</td></tr></tbody></table>`:""}<p class="small">Stopping rule: ${DATA.protocol.stopping_rule.plateau}</p>`;
 const H=DATA.history;let hh=`<p class="small">${H.lesson}</p>`;if(H.steady_state.length){hh+=`<h3 style="margin:.6rem 0 .3rem">Steady-state predecessors (hash-verified summaries)</h3><table aria-label="Steady-state predecessors"><thead><tr><th>run</th><th>model</th><th>n_g0 → n_g,final</th><th>seed</th><th>W</th><th>t (µs) · τ_i</th><th>final e⁻ / Xe⁺</th><th>final I_d · I_beam (mA)</th><th>final S (s⁻¹)</th><th>stop</th></tr></thead><tbody>${H.steady_state.map(h=>`<tr><td>${h.label}<br><code>${h.id}</code></td><td>${h.model_version||"–"}</td><td>${sci(h.neutral_density_initial_per_m3,2)} → ${h.neutral_density_final_per_m3==null?"static":sci(h.neutral_density_final_per_m3,3)}</td><td>${sci(h.seed_plasma_density_per_m3,1)}</td><td>${sci(h.macro_weight,2)}</td><td>${fmt(h.simulated_time_s*1e6,3)} · ${fmt(h.ion_transit_times,3)}</td><td>${h.final_electrons} / ${h.final_ions}</td><td>${fmt(h.final_discharge_a*1e3,3)} · ${fmt(h.final_exit_ion_beam_a*1e3,3)}</td><td>${sci(h.final_ionization_rate_per_s,2)}</td><td>${h.stop_reason.replaceAll("_"," ")}</td></tr>`).join("")}</tbody></table>${H.steady_state.map(h=>`<p class="small"><strong>${h.label}:</strong> ${h.note} (summary <code>${h.summary_sha256.slice(0,12)}</code>; protocol at run <code>${(h.protocol_sha256_at_run||"").slice(0,12)}</code>${h.protocol_matches_current_file?"":" — predates the current protocol file, differences documented in its attempts block"})</p>`).join("")}`}
 if(H.snapshot_v2){hh+=`<h3 style="margin:.8rem 0 .3rem">Snapshot v2 (model v1.1, static neutrals): growth without saturation</h3><p class="small">${H.snapshot_v2.lesson} Hash-verified from <code>${H.snapshot_v2.experiment_id}</code> (manifest <code>${H.snapshot_v2.manifest_sha256}</code>).</p><table aria-label="Snapshot v2 cases"><thead><tr><th>case</th><th>grid</th><th>W</th><th>steps</th><th>t (µs) · τ_i</th><th>window peak n_e</th><th>window I_d (mA)</th><th>N_e drift</th><th>stop</th></tr></thead><tbody>${H.snapshot_v2.cases.map(h=>`<tr><td>${h.id}</td><td>${h.grid}</td><td>${sci(h.macro_weight,2)}</td><td>${h.steps_completed}</td><td>${fmt(h.simulated_time_s*1e6,3)} · ${fmt(h.ion_transit_times,3)}</td><td>${sci(h.n_e_peak_per_m3,3)}</td><td>${fmt(h.window_discharge_a*1e3,3)}</td><td>${pct(h.electron_count_drift,3)}</td><td>${h.stop_reason.replaceAll("_"," ")}</td></tr>`).join("")}</tbody></table>`}

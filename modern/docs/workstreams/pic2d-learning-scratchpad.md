@@ -321,3 +321,45 @@ File policy: `COMMITTED` workstream evidence (`modern/docs/workstreams/pic2d-*`)
   to UTF-8 docs from Python and keep LF.
 - The maps' radial grid spans the exit radius (3 mm, Δr = 50 µm), not the bore (2 mm):
   compute node coordinates from the config's `dr_m`, never from "bore / cells".
+
+
+## 2026-09-03 (Phase 4, part 2): what two seeds taught
+
+### Learned (physics / statistics)
+
+- Seed-to-seed spread of the v1.3 plateau quantities at the same simulated time is
+  0.4–1.1 % (I_d +0.40 %, I_beam +0.64 %, S +1.05 %, n_g −0.83 %, N_e +0.57 %,
+  ⟨T_e⟩ +0.53 %). The differences are internally consistent: a 0.6 % denser, 0.5 % hotter
+  plasma ionises 1.1 % more, and the quasi-steady inventory answers with Δn_g = −ΔS/c
+  (−0.87 % predicted, −0.83 % observed). Use S/n_g coupling as a sanity check between runs.
+- Pure shot noise (1/√N ≈ 0.1 % for 1 M particles; 0.15–0.2 % for a current averaged over
+  a µs) is a lower bound that the observed spread exceeds by 3–7×. Run-to-run variance is
+  set by correlated plasma fluctuations and by the phase of the slow densification, not by
+  counting statistics — so a "1 M particles is enough" argument based on √N alone is not
+  valid; the spread must be measured with seeds.
+- Batch-means SEs over 30 ns blocks are right for currents and counts (|z| ≤ 1.6 between
+  seeds) but far too optimistic for smooth integrated quantities (S, n_g, T_e give
+  |z| ≈ 5–6 for < 1 % differences). Quote z with the block length and treat the smooth
+  quantities' spread as a trajectory offset, not a fluctuation.
+- Time-offset comparison is a trap: base plateau (7.2–7.68 µs) vs seed-b (4.85–6.06 µs)
+  shows N_e −7 %, wall currents −10 %, φ_mean +5 % — all densification between 6 and
+  7.7 µs, not seed variance. I_d and I_beam saturate first; the density and wall loss keep
+  growing. Always compare at the same simulated time; label any offset comparison as such.
+- The exit-plane axis cell is shot-noise dominated (j_z on axis differs by 34 % while the
+  total beam current agrees to 0.6 %). Compare fluxes as totals and as L2 profile
+  differences, not point values at r → 0.
+
+### Learned (tooling)
+
+- A graceful budget stop IS a finalization (window-average maps, summary, checkpoint-final).
+  Re-finalizing from the checkpoint would downgrade the maps to instantaneous ones; make
+  the tool refuse that by default (`--allow-refinalize`) instead of relying on memory.
+- Name variants by what they are (`w-0.7`, not `w-half`) before the first byte is written:
+  results dirs, config ids and .gitignore lines inherit the name and are awkward to rename
+  after a run exists.
+- Projected ETAs at launch overestimate throughput: ms/step scales with the particle count
+  that the case will reach, not the count at minute 3. Project with the expected plateau
+  count (base: 2.0 ms/step at 1.0 M; w-0.7 will carry 1.4 M).
+- Embedding the comparison into the dashboard payload (computed from the hash-verified
+  series) beats a side JSON: it is regenerated deterministically, validated (one comparison
+  per finished variant) and tested, and the w-0.7 case will get the same treatment for free.
