@@ -16,4 +16,13 @@
   flag, never move a preregistered launch plane by hand.
 - [self] Shakedown on 3 sweep designs + P2 hinted that interior cells launched at the mid-plane
   between cusps at 0.65-0.825 r_w hit the wall 16/16; the dataset must report the per-cell
-  structure by position class before any pooled value (v1 lesson kept).
+  structure by position class before any pooled value (v1 lesson kept). Confirmed: 181/181
+  interior cells at 128/128.
+- [tool] The shared runtime pins every bundle file during manifest publication; the Windows CRT
+  allows 8192 descriptors, this bundle had 16,957 files -> EMFILE after the terminal record. A
+  shakedown cannot see this (small bundle). Budget the FILE COUNT of a bundle (cases x 8 + access
+  records x 2) against the descriptor cap before preregistering; the runtime now caps pinning at
+  4096 and has a fail-closed recovery for complete-but-unpublished attempts.
+- [self] The timing projection over-estimated by 1.7x because it assumed v1's 72 % top-up
+  fraction; catalogue cells saturate far more often (69 %). Record the realised fraction for the
+  next campaign's planning assumption (31 %).

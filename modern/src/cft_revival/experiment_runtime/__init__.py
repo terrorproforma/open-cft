@@ -28,6 +28,7 @@ from .lifecycle import (
     BundleState,
     Decision,
     EVENT_TRANSITION_PAIRS,
+    MAX_PINNED_DESCRIPTORS,
     ExecutionAttestation,
     ExistingLockError,
     ExperimentRuntime,
@@ -38,6 +39,7 @@ from .lifecycle import (
     diagnose_bundle,
     validate_bundle,
 )
+from .recovery import RECOVERY_KIND, finalize_unpublished_attempt
 
 __all__ = [
     "CANONICALIZATION_ID",
@@ -53,7 +55,10 @@ __all__ = [
     "FileOps",
     "FilesystemSafetyError",
     "LifecycleError",
+    "MAX_PINNED_DESCRIPTORS",
     "ManagedCache",
+    "RECOVERY_KIND",
+    "finalize_unpublished_attempt",
     "PartialArtifactError",
     "RootPolicy",
     "SafeRoot",

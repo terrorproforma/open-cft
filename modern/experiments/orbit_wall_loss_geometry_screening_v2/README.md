@@ -92,6 +92,33 @@ python -m experiments.orbit_wall_loss_geometry_screening_v2.run execute
 python -m experiments.orbit_wall_loss_geometry_screening_v2.run validate
 ```
 
+## Outcome (single execution, preregistration `cef1ee59`, result `26029b72`)
+
+`accepted_result` / `accepted_screening_dataset`: 97 designs (96 sweep-v2 + the P2 row), 377
+catalogue cells, 1105 cases, 104,832 orbits (48,256 stage 1, 44,928 stage 2, 11,648 control),
+70 min of orbit wall time on 12 workers, 16,549 validators passed / 0 failed, no exclusion, no
+timeout, energy drift exactly 0. Allocation: 117 cells topped up to 512 (32 anode-side, 83
+exit-side, 2 of the P2 row), 260 saturated at 128 (all 181 interior cells at 128/128 wall hits,
+34 anode-side and 11 exit-side at 128/128, 32 anode-side cells at 118-127/128); replay of the
+rule and of the control selection reproduced every case authority. Per-cell P(wall) by position:
+anode-side median 0.984 (min 0.31), interior 1.000 for every cell, exit-side median 0.50 (range
+0.25-1.0; 0.50 = the direction/pitch structure of the 90 divergent-exit designs, 1.0 for the 6
+straight-exit designs). Reflections: 10,407 (11.2 % of the final launches), 65 of the 96
+exit-side cells and 1 anode-side cell, no interior cell; 66 designs. Floors: Jeffreys floor
+median 0.0055, max 0.0242; **294 / 377 cells (78.0 %) are surrogate-v3 ready** (253 of 258
+saturated sweep cells, 38 of 115 topped-up sweep cells; a topped-up cell at p ~ 0.5 has floor
+0.022 by the frozen rule). N -> 2N control: 2 discordant orbits in 11,648 (0.017 %), estimated
+bias -0.9e-4 +- 0.9e-4, gate passed, control flag true for 97/97 designs, all sealed. v1 vs v2
+pooled (launch-weighted): Spearman 0.15, mean difference +0.038, mean |difference| 0.11,
+interval overlap 45 % - the same fields ranked by different cells give a different ranking, as
+the protocol anticipated. P2 row: anode-side 0.605 (n 512), interior 1.0 / 1.0, exit-side 0.17
+with 350 reflections (v4's launch design had none: the 28 um exit-side cell sits at the exit
+cusp).
+
+**Manifest published post hoc.** The runtime's own publication step failed with EMFILE (Windows
+CRT 8192-descriptor cap, 16,957 files) after the terminal record and every sidecar-attested
+artifact were durable; see `POSTHOC_FINALIZATION.md`. Nothing was rerun.
+
 ## Outputs (`results/artifacts/`)
 
 `geometry-wall-loss-dataset-v2.json` (per design: identities, geometry, catalogue cells with

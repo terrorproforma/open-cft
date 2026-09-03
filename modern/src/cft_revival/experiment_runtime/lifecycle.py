@@ -65,6 +65,9 @@ class BundleState(str, Enum):
 
 
 TERMINAL_STATES = frozenset(BundleState)
+# Upper bound on files pinned during candidate-manifest validation (below the 8192 low-level
+# descriptor limit of the Windows CRT with headroom for the process's own descriptors).
+MAX_PINNED_DESCRIPTORS = 4096
 EVENT_TRANSITION_PAIRS = frozenset(
     {
         ("lock-acquired", "cache-prepared"),
@@ -604,8 +607,12 @@ class ExperimentRuntime:
             "artifacts": artifacts,
         }
         candidate = canonical_bytes(manifest)
+        # Pin at most MAX_PINNED_DESCRIPTORS files: the Windows CRT allows 8192 low-level
+        # descriptors and a 16,957-file bundle (orbit wall-loss geometry screening v2,
+        # 2026-09-03) failed here with EMFILE after its terminal record had been written.
         sealed = self.store.seal_files(
-            entry["path"] for entry in artifacts if entry["type"] == "file"
+            (entry["path"] for entry in artifacts if entry["type"] == "file"),
+            limit=MAX_PINNED_DESCRIPTORS,
         )
         try:
             # Validate the complete candidate through an invisible override.

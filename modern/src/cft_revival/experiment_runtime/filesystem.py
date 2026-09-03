@@ -503,10 +503,20 @@ class AtomicArtifactStore:
         finally:
             self._close_opened(opened)
 
-    def seal_files(self, relatives: Iterable[str]) -> list[int]:
+    def seal_files(self, relatives: Iterable[str], *, limit: int | None = None) -> list[int]:
+        """Pin (open for read) the given files and return their descriptors.
+
+        ``limit`` caps the number of pinned descriptors: the platform's low-level descriptor
+        limit is finite (8192 on the Windows CRT), and a bundle with more files than that
+        must still be publishable. Files beyond the cap stay unpinned; the candidate
+        validation reads every file's bytes regardless.
+        """
+
         descriptors: list[int] = []
         try:
             for relative in relatives:
+                if limit is not None and len(descriptors) >= limit:
+                    break
                 path = relative_path(relative)
                 parent, opened = self._parent(path.parent, False)
                 try:
