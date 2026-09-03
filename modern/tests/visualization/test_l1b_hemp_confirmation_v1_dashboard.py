@@ -19,11 +19,12 @@ MODERN = Path(__file__).resolve().parents[2]
 GENERATOR_PATH = MODERN / "visualization" / "generate_l1b_hemp_confirmation_v1_dashboard.py"
 TEMPLATE_PATH = MODERN / "visualization" / "l1b-hemp-confirmation-v1.template.html"
 CHECKED_HTML = MODERN / "visualization" / "l1b-hemp-confirmation-v1.html"
-EXPERIMENT = MODERN / "experiments" / "l1b_hemp_confirmation_v1"
+EXPERIMENT = MODERN / "experiments" / "l1b_hemp_confirmation_v1_1"
 RESULTS = EXPERIMENT / "results"
+V1_RESULTS = MODERN / "experiments" / "l1b_hemp_confirmation_v1" / "results"
 CLASSIFICATION = "P2_MATERIAL_AWARE_FIELD_CONFIRMATION_NOT_HARDWARE_VALID"
 
-pytestmark = pytest.mark.skipif(not (RESULTS / "manifest.json").is_file(), reason="the L1b confirmation campaign has not executed")
+pytestmark = pytest.mark.skipif(not (RESULTS / "manifest.json").is_file() or not (V1_RESULTS / "manifest.json").is_file(), reason="the L1b confirmation campaign (v1.1) has not executed")
 
 
 def _load_generator():
@@ -90,6 +91,20 @@ def test_bundle_is_byte_verified_and_payload_traces_to_it(payload, dataset, camp
         assert item["dofs"] == [level["p2_dofs"] for level in row["p2"]["levels"]]
 
 
+def test_predecessor_rejection_and_angle_gate_are_carried(payload):
+    predecessor = payload["predecessor"]
+    v1_manifest = _json(V1_RESULTS / "manifest.json")
+    assert v1_manifest["state"] == "development_rejection" and predecessor["state"] == "development_rejection"
+    assert predecessor["manifest_file_sha256"] == hashlib.sha256((V1_RESULTS / "manifest.json").read_bytes()).hexdigest()
+    assert sorted(item["design_id"] for item in predecessor["failed_designs"]) == ["l1a-gs-v3-028-f012c0bf33", "l1a-gs-v3-048-aabacb3a59"]
+    assert predecessor["resolved_design_count"] == 13 and predecessor["reject_below_angle_deg"] == 10.0
+    assert predecessor["protocol_block"]["preregistration_commit"] == predecessor["preregistration_commit_sha"]
+    gate = payload["angle_gate"]
+    assert gate["reject_below_angle_deg"] == 5.0 and len(gate["per_design_levels"]) == 15
+    assert all(level["min_angle_deg"] >= 5.0 for levels in gate["per_design_levels"].values() for level in levels)
+    assert set(gate["designs_with_elements_below_10deg"]) == {"l1a-gs-v3-028-f012c0bf33", "l1a-gs-v3-048-aabacb3a59"}
+
+
 def test_verdict_and_scatter_reproduce_from_the_rows(payload, dataset):
     confirmation = dataset["gates"]["confirmation"]
     b_passed = confirmation["cusp_count_unchanged"]["fraction_boundary_tolerant"] >= confirmation["cusp_count_unchanged"]["pass_threshold"]
@@ -131,7 +146,7 @@ def test_rendered_html_is_deterministic_offline_and_checked_in(payload, html):
     checked = CHECKED_HTML.read_bytes().replace(b"\r\n", b"\n")
     assert checked == html.encode("utf-8")
     assert len(checked) <= GENERATOR.MAX_HTML_BYTES
-    for token in ("no plasma", "Claim boundary", "GATE (b)", "GATE (c)", "paper admission not in scope", payload["verdict"]):
+    for token in ("no plasma", "Claim boundary", "GATE (b)", "GATE (c)", "paper admission not in scope", "development rejection", payload["verdict"]):
         assert token in html
 
 
@@ -146,5 +161,9 @@ def test_payload_validation_rejects_tampering(payload):
         GENERATOR.validate_payload(tampered)
     tampered = json.loads(json.dumps(payload))
     tampered["paper_admission"] = "admitted"
+    with pytest.raises(ValueError):
+        GENERATOR.validate_payload(tampered)
+    tampered = json.loads(json.dumps(payload))
+    tampered["predecessor"]["failed_designs"] = tampered["predecessor"]["failed_designs"][:1]
     with pytest.raises(ValueError):
         GENERATOR.validate_payload(tampered)

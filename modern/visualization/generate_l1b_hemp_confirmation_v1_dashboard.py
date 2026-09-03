@@ -1,10 +1,12 @@
-"""Generate the offline L1b HEMP confirmation v1 dashboard (material-aware P2 check of 15 L1a designs).
+"""Generate the offline L1b HEMP confirmation dashboard (material-aware P2 check of 15 L1a designs).
 
-Every number shown is read from the immutable, hash-bound results bundle of
-``modern/experiments/l1b_hemp_confirmation_v1``. The generator byte-verifies every manifest
-entry, re-derives the verdict and the headline counts from the per-design rows and refuses to
-render on any inconsistency. It emits no wall-clock timestamps or machine paths, so identical
-inputs produce identical bytes.
+Every number shown is read from the immutable, hash-bound results bundles of
+``modern/experiments/l1b_hemp_confirmation_v1_1`` (the accepted campaign) and
+``modern/experiments/l1b_hemp_confirmation_v1`` (the recorded development rejection it
+supersedes). The generator byte-verifies every manifest entry of both bundles, re-derives the
+verdict and the headline counts from the per-design rows and refuses to render on any
+inconsistency. It emits no wall-clock timestamps or machine paths, so identical inputs produce
+identical bytes.
 
 Labels carried everywhere: ``P2_MATERIAL_AWARE_FIELD_CONFIRMATION_NOT_HARDWARE_VALID`` and
 ``SCREENING_P2_MATERIAL_FIELD_SEPARATRIX_CUSP_TOPOLOGY``. Nothing is a plasma,
@@ -26,8 +28,10 @@ from typing import Any
 
 HERE = Path(__file__).resolve().parent
 MODERN = HERE.parent
-EXPERIMENT = MODERN / "experiments" / "l1b_hemp_confirmation_v1"
+EXPERIMENT = MODERN / "experiments" / "l1b_hemp_confirmation_v1_1"
 RESULTS = EXPERIMENT / "results"
+V1_EXPERIMENT = MODERN / "experiments" / "l1b_hemp_confirmation_v1"
+V1_RESULTS = V1_EXPERIMENT / "results"
 TEMPLATE_PATH = HERE / "l1b-hemp-confirmation-v1.template.html"
 DEFAULT_OUTPUT = HERE / "l1b-hemp-confirmation-v1.html"
 
@@ -257,8 +261,43 @@ def _distribution(values: list[float]) -> dict[str, Any]:
     return {"count": len(clean), "min": min(clean), "median": statistics.median(clean), "max": max(clean)}
 
 
-def build_payload(results: Path = RESULTS, experiment: Path = EXPERIMENT) -> dict[str, Any]:
+def _sliver_rows(results: Path, rows: list[Mapping[str, Any]]) -> dict[str, Any]:
+    """Per design and level: minimum angle and elements below the qualification's 10 deg (from the records)."""
+
+    output = {}
+    for row in rows:
+        record = _load_object(results / row["record_path"], row["record_path"])
+        levels = record["evidence"]["p2"]["levels"]
+        output[row["design_id"]] = [
+            {"level": level["level"], "min_angle_deg": level["mesh_quality"]["minimum_angle_deg"], "below_10deg": level["mesh_quality"]["sliver"]["elements_below_threshold"], "elements": level["mesh_quality"]["sliver"]["element_count"], "regions": level["mesh_quality"]["sliver"]["regions_below_threshold"]}
+            for level in levels
+        ]
+    return output
+
+
+def predecessor_record(v1_results: Path = V1_RESULTS) -> dict[str, Any]:
+    """The recorded v1 development rejection, byte-verified."""
+
+    identity = verify_bundle(v1_results, expected_state="development_rejection")
+    failures = _artifact(v1_results, "design-failures.json")["failed"]
+    protocol = _artifact(v1_results, "protocol.json")
+    terminal = _load_object(v1_results / "terminal.json", "terminal.json")
+    records = sorted(path.stem for path in (v1_results / "artifacts" / "designs" / "hemp_like_v3").glob("*.json") if not path.name.endswith(".sha256.json"))
+    if terminal["payload"]["failed_design_count"] != len(failures) or terminal["payload"]["resolved_design_count"] != len(records):
+        raise ValueError("v1 terminal payload does not match its failures / records")
+    return {
+        **identity,
+        "reject_below_angle_deg": protocol["p2"]["mesh"]["reject_below_angle_deg"],
+        "failed_designs": [{"design_id": item["key"].split(":")[1], "stage": item["stage"], "reason": item["reason"]} for item in failures],
+        "resolved_design_count": len(records),
+        "stage_wall_s": terminal["payload"]["stage_wall_s"],
+        "statement": "v1 executed once at its preregistration commit and ended in development_rejection: two level-0 meshes fell below the qualification's 10 deg angle gate before any solve (geometric slivers of the body-fitted mesher). No assessment, gates or verdict exist for v1; v1.1 re-preregistered with a 5 deg gate (disclosed) and a whole-set mesh preflight.",
+    }
+
+
+def build_payload(results: Path = RESULTS, experiment: Path = EXPERIMENT, v1_results: Path = V1_RESULTS) -> dict[str, Any]:
     identity = verify_bundle(results)
+    predecessor = predecessor_record(v1_results)
     dataset = _artifact(results, "confirmation-dataset.json")
     campaign = _artifact(results, "campaign-result.json")
     gates = _artifact(results, "gates.json")
@@ -297,6 +336,12 @@ def build_payload(results: Path = RESULTS, experiment: Path = EXPERIMENT) -> dic
         raise ValueError("the verdict does not reproduce from the predeclared thresholds")
     if not all(item["converged"] and item["gates"] and item["sampling_stable"] for item in designs):
         raise ValueError("a design row is not converged / gated / stable in an accepted bundle")
+    if protocol["predecessor"]["preregistration_commit"] != predecessor["preregistration_commit_sha"]:
+        raise ValueError("the v1.1 protocol's predecessor commit differs from the recorded v1 bundle")
+    slivers = _sliver_rows(results, rows)
+    gate = float(protocol["p2"]["mesh"]["reject_below_angle_deg"])
+    if any(level["min_angle_deg"] < gate for levels in slivers.values() for level in levels):
+        raise ValueError("a recorded level falls below the declared angle gate")
     protocol_text = (experiment / "protocol.json").read_bytes().replace(b"\r\n", b"\n")
     payload = {
         "schema": SCHEMA,
@@ -316,6 +361,8 @@ def build_payload(results: Path = RESULTS, experiment: Path = EXPERIMENT) -> dic
             "sealed_sources": dataset["sealed_sources"],
         },
         "purpose": protocol["purpose"],
+        "predecessor": {**predecessor, "protocol_block": protocol["predecessor"]},
+        "angle_gate": {"reject_below_angle_deg": gate, "disclosure": protocol["p2"]["mesh"]["angle_gate_disclosure"], "per_design_levels": slivers, "designs_with_elements_below_10deg": sorted(design_id for design_id, levels in slivers.items() if any(level["below_10deg"] > 0 for level in levels))},
         "verdict": campaign["verdict"],
         "verdict_rule": confirmation["verdict_rule"],
         "confirmation": confirmation,
@@ -353,6 +400,8 @@ def validate_payload(payload: Mapping[str, Any]) -> None:
         raise ValueError("verdict is invalid or inconsistent")
     if "NOT in scope" not in payload["paper_admission"]:
         raise ValueError("paper admission must be recorded as out of scope")
+    if payload["predecessor"]["state"] != "development_rejection" or len(payload["predecessor"]["failed_designs"]) != 2:
+        raise ValueError("the recorded v1 rejection must be carried with its two failures")
     ids = [item["id"] for item in payload["designs"]]
     if len(set(ids)) != len(ids) or len(ids) != payload["headline"]["design_count"]:
         raise ValueError("design rows are not unique or do not match the count")
@@ -393,9 +442,10 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--results", type=Path, default=RESULTS)
     parser.add_argument("--experiment", type=Path, default=EXPERIMENT)
+    parser.add_argument("--v1-results", type=Path, default=V1_RESULTS)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     arguments = parser.parse_args(argv)
-    payload = build_payload(arguments.results, arguments.experiment)
+    payload = build_payload(arguments.results, arguments.experiment, arguments.v1_results)
     html = render_html(payload)
     arguments.output.write_bytes(html.encode("utf-8"))
     print(json.dumps({"output": str(arguments.output), "bytes": len(html.encode("utf-8")), "designs": payload["headline"]["design_count"], "verdict": payload["verdict"], "overlays": len(payload["overlays"])}, indent=2, default=str))

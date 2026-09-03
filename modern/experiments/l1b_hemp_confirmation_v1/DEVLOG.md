@@ -27,3 +27,20 @@
 - ruff: clean under the classic default rule set (E4, E7, E9, F); ruff 0.16.6's broader
   defaults leave the template's `except Exception` (recorded-never-hidden) and `noqa: E402`
   patterns, shared with the accepted campaigns.
+- Shakedown 1 (015 / 036 / 106, non-evidentiary): passed first run, 932 s, bundle validated,
+  determinism replay bit-identical. It showed that the channel AXIS nulls move by up to 1.1 mm
+  under iron (036: 4.34 / 7.46 mm -> 5.41 / 6.39 mm) while the WALL cusps move <= 0.35 mm, so the
+  comparison now records the sorted channel-null shifts and the axis-null-to-cusp lean of both
+  maps (a code change; shakedown re-run). Shakedown 2: passed, 902 s, all 11 integrity gates
+  true, informational verdict CONFIRMED on the three designs, peak RSS 183 MB (4.1 % of the
+  4.45 GB budget), projection 4926 s wall for 15 + 1 designs (budget 5400 s). Committed with the
+  code and tests as `3e19575b`; `prepare` frozen and committed as `b9449ee5` ("preregister L1b
+  HEMP confirmation v1"), pushed to origin/exp/l1b-hemp-confirmation-v1.
+- Execution launched 04:01 AEST from the clean detached worktree `uni-project-l1b-hemp-run` at
+  `b9449ee5` (one worker, CPU only; the PIC plume process had already ended by itself, the GPU
+  was never used).
+- 04:55 AEST: terminal state `development_rejection` - 13/15 designs resolved, designs 028 and
+  048 failed the 10 deg level-0 mesh angle gate BEFORE any solve (geometric slivers of the
+  body-fitted mesher, 5.3 / 9.3 deg at every feature count). Recorded as `978c71be` (results/
+  only); `POSTHOC_REJECTION.md` written; the campaign continues as `l1b_hemp_confirmation_v1_1`
+  (5 deg gate disclosed + whole-set mesh preflight). No verdict exists for v1.

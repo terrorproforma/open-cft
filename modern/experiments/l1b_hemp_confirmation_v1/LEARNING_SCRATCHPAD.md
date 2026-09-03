@@ -24,6 +24,16 @@
   below the L1a axial step), not tuned on any outcome; the P2 level-0-to-level-1 cusp shift is
   recorded so the reader can see how much of the tolerance is P2 discretisation.
 
+## Learned from the recorded rejection
+
+- [self] The shakedown proved the code path on three designs; the mesh angle gate - a cheap,
+  fail-closed check that lives inside the solve path - was never evaluated for the other twelve,
+  and two of them failed it. Every fail-closed gate that can be evaluated without the expensive
+  stage must be run for EVERY declared design before the freeze (done in v1.1).
+- [self] A rejection threshold copied from a campaign with regular geometry (10 deg) is not a
+  property of a Sobol design set; the body-fitted mesher inherits near-coincident design
+  coordinates as slivers that no resolution removes.
+
 ## Claim guardrail
 
 P2 with LINEAR soft-iron and recoil magnets, two nested levels: a numerical confirmation of the
