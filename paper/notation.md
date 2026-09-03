@@ -37,8 +37,20 @@
   declared component model that is not a physics level of the ladder. It is
   admitted by a `numerical-campaign` gate whose typed manifest is committed
   and cross-checked against the sealed results bundle; it opens no L gate. The
-  only current one is `GATE-WALL-LOSS-V4`, classified
-  `collisionless_prescribed_field_test_particle_wall_loss_not_pic`.
+  current ones are `GATE-WALL-LOSS-V4`, classified
+  `collisionless_prescribed_field_test_particle_wall_loss_not_pic`, and
+  `GATE-MDO-L0-V1`, classified
+  `l0_model_robust_multiobjective_optimisation_under_declared_input_uncertainty_not_thruster_performance`
+  (optimiser evidence on the L0 model under the declared closure CL-1).
+- **Closure CL-1** — the declared multiplicative cusp-survival closure of the
+  optimisation campaign: \(S(\mathbf p)=\prod_{k=1}^{4}(1-p_k)\) scales the
+  produced ionised fraction and leaves the anode current unchanged. It is a
+  declared assumption, neither derived nor validated; every number of the
+  campaign is conditional on it and on the declared priors.
+- **Robust objective (CVaR)** — for each L0 objective the mean of the worst
+  16 of 64 frozen Halton sample values of the uncertain inputs; the robust
+  constraint is the worst sampled beam-current margin, which enforces the
+  worst *sampled* case, not the worst case over the prior's support.
 - **Numerical screening** — a preregistered, single-execution L1a field-only
   screening study (linear-vacuum equivalent-current fields; no
   permanent-magnet or nonlinear-iron material model) admitted by a
@@ -107,3 +119,11 @@
 - Sweep axis cusps and per-cell mirror ratios are field-only screening
   quantities; they are not confinement cells, confinement predictions or
   performance.
+- A robust or nominal Pareto front of the L0 optimisation campaign is an
+  optimiser estimand under the declared closure CL-1 and priors; it is not
+  thruster performance, a design recommendation, a calibration or a
+  validation, and "qLogNEHVI beat the baselines" holds only for the recorded
+  budget, seeds and model.
+- The collisionless wall-hit probability of the wall-loss campaign is not the
+  per-cusp loss probability of the Kornfeld cusp cascade; inserting the former
+  as the latter gives no beam under CL-1.

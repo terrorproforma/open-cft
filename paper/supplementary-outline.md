@@ -75,6 +75,31 @@
   plasma, mirror-probability or performance quantity is claimed, and that the
   superseded proxy search and failed criterion validations are lineage only.
 
+## S4d. Preregistered robust multi-objective optimisation of the L0 model (campaign v1)
+
+- Typed campaign manifest `paper/evidence/manifests/mdo-l0-v1.json` and the
+  hash-bound evidence file `paper/evidence/mdo-l0-v1.json`.
+- Preregistration, results and dashboard commits; the sealed bundle (manifest,
+  lock, transitions, protocol, authorities, code contract, shakedown, frozen
+  sample, nine run records with per-evaluation designs and objectives,
+  hypervolume curves, Pareto sets, pooled and per-strategy fronts, dense
+  reference, sensitivity) and the committed results dashboard whose embedded
+  extraction the generator requires to agree with the bundle.
+- Frozen protocol verbatim: design variables and excluded legacy radii with
+  the recorded reason, uncertain inputs and cusp-prior calibration, closure
+  CL-1 (declared, not derived), objectives, constraint, CVaR robust
+  formulation and separability expectation, optimiser settings, budget and
+  fairness rules, binding and reported gates, shakedown rule, prior-model
+  disclosures (F0-only status; corrected four-cell solver probe).
+- Tables regenerated from the bundle: hypervolume per optimiser and seed with
+  seed variance; robust versus nominal pooled fronts; alternative priors and
+  fixed scenarios.
+- Explicit statements that the campaign is optimiser evidence under CL-1 and
+  the declared priors, not thruster performance, not a design recommendation,
+  not an optimiser-superiority claim beyond the recorded budget, seeds and
+  model; that the worst case enforced is the worst sampled case; and that the
+  collisionless wall-hit probability is not the per-cusp loss probability.
+
 ## S5. Controlled performance benchmark
 
 This supplement remains closed until a benchmark manifest records kernel

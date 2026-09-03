@@ -102,6 +102,25 @@
       "required_gate": "GATE-TOPOLOGY-CHAR-V1"
     },
     {
+      "id": "TAB-MDO-L0-V1",
+      "kind": "table",
+      "status": "verified",
+      "manuscript_label": "tab:mdo-l0-v1-hypervolume",
+      "manuscript_labels": ["tab:mdo-l0-v1-hypervolume", "tab:mdo-l0-v1-robust-nominal", "tab:mdo-l0-v1-sensitivity"],
+      "manuscript_binding": "\\input{generated/mdo-l0-v1.tex}",
+      "claim_ids": ["CLM-031"],
+      "manifest_id": "MDO-L0-V1-20260903-864-V1",
+      "generator_path": "paper/scripts/generate_mdo_l0_v1_evidence.py",
+      "generator_module": "generate_mdo_l0_v1_evidence",
+      "generator_command": "python paper/scripts/generate_mdo_l0_v1_evidence.py",
+      "output_path": "paper/generated/mdo-l0-v1.tex",
+      "sidecar_path": "paper/generated/mdo-l0-v1.provenance.json",
+      "artifact_claim_count": 3,
+      "artifact_claim_note": "The generated file defines the evidence macros and three table macros (\\MdoHvTable, \\MdoRobustNominalTable, \\MdoScenarioTable); each table body is wrapped in its own ArtifactClaim bound to CLM-031, so exactly three ArtifactClaim macros are required. The tables report optimiser estimands under the declared closure, not thruster performance.",
+      "evidence_file": "paper/evidence/mdo-l0-v1.json",
+      "required_gate": "GATE-MDO-L0-V1"
+    },
+    {
       "id": "FIG-ARCHITECTURE",
       "kind": "figure",
       "status": "planned-nonresult",

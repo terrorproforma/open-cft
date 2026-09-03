@@ -396,3 +396,111 @@
 - Two overfull boxes appeared while integrating (a 148 pt gate table and the
   unbreakable `\texttt{manufacturability}` cell); fixed by ragged-right `p{}`
   columns with a wider gate column, not by editing any number.
+
+## 2026-09-03 — MDO L0 campaign v1 admitted to the claim matrix and manuscript
+
+### Scope
+
+- Worktree `uni-project-paper-mdo`, branch `paper/mdo-l0-v1-claim` from
+  `origin/feat/sota-foundation` (`e642f38c`), LF verified (`git ls-files --eol`
+  shows `w/crlf` only on three `attr/-text` files of other experiments).
+  Paper-owned paths and `modern/docs/workstreams/paper-*` only; nothing under
+  `modern/experiments/**/results/`, no frozen preregistration file and nothing
+  under `FYP/` touched; no GPU work.
+
+### Evidence level decision
+
+- The `numerical-campaign` kind is reused (second gate `GATE-MDO-L0-V1`,
+  `opens_level: null`) because its definition, one accepted preregistered
+  campaign about a declared component model, fits: the component model is the
+  accepted L0 conservation model under the declared multiplicative
+  cusp-survival closure CL-1 and declared uniform priors, executed once
+  (8 of 8 binding gates, `accepted_result`). It is optimiser evidence
+  (hypervolume per budget, paired comparisons, seed variance, Pareto sizes,
+  robust-versus-nominal fronts, sensitivity to the cusp prior), not
+  performance evidence; the gate record carries a `kind_justification`, and
+  the gate-kind description in `acceptance_policy` now names both campaigns.
+  No field solve, geometry variable or L0 mapping exists, so `GATE-L1`--`L3`
+  stay closed. A new manifest type `paper-mdo-campaign-manifest` 1.0 was
+  needed because required roles and metrics are type-specific.
+
+### Added
+
+- `paper/scripts/generate_mdo_l0_v1_evidence.py`: verifies the sealed bundle
+  of `modern/experiments/mdo_l0_campaign_v1` file by file against
+  `results/manifest.json` (137 files, every artifact sidecar re-checked; no
+  end-of-line tolerance exists or is granted), requires the frozen
+  `protocol.json`/`authorities.json`/`shakedown.json` to equal the sealed
+  canonical copies, cross-checks the committed results dashboard
+  (`modern/visualization/mdo-l0-campaign-v1.html` + generator, pinned
+  manifest SHA-256 and revisions, embedded `campaign_result`, seed variance,
+  gate blocks and per-run hypervolumes must equal the artifacts), recomputes
+  every repeated number (seed means/stds, attained fractions, Jaccard index,
+  scenario survivals, objective ranges, pair wins, invariance flags), and
+  writes 334 `\Mdo...` macros with three `\ArtifactClaim` tables
+  (`\MdoHvTable`, `\MdoRobustNominalTable`, `\MdoScenarioTable`) plus the
+  evidence file and sidecar. Derived macros record their derivation and
+  inputs; the four-cell solver probe numbers are parsed from the frozen
+  protocol's disclosure text with a fixed regular expression.
+- Typed manifest `paper/evidence/manifests/mdo-l0-v1.json`: 36 source files
+  bound by Git blob and SHA-256 at `c553124b` (results manifest, terminal,
+  lock, 20 artifacts, nine run records, two transitions, three frozen files
+  whose blobs equal those at `4898d0fd`), a `dashboard` block binding the
+  generator and HTML at `e642f38c`, 68 metrics copied from the raw macro
+  values plus 10 fixed policy metrics.
+- `result-gates.json` gate `GATE-MDO-L0-V1` (35 metric constraints,
+  prohibited inferences); `manifest-schemas.json` type; claims CLM-029
+  (abstract), CLM-030 (results, with `non_claims`), CLM-031 (tables), CLM-032
+  (robust versus nominal), CLM-033 (sensitivity/scenarios, bound to both the
+  optimisation and wall-loss manifests: the collisionless wall-hit estimand
+  is not the Kornfeld cusp probability; the corrected four-cell solver closed
+  only at p = 0 in the recorded probe), CLM-034 (scope limitation),
+  CLM-035 (labelled Discussion interpretation, four readings); contract item
+  `TAB-MDO-L0-V1` (`artifact_claim_count: 3`).
+- `check_paper.py`: `MDO_METRIC_MACROS`, `MDO_POLICY_METRICS`, schema type,
+  `_check_mdo_campaign` (byte-identical regeneration, artifact hashes on disk,
+  dashboard bound at its revision and equal to the checkout by LF-normalised
+  SHA-256, metric == raw with type equality, policy metrics, results tree
+  unchanged, prereg → results → dashboard → HEAD chains, frozen blobs,
+  macro-only section with no literal digit, classification and closure
+  macros, non-claims, bindings once, `\MdoEvidenceRevision`, three
+  ArtifactClaims, claim records bound and located), renderer, new required
+  section, new trackables.
+- `manuscript.tex`: `\MdoEvidenceRevision`, preamble `\input` of the macro
+  file, fourth date line, abstract sentence CLM-029, contribution list,
+  evidence-boundary paragraph, pointer from the optimisation-protocol
+  subsection, new Section 9 "Preregistered robust multi-objective
+  optimisation of the L0 model" (intro with the CL-1 formula, then
+  `\input{sections/mdo-l0-v1.tex}` with subsection 9.1), sentence after the
+  L1 gate box, Discussion paragraph with CLM-035 and a plain future-work
+  sentence on the geometry screening, Limitations rewritten (the old "no
+  admitted hypervolume result or baseline comparison" sentence was no longer
+  true), data availability, Conclusion.
+- Section `paper/sections/mdo-l0-v1.tex` (Method, Results, Robust versus
+  nominal fronts, Sensitivity to the cusp prior, boxed interpretation);
+  standalone driver; tests `test_mdo_l0_v1_admission.py` (17) and
+  `test_mdo_l0_v1_evidence.py` (8); README, author checklist, supplementary
+  outline (S4d) and notation updated.
+
+### Validation
+
+- Before the commit `check_paper.py` reported exactly the fail-closed
+  "accepted manifest is not committed at HEAD"; after commit `e6db2122` it
+  passed.
+- `python -m unittest discover -s paper/tests`: 83 tests OK (58 existing +
+  25 new).
+- `python paper/scripts/verify_reproducible_build.py`: two clean builds
+  byte-identical, `paper/build/manuscript.pdf` 446,316 bytes, SHA-256
+  `e7900c1000e3d48ef02cc6e67e114dce946c9cadfa4cd7820414ee48bde0d4ff`, 22
+  pages, no LaTeX errors, undefined references, warnings or overfull boxes.
+- Pages rendered with MiKTeX `pdftoppm -r 80` to `%TEMP%\paper-mdo-pages\`
+  (`p-01.png` … `p-22.png`) and inspected: abstract sentence and four-line
+  date p. 1; Section 9 opens p. 14 with the CL-1 equation and 9.1; Table 10
+  (hypervolume per optimiser and seed with mean ± std) p. 16; Table 11
+  (robust versus nominal) p. 17 with the boxed interpretation; Table 12
+  (priors and scenarios) p. 18 ahead of the L1 gate; Discussion paragraph
+  with CLM-035 p. 20.
+- One overfull box appeared while integrating (229 pt, the eight-column
+  sensitivity table); fixed by ragged-right `p{}` columns for the label and
+  probability columns, stacked two-line headers and `\scriptsize`, not by
+  dropping any number.
