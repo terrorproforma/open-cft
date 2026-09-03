@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>L1b HEMP confirmation v1 - material-aware P2 check of the 15 HEMP-like designs - offline dashboard</title>
+<style>
+  :root { --ink: #1c2430; --muted: #5d6b7a; --line: #d6dde6; --bg: #f7f9fb; --panel: #ffffff; --accent: #0b5cad; --warn: #b7560b; --ok: #1e7f4b; --bad: #a92626; --s3: #0b5cad; --s4: #1e7f4b; --s5: #7a3ea1; --l1a: #8a94a0; --p2: #b7560b; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 14px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--ink); background: var(--bg); }
+  header { padding: 20px 24px 12px; background: var(--panel); border-bottom: 1px solid var(--line); }
+  h1 { margin: 0 0 6px; font-size: 22px; }
+  h2 { margin: 0 0 10px; font-size: 17px; }
+  h3 { margin: 12px 0 6px; font-size: 14px; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 12px; font-weight: 600; color: #fff; background: var(--accent); margin-right: 6px; margin-bottom: 4px; }
+  .badge.warn { background: var(--warn); }
+  .badge.ok { background: var(--ok); }
+  .badge.bad { background: var(--bad); }
+  .badge.grey { background: var(--l1a); }
+  main { padding: 16px 24px 40px; display: grid; gap: 16px; grid-template-columns: repeat(12, 1fr); }
+  .panel { grid-column: span 12; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; min-width: 0; }
+  .panel.half { grid-column: span 6; }
+  .panel.third { grid-column: span 4; }
+  @media (max-width: 1000px) { .panel.half, .panel.third { grid-column: span 12; } }
+  .small { font-size: 12px; color: var(--muted); }
+  code { font-family: ui-monospace, Consolas, monospace; font-size: 12px; word-break: break-all; }
+  table { border-collapse: collapse; width: 100%; font-size: 12.5px; }
+  th, td { text-align: left; padding: 4px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { background: #eef2f6; position: sticky; top: 0; }
+  .scroll { max-height: 520px; overflow: auto; border: 1px solid var(--line); border-radius: 6px; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; }
+  .card { border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; background: #fbfcfd; }
+  .card .v { font-size: 22px; font-weight: 700; }
+  .card .k { font-size: 12px; color: var(--muted); }
+  .box { border-left: 4px solid var(--warn); background: #fff8f0; padding: 8px 12px; border-radius: 4px; }
+  .box.ok { border-color: var(--ok); background: #f1faf4; }
+  .box.bad { border-color: var(--bad); background: #fdf2f2; }
+  .box.partial { border-color: var(--warn); background: #fff8f0; }
+  svg { display: block; max-width: 100%; height: auto; }
+  svg text { font: 11px system-ui, sans-serif; fill: var(--ink); }
+  .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(440px, 1fr)); gap: 12px; }
+  .legend span { display: inline-block; margin-right: 12px; }
+  .legend i { display: inline-block; width: 12px; height: 12px; border-radius: 6px; vertical-align: -2px; margin-right: 4px; }
+  ul.tight { margin: 4px 0; padding-left: 18px; }
+  ul.tight li { margin: 2px 0; }
+  .ok-text { color: var(--ok); font-weight: 600; }
+  .bad-text { color: var(--bad); font-weight: 600; }
+  #jserrors { color: var(--bad); font-family: ui-monospace, monospace; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<header>
+  <h1>L1b HEMP confirmation v1 - do the 15 HEMP-like L1a designs keep their cusps and their Koch &rho; under a material-aware (iron) P2 field?</h1>
+  <div id="labels"></div>
+  <p class="small" id="statement"></p>
+  <div id="jserrors"></div>
+</header>
+<main>
+  <section class="panel" id="verdict"></section>
+  <section class="panel" id="claim"></section>
+  <section class="panel" id="headline"></section>
+  <section class="panel" id="agreement"></section>
+  <section class="panel half" id="shiftplot"></section>
+  <section class="panel half" id="rhoplot"></section>
+  <section class="panel" id="overlays"></section>
+  <section class="panel half" id="p2"></section>
+  <section class="panel half" id="rule"></section>
+  <section class="panel" id="designs"></section>
+  <section class="panel" id="gates"></section>
+  <section class="panel" id="identity"></section>
+</main>
+<script id="payload" type="application/json">__PAYLOAD_JSON__</script>
+<script>
+(function () {
+  "use strict";
+  window.addEventListener("error", (e) => { document.getElementById("jserrors").textContent += "JS error: " + e.message + "\n"; });
+  const DATA = JSON.parse(document.getElementById("payload").textContent.replace(/<\\\//g, "</"));
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const mm = (v, d = 3) => (v === null || v === undefined) ? "-" : (v * 1e3).toFixed(d);
+  const num = (v, d = 3) => (v === null || v === undefined) ? "-" : Number(v).toFixed(d);
+  const pct = (v) => (v === null || v === undefined) ? "-" : (100 * v).toFixed(1) + " %";
+  const yn = (v) => v === true ? '<span class="ok-text">yes</span>' : (v === false ? '<span class="bad-text">no</span>' : "-");
+  const STAGE_COLOR = { 3: "var(--s3)", 4: "var(--s4)", 5: "var(--s5)" };
+  const svgNs = "http://www.w3.org/2000/svg";
+  function el(tag, attrs, text) {
+    const node = document.createElementNS(svgNs, tag);
+    for (const k in attrs) node.setAttribute(k, attrs[k]);
+    if (text !== undefined) node.textContent = text;
+    return node;
+  }
+
+  // ------------------------------------------------------------- header
+  const verdictClass = DATA.verdict === "CONFIRMED" ? "ok" : (DATA.verdict === "DISCONFIRMED" ? "bad" : "warn");
+  $("labels").innerHTML = `<span class="badge">${esc(DATA.classification)}</span><span class="badge">${esc(DATA.topology_label)}</span><span class="badge ok">bundle ${esc(DATA.identity.state)}</span><span class="badge ${verdictClass}">verdict ${esc(DATA.verdict)}</span><span class="badge warn">linear-iron P2 screening: no plasma / mirror-probability / performance claim</span><span class="badge grey">paper admission not in scope</span>`;
+  $("statement").textContent = DATA.classification_statement;
+
+  // ------------------------------------------------------------- verdict
+  const C = DATA.confirmation;
+  const B = C.cusp_count_unchanged, Cc = C.cusp_position_shift, D = C.hemp_like_preserved;
+  $("verdict").innerHTML = `<h2>Verdict: <span class="${verdictClass === "ok" ? "ok-text" : (verdictClass === "bad" ? "bad-text" : "")}">${esc(DATA.verdict)}</span> (predeclared rule: ${esc(DATA.verdict_rule)})</h2>
+  <div class="box ${verdictClass === "ok" ? "ok" : (verdictClass === "bad" ? "bad" : "partial")}"><ul class="tight">
+    <li><b>GATE (b) cusp count unchanged:</b> ${yn(B.passed)} - ${B.agreeing_designs_boundary_tolerant}/${B.design_count} designs agree (boundary-tolerant; strict ${B.agreeing_designs_strict}/${B.design_count}), threshold fraction ${B.comparator} ${num(B.pass_threshold, 2)}${B.disagreeing_designs.length ? "; disagreeing: " + B.disagreeing_designs.map(esc).join(", ") : ""}</li>
+    <li><b>GATE (c) cusp position shift:</b> ${yn(Cc.passed)} - ${Cc.matched_cusp_count} matched cusps, every design a bijection: ${Cc.all_designs_bijective}; max shift ${mm(Cc.shift_m.max)} mm = ${num(Cc.max_shift_over_tolerance, 3)} of the design tolerance (median ${mm(Cc.shift_m.median)} mm, mean ${mm(Cc.shift_m.mean)} mm; tolerance ${mm(Cc.tolerance_m.min, 3)}-${mm(Cc.tolerance_m.max, 3)} mm), threshold ${Cc.comparator} ${num(Cc.pass_threshold, 2)}${Cc.designs_exceeding_tolerance.length ? "; exceeding: " + Cc.designs_exceeding_tolerance.map(esc).join(", ") : ""}</li>
+    <li><b>REPORTED (d) HEMP-like preserved:</b> ${D.preserved_count}/${D.design_count} designs keep &rho;<sub>cons</sub> &ge; 1.5 at every cusp under P2 (${pct(D.fraction)}); &rho;<sub>cons</sub> P2/L1a per cusp ${num(D.rho_conservative_ratio_p2_over_l1a.min, 3)}-${num(D.rho_conservative_ratio_p2_over_l1a.max, 3)} (median ${num(D.rho_conservative_ratio_p2_over_l1a.median, 3)}); P2 min &rho;<sub>cons</sub> ${num(D.p2_min_rho_conservative.min, 3)}-${num(D.p2_min_rho_conservative.max, 3)} vs L1a ${num(D.l1a_min_rho_conservative.min, 3)}-${num(D.l1a_min_rho_conservative.max, 3)}${D.lost_designs.length ? "; lost: " + D.lost_designs.map(esc).join(", ") : ""}</li>
+    <li><b>Wall |B| at the cusps, P2/L1a at equal magnet strength:</b> ${num(D.wall_b_ratio_p2_over_l1a_per_cusp.min, 3)}-${num(D.wall_b_ratio_p2_over_l1a_per_cusp.max, 3)} (median ${num(D.wall_b_ratio_p2_over_l1a_per_cusp.median, 3)}); peak wall |B| ratio ${num(D.peak_wall_b_ratio_p2_over_l1a.min, 3)}-${num(D.peak_wall_b_ratio_p2_over_l1a.max, 3)}; axis |B<sub>z</sub>| peak ratio ${num(D.axis_peak_b_ratio_p2_over_l1a.min, 3)}-${num(D.axis_peak_b_ratio_p2_over_l1a.max, 3)}; ${D.peak_wall_b_ratio_in_band_count}/${D.design_count} inside the descriptive band [0.5, 2.0]</li>
+  </ul></div>`;
+
+  // ------------------------------------------------------------- claim boundary
+  const cb = DATA.claim_boundary;
+  $("claim").innerHTML = `<h2>Claim boundary</h2><div class="box"><ul class="tight">
+    <li><b>Field level:</b> ${esc(cb.field_level)}</li>
+    <li><b>Confirmed or disconfirmed:</b> ${esc(cb.what_is_confirmed_or_disconfirmed)}</li>
+    <li><b>Not claimed:</b> ${esc(cb.what_is_not_claimed)}</li>
+    <li><b>&rho; and mirror descriptors</b> are field ratios (${cb.mirror_ratios_are_field_descriptors_not_probabilities ? "never probabilities" : "?"}); plasma/performance publication forbidden: ${cb.forbid_plasma_performance_publication}; shakedown outcomes are not evidence: ${cb.shakedown_outcomes_are_not_evidence}.</li>
+    <li><b>Paper:</b> ${esc(cb.paper_admission)}</li>
+  </ul></div><p class="small">${esc(DATA.purpose)}</p>`;
+
+  // ------------------------------------------------------------- headline
+  const H = DATA.headline;
+  const E = DATA.estimands;
+  $("headline").innerHTML = `<h2>Headline - ${H.design_count} designs, all ${Object.keys(DATA.gates.campaign).length} binding integrity gates true</h2>
+  <div class="cards">
+    <div class="card"><div class="v">${B.agreeing_designs_strict}/${H.design_count}</div><div class="k">designs with the SAME wall-cusp count (and cell count) under P2 as under L1a (strict); boundary-tolerant ${B.agreeing_designs_boundary_tolerant}/${H.design_count}</div></div>
+    <div class="card"><div class="v">${mm(Cc.shift_m.max, 3)} mm</div><div class="k">largest cusp axial shift L1a &rarr; P2 over ${Cc.matched_cusp_count} matched cusps (median ${mm(Cc.shift_m.median, 3)} mm); tolerance max(r_w/8, L1a dz) = ${mm(Cc.tolerance_m.min, 2)}-${mm(Cc.tolerance_m.max, 2)} mm</div></div>
+    <div class="card"><div class="v">${mm(H.p2_discretisation_max_wall_intersection_shift_m.max, 4)} mm</div><div class="k">P2 discretisation sensitivity: max cusp shift between level 0 and level 1 (${H.p2_discretisation_stable_count}/${H.design_count} stable at 0.25 mm); 2x sampling stable ${H.sampling_stable_count}/${H.design_count}</div></div>
+    <div class="card"><div class="v">${D.preserved_count}/${H.design_count}</div><div class="k">HEMP-like under P2 (&rho;<sub>cons</sub> &ge; 1.5 at every cusp); P2 min &rho; ${num(D.p2_min_rho_conservative.min, 2)}-${num(D.p2_min_rho_conservative.max, 2)}</div></div>
+    <div class="card"><div class="v">${num(D.wall_b_ratio_p2_over_l1a_per_cusp.median, 3)}</div><div class="k">median wall |B| ratio P2/L1a at the cusps (range ${num(D.wall_b_ratio_p2_over_l1a_per_cusp.min, 3)}-${num(D.wall_b_ratio_p2_over_l1a_per_cusp.max, 3)}); axis peak ratio ${num(D.axis_peak_b_ratio_p2_over_l1a.median, 3)}; unscaled peak wall ratio ${num(D.peak_wall_b_ratio_unscaled.median, 3)}</div></div>
+    <div class="card"><div class="v">${mm(H.channel_axis_null_sorted_shift_m.max, 2)} mm</div><div class="k">largest AXIS-null shift inside the channel (${H.channel_axis_null_count_equal_count}/${H.design_count} designs with equal channel-null counts; ${H.channel_axis_null_bijection_count} in bijection within the cusp tolerance); the iron moves the separatrix root on the axis more than its foot on the wall: axis-null-to-cusp lean ${mm(H.separatrix_lean_l1a_m.max, 2)} mm (L1a) vs ${mm(H.separatrix_lean_p2_m.max, 2)} mm (P2); nulls outside the straight section shift ${mm(H.outside_channel_axis_null_shift_m.min, 2)}-${mm(H.outside_channel_axis_null_shift_m.max, 2)} mm</div></div>
+    <div class="card"><div class="v">${Math.round(H.p2_level_dofs.level_1.min / 1000)}k-${Math.round(H.p2_level_dofs.level_1.max / 1000)}k</div><div class="k">P2 level-1 DOFs (level 0 ${Math.round(H.p2_level_dofs.level_0.min / 1000)}k-${Math.round(H.p2_level_dofs.level_0.max / 1000)}k); max relative true residual ${Number(H.p2_relative_true_residual_max).toExponential(2)}</div></div>
+    <div class="card"><div class="v">${num(H.p2_total_seconds.median / 60, 1)} min</div><div class="k">median P2 solve+sample time per design (max ${num(H.p2_total_seconds.max / 60, 1)} min); peak RSS ${num(H.peak_rss_bytes / 1e9, 2)} GB = ${pct(H.ram_budget_fraction_used)} of the ${num(H.ram_budget_bytes / 1e9, 2)} GB budget; GPU untouched</div></div>
+  </div>`;
+
+  // ------------------------------------------------------------- agreement table
+  const rowsA = DATA.agreement_table.map((r) => `<tr>
+    <td><code>${esc(r.design_id)}</code></td><td style="color:${STAGE_COLOR[r.stage_count]}">${r.stage_count}</td><td>${num(r.x_w, 2)}</td>
+    <td>${r.l1a_wall_cusp_count}</td><td>${r.p2_wall_cusp_count}</td><td>${r.l1a_cell_count} / ${r.p2_cell_count}</td>
+    <td>${yn(r.count_agreement_strict)}</td><td>${yn(r.cusp_bijection)}</td>
+    <td>${mm(r.max_cusp_shift_m, 3)}</td><td>${num(r.max_cusp_shift_over_tolerance, 2)}</td><td>${mm(r.cusp_position_tolerance_m, 2)}</td>
+    <td>${num(r.peak_wall_b_ratio_p2_over_l1a, 3)}</td><td>${r.cusp_wall_b_ratios.map((v) => num(v, 2)).join(" / ")}</td>
+    <td>${num(r.l1a_min_rho_conservative, 3)} &rarr; ${num(r.p2_min_rho_conservative, 3)}</td><td>${yn(r.p2_hemp_like)}</td>
+    <td>${r.p2_level1_dofs.toLocaleString("en")}</td><td>${yn(r.p2_all_levels_converged)}</td><td>${mm(r.p2_discretisation_max_cusp_shift_m, 4)}</td>
+  </tr>`).join("");
+  $("agreement").innerHTML = `<h2>Per-design agreement table (L1a accepted map vs P2 level-1 map)</h2>
+  <div class="scroll"><table><thead><tr><th>design</th><th>N</th><th>x_w</th><th>L1a cusps</th><th>P2 cusps</th><th>cells L1a / P2</th><th>count =</th><th>bijection</th><th>max shift mm</th><th>shift / tol</th><th>tol mm</th><th>peak wall |B| P2/L1a</th><th>cusp |B| ratios</th><th>min &rho;<sub>cons</sub> L1a &rarr; P2</th><th>HEMP-like P2</th><th>P2 L1 DOFs</th><th>converged</th><th>P2 h-shift mm</th></tr></thead><tbody>${rowsA}</tbody></table></div>
+  <p class="small">Wall |B| ratios are at equal magnet strength (the P2 field is scaled by the design's L1a source_strength_scale). "P2 h-shift" is the cusp shift between the level-0 and the level-1 P2 map (discretisation sensitivity).</p>`;
+
+  // ------------------------------------------------------------- shift plot
+  function shiftPlot() {
+    const pts = DATA.scatter.filter((p) => "shift_m" in p);
+    const W = 640, Hh = 380, mL = 60, mR = 20, mT = 26, mB = 44;
+    const x0 = 0, x1 = 1;
+    const ymax = Math.max(1.05, ...pts.map((p) => p.shift_tol)) * 1.08;
+    const sx = (x) => mL + (x - x0) / (x1 - x0) * (W - mL - mR);
+    const sy = (y) => Hh - mB - y / ymax * (Hh - mT - mB);
+    const svg = el("svg", { viewBox: `0 0 ${W} ${Hh}`, role: "img", "aria-label": "cusp shift over tolerance vs axial position" });
+    svg.appendChild(el("text", { x: mL, y: 14, "font-weight": "600" }, "Cusp shift |z_c(P2) - z_c(L1a)| / tolerance vs L1a z_c / L_chamber"));
+    svg.appendChild(el("line", { x1: sx(x0), x2: sx(x1), y1: sy(1), y2: sy(1), stroke: "var(--bad)", "stroke-dasharray": "5 4" }));
+    svg.appendChild(el("text", { x: sx(x1) - 4, y: sy(1) - 4, "text-anchor": "end", fill: "var(--bad)" }, "GATE (c) tolerance"));
+    for (let k = 0; k <= 5; k++) {
+      const y = ymax * k / 5;
+      svg.appendChild(el("line", { x1: mL, x2: W - mR, y1: sy(y), y2: sy(y), stroke: "#eef2f6" }));
+      svg.appendChild(el("text", { x: mL - 6, y: sy(y) + 4, "text-anchor": "end" }, y.toFixed(2)));
+    }
+    for (let k = 0; k <= 5; k++) {
+      const x = x0 + (x1 - x0) * k / 5;
+      svg.appendChild(el("text", { x: sx(x), y: Hh - mB + 16, "text-anchor": "middle" }, x.toFixed(1)));
+    }
+    svg.appendChild(el("text", { x: (mL + W - mR) / 2, y: Hh - 8, "text-anchor": "middle" }, "z_c / L (L1a)"));
+    for (const p of pts) {
+      const dot = el("circle", { cx: sx(Math.min(1, Math.max(0, p.z_over_L))), cy: sy(p.shift_tol), r: 5, fill: STAGE_COLOR[p.stages], opacity: 0.8, stroke: p.ambiguous ? "var(--bad)" : "none" });
+      dot.appendChild(el("title", {}, `${p.id}: L1a z_c ${mm(p.l1a_z_m)} mm -> P2 ${mm(p.p2_z_m)} mm, shift ${mm(p.shift_m, 4)} mm (${num(p.shift_tol, 3)} tol)`));
+      svg.appendChild(dot);
+    }
+    $("shiftplot").innerHTML = `<h2>Cusp axial positions: L1a vs P2</h2><p class="small">${pts.length} matched cusps; shift distribution ${mm(DATA.distributions.shift_m.min, 4)} / ${mm(DATA.distributions.shift_m.median, 4)} / ${mm(DATA.distributions.shift_m.max, 4)} mm (min / median / max). Colour = stage count (<span style="color:var(--s3)">3</span>, <span style="color:var(--s4)">4</span>, <span style="color:var(--s5)">5</span>); red outline = boundary-ambiguous cusp.</p>`;
+    $("shiftplot").appendChild(svg);
+  }
+  shiftPlot();
+
+  // ------------------------------------------------------------- rho plot
+  function rhoPlot() {
+    const pts = DATA.scatter.filter((p) => "l1a_rho" in p && p.l1a_rho !== null && p.p2_rho !== null);
+    const W = 640, Hh = 380, mL = 60, mR = 20, mT = 26, mB = 44;
+    const all = pts.flatMap((p) => [p.l1a_rho, p.p2_rho]);
+    const lo = Math.min(1.3, ...all) * 0.95, hi = Math.max(1.7, ...all) * 1.05;
+    const sx = (x) => mL + (x - lo) / (hi - lo) * (W - mL - mR);
+    const sy = (y) => Hh - mB - (y - lo) / (hi - lo) * (Hh - mT - mB);
+    const svg = el("svg", { viewBox: `0 0 ${W} ${Hh}`, role: "img", "aria-label": "Koch rho under P2 vs under L1a" });
+    svg.appendChild(el("text", { x: mL, y: 14, "font-weight": "600" }, "Koch rho_conservative per cusp: P2 (iron) vs L1a (vacuum)"));
+    svg.appendChild(el("line", { x1: sx(lo), x2: sx(hi), y1: sy(lo), y2: sy(hi), stroke: "#8a94a0", "stroke-dasharray": "4 4" }));
+    svg.appendChild(el("line", { x1: sx(1.5), x2: sx(1.5), y1: sy(lo), y2: sy(hi), stroke: "var(--ok)", "stroke-dasharray": "5 4" }));
+    svg.appendChild(el("line", { x1: sx(lo), x2: sx(hi), y1: sy(1.5), y2: sy(1.5), stroke: "var(--ok)", "stroke-dasharray": "5 4" }));
+    svg.appendChild(el("text", { x: sx(1.5) + 4, y: mT + 10, fill: "var(--ok)" }, "HEMP-like threshold 1.5"));
+    for (let k = 0; k <= 5; k++) {
+      const v = lo + (hi - lo) * k / 5;
+      svg.appendChild(el("text", { x: mL - 6, y: sy(v) + 4, "text-anchor": "end" }, v.toFixed(2)));
+      svg.appendChild(el("text", { x: sx(v), y: Hh - mB + 16, "text-anchor": "middle" }, v.toFixed(2)));
+    }
+    svg.appendChild(el("text", { x: (mL + W - mR) / 2, y: Hh - 8, "text-anchor": "middle" }, "rho_conservative (L1a)"));
+    svg.appendChild(el("text", { x: 14, y: (mT + Hh - mB) / 2, transform: `rotate(-90 14 ${(mT + Hh - mB) / 2})`, "text-anchor": "middle" }, "rho_conservative (P2)"));
+    for (const p of pts) {
+      const dot = el("circle", { cx: sx(p.l1a_rho), cy: sy(p.p2_rho), r: 5, fill: STAGE_COLOR[p.stages], opacity: 0.8 });
+      dot.appendChild(el("title", {}, `${p.id}: rho L1a ${num(p.l1a_rho)} -> P2 ${num(p.p2_rho)} (x${num(p.rho_ratio, 3)}); wall |B| ratio ${num(p.wall_ratio, 3)}`));
+      svg.appendChild(dot);
+    }
+    $("rhoplot").innerHTML = `<h2>Koch &rho; under the material-aware field</h2><p class="small">Every point is one matched cusp; the dashed diagonal is equality. &rho;<sub>cons</sub> P2/L1a ${num(DATA.distributions.rho_ratio.min, 3)} / ${num(DATA.distributions.rho_ratio.median, 3)} / ${num(DATA.distributions.rho_ratio.max, 3)} (min / median / max); wall |B| P2/L1a ${num(DATA.distributions.wall_ratio.min, 3)} / ${num(DATA.distributions.wall_ratio.median, 3)} / ${num(DATA.distributions.wall_ratio.max, 3)}.</p>`;
+    $("rhoplot").appendChild(svg);
+  }
+  rhoPlot();
+
+  // ------------------------------------------------------------- overlays
+  function profilePlot(o) {
+    const W = 960, Hh = 300, mL = 60, mR = 20, mT = 24, mB = 40;
+    const z0 = Math.min(o.l1a_profiles.z_m[0], o.p2_profiles.z_m[0]), z1 = Math.max(o.l1a_profiles.z_m.at(-1), o.p2_profiles.z_m.at(-1));
+    const ys = [...o.l1a_profiles.wall_abs_b_t, ...o.p2_profiles.wall_abs_b_t, ...o.l1a_profiles.axis_b_z_t.map(Math.abs), ...o.p2_profiles.axis_b_z_t.map(Math.abs)];
+    const ymax = Math.max(...ys) * 1.08;
+    const sx = (z) => mL + (z - z0) / (z1 - z0) * (W - mL - mR);
+    const sy = (b) => Hh - mB - b / ymax * (Hh - mT - mB);
+    const svg = el("svg", { viewBox: `0 0 ${W} ${Hh}`, role: "img", "aria-label": `wall and axis field profiles of ${o.id}` });
+    svg.appendChild(el("text", { x: mL, y: 14, "font-weight": "600" }, `${o.id}: wall |B| (solid) and axis |B_z| (dotted); grey = L1a vacuum, orange = P2 iron`));
+    svg.appendChild(el("rect", { x: sx(o.straight_m[0]), y: mT, width: sx(o.straight_m[1]) - sx(o.straight_m[0]), height: Hh - mT - mB, fill: "#f1f4f8" }));
+    for (const c of o.stage_centres_m) {
+      svg.appendChild(el("rect", { x: sx(c - o.magnet_t_m / 2), y: Hh - mB - 6, width: sx(c + o.magnet_t_m / 2) - sx(c - o.magnet_t_m / 2), height: 6, fill: "#c9d1db" }));
+    }
+    const path = (zs, bs, colour, dash) => {
+      const d = zs.map((z, i) => `${i ? "L" : "M"}${sx(z).toFixed(1)},${sy(Math.abs(bs[i])).toFixed(1)}`).join("");
+      const node = el("path", { d, fill: "none", stroke: colour, "stroke-width": 1.8 });
+      if (dash) node.setAttribute("stroke-dasharray", dash);
+      return node;
+    };
+    svg.appendChild(path(o.l1a_profiles.z_m, o.l1a_profiles.wall_abs_b_t, "var(--l1a)"));
+    svg.appendChild(path(o.p2_profiles.z_m, o.p2_profiles.wall_abs_b_t, "var(--p2)"));
+    svg.appendChild(path(o.l1a_profiles.z_m, o.l1a_profiles.axis_b_z_t, "var(--l1a)", "2 3"));
+    svg.appendChild(path(o.p2_profiles.z_m, o.p2_profiles.axis_b_z_t, "var(--p2)", "2 3"));
+    for (const c of o.l1a_cusps) svg.appendChild(el("line", { x1: sx(c.z_m), x2: sx(c.z_m), y1: mT, y2: Hh - mB, stroke: "var(--l1a)", "stroke-dasharray": "4 3" }));
+    for (const c of o.p2_cusps) svg.appendChild(el("line", { x1: sx(c.z_m), x2: sx(c.z_m), y1: mT, y2: Hh - mB, stroke: "var(--p2)", "stroke-dasharray": "4 3" }));
+    for (const n of o.l1a_nulls) svg.appendChild(el("circle", { cx: sx(n.z_m), cy: Hh - mB, r: 3.5, fill: "var(--l1a)" }));
+    for (const n of o.p2_nulls) svg.appendChild(el("circle", { cx: sx(n.z_m), cy: Hh - mB, r: 3.5, fill: "var(--p2)" }));
+    for (let k = 0; k <= 4; k++) {
+      const b = ymax * k / 4;
+      svg.appendChild(el("text", { x: mL - 6, y: sy(b) + 4, "text-anchor": "end" }, b.toFixed(3)));
+    }
+    for (let k = 0; k <= 6; k++) {
+      const z = z0 + (z1 - z0) * k / 6;
+      svg.appendChild(el("text", { x: sx(z), y: Hh - mB + 16, "text-anchor": "middle" }, (z * 1e3).toFixed(1)));
+    }
+    svg.appendChild(el("text", { x: (mL + W - mR) / 2, y: Hh - 6, "text-anchor": "middle" }, "z (mm); shaded = straight dielectric; bars = magnets; dots = axis nulls; dashed verticals = wall cusps"));
+    svg.appendChild(el("text", { x: 14, y: (mT + Hh - mB) / 2, transform: `rotate(-90 14 ${(mT + Hh - mB) / 2})`, "text-anchor": "middle" }, "|B| (T)"));
+    return svg;
+  }
+  function tracePlot(o) {
+    const W = 460, Hh = 300, mL = 50, mR = 14, mT = 24, mB = 36;
+    const zs = o.traces.flatMap((t) => t.path.map((p) => p[1]));
+    const z0 = Math.min(o.straight_m[0] - 0.5 * o.pitch_m, ...zs), z1 = Math.max(o.L_m + 0.5 * o.pitch_m, ...zs);
+    const sx = (z) => mL + (z - z0) / (z1 - z0) * (W - mL - mR);
+    const sy = (r) => Hh - mB - r / (o.rw_m * 1.05) * (Hh - mT - mB);
+    const svg = el("svg", { viewBox: `0 0 ${W} ${Hh}`, role: "img", "aria-label": `P2 separatrices of ${o.id}` });
+    svg.appendChild(el("text", { x: mL, y: 14, "font-weight": "600" }, "P2 separatrices (axis null -> wall)"));
+    svg.appendChild(el("rect", { x: sx(o.straight_m[0]), y: sy(o.rw_m), width: sx(o.straight_m[1]) - sx(o.straight_m[0]), height: Hh - mB - sy(o.rw_m), fill: "#f1f4f8" }));
+    svg.appendChild(el("line", { x1: sx(o.straight_m[0]), x2: sx(o.straight_m[1]), y1: sy(o.rw_m), y2: sy(o.rw_m), stroke: "#1c2430", "stroke-width": 2 }));
+    for (const c of o.p2_cells) svg.appendChild(el("text", { x: sx((c.z0 + c.z1) / 2), y: sy(o.rw_m) - 4, "text-anchor": "middle", fill: "var(--muted)" }, c.id.replace("cell-", "c")));
+    for (const t of o.traces) {
+      const d = t.path.map((p, i) => `${i ? "L" : "M"}${sx(p[1]).toFixed(1)},${sy(Math.abs(p[0])).toFixed(1)}`).join("");
+      svg.appendChild(el("path", { d, fill: "none", stroke: t.reaches_wall ? "var(--p2)" : "var(--l1a)", "stroke-width": 1.6 }));
+    }
+    for (const c of o.l1a_cusps) svg.appendChild(el("circle", { cx: sx(c.z_m), cy: sy(o.rw_m), r: 4, fill: "var(--l1a)" }));
+    for (const c of o.p2_cusps) svg.appendChild(el("circle", { cx: sx(c.z_m), cy: sy(o.rw_m), r: 3, fill: "var(--p2)" }));
+    svg.appendChild(el("text", { x: (mL + W - mR) / 2, y: Hh - 6, "text-anchor": "middle" }, "z (mm) - grey dots: L1a cusps; orange: P2 cusps"));
+    for (let k = 0; k <= 4; k++) {
+      const z = z0 + (z1 - z0) * k / 4;
+      svg.appendChild(el("text", { x: sx(z), y: Hh - mB + 14, "text-anchor": "middle" }, (z * 1e3).toFixed(1)));
+    }
+    svg.appendChild(el("text", { x: mL - 6, y: sy(o.rw_m) + 4, "text-anchor": "end" }, "r_w"));
+    svg.appendChild(el("text", { x: mL - 6, y: sy(0) + 4, "text-anchor": "end" }, "0"));
+    return svg;
+  }
+  const ov = $("overlays");
+  ov.innerHTML = `<h2>Field profile overlays (${DATA.overlays.length} designs: the four protocol representatives, the largest cusp shift, the largest wall-|B| ratio)</h2>`;
+  for (const o of DATA.overlays) {
+    const wrap = document.createElement("div");
+    const cuspRows = o.p2_cusps.map((c, i) => { const l = o.l1a_cusps[i]; return `<tr><td>${esc(c.id)}</td><td>${l ? mm(l.z_m) : "-"}</td><td>${mm(c.z_m)}</td><td>${l ? mm(Math.abs(c.z_m - l.z_m), 4) : "-"}</td><td>${l ? num(l.b_t, 4) : "-"}</td><td>${num(c.b_t, 4)}</td><td>${l ? num(l.rho) : "-"}</td><td>${num(c.rho)}</td><td>${yn(c.hemp)}</td></tr>`; }).join("");
+    wrap.innerHTML = `<h3>${esc(o.id)} - ${o.stages} stages, x_w ${num(o.x_w, 2)}, r_w ${mm(o.rw_m, 2)} mm, pitch ${mm(o.pitch_m, 2)} mm; P2 levels ${o.p2_levels.map((l) => `${l.dofs.toLocaleString("en")} DOFs / ${l.iterations} it / ${Number(l.residual).toExponential(1)}`).join(" -> ")}; count = ${o.verdict_row.strict}, bijection ${o.verdict_row.bijection}, max shift ${mm(o.verdict_row.max_shift_m, 3)} mm (tol ${mm(o.verdict_row.tolerance_m, 2)}), HEMP-like under P2 ${o.verdict_row.p2_hemp}</h3>
+    <div class="grid2"><div class="profile"></div><div class="trace"></div></div>
+    <table><thead><tr><th>cusp (P2 order)</th><th>L1a z_c mm</th><th>P2 z_c mm</th><th>shift mm</th><th>L1a wall |B| T</th><th>P2 wall |B| T</th><th>L1a &rho;<sub>cons</sub></th><th>P2 &rho;<sub>cons</sub></th><th>P2 HEMP-like</th></tr></thead><tbody>${cuspRows}</tbody></table>
+    <p class="small">Material regions in the P2 model: ${o.regions.map((r) => `${esc(r.id)} (&mu;<sub>r</sub> ${num(r.mu_r, 2)}${r.br_t ? `, B<sub>r</sub> ${num(r.br_t, 2)} T` : ""})`).join(", ")}.</p>`;
+    wrap.querySelector(".profile").appendChild(profilePlot(o));
+    wrap.querySelector(".trace").appendChild(tracePlot(o));
+    ov.appendChild(wrap);
+  }
+
+  // ------------------------------------------------------------- P2 declaration
+  const P = DATA.p2;
+  $("p2").innerHTML = `<h2>Material-aware P2 field (frozen controls)</h2><ul class="tight">
+    <li><b>Solver:</b> ${esc(P.solver.package)}; relative tolerance ${P.solver.relative_tolerance}, max ${P.solver.max_iterations} iterations; ${esc(P.solver.backend)}</li>
+    <li><b>Materials:</b> soft iron &mu;<sub>r</sub> ${P.materials.soft_iron_relative_permeability} (poles between the magnets, return yoke); magnets recoil &mu;<sub>r</sub> ${P.materials.magnet_recoil_relative_permeability} with ${esc(P.materials.magnet_remanence_t)}; ${esc(P.materials.vacuum_like_regions)}. ${esc(P.materials.statement)}</li>
+    <li><b>Mesh:</b> bore ${P.mesh.bore_elements}, feature ${P.mesh.feature_elements}, padding ${P.mesh.padding_factor}. ${esc(P.mesh.statement)}</li>
+    <li><b>Adaptivity:</b> ${P.adaptivity.levels} levels, Dorfler &theta; ${P.adaptivity.dorfler_theta}, gradation ${P.adaptivity.maximum_adjacent_size_growth}. ${esc(P.adaptivity.statement)}</li>
+    <li><b>Sampling:</b> ${esc(P.sampling.statement)} ${esc(P.sampling.axis_window)}</li>
+    <li><b>Resources:</b> DOF cap ${P.resources.maximum_p2_dofs.toLocaleString("en")}, RAM budget ${P.resources.ram_budget_fraction_of_free_at_start} x free at start; ${esc(P.resources.gpu_not_used)}. ${esc(P.resources.guard)}</li>
+    <li><b>Definition:</b> ${esc(DATA.definition_import)}</li>
+  </ul>`;
+
+  // ------------------------------------------------------------- comparison rule
+  const R = DATA.comparison_rule;
+  $("rule").innerHTML = `<h2>Comparison rule (preregistered)</h2><ul class="tight">
+    <li><b>L1a reference:</b> ${esc(R.l1a_reference)}</li>
+    <li><b>P2 reference:</b> ${esc(R.p2_reference)}</li>
+    <li><b>Tolerance:</b> ${esc(R.cusp_position_tolerance_rule)}</li>
+    <li><b>Matching:</b> ${esc(R.matching)}</li>
+    <li><b>Count agreement:</b> ${esc(R.count_agreement)}</li>
+    <li><b>Wall |B|:</b> ${esc(R.wall_b_ratio)}</li>
+    <li><b>&rho;:</b> ${esc(R.rho)}</li>
+    <li><b>P2 discretisation:</b> ${esc(R.p2_discretisation_sensitivity)}</li>
+    <li><b>Sampling stability:</b> ${esc(R.sampling_stability)}</li>
+  </ul>`;
+
+  // ------------------------------------------------------------- designs table
+  const rowsD = DATA.designs.map((d) => `<tr>
+    <td><code>${esc(d.id)}</code>${d.representative ? ' <span class="badge grey">rep</span>' : ""}</td><td style="color:${STAGE_COLOR[d.stages]}">${d.stages}</td><td>${mm(d.rw_m, 2)}</td><td>${mm(d.pitch_m, 2)}</td><td>${num(d.x_w, 2)}</td><td>${num(d.scale, 3)}</td>
+    <td>${d.l1a_nulls} / ${d.p2_nulls}</td><td>${mm(d.channel_null_shift_m, 3)}</td><td>${mm(d.lean_l1a_m, 2)} / ${mm(d.lean_p2_m, 2)}</td><td>${(d.outside_null_shifts_m || []).map((v) => mm(v, 2)).join(" / ") || "-"}</td>
+    <td>${d.l1a_cusps} / ${d.p2_cusps}</td><td>${mm(d.max_shift_m, 3)}</td><td>${num(d.wall_ratio, 3)} (${num(d.wall_ratio_unscaled, 3)})</td><td>${num(d.axis_ratio, 3)}</td>
+    <td>${d.l1a_rho.map((v) => num(v, 2)).join(" / ")}</td><td>${d.p2_rho.map((v) => num(v, 2)).join(" / ")}</td>
+    <td>${num(d.l1a_b3_b1, 3)} / ${num(d.p2_b3_b1, 3)}</td>
+    <td>${d.dofs.map((v) => v.toLocaleString("en")).join(" -> ")}</td><td>${d.iterations.join(" / ")}</td><td>${Number(d.residual).toExponential(1)}</td>
+    <td>${mm(d.disc_shift_m, 4)} / ${mm(d.disc_null_shift_m, 4)}</td><td>${mm(d.sampling_shift_m, 5)}</td><td>${num(d.seconds / 60, 1)}</td><td>${Math.round(d.rss_bytes / 1e6)}</td><td>${yn(d.gates)}</td>
+  </tr>`).join("");
+  $("designs").innerHTML = `<h2>All designs (P2 solve evidence and full comparison)</h2>
+  <div class="scroll"><table><thead><tr><th>design</th><th>N</th><th>r_w mm</th><th>pitch mm</th><th>x_w</th><th>scale s</th><th>axis nulls L1a / P2</th><th>channel null shift mm</th><th>lean L1a / P2 mm</th><th>outside null shifts mm</th><th>cusps L1a / P2</th><th>max cusp shift mm</th><th>peak wall |B| ratio (unscaled)</th><th>axis peak ratio</th><th>&rho;<sub>cons</sub> L1a</th><th>&rho;<sub>cons</sub> P2</th><th>b3/b1 L1a / P2</th><th>P2 DOFs L0 -> L1</th><th>PCG iterations</th><th>max residual</th><th>P2 h-shift cusp / null mm</th><th>2x sampling shift mm</th><th>min</th><th>RSS MB</th><th>gates</th></tr></thead><tbody>${rowsD}</tbody></table></div>`;
+
+  // ------------------------------------------------------------- gates
+  const G = DATA.gates;
+  const gateRows = Object.keys(G.campaign).map((k) => `<tr><td><code>${esc(k)}</code></td><td>${yn(G.campaign[k])}</td><td class="small">${esc(G.definitions[k] || "")}</td></tr>`).join("");
+  const confRows = ["cusp_count_unchanged", "cusp_position_shift", "hemp_like_preserved"].map((k) => { const g = DATA.gate_definitions.confirmation[k]; return `<tr><td><code>${esc(k)}</code> (${esc(g.id)})</td><td>${C[k].passed === null ? "reported" : yn(C[k].passed)}</td><td class="small">${esc(g.estimand)}; threshold ${g.pass_threshold === null ? "none" : `${esc(g.comparator)} ${g.pass_threshold}`}</td></tr>`; }).join("");
+  $("gates").innerHTML = `<h2>Gates</h2><h3>Binding integrity (decide whether the bundle is evidence)</h3><table><thead><tr><th>gate</th><th>result</th><th>definition</th></tr></thead><tbody>${gateRows}</tbody></table>
+  <h3>Confirmation (classify the outcome; never invalidate the campaign)</h3><table><thead><tr><th>gate</th><th>result</th><th>definition</th></tr></thead><tbody>${confRows}</tbody></table>
+  <p class="small">Determinism replay: ${G.replays.map((r) => `${esc(r.key)} bit-identical ${r.bit_identical}, P2 run hashes equal ${r.p2_run_sha256_equal}, grid equal ${r.accepted_grid_equal}`).join("; ")}. Peak RSS ${Math.round(G.peak_rss_bytes / 1e6)} MB of the ${Math.round(G.ram_budget.budget_bytes / 1e6)} MB budget (${G.ram_budget.fraction} x ${Math.round(G.ram_budget.free_at_start_bytes / 1e6)} MB free at start; DOF cap ${G.ram_budget.maximum_p2_dofs.toLocaleString("en")}). Design stage wall ${num(DATA.execution.stage_wall_s / 60, 1)} min + assessment ${num(DATA.execution.assessment_wall_s / 60, 1)} min, ${DATA.execution.worker_pool_size} worker. Reported, not binding: ${G.reported_not_binding.map(esc).join("; ")}.</p>`;
+
+  // ------------------------------------------------------------- identity
+  const I = DATA.identity;
+  const S = I.sealed_sources.l1a_geometry_sweep_v3;
+  $("identity").innerHTML = `<h2>Identity (hash-bound evidence)</h2><table><tbody>
+    <tr><td>experiment</td><td><code>${esc(I.experiment_id)}</code> - bundle <code>${esc(I.state)}</code>, ${I.artifact_count} artifacts, ${I.verified_file_count} files byte-verified</td></tr>
+    <tr><td>preregistration commit</td><td><code>${esc(I.preregistration_commit_sha)}</code></td></tr>
+    <tr><td>execution</td><td><code>${esc(I.execution_command)}</code> on <code>${esc(I.device)}</code></td></tr>
+    <tr><td>manifest / terminal / lock</td><td><code>${esc(I.manifest_file_sha256)}</code><br><code>${esc(I.terminal_file_sha256)}</code><br><code>${esc(I.lock_file_sha256)}</code></td></tr>
+    <tr><td>protocol (semantic / LF file)</td><td><code>${esc(I.protocol_semantic_sha256)}</code><br><code>${esc(I.protocol_file_sha256_lf)}</code></td></tr>
+    <tr><td>experiment code / dependency sources / field pipeline</td><td><code>${esc(I.experiment_code_sha256)}</code><br><code>${esc(I.dependency_source_sha256)}</code><br><code>${esc(I.field_pipeline_source_sha256)}</code></td></tr>
+    <tr><td>sealed L1a sweep v3</td><td>manifest <code>${esc(S.manifest_file_sha256)}</code><br>terminal <code>${esc(S.terminal_byte_sha256)}</code><br>catalogue <code>${esc(S.catalogue_byte_sha256)}</code><br>preregistration commit <code>${esc(S.preregistration_commit)}</code>, ${S.hemp_like_design_count} HEMP-like designs</td></tr>
+    <tr><td>dashboard generator / template</td><td><code>${esc(I.generator_sha256)}</code><br><code>${esc(I.template_sha256)}</code></td></tr>
+  </tbody></table>`;
+})();
+</script>
+</body>
+</html>
