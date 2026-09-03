@@ -103,10 +103,27 @@
   `numerical-screening` gate at exactly its `recorded_outcome`:
   `accepted-screening` (`GATE-L1A-SWEEP-V2`), `preregistered-null`
   (`GATE-FOUR-CELL-V2`), `recorded-characterization`
-  (`GATE-TOPOLOGY-CHAR-V1`) or `accepted-screening-dataset`
-  (`GATE-WALL-LOSS-GEOMETRY-SCREENING-V1`). Gate status `accepted` means
-  admitted as recorded, never that a positive finding is accepted; it opens no
-  L gate.
+  (`GATE-TOPOLOGY-CHAR-V1`), `accepted-screening-dataset`
+  (`GATE-WALL-LOSS-GEOMETRY-SCREENING-V1`) or `accepted-topology-screening`
+  (`GATE-CUSP-TOPOLOGY-V3-1`). Gate status `accepted` means admitted as
+  recorded, never that a positive finding is accepted; it opens no L gate.
+- **Wall cusp (literature definition)** — the intersection of the separatrix of
+  an axis null (the point on the axis where \(B_z\) changes sign; X-type by the
+  analytic Jacobian) with the straight dielectric wall; the cusps sit at the
+  inter-magnet gaps of a periodic-permanent-magnet stack. A **cell** is the wall
+  interval between consecutive cusps (plus anode-side and exit-side partial
+  cells). Both are geometric properties of a prescribed field map under the
+  definition of `GATE-CUSP-TOPOLOGY-V3-1`, classified
+  `SCREENING_L1A_FIELD_SEPARATRIX_CUSP_TOPOLOGY` (L1a sets) or
+  `P2_QUALIFIED_FIELD_SEPARATRIX_CUSP_TOPOLOGY` (the single P2 row); a cell is
+  not a demonstrated confinement cell.
+- **Wall / axis mirror ratio (topology screening)** — the weaker bounding
+  cusp's wall field over the smallest wall field inside the cell, and that cusp
+  field over the largest axial field on the axis of the cell; field ratios by
+  construction, never probabilities or loss fractions.
+- **Cusp-cell catalogue** — the per-design record of axis nulls, wall cusps,
+  cells and mirror descriptors sealed by the topology screening; a consumer
+  contract under its labels, ingested by no admitted consumer.
 - **Screening dataset (wall-loss geometry screening)** — collisionless
   prescribed-field test-particle electron orbits (orbit_mc 1.7, numpy CPU)
   integrated in the re-solved L1a screening fields of all 96 accepted sweep-v2
@@ -183,7 +200,13 @@
   campaign does not open `GATE-L1`.
 - A preregistered null (four-cell v2) or a recorded characterization null
   (characterization v1) is a null under its frozen cusp/cell definitions and
-  linear-vacuum field model; it is not proof that no such design exists.
+  linear-vacuum field model; it is not proof that no such design exists, and
+  the literature-definition cusps of the topology screening do not contradict
+  it (the frozen definition asked for a wall-side vector null, which the
+  literature definition does not place at the wall).
+- A separatrix-bounded cell of the topology screening is a geometric property
+  of a prescribed field map; it is not a demonstrated plasma confinement cell,
+  and its mirror ratios are not cusp-loss probabilities.
 - Sweep axis cusps and per-cell mirror ratios are field-only screening
   quantities; they are not confinement cells, confinement predictions or
   performance.

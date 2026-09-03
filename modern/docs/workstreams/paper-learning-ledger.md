@@ -394,3 +394,43 @@
   cheapest proof of a results-only commit (v1 audit F9); bind the count and
   the outside-`results/` list as derived macros so the paper's statement is
   recomputed at every check.
+## 2026-09-03 - Admitting the cusp topology search v3.1 and amending the topology Discussion
+
+- [self] Verify a brief's topological statement against the sealed reference
+  before writing it as a claim: "every vector null sits on the axis" was false
+  for the sealed characterization dataset (20 of 200 in-channel X roots are
+  off-axis bilinear roots at 0.16-0.54 of the wall radius). Bind the split as
+  derived macros and state exactly what the data show ("none at the wall",
+  "excluded by the frozen rule"), not the slogan.
+- [self] "By construction" needs two bound facts, not a phrase: the definition
+  (the literature wall cusp is a separatrix intersection, so a wall-side null
+  search cannot find it) and the source policy (the sealed v2 strength ratios
+  16-42 % leave one axis sign change, so 128/128 one cusp). Both are macros
+  read from the frozen protocol and the sealed v2 dataset.
+- [self] A recorded rejection is admitted as lineage by binding its whole
+  bundle at its own revision, byte-verifying it, reproducing its audit from
+  sealed data inside the generator, and giving the gate a `lineage` block with
+  `cited_for_numbers: false` that the checker enforces; the histogram-equality
+  boolean is the recomputed proof that the corrected campaign changed the
+  recording layer only.
+- [self] When a shared policy flag was defined against a definition the new
+  study does not evaluate (`stable_multicell_wall_cusp_topology_demonstrated`),
+  do not reuse it with a flipped meaning; add explicit flags for the new
+  boundary (`confinement_cells_demonstrated`,
+  `frozen_definition_nulls_remain_true`) and leave the old gates' flags as
+  they were.
+- [self] Recomputing a sealed derived quantity exactly needs the producer's
+  convention: `distance_to_nearest_stage_gap_m` uses the half-pitch end gaps
+  beyond the stack, not only the interior midpoints. Fail closed, then read the
+  one failing design before changing the rule.
+- [self] Version tokens (`v3.1`, `v2`, `L1a`, `RK4`) are digits under the
+  macro-only rule; derive them from the experiment ids and set keys as macros
+  or spell them out ("fourth-order").
+- [tool] `\texttt{}` identifier lists (gate names, review paths) overflow the
+  line even with `\allowbreak`; render long identifier lists as prose and keep
+  a single identifier per `\texttt{}` at a sentence end.
+- [tool] Validating N revision-bound files with per-file `git rev-parse` +
+  `git cat-file` costs ~4 git calls per file; `git ls-tree -r -z <rev> -- paths`
+  + one `git cat-file --batch` per revision binds 65 files in two calls.
+- [tool] PowerShell `Measure-Command { python ... }` swallows the script's
+  stdout; time with Python's `time.time()` inside the script instead.

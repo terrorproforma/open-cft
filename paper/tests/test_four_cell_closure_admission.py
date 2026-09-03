@@ -332,7 +332,11 @@ class FourCellClosureAdmissionTests(unittest.TestCase):
         records = {c["id"]: c for c in self.matrix["claims"]}
         self.assertEqual(records["CLM-043"]["claim_class"], "interpretation")
         self.assertEqual(records["CLM-044"]["claim_class"], "interpretation")
-        self.assertEqual(set(records["CLM-044"]["manifest_ids"]), {MANIFEST_ID, "WALL-LOSS-V4-20260902-4608-V1", "FOUR-CELL-V2-20260902-128-V1"})
+        # The cusp topology admission bound CLM-044 to its manifest as well (cells exist under the literature definition).
+        self.assertEqual(
+            set(records["CLM-044"]["manifest_ids"]),
+            {MANIFEST_ID, "WALL-LOSS-V4-20260902-4608-V1", "FOUR-CELL-V2-20260902-128-V1", "CUSP-TOPOLOGY-V3-1-20260903-281-V1"},
+        )
         self.assertIn("Kornfeld2007", records["CLM-040"]["bibliography"])
         self.assertIn("SRC-AUDIT", records["CLM-043"]["evidence"])
         # The legacy-study reading is worded as interpretation and the audit's rule is what it says.

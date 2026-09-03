@@ -1,0 +1,1149 @@
+{
+  "classification": "SCREENING_L1A_FIELD_SEPARATRIX_CUSP_TOPOLOGY",
+  "dashboard": {
+    "files": [
+      {
+        "git_blob": "4f52f5c9efd51bd8587634f16eb05568dbb2e989",
+        "git_blob_sha256": "28d8ffc6c5e054c1f4b4a0d563f55fa03d2c951a51371a74fb36d81b7b4f4718",
+        "path": "modern/visualization/generate_cusp_topology_search_v3_dashboard.py",
+        "role": "dashboard-generator"
+      },
+      {
+        "git_blob": "322697db8406f2b3f61dfc3ab6bec0360dd5c687",
+        "git_blob_sha256": "f56a0721f939b48d7ce92651faada1f82bb81a856e7a681a6ac2c77e9ce8576f",
+        "path": "modern/visualization/cusp-topology-search-v3.template.html",
+        "role": "dashboard-template"
+      },
+      {
+        "git_blob": "4ef3306d8a9946402bfd4882d29de9276e3f84bc",
+        "git_blob_sha256": "9f125bd4ba57566239c4a80b0804dd3fa84cf77b260daf8ee25b171c95dd4061",
+        "path": "modern/visualization/cusp-topology-search-v3.html",
+        "role": "dashboard-html"
+      }
+    ],
+    "path": "modern/visualization/cusp-topology-search-v3.html",
+    "revision": "9abbd5371b816208d687f1adbf54f31884c8b27f",
+    "rule": "the committed dashboard byte-verifies the accepted bundle and the recorded lineage bundle, embeds its own extraction and pins the manifest SHA-256 values and the preregistration commits; the generator requires that extraction (identity incl. every artifact hash, headline, held-out, P2 consistency, gates, execution, every per-design row, catalogue counts and the lineage block) to equal the sealed artifacts before writing any macro",
+    "subject": "feat(visualization): cusp topology search v3 dashboard (v3.1 accepted bundle, v3 lineage)"
+  },
+  "definition_sources": {
+    "files": [
+      {
+        "git_blob": "56a5ea0c230cb930aa58dd41162691bc041ee0dd",
+        "git_blob_sha256": "cae55beada4a87fa00ac9ccbd7438e3973fcc2036b291375ef79cdee9a487722",
+        "path": "modern/docs/literature/reduced-models-cusp-topology-blockers.md",
+        "role": "definition-source-review"
+      }
+    ],
+    "literature_keys": [
+      "gildea2012",
+      "kornfeld2007",
+      "koch2011",
+      "lewerentz2023",
+      "parnell1996",
+      "haynes2010",
+      "murphy2015"
+    ],
+    "revision": "66879e00834b09e2c7f942358b3ae4a51658cb6b",
+    "rule": "the frozen definition names the literature review at its commit; every literature locator of the definition appears in the bound review, whose checkout equals the blob (LF-normalised)",
+    "subject": "docs(literature): reduced-model, cusp-loss and topology blockers review"
+  },
+  "document_type": "paper-separatrix-topology-screening-manifest",
+  "evidence_level": {
+    "justification": "The study is a preregistered, single-execution numerical screening of prescribed field maps: the literature cusp definition (axis null of the axis-regular bicubic flux interpolant, separatrix traced to the dielectric wall, wall cusp at the intersection cross-checked against the flux root, cells between consecutive cusps) applied to the 96 re-solved L1a sweep designs, the 128 sealed four-cell candidates, the 56 characterization cases and the P2-qualified divergent-exit-stack field, each on its accepted map and a refined map, with two binding held-out references (sealed characterization axis roots, sealed sweep axis nulls). Its recorded outcome is accepted_topology_screening. The framework admits accepted numerical evidence through a typed committed manifest, hashed artifacts at a resolvable revision, exact registered claim text and generated artifacts with provenance sidecars; that pattern is applied here through the numerical-screening gate GATE-CUSP-TOPOLOGY-V3-1 at the recorded outcome accepted-topology-screening, a fifth outcome value added for this study. Three of its four sets are L1a screening fields (not P2-qualified); the single P2 row is one finite-element field whose iron sensitivity was not tested. Nothing here is a plasma, confinement, wall-loss or performance quantity; it is not the L1 field-resolved reduction of GATE-L1 (no manufactured solution, no L0 mapping, no performance model), not L2 and not L3, and it opens none of those gates. The cusp-cell catalogue is a consumer contract under its labels; no consumer of it is admitted here.",
+    "name": "numerical-screening",
+    "opens_gate": null,
+    "relation_to_levels": {
+      "L0": "independent of the algebraic L0 model; no mapping is claimed and no L0 quantity is computed",
+      "L1": "consumes linear-vacuum L1a screening fields re-solved from the accepted sweep and the sealed v1/v2 records plus one P2-qualified field; no field-resolved reduction, no L0 mapping, no geometry-response prediction",
+      "L2": "not coupled to any plasma model; cells and mirror ratios are geometric field descriptors offered to consumers under their label",
+      "L3": "not particle-in-cell and not experimental; the kinetic-workstream axis-null planes enter only as a reported, ungated consistency reference from a workstream whose results are not admitted"
+    },
+    "validation_status": "none: no measurement, facility, or hardware comparison exists",
+    "verification_tier": "code verification (analytic Jacobian versus the frozen characterization classification at every null, trace versus flux-root cross-check at every wall intersection, bilinear-step comparison, bit-identical determinism replays, hash bindings to the frozen authorities, identity proofs of every rebuilt field) and solution verification at screening tier (refinement stability on a 2x map per design, held-out correspondences with two sealed references); no validation"
+  },
+  "evidence_revision": "cec47f12f5909c5886424bf5d46ac20ce06f1ac5",
+  "evidence_revision_note": "The results tree first exists at this record commit; the dashboard was generated from the sealed bundle two commits later and is bound at its own revision.",
+  "evidence_revision_subject": "record cusp topology search v3.1 result",
+  "experiment_id": "cusp-topology-search-v3.1",
+  "experiment_path": "modern/experiments/cusp_topology_search_v3_1",
+  "gate_id": "GATE-CUSP-TOPOLOGY-V3-1",
+  "gate_kind": "numerical-screening",
+  "level": "numerical-screening",
+  "lineage": {
+    "campaign_status": "gates_failed",
+    "cited_for_numbers": false,
+    "experiment_id": "cusp-topology-search-v3",
+    "failing_gate": "held_out_correspondence",
+    "manifest_git_blob": "6d31a23968cbb585d80676ffbba449ac5324f612",
+    "posthoc_audit_commit": "9fa6359a2ba87d14635d80147af4857482afc977",
+    "preregistration_commit": "691599340355818ff64d3834d45110768a751589",
+    "results_commit": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+    "results_tree": "bfe139d6d0b8dd93497c7d5cf75dc44ce24e9728",
+    "rule": "hash-bound lineage records of the recorded assessment_rejection and its read-only post-hoc audit; disclosed as lineage, never cited for a number; the generator byte-verifies the whole rejected bundle and reproduces the audit's counts from the sealed characterization dataset",
+    "terminal_state": "assessment_rejection"
+  },
+  "lineage_bundle": {
+    "artifact_count": 1226,
+    "manifest_path": "modern/experiments/cusp_topology_search_v3/results/manifest.json",
+    "manifest_sha256": "c9b5d03b9ae527352c04221eeb314f6c94ab12074ff0b4471b941e7ea4f50ba7",
+    "state": "assessment_rejection",
+    "verified_file_count": 1211
+  },
+  "lineage_files": [
+    {
+      "git_blob": "db76e976d5d41f1825ede73bd2e01375d032de66",
+      "git_blob_sha256": "9677b240076ded20d57a2823b58b0674dd4e47c52de42f752603ff57f94ce8dd",
+      "note": "read-only audit of the recorded rejection; its documented counts are reproduced by the generator from the sealed characterization dataset",
+      "path": "modern/experiments/cusp_topology_search_v3/POSTHOC_AUDIT.md",
+      "revision": "9fa6359a2ba87d14635d80147af4857482afc977",
+      "role": "lineage-posthoc-audit"
+    },
+    {
+      "git_blob": "4c7b7f756ea0b7704fafddb709df117064f2e71c",
+      "git_blob_sha256": "106caafc3be4d1053654766e060c64cf387127a89ecf39dbacea7df264895c19",
+      "note": "read-only audit script pinning the recorded failing gate and count; never writes inside results/",
+      "path": "modern/experiments/cusp_topology_search_v3/audit_held_out.py",
+      "revision": "9fa6359a2ba87d14635d80147af4857482afc977",
+      "role": "lineage-posthoc-audit-script"
+    },
+    {
+      "git_blob": "cf95807b0801615d4172b40405406e6306a82408",
+      "git_blob_sha256": "7ad98609cba46127b40f3da86fb1ebfd0caf6f82d04184f930e3f8338e4a4576",
+      "note": "frozen protocol of the predecessor at its preregistration commit; identical definition, tolerances, design sets and gates; only the held-out reference extraction differed in code",
+      "path": "modern/experiments/cusp_topology_search_v3/protocol.json",
+      "revision": "691599340355818ff64d3834d45110768a751589",
+      "role": "lineage-rejected-preregistration"
+    },
+    {
+      "git_blob": "01541f3265a5ae440592365d7d91bfc5fbe3c67f",
+      "git_blob_sha256": "aa741fc259065a95d705ee0cd29b84888a42cbed8241db6d356cc13ed7f048bd",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/campaign-result.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "a71997133ea32d4a31ba6aae96a0e4660872cd62",
+      "git_blob_sha256": "5707f07bb777f2dc64ec2e1f26dd941fb31d3c9a55cd45b561f6829f7310c730",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s02-p0-r0-neg.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "4ebf4033fa89e18cf17a3d92fe0b2e226841ec81",
+      "git_blob_sha256": "344b40a8774560f5217e9185d7d20c97757c777071d12b8e953cce55dfaf154e",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s02-p0-r0-pos.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "2bbba0b1663a8dbdfe5b5fdf5a1a8a319edbbb09",
+      "git_blob_sha256": "431252539c0a2337b084521fb148c77d636ea2c50b5ca24e6db7f3b659952f79",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s02-p0-r1-neg.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "488911c1aa0412ad194d699e0da4579a9acb5205",
+      "git_blob_sha256": "d6791b5c63fd0d64b3228eba950d0fea8ee33f3dc334d47a0bbf8d2b72e8ea24",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s02-p0-r1-pos.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "a7249d7e5ed2597f0a84e04c79e15d483d11198a",
+      "git_blob_sha256": "c4886cf86f1c64e259fd26fcebf88a3c2bf323cf41c71f1239048ead5345598a",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s02-p1-r0-neg.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "57fa66d0578e6db68625c4a6f6d19bc1cc08759f",
+      "git_blob_sha256": "accd7fa3363fa73e2bf84924d0efaaf5e5b0afd85b95b1fb8fc2378b75fbbc65",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s02-p1-r0-pos.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "f1501e00c42b88e587d2b1c3f91dce9ec2fcf9b5",
+      "git_blob_sha256": "0dc553d9e1e7248f9e039127e735eeb0949cae96bd2887f7b659323229392912",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s02-p1-r1-neg.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "34dc2cb1334f9988b6c5316222df727270da3fd2",
+      "git_blob_sha256": "81214a7b5f18914b11da0e6f38a71b40be378afb57b291a2c70b2801fa5bda85",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s02-p1-r1-pos.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "10bcb8fecf21fef97ea5624d31cd3b0a01460be6",
+      "git_blob_sha256": "a732d550d7b0449dba64a8baef64f0dfc9ecb3ea138a207785acfd35e428d0b9",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s03-p0-r0-neg.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "5bca7da3d82dfa3aaa5b590a35da8b12f27632d4",
+      "git_blob_sha256": "c7d829835a325fc29835a94ea1745f7f7bb336a5e671e3c7b959217070606ef5",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s03-p0-r0-pos.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "d7f3dcf0ef35ec5386583147549b5a3763b7ac2a",
+      "git_blob_sha256": "32eb42a6f87aa17774f5d452eae0c136ea4d2c295e8dcdbb12f16f7854bd1c2a",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s03-p0-r1-neg.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "2a625ccbb548f4813050fdf3238a82c9ffbbfab6",
+      "git_blob_sha256": "dba586b3a9ef02ca8dbcf32223d820c656225ed1d2f418223aa776beeb3792a5",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s03-p0-r1-pos.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "81742bd162d7a4e82f8533feb0525bcd758ebbac",
+      "git_blob_sha256": "de8487d31bdf3175d762989756e7c0f82b5103840cfd34523a69ccaeb71dc3e9",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s03-p1-r0-neg.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "5657c568d2875e12a48f6b6f8fdb0c5191828e04",
+      "git_blob_sha256": "9534acfce8ec723d343c80040aa5503f5c51a7780f8f481f2ee6edc21ddc4250",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s03-p1-r0-pos.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "d6871b01b4c7b44b52eb40db4a650b38b5d1ac1f",
+      "git_blob_sha256": "e6e5e50b2b5d0ac7b980d31f8c7cea675859c53524f965ff873cb9ee3932f96a",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s03-p1-r1-neg.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "d2cb13c5183e95f08f1b6ad82cc5a806fd05a213",
+      "git_blob_sha256": "56111fe2abb4f1f41d2782ee74fe5abd55fe23288f68e54b77ca75d40830efa6",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s03-p1-r1-pos.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "d8b5c2f311e6b8130b66226e4c2d212627b51aa5",
+      "git_blob_sha256": "202ef3a7364c771ed29e5fabe9c01d59b9a0ecde2f1ef9bea6f09234604c2dcd",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s04-p0-r0-neg.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "5999554322d9acc2b422b46d77819d9e0e5fe1d8",
+      "git_blob_sha256": "2e36db51c3731682b28610ae803320d9cfdb608f85ad367c07ff51dfbb65b5a2",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s04-p0-r0-pos.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "b2533035e13f4450d59662ee342ca0636569bc2a",
+      "git_blob_sha256": "000debc0bfc20d9b5875bdea366e756162d7ccb3419d8d4c09a851138b106016",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s04-p0-r1-neg.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "8d807d49e01b1aaf2faf790e914ea1f8fdd96597",
+      "git_blob_sha256": "eb8ed418febdb4cabeb57d00eeb21f742ced1bfbd3509663bf821e597c32d315",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s04-p0-r1-pos.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "a0c14b4f9d8361a1fa1132035e6dfda8172cf240",
+      "git_blob_sha256": "1ab36f190b29cce0b9853352377dfd7e52271b0edc3e7f133cd4de5798741028",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s04-p1-r0-neg.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "dd20d202be986b6153ef2ebeeaf096cac28e06ab",
+      "git_blob_sha256": "8a3983a1c1eca620de7791549c9b6489f6dd596dbc8d318ba53fead9e1a3ba07",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s04-p1-r0-pos.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "0fdeaa41fa44a85f7742d4d85d3b1b498c3d076d",
+      "git_blob_sha256": "5eb71412b5c37d38a3848d699f6de0c2aecc994153cd75f0bac5449f6c0592fd",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s04-p1-r1-neg.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "b9c995db0c43785c96eb1fc73601ebf6948b3e48",
+      "git_blob_sha256": "c9aeda996c9b6d99466f1f6f809f55c03c2683670e10af1ab6f84364871c0080",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s04-p1-r1-pos.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "6b55a39da51dc5c1dc907841df5bbbf0dc996196",
+      "git_blob_sha256": "e896b796403878459a18e4a41baa7b43a1d6c4c913a3135bd3eea800ba729973",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s05-p0-r0-neg.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "21faea3999a78b3956925e71a6e0d5feedc34460",
+      "git_blob_sha256": "07268c1b9e0b54020acfa7bbce1c0a89c604de4b4523e1a507a0ce72a80726e2",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s05-p0-r0-pos.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "455259e5a44803bf934fd3a8236694cbcb835d57",
+      "git_blob_sha256": "d5b0a47a3a717a57b104e35e9d28b6cdb7ed68fe6263aad000d63f422f8ff8bc",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s05-p0-r1-neg.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "61a01ffa64bcb621ba8875ab6e3319b2884b937a",
+      "git_blob_sha256": "0ce7b20fd1fe49876fca263e404c1b62c339c28ada0ead4bc33f8a252841fb99",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s05-p0-r1-pos.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "b924d068ab8c9d1efc0c2c0f84e810813f5676cb",
+      "git_blob_sha256": "23ccfa70ebd940ace9e97ad053765a21456b12ee286ba8b0ebaa7509f5900afc",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s05-p1-r0-neg.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "c88ba107736b51d7065518fc810e8a8fb1d3f4f0",
+      "git_blob_sha256": "f5303b3a97061501b634052a35876da09f46eebdb6e36d9a00b8072afb5a65c8",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s05-p1-r0-pos.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "5d6315f294cdabcb11f0fca7026d2f8da5da9f56",
+      "git_blob_sha256": "691ef44e0f65cb0b47ef2f3212f9befa042f8f9d8250d9d2ed39c2865b9abe5d",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s05-p1-r1-neg.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "f325e157592fe4b42a99b3bf16e09a5342aa0211",
+      "git_blob_sha256": "7bdda54fc2e4229e80f73cf83f41964530266c95b0e1edaaa83a9e12a0b0dca7",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s05-p1-r1-pos.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "f0979848dad8664fa0f7e428854104983a54464d",
+      "git_blob_sha256": "956e13f780ea2fc3bef4a560a5092ea176fab2aa48c47cc117e29a5244f9820d",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s06-p0-r0-neg.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "1dc53d30d17594502fe9bb768389629b439a4c1b",
+      "git_blob_sha256": "429846a5324408f65a01f5d656da7d8ffa269130b956d1878373abaaa7ba0714",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s06-p0-r0-pos.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "e73a07e48ff02d2d10221379352df0bcf22067d1",
+      "git_blob_sha256": "c2827dc052004c99e1a86af6950111d6d8087e5a0babd7b7b1d6e48212b2af92",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s06-p0-r1-neg.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "dca9edfae458efbf826ac7b22b6e647c65ed78cd",
+      "git_blob_sha256": "6bc3dc2c4d10b6ee390da7b5c060fcfe52733ea9b3071da2e34308be86f3d26e",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s06-p0-r1-pos.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "756fbcd68c17d5ed0c958716f8b628c40e509d11",
+      "git_blob_sha256": "b05378d575b6a94d45628d62ed27ead05d435f8395f16db5410ccb544fa47885",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s06-p1-r0-neg.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "6ea85d163ed87ac10b963f5637302da78174ee0a",
+      "git_blob_sha256": "31c03a09de1d3cbb117e6cce18c5457383644c7fd5274b997aed48f1211374e6",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s06-p1-r0-pos.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "81d1ef046c0e09cf119b93e60d57384b1c006b92",
+      "git_blob_sha256": "b4b960ed13cdc95a0035e9cb24bb47f5f5dd59a3390a6f96bc775e6c14c08e3c",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s06-p1-r1-neg.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "e4a719927f0f581d60e39b0478094a2e0c68704d",
+      "git_blob_sha256": "56ad76e722ee4ef1fc59e7c93723a4823e2b114f16e4e7abe4a88ef81dbc1cb7",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s06-p1-r1-pos.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "41e255520f08e8f6f1a7402ec09ec61ed4157894",
+      "git_blob_sha256": "c983865aa91d7f2eaade8e558e8be2240912558dcf3ef25b9d2fc71c52764fe0",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s07-p0-r0-neg.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "8ba8291af00abff396f61ec440aae3cd6827d622",
+      "git_blob_sha256": "cd6d745c84f6f5dc86cb0f08e78d49393565653ecb94a6fd07f3cbad9d3e5b6c",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s07-p0-r0-pos.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "c83621bb5949263f08c7c9924c0e67adc31fa362",
+      "git_blob_sha256": "06606c1aa0c774d30dbea237c3a68538e0d797ab6ac9e001df94d371acbc3756",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s07-p0-r1-neg.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "350712ea960af868a0745af63ef706617e6a5f45",
+      "git_blob_sha256": "4f5c184c1771f5be364f33e8d4eae3c3d0ae0ee8ffe7b495973e2ee31700dbf4",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s07-p0-r1-pos.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "bdfd66fa98cc6e6ed3116eb2e207eb2e6999b3b7",
+      "git_blob_sha256": "04d0121cd20bd4d1f020e10e44d1edd2bdee35c0d1f2bc25840dfa2568143c7e",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s07-p1-r0-neg.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "06f0b8c4ec3e77e3c3beb9cef7e3db3243f09d9b",
+      "git_blob_sha256": "b97c7f2948669b326f8dc052fb73dd5d70d352b59d444f63106f5991e5e687a3",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s07-p1-r0-pos.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "212dc88e7d1b40a3b33dd6212f5b76c041a5a8b6",
+      "git_blob_sha256": "a312e2c59a4fe9dc43f94e1d721250884323766c981bcd44cd1254c1ae6278f1",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s07-p1-r1-neg.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "9fba290827b3b92c8bbc7d9c6618b52d53199cbc",
+      "git_blob_sha256": "b5fd2c3998e12227e17a0af86ab0c408546c408ec2766a0316fd71cc240f4e9f",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s07-p1-r1-pos.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "bcd6e801495f5c817967315bd77a4069e05d894c",
+      "git_blob_sha256": "12df3a719e93d69915a69ac3eb6dc0072d5a6dae950cef03d91dfe12c6af3eb3",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s08-p0-r0-neg.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "e45aeb48fdb593be5478a2a3dc37aa59a9bb20b8",
+      "git_blob_sha256": "634491452a2de54d5ccebe5178906fbcfd4d60ce2168b178e6d267b7df37ded2",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s08-p0-r0-pos.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "901097e1cdc96260f8c89c7785c3711705aa845b",
+      "git_blob_sha256": "deff70d7bec9e26095f8c03feea73aec8e622628367eba67c8e3af6a19f8e3cc",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s08-p0-r1-neg.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "0fa117171dffc6285cd652fd7a59b5f37637a734",
+      "git_blob_sha256": "5019b191c02ace6c95ebccbbaf8ea91e1803dde738bc2fad3ad50dc07dee811c",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s08-p0-r1-pos.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "fc966a5544711441b8bb102db67802b59f3c3f97",
+      "git_blob_sha256": "4ab0d329376e1ec80a89f45baffd3eafb59a344ce85c0a1f6159de1f084fed7e",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s08-p1-r0-neg.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "3c87ebd2a9dd8b605e50e1f9221fa3c0904908ca",
+      "git_blob_sha256": "ce7256b4c5be430c752460480a04b49fa99af7783fe7cd1a9399195d9c1f5716",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s08-p1-r0-pos.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "f1a2114cfb99a3a2cb645b4ddb9c16bdbba771bf",
+      "git_blob_sha256": "79d549919803c46c05c4abe785ff7dc4628fcec5ff6201eef339e0fb189c4d8a",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s08-p1-r1-neg.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "36fe39afd27163cd5fdfa30d2b3d618f80b77fcb",
+      "git_blob_sha256": "fcf98fc0d8f26dbfd1da970e5c3f0365e185fb0e80b6ac458d110fd2b5d1643b",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/designs/characterization_v1/topology-s08-p1-r1-pos.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "bd124189927ecfd7661ad6f7e09f4aad2ccc6834",
+      "git_blob_sha256": "f8f35a1758d4b5ae8b7ec7574fca40a571ea6fa26a496214dfa18711bd44d51a",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/gates.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "fff1d60d1678b2f7be130bac44400eee38965da0",
+      "git_blob_sha256": "dee40c67e6b012673bba521ee2ad84633983cf5fce18f8c3a7f8599aa4da1b75",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/protocol.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "d6fb710bfd17540e818f00350106fbf09a3bd69e",
+      "git_blob_sha256": "e3b6184985c80234d909be0d4adc10b30ac0b4b1a0258854f9477e4af659b3b6",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/artifacts/topology-dataset.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "6b171db02aa999a64a9485f6d2a22540cb599f74",
+      "git_blob_sha256": "9977478768ea581eb09856ff61f70fa5ed876e8a38f7bf1f93fdaa35e866b5ec",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/execution-lock.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    },
+    {
+      "git_blob": "f1de5aae8d1af5cfb8c76343df2f8db1b4b93aa4",
+      "git_blob_sha256": "209f7d630e623d47769a704539bad334b0b7bd9d2a93e6afd9d266947fd39d22",
+      "note": "recorded assessment_rejection of the predecessor (held_out_correspondence false for 14 characterization designs through a reference-extraction defect); byte-verified by the generator; never cited for a number",
+      "path": "modern/experiments/cusp_topology_search_v3/results/terminal.json",
+      "revision": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "role": "lineage-rejected-campaign"
+    }
+  ],
+  "manifest_id": "CUSP-TOPOLOGY-V3-1-20260903-281-V1",
+  "metrics": {
+    "attempt_count": 1,
+    "binding_gate_count": 9,
+    "binding_gates_true": 9,
+    "campaign_status": "accepted_topology_screening",
+    "catalogue_is_consumer_contract_under_label": true,
+    "characterization_case_count": 56,
+    "characterization_channel_axis_roots": 180,
+    "characterization_channel_off_axis_roots": 20,
+    "characterization_channel_roots": 200,
+    "characterization_interior_axis_mirror_maximum": 173.9530720183155,
+    "characterization_interior_axis_mirror_minimum": 5.081841169352259,
+    "characterization_n_minus_one_designs": 42,
+    "characterization_off_axis_eligible": 0,
+    "characterization_off_axis_radius_fraction_maximum": 0.5370086865882355,
+    "characterization_reference_eligible_cells": 0,
+    "characterization_reference_eligible_cusps": 0,
+    "classification": "SCREENING_L1A_FIELD_SEPARATRIX_CUSP_TOPOLOGY",
+    "confinement_cells_demonstrated": false,
+    "declared_count": 281,
+    "design_set_count": 4,
+    "designs_with_at_least_one_cusp": 275,
+    "designs_with_at_least_two_cusps": 135,
+    "designs_with_five_cusps": 6,
+    "designs_with_four_cusps": 25,
+    "designs_with_one_cusp": 140,
+    "designs_with_seven_cusps": 6,
+    "designs_with_six_cusps": 6,
+    "designs_with_three_cusps": 56,
+    "designs_with_two_cusps": 36,
+    "designs_with_zero_cusps": 6,
+    "evaluated_count": 281,
+    "failed_cases_count": 0,
+    "flux_root_maximum_difference_m": 8.098493306518684e-09,
+    "four_cell_candidate_count": 128,
+    "four_cell_designs": 56,
+    "four_cell_one_axis_null_designs": 128,
+    "four_cell_one_cusp_designs": 128,
+    "four_cell_reference_stable_count": 0,
+    "four_cell_strength_ratio_maximum": 0.4168,
+    "four_cell_strength_ratio_minimum": 0.1646,
+    "four_wall_cusp_designs": 25,
+    "frozen_definition_nulls_remain_true": true,
+    "hardware_or_experimental_validation": false,
+    "held_out_characterization_designs": 56,
+    "held_out_characterization_max_difference_m": 1.7564011821423475e-05,
+    "held_out_characterization_nulls": 180,
+    "held_out_characterization_passed": 56,
+    "held_out_sweep_designs": 96,
+    "held_out_sweep_max_difference_m": 2.7294298442819692e-05,
+    "held_out_sweep_nulls": 479,
+    "held_out_sweep_passed": 96,
+    "held_out_tolerance_m": 0.00025,
+    "iron_sensitivity_tested": false,
+    "l1a_sets_permanent_magnet_material_model": false,
+    "lineage_campaign_status": "gates_failed",
+    "lineage_cited_for_numbers": false,
+    "lineage_corrected_passed": 56,
+    "lineage_dropped_clusters": 26,
+    "lineage_dropped_in_channel": 22,
+    "lineage_failing_designs": 14,
+    "lineage_failing_gate": "held_out_correspondence",
+    "lineage_failures_explained": true,
+    "lineage_gates_true": 8,
+    "lineage_histogram_equal": true,
+    "lineage_sealed_axis_clusters": 206,
+    "lineage_stable_design_count": 281,
+    "lineage_terminal_state": "assessment_rejection",
+    "lineage_verified_file_count": 1211,
+    "literature_source_count": 7,
+    "maximum_axis_null_shift_m": 5.275861351940192e-05,
+    "maximum_wall_intersection_shift_m": 3.332735706386013e-05,
+    "mirror_probability_publication_forbidden": true,
+    "mirror_ratios_are_field_descriptors_not_probabilities": true,
+    "multicell_wall_cusp_topology_under_frozen_definition_demonstrated": false,
+    "p2_axis_null_to_pic_plane_maximum_m": 3.146145911887225e-05,
+    "p2_boundary_ambiguous_cusps": 1,
+    "p2_cell_count": 4,
+    "p2_cusp_count_equals_reference_count": true,
+    "p2_cusp_positions_m": [
+      0.006028062818933392,
+      0.012000005466825737,
+      0.01797206288202682
+    ],
+    "p2_cusp_to_dashboard_maximum_m": 0.00017793711797317938,
+    "p2_row_classification": "P2_QUALIFIED_FIELD_SEPARATRIX_CUSP_TOPOLOGY",
+    "p2_row_count": 1,
+    "p2_row_iron_present": true,
+    "p2_third_cusp_inside_end_m": 2.793711797317855e-05,
+    "p2_wall_cusp_count": 3,
+    "physics_level_opened": false,
+    "plasma_or_performance_claim_forbidden": true,
+    "preregistered_one_shot": true,
+    "recorded_outcome": "accepted-topology-screening",
+    "replay_designs": 4,
+    "replays_bit_identical": 4,
+    "representative_count": 14,
+    "screening_model": "separatrix cusp topology of prescribed vacuum field maps under the HEMP/DCFT literature definition (axis null, separatrix traced to the dielectric wall, wall cusp at the intersection, cells between consecutive cusps): linear-vacuum L1a equivalent-current screening fields for the sweep-v2, four-cell-v2 and characterization-v1 sets (not P2-qualified; no permanent-magnet or nonlinear-iron material model) and the P2-qualified adaptive finite-element divergent-exit-stack field (iron poles and return yoke present) for the single P2 row",
+    "shakedown_evidentiary": false,
+    "shakedown_passed": true,
+    "stability_tolerance_m": 0.00025,
+    "stable_design_count": 281,
+    "sweep_angle_median_deg": 0.6959646466338333,
+    "sweep_cusps_equal_channel_nulls": 95,
+    "sweep_design_count": 96,
+    "sweep_four_cell_designs": 47,
+    "sweep_four_cell_fraction": 0.4895833333333333,
+    "sweep_four_cusp_designs": 19,
+    "sweep_four_wall_cusp_designs": 19,
+    "sweep_four_wall_cusp_fraction": 0.19791666666666666,
+    "sweep_gap_distance_maximum_m": 0.0002633862742862387,
+    "sweep_gap_distance_median_m": 0.00014194313015091983,
+    "sweep_interior_axis_mirror_maximum": 1.1545620760443707,
+    "sweep_interior_axis_mirror_minimum": 0.19662215205470748,
+    "sweep_interior_cell_count": 181,
+    "sweep_interior_length_pitch_maximum": 1.1181273552480455,
+    "sweep_interior_length_pitch_minimum": 0.9045044868873977,
+    "sweep_interior_wall_mirror_maximum": 1.0169150479177655,
+    "sweep_interior_wall_mirror_minimum": 0.9999999999999996,
+    "sweep_n_minus_one_designs": 83,
+    "sweep_n_minus_two_designs": 12,
+    "sweep_n_plus_one_designs": 1,
+    "sweep_three_cusp_designs": 47,
+    "sweep_two_cusp_designs": 30,
+    "terminal_state": "accepted_result",
+    "tolerated_eol_file_count": 0,
+    "verified_file_count": 1211,
+    "wall_cusp_count_histogram": {
+      "0": 6,
+      "1": 140,
+      "2": 36,
+      "3": 56,
+      "4": 25,
+      "5": 6,
+      "6": 6,
+      "7": 6
+    },
+    "wall_cusp_total": 588,
+    "wall_trace_count": 804
+  },
+  "model_fidelity": "separatrix-cusp-topology-of-prescribed-vacuum-field-maps-L1a-screening-fields-plus-one-P2-row",
+  "p2_row_classification": "P2_QUALIFIED_FIELD_SEPARATRIX_CUSP_TOPOLOGY",
+  "paper_evidence_file": {
+    "document_type": "paper-cusp-topology-v3-1-evidence",
+    "generator": "paper/scripts/generate_cusp_topology_v3_1_evidence.py",
+    "generator_command": "python paper/scripts/generate_cusp_topology_v3_1_evidence.py",
+    "macro_count": 427,
+    "macro_prefix": "Ctv",
+    "path": "paper/evidence/cusp-topology-v3-1.json",
+    "rule": "check_paper.py regenerates the evidence file, the generated TeX and the sidecar from the sealed bundle and requires byte identity with the committed files; every macro therefore traces to a verified artifact hash at every check, the headline and every per-set estimand are re-derived from the per-design rows on the way, the recorded rejection of the predecessor is byte-verified and its post-hoc audit reproduced from the sealed characterization dataset, and the sealed references must hash to the identities the bundle recorded.",
+    "schema_version": "1.0"
+  },
+  "permitted_claim_scope": [
+    "terminal state, campaign status, design, gate, replay, stability and held-out counts of the single execution",
+    "wall-cusp counts per design and per set under the literature definition, the legacy-target fractions (exactly four wall cusps; exactly four cells), cusp positions relative to the inter-magnet gaps and to the generating axis nulls, cell lengths, wall and axis mirror ratios as field ratios, and separatrix angles",
+    "the four-cell candidates' single wall cusp and its explanation by the construction of the frozen v2 definition (wall-side vector null) and source policy (weak even stages), and the characterization cases' cusp counts with the sealed search's in-channel roots (axis clusters reproduced; off-axis roots excluded by the frozen rule), so that the frozen-definition nulls remain true",
+    "the P2 row's three cusps and cells and their differences to the two recorded, ungated consistency references (kinetic-workstream axis-null planes; plasma-topology-dashboard wall maxima), stated as development context",
+    "the recorded rejection of the predecessor campaign as lineage: its gate outcome, its root cause in the held-out reference extraction reproduced from sealed data, and the correspondence under the intended filter, never as a source of numbers",
+    "the classification strings, the recorded outcome, the sealed claim boundary and the catalogue's status as a consumer contract under its labels"
+  ],
+  "posthoc_audit": null,
+  "posthoc_audit_note": "no post-hoc audit exists for the accepted bundle; every one of its 1211 files is verified byte for byte by the generator and by the checker and no end-of-line tolerance is needed. The predecessor's read-only post-hoc audit is bound under lineage_files.",
+  "preregistration_revision": "1600cfd3b102980eeba4b070930667d232a1105c",
+  "preregistration_revision_subject": "preregister cusp topology search v3.1",
+  "prohibited_inferences": [
+    "plasma confinement, cusp-loss probabilities, wall-loss rates, thrust, efficiency or any thruster performance",
+    "reading a wall or axis mirror ratio as a probability or a loss fraction",
+    "that a separatrix-bounded cell confines electrons or that the legacy multi-cell plasma picture is demonstrated",
+    "permanent-magnet or nonlinear-iron material behaviour of the L1a sets, iron sensitivity of the P2 row, or P2 qualification of the L1a fields",
+    "any kinetic-simulation or particle-in-cell result (the axis-null planes are a reported consistency reference from a workstream whose results are not admitted)",
+    "any number of the predecessor campaign (disclosed as lineage only)",
+    "a change to the frozen-definition records of the earlier admissions (their nulls remain true under their definitions)",
+    "hardware or experimental validation",
+    "field-resolved reduction, L0 mapping or geometry-response prediction (GATE-L1 stays closed)",
+    "opening of GATE-L1, GATE-L2 or GATE-L3"
+  ],
+  "recorded_outcome": "accepted-topology-screening",
+  "recorded_outcome_justification": "The four existing numerical-screening outcomes name a field-only design-space screening (accepted-screening), a preregistered null (preregistered-null), a developmental characterization (recorded-characterization) and a test-particle screening dataset (accepted-screening-dataset). This study's sealed campaign status is accepted_topology_screening: the HEMP/DCFT literature definition of a wall cusp (axis null, separatrix, dielectric-wall intersection) evaluated on 281 prescribed field maps (three L1a linear-vacuum sets and one P2-qualified row) with every binding integrity gate true and every design stable under refinement. A fifth outcome value names exactly that, so that accepted keeps meaning admitted as recorded: the cusps and cells are geometric properties of prescribed field maps under a stated definition, never demonstrated plasma confinement, and the earlier frozen-definition nulls remain true under their own definitions.",
+  "reference_files": [
+    {
+      "git_blob": "f628358682d8d9cc94c7cc49e4427833cf58966e",
+      "git_blob_sha256": "885cc8703329f9226592dbdf73d6d5f4ad4bcc35a0a69786621374d7e5a6b419",
+      "note": "sealed characterization-v1 dataset: held-out axis-root reference and the frozen-definition null (0 stable eligible cusps/cells); must hash to sealed_sources.characterization_v1.dataset_file_sha256",
+      "path": "modern/experiments/cft_topology_characterization_v1/results/dataset.json",
+      "revision": "3ce6c546194e1d3e943d0b3d0951d03e15e354d9",
+      "role": "reference-characterization-dataset"
+    },
+    {
+      "git_blob": "11360bf35b1bcb5911283559d47b60897274c358",
+      "git_blob_sha256": "f01c044b99349ee1fc207702b4b7ab73c6eab49362a5b0249c3a99f501252d68",
+      "note": "sealed four-cell-v2 dataset: the 128 candidate identities and their source policy (alternating strength ratio); must hash to sealed_sources.four_cell_v2.dataset_file_sha256",
+      "path": "modern/experiments/four_cell_topology_search_v2/results/dataset.json",
+      "revision": "7120e8edcb74c02c1df968c730d1f93b3758b4e1",
+      "role": "reference-four-cell-dataset"
+    },
+    {
+      "git_blob": "cc2e29ba5bd1a6cd245bf6cc4a4f41a85ac83e82",
+      "git_blob_sha256": "768b345e946a45e623f83aaa18e01f8ec5bc7f823e81858a0a8c3a3e2e448754",
+      "note": "sealed sweep-v2 results manifest the re-solved designs were identity-proven against; must hash to sealed_sources.sweep_v2.manifest_file_sha256",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/manifest.json",
+      "revision": "f30cb42ec4a8633bf634a3d32ffa5b11f66be97a",
+      "role": "reference-sweep-manifest"
+    }
+  ],
+  "results_bundle": {
+    "artifact_count": 1226,
+    "manifest_git_blob": "f65ce0c0575eebffa9d1cef9ef2f3b3688f5eee6",
+    "manifest_path": "modern/experiments/cusp_topology_search_v3_1/results/manifest.json",
+    "manifest_sha256": "1dde073f98b51d78a72818a360bba259a8b4e9e0f06462ea8663ae3a62c8d3c6",
+    "recomputation_rule": "the headline and every per-set estimand (except the bilinear-step comparison, whose maximum is recomputed from the traces) are re-derived from the per-design rows and must equal the sealed values exactly; every design record, field grid, catalogue entry and CSV row must agree with its row",
+    "results_tree": "a69ba050b11b0976ca50e2d16253d3d1283f4939",
+    "tolerance_rule": "none: every manifest file entry must hash to its recorded byte_sha256 with its recorded size",
+    "tolerated_eol_files": [],
+    "verified_file_count": 1211
+  },
+  "schema_version": "1.0",
+  "screening_model": "separatrix cusp topology of prescribed vacuum field maps under the HEMP/DCFT literature definition (axis null, separatrix traced to the dielectric wall, wall cusp at the intersection, cells between consecutive cusps): linear-vacuum L1a equivalent-current screening fields for the sweep-v2, four-cell-v2 and characterization-v1 sets (not P2-qualified; no permanent-magnet or nonlinear-iron material model) and the P2-qualified adaptive finite-element divergent-exit-stack field (iron poles and return yoke present) for the single P2 row",
+  "section_heading": "Wall cusps and cells under the literature definition across the screened design sets",
+  "source_files": [
+    {
+      "git_blob": "f65ce0c0575eebffa9d1cef9ef2f3b3688f5eee6",
+      "git_blob_sha256": "1dde073f98b51d78a72818a360bba259a8b4e9e0f06462ea8663ae3a62c8d3c6",
+      "path": "modern/experiments/cusp_topology_search_v3_1/results/manifest.json",
+      "role": "results-manifest"
+    },
+    {
+      "git_blob": "46fe32cb2cccecd986ec88ccecba56b558a5e8dd",
+      "git_blob_sha256": "46f8f61383b942c4ceaf67e72ca215f22cc6789df96b9d8ff4c584c03ae0420c",
+      "path": "modern/experiments/cusp_topology_search_v3_1/results/terminal.json",
+      "role": "terminal-record"
+    },
+    {
+      "git_blob": "f57d7442348e4f75ccc6943837a879bb112fc69c",
+      "git_blob_sha256": "b94da1bc0fe80f31b83c862b3c196e8394bcec79126e00a7160a77ccfb47b06b",
+      "path": "modern/experiments/cusp_topology_search_v3_1/results/terminal.json.sha256.json",
+      "role": "terminal-record-sidecar"
+    },
+    {
+      "git_blob": "7a77b0f7cfc6f8a917b79f9e162750364bfd3a6b",
+      "git_blob_sha256": "832265505d87a67b1d87ef9dac42c176f14dde4868756b8be0b2d10b8c75e1bb",
+      "path": "modern/experiments/cusp_topology_search_v3_1/results/execution-lock.json",
+      "role": "execution-lock"
+    },
+    {
+      "git_blob": "14fda8254cf76e65d5c569015fe8154d5d1a4815",
+      "git_blob_sha256": "a2f9d3218a6facd9529081f9f57973be1d1b998d948a17ba392833286cfa5d2c",
+      "path": "modern/experiments/cusp_topology_search_v3_1/results/transitions/0001-lock-acquired.json",
+      "role": "transition"
+    },
+    {
+      "git_blob": "9bf9c7a4108004c98e1ac039d0c218b83ae1e38e",
+      "git_blob_sha256": "922a07aecd5a05ba503d768a9a0d6ad897b9b955f7daaf0a8439ed7ea8515852",
+      "path": "modern/experiments/cusp_topology_search_v3_1/results/transitions/0009-terminal.json",
+      "role": "transition"
+    },
+    {
+      "git_blob": "0c999277a9212d21f086604505cac19ca5ff05a6",
+      "git_blob_sha256": "07b79bd6f88c6885ec0a9286eaf881cd283afc3e081fef38591d6a500da9b015",
+      "path": "modern/experiments/cusp_topology_search_v3_1/results/artifacts/protocol.json",
+      "role": "protocol"
+    },
+    {
+      "git_blob": "a0ebab4a7c51d4b66d6a148dd5e485442e13e64a",
+      "git_blob_sha256": "f96cf9e4d2f72b738c259e0850e396346d9c44076aef71b50bb12aacb0286c8b",
+      "path": "modern/experiments/cusp_topology_search_v3_1/results/artifacts/authorities.json",
+      "role": "authorities"
+    },
+    {
+      "git_blob": "0f1d7453e8e9335a730136735ccf48982c2fb2e7",
+      "git_blob_sha256": "f6301a4dc48f3fd85ceb8a5c0481a90300d6c3c57d73b549dd7daed5b57ca2dd",
+      "path": "modern/experiments/cusp_topology_search_v3_1/results/artifacts/shakedown.json",
+      "role": "shakedown"
+    },
+    {
+      "git_blob": "ffc6ec7d8f22fcc0ade27a1d401d7ccac21df947",
+      "git_blob_sha256": "ce03b37570149f99dc2c115549c308fc4fa3098f31e006bb7e014b2d6a1cadd4",
+      "path": "modern/experiments/cusp_topology_search_v3_1/results/artifacts/design-authorities.json",
+      "role": "design-authorities"
+    },
+    {
+      "git_blob": "1d228b34d440b849f3b730c4f19db1fa286e4315",
+      "git_blob_sha256": "76dbaa8283a1e4dbd7463ca6f9a481715a1e98a59d82caabb3e5780beaf52532",
+      "path": "modern/experiments/cusp_topology_search_v3_1/results/artifacts/campaign-plan.json",
+      "role": "campaign-plan"
+    },
+    {
+      "git_blob": "a1cea1732d5fec118f45c58c8abea950b8d4293e",
+      "git_blob_sha256": "902d5a4bcb2042955d3de716fbc547e92942da7e19ec2601a719cd9ef1d7a9ca",
+      "path": "modern/experiments/cusp_topology_search_v3_1/results/artifacts/campaign-result.json",
+      "role": "campaign-result"
+    },
+    {
+      "git_blob": "b9a90347f6de4128906e64b99dae50c64fa327bd",
+      "git_blob_sha256": "13b7189b37f386afa2df5b3dd2fb1f6474759614081de2822d53e7f7ae8e249f",
+      "path": "modern/experiments/cusp_topology_search_v3_1/results/artifacts/gates.json",
+      "role": "binding-gates"
+    },
+    {
+      "git_blob": "d905927addacb8c07497cd8a3cb60f966a51e8f1",
+      "git_blob_sha256": "615d16c3a8679c150bc8873876b53d543fc9f1629e6f64c280ddc7e3af254037",
+      "path": "modern/experiments/cusp_topology_search_v3_1/results/artifacts/runtime.json",
+      "role": "runtime"
+    },
+    {
+      "git_blob": "6b47c06a015634d57eb99d4f4266d1e52dd765e7",
+      "git_blob_sha256": "b149284764060e60a00e64cbfedb8ad098e9cd414e691dcddda650c80886aa4e",
+      "path": "modern/experiments/cusp_topology_search_v3_1/results/artifacts/design-failures.json",
+      "role": "design-failures"
+    },
+    {
+      "git_blob": "6cfb335cfe83d5cf865d127878105d7e54dcd195",
+      "git_blob_sha256": "8702789a99b3741a9f17ad55941765c0e6dec5e90b3a01aebbe96d92158acba6",
+      "path": "modern/experiments/cusp_topology_search_v3_1/results/artifacts/source-binding.json",
+      "role": "source-binding"
+    },
+    {
+      "git_blob": "d35ea5d9f74e90705436310c6321887ce1a59024",
+      "git_blob_sha256": "cbd4eb32b5e2bbfba82dcbbca43c47a68ef831b1c2fc46439e5aa77b3ae26d32",
+      "path": "modern/experiments/cusp_topology_search_v3_1/results/artifacts/topology-dataset.json",
+      "role": "primary-dataset"
+    },
+    {
+      "git_blob": "acbdffafcaf5e13acff78772fbae910587158daf",
+      "git_blob_sha256": "0dd3a5d1d5516bced28906e71d48072afe9149f0970c9332a6ca23eb2f1fe5e7",
+      "path": "modern/experiments/cusp_topology_search_v3_1/results/artifacts/topology-dataset.json.sha256.json",
+      "role": "primary-dataset-sidecar"
+    },
+    {
+      "git_blob": "d814b5e2aa4810770676be9d13ff3f3318acf8e5",
+      "git_blob_sha256": "9abb87f7e4c9f9eb72458848eb08f3678cb28776ab2661c910f1930e3e4d5226",
+      "path": "modern/experiments/cusp_topology_search_v3_1/results/artifacts/topology-dataset.csv",
+      "role": "dataset-csv"
+    },
+    {
+      "git_blob": "e2698788a243b9d568af246c3202148402ea2701",
+      "git_blob_sha256": "4ada0804323b2b47aad10b9fb7d599da4059427876859d153913ff0cc93ea0c1",
+      "path": "modern/experiments/cusp_topology_search_v3_1/results/artifacts/cusp-cell-catalogue.json",
+      "role": "catalogue"
+    },
+    {
+      "git_blob": "e6eb046f127699a2b537c19c80b1c6c44078e752",
+      "git_blob_sha256": "f6077edde3a4e4326f2dda9df4429452d88cb8c7145a620f0243ae48795090f8",
+      "path": "modern/experiments/cusp_topology_search_v3_1/protocol.json",
+      "role": "preregistered-protocol"
+    },
+    {
+      "git_blob": "a0ebab4a7c51d4b66d6a148dd5e485442e13e64a",
+      "git_blob_sha256": "f96cf9e4d2f72b738c259e0850e396346d9c44076aef71b50bb12aacb0286c8b",
+      "path": "modern/experiments/cusp_topology_search_v3_1/authorities.json",
+      "role": "preregistered-authorities"
+    },
+    {
+      "git_blob": "0f1d7453e8e9335a730136735ccf48982c2fb2e7",
+      "git_blob_sha256": "f6301a4dc48f3fd85ceb8a5c0481a90300d6c3c57d73b549dd7daed5b57ca2dd",
+      "path": "modern/experiments/cusp_topology_search_v3_1/shakedown.json",
+      "role": "preregistered-shakedown"
+    },
+    {
+      "git_blob": "ffc6ec7d8f22fcc0ade27a1d401d7ccac21df947",
+      "git_blob_sha256": "ce03b37570149f99dc2c115549c308fc4fa3098f31e006bb7e014b2d6a1cadd4",
+      "path": "modern/experiments/cusp_topology_search_v3_1/design-authorities.json",
+      "role": "preregistered-design-authorities"
+    },
+    {
+      "git_blob": "f95d5443b491d0ab9ed20f3a482936c0cecee99f",
+      "git_blob_sha256": "612090e7ba671749b101f821cb5e2547be5fed2c482b1519d2ec6bef4b7c99c4",
+      "path": "modern/experiments/cusp_topology_search_v3_1/results/artifacts/designs/sweep_v2/l1a-gs-v2-000-48d2ccedd5.json",
+      "role": "design-record"
+    },
+    {
+      "git_blob": "24fc3f21bfd846cc8096e44c5901874cdbf0d272",
+      "git_blob_sha256": "2a80d5314f011e0627eb1f39f1ff2acc4d842a228496d410748d4f81ad52e907",
+      "path": "modern/experiments/cusp_topology_search_v3_1/results/artifacts/fields/sweep_v2/l1a-gs-v2-000-48d2ccedd5.json.gz",
+      "role": "field-grid"
+    },
+    {
+      "git_blob": "922d121cb13f98f9f3c228166ec2a6520fb0b67a",
+      "git_blob_sha256": "387f645f824d6cf90171f697f9407ed824b53d0e7d1bec7326e568cb842ac37e",
+      "path": "modern/experiments/cusp_topology_search_v3_1/results/artifacts/designs/sweep_v2/l1a-gs-v2-032-570ad83ba6.json",
+      "role": "design-record"
+    },
+    {
+      "git_blob": "30d5c3e0080742a7db31d8bd1c53365ceb6c35a9",
+      "git_blob_sha256": "06a87cd2e3402b48b108f814fcd233614025d9d8d5ae731fdcbd0e1088eb46c5",
+      "path": "modern/experiments/cusp_topology_search_v3_1/results/artifacts/fields/sweep_v2/l1a-gs-v2-032-570ad83ba6.json.gz",
+      "role": "field-grid"
+    },
+    {
+      "git_blob": "babba3fab15b5d288d354365472b0925958e6c2e",
+      "git_blob_sha256": "c2a6e9a71dc200fe952e54861468e57fb101da911ba06f222ce6fae97470a7c7",
+      "path": "modern/experiments/cusp_topology_search_v3_1/results/artifacts/designs/sweep_v2/l1a-gs-v2-065-9e98f08f3b.json",
+      "role": "design-record"
+    },
+    {
+      "git_blob": "3cb7a5b3f2bce62a4ea62824fd14184b4c7923eb",
+      "git_blob_sha256": "08fff2fc02ba7960e6d76b1b097b1fd32e20aaf7da8f953d531a8b75657bf087",
+      "path": "modern/experiments/cusp_topology_search_v3_1/results/artifacts/fields/sweep_v2/l1a-gs-v2-065-9e98f08f3b.json.gz",
+      "role": "field-grid"
+    },
+    {
+      "git_blob": "fe2000408e3eede83d6bc92d84c25964d57b4926",
+      "git_blob_sha256": "12d5059869b714c8040437da3312d7275ee89609ee96ef40e07c1f6f01e69344",
+      "path": "modern/experiments/cusp_topology_search_v3_1/results/artifacts/designs/sweep_v2/l1a-gs-v2-068-375d1b1b13.json",
+      "role": "design-record"
+    },
+    {
+      "git_blob": "b02aaa53f049179206cfb1b636e3c9a4179760fa",
+      "git_blob_sha256": "8a0f8e33d871fa7e49b8c887b78bab0f53969b59b16bee8a15c8824df3e5f6af",
+      "path": "modern/experiments/cusp_topology_search_v3_1/results/artifacts/fields/sweep_v2/l1a-gs-v2-068-375d1b1b13.json.gz",
+      "role": "field-grid"
+    },
+    {
+      "git_blob": "62fcd782ff0683695198ca7d8eeb17473bcc9b0f",
+      "git_blob_sha256": "689c46dd71f40e1da76f7d6413f9e35fc62b429822e04604c7ebffc672811edd",
+      "path": "modern/experiments/cusp_topology_search_v3_1/results/artifacts/designs/four_cell_v2/v2-006.json",
+      "role": "design-record"
+    },
+    {
+      "git_blob": "cc4846baf5ba1b72e9ecee0ee9671d5bde895ee7",
+      "git_blob_sha256": "8411d9bb37fef69c442491a02be1febc9956ef2fa80bc3ba1e3d6307bf9d25ad",
+      "path": "modern/experiments/cusp_topology_search_v3_1/results/artifacts/fields/four_cell_v2/v2-006.json.gz",
+      "role": "field-grid"
+    },
+    {
+      "git_blob": "a7cd97124781f80e38f1e8c80e3d2b6f5b047908",
+      "git_blob_sha256": "0041423c46554a59b00badf64922663ae80f3427a9639b0b67ab3d97a420b6d0",
+      "path": "modern/experiments/cusp_topology_search_v3_1/results/artifacts/designs/four_cell_v2/v2-010.json",
+      "role": "design-record"
+    },
+    {
+      "git_blob": "c3449c209f37d78088f14bb117a0416f6fb23b11",
+      "git_blob_sha256": "5c5e78df4a15bc2afeef02a0382cc033f36c205e5ab8e444769c4ac357ce7184",
+      "path": "modern/experiments/cusp_topology_search_v3_1/results/artifacts/fields/four_cell_v2/v2-010.json.gz",
+      "role": "field-grid"
+    },
+    {
+      "git_blob": "02957fb7b7a91ffdfac1d8eea43a2b3c32d6c347",
+      "git_blob_sha256": "3761b95930eb72f5eeaeaf8d1d81dac22370be69dfcaed844d8b6e95c78f3011",
+      "path": "modern/experiments/cusp_topology_search_v3_1/results/artifacts/designs/characterization_v1/topology-s02-p0-r0-neg.json",
+      "role": "design-record"
+    },
+    {
+      "git_blob": "a87909d8d0f78ba65b168e5e730967ceea2950aa",
+      "git_blob_sha256": "7bbf022363a47c536165e21ef950ce2a0a72668d43a571475ec245d8659e8952",
+      "path": "modern/experiments/cusp_topology_search_v3_1/results/artifacts/fields/characterization_v1/topology-s02-p0-r0-neg.json.gz",
+      "role": "field-grid"
+    },
+    {
+      "git_blob": "73899be5c89f4ad4460e268c5e50438c24b7010f",
+      "git_blob_sha256": "c2217547d0e541d4dcd40f81470f50e247ea0c059bbec1cc6db89f4f161bb466",
+      "path": "modern/experiments/cusp_topology_search_v3_1/results/artifacts/designs/characterization_v1/topology-s03-p0-r0-neg.json",
+      "role": "design-record"
+    },
+    {
+      "git_blob": "1f6c859d63efdbabf92063d50e99c9f8c5cc8393",
+      "git_blob_sha256": "8ff34f7856e6c66fae5e06dbaba2f0de40b93bc69c214a8237cef1e132cd68c5",
+      "path": "modern/experiments/cusp_topology_search_v3_1/results/artifacts/fields/characterization_v1/topology-s03-p0-r0-neg.json.gz",
+      "role": "field-grid"
+    },
+    {
+      "git_blob": "617a0ea8ea782fdfdcda09ecbe43f431acf0681b",
+      "git_blob_sha256": "40c413e3cbac28ef7d744e9f288a074f0a34609b81e593a4e3ec8601578ad66f",
+      "path": "modern/experiments/cusp_topology_search_v3_1/results/artifacts/designs/characterization_v1/topology-s04-p0-r0-neg.json",
+      "role": "design-record"
+    },
+    {
+      "git_blob": "51ecaa604be39db9c7a4d548670f1fa20e8a1421",
+      "git_blob_sha256": "5233b1bb54b5f84c21fe03458e584a9d1fd657e41f6c72f38d84c227a48e7a66",
+      "path": "modern/experiments/cusp_topology_search_v3_1/results/artifacts/fields/characterization_v1/topology-s04-p0-r0-neg.json.gz",
+      "role": "field-grid"
+    },
+    {
+      "git_blob": "c9fef5e15ee7819dc5d0780db215e348fbf399a0",
+      "git_blob_sha256": "ec51f34fc1baf2b5eb17cde15b9cacc3ad39e949f1de952551436b1351ce266e",
+      "path": "modern/experiments/cusp_topology_search_v3_1/results/artifacts/designs/characterization_v1/topology-s05-p0-r0-neg.json",
+      "role": "design-record"
+    },
+    {
+      "git_blob": "771f66640eb71ed6ab97830be490552ba1cd7f13",
+      "git_blob_sha256": "7f6df26539b1bc36caf770da56f0cd1c4d642b0f964b2a5b09cca49e10a38481",
+      "path": "modern/experiments/cusp_topology_search_v3_1/results/artifacts/fields/characterization_v1/topology-s05-p0-r0-neg.json.gz",
+      "role": "field-grid"
+    },
+    {
+      "git_blob": "2536d40249a2ba0261690cbc71ca5c3b399a6a33",
+      "git_blob_sha256": "ceee058b014387b53a9cdebc04782e0a38e0c1dc41b56a95abd8a951bda53629",
+      "path": "modern/experiments/cusp_topology_search_v3_1/results/artifacts/designs/characterization_v1/topology-s06-p0-r0-neg.json",
+      "role": "design-record"
+    },
+    {
+      "git_blob": "0a1020511ae5d7127f8ee8297ddee533cebff4aa",
+      "git_blob_sha256": "d108addc505fd444f30a77cea313aa6992ae8a8f4fe0ffdf08744c005862de08",
+      "path": "modern/experiments/cusp_topology_search_v3_1/results/artifacts/fields/characterization_v1/topology-s06-p0-r0-neg.json.gz",
+      "role": "field-grid"
+    },
+    {
+      "git_blob": "7bfb2bd66f1cdf90b4d9b0edc7d14c857a65b5af",
+      "git_blob_sha256": "8dd02b18a694ba2178c2dcd7b4543ce57b595a9fed0e3a69e3bf6c9f6d99ebb7",
+      "path": "modern/experiments/cusp_topology_search_v3_1/results/artifacts/designs/characterization_v1/topology-s07-p0-r0-neg.json",
+      "role": "design-record"
+    },
+    {
+      "git_blob": "478f0f023b3ac0ba4b57bbf7b77a38f8da21c091",
+      "git_blob_sha256": "db39c10e18408f5463698c1a90949a6e7c2b7388f95b3a6d4cbf1dfe8fa4daab",
+      "path": "modern/experiments/cusp_topology_search_v3_1/results/artifacts/fields/characterization_v1/topology-s07-p0-r0-neg.json.gz",
+      "role": "field-grid"
+    },
+    {
+      "git_blob": "4d96e46dbe7aba1cd82520b4b23f362d7a17b628",
+      "git_blob_sha256": "38c1e42f2f4b537c9afa915375d08490b1594af1fd7acb13a5da009e61f66061",
+      "path": "modern/experiments/cusp_topology_search_v3_1/results/artifacts/designs/characterization_v1/topology-s08-p0-r0-neg.json",
+      "role": "design-record"
+    },
+    {
+      "git_blob": "e4cd862d67b8c5c3822bf5fd2b569e6459e1f0c8",
+      "git_blob_sha256": "37cc9f509b8d16d327d73d91d10ec8a02d7b71b28dbcb514484b338a0d237db4",
+      "path": "modern/experiments/cusp_topology_search_v3_1/results/artifacts/fields/characterization_v1/topology-s08-p0-r0-neg.json.gz",
+      "role": "field-grid"
+    },
+    {
+      "git_blob": "f73cb52bba83f82908ae190e57b15789a1f706ef",
+      "git_blob_sha256": "43fedee0057f2851a7282cd4c4ab9e33aaf620cdceca351d65d602a6fa78b9e9",
+      "path": "modern/experiments/cusp_topology_search_v3_1/results/artifacts/designs/p2_divergent_exit/divergent-exit-stack.json",
+      "role": "design-record"
+    },
+    {
+      "git_blob": "2ae49b1a624cb8a850da074afece41ce2672b965",
+      "git_blob_sha256": "8c0fd9f00e5ebdb8a6b4fe6da9c8e3c4529349f5a440ea58f44569f5b364acd8",
+      "path": "modern/experiments/cusp_topology_search_v3_1/results/artifacts/fields/p2_divergent_exit/divergent-exit-stack.json.gz",
+      "role": "field-grid"
+    }
+  ],
+  "status": "accepted"
+}
