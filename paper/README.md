@@ -34,7 +34,18 @@ multi-objective optimisation campaign of the L0 model
 `modern/experiments/mdo_l0_campaign_v1` (results
 `c553124b7393890d8ee9c6fc022e536c8a1fd35e`, preregistration `4898d0fd…`,
 dashboard `e642f38c…`) as optimiser evidence under the declared closure CL-1:
-it makes no thruster-performance claim. The checked evidence is
+it makes no thruster-performance claim. One `analytic-consistency` gate,
+`GATE-FOUR-CELL-CLOSURE-V1`, admits the four-cell power-balance closure
+analysis (`modern/docs/workstreams/global-plasma-closure-analysis.md` and
+`spec/plasma/equation-ledger.json#global_row_consistency` at
+`266d8a99ce75fe35b4870d5d046c9069d7b26c0b`, verified unchanged at `ba6875f6…`):
+on the manifold of the corrected ledger the global power row reduces to
+`2 (j_e3 (1-p4) + I4)(phi_4 - Ua) + EI (p1 j_e0 + p2 j_e1 + p3 j_e2)`, both
+terms are non-negative, so the equation set has no admissible root for any
+positive interior cusp probability; the checker recomputes the verification
+from the bound `cft_revival.plasma` package at every run, the proposed
+correction stays `PROPOSED_NOT_ACCEPTED`, and nothing follows about the
+physical thruster. The checked evidence is
 enumerated in `evidence/claims.json`. Concurrent or later work is not
 publishable merely because files exist in a working tree: a planned section
 opens only when its gate in `evidence/result-gates.json` names an accepted,
@@ -59,7 +70,13 @@ its estimands are properties of the optimisers (hypervolume per budget, paired
 comparisons, seed variance, Pareto sizes) and of the declared evaluation chain
 (robust-versus-nominal fronts, sensitivity to the cusp prior); every number is
 conditional on the declared closure and priors; geometry is excluded because no
-geometry-to-L0 map survives the audit; it opens none of L1--L3.
+geometry-to-L0 map survives the audit; it opens none of L1--L3. The closure
+analysis is classified
+`analytic_consistency_of_the_corrected_four_cell_power_balance_not_thruster_physics`:
+it is a statement about an equation set, not about the thruster; the reading
+that the legacy performance values were residual-floor artefacts is a labelled
+interpretation in the Discussion, and no value of the unavailable legacy run is
+claimed or recomputed.
 
 ## Reproduce checks and build
 
@@ -97,9 +114,22 @@ it does not modify the environment.
   file roles, and required metrics.
 - `evidence/result-gates.json` — explicit L1/L2/L3 admission criteria
   (`physics-level` gates), the accepted `numerical-campaign` gates
-  `GATE-WALL-LOSS-V4` and `GATE-MDO-L0-V1`, and the three
+  `GATE-WALL-LOSS-V4` and `GATE-MDO-L0-V1`, the three
   `numerical-screening` gates `GATE-L1A-SWEEP-V2`, `GATE-FOUR-CELL-V2` and
-  `GATE-TOPOLOGY-CHAR-V1`, each carrying its `recorded_outcome`.
+  `GATE-TOPOLOGY-CHAR-V1`, each carrying its `recorded_outcome`, and the
+  `analytic-consistency` gate `GATE-FOUR-CELL-CLOSURE-V1`.
+- `evidence/manifests/four-cell-closure.json` — typed analysis manifest
+  (`paper-analytic-consistency-manifest` 1.0) binding the analysis document,
+  the ledger, the five `cft_revival.plasma` files, three pinning test files,
+  the frozen MDO protocol, `FYP/Power_B_EQs.m` (lineage), `AUDIT.md` and
+  `REFERENCES.md` by Git blob and SHA-256 at the analysis revision, the
+  executed package digests, the recomputation protocol and tolerances, and the
+  metrics the checker compares with the values behind the `\Fcc...` macros.
+- `evidence/four-cell-closure.json`, `generated/four-cell-closure.tex`,
+  `sections/four-cell-closure.tex` — evidence file (documented macros bound by
+  pointer or fixed pattern; recomputed macros with their protocol), generated
+  macros with two `\ArtifactClaim` tables, and the admitted macro-only
+  subsection bound once by `\input` from Section 10 of `manuscript.tex`.
 - `evidence/manifests/mdo-l0-v1.json` — typed campaign manifest
   (`paper-mdo-campaign-manifest` 1.0) binding every consumed bundle file by
   Git blob and SHA-256 at the results revision, the frozen preregistration
@@ -264,4 +294,43 @@ not render its string, a missing registered non-claim, or a
 ```powershell
 python paper/scripts/generate_mdo_l0_v1_evidence.py
 python -m unittest discover -s paper/tests -p "test_mdo*" -v
+```
+
+## Admitted analytic consistency result: four-cell power-balance closure
+
+`paper/scripts/generate_four_cell_closure_evidence.py` binds the analysis
+document, the equation ledger, the `cft_revival.plasma` package, the three
+pinning test files, the frozen MDO protocol (blob equal at the preregistration
+commit) and the legacy `FYP/Power_B_EQs.m` blob at the analysis revision
+`266d8a99`, requires the checkout's package to equal the bound blobs
+(LF-normalised SHA-256), and then RECOMPUTES the verification with that
+package: the closed form `global_row_closed_form` against the full residual
+over a 400-state seeded sample (max relative difference recorded as
+`\FccClosedFormRelDiff`), the R00--R26 manifold residual, the anode-fall
+coefficient, the continuation ladder `p = eps (1,1,1,1)` at 300 V / 1 A through
+the production solver (one start, 600 iterations), the anode-only closures
+`p = (0,0,0,eps)` (five starts), the published-state misfit, one relaxed root by
+bisection and the Jacobian rank at every floor. It refuses to write anything if
+a recomputed number departs from the analysis document beyond the declared
+tolerance (`TOLERANCES`). The `13/80` probe is read from the frozen MDO protocol
+disclosure with the same fixed pattern the optimisation generator uses, and the
+document's reproduction must agree; the differential-evolution and
+random-start searches are documented values, not recomputed (they need SciPy
+and minutes of solver time). Recomputed values are recorded to a declared
+number of significant digits because the floors are solver-stall values.
+
+The subsection `paper/sections/four-cell-closure.tex` renders numbers only
+through `\Fcc...` macros; its result, sub-region/continuation, attribution,
+proposed-correction and scope statements are exact `\EvidenceClaim` bodies
+(CLM-037, CLM-038, CLM-040, CLM-041, CLM-042), the abstract sentence is
+CLM-036 and the two Discussion interpretations (legacy-study consequence;
+the three chain findings read together) are CLM-043 and CLM-044. The closed
+form is displayed in the manuscript's Section 10 with the coefficient and row
+index bound to macros. The gate kind `analytic-consistency` admits the
+derivation and its numerical verification as recorded, opens no physics level
+and accepts no correction.
+
+```powershell
+python paper/scripts/generate_four_cell_closure_evidence.py
+python -m unittest discover -s paper/tests -p "test_four_cell*" -v
 ```

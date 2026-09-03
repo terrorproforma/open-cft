@@ -1,0 +1,388 @@
+{
+  "analysis_document": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+  "analysis_id": "four-cell-power-balance-closure-analysis-2026-09-03",
+  "classification": "analytic_consistency_of_the_corrected_four_cell_power_balance_not_thruster_physics",
+  "correction_status": "PROPOSED_NOT_ACCEPTED",
+  "document_type": "paper-analytic-consistency-manifest",
+  "documented_but_not_recomputed": [
+    "differential evolution (205 312 evaluations; SciPy)",
+    "200 random feasible LM starts",
+    "the 80-case solver probe (read from the frozen MDO protocol; its reproduction is documented)"
+  ],
+  "evidence_level": {
+    "justification": "The admitted object is a derivation about the corrected four-cell discharge equation set (28 rows, 25 unknowns, spec/plasma/equation-ledger.json): substituting the mutually consistent rows R00-R26 into the global power row R27 leaves the closed form 2 (j_e3 (1-p4) + I4)(phi_4 - Ua) + EI (p1 j_e0 + p2 j_e1 + p3 j_e2), whose two terms are non-negative on the admissible region, so no admissible root exists for any positive interior cusp probability. It is neither a preregistered numerical campaign (nothing was executed under a protocol; the numbers are verification of an algebraic identity) nor a design-space screening (no design was screened) nor a physics level (no field, plasma or experimental evidence). The analytic-consistency kind therefore admits it: the closed form is verified numerically to a stated tolerance, pinned by committed tests, and recomputed by the paper checker from the bound package at every run. Status accepted means the derivation and its numerical verification are admitted as recorded; it accepts no correction of the equation set (the proposal stays PROPOSED_NOT_ACCEPTED), makes no statement about the physical thruster, and opens none of GATE-L1, GATE-L2 or GATE-L3.",
+    "name": "analytic-consistency",
+    "opens_gate": null,
+    "relation_to_levels": {
+      "L0": "independent of the accepted L0 conservation model; the four-cell ledger is a separate equation set that L0 does not consume",
+      "L1": "no field solve, geometry or L0 mapping",
+      "L2": "the analysis concerns the candidate coupled plasma equation set; it supplies no coupled model and leaves GATE-L2 closed",
+      "L3": "not particle-in-cell and not experimental"
+    },
+    "validation_status": "none: the result is a property of an equation set, not a comparison with any measurement",
+    "verification_tier": "numerical verification of an algebraic identity (closed form versus full residual over a seeded sample; continuation, anode-only closures, published-state misfit, relaxed root, Jacobian rank) recomputed at every check against declared tolerances"
+  },
+  "evidence_revision": "266d8a99ce75fe35b4870d5d046c9069d7b26c0b",
+  "evidence_revision_subject": "fix(plasma): isotonic potential projection; four-cell closure analysis for p != 0",
+  "executed_package": {
+    "files": [
+      {
+        "git_blob_sha256": "1217101c5cd4f13b441e65f73a1121fd99443c6321f4eb0036b4199c180b9c9f",
+        "path": "modern/src/cft_revival/plasma/__init__.py",
+        "sha256_lf": "1217101c5cd4f13b441e65f73a1121fd99443c6321f4eb0036b4199c180b9c9f"
+      },
+      {
+        "git_blob_sha256": "5a39c4992bfba4b1925a773af50d74035ecdef164fa9bf15ecb46aa39eaafa90",
+        "path": "modern/src/cft_revival/plasma/models.py",
+        "sha256_lf": "5a39c4992bfba4b1925a773af50d74035ecdef164fa9bf15ecb46aa39eaafa90"
+      },
+      {
+        "git_blob_sha256": "6eee1cc1b11283c009ab7cc3fd453f7b4d85ded8ce5e856921b6ef878f5a0356",
+        "path": "modern/src/cft_revival/plasma/reference.py",
+        "sha256_lf": "6eee1cc1b11283c009ab7cc3fd453f7b4d85ded8ce5e856921b6ef878f5a0356"
+      },
+      {
+        "git_blob_sha256": "be1d4ff8e8ba728b5a28c01a4df7cfdce8d2bcad8b85d3c14267c95e18ca7d8c",
+        "path": "modern/src/cft_revival/plasma/residuals.py",
+        "sha256_lf": "be1d4ff8e8ba728b5a28c01a4df7cfdce8d2bcad8b85d3c14267c95e18ca7d8c"
+      },
+      {
+        "git_blob_sha256": "10141bf125853a47cb1ed1bed133fea36f7d96d2d70ceb31b40d25b06567f9ed",
+        "path": "modern/src/cft_revival/plasma/solver.py",
+        "sha256_lf": "10141bf125853a47cb1ed1bed133fea36f7d96d2d70ceb31b40d25b06567f9ed"
+      }
+    ],
+    "import_root": "modern/src",
+    "matches_bound_blobs": true
+  },
+  "gate_id": "GATE-FOUR-CELL-CLOSURE-V1",
+  "gate_kind": "analytic-consistency",
+  "ledger_entry": "modern/spec/plasma/equation-ledger.json#global_row_consistency",
+  "legacy_lineage": {
+    "git_blob": "8eeca9c61cce5b1f9157b7db5a7c9e6c21d63d80",
+    "path": "FYP/Power_B_EQs.m",
+    "rule": "bound as lineage only: the generator requires the cusp-loss line to carry three +IE terms and the anode-loss line the electron term with the sign (x(9)-Ua+x(13)); no legacy value is a claim"
+  },
+  "level": "analytic-consistency",
+  "manifest_id": "FOUR-CELL-CLOSURE-20260903-R27-V1",
+  "mdo_preregistration_revision": "4898d0fd3decddc5f308072e724d1936660c00e9",
+  "mdo_preregistration_revision_subject": "preregister MDO L0 campaign v1",
+  "metrics": {
+    "analysis_date": "2026-09-03",
+    "anode_only_closures": 6,
+    "anode_only_max_residual": 2e-13,
+    "anode_only_residual_upper_bound": 1e-08,
+    "audit_corrections_introduced_inconsistency": false,
+    "bound_file_count": 14,
+    "cell_count": 4,
+    "classification": "analytic_consistency_of_the_corrected_four_cell_power_balance_not_thruster_physics",
+    "closed_form_relative_difference_upper_bound": 1e-12,
+    "continuation_branch_found": false,
+    "continuation_current_a": 1,
+    "continuation_departure_tolerance": 0.25,
+    "continuation_dominant_row_is_global": true,
+    "continuation_ladder_count": 6,
+    "continuation_max_relative_departure": 0.059,
+    "continuation_slope_spread": 1.4,
+    "continuation_slope_spread_maximum": 2.0,
+    "continuation_voltage_v": 300,
+    "corrected_model_validity_claim_forbidden": true,
+    "corrected_nullity_if_accepted": 4,
+    "corrected_rank_if_accepted": 21,
+    "correction_status": "PROPOSED_NOT_ACCEPTED",
+    "documented_closed_form_relative_difference": 1.9e-13,
+    "documented_closed_form_sample_count": 400,
+    "documented_continuation_floor_maximum": 0.00578,
+    "documented_continuation_floor_minimum": 1.28e-06,
+    "documented_de_best_residual": 0.0206,
+    "documented_de_evaluations": 205312,
+    "documented_jacobian_condition_maximum": 200,
+    "documented_jacobian_rank": 22,
+    "documented_probe_closed_cases": 13,
+    "documented_probe_total_cases": 80,
+    "documented_published_state_misfit": 0.00147,
+    "documented_random_start_floor_minimum": 0.00182,
+    "documented_random_starts": 200,
+    "documented_random_starts_closed": 0,
+    "documented_relaxed_depth_maximum_v": 12.6,
+    "documented_relaxed_depth_minimum_v": 0.6,
+    "executed_package_file_count": 5,
+    "executed_package_matches_bound_blobs": true,
+    "global_row_index": 27,
+    "global_search_recomputed": false,
+    "hardware_or_experimental_validation": false,
+    "jacobian_nullity": 3,
+    "kornfeld_assumption": 8,
+    "ledger_anode_fall_coefficient": 2,
+    "ledger_published_state_misfit": 0.0014866093499999807,
+    "ledger_row_count": 28,
+    "legacy_accepted_exit_flags": "1-3",
+    "legacy_anode_loss_line": 137,
+    "legacy_cusp_loss_line": 136,
+    "legacy_ionisation_energy_terms": 3,
+    "legacy_rejected_exit_flag": 4,
+    "manifold_normalized_residual_upper_bound": 1e-11,
+    "physical_thruster_claim_forbidden": true,
+    "physics_level_opened": false,
+    "power_expression_count": 7,
+    "probe_closed_cases": 13,
+    "probe_recomputed": false,
+    "probe_source": "mdo-protocol-disclosure",
+    "probe_total_cases": 80,
+    "proposed_correction_accepted": false,
+    "recomputation_at_every_check": true,
+    "recomputed_anode_fall_coefficient": 2.0,
+    "recomputed_closed_form_relative_difference": 2e-13,
+    "recomputed_closed_form_sample_count": 400,
+    "recomputed_continuation_floor_maximum": 0.00578,
+    "recomputed_continuation_floor_minimum": 1.35e-06,
+    "recomputed_jacobian_condition_maximum": 20.0,
+    "recomputed_jacobian_rank": 22,
+    "recomputed_manifold_max_normalized_residual": 2.8e-13,
+    "recomputed_published_state_misfit": 0.00147,
+    "recomputed_relaxed_depth_v": 1.18,
+    "recomputed_relaxed_root_feasible": false,
+    "solver_defect_is_cause_of_interior_floor": false,
+    "state_dimension": 25,
+    "zero_cusp_grid_cases": 16,
+    "zero_cusp_grid_closed_after_fix": 16,
+    "zero_cusp_grid_closed_before_fix": 13
+  },
+  "paper_evidence_file": {
+    "document_type": "paper-four-cell-closure-evidence",
+    "generator": "paper/scripts/generate_four_cell_closure_evidence.py",
+    "generator_command": "python paper/scripts/generate_four_cell_closure_evidence.py",
+    "macro_count": 163,
+    "macro_prefix": "Fcc",
+    "path": "paper/evidence/four-cell-closure.json",
+    "rule": "check_paper.py regenerates the evidence file, the generated TeX and the sidecar at every run, which recomputes the numerical verification from the bound package and refuses on any departure from the analysis document beyond the declared tolerance; the committed files must equal the regeneration byte for byte.",
+    "schema_version": "1.0"
+  },
+  "permitted_claim_scope": [
+    "the closed form of the global power row on the R00-R26 manifold and its numerical verification at the recorded tolerance",
+    "non-negativity of both terms on the admissible region and the resulting absence of an admissible root for any positive interior cusp probability",
+    "the solution sub-region (interior probabilities zero, any anode-cusp probability, anode-cell potential equal to the anode potential) and the anode-only closures",
+    "the continuation ladder, the documented global search and relaxed-constraint roots, the Jacobian rank and the published-state misfit as documented and, where stated, recomputed",
+    "attribution of the two terms to the source formulation and to the legacy code, and the cancellation of the audit corrections, as documented",
+    "the proposed correction and its PROPOSED_NOT_ACCEPTED status with the documented consequence for the rank",
+    "the frozen protocol's probe disclosure and its documented reproduction"
+  ],
+  "probe_source": {
+    "path": "modern/experiments/mdo_l0_campaign_v1/protocol.json",
+    "pointer": "/prior_model_disclosure/corrected_four_cell_solver_probe",
+    "rule": "the 13/80 probe pattern is read from the frozen MDO protocol disclosure (blob equal at the preregistration commit) and the analysis document's exact reproduction must agree; it is not recomputed here",
+    "source": "mdo-protocol-disclosure"
+  },
+  "prohibited_inferences": [
+    "any statement about the physical thruster, its plasma or its performance",
+    "validity of the corrected equation set or of the proposed correction",
+    "acceptance of the proposed correction",
+    "a solver defect as the cause of the interior residual floors",
+    "numerical values of the legacy publication run",
+    "hardware or experimental validation",
+    "opening of GATE-L1, GATE-L2 or GATE-L3"
+  ],
+  "recomputation": {
+    "anode_fall_coefficient": {
+      "current_a": 1.0,
+      "delta_v": 1.0,
+      "probabilities": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "voltage_v": 300.0
+    },
+    "closed_form_sample": {
+      "count": 400,
+      "currents_a": [
+        0.1,
+        0.5,
+        1.0,
+        3.0
+      ],
+      "interior_potentials": "three uniform draws on [0.01 Ua, Ua] sorted; anode-cell potential uniform on [Ua, 1.5 Ua]",
+      "probability_upper": 0.7,
+      "seed": 20260903,
+      "voltages_v": [
+        150.0,
+        300.0,
+        500.0,
+        1000.0
+      ]
+    },
+    "continuation": {
+      "current_a": 1.0,
+      "epsilons": [
+        0.0001,
+        0.001,
+        0.01,
+        0.03,
+        0.1,
+        0.3
+      ],
+      "max_iterations": 600,
+      "patterns": [
+        "eps*(1,1,1,1)",
+        "(0,0,0,eps)"
+      ],
+      "residual_tolerance": 1e-08,
+      "solver": "cft_revival.plasma.solve_global_discharge_multistart",
+      "start_count_anode_only": 5,
+      "start_count_interior": 1,
+      "voltage_v": 300.0
+    },
+    "not_recomputed": [
+      "differential evolution (205 312 evaluations; SciPy)",
+      "200 random feasible LM starts",
+      "the 80-case solver probe (read from the frozen MDO protocol; its reproduction is documented)"
+    ],
+    "published_state": {
+      "current_a": 1.0,
+      "potentials_v": [
+        14.1,
+        1000.0,
+        1000.0,
+        1000.0
+      ],
+      "probabilities": [
+        0.06,
+        0.119,
+        0.16,
+        0.254
+      ],
+      "voltage_v": 1000.0
+    },
+    "recorded_significant_digits": {
+      "anode_only_residual": 1,
+      "closed_form_relative_difference": 2,
+      "continuation_floor": 3,
+      "continuation_slope": 3,
+      "departure": 2,
+      "dm92_misfit": 3,
+      "jacobian_condition": 2,
+      "manifold_normalized_residual": 2,
+      "relaxed_root_depth_v": 3,
+      "relaxed_root_residual": 1
+    },
+    "relaxed_root": {
+      "bisections": 200,
+      "current_a": 1.0,
+      "interior_potentials_v": [
+        4.23,
+        270.0,
+        285.0
+      ],
+      "probabilities": [
+        0.06,
+        0.119,
+        0.16,
+        0.254
+      ],
+      "voltage_v": 300.0
+    },
+    "tolerances": {
+      "anode_fall_coefficient_absolute": 1e-09,
+      "anode_only_residual_upper_bound": 1e-08,
+      "closed_form_relative_difference_upper_bound": 1e-12,
+      "continuation_floor_relative": 0.25,
+      "continuation_slope_spread_maximum": 2.0,
+      "dm92_misfit_relative": 0.02,
+      "manifold_normalized_residual_upper_bound": 1e-11,
+      "relaxed_root_depth_relative": 0.02,
+      "relaxed_root_residual_upper_bound": 1e-10
+    }
+  },
+  "schema_version": "1.0",
+  "section_heading": "Closed form of the global power row and its admissible roots",
+  "source_files": [
+    {
+      "git_blob": "75e543503e91e6b1aef828a37b3e38983209a69f",
+      "git_blob_sha256": "555915928ffc9734b62615dc273ad63d890a99948367811726ddace2c9d8c54b",
+      "path": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+      "role": "analysis-document"
+    },
+    {
+      "git_blob": "a09d76fef9cfc7d2f83c2ebac46fb8d47c451240",
+      "git_blob_sha256": "19822eb3364a5cc660c8b9bba2b699218f7d80c9657a16f0d8580f33188faff0",
+      "path": "modern/spec/plasma/equation-ledger.json",
+      "role": "equation-ledger"
+    },
+    {
+      "git_blob": "d4cb8cb1a33e8b0351c9fbb05efe048dd3fd0531",
+      "git_blob_sha256": "be1d4ff8e8ba728b5a28c01a4df7cfdce8d2bcad8b85d3c14267c95e18ca7d8c",
+      "path": "modern/src/cft_revival/plasma/residuals.py",
+      "role": "diagnostics-source"
+    },
+    {
+      "git_blob": "face43023e81ac0eb0a87636daf4fec98d899e38",
+      "git_blob_sha256": "10141bf125853a47cb1ed1bed133fea36f7d96d2d70ceb31b40d25b06567f9ed",
+      "path": "modern/src/cft_revival/plasma/solver.py",
+      "role": "solver-source"
+    },
+    {
+      "git_blob": "81725f3aff34e30b095d9ef055c78145e027f612",
+      "git_blob_sha256": "5a39c4992bfba4b1925a773af50d74035ecdef164fa9bf15ecb46aa39eaafa90",
+      "path": "modern/src/cft_revival/plasma/models.py",
+      "role": "model-source"
+    },
+    {
+      "git_blob": "b1386e05b303cdedba7a223d2429612f28836e72",
+      "git_blob_sha256": "6eee1cc1b11283c009ab7cc3fd453f7b4d85ded8ce5e856921b6ef878f5a0356",
+      "path": "modern/src/cft_revival/plasma/reference.py",
+      "role": "reference-source"
+    },
+    {
+      "git_blob": "939e5c67ad11e276263b3760379eab8c989c5869",
+      "git_blob_sha256": "1217101c5cd4f13b441e65f73a1121fd99443c6321f4eb0036b4199c180b9c9f",
+      "path": "modern/src/cft_revival/plasma/__init__.py",
+      "role": "package-init"
+    },
+    {
+      "git_blob": "805b4a645cf734f890d6457e091c35c5cb41fcd3",
+      "git_blob_sha256": "006cc52e6b4338138c9c8b897745e6743ffac498d29dbad9270e60814e5a7d0a",
+      "path": "modern/tests/plasma/test_closure_p_nonzero.py",
+      "role": "closure-tests"
+    },
+    {
+      "git_blob": "0b931ed5d83ee32c66cb5490cb1ae3b4b8ccdbe4",
+      "git_blob_sha256": "ff516a59dddf0c278553f4098bec7d0fcef204ac3db28055a27f27523a1f067e",
+      "path": "modern/tests/plasma_network/test_plasma_network_closure_p_nonzero.py",
+      "role": "network-closure-tests"
+    },
+    {
+      "git_blob": "9a43a60e689e0dd48954dfd65ad76091a372a432",
+      "git_blob_sha256": "0aa64864b2724e44f499c9621d85a0f435d39792febf8127084fbd59e099d6fc",
+      "path": "modern/tests/plasma/test_solver.py",
+      "role": "solver-tests"
+    },
+    {
+      "git_blob": "06eef451c8c5f3a3b161f893fc9116787caf2c4c",
+      "git_blob_sha256": "a9776f642e6a5da904c7a733d6eb0f42bcd3328afbef69cbd9f5bc5c6a2b139e",
+      "path": "modern/experiments/mdo_l0_campaign_v1/protocol.json",
+      "role": "mdo-protocol-disclosure"
+    },
+    {
+      "git_blob": "8eeca9c61cce5b1f9157b7db5a7c9e6c21d63d80",
+      "git_blob_sha256": "28ebf8b5cda67529f3978d10c781a09affcc5933e8f199576729594516726c80",
+      "path": "FYP/Power_B_EQs.m",
+      "role": "legacy-lineage"
+    },
+    {
+      "git_blob": "ce30e2141557fda277351715b754f9432c865715",
+      "git_blob_sha256": "3c813ef8fd3ebbce5745c33ea655dc161864e43ea321741445733b919c38235e",
+      "path": "modern/docs/AUDIT.md",
+      "role": "legacy-audit"
+    },
+    {
+      "git_blob": "9b27fc7b74446526be14c0fcb6f1a297f7c14f64",
+      "git_blob_sha256": "808bf44e01eaac87b43cba5c45895fd6222aadc5a4bc1d2dd127a01841d575b1",
+      "path": "modern/docs/REFERENCES.md",
+      "role": "references"
+    }
+  ],
+  "status": "accepted",
+  "verified_tree_revision": "ba6875f604746e8fbeaf2aee2bdf06b8f06bdc04",
+  "verified_tree_revision_subject": "paper: admit MDO L0 campaign v1 to the claim matrix and manuscript"
+}

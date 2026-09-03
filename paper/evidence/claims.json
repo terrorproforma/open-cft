@@ -10,6 +10,7 @@
     "screening_rule": "A section admitted by a numerical-screening gate follows the campaign_macro_rule and additionally states the recorded outcome (accepted screening, preregistered null or recorded characterization) as recorded: a null is admitted under the frozen cusp/cell definitions only, is never phrased as an existence disproof, and lineage records (superseded or failed studies) appear only inside registered non-claims.",
     "working_tree_rule": "Uncommitted scientific inputs are never evidence; paper-owned generated sources are hash-bound pending integration.",
     "campaign_macro_rule": "A section admitted by a numerical-campaign gate may render numbers only through evidence macros whose value, artifact path, JSON pointer and SHA-256 are recorded in the campaign's evidence file and regenerated from the sealed bundle by the checker; the section may type no literal digit, and its claim-bearing sentences remain exact EvidenceClaim bodies bound to the campaign manifest.",
+    "analytic_consistency_rule": "A section admitted by an analytic-consistency gate follows the campaign_macro_rule with two differences: documented numbers are bound to the analysis document, ledger, frozen protocol or lineage blob at the analysis revision by a JSON pointer or a fixed regular expression, and recomputed numbers are produced by the checker from the bound package at every run and refused on any departure from the document beyond the declared tolerance. The result is admitted as a statement about the equation set: it accepts no correction, says nothing about the physical thruster, and any consequence drawn for the legacy study is a labelled interpretation outside the results section.",
     "section_input_rule": "Files bound through \\input{sections/...} are flattened into the manuscript before every claim, citation and prose check; a section is not a way around the matrix."
   },
   "sources": {
@@ -107,6 +108,17 @@
       "preregistration_revision": "4898d0fd3decddc5f308072e724d1936660c00e9",
       "dashboard_revision": "e642f38cd613e3d687c32777080d8aefae93c7b3",
       "evidence_file": "paper/evidence/mdo-l0-v1.json"
+    },
+    "FOUR-CELL-CLOSURE-20260903-R27-V1": {
+      "path": "paper/evidence/manifests/four-cell-closure.json",
+      "document_type": "paper-analytic-consistency-manifest",
+      "schema_version": "1.0",
+      "gate_id": "GATE-FOUR-CELL-CLOSURE-V1",
+      "gate_kind": "analytic-consistency",
+      "evidence_revision": "266d8a99ce75fe35b4870d5d046c9069d7b26c0b",
+      "verified_tree_revision": "ba6875f604746e8fbeaf2aee2bdf06b8f06bdc04",
+      "mdo_preregistration_revision": "4898d0fd3decddc5f308072e724d1936660c00e9",
+      "evidence_file": "paper/evidence/four-cell-closure.json"
     }
   },
   "claims": [
@@ -827,6 +839,279 @@
       ]
     },
     {
+      "id": "CLM-036",
+      "status": "verified",
+      "claim_class": "analytic-consistency-summary",
+      "authorized_tex": "An analytic consistency result is admitted with a recomputed numerical verification: on the manifold of the corrected four-cell power-balance ledger the global power row reduces to a closed form whose terms are non-negative (closed form and evaluated row agree to \\FccClosedFormRelDiff{} over \\FccClosedFormSamples{} seeded states), so the equation set inherited from the source formulation has no admissible root for any positive interior cusp probability, which explains why the solver probe of the optimisation campaign closed in \\FccProbeClosed{} of \\FccProbeTotal{} cases; the proposed correction is recorded and not accepted, and nothing follows about the physical thruster.",
+      "allowed_locations": [
+        "Abstract"
+      ],
+      "manifest_ids": [
+        "FOUR-CELL-CLOSURE-20260903-R27-V1"
+      ],
+      "classification": "analytic_consistency_of_the_corrected_four_cell_power_balance_not_thruster_physics",
+      "correction_status": "PROPOSED_NOT_ACCEPTED",
+      "permitted_scope": [
+        "existence and admission of the analytic consistency result with a recomputed verification",
+        "macro-bound closed-form agreement and probe counts",
+        "the no-admissible-root consequence for positive interior cusp probabilities as detailed by CLM-037",
+        "the not-accepted status of the proposed correction and the no-thruster boundary"
+      ],
+      "prohibited_inferences": [
+        "any statement about the physical thruster, its plasma or its performance",
+        "validity of the corrected equation set or of the proposed correction",
+        "acceptance of the proposed correction",
+        "a solver defect as the cause of the interior residual floors",
+        "opening of GATE-L1, GATE-L2 or GATE-L3"
+      ]
+    },
+    {
+      "id": "CLM-037",
+      "status": "verified",
+      "claim_class": "quantitative-analytic-result",
+      "authorized_tex": "On the manifold of states that satisfy the first \\FccGlobalRowIndex{} rows of the corrected four-cell ledger, which the four cell potentials parametrize exactly (largest normalized residual of those rows \\FccManifoldMaxResidual{} over the \\FccClosedFormSamples{} seeded random states of the recomputation, against a documented bound of \\FccDocManifoldBound), the global power row $R_{\\FccGlobalRowIndex}$ reduces to the closed form displayed in Section~\\ref{sec:four-cell-closure}: \\FccAnodeFallCoefficient{} times the transported anode-cell electron current times the anode fall, plus the ionisation energy times the electron current lost to the three interior cusps. The closed form agrees with the evaluated row to a largest relative difference of \\FccClosedFormRelDiff{} over those \\FccClosedFormSamples{} states (documented \\FccDocClosedFormRelDiff{} over \\FccDocClosedFormSamples{} states; declared bound \\FccClosedFormBound), and the anode-fall coefficient recomputed at zero cusp probability is \\FccAnodeFallCoefficient{} against the ledger's \\FccLedgerCoefficient. Inside the admissible region, where the anode-cell potential is at or above the anode potential and every current is non-negative, both terms are non-negative, so the corrected equation set has no admissible root whenever any interior cusp probability is positive.",
+      "allowed_locations": [
+        "Closed form of the global power row and its admissible roots"
+      ],
+      "manifest_ids": [
+        "FOUR-CELL-CLOSURE-20260903-R27-V1"
+      ],
+      "gate_id": "GATE-FOUR-CELL-CLOSURE-V1",
+      "classification": "analytic_consistency_of_the_corrected_four_cell_power_balance_not_thruster_physics",
+      "correction_status": "PROPOSED_NOT_ACCEPTED",
+      "evidence_level": "analytic-consistency",
+      "evidence_level_justification": "The claim is a derivation about a declared equation set (the corrected four-cell discharge ledger) together with its numerical verification: the closed form of the global power row on the R00-R26 manifold agrees with the evaluated row to the recorded relative difference over a seeded sample, and both terms are non-negative on the admissible region. Nothing was executed under a preregistered protocol, no design space was screened and no field, plasma or experimental evidence enters, so neither the numerical-campaign nor the numerical-screening kind fits and no physics level is opened; the analytic-consistency gate GATE-FOUR-CELL-CLOSURE-V1 admits the derivation and its verification as recorded, with the verification recomputed by the checker from the bound cft_revival.plasma package at every run and refused on any departure from the analysis document beyond the declared tolerance.",
+      "bindings": {
+        "evidence_file": "paper/evidence/four-cell-closure.json",
+        "evidence_macros": "every \\Fcc... macro in the authorized text is defined in paper/generated/four-cell-closure.tex and bound in the evidence file to a document, ledger, protocol or legacy path with a JSON pointer or fixed regular expression and SHA-256, or to a recomputation whose protocol and inputs are recorded",
+        "analysis_commit": "266d8a99ce75fe35b4870d5d046c9069d7b26c0b",
+        "verified_tree_commit": "ba6875f604746e8fbeaf2aee2bdf06b8f06bdc04",
+        "mdo_preregistration_commit": "4898d0fd3decddc5f308072e724d1936660c00e9"
+      },
+      "non_claims": [
+        "says nothing about the physical thruster, its plasma or its performance",
+        "does not claim that the corrected equation set or the proposed correction is right",
+        "accepts no correction",
+        "a property of the equations, not of the solver",
+        "not recomputed",
+        "opens none of the field-resolved, coupled or experimental gates"
+      ],
+      "permitted_scope": [
+        "exact parametrization of the R00-R26 manifold by the four potentials with the recomputed residual bound",
+        "the closed form of the global power row and its recomputed agreement with the evaluated row",
+        "the recomputed anode-fall coefficient against the ledger's",
+        "non-negativity of both terms on the admissible region and the absence of an admissible root for positive interior cusp probabilities"
+      ],
+      "prohibited_inferences": [
+        "any statement about the physical thruster, its plasma or its performance",
+        "validity of the corrected equation set or of the proposed correction",
+        "acceptance of the proposed correction",
+        "a solver defect as the cause of the interior residual floors",
+        "opening of GATE-L1, GATE-L2 or GATE-L3",
+        "numerical values of the legacy publication run"
+      ]
+    },
+    {
+      "id": "CLM-038",
+      "status": "verified",
+      "claim_class": "quantitative-analytic-result",
+      "authorized_tex": "Solutions exist exactly on the sub-region where the three interior cusp probabilities vanish, the anode-cusp probability is arbitrary and the anode-cell potential equals the anode potential: the anode-only pattern closed at every one of the \\FccLadderCount{} rungs of the ladder in the recomputation (\\FccAnodeOnlyClosed{} of \\FccLadderCount; largest residual \\FccAnodeOnlyMaxResidual{} against the convergence tolerance \\FccResidualTolerance; largest gap between the anode-cell and anode potentials \\FccAnodeOnlyPhiFourGap{}~V), as the analysis document records. For the uniform interior pattern at \\FccDocContinuationVoltage{}~V and \\FccDocContinuationCurrent{}~A the production solver stalls at a least-squares floor that is linear in the probability: the documented floors run from \\FccDocFloorMin{} to \\FccDocFloorMax{} and the recomputed floors from \\FccFloorMin{} to \\FccFloorMax{} (largest departure \\FccFloorDepartureMax{} against a declared tolerance of \\FccFloorTolerance; the floor divided by the probability varies by a factor of \\FccSlopeSpread{} over the ladder against a declared maximum of \\FccSlopeSpreadMax), no rung closed (branch found: \\FccBranchFound) and the global row dominates every floor (\\FccDominantRowIsGlobal). The documented global search found nothing better: differential evolution over the full \\FccDocDeDimension-value box (\\FccDocDeEvaluations{} evaluations) reached \\FccDocDeBest, and \\FccDocLmClosed{} of \\FccDocLmStarts{} random feasible starts closed (smallest floor \\FccDocLmFloorMin). Relaxing only the anode-potential inequality exposes exact roots \\FccDocRelaxedDepthMin{} to \\FccDocRelaxedDepthMax{}~V below the anode potential, which balance the two terms against each other and are rejected by the admissible region (recomputed example at the published probabilities: \\FccRelaxedDepth{}~V below the anode, largest residual \\FccRelaxedResidual, admissible: \\FccRelaxedFeasible). The Jacobian has rank \\FccJacobianRank{} of \\FccStateDimension{} at every floor point (nullity \\FccJacobianNullity, the potential null space) with condition at most \\FccConditionMax{} in the recomputation (documented \\FccDocConditionMin{} to \\FccDocConditionMax), so conditioning does not explain the floors. The frozen protocol of the optimisation campaign discloses \\FccProbeClosed{} closures in \\FccProbeTotal{} probe cases, all at zero cusp probability, which the analysis reproduced exactly (\\FccDocProbeClosed{} of \\FccDocProbeTotal) and which is this inconsistency; the probe pattern is read from the frozen protocol (source \\texttt{\\FccProbeSource}) and is not recomputed here.",
+      "allowed_locations": [
+        "Closed form of the global power row and its admissible roots"
+      ],
+      "manifest_ids": [
+        "FOUR-CELL-CLOSURE-20260903-R27-V1",
+        "MDO-L0-V1-20260903-864-V1"
+      ],
+      "classification": "analytic_consistency_of_the_corrected_four_cell_power_balance_not_thruster_physics",
+      "correction_status": "PROPOSED_NOT_ACCEPTED",
+      "permitted_scope": [
+        "the solution sub-region (interior probabilities zero, any anode-cusp probability, anode-cell potential equal to the anode potential) and the recomputed anode-only closures",
+        "documented and recomputed continuation floors with the declared tolerance and slope spread",
+        "the documented global search and relaxed-constraint roots, one recomputed relaxed root",
+        "Jacobian rank and condition at the floor points, documented and recomputed",
+        "the frozen protocol's probe disclosure, its documented reproduction and the statement of which is read and which is recomputed"
+      ],
+      "prohibited_inferences": [
+        "any statement about the physical thruster, its plasma or its performance",
+        "validity of the corrected equation set or of the proposed correction",
+        "acceptance of the proposed correction",
+        "a solver defect as the cause of the interior residual floors",
+        "opening of GATE-L1, GATE-L2 or GATE-L3",
+        "recomputation of the differential-evolution or random-start searches or of the probe"
+      ]
+    },
+    {
+      "id": "CLM-039",
+      "status": "verified",
+      "claim_class": "quantitative-generated-table",
+      "authorized_artifact_ids": [
+        "TAB-FOUR-CELL-CLOSURE-V1"
+      ],
+      "allowed_locations": [
+        "Closed form of the global power row and its admissible roots"
+      ],
+      "manifest_ids": [
+        "FOUR-CELL-CLOSURE-20260903-R27-V1"
+      ],
+      "permitted_scope": [
+        "the continuation ladder with documented floors (analysis document) and recomputed floors, floor over epsilon, Jacobian rank and anode-only closures",
+        "the documented global search, relaxed roots, Jacobian and published-state misfit beside their recomputed counterparts and the frozen-protocol probe, each labelled with its status"
+      ],
+      "prohibited_inferences": [
+        "any statement about the physical thruster",
+        "validity of the equation set or of the proposed correction",
+        "recomputation of the rows labelled documented"
+      ]
+    },
+    {
+      "id": "CLM-040",
+      "status": "verified",
+      "claim_class": "analytic-attribution",
+      "authorized_tex": "Both terms of the closed form are inherited from the source formulation: assumption \\FccKornfeldAssumption{} of \\FccKornfeldId{} books ionisation as a frozen loss and again as recombination heat at the boundaries, which is the ionisation energy carried by the cusp-loss expression \\texttt{\\FccPcuspCurrent}, and the printed anode electron term \\texttt{\\FccPanodeCurrent} carries the sign of an ion under the restriction that the anode-cell potential is at or above the anode potential, which is why the source's own published state and every rebuilt closure sit on that boundary. The legacy \\texttt{Power\\_B\\_EQs.m} (blob \\texttt{\\FccLegacyBlob}) carries the same terms on lines \\FccLegacyCuspLine{} and \\FccLegacyAnodeLine{} (\\FccLegacyIeTerms{} ionisation-energy terms on the cusp-loss line), and the rounded published table of the source leaves a global-row misfit of \\FccDocDmLedgerMisfit{} in the ledger against \\FccDmMisfit{} recomputed on the exact manifold at the published potentials. The audit corrections of the rebuild (signed terminal ion row, fourth-cell transport, excitation as a loss, cusp current subtracted in the ion rows) cancel exactly in the substitution and do not appear in the closed form; they did not introduce the inconsistency.",
+      "allowed_locations": [
+        "Closed form of the global power row and its admissible roots"
+      ],
+      "manifest_ids": [
+        "FOUR-CELL-CLOSURE-20260903-R27-V1"
+      ],
+      "evidence": [
+        "SRC-AUDIT",
+        "SRC-PROVENANCE"
+      ],
+      "bibliography": [
+        "Kornfeld2007"
+      ],
+      "classification": "analytic_consistency_of_the_corrected_four_cell_power_balance_not_thruster_physics",
+      "permitted_scope": [
+        "attribution of the recombination term to the source's frozen-loss assumption and of the anode-fall term to the printed anode electron sign, as documented",
+        "presence of the same terms in the legacy power-balance file at the bound blob, recomputed by pattern",
+        "the documented and recomputed published-state misfit",
+        "the documented cancellation of the audit corrections in the substitution"
+      ],
+      "prohibited_inferences": [
+        "any statement about the physical thruster, its plasma or its performance",
+        "validity of the corrected equation set or of the proposed correction",
+        "acceptance of the proposed correction",
+        "a solver defect as the cause of the interior residual floors",
+        "opening of GATE-L1, GATE-L2 or GATE-L3",
+        "numerical values of the legacy publication run",
+        "any statement about the source's experiment"
+      ]
+    },
+    {
+      "id": "CLM-041",
+      "status": "verified",
+      "claim_class": "proposed-correction-status",
+      "authorized_tex": "The minimal correction recorded in the ledger, dropping the ionisation energy from the cusp-loss expression (\\texttt{\\FccPcuspProposed}) and giving the anode electron term the electron sign (\\texttt{\\FccPanodeProposed}), has status \\texttt{\\FccCorrectionStatus} and is not accepted here: with both changes the global row is implied identically by the cell energy rows and charge conservation for every cusp probability, the structural rank drops from \\FccDocCorrectedRankBefore{} to \\FccDocCorrectedRankAfter{} (nullity \\FccDocCorrectedNullity, all four potentials free), and the model would need an independent potential closure, the dielectric-cusp sheath relation that the source's cancelled cusp potentials were meant to supply, before any state could be published; accepting the correction without that closure would replace a non-closing model by an underdetermined one. A secondary solver defect found alongside the analysis, an ordering projection that permuted variable identities, was replaced by the isotonic projection and raised the zero-cusp grid from \\FccDocZeroCuspBefore{} to \\FccDocZeroCuspAfter{} of \\FccDocZeroCuspTotal{} closures; it does not and cannot change the outcome for positive interior probabilities.",
+      "allowed_locations": [
+        "Closed form of the global power row and its admissible roots"
+      ],
+      "manifest_ids": [
+        "FOUR-CELL-CLOSURE-20260903-R27-V1"
+      ],
+      "classification": "analytic_consistency_of_the_corrected_four_cell_power_balance_not_thruster_physics",
+      "correction_status": "PROPOSED_NOT_ACCEPTED",
+      "permitted_scope": [
+        "the proposed correction exactly as recorded in the ledger with its PROPOSED_NOT_ACCEPTED status",
+        "the documented consequence for the structural rank and the need for a potential closure",
+        "the secondary solver defect, its fix and the documented zero-cusp grid counts"
+      ],
+      "prohibited_inferences": [
+        "acceptance of the proposed correction",
+        "validity of the corrected model",
+        "a solver defect as the cause of the interior residual floors",
+        "any statement about the physical thruster"
+      ]
+    },
+    {
+      "id": "CLM-042",
+      "status": "verified",
+      "claim_class": "analytic-scope-limitation",
+      "authorized_tex": "This result is an analytic consistency statement about the corrected four-cell equation set, classified \\texttt{\\FccClassification}: it says nothing about the physical thruster, its plasma or its performance, it does not claim that the corrected equation set or the proposed correction is right, and it accepts no correction (status \\texttt{\\FccCorrectionStatus}). The residual floors are a property of the equations, not of the solver: they are linear in the interior probability with a well-conditioned Jacobian of constant rank, and the global search found no branch. The verification is recomputed from the bound package at every check; the differential-evolution and random-start searches and the \\FccProbeTotal-case probe are documented values read from the analysis document and the frozen protocol, not recomputed. It opens none of the field-resolved, coupled or experimental gates.",
+      "allowed_locations": [
+        "Closed form of the global power row and its admissible roots"
+      ],
+      "manifest_ids": [
+        "FOUR-CELL-CLOSURE-20260903-R27-V1"
+      ],
+      "classification": "analytic_consistency_of_the_corrected_four_cell_power_balance_not_thruster_physics",
+      "correction_status": "PROPOSED_NOT_ACCEPTED",
+      "permitted_scope": [
+        "model-bounded restatement of the result's classification, claim boundary and what is recomputed versus documented"
+      ],
+      "prohibited_inferences": [
+        "any statement about the physical thruster, its plasma or its performance",
+        "validity of the corrected equation set or of the proposed correction",
+        "acceptance of the proposed correction",
+        "a solver defect as the cause of the interior residual floors",
+        "opening of GATE-L1, GATE-L2 or GATE-L3"
+      ]
+    },
+    {
+      "id": "CLM-043",
+      "status": "verified",
+      "claim_class": "interpretation",
+      "authorized_tex": "The legacy MATLAB chain accepted \\texttt{lsqnonlin} exit flags \\FccAuditAcceptedFlags{} by status alone, discarded the residual norm and residual vector and checked no residual tolerance (flag \\FccAuditRejectedFlag{} was rejected; the function tolerance was \\FccAuditTolFun), as the legacy audit documents. Its power-balance file carries the same two global-row terms whose closed form is derived here, so for the positive cusp probabilities that its mirror-formula routine supplies the corrected form of the equation set it solved has no admissible root, and the legacy set is additionally inconsistent in its current rows. The reading that follows is interpretation: the performance values the legacy study reported from that solver are the residual floors at which a stalled least-squares solve was accepted by exit status, not solutions of the balance; the legacy publication run itself is unavailable, so no numerical value of that run is claimed or recomputed.",
+      "allowed_locations": [
+        "Discussion"
+      ],
+      "manifest_ids": [
+        "FOUR-CELL-CLOSURE-20260903-R27-V1"
+      ],
+      "evidence": [
+        "SRC-AUDIT",
+        "SRC-PROVENANCE"
+      ],
+      "bibliography": [
+        "Muffatti2017"
+      ],
+      "permitted_scope": [
+        "the legacy acceptance rule exactly as the audit documents it (exit flags accepted by status, residual norm discarded, function tolerance)",
+        "the model-bounded inference that the corrected form of the legacy equation set has no admissible root for positive interior cusp probabilities, with the legacy set's additional current-row inconsistency stated",
+        "the labelled interpretation that the reported legacy performance values were residual floors accepted by exit status"
+      ],
+      "prohibited_inferences": [
+        "any numerical value of the legacy publication run",
+        "any statement about the physical thruster",
+        "that the legacy chain used any specific cusp-probability values",
+        "validity of the corrected equation set"
+      ]
+    },
+    {
+      "id": "CLM-044",
+      "status": "verified",
+      "claim_class": "interpretation",
+      "authorized_tex": "Three admitted findings now bear on the legacy design chain, each bounded to its own model: the collisionless test-particle campaign recorded \\WlfPooledReflected{} reflections, so the mirror picture of cusp loss is unsupported for the qualified field; the preregistered screening found the four-cell wall-cusp topology of the legacy parameterisation stable for none of \\FcnEvaluated{} candidates under the frozen definitions; and the corrected four-cell power balance has no admissible root for any positive interior cusp probability, with \\FccProbeClosed{} of \\FccProbeTotal{} probe cases closing, all at zero cusp probability. Read together, and as interpretation only, they are the reason the legacy design chain cannot be reproduced from its equations: its cusp probabilities came from a mirror formula the integrated orbits do not support, its cells were never shown to exist in the screened field space, and the balance that turned those probabilities into performance has no solution for them. That is why the rebuild pivoted to declared closures, the operating-point model under the declared survival closure of Section~\\ref{sec:mdo-l0}, and to a kinetic-simulation workstream for the wall-loss and confinement questions, whose results are not admitted here and open no physics level.",
+      "allowed_locations": [
+        "Discussion"
+      ],
+      "manifest_ids": [
+        "FOUR-CELL-CLOSURE-20260903-R27-V1",
+        "WALL-LOSS-V4-20260902-4608-V1",
+        "FOUR-CELL-V2-20260902-128-V1"
+      ],
+      "evidence": [
+        "SRC-AUDIT",
+        "SRC-PROVENANCE"
+      ],
+      "bibliography": [
+        "Muffatti2017"
+      ],
+      "permitted_scope": [
+        "model-bounded synthesis of the three admitted findings (zero reflections, four-cell topology not shown stable, no admissible root for interior cusp probabilities)",
+        "the labelled interpretation that the legacy design chain cannot be reproduced from its equations",
+        "the pivot to declared closures and a kinetic-simulation workstream stated as motivation, with the kinetic results explicitly not admitted"
+      ],
+      "prohibited_inferences": [
+        "non-existence of a stable multi-cell wall-cusp topology",
+        "loss rates of a real electron population",
+        "any statement about the physical thruster's performance",
+        "any result of the kinetic-simulation workstream",
+        "opening of GATE-L1, GATE-L2 or GATE-L3"
+      ]
+    },
+    {
       "id": "GATE-L1",
       "status": "evidence-gate",
       "gate_registry_id": "GATE-L1"
@@ -883,6 +1168,14 @@
       "kind": "numerical-campaign",
       "gate_status": "accepted",
       "manifest_id": "MDO-L0-V1-20260903-864-V1"
+    },
+    {
+      "id": "GATE-FOUR-CELL-CLOSURE-V1",
+      "status": "evidence-gate",
+      "gate_registry_id": "GATE-FOUR-CELL-CLOSURE-V1",
+      "kind": "analytic-consistency",
+      "gate_status": "accepted",
+      "manifest_id": "FOUR-CELL-CLOSURE-20260903-R27-V1"
     }
   ]
 }

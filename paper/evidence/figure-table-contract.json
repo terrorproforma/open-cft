@@ -121,6 +121,30 @@
       "required_gate": "GATE-MDO-L0-V1"
     },
     {
+      "id": "TAB-FOUR-CELL-CLOSURE-V1",
+      "kind": "table",
+      "status": "verified",
+      "manuscript_label": "tab:four-cell-closure-continuation",
+      "manuscript_labels": [
+        "tab:four-cell-closure-continuation",
+        "tab:four-cell-closure-search"
+      ],
+      "manuscript_binding": "\\input{generated/four-cell-closure.tex}",
+      "claim_ids": [
+        "CLM-039"
+      ],
+      "manifest_id": "FOUR-CELL-CLOSURE-20260903-R27-V1",
+      "generator_path": "paper/scripts/generate_four_cell_closure_evidence.py",
+      "generator_module": "generate_four_cell_closure_evidence",
+      "generator_command": "python paper/scripts/generate_four_cell_closure_evidence.py",
+      "output_path": "paper/generated/four-cell-closure.tex",
+      "sidecar_path": "paper/generated/four-cell-closure.provenance.json",
+      "artifact_claim_count": 2,
+      "artifact_claim_note": "The generated file defines the evidence macros and two table macros (\\FccContinuationTable, \\FccGlobalSearchTable); each table body is wrapped in its own ArtifactClaim bound to CLM-039, so exactly two ArtifactClaim macros are required. The tables set documented values (analysis document at the analysis revision, ledger, frozen protocol) beside values the checker recomputes from the bound package at every run, each row labelled with its status; nothing in them is thruster physics.",
+      "evidence_file": "paper/evidence/four-cell-closure.json",
+      "required_gate": "GATE-FOUR-CELL-CLOSURE-V1"
+    },
+    {
       "id": "FIG-ARCHITECTURE",
       "kind": "figure",
       "status": "planned-nonresult",

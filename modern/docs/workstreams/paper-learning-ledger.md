@@ -267,3 +267,44 @@
   by ~230 pt on a 468 pt text width; `>{\raggedright\arraybackslash}p{}` for
   the two text columns, `\shortstack` two-line headers and `\scriptsize`
   bring them under width without shortening any value.
+
+## 2026-09-03 — Admitting the four-cell power-balance closure analysis
+
+- [self] A finding that was never executed under a protocol needs its own gate
+  kind; forcing it into `numerical-campaign` or `numerical-screening` would
+  have made the checker's bundle/preregistration rules meaningless. Define the
+  kind by what “accepted” means (“the derivation and its numerical verification
+  are admitted as recorded”) and by what it does not accept (the correction,
+  any thruster statement, any physics level).
+- [self] “Recompute the verification” has to be budgeted: the document's
+  ladder (5 starts, 600 iterations) costs ~13 s per rung; one start reaches
+  the same stall floor within 6 % in 2.7 s. Declare the reduced protocol, the
+  tolerance (25 %) and the recorded precision (3 significant digits) in the
+  generator, and cache the recomputation per process so 30 checker/test calls
+  cost one run.
+- [self] Least-squares stall floors are not bit-reproducible quantities (they
+  move with start count, iteration budget and libm); record them rounded and
+  compare to the document at a declared tolerance, and say in the section that
+  documented and recomputed floors agree within tolerance, not bitwise.
+- [self] A `sci`-formatted macro carries its own `$...$`; using it inside a
+  caption's math gives “Missing $ inserted” two files away from the cause.
+  Keep macros that render math outside `$...$`.
+- [self] `\allowbreak` inside `\texttt` gives break points but no stretch, so
+  long ledger expressions still overflow; `\hspace{0pt plus 1.5pt}` after
+  each operator gives both.
+- [self] Verify the brief's numbers against the files before writing claims:
+  the legacy acceptance defect is “flags 1–3 accepted by status, flag 4
+  rejected”, not “flag 4 accepted”; the `+IE` cusp terms are on line 136 of
+  the blob while the document says 137 (the anode term). Bind both lines and
+  make the checker require the documented line to lie in the span.
+- [self] Digits in the displayed closed form are structural indices; the
+  checker strips sub/superscripts and macros and refuses any remaining digit,
+  so the coefficient and row index are macros (`\FccAnodeFallCoefficient`,
+  `\FccGlobalRowIndex`) and the equation lives in the manuscript section where
+  `\cite{Kornfeld2007}` (digits) is allowed.
+- [tool] Per-file `git rev-parse`/`git show` cost ~170 ms each on this host
+  (42 calls = 7 s); one `git ls-tree -r -z` per commit plus one
+  `git cat-file --batch` binds 14 files in about a second.
+- [tool] Importing the package under test from the checkout must be verified
+  (`module.__file__` under `modern/src`); an installed `cft_revival` elsewhere
+  on `sys.path` would silently recompute with the wrong code.

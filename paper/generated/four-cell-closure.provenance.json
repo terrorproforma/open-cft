@@ -1,0 +1,269 @@
+{
+  "artifact_id": "TAB-FOUR-CELL-CLOSURE-V1",
+  "claim_ids": [
+    "CLM-039"
+  ],
+  "claim_status": "authorized by CLM-039 (quantitative-generated-table) in paper/evidence/claims.json; admitted through GATE-FOUR-CELL-CLOSURE-V1",
+  "document_type": "paper-generated-artifact-provenance",
+  "evidence_revision": "266d8a99ce75fe35b4870d5d046c9069d7b26c0b",
+  "executed_package": {
+    "files": [
+      {
+        "git_blob_sha256": "1217101c5cd4f13b441e65f73a1121fd99443c6321f4eb0036b4199c180b9c9f",
+        "path": "modern/src/cft_revival/plasma/__init__.py",
+        "sha256_lf": "1217101c5cd4f13b441e65f73a1121fd99443c6321f4eb0036b4199c180b9c9f"
+      },
+      {
+        "git_blob_sha256": "5a39c4992bfba4b1925a773af50d74035ecdef164fa9bf15ecb46aa39eaafa90",
+        "path": "modern/src/cft_revival/plasma/models.py",
+        "sha256_lf": "5a39c4992bfba4b1925a773af50d74035ecdef164fa9bf15ecb46aa39eaafa90"
+      },
+      {
+        "git_blob_sha256": "6eee1cc1b11283c009ab7cc3fd453f7b4d85ded8ce5e856921b6ef878f5a0356",
+        "path": "modern/src/cft_revival/plasma/reference.py",
+        "sha256_lf": "6eee1cc1b11283c009ab7cc3fd453f7b4d85ded8ce5e856921b6ef878f5a0356"
+      },
+      {
+        "git_blob_sha256": "be1d4ff8e8ba728b5a28c01a4df7cfdce8d2bcad8b85d3c14267c95e18ca7d8c",
+        "path": "modern/src/cft_revival/plasma/residuals.py",
+        "sha256_lf": "be1d4ff8e8ba728b5a28c01a4df7cfdce8d2bcad8b85d3c14267c95e18ca7d8c"
+      },
+      {
+        "git_blob_sha256": "10141bf125853a47cb1ed1bed133fea36f7d96d2d70ceb31b40d25b06567f9ed",
+        "path": "modern/src/cft_revival/plasma/solver.py",
+        "sha256_lf": "10141bf125853a47cb1ed1bed133fea36f7d96d2d70ceb31b40d25b06567f9ed"
+      }
+    ],
+    "import_root": "modern/src",
+    "matches_bound_blobs": true
+  },
+  "generator": {
+    "command": "python paper/scripts/generate_four_cell_closure_evidence.py",
+    "path": "paper/scripts/generate_four_cell_closure_evidence.py",
+    "sha256": "eb2dabd919b273da8807cce3e3d60d64c2a939473dced45f96428c0d5beaeaeb"
+  },
+  "inputs": [
+    {
+      "bytes": 7059,
+      "git_blob": "8eeca9c61cce5b1f9157b7db5a7c9e6c21d63d80",
+      "path": "FYP/Power_B_EQs.m",
+      "revision": "266d8a99ce75fe35b4870d5d046c9069d7b26c0b",
+      "sha256": "28ebf8b5cda67529f3978d10c781a09affcc5933e8f199576729594516726c80"
+    },
+    {
+      "bytes": 12666,
+      "git_blob": "ce30e2141557fda277351715b754f9432c865715",
+      "path": "modern/docs/AUDIT.md",
+      "revision": "266d8a99ce75fe35b4870d5d046c9069d7b26c0b",
+      "sha256": "3c813ef8fd3ebbce5745c33ea655dc161864e43ea321741445733b919c38235e"
+    },
+    {
+      "bytes": 6757,
+      "git_blob": "9b27fc7b74446526be14c0fcb6f1a297f7c14f64",
+      "path": "modern/docs/REFERENCES.md",
+      "revision": "266d8a99ce75fe35b4870d5d046c9069d7b26c0b",
+      "sha256": "808bf44e01eaac87b43cba5c45895fd6222aadc5a4bc1d2dd127a01841d575b1"
+    },
+    {
+      "bytes": 14542,
+      "git_blob": "75e543503e91e6b1aef828a37b3e38983209a69f",
+      "path": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+      "revision": "266d8a99ce75fe35b4870d5d046c9069d7b26c0b",
+      "sha256": "555915928ffc9734b62615dc273ad63d890a99948367811726ddace2c9d8c54b"
+    },
+    {
+      "bytes": 24531,
+      "git_blob": "06eef451c8c5f3a3b161f893fc9116787caf2c4c",
+      "path": "modern/experiments/mdo_l0_campaign_v1/protocol.json",
+      "revision": "266d8a99ce75fe35b4870d5d046c9069d7b26c0b",
+      "sha256": "a9776f642e6a5da904c7a733d6eb0f42bcd3328afbef69cbd9f5bc5c6a2b139e"
+    },
+    {
+      "bytes": 16548,
+      "git_blob": "a09d76fef9cfc7d2f83c2ebac46fb8d47c451240",
+      "path": "modern/spec/plasma/equation-ledger.json",
+      "revision": "266d8a99ce75fe35b4870d5d046c9069d7b26c0b",
+      "sha256": "19822eb3364a5cc660c8b9bba2b699218f7d80c9657a16f0d8580f33188faff0"
+    },
+    {
+      "bytes": 1971,
+      "git_blob": "939e5c67ad11e276263b3760379eab8c989c5869",
+      "path": "modern/src/cft_revival/plasma/__init__.py",
+      "revision": "266d8a99ce75fe35b4870d5d046c9069d7b26c0b",
+      "sha256": "1217101c5cd4f13b441e65f73a1121fd99443c6321f4eb0036b4199c180b9c9f"
+    },
+    {
+      "bytes": 11674,
+      "git_blob": "81725f3aff34e30b095d9ef055c78145e027f612",
+      "path": "modern/src/cft_revival/plasma/models.py",
+      "revision": "266d8a99ce75fe35b4870d5d046c9069d7b26c0b",
+      "sha256": "5a39c4992bfba4b1925a773af50d74035ecdef164fa9bf15ecb46aa39eaafa90"
+    },
+    {
+      "bytes": 1453,
+      "git_blob": "b1386e05b303cdedba7a223d2429612f28836e72",
+      "path": "modern/src/cft_revival/plasma/reference.py",
+      "revision": "266d8a99ce75fe35b4870d5d046c9069d7b26c0b",
+      "sha256": "6eee1cc1b11283c009ab7cc3fd453f7b4d85ded8ce5e856921b6ef878f5a0356"
+    },
+    {
+      "bytes": 21694,
+      "git_blob": "d4cb8cb1a33e8b0351c9fbb05efe048dd3fd0531",
+      "path": "modern/src/cft_revival/plasma/residuals.py",
+      "revision": "266d8a99ce75fe35b4870d5d046c9069d7b26c0b",
+      "sha256": "be1d4ff8e8ba728b5a28c01a4df7cfdce8d2bcad8b85d3c14267c95e18ca7d8c"
+    },
+    {
+      "bytes": 27199,
+      "git_blob": "face43023e81ac0eb0a87636daf4fec98d899e38",
+      "path": "modern/src/cft_revival/plasma/solver.py",
+      "revision": "266d8a99ce75fe35b4870d5d046c9069d7b26c0b",
+      "sha256": "10141bf125853a47cb1ed1bed133fea36f7d96d2d70ceb31b40d25b06567f9ed"
+    },
+    {
+      "bytes": 8445,
+      "git_blob": "805b4a645cf734f890d6457e091c35c5cb41fcd3",
+      "path": "modern/tests/plasma/test_closure_p_nonzero.py",
+      "revision": "266d8a99ce75fe35b4870d5d046c9069d7b26c0b",
+      "sha256": "006cc52e6b4338138c9c8b897745e6743ffac498d29dbad9270e60814e5a7d0a"
+    },
+    {
+      "bytes": 9038,
+      "git_blob": "9a43a60e689e0dd48954dfd65ad76091a372a432",
+      "path": "modern/tests/plasma/test_solver.py",
+      "revision": "266d8a99ce75fe35b4870d5d046c9069d7b26c0b",
+      "sha256": "0aa64864b2724e44f499c9621d85a0f435d39792febf8127084fbd59e099d6fc"
+    },
+    {
+      "bytes": 3192,
+      "git_blob": "0b931ed5d83ee32c66cb5490cb1ae3b4b8ccdbe4",
+      "path": "modern/tests/plasma_network/test_plasma_network_closure_p_nonzero.py",
+      "revision": "266d8a99ce75fe35b4870d5d046c9069d7b26c0b",
+      "sha256": "ff516a59dddf0c278553f4098bec7d0fcef204ac3db28055a27f27523a1f067e"
+    }
+  ],
+  "manifest": {
+    "gate_manifest_path": "paper/evidence/manifests/four-cell-closure.json",
+    "manifest_id": "FOUR-CELL-CLOSURE-20260903-R27-V1",
+    "path": "paper/evidence/four-cell-closure.json",
+    "sha256": "dd635e34822e5951d2e438d693e6871850af23b9efe3b252c223fd614e26808b"
+  },
+  "output": {
+    "path": "paper/generated/four-cell-closure.tex",
+    "sha256": "db749f42fc4bd6986def22b63e52612d65a6320800ec592bf5cb2bbe32d8b6e1"
+  },
+  "recomputation_protocol": {
+    "anode_fall_coefficient": {
+      "current_a": 1.0,
+      "delta_v": 1.0,
+      "probabilities": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "voltage_v": 300.0
+    },
+    "closed_form_sample": {
+      "count": 400,
+      "currents_a": [
+        0.1,
+        0.5,
+        1.0,
+        3.0
+      ],
+      "interior_potentials": "three uniform draws on [0.01 Ua, Ua] sorted; anode-cell potential uniform on [Ua, 1.5 Ua]",
+      "probability_upper": 0.7,
+      "seed": 20260903,
+      "voltages_v": [
+        150.0,
+        300.0,
+        500.0,
+        1000.0
+      ]
+    },
+    "continuation": {
+      "current_a": 1.0,
+      "epsilons": [
+        0.0001,
+        0.001,
+        0.01,
+        0.03,
+        0.1,
+        0.3
+      ],
+      "max_iterations": 600,
+      "patterns": [
+        "eps*(1,1,1,1)",
+        "(0,0,0,eps)"
+      ],
+      "residual_tolerance": 1e-08,
+      "solver": "cft_revival.plasma.solve_global_discharge_multistart",
+      "start_count_anode_only": 5,
+      "start_count_interior": 1,
+      "voltage_v": 300.0
+    },
+    "not_recomputed": [
+      "differential evolution (205 312 evaluations; SciPy)",
+      "200 random feasible LM starts",
+      "the 80-case solver probe (read from the frozen MDO protocol; its reproduction is documented)"
+    ],
+    "published_state": {
+      "current_a": 1.0,
+      "potentials_v": [
+        14.1,
+        1000.0,
+        1000.0,
+        1000.0
+      ],
+      "probabilities": [
+        0.06,
+        0.119,
+        0.16,
+        0.254
+      ],
+      "voltage_v": 1000.0
+    },
+    "recorded_significant_digits": {
+      "anode_only_residual": 1,
+      "closed_form_relative_difference": 2,
+      "continuation_floor": 3,
+      "continuation_slope": 3,
+      "departure": 2,
+      "dm92_misfit": 3,
+      "jacobian_condition": 2,
+      "manifold_normalized_residual": 2,
+      "relaxed_root_depth_v": 3,
+      "relaxed_root_residual": 1
+    },
+    "relaxed_root": {
+      "bisections": 200,
+      "current_a": 1.0,
+      "interior_potentials_v": [
+        4.23,
+        270.0,
+        285.0
+      ],
+      "probabilities": [
+        0.06,
+        0.119,
+        0.16,
+        0.254
+      ],
+      "voltage_v": 300.0
+    },
+    "tolerances": {
+      "anode_fall_coefficient_absolute": 1e-09,
+      "anode_only_residual_upper_bound": 1e-08,
+      "closed_form_relative_difference_upper_bound": 1e-12,
+      "continuation_floor_relative": 0.25,
+      "continuation_slope_spread_maximum": 2.0,
+      "dm92_misfit_relative": 0.02,
+      "manifold_normalized_residual_upper_bound": 1e-11,
+      "relaxed_root_depth_relative": 0.02,
+      "relaxed_root_residual_upper_bound": 1e-10
+    }
+  },
+  "schema_version": "1.0",
+  "source_date_epoch": 1788270043
+}

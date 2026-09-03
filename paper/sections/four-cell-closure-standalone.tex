@@ -1,0 +1,25 @@
+% Standalone dry-parse driver for the admitted four-cell power-balance closure subsection.
+% Compile from the paper/ directory, for example:
+%   pdflatex -interaction=nonstopmode -halt-on-error -output-directory=<scratch> sections/four-cell-closure-standalone.tex
+% (twice, so the table references resolve). paper/tests/test_four_cell_closure_evidence.py
+% runs exactly this when pdflatex is available. The claim macros mirror manuscript.tex
+% so that the section renders identically on its own.
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{microtype}
+\usepackage{xcolor}
+\ifdefined\pdfinfoomitdate\pdfinfoomitdate=1\fi
+\ifdefined\pdftrailerid\pdftrailerid{}\fi
+\ifdefined\pdfsuppressptexinfo\pdfsuppressptexinfo=15\fi
+\newcommand{\EvidenceClaim}[2]{#2\textsuperscript{\textcolor{blue}{[#1]}}}
+\newcommand{\ArtifactClaim}[3]{#3\par\noindent\textsuperscript{\textcolor{blue}{[#1; #2]}}}
+\input{generated/four-cell-closure.tex}
+\begin{document}
+% The manuscript section that displays the closed form is not compiled here; give its
+% label a target so the subsection's reference resolves.
+\section{Consistency of the four-cell power balance (compiled in the manuscript)}\label{sec:four-cell-closure}
+\input{sections/four-cell-closure.tex}
+\end{document}
