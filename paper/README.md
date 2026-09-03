@@ -125,7 +125,16 @@ pieces are vacuum in the field, the material-aware confirmation the protocol
 queues was not run, no HEMP-like design is a design recommendation, and the
 Discussion (CLM-076) reads the result as interpretation: the legacy design space
 could not contain a HEMP-like cusp because its parameterisation never varied the
-ratio the HEMP criterion depends on. The
+ratio the HEMP criterion depends on. The same bound analysis re-scopes the
+wall-loss campaign's zero reflections (CLM-016, CLM-017, CLM-044, CLM-052): the
+P2 field is a PPM mirror field, the campaign's launch planes sit 0.5 mm from the
+magnet centres where mirroring is impossible (the review's 7 launch cells within
+0.17 pitch of a magnet centre produced 0–1 reflections per 128 against 32–88 for
+the 9 cells 0.22–0.48 pitch away), so the zero count is a launch-position result
+and the screening's reflections are the mirror reflections the field predicts;
+the Limitations add that every electron of these fields is non-adiabatic at the
+wall cusps (Mendel α 9.93–1190, ε 0.05–0.75, μ-variation medians ordered by ε),
+so a per-cusp loss probability cannot be a loss-cone number. The
 checked evidence is enumerated in `evidence/claims.json`. Concurrent or later work is not
 publishable merely because files exist in a working tree: a planned section
 opens only when its gate in `evidence/result-gates.json` names an accepted,
@@ -573,8 +582,11 @@ numbers only through macros; its results, reflection/escape/cell,
 geometry-association, consumer and scope statements are exact
 `\EvidenceClaim` bodies (CLM-046, CLM-048, CLM-049, CLM-050, CLM-051), the
 abstract sentence is CLM-045 and the labelled Discussion interpretation (the
-wall-loss campaign's mirror-picture statement is field-specific; the
-screening is the geometry-to-wall-loss bridge at screening tier) is CLM-052.
+wall-loss campaign's zero reflections are a launch-position result and the
+screening's reflections are the mirror reflections toward the magnet centres
+that the PPM field predicts, per the recorded analysis bound with the sweep-v3
+manifest; the screening is the geometry-to-wall-loss bridge at screening tier)
+is CLM-052.
 The gate reuses the `numerical-screening` kind at a fourth outcome value,
 `accepted-screening-dataset`, because the study screens a design space on
 linear-vacuum fields that are not P2-qualified and its sealed status is a

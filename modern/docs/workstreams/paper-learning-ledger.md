@@ -470,3 +470,26 @@
 - [tool] `pdflatex` in the MiKTeX install accepts `--disable-installer`; the
   standalone-section test compiles twice and asserts no overfull box, so table
   column widths must be fixed before the suite passes.
+
+## 2026-09-03 - Re-scoping the wall-loss reflection statements
+
+- [self] "Zero reflections" is a statement about launch positions before it is
+  a statement about a field: in a PPM mirror field the |B| maxima sit at the
+  magnet centres, so launches there cannot mirror. Check the launch design
+  against the stage centres (both are hash-bound: frozen protocol and topology
+  record) before reading a reflection count as physics.
+- [self] Re-scope by replacement, not by hedging: delete "unsupported" /
+  "field-specific" and state what the field predicts at those launch positions,
+  with the recorded launch-cell counts as macros; then make the checker reject
+  the superseded wording so it cannot come back.
+- [self] A recorded analysis (the review's committed check output) becomes
+  citable by binding it as a definition-source file of an admitted manifest and
+  deriving macros from it; the claim then says "recorded analysis of sealed
+  orbits", never "new orbit result".
+- [self] When an amended Discussion claim gains macros from a new manifest, add
+  the manifest id and update every test that pins that claim's manifest set
+  (three admission tests here); the pins are the point, so change them
+  deliberately and say why in the test comment.
+- [tool] `pdflatex` compile of the whole manuscript takes ~3.5 min per clean
+  build here; run `verify_reproducible_build.py` in the background alongside
+  the test suite and read both logs afterwards.

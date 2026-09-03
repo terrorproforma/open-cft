@@ -568,8 +568,10 @@ accepted L0 conservation model under declared input uncertainty, admitted by
 the numerical-campaign gate \texttt{GATE-MDO-L0-V1} (results revision
 \MdoEvidenceRevision). The declared component model is L0 with one additional,
 explicitly declared closure. The per-cell cusp probabilities $p_k$, which the
-legacy chain derived from a magnetic-mirror formula that the admitted wall-loss
-campaign does not support, enter as uncertain inputs through the multiplicative
+legacy chain derived from a magnetic-mirror formula (a loss-cone reading that the
+admitted wall-loss campaign could not test at its launch planes and that the
+non-adiabatic electrons of these fields do not satisfy at the wall cusps; see the
+Discussion and Limitations), enter as uncertain inputs through the multiplicative
 survival
 \begin{equation}
   S(\mathbf p)=\prod_{k=1}^{4}(1-p_k),
@@ -652,7 +654,11 @@ downstream only when carried with its label. Its launch cells are fractions of
 each design's straight channel fixed by the protocol, not the separatrix-bounded
 cells of the catalogue admitted in Section~\ref{sec:cusp-topology}; a screening
 that launches from the catalogue cells is future work and no result of it
-exists.
+exists. The reflection count of a launch cell depends on where its plane sits
+relative to the nearest magnet centre of the periodic-permanent-magnet field:
+the recorded launch-position analysis bound with Section~\ref{sec:l1a-sweep-v3}
+is read in the Discussion, and a second screening that stratifies its launches
+by catalogue cell is planned; no result of it exists.
 
 \input{sections/wall-loss-geometry-screening-v1.tex}
 
@@ -834,42 +840,70 @@ The statements in this section are interpretation. They are bounded to the
 admitted evidence, are not part of any preregistered estimand, and carry no
 evidentiary weight beyond the registered claims they rest on.
 
-\paragraph{Wall loss is not a mirror process in the qualified field, and that
-statement is field-specific.}
+\paragraph{The wall-loss campaign's zero reflections are a launch-position
+result: its launch planes sit at the field maxima of a periodic-permanent-magnet
+mirror field.}
 The legacy design chain closes its cusp-loss estimate with a magnetic-mirror
 acceptance-angle relation, the mirror-ratio and angular-arrival expressions of
 the original study that its cusp-probability routine evaluates
-\cite{Muffatti2017}.
+\cite{Muffatti2017}. The TWT and periodic-permanent-magnet review bound with
+Section~\ref{sec:l1a-sweep-v3} (a recorded analysis at commit
+\texttt{\SwtLiteratureCommit}) re-read the sealed orbits of the wall-loss
+campaign and of the geometry screening against the field theory of the PPM
+stack; the two readings that follow are interpretation.
 \EvidenceClaim{CLM-017}{Because \WlfPooledReflected{} of the \WlfPooledTrials{}
-integrated electrons reflected before reaching a boundary, the magnetic-mirror
-picture of wall loss used by the original design study is not supported for
-this field and design within the collisionless prescribed-field test-particle
-model: the outcome is a split between wall capture and axial escape that is
-decided almost entirely by the launch cell.} No mirror-formula loss estimate is
-therefore published from this campaign, and the result says nothing about
-collisional or self-consistent electron transport, in which scattering could
-repopulate directions that the collisionless orbits never revisit. The
-screening of Section~\ref{sec:wall-loss-geometry-screening} now bounds how far
-that statement reaches.
-\EvidenceClaim{CLM-052}{The mirror-picture statement of
-Section~\ref{sec:wall-loss-v4} is scoped to the field it was made in: the
-collisionless campaign on the qualified divergent-exit field recorded
-\WlfPooledReflected{} reflections, whereas the screening of
-Section~\ref{sec:wall-loss-geometry-screening} recorded reflections in every one
-of its \WlgDesignsWithReflections{} linear-vacuum sweep designs
-(\WlgReflectionShareAll{} of \WlgOrbitCount{} orbits) and saturated only
-\WlgCellsSaturatedOne{} of \WlgDesignCells{} design-cells, so the absence of
-reflections and the all-or-nothing per-cell pattern are properties of that
-design and field within the collisionless model, not of the model or of the
-design space; whether a reflection means confinement in any of these fields is
-not decided by collisionless test particles. Read as interpretation, the
-screening supplies, at screening tier and under its label, the
-geometry-to-wall-loss map that the optimisation campaign of
-Section~\ref{sec:mdo-l0} lacked; the design-dependent optimisation that consumes
-it is admitted in Section~\ref{sec:mdo-l0-v2} under a declared closure, and the
-geometry-to-performance link is realised there only as a closure-dependent
-ranking at screening tier, not as a map from these fields to the operating-point
-model.}
+integrated electrons reflected before reaching a boundary, the campaign could
+not test the magnetic-mirror picture of wall loss used by the original design
+study: the P2 field is a periodic-permanent-magnet mirror field whose $|B|$
+maxima sit at the magnet-stage centres, the campaign's \SwtVFourLaunchCells{}
+launch planes (\SwtVFourLaunchZMm{}~mm) sit \SwtVFourLaunchOffsetMm{}~mm, or
+\SwtVFourLaunchOffsetPitch{} of a pitch, from those centres
+(\SwtPTwoStageCentresMm{}~mm), and along the \SwtPpmLineCount{} field lines the
+recorded analysis traced from the magnet centres at the campaign's launch radii
+(\SwtVFourLaunchRadiiFraction{} of the wall radius) in the five recorded fields
+the field never rises above its launch value (largest ratio
+\SwtPpmLineMaxOverLaunchMax) and reaches the wall at \SwtPpmLineWallOverLaunchMin{}
+to \SwtPpmLineWallOverLaunchMax{} of it, so that no electron launched there can
+meet a mirror condition before it reaches the dielectric. Within the
+collisionless prescribed-field test-particle model the zero count is a
+launch-position result, not a property of the field's topology, and the outcome
+at those planes is a split between wall capture and axial escape decided almost
+entirely by the launch cell.} No mirror-formula loss estimate is therefore
+published from this campaign, and the result says nothing about collisional or
+self-consistent electron transport, in which scattering could repopulate
+directions that the collisionless orbits never revisit. The screening of
+Section~\ref{sec:wall-loss-geometry-screening}, whose launch planes fall
+anywhere between a magnet centre and a null, shows what the same field predicts
+away from the maxima.
+\EvidenceClaim{CLM-052}{The zero-reflection statement of
+Section~\ref{sec:wall-loss-v4} is a launch-position result, not a field-topology
+result. The recorded analysis bound with Section~\ref{sec:l1a-sweep-v3} re-read
+the sealed orbits of the screening of Section~\ref{sec:wall-loss-geometry-screening}
+by launch cell: the \SwtPpmNearCells{} launch cells within
+\SwtPpmNearCentrePitch{} of a pitch of a magnet centre produced
+\SwtPpmNearReflectionsMin{} to \SwtPpmNearReflectionsMax{} reflections per
+\SwtPpmOrbitsPerCell{} orbits, the \SwtPpmFarCells{} cells \SwtPpmFarMinPitch{}
+to \SwtPpmFarMaxPitch{} of a pitch away produced \SwtPpmFarReflectionsMin{} to
+\SwtPpmFarReflectionsMax, the reflected orbits turned at a median $|B|$ of
+\SwtPpmBTurnMedianMin{} to \SwtPpmBTurnMedianMax{} times their launch value with
+\SwtPpmMirrorConditionMin{} to \SwtPpmMirrorConditionMax{} of them meeting the
+mirror condition, and the wall-loss campaign launched \SwtVFourLaunchOffsetMm{}~mm
+from the magnet centres, inside the near-centre class. The reflections the
+screening recorded in every one of its \WlgDesignsWithReflections{} linear-vacuum
+sweep designs (\WlgReflectionShareAll{} of \WlgOrbitCount{} orbits) are therefore
+the mirror reflections toward the magnet centres that the periodic-permanent-magnet
+field predicts, and the \WlfPooledReflected{} reflections of the wall-loss
+campaign are what that field predicts for launches at its maxima; the
+all-or-nothing pattern of its \WlgCellsSaturatedOne{} of \WlgDesignCells{}
+saturated design-cells is likewise a property of where each launch plane sits,
+and whether a reflection means confinement in any of these fields is not decided
+by collisionless test particles. Read as interpretation, the screening supplies,
+at screening tier and under its label, the geometry-to-wall-loss map that the
+optimisation campaign of Section~\ref{sec:mdo-l0} lacked; the design-dependent
+optimisation that consumes it is admitted in Section~\ref{sec:mdo-l0-v2} under a
+declared closure, and the geometry-to-performance link is realised there only as
+a closure-dependent ranking at screening tier, not as a map from these fields to
+the operating-point model.}
 
 \paragraph{The multi-cell wall-cusp topology was undemonstrated under the
 frozen definition and is a geometric property of the screened fields under the
@@ -1039,8 +1073,11 @@ run itself is unavailable, so no numerical value of that run is claimed or
 recomputed.}
 \EvidenceClaim{CLM-044}{Three admitted findings now bear on the legacy design
 chain, each bounded to its own model: the collisionless test-particle campaign
-recorded \WlfPooledReflected{} reflections, so the mirror picture of cusp loss is
-unsupported for the qualified field; the preregistered screening found the
+recorded \WlfPooledReflected{} reflections from launch planes
+\SwtVFourLaunchOffsetMm{}~mm from the magnet centres of a
+periodic-permanent-magnet mirror field, a launch-position result that could not
+test the mirror picture of cusp loss, while the screening launched away from the
+centres recorded the mirror reflections that field predicts; the preregistered screening found the
 four-cell wall-cusp topology of the legacy parameterisation stable for none of
 \FcnEvaluated{} candidates under the frozen definitions, whereas under the
 literature definition the topology screening of Section~\ref{sec:cusp-topology}
@@ -1050,8 +1087,10 @@ the corrected four-cell power balance has no admissible root for any positive
 interior cusp probability, with \FccProbeClosed{} of \FccProbeTotal{} probe
 cases closing, all at zero cusp probability. Read together, and as
 interpretation only, they are the reason the legacy design chain cannot be
-reproduced from its equations: its cusp probabilities came from a mirror formula
-the integrated orbits do not support, its cells exist under the literature
+reproduced from its equations: its cusp probabilities came from a loss-cone
+formula that the integrated orbits could not test at their launch planes and
+that the electrons of these fields, non-adiabatic at every wall cusp, do not
+satisfy, its cells exist under the literature
 definition as geometric structures of the field whose plasma physics, whether
 they confine electrons and with what loss probabilities, remains undemonstrated,
 and the balance that turned those probabilities into performance has no solution
@@ -1100,7 +1139,19 @@ geometry declares are vacuum in the field, its Koch ratios are field ratios of
 those fields and never probabilities, its preregistered hypothesis is reported at
 its recorded outcome and was not confirmed as predicted, the material-aware
 confirmation its protocol queues for every design with $r_w/L$ above one half was
-not run, and none of its HEMP-like designs is a design recommendation. The legacy end-to-end workflow remains
+not run, and none of its HEMP-like designs is a design recommendation. Every
+electron of the admitted orbit campaigns is non-adiabatic at the wall cusps: the
+recorded analysis bound with Section~\ref{sec:l1a-sweep-v3} gives Mendel
+stability parameters $\alpha$ of \SwtPpmMendelAlphaMin{} to
+\SwtPpmMendelAlphaMax{} for the launch energies of \SwtPpmEnergiesEv{}~eV in the
+recorded fields (against the travelling-wave-tube regime below
+\SwtPpmTwtAlphaLimit), wall-cusp adiabaticity parameters $\epsilon$ of
+\SwtPpmEpsilonMin{} to \SwtPpmEpsilonMax{} against a Leffel--Gray boundary near
+\SwtPpmLeffelGrayEpsilon, and per-design medians of the magnetic-moment
+variation from \SwtPpmMuMedianMin{} to \SwtPpmMuMedianMax{} ordered by
+$\epsilon$ (\SwtPpmMuOrderedByEpsilon), so a per-cusp loss probability cannot be
+a loss-cone number for these fields; it is a question for the kinetic
+workstream, whose results are not admitted here. The legacy end-to-end workflow remains
 unreproducible because source inputs and dependencies are missing. The admitted
 optimisation campaign is F0-only: it optimises the L0 model under a declared,
 unvalidated closure and declared priors, its hypervolume and paired comparisons

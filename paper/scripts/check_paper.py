@@ -4424,6 +4424,29 @@ def _check_l1a_sweep_v3_screening(
     for phrase in ("Read as interpretation", "\\SwtRegionMaxRho", "\\SwtRwOverLStarFromSlope", "could not contain a HEMP-like", "material-aware", "not report"):
         if phrase not in str(record.get("authorized_tex", "")):
             errors.append(f"{label}: Discussion claim CLM-076 lacks the required wording {phrase!r}")
+    # The wall-loss campaign's zero reflections are re-scoped as a launch-position result by
+    # the recorded analysis bound with this manifest: the three Discussion claims that read
+    # that count must be interpretations bound here and carry the launch-position wording,
+    # the Limitations must carry the non-adiabaticity numbers, and the superseded wording
+    # ("field-specific", "unsupported for the qualified field") must be gone.
+    for claim_id, required in (
+        ("CLM-017", ("launch-position result", "could not test", "\\SwtVFourLaunchOffsetMm", "\\SwtVFourLaunchZMm", "\\SwtPTwoStageCentresMm", "\\SwtPpmLineMaxOverLaunchMax", "\\WlfPooledReflected")),
+        ("CLM-052", ("launch-position result", "\\SwtPpmNearReflectionsMax", "\\SwtPpmFarReflectionsMin", "\\SwtPpmFarReflectionsMax", "\\SwtVFourLaunchOffsetMm", "mirror reflections toward the magnet centres", "\\WlfPooledReflected", "\\WlgDesignsWithReflections")),
+        ("CLM-044", ("launch-position result", "\\SwtVFourLaunchOffsetMm", "could not test", "non-adiabatic")),
+    ):
+        record = records.get(claim_id, {})
+        if claim_id not in prose_ids or record.get("claim_class") != "interpretation" or manifest_id not in record.get("manifest_ids", []):
+            errors.append(f"{label}: Discussion claim {claim_id} must be an interpretation bound to manifest {manifest_id}")
+        text = str(record.get("authorized_tex", ""))
+        for phrase in required:
+            if phrase not in text:
+                errors.append(f"{label}: Discussion claim {claim_id} lacks the launch-position wording {phrase!r}")
+    for required in ("\\SwtPpmMendelAlphaMin", "\\SwtPpmMendelAlphaMax", "\\SwtPpmEpsilonMax", "\\SwtPpmMuOrderedByEpsilon", "cannot be\na loss-cone number"):
+        if required not in manuscript:
+            errors.append(f"{label}: the Limitations must carry the non-adiabaticity statement ({required!r})")
+    for stale in ("that statement is field-specific", "is not supported for this field and design", "unsupported for the qualified field", "a mirror formula the integrated orbits do not support"):
+        if stale in flattened:
+            errors.append(f"{label}: superseded mirror-picture wording remains in the manuscript: {stale!r}")
     artifact_claim = integration.get("artifact_claim_id")
     record = records.get(artifact_claim, {})
     if artifact_claim != sweep_v3.ARTIFACT_CLAIM_ID or integration.get("artifact_id") not in record.get("authorized_artifact_ids", []):

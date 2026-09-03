@@ -45,7 +45,7 @@
   "generator": {
     "command": "python paper/scripts/generate_l1a_sweep_v3_evidence.py",
     "path": "paper/scripts/generate_l1a_sweep_v3_evidence.py",
-    "sha256": "020859d4641a870ccb1e29f7302be8c5bc43e04343d66e08e4975f2b9c96e08b"
+    "sha256": "22e02e39c8ce77cd57fb1ffe9c5a18f92067f53263decb916d95ee2c6366d3f2"
   },
   "inputs": [
     {
@@ -2368,11 +2368,11 @@
     "gate_manifest_path": "paper/evidence/manifests/l1a-sweep-v3.json",
     "manifest_id": "L1A-SWEEP-V3-20260903-128-V1",
     "path": "paper/evidence/l1a-sweep-v3.json",
-    "sha256": "5c66a9d0730f1d9b9f11481ab6f2bb1b1ae5521cf60a70f86a72c23f94cfe80c"
+    "sha256": "2c31758465a2f7720e65589ceaf7c2014fe7095d10bd385082dd121b9bed0ce5"
   },
   "output": {
     "path": "paper/generated/l1a-sweep-v3.tex",
-    "sha256": "a1aa0cfe692dbd2cbc20a4c4361e72e55ffd02473b3c87a533fb2c50f6ce2910"
+    "sha256": "1446eb2faee34335c5d2b44564fb28d3c98e4fe893f893d4f76c5ea72866551a"
   },
   "reference_inputs": [
     {

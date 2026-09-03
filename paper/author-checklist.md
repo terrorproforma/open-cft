@@ -104,11 +104,20 @@
   rule; surrogate and optimisation input only under its label.
 - [ ] Keep every number of the screening section a `\Wlg...` macro; never type
   a digit into `paper/sections/wall-loss-geometry-screening-v1.tex`.
-- [ ] Keep the mirror-picture statement of the wall-loss campaign scoped to its
-  field (the screening records reflections in every design); the
-  design-dependent optimisation that consumes the dataset is admitted in
-  Section 12 and its geometry link is a closure-dependent ranking, not a map
-  from the screening fields to the operating-point model.
+- [ ] State the wall-loss campaign's zero reflections as a launch-position
+  result (its launch planes sit 0.5 mm from the magnet centres of a PPM mirror
+  field, where no launch field line has a maximum before the wall) and the
+  screening's reflections as the mirror reflections toward the magnet centres
+  that the field predicts, both macro-bound to the recorded analysis of the
+  sweep-v3 manifest (CLM-016, CLM-017, CLM-044, CLM-052); never write that the
+  mirror picture is "unsupported" or "field-specific". The design-dependent
+  optimisation that consumes the dataset is admitted in Section 12 and its
+  geometry link is a closure-dependent ranking, not a map from the screening
+  fields to the operating-point model.
+- [ ] Keep the Limitations' non-adiabaticity sentence macro-bound (Mendel
+  alpha, epsilon, mu-variation medians ordered by epsilon): a per-cusp loss
+  probability cannot be a loss-cone number for these fields; it points at the
+  kinetic workstream, whose results are not admitted.
 - [ ] Describe the cusp topology search v3.1 only as
   `SCREENING_L1A_FIELD_SEPARATRIX_CUSP_TOPOLOGY` (three L1a sets) and
   `P2_QUALIFIED_FIELD_SEPARATRIX_CUSP_TOPOLOGY` (one P2 row) admitted at

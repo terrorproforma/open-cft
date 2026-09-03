@@ -348,6 +348,60 @@ class SweepV3AdmissionTests(unittest.TestCase):
         self.assertIn("\\cite{Koch2007}", self.manuscript)
         self.assertIn("is not the outcome it predicted", self.manuscript)
 
+    def test_reflection_statements_are_rescoped_as_a_launch_position_result(self) -> None:
+        records = {c["id"]: c for c in self.matrix["claims"]}
+        for claim_id in ("CLM-017", "CLM-044", "CLM-052"):
+            record = records[claim_id]
+            self.assertEqual(record["claim_class"], "interpretation")
+            self.assertIn(MANIFEST_ID, record["manifest_ids"])
+            self.assertIn("launch-position result", record["authorized_tex"])
+            self.assertIn("\\SwtVFourLaunchOffsetMm", record["authorized_tex"])
+            self.assertIn(claim_id, swt.PROSE_CLAIM_IDS)
+        self.assertEqual(set(records["CLM-017"]["manifest_ids"]), {V4_MANIFEST_ID, MANIFEST_ID})
+        self.assertIn("could not test the magnetic-mirror picture", records["CLM-017"]["authorized_tex"])
+        self.assertIn("\\SwtPpmLineMaxOverLaunchMax", records["CLM-017"]["authorized_tex"])
+        self.assertNotIn("is not supported for this field and design", records["CLM-017"]["authorized_tex"])
+        self.assertIn("\\SwtPpmNearReflectionsMax", records["CLM-052"]["authorized_tex"])
+        self.assertIn("\\SwtPpmFarReflectionsMin", records["CLM-052"]["authorized_tex"])
+        self.assertIn("mirror reflections toward the magnet centres", records["CLM-052"]["authorized_tex"])
+        self.assertNotIn("scoped to the field it was made in", records["CLM-052"]["authorized_tex"])
+        self.assertNotIn("unsupported for the qualified field", records["CLM-044"]["authorized_tex"])
+        self.assertIn("non-adiabatic at every wall cusp", records["CLM-044"]["authorized_tex"])
+        # The wall-loss section's own scope claim names the launch planes and defers the reading to the Discussion.
+        self.assertIn("at the launch planes of this campaign", records["CLM-016"]["authorized_tex"])
+        self.assertIn("\\WlfCellOneZMm", records["CLM-016"]["authorized_tex"])
+        self.assertEqual(records["CLM-016"]["manifest_ids"], [V4_MANIFEST_ID])
+        # The Limitations carry the non-adiabaticity numbers; the superseded wording is gone.
+        for phrase in ("\\SwtPpmMendelAlphaMin", "\\SwtPpmMendelAlphaMax", "\\SwtPpmEpsilonMax", "\\SwtPpmMuOrderedByEpsilon", "cannot be\na loss-cone number"):
+            self.assertIn(phrase, self.manuscript)
+        for stale in ("that statement is field-specific", "is not supported for this field and design", "unsupported for the qualified field", "a mirror formula the integrated orbits do not support", "does not support, enter as uncertain inputs"):
+            self.assertNotIn(stale, self.flattened)
+        self.assertIn("could not test at its launch planes", self.manuscript)
+        # Removing the wording or the binding is rejected by the checker.
+        matrix = copy.deepcopy(self.matrix)
+        record = next(c for c in matrix["claims"] if c["id"] == "CLM-052")
+        record["authorized_tex"] = record["authorized_tex"].replace("launch-position result", "field-specific result")
+        errors = self._errors(matrix=matrix)
+        self.assertTrue(any("CLM-052 lacks the launch-position wording 'launch-position result'" in e for e in errors))
+        matrix = copy.deepcopy(self.matrix)
+        record = next(c for c in matrix["claims"] if c["id"] == "CLM-017")
+        record["manifest_ids"] = [V4_MANIFEST_ID]
+        errors = self._errors(matrix=matrix)
+        self.assertTrue(any("Discussion claim CLM-017 must be an interpretation bound to manifest" in e for e in errors))
+        stale_manuscript = self.manuscript.replace("cannot be\na loss-cone number", "is\na loss-cone number")
+        errors = self._errors(manuscript=stale_manuscript)
+        self.assertTrue(any("non-adiabaticity statement" in e for e in errors))
+        stale_flattened = self.flattened + "\nthat statement is field-specific\n"
+        errors = self._errors(flattened=stale_flattened)
+        self.assertTrue(any("superseded mirror-picture wording remains" in e for e in errors))
+        # The launch-offset macros recompute from the frozen wall-loss protocol and the topology P2 record.
+        raw = {m["name"]: m["raw"] for m in self.evidence["macros"]}
+        self.assertAlmostEqual(raw["SwtVFourLaunchOffsetMm"], 0.5e-3, places=12)
+        self.assertEqual(raw["SwtVFourLaunchZMm"], [0.0035, 0.0095, 0.0155, 0.0215])
+        self.assertEqual(raw["SwtPTwoStageCentresMm"], [0.003, 0.009, 0.015, 0.021])
+        self.assertEqual((raw["SwtPpmNearReflectionsMax"], raw["SwtPpmFarReflectionsMin"], raw["SwtPpmFarReflectionsMax"]), (1, 32, 88))
+        self.assertLessEqual(raw["SwtPpmLineMaxOverLaunchMax"], 1.0 + 1e-9)
+
     def test_revision_macro_must_spell_the_manifest_revision(self) -> None:
         tampered = self.manuscript.replace("2cfe8223\\allowbreak{}630fbef6", "2cfe8224\\allowbreak{}630fbef6")
         self.assertNotEqual(tampered, self.manuscript)

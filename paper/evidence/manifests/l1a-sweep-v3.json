@@ -201,7 +201,7 @@
     "document_type": "paper-l1a-sweep-v3-evidence",
     "generator": "paper/scripts/generate_l1a_sweep_v3_evidence.py",
     "generator_command": "python paper/scripts/generate_l1a_sweep_v3_evidence.py",
-    "macro_count": 353,
+    "macro_count": 361,
     "macro_prefix": "Swt",
     "path": "paper/evidence/l1a-sweep-v3.json",
     "rule": "check_paper.py regenerates the evidence file, the generated TeX and the sidecar from the sealed bundle and requires byte identity with the committed files; every macro therefore traces to a verified artifact hash at every check, the headline, every per-set estimand and the preregistered hypothesis statistics are re-derived from the per-design rows on the way, every design record, field grid, catalogue entry and CSV row is cross-checked against its row, the sealed sweep-v2 manifest must hash to the identity the bundle recorded, the frozen topology protocol must carry the imported definition parameters, and the review's committed check output must be the blob at the review commit.",

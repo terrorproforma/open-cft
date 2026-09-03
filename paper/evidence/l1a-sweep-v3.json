@@ -1930,7 +1930,7 @@
   "generator": {
     "command": "python paper/scripts/generate_l1a_sweep_v3_evidence.py",
     "path": "paper/scripts/generate_l1a_sweep_v3_evidence.py",
-    "sha256": "020859d4641a870ccb1e29f7302be8c5bc43e04343d66e08e4975f2b9c96e08b"
+    "sha256": "22e02e39c8ce77cd57fb1ffe9c5a18f92067f53263decb916d95ee2c6366d3f2"
   },
   "macros": [
     {
@@ -6684,6 +6684,161 @@
       "value": "true"
     },
     {
+      "derivation": "count of results[*].field_lines",
+      "derived": true,
+      "description": "launch field lines the review traced from the magnet centres (two launch radii in each recorded field)",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "definition-source:modern/docs/literature/scripts/ppm_axis_field_check.output.json",
+          "pointer": "/results"
+        },
+        {
+          "artifact": "reference:modern/experiments/cft_orbit_wall_loss_v4/protocol.json",
+          "pointer": "/launches/position_seeds"
+        }
+      ],
+      "name": "SwtPpmLineCount",
+      "raw": 10,
+      "value": "10"
+    },
+    {
+      "derivation": "sorted distinct launches.position_seeds[*].position_m[0] / P2 wall radius (equal to the review's launch_r_over_rw)",
+      "derived": true,
+      "description": "wall-loss launch radii as fractions of the P2 wall radius",
+      "format": "list_fixed3",
+      "inputs": [
+        {
+          "artifact": "definition-source:modern/docs/literature/scripts/ppm_axis_field_check.output.json",
+          "pointer": "/results"
+        },
+        {
+          "artifact": "reference:modern/experiments/cft_orbit_wall_loss_v4/protocol.json",
+          "pointer": "/launches/position_seeds"
+        }
+      ],
+      "name": "SwtVFourLaunchRadiiFraction",
+      "raw": [
+        0.675,
+        0.8
+      ],
+      "value": "0.675, 0.800"
+    },
+    {
+      "derivation": "all(results[*].field_lines[*].reaches_wall)",
+      "derived": true,
+      "description": "every traced launch field line reaches the wall before the cusp plane",
+      "format": "bool",
+      "inputs": [
+        {
+          "artifact": "definition-source:modern/docs/literature/scripts/ppm_axis_field_check.output.json",
+          "pointer": "/results"
+        },
+        {
+          "artifact": "reference:modern/experiments/cft_orbit_wall_loss_v4/protocol.json",
+          "pointer": "/launches/position_seeds"
+        }
+      ],
+      "name": "SwtPpmLineAllReachWall",
+      "raw": true,
+      "value": "true"
+    },
+    {
+      "derivation": "max results[*].field_lines[*].max_along_line_over_launch",
+      "derived": true,
+      "description": "largest |B| along any traced launch field line over its launch value",
+      "format": "fixed2",
+      "inputs": [
+        {
+          "artifact": "definition-source:modern/docs/literature/scripts/ppm_axis_field_check.output.json",
+          "pointer": "/results"
+        },
+        {
+          "artifact": "reference:modern/experiments/cft_orbit_wall_loss_v4/protocol.json",
+          "pointer": "/launches/position_seeds"
+        }
+      ],
+      "name": "SwtPpmLineMaxOverLaunchMax",
+      "raw": 1.0000000000000002,
+      "value": "1.00"
+    },
+    {
+      "derivation": "min results[*].field_lines[*].ratio_wall_over_launch",
+      "derived": true,
+      "description": "smallest wall-hit |B| over launch |B| along the traced lines",
+      "format": "fixed2",
+      "inputs": [
+        {
+          "artifact": "definition-source:modern/docs/literature/scripts/ppm_axis_field_check.output.json",
+          "pointer": "/results"
+        },
+        {
+          "artifact": "reference:modern/experiments/cft_orbit_wall_loss_v4/protocol.json",
+          "pointer": "/launches/position_seeds"
+        }
+      ],
+      "name": "SwtPpmLineWallOverLaunchMin",
+      "raw": 0.39136977196388617,
+      "value": "0.39"
+    },
+    {
+      "derivation": "max results[*].field_lines[*].ratio_wall_over_launch",
+      "derived": true,
+      "description": "largest wall-hit |B| over launch |B| along the traced lines",
+      "format": "fixed2",
+      "inputs": [
+        {
+          "artifact": "definition-source:modern/docs/literature/scripts/ppm_axis_field_check.output.json",
+          "pointer": "/results"
+        },
+        {
+          "artifact": "reference:modern/experiments/cft_orbit_wall_loss_v4/protocol.json",
+          "pointer": "/launches/position_seeds"
+        }
+      ],
+      "name": "SwtPpmLineWallOverLaunchMax",
+      "raw": 0.9571408674244227,
+      "value": "0.96"
+    },
+    {
+      "derivation": "min results[*].field_lines[*].wall_hit_fraction_to_cusp",
+      "derived": true,
+      "description": "smallest fraction of the centre-to-cusp distance at which a traced line reaches the wall",
+      "format": "pct0",
+      "inputs": [
+        {
+          "artifact": "definition-source:modern/docs/literature/scripts/ppm_axis_field_check.output.json",
+          "pointer": "/results"
+        },
+        {
+          "artifact": "reference:modern/experiments/cft_orbit_wall_loss_v4/protocol.json",
+          "pointer": "/launches/position_seeds"
+        }
+      ],
+      "name": "SwtPpmLineWallFractionMin",
+      "raw": 0.36115151616796753,
+      "value": "36\\%"
+    },
+    {
+      "derivation": "max results[*].field_lines[*].wall_hit_fraction_to_cusp",
+      "derived": true,
+      "description": "largest fraction of the centre-to-cusp distance at which a traced line reaches the wall",
+      "format": "pct0",
+      "inputs": [
+        {
+          "artifact": "definition-source:modern/docs/literature/scripts/ppm_axis_field_check.output.json",
+          "pointer": "/results"
+        },
+        {
+          "artifact": "reference:modern/experiments/cft_orbit_wall_loss_v4/protocol.json",
+          "pointer": "/launches/position_seeds"
+        }
+      ],
+      "name": "SwtPpmLineWallFractionMax",
+      "raw": 0.8687668527571106,
+      "value": "87\\%"
+    },
+    {
       "derived": false,
       "description": "field level statement of the claim boundary",
       "format": "text",
@@ -6911,7 +7066,10 @@
       "CLM-073",
       "CLM-074",
       "CLM-075",
-      "CLM-076"
+      "CLM-076",
+      "CLM-017",
+      "CLM-044",
+      "CLM-052"
     ],
     "rule": "Every number in the section is a macro defined here; each macro is bound below to an artifact path, JSON pointer, formatter and SHA-256, or to a stated derivation over such inputs. Claim-bearing sentences are exact EvidenceClaim bodies registered in paper/evidence/claims.json; the numerical-screening gate in paper/evidence/result-gates.json names the typed manifest that admits the section at its recorded outcome (an accepted field-only design-space screening) without opening any physics level. The Koch ratio and every mirror descriptor are field ratios of linear-vacuum screening fields and never probabilities; the preregistered hypothesis is reported at its recorded outcome (not as predicted); nothing here is a plasma, wall-loss or performance claim, and the material-aware confirmation the protocol queues was not run.",
     "section_binding": "\\input{sections/l1a-sweep-v3.tex}",
@@ -6927,7 +7085,7 @@
   },
   "output": {
     "path": "paper/generated/l1a-sweep-v3.tex",
-    "sha256": "a1aa0cfe692dbd2cbc20a4c4361e72e55ffd02473b3c87a533fb2c50f6ce2910"
+    "sha256": "1446eb2faee34335c5d2b44564fb28d3c98e4fe893f893d4f76c5ea72866551a"
   },
   "recorded_outcome": "accepted-screening",
   "reference_artifacts": {

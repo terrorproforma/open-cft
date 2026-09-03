@@ -104,7 +104,11 @@ GATE_KIND = "numerical-screening"
 RECORDED_OUTCOME = "accepted-screening"
 ARTIFACT_ID = "TAB-L1A-SWEEP-V3"
 ARTIFACT_CLAIM_ID = "CLM-071"
-PROSE_CLAIM_IDS = ("CLM-069", "CLM-070", "CLM-072", "CLM-073", "CLM-074", "CLM-075", "CLM-076")
+# The section claims, the abstract sentence, the Discussion interpretation on the legacy
+# design space, and the three Discussion claims re-scoped by the launch-position analysis
+# bound with this manifest (the wall-loss campaign's zero reflections as a launch-position
+# result: CLM-017, CLM-052 and the first finding of CLM-044).
+PROSE_CLAIM_IDS = ("CLM-069", "CLM-070", "CLM-072", "CLM-073", "CLM-074", "CLM-075", "CLM-076", "CLM-017", "CLM-044", "CLM-052")
 SECTION_BINDING = "\\input{sections/l1a-sweep-v3.tex}"
 GENERATED_BINDING = "\\input{generated/l1a-sweep-v3.tex}"
 SECTION_HEADING = "Geometry sweep into the HEMP-like wall-radius-to-pitch regime"
@@ -176,6 +180,7 @@ FORMATTERS: dict[str, Callable[[Any], str]] = {
     "pct1": lambda v: f"{100.0 * float(v):.1f}\\%",
     "list_mm1": lambda v: ", ".join(f"{1e3 * float(x):.1f}" for x in v),
     "list_fixed2": lambda v: ", ".join(f"{float(x):.2f}" for x in v),
+    "list_fixed3": lambda v: ", ".join(f"{float(x):.3f}" for x in v),
     # Mathematical symbols the macro-only section may not type because they carry a digit
     # (I_1, b_3/b_1, R^2, H1/H2); the raw value is emitted verbatim and must match a fixed
     # whitelist below so no arbitrary TeX can enter through this formatter.
@@ -1032,6 +1037,14 @@ def build(repo: Path) -> tuple[dict[str, Any], str]:
     launch_offset_m = statistics.median(offsets)
     if not launch_offset_m / p2_pitch < NEAR_CENTRE_PITCH:
         raise ValueError("the wall-loss launch planes are not within the review's near-centre class")
+    # The review traced the launch field lines from the magnet centres at the wall-loss
+    # campaign's two launch radii (as fractions of the P2 wall radius) in every recorded field.
+    field_lines = [line for r in check_output["results"] for line in r["field_lines"]]
+    launch_radii = sorted({seed["position_m"][0] / p2_record["geometry"]["wall_radius_m"] for seed in wall_loss_protocol["launches"]["position_seeds"]})
+    if sorted({line["launch_r_over_rw"] for line in field_lines}) != launch_radii:
+        raise ValueError("the review's launch field lines are not at the wall-loss campaign's launch radii")
+    if not all(line["reaches_wall"] for line in field_lines):
+        raise ValueError("a launch field line of the review did not reach the wall before the cusp")
 
     # ================================================================== macros ====
     # ---- identity and lifecycle ----
@@ -1364,6 +1377,17 @@ def build(repo: Path) -> tuple[dict[str, Any], str]:
     m.add_derived("SwtVFourLaunchOffsetMm", launch_offset_m, "mm1", "distance of every wall-loss launch plane from its nearest magnet centre (mm)", "min over stage centres of |launch z - centre|, identical for the four launch planes", launch_inputs)
     m.add_derived("SwtVFourLaunchOffsetPitch", launch_offset_m / p2_pitch, "fixed3", "the same distance in stage pitches", "launch offset / P2 stage pitch", launch_inputs)
     m.add_derived("SwtVFourLaunchInNearClass", launch_offset_m / p2_pitch <= NEAR_CENTRE_PITCH, "bool", "the wall-loss launch planes fall in the review's near-centre class", "launch offset in pitches <= 0.17", launch_inputs)
+    line_inputs = [{"artifact": f"definition-source:{PPM_CHECK_OUTPUT.as_posix()}", "pointer": "/results"}, {"artifact": f"reference:{WALL_LOSS_PROTOCOL.as_posix()}", "pointer": "/launches/position_seeds"}]
+    m.add_derived("SwtPpmLineCount", len(field_lines), "int", "launch field lines the review traced from the magnet centres (two launch radii in each recorded field)", "count of results[*].field_lines", line_inputs)
+    m.add_derived("SwtVFourLaunchRadiiFraction", launch_radii, "list_fixed3", "wall-loss launch radii as fractions of the P2 wall radius", "sorted distinct launches.position_seeds[*].position_m[0] / P2 wall radius (equal to the review's launch_r_over_rw)", line_inputs)
+    m.add_derived("SwtPpmLineAllReachWall", all(line["reaches_wall"] for line in field_lines), "bool", "every traced launch field line reaches the wall before the cusp plane", "all(results[*].field_lines[*].reaches_wall)", line_inputs)
+    m.add_derived("SwtPpmLineMaxOverLaunchMax", max(line["max_along_line_over_launch"] for line in field_lines), "fixed2", "largest |B| along any traced launch field line over its launch value", "max results[*].field_lines[*].max_along_line_over_launch", line_inputs)
+    m.add_derived("SwtPpmLineWallOverLaunchMin", min(line["ratio_wall_over_launch"] for line in field_lines), "fixed2", "smallest wall-hit |B| over launch |B| along the traced lines", "min results[*].field_lines[*].ratio_wall_over_launch", line_inputs)
+    m.add_derived("SwtPpmLineWallOverLaunchMax", max(line["ratio_wall_over_launch"] for line in field_lines), "fixed2", "largest wall-hit |B| over launch |B| along the traced lines", "max results[*].field_lines[*].ratio_wall_over_launch", line_inputs)
+    m.add_derived("SwtPpmLineWallFractionMin", min(line["wall_hit_fraction_to_cusp"] for line in field_lines), "pct0", "smallest fraction of the centre-to-cusp distance at which a traced line reaches the wall", "min results[*].field_lines[*].wall_hit_fraction_to_cusp", line_inputs)
+    m.add_derived("SwtPpmLineWallFractionMax", max(line["wall_hit_fraction_to_cusp"] for line in field_lines), "pct0", "largest fraction of the centre-to-cusp distance at which a traced line reaches the wall", "max results[*].field_lines[*].wall_hit_fraction_to_cusp", line_inputs)
+    if max(line["max_along_line_over_launch"] for line in field_lines) > 1.0 + 1e-9:
+        raise ValueError("a traced launch field line carries a |B| maximum above its launch value")
 
     # ---- claim-boundary flags ----
     m.add("SwtFieldLevelStatement", "artifacts/protocol.json", "/claim_boundary/field_level", "text", "field level statement of the claim boundary")

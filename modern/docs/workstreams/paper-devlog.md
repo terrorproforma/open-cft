@@ -1223,3 +1223,76 @@
   equality check was corrected to the recorded structure, not tolerated.
 - `\label{sec:l1a-sweep-v3}` was defined twice (section and subsection); the
   subsection label is `sec:l1a-sweep-v3-screening`.
+
+## 2026-09-03 - Wall-loss reflection statements re-scoped per the PPM launch-position analysis
+
+### Scope
+
+- Trigger: the TWT/PPM review (`beb4772c`, section 3.3 and Table G2) and the
+  sweep-v3 admission that binds it. The review re-read the sealed orbits of the
+  geometry screening by launch cell: the seven cells within 0.17 pitch of a
+  magnet centre produced 0-1 reflections per 128, the nine cells 0.22-0.48
+  pitch away produced 32-88; the wall-loss campaign launched 0.5 mm (0.083
+  pitch) from the P2 magnet centres (frozen v4 protocol launch planes 3.5, 9.5,
+  15.5, 21.5 mm against the topology P2 record's stage centres 3, 9, 15, 21 mm),
+  and along the ten launch field lines the review traced from the magnet
+  centres at the campaign's launch radii the field never rises above its launch
+  value. Verified from the artifacts inside the generator, which fails closed if
+  any of it changes.
+- No number changed anywhere; every changed sentence is macro-bound (`\Swt`,
+  `\Wlf`, `\Wlg`) or labelled interpretation.
+
+### Changed
+
+- Discussion paragraph "Wall loss is not a mirror process in the qualified
+  field, and that statement is field-specific" -> "The wall-loss campaign's
+  zero reflections are a launch-position result: its launch planes sit at the
+  field maxima of a periodic-permanent-magnet mirror field". CLM-017 now says
+  the campaign could not test the mirror picture (launch planes, offset in mm
+  and pitch, stage centres, field-line maximum ratio and wall/launch ratios as
+  macros; zero count = launch-position result, not a property of the topology).
+  CLM-052 now states the launch-cell classes and their reflection counts, the
+  turning-point field ratios and mirror-condition fractions, that the wall-loss
+  launches fall in the near-centre class, and that the screening's reflections
+  are the mirror reflections toward the magnet centres the PPM field predicts.
+  CLM-044's first finding re-scoped the same way; its "mirror formula the
+  integrated orbits do not support" became a loss-cone formula the orbits could
+  not test at their launch planes and that the non-adiabatic electrons do not
+  satisfy. CLM-016 (wall-loss section scope box) now says the mirror description
+  does not apply "at the launch planes of this campaign" (planes as `\WlfCell..ZMm`
+  macros) and defers the reading to the Discussion. Section 9 intro: the mirror
+  formula's loss-cone reading "could not be tested at the launch planes" instead
+  of "does not support". CLM-017, CLM-044 and CLM-052 are bound to the sweep-v3
+  manifest; the generator lists them as prose claims.
+- Limitations: every electron of the admitted orbit campaigns is non-adiabatic at
+  the wall cusps (Mendel alpha 9.93-1190 against the TWT regime below 0.66,
+  epsilon 0.05-0.75 against the Leffel-Gray boundary near 0.03, mu-variation
+  medians 0.11-0.42 ordered by epsilon), so a per-cusp loss probability cannot be
+  a loss-cone number for these fields; pointed at the kinetic workstream.
+- Section 11 intro: the reflection count of a launch cell depends on where its
+  plane sits relative to the nearest magnet centre; a second screening that
+  stratifies its launches by catalogue cell is planned, no result exists.
+- `check_paper.py` (`_check_l1a_sweep_v3_screening`): CLM-017/044/052 must be
+  interpretations bound to the sweep-v3 manifest with the launch-position
+  wording and macros; the Limitations must carry the non-adiabaticity macros;
+  the superseded wording ("field-specific", "not supported for this field",
+  "unsupported for the qualified field", "mirror formula the integrated orbits
+  do not support") must be absent from the flattened manuscript.
+- Generator: ten field-line macros (`\SwtPpmLine...`, `\SwtVFourLaunchRadiiFraction`)
+  derived from the review's output and the frozen v4 protocol; 361 macros.
+- Tests: `test_l1a_sweep_v3_admission.py` +1 (re-scoping enforced, stale
+  wording rejected, launch-offset macros recompute);
+  `test_wall_loss_geometry_screening_admission.py`,
+  `test_cusp_topology_v3_1_admission.py`, `test_four_cell_closure_admission.py`
+  updated for the new manifest sets and wording. README, author checklist.
+
+### Validation
+
+- `python paper/scripts/check_paper.py`: green.
+- `python -m unittest discover -s paper/tests`: 228 tests OK.
+- `python paper/scripts/verify_reproducible_build.py`: two clean builds
+  byte-identical, `paper/build/manuscript.pdf` 56 pages, 681,141 bytes,
+  SHA-256 `b2440f6e5a3b543d5dd7dee88e5b81cf2646518059cdf23e3ddf4268afa2e8b9`; no overfull box, no LaTeX error, no undefined reference.
+- Rendered the Discussion, Limitations and Section 11 pages to
+  `%TEMP%\paper-sweep3-pages\` (`B-p*.png`) with `pdftoppm` and read the two
+  re-scoped claims.
