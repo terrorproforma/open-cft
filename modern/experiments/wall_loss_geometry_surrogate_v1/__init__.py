@@ -1,0 +1,1 @@
+"""Wall-loss geometry surrogate v1 (SURROGATE_OF_SCREENING_L1A_FIELD_TEST_PARTICLE_WALL_LOSS)."""
