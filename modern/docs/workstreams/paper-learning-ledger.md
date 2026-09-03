@@ -536,3 +536,47 @@
 - [tool] PowerShell double-quoted strings pass `\\` through unchanged, so an
   inline `python -c` regex with `\\\\newcommand` silently matches nothing;
   write the check as a temp `.py` under `%TEMP%` instead.
+
+## 2026-09-04 - Admitting the L1b/P2 material-aware HEMP confirmation v1.1
+
+- [self] Add a new recorded_outcome value (not a new gate kind) when the study's
+  OBJECT differs from every existing outcome's definition - here the field is a
+  linear-iron P2 field for every design, and every earlier outcome text says
+  "on L1a linear-vacuum fields". Reusing an outcome whose definition is false
+  for the study would make "recorded outcome" meaningless; adding a kind for a
+  study that is still a preregistered single-execution screening of prescribed
+  field maps would multiply kinds. Amend the kind description to name the new
+  outcome and have the checker require both the naming and the justification.
+- [self] A rebased campaign chain leaves the bundle's lock and the protocol's
+  predecessor block naming commits that are not ancestors of HEAD. Do not resolve
+  them in the generator (a clone without the experiment branch would regenerate
+  different bytes); record them as strings and bind the rebased commits by
+  recomputing the sealed source hashes (name NUL bytes NUL) from their blobs.
+  That is a stronger proof than tree equality and it is HEAD-reachable.
+- [self] A predecessor's development rejection is lineage, not an audit: bind
+  the whole rejected bundle, its frozen files and the post-hoc note at their
+  revisions, verify the note against the bundle by regex, and prove the
+  re-preregistration changed exactly the declared paths by diffing the two sealed
+  protocols. "Cited for numbers: false" belongs on the lineage block.
+- [self] Report the recorded statistic, not the brief's paraphrase: the "9.3 deg"
+  sliver angle of design 048 is the note's population description; the record's
+  level-0 minimum angle is 5.6 deg. Verify every brief number against the
+  artifact before it becomes a macro, and explain the difference in the devlog.
+- [self] A sealed record can carry stale prose (the shakedown's `disclosure`
+  string says "three REAL designs" while `design_count` is 5). Do not quote a
+  sealed prose field into the paper unless its content is cross-checked against
+  the numbers; use the field whose value the generator verifies.
+- [self] Distributions keyed "shift_m" in a headline are not always over the same
+  population as the count next to them (matched-null max differences: 9; null
+  bijections: 6). Recompute each from the rows before assuming what it is over.
+- [tool] `git cat-file --batch` with `<rev>:<path>` lines hashes 95 blobs in one
+  call (~0.3 s) where per-file `git show` costs ~170 ms each; use it for both
+  the source-hash recomputation and the lineage blob checks.
+- [tool] The Write tool emitted LF for the new `.tex` and `.py` files here, but
+  keep the LF normaliser step; the JSON registry files are hand-formatted with
+  compact one-line arrays, so splice new blocks as text instead of re-dumping
+  the whole document (a full `json.dumps` would rewrite ~40 % of the lines).
+- [tool] `pip install --target %TEMP%\rufftool <wheel>` gives a ruff binary
+  without touching the global environment; run it with the classic rule set
+  (E4, E7, E9, F) that the earlier admissions were checked against, plus B/C4
+  on new files.

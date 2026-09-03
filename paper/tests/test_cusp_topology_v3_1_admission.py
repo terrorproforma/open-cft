@@ -70,7 +70,8 @@ class CuspTopologyAdmissionTests(unittest.TestCase):
         self.assertIsNone(self.gate["opens_level"])
         self.assertEqual(self.gate["recorded_outcome"], ctv.RECORDED_OUTCOME)
         self.assertIn(ctv.RECORDED_OUTCOME, check_paper.SCREENING_OUTCOMES)
-        self.assertEqual(len(check_paper.SCREENING_OUTCOMES), 5)
+        # Five outcomes at this admission; the material-aware confirmation later added a sixth.
+        self.assertEqual(len(check_paper.SCREENING_OUTCOMES), 6)
         self.assertIn("accepted_topology_screening", self.gate["recorded_outcome_justification"])
         self.assertIn("never demonstrated plasma confinement", self.gate["recorded_outcome_justification"])
         self.assertEqual(self.gate["required_manifest_document_type"], "paper-separatrix-topology-screening-manifest")
@@ -329,7 +330,8 @@ class CuspTopologyAdmissionTests(unittest.TestCase):
         records = {c["id"]: c for c in self.matrix["claims"]}
         clm028 = records["CLM-028"]
         self.assertIn(MANIFEST_ID, clm028["manifest_ids"])
-        self.assertEqual(set(clm028["manifest_ids"]), {FOUR_CELL_MANIFEST_ID, CHAR_MANIFEST_ID, MANIFEST_ID})
+        # The material-aware confirmation admission added its manifest (CLM-028 now reads its macros).
+        self.assertEqual(set(clm028["manifest_ids"]), {FOUR_CELL_MANIFEST_ID, CHAR_MANIFEST_ID, MANIFEST_ID, "L1B-HEMP-CONFIRMATION-V1-1-20260904-15-V1"})
         for phrase in ("non-standard", "\\CtvSweepNMinusOne", "\\CtvSweepFourWallCusps", "\\CtvSweepFourCells", "not proof that no such design exists", "at the magnet ends rather than the stage midplanes", "material-aware field model", "not decided here"):
             self.assertIn(phrase, clm028["authorized_tex"])
         self.assertNotIn("undemonstrated, which is a null", clm028["authorized_tex"])

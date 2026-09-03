@@ -23,7 +23,7 @@
     "gate_kinds": {
       "physics-level": "GATE-L1, GATE-L2 and GATE-L3 open a paper physics level; they stay closed until their typed manifest is accepted.",
       "numerical-campaign": "Admits one accepted, preregistered numerical campaign about a declared component model (the collisionless test-particle wall-loss campaign on one qualified field; the robust multi-objective optimisation campaign on the L0 model under the declared closure CL-1; the catalogue optimisation of the L0 model over the 96 screened sweep designs under the declared closure CL-1 with per-cell test-particle wall-hit posteriors). It opens no physics level (opens_level is null), must be accepted (never closed), and its manifest is cross-checked against the sealed results bundle, the hash-bound evidence file, the bound section and the claim matrix by a campaign-specific checker in check_paper.py.",
-      "numerical-screening": "Admits one preregistered, single-execution screening study on L1a linear-vacuum equivalent-current fields (no permanent-magnet or nonlinear-iron material model; not P2-qualified) at exactly its recorded outcome, declared as recorded_outcome: accepted-screening (a field-only design-space screening), preregistered-null, recorded-characterization, accepted-screening-dataset (a collisionless test-particle wall-loss dataset integrated in those fields over a design space, accepted as surrogate and optimisation input only when carried with its label), or accepted-topology-screening (the HEMP/DCFT literature separatrix cusp definition evaluated on those fields plus one P2-qualified row, accepted as a geometric screening of prescribed field maps whose cusps, cells and mirror ratios are descriptors under their label and never plasma confinement or probabilities). The gate status accepted means the study is admitted as recorded, never that a positive finding is accepted; a null is admitted as a null under the frozen definitions and is not an existence disproof; a screening dataset is admitted as screening input and is never accepted physical-orbit, plasma or performance evidence; a topology screening is admitted as a property of prescribed field maps under a stated definition and changes no earlier frozen-definition record. It opens no physics level (opens_level is null), its typed manifest is cross-checked against the sealed bundle, the hash-bound evidence file, the audited end-of-line tolerances where a bundle needs one, the bound section and the claim matrix by the screening checkers in check_paper.py, and it never opens GATE-L1.",
+      "numerical-screening": "Admits one preregistered, single-execution screening study on L1a linear-vacuum equivalent-current fields (no permanent-magnet or nonlinear-iron material model; not P2-qualified), or, for the material-aware confirmation outcome, on the linear-iron recoil-magnet P2 fields of designs already screened on those fields, at exactly its recorded outcome, declared as recorded_outcome: accepted-screening (a field-only design-space screening), preregistered-null, recorded-characterization, accepted-screening-dataset (a collisionless test-particle wall-loss dataset integrated in those fields over a design space, accepted as surrogate and optimisation input only when carried with its label), accepted-topology-screening (the HEMP/DCFT literature separatrix cusp definition evaluated on those fields plus one P2-qualified row, accepted as a geometric screening of prescribed field maps whose cusps, cells and mirror ratios are descriptors under their label and never plasma confinement or probabilities), or accepted-material-aware-confirmation (the same literature cusp definition applied verbatim to the linear-iron, recoil-magnet P2 field maps of designs already screened on those L1a fields and compared with their sealed L1a records under predeclared count and position tolerances, admitted at the verdict the campaign recorded, CONFIRMED / PARTIALLY_CONFIRMED / DISCONFIRMED, as a numerical confirmation of field-map descriptors under two field models; the materials are linear, so no saturation or B-H nonlinearity, no plasma, mirror probability, thrust, efficiency or design recommendation follows, and the field is not the three-level P2-qualified chain). The gate status accepted means the study is admitted as recorded, never that a positive finding is accepted; a null is admitted as a null under the frozen definitions and is not an existence disproof; a screening dataset is admitted as screening input and is never accepted physical-orbit, plasma or performance evidence; a topology screening is admitted as a property of prescribed field maps under a stated definition and changes no earlier frozen-definition record; a material-aware confirmation is admitted at its recorded verdict as a statement about two field models and changes no earlier L1a record. It opens no physics level (opens_level is null), its typed manifest is cross-checked against the sealed bundle, the hash-bound evidence file, the audited end-of-line tolerances where a bundle needs one, the bound section and the claim matrix by the screening checkers in check_paper.py, and it never opens GATE-L1.",
       "analytic-consistency": "Admits one analytic consistency result about a declared equation set: a derivation whose closed form is verified numerically to a stated tolerance and pinned by committed tests (the reduced global power row of the corrected four-cell discharge ledger and its consequence that no admissible root exists for any positive interior cusp probability). The gate status accepted means the derivation and its numerical verification are admitted as recorded; it is not a statement about the physical thruster, it does not accept any proposed correction of the equation set (the proposal stays PROPOSED_NOT_ACCEPTED), and it opens no physics level (opens_level is null; never GATE-L1, GATE-L2 or GATE-L3). Its typed manifest binds the analysis document, the ledger entry, the executed diagnostics and solver sources, the pinning tests, the frozen MDO protocol disclosure and the legacy lineage blob at the analysis revision; the paper generator recomputes the numerical verification from the checkout package at every check, refuses if the executed package differs from the bound blobs or if any recomputed number departs from the analysis document beyond the declared tolerance, and the analysis checker in check_paper.py cross-checks the manifest against the evidence file, the bound section, the displayed closed form and the claim matrix."
     }
   },
@@ -1928,6 +1928,616 @@
       "section_path": "paper/sections/wall-loss-geometry-screening-v2.tex",
       "status": "accepted",
       "title": "Preregistered orbit wall-loss geometry screening v2: accepted collisionless test-particle wall-access dataset from the catalogue cells of the accepted L1a sweep designs"
+    },
+    {
+      "accepted_manuscript_binding": "\\input{sections/l1b-hemp-confirmation-v1-1.tex}",
+      "checks": [
+        "typed manifest under paper/evidence/manifests with every one of the bundle's 134 files bound by Git blob and SHA-256 at the results revision (the record commit, where the results tree first exists and which carries only that tree), the four frozen preregistration files bound at the preregistration revision, the dashboard generator, template and HTML bound at the dashboard revision and equal to the checkout by LF-normalised SHA-256, the sweep-v3 catalogue, manifest and design authorities and the frozen cusp-topology-v3.1 protocol bound as references at their admitted revisions, and the predecessor's whole rejection bundle, frozen files and post-hoc rejection note bound as lineage at their revisions",
+        "evidence file, generated macros and sidecar regenerate byte-identically from the sealed bundle, which re-verifies every file of both bundles with no end-of-line tolerance, recomputes the sealed experiment-code, dependency-source and field-pipeline hashes from the blobs at the preregistration commit, re-derives the verdict, gates (b) and (c), the reported preservation and every headline and estimand distribution from the per-design rows and matched cusp pairs, recomputes every Koch ratio, shift, tolerance, wall-field and rho ratio and x_w from their inputs, cross-checks every design record, field grid, agreement-table row and CSV row against its row, requires the declared designs to be exactly the sealed catalogue's HEMP-like entries and the imported definition to equal the frozen topology protocol, proves that the v1 -> v1.1 protocol differs at exactly the declared paths, verifies the rejection note against the v1 bundle and requires the dashboard's embedded extraction of both bundles to equal the sealed artifacts",
+        "every mapped manifest metric equals the raw artifact value behind its macro with type equality; policy metrics carry their fixed values; the results tree is unchanged since the evidence revision",
+        "preregistration strictly precedes the results revision, the frozen protocol, authorities, shakedown and design-authorities blobs are unchanged and equal the sealed copies, and the predecessor chain (code -> preregistration -> rejection record -> v1.1 code and rejection note -> preregistration) holds strictly; the recorded outcome accepted-material-aware-confirmation agrees between gate, manifest, evidence file and generator and is justified as a sixth outcome on the gate; the verdict CONFIRMED, the 14/15 preservation, the axis-null non-robustness and the predecessor's development rejection are recorded as admitted",
+        "the section is input exactly once, uses only generated macros, types no literal digit, uses the classification, topology-label, recorded-outcome, campaign-status, verdict, field-level and version macros whose renderings equal their strings, and contains every registered non-claim",
+        "every EvidenceClaim in the section is a registered confirmation prose claim bound to the manifest and allowed under the section heading; the results claim is worded as recorded (robust within one bore element; a statement about two field models), the reported claim states that the axis nulls and any threshold near the design value are not robust, the disclosure claim carries the three verified disclosures, the Discussion interpretation CLM-093 is labelled and bound to the manifest, the sweep-v3 Discussion claim CLM-076 and scope claim CLM-075 and the topology Discussion claim CLM-028 cite this section instead of a queued confirmation; the artifact claim authorizes the four generated tables, each wrapped in the registered ArtifactClaim"
+      ],
+      "code_revision": "b6125fe7a3c4f310ff564c0102c1617ccc68b00a",
+      "dashboard_revision": "560909f77ad64ff0215437ecd85e12bee6e8d4ea",
+      "dependencies": [
+        "GATE-L1A-SWEEP-V3",
+        "GATE-CUSP-TOPOLOGY-V3-1"
+      ],
+      "evidence_file": "paper/evidence/l1b-hemp-confirmation-v1-1.json",
+      "evidence_revision": "54cd3e82b7c879110cb7242c5f6210d1ac59fc92",
+      "generated_macros": "paper/generated/l1b-hemp-confirmation-v1-1.tex",
+      "id": "GATE-L1B-HEMP-CONFIRMATION-V1-1",
+      "kind": "numerical-screening",
+      "lineage_revisions": {
+        "posthoc_rejection_note": "b6125fe7a3c4f310ff564c0102c1617ccc68b00a",
+        "predecessor_code": "6e9f056cc01bb00d6c9cdba3f98b997ee01b4dcc",
+        "predecessor_preregistration": "fb143eb2280abafc1bce3910f4311f8fdff5fd7f",
+        "predecessor_results": "2d8d670593f11045601f911acd1fa11ccf9bda21"
+      },
+      "manifest_path": "paper/evidence/manifests/l1b-hemp-confirmation-v1-1.json",
+      "manuscript_revision_macro": "HempConfirmationEvidenceRevision",
+      "metric_constraints": {
+        "absolute_field_or_rho_threshold_robust": {
+          "equals": false
+        },
+        "adaptive_levels": {
+          "equals": 2
+        },
+        "all_designs_bijective": {
+          "equals": true
+        },
+        "angle_gate_deg": {
+          "equals": 5.0
+        },
+        "assessment_wall_s": {
+          "equals": 304.73673110001255
+        },
+        "attempt_count": {
+          "equals": 1
+        },
+        "axis_null_positions_robust_within_tolerance": {
+          "equals": false
+        },
+        "axis_peak_b_ratio_maximum": {
+          "equals": 1.345591831654561
+        },
+        "axis_peak_b_ratio_median": {
+          "equals": 1.1775446157679763
+        },
+        "axis_peak_b_ratio_minimum": {
+          "equals": 0.9766238209161009
+        },
+        "bijective_designs": {
+          "equals": 15
+        },
+        "binding_gate_count": {
+          "equals": 11
+        },
+        "binding_gates_true": {
+          "equals": 11
+        },
+        "bore_elements": {
+          "equals": 8
+        },
+        "campaign_status": {
+          "equals": "accepted_l1b_confirmation_confirmed"
+        },
+        "cell_counts_agree": {
+          "equals": 15
+        },
+        "channel_axis_null_bijection": {
+          "equals": 6
+        },
+        "channel_axis_null_count_equal": {
+          "equals": 15
+        },
+        "channel_axis_null_shift_maximum_m": {
+          "equals": 0.0010724508771368093
+        },
+        "channel_axis_null_shift_median_m": {
+          "equals": 0.0004685912108400407
+        },
+        "channel_axis_nulls_beyond_tolerance_designs": {
+          "equals": 9
+        },
+        "classification": {
+          "equals": "P2_MATERIAL_AWARE_FIELD_CONFIRMATION_NOT_HARDWARE_VALID"
+        },
+        "cpu_count": {
+          "equals": 24
+        },
+        "cpu_only": {
+          "equals": true
+        },
+        "cusp_four_designs": {
+          "equals": 2
+        },
+        "cusp_three_designs": {
+          "equals": 3
+        },
+        "cusp_two_designs": {
+          "equals": 10
+        },
+        "declared_count": {
+          "equals": 15
+        },
+        "definition_parameters_equal": {
+          "equals": true
+        },
+        "design_recommendation": {
+          "equals": false
+        },
+        "design_recommendation_claimed": {
+          "equals": false
+        },
+        "designs_exceeding_tolerance": {
+          "equals": 0
+        },
+        "discretisation_axis_null_shift_maximum_m": {
+          "equals": 5.611338980502506e-06
+        },
+        "discretisation_shift_maximum_m": {
+          "equals": 1.4220098524617836e-06
+        },
+        "discretisation_stable_count": {
+          "equals": 15
+        },
+        "evaluated_count": {
+          "equals": 15
+        },
+        "failed_cases_count": {
+          "equals": 0
+        },
+        "feature_elements": {
+          "equals": 3
+        },
+        "field_is_p2_qualified_chain": {
+          "equals": false
+        },
+        "forbid_mirror_probability_publication": {
+          "equals": true
+        },
+        "forbid_plasma_performance_publication": {
+          "equals": true
+        },
+        "gate_b_agreeing_boundary_tolerant": {
+          "equals": 15
+        },
+        "gate_b_agreeing_strict": {
+          "equals": 15
+        },
+        "gate_b_disagreeing_designs": {
+          "equals": 0
+        },
+        "gate_b_pass_threshold": {
+          "equals": 1.0
+        },
+        "gate_b_passed": {
+          "equals": true
+        },
+        "gate_c_max_shift_over_tolerance": {
+          "equals": 0.8023324858192963
+        },
+        "gate_c_pass_threshold": {
+          "equals": 1.0
+        },
+        "gate_c_passed": {
+          "equals": true
+        },
+        "gates_passed": {
+          "equals": true
+        },
+        "hardware_or_experimental_validation": {
+          "equals": false
+        },
+        "hemp_flag_stable_levels": {
+          "equals": 15
+        },
+        "hemp_like_flag_preserved_for_every_design": {
+          "equals": false
+        },
+        "hemp_like_lost_count": {
+          "equals": 1
+        },
+        "hemp_like_lost_design": {
+          "equals": "028"
+        },
+        "hemp_like_preserved_count": {
+          "equals": 14
+        },
+        "hemp_like_preserved_fraction": {
+          "equals": 0.9333333333333333
+        },
+        "in_band_count": {
+          "equals": 15
+        },
+        "l1a_dz_m": {
+          "equals": 0.0004513888888888889
+        },
+        "l1a_outside_nulls": {
+          "equals": 11
+        },
+        "level0_dofs_maximum": {
+          "equals": 116883
+        },
+        "level0_dofs_minimum": {
+          "equals": 24369
+        },
+        "level1_dofs_maximum": {
+          "equals": 466005
+        },
+        "level1_dofs_minimum": {
+          "equals": 50037
+        },
+        "linear_materials": {
+          "equals": true
+        },
+        "lost_design_l1a_min_rho": {
+          "equals": 1.5150770513776666
+        },
+        "lost_design_p2_min_rho": {
+          "equals": 1.463778208091294
+        },
+        "magnet_recoil_relative_permeability": {
+          "equals": 1.05
+        },
+        "matched_cusp_count": {
+          "equals": 37
+        },
+        "max_shift_design": {
+          "equals": "076"
+        },
+        "maximum_p2_dofs": {
+          "equals": 600000
+        },
+        "mirror_probability_publication_forbidden": {
+          "equals": true
+        },
+        "mirror_ratios_are_field_descriptors_not_probabilities": {
+          "equals": true
+        },
+        "more_p2_null_designs": {
+          "equals": 9
+        },
+        "not_hardware_valid": {
+          "equals": true
+        },
+        "not_p2_qualified_chain": {
+          "equals": true
+        },
+        "outside_null_shift_maximum_m": {
+          "equals": 0.0017519192592770107
+        },
+        "outside_null_shift_minimum_m": {
+          "equals": 0.0010888136237901577
+        },
+        "p2_cusps_at_wall_maximum": {
+          "equals": 0
+        },
+        "p2_min_rho_maximum": {
+          "equals": 2.927676383018529
+        },
+        "p2_min_rho_minimum": {
+          "equals": 1.463778208091294
+        },
+        "p2_outside_nulls": {
+          "equals": 29
+        },
+        "peak_rss_bytes": {
+          "equals": 239702016
+        },
+        "peak_wall_b_ratio_maximum": {
+          "equals": 1.390105647738947
+        },
+        "peak_wall_b_ratio_median": {
+          "equals": 1.195183085309595
+        },
+        "peak_wall_b_ratio_minimum": {
+          "equals": 0.9294601238726473
+        },
+        "physics_level_opened": {
+          "equals": false
+        },
+        "plasma_or_performance_claim_forbidden": {
+          "equals": true
+        },
+        "pooled_axis_null_bijection": {
+          "equals": 0
+        },
+        "positive_finding_accepted": {
+          "equals": false
+        },
+        "predecessor_angle_gate_deg": {
+          "equals": 10.0
+        },
+        "predecessor_artifact_count": {
+          "equals": 112
+        },
+        "predecessor_assessment_access_count": {
+          "equals": 0
+        },
+        "predecessor_failed": {
+          "equals": 2
+        },
+        "predecessor_failure_stage": {
+          "equals": "resolve"
+        },
+        "predecessor_records": {
+          "equals": 13
+        },
+        "predecessor_rejection_disclosed": {
+          "equals": true
+        },
+        "predecessor_resolved": {
+          "equals": 13
+        },
+        "predecessor_stage_wall_s": {
+          "equals": 2738.1153885000094
+        },
+        "predecessor_terminal_state": {
+          "equals": "development_rejection"
+        },
+        "predecessor_verified_file_count": {
+          "equals": 103
+        },
+        "preflight_below_threshold_designs": {
+          "equals": 2
+        },
+        "preflight_designs": {
+          "equals": 15
+        },
+        "preflight_minimum_angle_deg": {
+          "equals": 5.314978675079004
+        },
+        "preflight_passed": {
+          "equals": 15
+        },
+        "preregistered_one_shot": {
+          "equals": true
+        },
+        "protocol_blocks_unchanged": {
+          "equals": true
+        },
+        "protocol_declarations_changed": {
+          "equals": 2
+        },
+        "protocol_paths_changed": {
+          "equals": 12
+        },
+        "radial_intervals": {
+          "equals": 32
+        },
+        "ram_budget_bytes": {
+          "equals": 3505505894
+        },
+        "ram_budget_fraction": {
+          "equals": 0.4
+        },
+        "record_commit_files": {
+          "equals": 134
+        },
+        "recorded_outcome": {
+          "equals": "accepted-material-aware-confirmation"
+        },
+        "rejection_note_bound": {
+          "equals": true
+        },
+        "relative_true_residual_maximum": {
+          "equals": 1.9998663339378087e-10
+        },
+        "replay_designs": {
+          "equals": 1
+        },
+        "replays_bit_identical": {
+          "equals": 1
+        },
+        "representative_count": {
+          "equals": 4
+        },
+        "resolved_design_count": {
+          "equals": 15
+        },
+        "rho_is_probability": {
+          "equals": false
+        },
+        "rho_ratio_below_one_cusps": {
+          "equals": 14
+        },
+        "rho_ratio_below_one_designs": {
+          "equals": 8
+        },
+        "rho_ratio_maximum": {
+          "equals": 1.4459048971630442
+        },
+        "rho_ratio_median": {
+          "equals": 1.0598508574421766
+        },
+        "rho_ratio_minimum": {
+          "equals": 0.942536584332938
+        },
+        "rho_threshold": {
+          "equals": 1.5
+        },
+        "sampling_refinement": {
+          "equals": 2
+        },
+        "sampling_shift_maximum_m": {
+          "equals": 6.239435475056954e-08
+        },
+        "sampling_stable_count": {
+          "equals": 15
+        },
+        "saturation_or_bh_nonlinearity_modelled": {
+          "equals": false
+        },
+        "screening_model": {
+          "equals": "adaptive quadratic finite-element magnetostatics (cft_revival.fem_reference, numpy CPU) with LINEAR soft-iron poles and return yoke and recoil-remanence SmCo-like magnets on two nested levels, sampled into the cusp topology search v3.1 definition and compared with the sealed linear-vacuum L1a records of the fifteen HEMP-like sweep-v3 designs (a confirmation of field-map descriptors under two field models; not the three-level P2-qualified chain, no saturation or B-H curve, not hardware-valid)"
+        },
+        "separatrix_lean_l1a_maximum_m": {
+          "equals": 0.000463299811208474
+        },
+        "separatrix_lean_p2_maximum_m": {
+          "equals": 0.0011445245108789607
+        },
+        "shakedown_designs": {
+          "equals": 5
+        },
+        "shakedown_evidentiary": {
+          "equals": false
+        },
+        "shakedown_outcomes_are_not_evidence": {
+          "equals": true
+        },
+        "shakedown_overlap_designs": {
+          "equals": 5
+        },
+        "shakedown_passed": {
+          "equals": true
+        },
+        "shift_maximum_m": {
+          "equals": 0.0003621639692934324
+        },
+        "shift_mean_m": {
+          "equals": 0.0002433271081205591
+        },
+        "shift_median_m": {
+          "equals": 0.0002671743195241487
+        },
+        "shift_minimum_m": {
+          "equals": 1.3036083879331556e-06
+        },
+        "shift_over_tolerance_median": {
+          "equals": 0.5411543274515939
+        },
+        "shifts_above_discretisation": {
+          "equals": 37
+        },
+        "shifts_above_stability_tolerance": {
+          "equals": 22
+        },
+        "sliver_a_elements_below_threshold": {
+          "equals": 3
+        },
+        "sliver_a_minimum_angle_deg": {
+          "equals": 5.314978675079004
+        },
+        "sliver_b_elements_below_threshold": {
+          "equals": 13816
+        },
+        "sliver_b_minimum_angle_deg": {
+          "equals": 5.553001380243498
+        },
+        "soft_iron_relative_permeability": {
+          "equals": 4000.0
+        },
+        "solver_max_iterations": {
+          "equals": 16000
+        },
+        "solver_relative_tolerance": {
+          "equals": 2e-10
+        },
+        "solves_converged": {
+          "equals": 30
+        },
+        "solves_total": {
+          "equals": 30
+        },
+        "stability_tolerance_m": {
+          "equals": 0.00025
+        },
+        "stage_five_designs": {
+          "equals": 3
+        },
+        "stage_four_designs": {
+          "equals": 2
+        },
+        "stage_three_designs": {
+          "equals": 10
+        },
+        "stage_wall_s": {
+          "equals": 3079.2892819000117
+        },
+        "stage_within_budget": {
+          "equals": true
+        },
+        "sweep_hemp_like_count": {
+          "equals": 15
+        },
+        "terminal_state": {
+          "equals": "accepted_result"
+        },
+        "timing_projected_s": {
+          "equals": 6017.68606320005
+        },
+        "timing_within_budget": {
+          "equals": false
+        },
+        "tolerance_maximum_m": {
+          "equals": 0.0005229379374895871
+        },
+        "tolerance_median_m": {
+          "equals": 0.0004513888888888889
+        },
+        "tolerance_minimum_m": {
+          "equals": 0.0004513888888888889
+        },
+        "tolerated_eol_file_count": {
+          "equals": 0
+        },
+        "topology_label": {
+          "equals": "SCREENING_P2_MATERIAL_FIELD_SEPARATRIX_CUSP_TOPOLOGY"
+        },
+        "transition_count": {
+          "equals": 9
+        },
+        "verdict": {
+          "equals": "CONFIRMED"
+        },
+        "verdict_admitted_as_recorded": {
+          "equals": true
+        },
+        "verified_file_count": {
+          "equals": 133
+        },
+        "wall_b_ratio_above_one_cusps": {
+          "equals": 37
+        },
+        "wall_b_ratio_maximum": {
+          "equals": 1.5252332413152598
+        },
+        "wall_b_ratio_median": {
+          "equals": 1.2252323629590833
+        },
+        "wall_b_ratio_minimum": {
+          "equals": 1.0547158205359815
+        },
+        "wall_cusp_positions_robust_within_tolerance": {
+          "equals": true
+        },
+        "wall_radius_over_pitch_maximum": {
+          "equals": 1.0320870080287337
+        },
+        "wall_radius_over_pitch_minimum": {
+          "equals": 0.7153483317100598
+        },
+        "worker_pool_size": {
+          "equals": 1
+        },
+        "x_w_maximum": {
+          "equals": 3.2423969622885394
+        },
+        "x_w_minimum": {
+          "equals": 2.247333063658038
+        }
+      },
+      "opens_level": null,
+      "preregistration_revision": "c8692ff2cb6d4b8605fc00176f919b830ff9e685",
+      "prohibited_inferences": [
+        "saturation, B-H nonlinearity, temperature dependence or any nonlinear material behaviour",
+        "plasma state, confinement, mirror or cusp-loss probability, wall loss, thrust, efficiency or any thruster performance",
+        "reading the Koch ratio, a wall-field ratio or any mirror descriptor as a probability",
+        "that any design is recommended, or that the HEMP-like flag of every design is robust to iron (design 028 crosses the threshold)",
+        "that the axis-null positions or any absolute field or rho threshold near the design value are robust to iron",
+        "P2 qualification of the confirmation field (the three-level qualified chain was not run) or hardware validation",
+        "that the verdict is a positive finding accepted about the physical thruster rather than an as-recorded confirmation of field-map descriptors",
+        "that the predecessor campaign produced a verdict, or that its rejected designs were excluded from the confirmation",
+        "field-resolved reduction, L0 mapping or geometry-response prediction (GATE-L1 stays closed)",
+        "opening of GATE-L1, GATE-L2 or GATE-L3"
+      ],
+      "recorded_outcome": "accepted-material-aware-confirmation",
+      "recorded_outcome_justification": "The five earlier numerical-screening outcomes name studies on L1a linear-vacuum equivalent-current fields (a field-only screening, a null, a characterization, a test-particle dataset, and the literature cusp definition on those fields plus one P2-qualified row). This study is a different object: the same literature cusp definition applied verbatim to the material-aware P2 field (adaptive quadratic finite elements with LINEAR soft-iron poles and yoke and recoil-remanence magnets, two nested levels) of fifteen designs already screened on L1a fields, compared with their sealed L1a records under predeclared count and position tolerances, and classified by a preregistered verdict rule as CONFIRMED / PARTIALLY_CONFIRMED / DISCONFIRMED. Reusing accepted-topology-screening would state that the fields are L1a fields with one P2 row, which is false here, so a sixth outcome value, accepted-material-aware-confirmation, is added and the kind's description is amended to name it. Its meaning is the same as every other outcome: the study is admitted exactly as recorded (verdict CONFIRMED under the frozen tolerance rule; the sealed status is accepted_l1b_confirmation_confirmed), never as a positive finding about the thruster. What is confirmed is a property of two field models (the L1a separatrix-cusp count and wall-cusp positions survive the linear-iron field within one level-0 bore element), not saturation, plasma, mirror probability, thrust, efficiency or a design recommendation, and the field is not the three-level P2-qualified chain.",
+      "reference_revisions": {
+        "cusp_topology_v3_1_results": "cec47f12f5909c5886424bf5d46ac20ce06f1ac5",
+        "sweep_v3_results": "2cfe8223630fbef6bfe8099a5dcecaf4eb8c6b44"
+      },
+      "required_manifest_document_type": "paper-material-aware-confirmation-manifest",
+      "required_manifest_schema_version": "1.0",
+      "section_heading": "Material-aware confirmation of the HEMP-like designs under a linear-iron P2 field",
+      "section_path": "paper/sections/l1b-hemp-confirmation-v1-1.tex",
+      "status": "accepted",
+      "title": "Preregistered L1b/P2 material-aware HEMP confirmation v1.1: accepted confirmation of the L1a separatrix-cusp topology of the fifteen HEMP-like sweep-v3 designs under a linear-iron finite-element field"
     }
   ]
 }

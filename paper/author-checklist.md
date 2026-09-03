@@ -179,8 +179,51 @@
   descriptor are field ratios of linear-vacuum screening fields and never
   probabilities; the declared iron pole pieces are vacuum in the field; the
   preregistered hypothesis is reported at its recorded outcome (neither H1 nor
-  H2 held; I_1(x_w) is an upper envelope); the material-aware confirmation is
-  queued, not run; no HEMP-like design is a design recommendation.
+  H2 held; I_1(x_w) is an upper envelope); the material-aware confirmation was
+  queued within it and is admitted as the separate campaign of Section 16 (never
+  say the confirmation is unreported); no HEMP-like design is a design
+  recommendation.
+- [ ] Describe the L1b/P2 material-aware HEMP confirmation v1.1 only as
+  `P2_MATERIAL_AWARE_FIELD_CONFIRMATION_NOT_HARDWARE_VALID` (topology label
+  `SCREENING_P2_MATERIAL_FIELD_SEPARATRIX_CUSP_TOPOLOGY`) admitted at
+  `accepted-material-aware-confirmation` (a sixth outcome, justified on the
+  gate) at its recorded verdict CONFIRMED: the field is the two-level adaptive
+  quadratic FEM reference with LINEAR soft-iron poles and yoke (μr 4000) and
+  recoil-remanence magnets, not the three-level P2-qualified chain; no
+  saturation, B–H curve or temperature dependence is modelled; every wall-field
+  and Koch-ratio ratio is a ratio of two field models at equal magnet strength
+  and never a probability; the verdict is admitted as recorded and is not a
+  positive finding about the thruster.
+- [ ] State the confirmation's findings as recorded and bounded: the wall-cusp
+  count and positions are robust to the linear iron within one level-0 bore
+  element (37/37 cusps, largest shift 0.362 mm = 0.80 of tolerance); the axis
+  nulls (up to 1.07 mm) and any absolute-field or ρ threshold near 1.5 are NOT
+  robust (design 028 crosses: 1.515 → 1.464); the iron raises the wall field at
+  the cusps by 5–53 %. Never turn these into a plasma, mirror-probability,
+  thrust, efficiency or design-recommendation statement.
+- [ ] Disclose, never smooth over, the predecessor v1 development rejection
+  (13/15 resolved; 028 and 048 below the inherited 10° level-0 mesh-angle gate
+  before any solve; no verdict; `POSTHOC_REJECTION.md` bound at `b6125fe7`), the
+  relaxed 5° gate with the sliver record (028: 5.3°; 048: 5.6° minimum angle;
+  the note's "9.3°" describes the sliver population, not the recorded minimum),
+  the shakedown's overlap with the evidentiary set and its over-budget timing
+  projection, and the campaign's own statement that paper admission was out of
+  its scope (this admission is the paper's act under its gate).
+- [ ] Say that the campaign chain was rebased onto the evidence branch: the
+  bundle's lock names the pre-rebase preregistration commit (`ead9b525`,
+  recorded as a string) while the checker binds the rebased commit (`c8692ff2`)
+  by recomputing the sealed code hashes from its blobs.
+- [ ] Keep every number of the confirmation section an `\Hmc...` macro
+  (including the field level `L1a`, the version tokens `v3.1`, `v3`, `v1`,
+  `v1.1` and the level names `zero`/`one`); never type a digit into
+  `paper/sections/l1b-hemp-confirmation-v1-1.tex`.
+- [ ] Keep the Discussion's material-question paragraph labelled as
+  interpretation (CLM-093): the separatrix-cusp topology of the HEMP-like
+  designs is a property of the magnet arrangement under linear iron; a
+  classifier thresholding an absolute field or ρ near the design value is not
+  robust to the material model; launch designs keyed to axis nulls inherit a
+  millimetre-scale material uncertainty; a saturating yoke would be a further
+  test; nothing about plasma confinement.
 - [ ] Keep every number of the sweep-v3 section a `\Swt...` macro (including
   the version tokens `v3`, `v2`, `v3.1`, `v4`, the field levels `L1a`/`L1b` and
   the digit-bearing symbols `I_1`, `b_3/b_1`, `R^2`, `H1`, `H2`); never type a
@@ -189,7 +232,9 @@
   interpretation (CLM-076): the legacy parameterisation never varied r_w/L into
   the HEMP band, so in the screening field its design space could not contain a
   HEMP-like cusp; whether the widened-box ratios survive a material-aware field
-  is not reported.
+  is reported by the confirmation of Section 16 (the topology survives; one
+  design's ratio does not), and still no design of the widened box is
+  recommended.
 - [ ] Cite the TWT/PPM review's launch-position analysis as a recorded analysis
   of the geometry screening's sealed orbits (bound at `beb4772c` through the
   sweep-v3 manifest), never as a result of the sweep or a new orbit result.

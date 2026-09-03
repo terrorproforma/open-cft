@@ -119,7 +119,47 @@
   (the finite stack's end field raises the axis peaks adjacent to the end
   cusps), not as its value; every reading is a field ratio of a linear-vacuum
   screening field, never a probability, and no HEMP-like design is a design
-  recommendation (the material-aware confirmation is queued, not run).
+  recommendation (the material-aware confirmation queued by the sweep was run
+  afterwards as `GATE-L1B-HEMP-CONFIRMATION-V1-1`; see below).
+- **Material-aware confirmation (L1b/P2 HEMP confirmation v1.1)** — the
+  fifteen HEMP-like sweep-v3 designs re-solved with the adaptive quadratic
+  finite-element magnetostatic reference (`cft_revival.fem_reference`) with
+  linear soft-iron pole pieces in the inter-magnet gaps and a soft-iron return
+  yoke (\(\mu_r = 4000\)), recoil-remanence SmCo-like magnets (\(\mu_r = 1.05\)),
+  two nested Dörfler/red levels at relative true residual \(2\times10^{-10}\),
+  the level-1 map sampled on a 32-interval bore grid and post-scaled by the
+  design's L1a magnet-strength scale, then characterised with the cusp topology
+  v3.1 definition on the sealed L1a axis window and compared with the sealed L1a
+  record. Classified `P2_MATERIAL_AWARE_FIELD_CONFIRMATION_NOT_HARDWARE_VALID`
+  with topology label `SCREENING_P2_MATERIAL_FIELD_SEPARATRIX_CUSP_TOPOLOGY`;
+  admitted by `GATE-L1B-HEMP-CONFIRMATION-V1-1` at the recorded outcome
+  `accepted-material-aware-confirmation` (a sixth `numerical-screening`
+  outcome). The materials are linear (no saturation, no B–H curve) and the
+  field is the two-level screening configuration, not the three-level
+  P2-qualified chain; every ratio is a ratio of two field models and never a
+  probability.
+- **Cusp-position tolerance (confirmation)** — per design
+  \(\max(r_w/8, \Delta z_{\mathrm{L1a}})\), one level-0 bore element and never
+  below the L1a axial step (0.451 mm): 0.451–0.523 mm over the set, fixed before
+  any outcome was read. Gate (b): boundary-tolerant cusp-count agreement
+  fraction ≥ 1.0; gate (c): every matched cusp within its tolerance and every
+  matching a bijection; verdict CONFIRMED iff both pass. Recorded: (b) 15/15
+  (strict), (c) 37/37 with the largest shift 0.362 mm = 0.80 of tolerance.
+- **Reported (d), confirmation** — the HEMP-like flag preserved for 14 of 15
+  designs (design 028: \(\rho\) 1.515 → 1.464), the per-cusp \(\rho\) ratio
+  P2/L1a 0.94–1.45, the per-cusp wall \(|B|\) ratio 1.05–1.53 at equal magnet
+  strength, the axis peak ratio 0.98–1.35, the channel axis nulls moved by up to
+  1.07 mm (not in bijection within the cusp tolerance in 9 of 15 designs), the
+  separatrix lean 0.46 → 1.14 mm. Reported, never gated; an absolute field or a
+  \(\rho\) threshold near the design value is not robust to the material model,
+  the wall-cusp count and positions are.
+- **Development rejection (lineage)** — the terminal state of the predecessor
+  campaign v1: one execution at its preregistration, 13 of 15 designs resolved,
+  designs 028 and 048 failed the inherited 10° level-0 mesh-angle gate before
+  any solve, no assessment or verdict. Bound as lineage (never cited for a
+  confirmation number) with the v1 → v1.1 protocol diff (exactly 12 paths;
+  the angle gate 10° → 5° and a whole-set mesh preflight are the only
+  declaration changes).
 - **Wall cusp (literature definition)** — the intersection of the separatrix of
   an axis null (the point on the axis where \(B_z\) changes sign; X-type by the
   analytic Jacobian) with the straight dielectric wall; the cusps sit at the

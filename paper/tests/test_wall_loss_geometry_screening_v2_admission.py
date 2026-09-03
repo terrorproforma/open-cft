@@ -69,8 +69,9 @@ class GeometryScreeningV2AdmissionTests(unittest.TestCase):
         self.assertIsNone(self.gate["opens_level"])
         self.assertEqual(self.gate["recorded_outcome"], geo.RECORDED_OUTCOME)
         self.assertEqual(geo.RECORDED_OUTCOME, geo_v1.RECORDED_OUTCOME)
-        # No sixth outcome value: the v1 outcome is reused and the reuse is justified on the gate.
-        self.assertEqual(len(check_paper.SCREENING_OUTCOMES), 5)
+        # No new outcome value here: the v1 outcome is reused and the reuse is justified on the gate
+        # (the sixth outcome was added later by the material-aware confirmation admission).
+        self.assertEqual(len(check_paper.SCREENING_OUTCOMES), 6)
         self.assertIn("reused", self.gate["recorded_outcome_justification"])
         self.assertIn("accepted_screening_dataset", self.gate["recorded_outcome_justification"])
         self.assertEqual(self.gate["required_manifest_document_type"], "paper-orbit-cell-screening-manifest")

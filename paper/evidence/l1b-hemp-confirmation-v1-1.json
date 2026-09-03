@@ -1,0 +1,5165 @@
+{
+  "artifacts": {
+    "artifacts/authorities.json": {
+      "bytes": 2618,
+      "sha256": "85090e8d4c674014186d9bf58df2fb7eced91a063d06a091134f34cbf2a7e5bb"
+    },
+    "artifacts/campaign-plan.json": {
+      "bytes": 659,
+      "sha256": "c8ca1a56ac207265318f57de156163001c1e99ae2cf58dcdafb95454e58d5e08"
+    },
+    "artifacts/campaign-result.json": {
+      "bytes": 17118,
+      "sha256": "5cd80fde14c0dd2ab0fbd2fa0e1d8c401b2e9bde7c173eadeabf4ba2e8c7e2f7"
+    },
+    "artifacts/confirmation-dataset.csv": {
+      "bytes": 8111,
+      "sha256": "8c741b2c39225a08f9e50f08f752c4b1dcabb34bd08de718657bb065c917f1ea"
+    },
+    "artifacts/confirmation-dataset.json": {
+      "bytes": 335860,
+      "sha256": "5d1af79e406173ae5d782f2eae297daabcf9b2d55b5d3c4db0d43816738ce4e2"
+    },
+    "artifacts/design-authorities.json": {
+      "bytes": 17364,
+      "sha256": "80cbf24b78c6a7e9dea1150e90f529c2897b87c5d90b83aba42d0380a5f92368"
+    },
+    "artifacts/design-failures.json": {
+      "bytes": 218,
+      "sha256": "29df25d8b1594a1a5ea5ae96ca2013984876122ffc2ba1e683fc8597aaf3e7ea"
+    },
+    "artifacts/designs/hemp_like_v3/l1a-gs-v3-000-78dcc2bb4c.json": {
+      "bytes": 198834,
+      "sha256": "fb64a8d9c4be8982a551507f17fa4cf40da35b17020b8a14e52698e8af5a3e0c"
+    },
+    "artifacts/designs/hemp_like_v3/l1a-gs-v3-005-0e7f21e31d.json": {
+      "bytes": 263556,
+      "sha256": "7e3575a58e1daaaf8d715d59505e64d1726413276f251ce5dde3bdb06f85040c"
+    },
+    "artifacts/designs/hemp_like_v3/l1a-gs-v3-015-3ce63a512e.json": {
+      "bytes": 232028,
+      "sha256": "06a15133c33a37aea9c35061a3b34d060b37cc0efb181175cb3226d400084195"
+    },
+    "artifacts/designs/hemp_like_v3/l1a-gs-v3-020-b6aa9b10ad.json": {
+      "bytes": 200310,
+      "sha256": "87bb045f55b4b02a93fc4a2a25885e02436e8ff494006f68383c74f331afb388"
+    },
+    "artifacts/designs/hemp_like_v3/l1a-gs-v3-028-f012c0bf33.json": {
+      "bytes": 199211,
+      "sha256": "89487b849c348cf48a9d4c232e213b332168ba3d597067a86a68be1066e38f7e"
+    },
+    "artifacts/designs/hemp_like_v3/l1a-gs-v3-036-4a814065a1.json": {
+      "bytes": 150472,
+      "sha256": "2698604412cafe2e0c7973c8290ec15ebf31410e9a1e7a43c5b77b86aa0c17b5"
+    },
+    "artifacts/designs/hemp_like_v3/l1a-gs-v3-048-aabacb3a59.json": {
+      "bytes": 198949,
+      "sha256": "1c2ef0fe58d855c9788ab778884bd301cef4d3cf8494dadd9d9b399d5366553d"
+    },
+    "artifacts/designs/hemp_like_v3/l1a-gs-v3-056-effcbc8686.json": {
+      "bytes": 230219,
+      "sha256": "527900ea38b1eec5cb06b2f8e90946921376e88a2dfb7b2323fb4209c7bb74a7"
+    },
+    "artifacts/designs/hemp_like_v3/l1a-gs-v3-063-f3fd134978.json": {
+      "bytes": 198830,
+      "sha256": "833ea41944731378b392c5cbdce63a4e8cd6d230445d180ae6cd0214a27c3e42"
+    },
+    "artifacts/designs/hemp_like_v3/l1a-gs-v3-068-71057b61d4.json": {
+      "bytes": 199191,
+      "sha256": "758d62a9a9ee5e9b4def4951a3af5d57ec597907e61253dc3cfdbf76c44c2e2f"
+    },
+    "artifacts/designs/hemp_like_v3/l1a-gs-v3-076-c57391dd35.json": {
+      "bytes": 199131,
+      "sha256": "33c8ebc0d7fbe65280405c704f6f701daacb347fc003a070cca3fb6ccf12792f"
+    },
+    "artifacts/designs/hemp_like_v3/l1a-gs-v3-090-c761e36e9c.json": {
+      "bytes": 256087,
+      "sha256": "af142b433b7263cb3161f5a5a4a26e611f1d24e50763d5d2ef47e09e253d0c65"
+    },
+    "artifacts/designs/hemp_like_v3/l1a-gs-v3-106-ccec1c8b2f.json": {
+      "bytes": 262826,
+      "sha256": "d9b37d5400963a8efd16f799eab6d67881206796deda36c53034533b81bdf367"
+    },
+    "artifacts/designs/hemp_like_v3/l1a-gs-v3-116-7865daa491.json": {
+      "bytes": 198706,
+      "sha256": "8486876953c9c394885d49b7d3c65c7a6757d1ae2317921d8b6e1fab738ce465"
+    },
+    "artifacts/designs/hemp_like_v3/l1a-gs-v3-124-f740cfc79a.json": {
+      "bytes": 199169,
+      "sha256": "9c2593750b7cce8983e3338d3a4e1911a42b5eb338a9746336399f00759de2d2"
+    },
+    "artifacts/fields/hemp_like_v3/l1a-gs-v3-000-78dcc2bb4c.json.gz": {
+      "bytes": 212245,
+      "sha256": "bc1ba1a2ce2701b5b90b21a2d54d6951beb3015105e120394424cb7b3c1067cc"
+    },
+    "artifacts/fields/hemp_like_v3/l1a-gs-v3-005-0e7f21e31d.json.gz": {
+      "bytes": 358889,
+      "sha256": "80c249dcd59621a8c816b16a01a7c2ff2267130e8f315152753a08c1a60581de"
+    },
+    "artifacts/fields/hemp_like_v3/l1a-gs-v3-015-3ce63a512e.json.gz": {
+      "bytes": 335266,
+      "sha256": "da3b2229e4895e8bd666eec2f4c3bf0ba9ff19b36d2856127d1cde762aee1ae7"
+    },
+    "artifacts/fields/hemp_like_v3/l1a-gs-v3-020-b6aa9b10ad.json.gz": {
+      "bytes": 192775,
+      "sha256": "b8b6b5dc05571c60071f8bf6bada78e8ea8984df434e1657ee72c04f8aefa6f6"
+    },
+    "artifacts/fields/hemp_like_v3/l1a-gs-v3-028-f012c0bf33.json.gz": {
+      "bytes": 246553,
+      "sha256": "afe3b0c6069d5e5b319f9e47ae2fcba7285720fb7a2a3f0e8f36bb9fa16f9ee5"
+    },
+    "artifacts/fields/hemp_like_v3/l1a-gs-v3-036-4a814065a1.json.gz": {
+      "bytes": 180036,
+      "sha256": "98aca2ea01fe32bf2295c77de1ddcc25349615f0f401620dc676c01ec3986a21"
+    },
+    "artifacts/fields/hemp_like_v3/l1a-gs-v3-048-aabacb3a59.json.gz": {
+      "bytes": 229824,
+      "sha256": "e43775ed58efa67f8f2393850d6d1177a2d14303dfc25b69e23a3d2a824458bf"
+    },
+    "artifacts/fields/hemp_like_v3/l1a-gs-v3-056-effcbc8686.json.gz": {
+      "bytes": 269690,
+      "sha256": "b9df23fd2d65a662f1f16c093ed3daaf455a0292485e639c6b80abc1e612e3b0"
+    },
+    "artifacts/fields/hemp_like_v3/l1a-gs-v3-063-f3fd134978.json.gz": {
+      "bytes": 248145,
+      "sha256": "f6db69fa9d9a7c4daf203b3616b7b257da17ea0cac4e4b0619d39d1b44414abd"
+    },
+    "artifacts/fields/hemp_like_v3/l1a-gs-v3-068-71057b61d4.json.gz": {
+      "bytes": 188877,
+      "sha256": "7f6558af35970492d44ee18f5636ae067f032f87f7cb889a44ea431312ae5272"
+    },
+    "artifacts/fields/hemp_like_v3/l1a-gs-v3-076-c57391dd35.json.gz": {
+      "bytes": 240664,
+      "sha256": "3e2e3e3bf12c759a5435baddd06425e6b471607337140ebe178f8102f1c127ff"
+    },
+    "artifacts/fields/hemp_like_v3/l1a-gs-v3-090-c761e36e9c.json.gz": {
+      "bytes": 297025,
+      "sha256": "58356e8948553c087709f56a0acb20eee68119b1ee3bfe8da0b57cb14a584f9c"
+    },
+    "artifacts/fields/hemp_like_v3/l1a-gs-v3-106-ccec1c8b2f.json.gz": {
+      "bytes": 295122,
+      "sha256": "9b250dea49e4b93fca1556da5cb220f9201ce44483614e3dab0992b87d30475d"
+    },
+    "artifacts/fields/hemp_like_v3/l1a-gs-v3-116-7865daa491.json.gz": {
+      "bytes": 255580,
+      "sha256": "11e3c214f65ee5dc73608d7924cbca53474898a3093177a7d1b19d47d894b886"
+    },
+    "artifacts/fields/hemp_like_v3/l1a-gs-v3-124-f740cfc79a.json.gz": {
+      "bytes": 186259,
+      "sha256": "556424186422b3f739be08ce950074d5b553e6051d6ecd1779195a21e5d39af2"
+    },
+    "artifacts/gates.json": {
+      "bytes": 11314,
+      "sha256": "ff378b36aafdcdd8aba88e1cd38ba797092db88fd3f7214cbe35316dd8115762"
+    },
+    "artifacts/protocol.json": {
+      "bytes": 20506,
+      "sha256": "0db3a36e1f17d4e1506878334f97d120cf38d0e46565889f093aa3b9b4c50d36"
+    },
+    "artifacts/runtime.json": {
+      "bytes": 663,
+      "sha256": "eed3bb098c11c9f8135a2bb3df8bfa55424ac3a82afa13c33bd99627b433479d"
+    },
+    "artifacts/shakedown.json": {
+      "bytes": 29985,
+      "sha256": "256207f9970be8eefa0acb1d7c259b77f3c529be73cd86bf594de944e34943f5"
+    },
+    "artifacts/source-binding.json": {
+      "bytes": 5264,
+      "sha256": "ef0830c6b47099c1d72e63064a0f8a3083af4b966512e0f33e5e14f2159df2ed"
+    },
+    "execution-lock.json": {
+      "bytes": 596,
+      "sha256": "35f8816ffcb017e414b98e981d12226aa73d823cf78a83bf229091b1b3ffc23b"
+    },
+    "phases/assessment.json": {
+      "bytes": 556,
+      "sha256": "fbbdac4c092ed517618452dc0c944f66e1900b31f0c5392cc4dabc5a03ed3cb0"
+    },
+    "phases/development.json": {
+      "bytes": 212,
+      "sha256": "598b985b9a632c2bfdf2a6735aada3c41ca6c4302bf62b0627e618a4df10f56e"
+    },
+    "phases/prebundle.json": {
+      "bytes": 527,
+      "sha256": "7e0cc1bb440df0b8776d286b8f252cad7181a29dc4904cfceca3b666c03c3424"
+    },
+    "terminal.json": {
+      "bytes": 734,
+      "sha256": "c4a2531733302635ef0c222c1a6d81532b9a27ba065c774dd5432c7522dba2d1"
+    },
+    "transitions/0001-lock-acquired.json": {
+      "bytes": 288,
+      "sha256": "eb91dd8289825af1ace3297050c2bb2ce45e95e1791de4da303eae965334d341"
+    },
+    "transitions/0002-cache-prepared.json": {
+      "bytes": 234,
+      "sha256": "0f88d3c36a95e0cba9d4bf9d548cf61a34708c2f14f8979054bac6667c2b5aa1"
+    },
+    "transitions/0003-prebundle-started.json": {
+      "bytes": 213,
+      "sha256": "11656de5ae2120d1550be443a576e16866886e239b55ac0386eb198a95564ac5"
+    },
+    "transitions/0004-prebundle-completed.json": {
+      "bytes": 215,
+      "sha256": "0de665e1dd935f7a4bf7aba3d41fb37a5e1a0ee5f5482c64e49c4e5dabf2a741"
+    },
+    "transitions/0005-development-started.json": {
+      "bytes": 215,
+      "sha256": "8d1820d9ffff4059a80c6e708e0230e471b27b2ce67c70b9766daeb44592dcd1"
+    },
+    "transitions/0006-development-accepted.json": {
+      "bytes": 216,
+      "sha256": "4e699c417652ba64c64c07031180abd3862977f15818a70d3019ef5d70c41959"
+    },
+    "transitions/0007-assessment-started.json": {
+      "bytes": 214,
+      "sha256": "ab76491e12a9d80e2b09c8716ca98ce4a973bf3fa5ef70efa9892d8f79f52528"
+    },
+    "transitions/0008-assessment-accepted.json": {
+      "bytes": 215,
+      "sha256": "737d4566ba19a5e6de9a03058068be533a013566f58d719a5a390d6827418f09"
+    },
+    "transitions/0009-terminal.json": {
+      "bytes": 229,
+      "sha256": "d85c15bba48d7c1fb06a470e437d4dd16849cfb557b5d319d4542e2e73fe966e"
+    }
+  },
+  "binding": {
+    "code_commit": "b6125fe7a3c4f310ff564c0102c1617ccc68b00a",
+    "code_commit_subject": "feat(l1b-hemp-confirmation-v1.1): re-preregistration after the recorded v1 rejection; v1 posthoc record",
+    "dashboard_commit": "560909f77ad64ff0215437ecd85e12bee6e8d4ea",
+    "dashboard_commit_code_files_changed": 0,
+    "lineage": {
+      "code_commit": "6e9f056cc01bb00d6c9cdba3f98b997ee01b4dcc",
+      "experiment_id": "l1b-hemp-confirmation-v1",
+      "manifest_git_blob": "bf0bd0dcc9db4abdf901e4016e7f21c9f514d969",
+      "manifest_path": "modern/experiments/l1b_hemp_confirmation_v1/results/manifest.json",
+      "posthoc_rejection_commit": "b6125fe7a3c4f310ff564c0102c1617ccc68b00a",
+      "preregistration_commit": "fb143eb2280abafc1bce3910f4311f8fdff5fd7f",
+      "results_commit": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+      "results_commit_files": 104,
+      "results_commit_subject": "record L1b HEMP confirmation v1 result: development_rejection (2/15 level-0 meshes fail the 10 deg gate)",
+      "results_tree": "695c37494d8a3029f14696deccd64db1303f7f4e",
+      "terminal_state": "development_rejection"
+    },
+    "manifest_git_blob": "577c4640cf8a561f10a9ea2157dc49e400cc544d",
+    "manifest_path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/manifest.json",
+    "preregistration_commit": "c8692ff2cb6d4b8605fc00176f919b830ff9e685",
+    "preregistration_commit_subject": "preregister L1b HEMP confirmation v1.1",
+    "rebase_note": "the campaign chain was developed on origin/exp/l1b-hemp-confirmation-v1 and rebased onto feat/sota-foundation; the bundle's execution lock and the protocol's predecessor block name the pre-rebase commits of that branch, which are recorded here as strings, while every binding above uses the rebased commits reachable from HEAD and the sealed source hashes are recomputed from their blobs",
+    "reference_commits": {
+      "cusp_topology_v3_1_results": "cec47f12f5909c5886424bf5d46ac20ce06f1ac5",
+      "sweep_v3_results": "2cfe8223630fbef6bfe8099a5dcecaf4eb8c6b44"
+    },
+    "results_commit": "54cd3e82b7c879110cb7242c5f6210d1ac59fc92",
+    "results_commit_files": 134,
+    "results_commit_files_outside_results_tree": 0,
+    "results_commit_subject": "record L1b HEMP confirmation v1.1 result: CONFIRMED (15/15 cusp counts, 37 cusps within 0.80 tolerance)",
+    "results_tree": "19d1f6df0e0d8485e336d3c5522c22438fd49090",
+    "source_hash_rule": "sha256 over (relative name, NUL, bytes, NUL) for every file of the sealed source-binding lists, read as Git blobs at the rebased preregistration commit; each must equal the value the bundle sealed in source-binding.json and authorities.json",
+    "source_hashes_recomputed_at_preregistration": {
+      "dependency_source_sha256": "c6b037fb8662f31c43615e8673353eea004254884c889f14097da2ebf037b0e7",
+      "experiment_code_sha256": "094b8cf8ffc1906e9fc36f98addb8685857d6fd9745b4bd44d63c4d1225aaf89",
+      "field_pipeline_source_sha256": "32254bf65742a5eb5a79c31df364fc3bc4620866f6961a5168b10aae828e53ce"
+    }
+  },
+  "bundle": {
+    "artifact_count": 142,
+    "manifest_path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/manifest.json",
+    "manifest_sha256": "0d8bec9f08901973c9d120dc71009fdcec8abc135c6544dec14e0c7c86b0b0ce",
+    "recomputation_rule": "the verdict, gates (b) and (c), reported (d), every headline and estimand distribution, the tolerance rule max(r_w / bore elements, L1a dz), x_w and r_w / L, every matched cusp's shift, tolerance ratio, wall-field ratio, magnet-strength scaling and rho ratio, every conservative Koch ratio from the wall field and the adjacent axis peaks, every HEMP-like flag against the recorded threshold, the channel and outside axis-null populations, the separatrix lean, the level structure, convergence, DOF cap and mesh-angle gate of every solve, the material regions, and the agreement-table and CSV rows are recomputed from the per-design rows, records and grids and must equal the sealed values (counts exactly; floats within a relative tolerance of 1e-09)",
+    "tolerance_rule": "none: every manifest file entry must hash to its recorded byte_sha256 with its recorded size, and the results tree carries no file the manifest does not bind",
+    "tolerated_eol_files": [],
+    "verified_file_count": 133
+  },
+  "campaign_status": "accepted_l1b_confirmation_confirmed",
+  "classification": "P2_MATERIAL_AWARE_FIELD_CONFIRMATION_NOT_HARDWARE_VALID",
+  "dashboard": {
+    "angle_gate_designs_below_ten_degrees": [
+      "l1a-gs-v3-028-f012c0bf33",
+      "l1a-gs-v3-048-aabacb3a59"
+    ],
+    "generator_path": "modern/visualization/generate_l1b_hemp_confirmation_v1_dashboard.py",
+    "generator_sha256_lf": "0d32de359e7721aa78e59e14b21f4c398abe615dcd755de74404fa7c4000dfd0",
+    "html_path": "modern/visualization/l1b-hemp-confirmation-v1.html",
+    "html_schema": "cft-revival.l1b-hemp-confirmation-v1-dashboard/1.0.0",
+    "html_sha256_lf": "4391620c6144cdb8ad77cb6faaeedbb2f05366e842e3b05daedb864064803df6",
+    "payload_manifest_sha256": "0d8bec9f08901973c9d120dc71009fdcec8abc135c6544dec14e0c7c86b0b0ce",
+    "payload_predecessor_manifest_sha256": "37ace02f630c3eecc5de2f9712e47eb1e5ab58646aa0d56055102fe9e1a2faac",
+    "rule": "the committed dashboard byte-verifies both bundles against their manifests, re-derives the verdict and the headline counts from the per-design rows, embeds its own extraction and pins the manifest SHA-256 and the lock commit of each bundle; the generator requires that extraction (identity, sealed sources, verdict, confirmation, headline, estimands, agreement table, claim boundary, gates, execution, protocol blocks, every design row, the predecessor record and the angle-gate block) to equal the sealed artifacts before writing any macro",
+    "template_path": "modern/visualization/l1b-hemp-confirmation-v1.template.html",
+    "template_sha256_lf": "ef756b4e7f56a4b0b2fa26ddc67794823d62e59514556916906a4a20cb0ebafa"
+  },
+  "document_type": "paper-l1b-hemp-confirmation-v1-1-evidence",
+  "evidence_revision": "54cd3e82b7c879110cb7242c5f6210d1ac59fc92",
+  "experiment_id": "l1b-hemp-confirmation-v1-1",
+  "generator": {
+    "command": "python paper/scripts/generate_l1b_hemp_confirmation_v1_1_evidence.py",
+    "path": "paper/scripts/generate_l1b_hemp_confirmation_v1_1_evidence.py",
+    "sha256": "2696f441e11512782fc2e0fe0abf69b0d2cbea13e749f5d7fa07d597ce870495"
+  },
+  "lineage": {
+    "angle_gate_deg": 10.0,
+    "artifact_count": 112,
+    "cited_for_numbers": false,
+    "code_commit": "6e9f056cc01bb00d6c9cdba3f98b997ee01b4dcc",
+    "declarations_changed": [
+      "p2/mesh/reject_below_angle_deg",
+      "shakedown/whole_set_mesh_preflight"
+    ],
+    "experiment_id": "l1b-hemp-confirmation-v1",
+    "failed_design_count": 2,
+    "failed_designs": [
+      "l1a-gs-v3-028-f012c0bf33",
+      "l1a-gs-v3-048-aabacb3a59"
+    ],
+    "files": {
+      "modern/experiments/l1b_hemp_confirmation_v1/POSTHOC_REJECTION.md": {
+        "bytes": 2089,
+        "git_blob": "a219bee2c7da0a740e6704b3a0c46b72bf3b6a10",
+        "git_blob_sha256": "a606968797bb0674c045f1b47efeb6081642ddd873955377f1ae2551ba4a35e4",
+        "revision": "b6125fe7a3c4f310ff564c0102c1617ccc68b00a",
+        "role": "lineage-posthoc-rejection",
+        "sha256": "a606968797bb0674c045f1b47efeb6081642ddd873955377f1ae2551ba4a35e4"
+      }
+    },
+    "lock_commit_recorded": "b9449ee58240d2ab2789571a7ab28ead19dca2d1",
+    "manifest_git_blob": "bf0bd0dcc9db4abdf901e4016e7f21c9f514d969",
+    "manifest_path": "modern/experiments/l1b_hemp_confirmation_v1/results/manifest.json",
+    "manifest_sha256": "37ace02f630c3eecc5de2f9712e47eb1e5ab58646aa0d56055102fe9e1a2faac",
+    "posthoc_rejection_commit": "b6125fe7a3c4f310ff564c0102c1617ccc68b00a",
+    "preregistration_commit": "fb143eb2280abafc1bce3910f4311f8fdff5fd7f",
+    "protocol_paths_changed": [
+      "execution/git_common_lock",
+      "experiment_id",
+      "p2/mesh/angle_gate_disclosure",
+      "p2/mesh/reject_below_angle_deg",
+      "p2/mesh/whole_set_preflight",
+      "predecessor",
+      "schema_version",
+      "shakedown/design_rule",
+      "shakedown/designs/hemp_like_v3",
+      "shakedown/prepare_requires",
+      "shakedown/whole_set_mesh_preflight",
+      "title"
+    ],
+    "resolved_design_count": 13,
+    "result_commit_recorded_prefix": "978c71be",
+    "results_commit": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+    "results_commit_files": 104,
+    "results_commit_subject": "record L1b HEMP confirmation v1 result: development_rejection (2/15 level-0 meshes fail the 10 deg gate)",
+    "results_tree": "695c37494d8a3029f14696deccd64db1303f7f4e",
+    "rule": "the recorded development rejection of l1b_hemp_confirmation_v1 is byte-verified from its own bundle (every file, sidecar, terminal record, lock and transition), its two failures must be the level-0 mesh-angle rejection at the resolve stage, its resolved count plus failures must equal the declared set, the v1.1 protocol must differ from the v1 protocol at exactly the declared paths, the post-hoc rejection note bound at the v1.1 code commit must name the recorded commits, counts, gate, stage time and the absence of a verdict, and the two rejected designs' v1.1 level-0 meshes must fall below the v1 gate; the rejection is disclosed as lineage and never cited for a confirmation number",
+    "terminal_state": "development_rejection",
+    "verified_file_count": 103
+  },
+  "lineage_artifacts": {
+    "artifacts/authorities.json": {
+      "bytes": 2564,
+      "sha256": "36aac526138b7dbf974b6dcb5782789f8104521ad7a0366d921dd584d1ef34d2"
+    },
+    "artifacts/design-authorities.json": {
+      "bytes": 17362,
+      "sha256": "aa38fe4c8fef1f2e681b0d86a5018b71ae89bf7a6c048b568f23307f9834542c"
+    },
+    "artifacts/design-failures.json": {
+      "bytes": 553,
+      "sha256": "55c47e2bb60011e77d923863e11dcedf3963f137f66a6c2585c7bb93c907acbd"
+    },
+    "artifacts/protocol.json": {
+      "bytes": 18136,
+      "sha256": "cdb2a624f2f342c86486b3348f71068653a1ebff908adc17d8ba7b2fe931ad88"
+    },
+    "artifacts/shakedown.json": {
+      "bytes": 18065,
+      "sha256": "8a21f9e62833f7322f472a187d08f9df25b65b7b8cb019a547e79441ff040786"
+    },
+    "execution-lock.json": {
+      "bytes": 590,
+      "sha256": "a2c218d6bd6d5887ea42584f34d24df595b3c43b1f011914f7b1b045983dd461"
+    },
+    "phases/development.json": {
+      "bytes": 213,
+      "sha256": "101fc31253454242452d567ee30dbd0b9791af02a63c984d618e3602919fdb7f"
+    },
+    "terminal.json": {
+      "bytes": 396,
+      "sha256": "8d04b8ee3f64919378faca5b02effd9b89c829447ec5683012733ba54b48010a"
+    },
+    "transitions/0001-lock-acquired.json": {
+      "bytes": 286,
+      "sha256": "2a9dfa1feafc9d8d642cb9c383c4aa64ca4e2a4488fe2cf1955d175c5b3e7a70"
+    },
+    "transitions/0002-cache-prepared.json": {
+      "bytes": 234,
+      "sha256": "8dac4a5c21d26748006031b2fa3d76f9521f5b867cc89943592edd638f880eeb"
+    },
+    "transitions/0003-prebundle-started.json": {
+      "bytes": 213,
+      "sha256": "be2572c8dedece9251884ad2bf817bd5071344289c30e428d6494877f032a1de"
+    },
+    "transitions/0004-prebundle-completed.json": {
+      "bytes": 215,
+      "sha256": "02e07a0834e783e39d1a6f94e357a33bc6b0e759062b0fa18fbdd7fd737870b9"
+    },
+    "transitions/0005-development-started.json": {
+      "bytes": 215,
+      "sha256": "54f81e9444423f39ebb7d72f44901dae4ae71517ad5fab10a7106aa3d8901171"
+    },
+    "transitions/0006-development-rejected.json": {
+      "bytes": 216,
+      "sha256": "8d40d25f4d5708e3eea70d5a7b5d0187dcde94c33ce85f1957bdaf8f469374fa"
+    },
+    "transitions/0007-terminal.json": {
+      "bytes": 235,
+      "sha256": "85e6e360c83c7a438ff0c7b1c7e0aca5e403e35530fd0a88a13ac7a841562392"
+    }
+  },
+  "macros": [
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "experiment identifier",
+      "format": "ident",
+      "name": "HmcExperimentId",
+      "raw": "l1b-hemp-confirmation-v1-1",
+      "source": {
+        "artifact": "artifacts/campaign-result.json",
+        "pointer": "/experiment_id"
+      },
+      "value": "l1b-\\allowbreak{}hemp-\\allowbreak{}confirmation-\\allowbreak{}v1-\\allowbreak{}1"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "classification string sealed with the campaign",
+      "format": "ident",
+      "name": "HmcClassification",
+      "raw": "P2_MATERIAL_AWARE_FIELD_CONFIRMATION_NOT_HARDWARE_VALID",
+      "source": {
+        "artifact": "artifacts/campaign-result.json",
+        "pointer": "/classification"
+      },
+      "value": "P2\\_\\allowbreak{}MATERIAL\\_\\allowbreak{}AWARE\\_\\allowbreak{}FIELD\\_\\allowbreak{}CONFIRMATION\\_\\allowbreak{}NOT\\_\\allowbreak{}HARDWARE\\_\\allowbreak{}VALID"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "topology label carried by every record",
+      "format": "ident",
+      "name": "HmcTopologyLabel",
+      "raw": "SCREENING_P2_MATERIAL_FIELD_SEPARATRIX_CUSP_TOPOLOGY",
+      "source": {
+        "artifact": "artifacts/campaign-result.json",
+        "pointer": "/topology_label"
+      },
+      "value": "SCREENING\\_\\allowbreak{}P2\\_\\allowbreak{}MATERIAL\\_\\allowbreak{}FIELD\\_\\allowbreak{}SEPARATRIX\\_\\allowbreak{}CUSP\\_\\allowbreak{}TOPOLOGY"
+    },
+    {
+      "bundle": "results",
+      "derivation": "constant of the admission (paper/evidence/result-gates.json)",
+      "derived": true,
+      "description": "recorded outcome at which the gate admits the study",
+      "format": "ident",
+      "inputs": [
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/status"
+        }
+      ],
+      "name": "HmcRecordedOutcome",
+      "raw": "accepted-material-aware-confirmation",
+      "value": "accepted-\\allowbreak{}material-\\allowbreak{}aware-\\allowbreak{}confirmation"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "sealed campaign status",
+      "format": "ident",
+      "name": "HmcCampaignStatus",
+      "raw": "accepted_l1b_confirmation_confirmed",
+      "source": {
+        "artifact": "artifacts/campaign-result.json",
+        "pointer": "/status"
+      },
+      "value": "accepted\\_\\allowbreak{}l1b\\_\\allowbreak{}confirmation\\_\\allowbreak{}confirmed"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "terminal state of the single execution",
+      "format": "ident",
+      "name": "HmcTerminalState",
+      "raw": "accepted_result",
+      "source": {
+        "artifact": "terminal.json",
+        "pointer": "/state"
+      },
+      "value": "accepted\\_\\allowbreak{}result"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "recorded confirmation verdict",
+      "format": "ident",
+      "name": "HmcVerdict",
+      "raw": "CONFIRMED",
+      "source": {
+        "artifact": "artifacts/campaign-result.json",
+        "pointer": "/verdict"
+      },
+      "value": "CONFIRMED"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "predeclared verdict rule",
+      "format": "text",
+      "name": "HmcVerdictRule",
+      "raw": "CONFIRMED iff (b) and (c) pass; PARTIALLY_CONFIRMED iff exactly one passes; DISCONFIRMED iff neither passes",
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/confirmation/verdict_rule"
+      },
+      "value": "CONFIRMED iff (b) and (c) pass; PARTIALLY\\_CONFIRMED iff exactly one passes; DISCONFIRMED iff neither passes"
+    },
+    {
+      "bundle": "results",
+      "derivation": "constant of the admission (paper/evidence/manifests)",
+      "derived": true,
+      "description": "screening model statement of the admission",
+      "format": "text",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/classification_statement"
+        }
+      ],
+      "name": "HmcScreeningModel",
+      "raw": "adaptive quadratic finite-element magnetostatics (cft_revival.fem_reference, numpy CPU) with LINEAR soft-iron poles and return yoke and recoil-remanence SmCo-like magnets on two nested levels, sampled into the cusp topology search v3.1 definition and compared with the sealed linear-vacuum L1a records of the fifteen HEMP-like sweep-v3 designs (a confirmation of field-map descriptors under two field models; not the three-level P2-qualified chain, no saturation or B-H curve, not hardware-valid)",
+      "value": "adaptive quadratic finite-element magnetostatics (cft\\_revival.fem\\_reference, numpy CPU) with LINEAR soft-iron poles and return yoke and recoil-remanence SmCo-like magnets on two nested levels, sampled into the cusp topology search v3.1 definition and compared with the sealed linear-vacuum L1a records of the fifteen HEMP-like sweep-v3 designs (a confirmation of field-map descriptors under two field models; not the three-level P2-qualified chain, no saturation or B-H curve, not hardware-valid)"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "plan kind",
+      "format": "ident",
+      "name": "HmcPlanKind",
+      "raw": "evidentiary",
+      "source": {
+        "artifact": "artifacts/campaign-result.json",
+        "pointer": "/plan_kind"
+      },
+      "value": "evidentiary"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "the single execution is the evidentiary run",
+      "format": "bool",
+      "name": "HmcEvidentiary",
+      "raw": true,
+      "source": {
+        "artifact": "artifacts/campaign-result.json",
+        "pointer": "/evidentiary"
+      },
+      "value": "true"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "the campaign's own statement about paper admission, as sealed",
+      "format": "text",
+      "name": "HmcPaperAdmissionRecord",
+      "raw": "NOT in scope of this campaign; the result records what a numerical-screening admission would state",
+      "source": {
+        "artifact": "artifacts/campaign-result.json",
+        "pointer": "/paper_admission"
+      },
+      "value": "NOT in scope of this campaign; the result records what a numerical-screening admission would state"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "field level statement of the sealed claim boundary",
+      "format": "text",
+      "name": "HmcFieldLevelStatement",
+      "raw": "P2 adaptive FEM with LINEAR soft-iron (mu_r 4000) poles and yoke and recoil-remanence SmCo-like magnets; two nested levels (screening configuration of the fem_reference qualification, not the three-level NUMERICAL_P2_QUALIFIED chain); not hardware-valid",
+      "source": {
+        "artifact": "artifacts/confirmation-dataset.json",
+        "pointer": "/claim_boundary/field_level"
+      },
+      "value": "P2 adaptive FEM with LINEAR soft-iron (mu\\_r 4000) poles and yoke and recoil-remanence SmCo-like magnets; two nested levels (screening configuration of the fem\\_reference qualification, not the three-level NUMERICAL\\_P2\\_QUALIFIED chain); not hardware-valid"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "what the campaign confirms or disconfirms",
+      "format": "text",
+      "name": "HmcWhatConfirmed",
+      "raw": "the L1a cusp topology (cell count, cusp axial positions) and the L1a Koch-rho HEMP-like classification of the 15 designs under a material-aware field",
+      "source": {
+        "artifact": "artifacts/confirmation-dataset.json",
+        "pointer": "/claim_boundary/what_is_confirmed_or_disconfirmed"
+      },
+      "value": "the L1a cusp topology (cell count, cusp axial positions) and the L1a Koch-rho HEMP-like classification of the 15 designs under a material-aware field"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "what the campaign does not claim",
+      "format": "text",
+      "name": "HmcWhatNotClaimed",
+      "raw": "saturation, B-H nonlinearity, temperature, plasma, mirror probability, thrust, efficiency, or any design recommendation",
+      "source": {
+        "artifact": "artifacts/confirmation-dataset.json",
+        "pointer": "/claim_boundary/what_is_not_claimed"
+      },
+      "value": "saturation, B-H nonlinearity, temperature, plasma, mirror probability, thrust, efficiency, or any design recommendation"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "plasma or performance publication forbidden",
+      "format": "bool",
+      "name": "HmcForbidPlasmaPerformance",
+      "raw": true,
+      "source": {
+        "artifact": "artifacts/confirmation-dataset.json",
+        "pointer": "/claim_boundary/forbid_plasma_performance_publication"
+      },
+      "value": "true"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "mirror-probability publication forbidden",
+      "format": "bool",
+      "name": "HmcForbidMirrorProbability",
+      "raw": true,
+      "source": {
+        "artifact": "artifacts/confirmation-dataset.json",
+        "pointer": "/claim_boundary/forbid_mirror_probability_publication"
+      },
+      "value": "true"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "mirror ratios are field descriptors, not probabilities",
+      "format": "bool",
+      "name": "HmcMirrorDescriptorsNotProbabilities",
+      "raw": true,
+      "source": {
+        "artifact": "artifacts/confirmation-dataset.json",
+        "pointer": "/claim_boundary/mirror_ratios_are_field_descriptors_not_probabilities"
+      },
+      "value": "true"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "shakedown outcomes are not evidence",
+      "format": "bool",
+      "name": "HmcShakedownNotEvidence",
+      "raw": true,
+      "source": {
+        "artifact": "artifacts/confirmation-dataset.json",
+        "pointer": "/claim_boundary/shakedown_outcomes_are_not_evidence"
+      },
+      "value": "true"
+    },
+    {
+      "bundle": "results",
+      "derivation": "fixed token of the classification statement (linear-vacuum equivalent-current FDM = L1a)",
+      "derived": true,
+      "description": "field level token of the linear-vacuum reference records",
+      "format": "symbol",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/classification_statement"
+        }
+      ],
+      "name": "HmcFieldModelLevelLOneA",
+      "raw": "L1a",
+      "value": "L1a"
+    },
+    {
+      "bundle": "results",
+      "derivation": "token of protocol.definition_v3_import.source (cusp_topology_search_v3_1)",
+      "derived": true,
+      "description": "version token of the imported cusp definition",
+      "format": "symbol",
+      "inputs": [
+        {
+          "artifact": "artifacts/protocol.json",
+          "pointer": "/definition_v3_import/source"
+        }
+      ],
+      "name": "HmcTopologyVersion",
+      "raw": "v3.1",
+      "value": "v3.1"
+    },
+    {
+      "bundle": "results",
+      "derivation": "token of protocol.design_sets.hemp_like_v3.source (l1a_geometry_sweep_v3)",
+      "derived": true,
+      "description": "version token of the sweep whose HEMP-like designs are confirmed",
+      "format": "symbol",
+      "inputs": [
+        {
+          "artifact": "artifacts/protocol.json",
+          "pointer": "/design_sets/hemp_like_v3/source"
+        }
+      ],
+      "name": "HmcSweepVersion",
+      "raw": "v3",
+      "value": "v3"
+    },
+    {
+      "bundle": "results",
+      "derivation": "token of protocol.predecessor.experiment_id",
+      "derived": true,
+      "description": "version token of the rejected predecessor",
+      "format": "symbol",
+      "inputs": [
+        {
+          "artifact": "artifacts/protocol.json",
+          "pointer": "/predecessor/experiment_id"
+        }
+      ],
+      "name": "HmcVOneVersion",
+      "raw": "v1",
+      "value": "v1"
+    },
+    {
+      "bundle": "results",
+      "derivation": "token of campaign-result.experiment_id",
+      "derived": true,
+      "description": "version token of this campaign",
+      "format": "symbol",
+      "inputs": [
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/experiment_id"
+        }
+      ],
+      "name": "HmcVersion",
+      "raw": "v1.1",
+      "value": "v1.1"
+    },
+    {
+      "bundle": "results",
+      "derivation": "fixed symbol",
+      "derived": true,
+      "description": "modified Bessel function symbol of the single-harmonic prediction",
+      "format": "symbol",
+      "inputs": [
+        {
+          "artifact": "artifacts/protocol.json",
+          "pointer": "/purpose"
+        }
+      ],
+      "name": "HmcIOne",
+      "raw": "I_1",
+      "value": "I_1"
+    },
+    {
+      "bundle": "results",
+      "derivation": "fixed symbol",
+      "derived": true,
+      "description": "radial field component symbol",
+      "format": "symbol",
+      "inputs": [
+        {
+          "artifact": "artifacts/protocol.json",
+          "pointer": "/p2/sampling/statement"
+        }
+      ],
+      "name": "HmcBRSymbol",
+      "raw": "B_r",
+      "value": "B_r"
+    },
+    {
+      "bundle": "results",
+      "derivation": "fixed symbol",
+      "derived": true,
+      "description": "axial field component symbol",
+      "format": "symbol",
+      "inputs": [
+        {
+          "artifact": "artifacts/protocol.json",
+          "pointer": "/p2/sampling/statement"
+        }
+      ],
+      "name": "HmcBZSymbol",
+      "raw": "B_z",
+      "value": "B_z"
+    },
+    {
+      "bundle": "results",
+      "derivation": "fixed token",
+      "derived": true,
+      "description": "name of the coarse P2 level",
+      "format": "text",
+      "inputs": [
+        {
+          "artifact": "artifacts/protocol.json",
+          "pointer": "/p2/adaptivity/levels"
+        }
+      ],
+      "name": "HmcLevelZeroToken",
+      "raw": "zero",
+      "value": "zero"
+    },
+    {
+      "bundle": "results",
+      "derivation": "fixed token",
+      "derived": true,
+      "description": "name of the accepted P2 level",
+      "format": "text",
+      "inputs": [
+        {
+          "artifact": "artifacts/protocol.json",
+          "pointer": "/p2/adaptivity/levels"
+        }
+      ],
+      "name": "HmcLevelOneToken",
+      "raw": "one",
+      "value": "one"
+    },
+    {
+      "bundle": "results",
+      "derivation": "constant of the admission, verified as the commit at which the results tree first exists",
+      "derived": true,
+      "description": "results (record) commit prefix",
+      "format": "sha_short",
+      "inputs": [
+        {
+          "artifact": "manifest.json",
+          "pointer": ""
+        }
+      ],
+      "name": "HmcResultsCommit",
+      "raw": "54cd3e82b7c879110cb7242c5f6210d1ac59fc92",
+      "value": "54cd3e82b7c8"
+    },
+    {
+      "bundle": "results",
+      "derivation": "constant of the admission, verified by recomputing the sealed source hashes from its blobs",
+      "derived": true,
+      "description": "rebased preregistration commit prefix (carries the code whose hashes the bundle sealed)",
+      "format": "sha_short",
+      "inputs": [
+        {
+          "artifact": "artifacts/source-binding.json",
+          "pointer": "/experiment_code_sha256"
+        }
+      ],
+      "name": "HmcPreregCommit",
+      "raw": "c8692ff2cb6d4b8605fc00176f919b830ff9e685",
+      "value": "c8692ff2cb6d"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "pre-rebase preregistration commit named by the execution lock (origin/exp/l1b-hemp-confirmation-v1)",
+      "format": "sha_short",
+      "name": "HmcLockCommit",
+      "raw": "ead9b52569c28d201df853da4f2f9e0db2bef993",
+      "source": {
+        "artifact": "execution-lock.json",
+        "pointer": "/commit"
+      },
+      "value": "ead9b52569c2"
+    },
+    {
+      "bundle": "results",
+      "derivation": "constant of the admission",
+      "derived": true,
+      "description": "commit of the v1.1 code, tests and the v1 post-hoc rejection note",
+      "format": "sha_short",
+      "inputs": [
+        {
+          "artifact": "manifest.json",
+          "pointer": ""
+        }
+      ],
+      "name": "HmcCodeCommit",
+      "raw": "b6125fe7a3c4f310ff564c0102c1617ccc68b00a",
+      "value": "b6125fe7a3c4"
+    },
+    {
+      "bundle": "results",
+      "derivation": "constant of the admission",
+      "derived": true,
+      "description": "dashboard commit prefix",
+      "format": "sha_short",
+      "inputs": [
+        {
+          "artifact": "manifest.json",
+          "pointer": ""
+        }
+      ],
+      "name": "HmcDashboardCommit",
+      "raw": "560909f77ad64ff0215437ecd85e12bee6e8d4ea",
+      "value": "560909f77ad6"
+    },
+    {
+      "bundle": "results",
+      "derivation": "constant of the admission",
+      "derived": true,
+      "description": "rebased v1 record commit prefix",
+      "format": "sha_short",
+      "inputs": [
+        {
+          "artifact": "manifest.json",
+          "pointer": ""
+        }
+      ],
+      "name": "HmcVOneResultsCommit",
+      "raw": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+      "value": "2d8d670593f1"
+    },
+    {
+      "bundle": "results",
+      "derivation": "constant of the admission",
+      "derived": true,
+      "description": "rebased v1 preregistration commit prefix",
+      "format": "sha_short",
+      "inputs": [
+        {
+          "artifact": "manifest.json",
+          "pointer": ""
+        }
+      ],
+      "name": "HmcVOnePreregCommit",
+      "raw": "fb143eb2280abafc1bce3910f4311f8fdff5fd7f",
+      "value": "fb143eb2280a"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "pre-rebase v1 preregistration commit named by the v1 lock and the protocol's predecessor block",
+      "format": "sha_short",
+      "name": "HmcVOneLockCommit",
+      "raw": "b9449ee58240d2ab2789571a7ab28ead19dca2d1",
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/predecessor/preregistration_commit"
+      },
+      "value": "b9449ee58240"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "pre-rebase v1 result commit prefix named by the protocol's predecessor block",
+      "format": "sha_short",
+      "name": "HmcVOneRecordedResultCommit",
+      "raw": "978c71be",
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/predecessor/result_commit"
+      },
+      "value": "978c71be"
+    },
+    {
+      "bundle": "results",
+      "derivation": "constant of the admission",
+      "derived": true,
+      "description": "sweep-v3 results commit at which the catalogue and manifest are bound",
+      "format": "sha_short",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/sealed_sources/l1a_geometry_sweep_v3"
+        }
+      ],
+      "name": "HmcSweepResultsCommit",
+      "raw": "2cfe8223630fbef6bfe8099a5dcecaf4eb8c6b44",
+      "value": "2cfe8223630f"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "sweep-v3 preregistration commit sealed as source",
+      "format": "sha_short",
+      "name": "HmcSweepPreregCommit",
+      "raw": "1923ef7601bcc07acafa28ce54db687f025922b6",
+      "source": {
+        "artifact": "artifacts/confirmation-dataset.json",
+        "pointer": "/sealed_sources/l1a_geometry_sweep_v3/preregistration_commit"
+      },
+      "value": "1923ef7601bc"
+    },
+    {
+      "bundle": "results",
+      "derivation": "constant of the admission",
+      "derived": true,
+      "description": "cusp topology v3.1 results commit at which the frozen definition protocol is bound",
+      "format": "sha_short",
+      "inputs": [
+        {
+          "artifact": "artifacts/protocol.json",
+          "pointer": "/definition_v3_import"
+        }
+      ],
+      "name": "HmcTopologyResultsCommit",
+      "raw": "cec47f12f5909c5886424bf5d46ac20ce06f1ac5",
+      "value": "cec47f12f590"
+    },
+    {
+      "bundle": "results",
+      "derivation": "sha256(results/manifest.json)",
+      "derived": true,
+      "description": "results manifest SHA-256 prefix",
+      "format": "sha_short",
+      "inputs": [
+        {
+          "artifact": "manifest.json",
+          "pointer": ""
+        }
+      ],
+      "name": "HmcManifestSha",
+      "raw": "0d8bec9f08901973c9d120dc71009fdcec8abc135c6544dec14e0c7c86b0b0ce",
+      "value": "0d8bec9f0890"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "terminal record SHA-256 prefix",
+      "format": "sha_short",
+      "name": "HmcTerminalSha",
+      "raw": "c4a2531733302635ef0c222c1a6d81532b9a27ba065c774dd5432c7522dba2d1",
+      "source": {
+        "artifact": "manifest.json",
+        "pointer": "/terminal_byte_sha256"
+      },
+      "value": "c4a253173330"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "protocol semantic hash prefix (recomputed)",
+      "format": "sha_short",
+      "name": "HmcProtocolSha",
+      "raw": "0db3a36e1f17d4e1506878334f97d120cf38d0e46565889f093aa3b9b4c50d36",
+      "source": {
+        "artifact": "artifacts/authorities.json",
+        "pointer": "/protocol_semantic_sha256"
+      },
+      "value": "0db3a36e1f17"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "experiment code hash prefix (recomputed from the preregistration blobs)",
+      "format": "sha_short",
+      "name": "HmcExperimentCodeSha",
+      "raw": "094b8cf8ffc1906e9fc36f98addb8685857d6fd9745b4bd44d63c4d1225aaf89",
+      "source": {
+        "artifact": "artifacts/authorities.json",
+        "pointer": "/experiment_code_sha256"
+      },
+      "value": "094b8cf8ffc1"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "dependency source hash prefix (recomputed from the preregistration blobs)",
+      "format": "sha_short",
+      "name": "HmcDependencySourceSha",
+      "raw": "c6b037fb8662f31c43615e8673353eea004254884c889f14097da2ebf037b0e7",
+      "source": {
+        "artifact": "artifacts/authorities.json",
+        "pointer": "/dependency_source_sha256"
+      },
+      "value": "c6b037fb8662"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "field pipeline source hash prefix (recomputed from the preregistration blobs)",
+      "format": "sha_short",
+      "name": "HmcFieldPipelineSha",
+      "raw": "32254bf65742a5eb5a79c31df364fc3bc4620866f6961a5168b10aae828e53ce",
+      "source": {
+        "artifact": "artifacts/authorities.json",
+        "pointer": "/field_pipeline_source_sha256"
+      },
+      "value": "32254bf65742"
+    },
+    {
+      "bundle": "results",
+      "derivation": "len(source-binding.experiment_code_files)",
+      "derived": true,
+      "description": "experiment code files hashed",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/source-binding.json",
+          "pointer": "/experiment_code_files"
+        }
+      ],
+      "name": "HmcExperimentCodeFiles",
+      "raw": 5,
+      "value": "5"
+    },
+    {
+      "bundle": "results",
+      "derivation": "len(source-binding.dependency_source_files)",
+      "derived": true,
+      "description": "dependency source files hashed",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/source-binding.json",
+          "pointer": "/dependency_source_files"
+        }
+      ],
+      "name": "HmcDependencySourceFiles",
+      "raw": 54,
+      "value": "54"
+    },
+    {
+      "bundle": "results",
+      "derivation": "len(source-binding.field_pipeline_source_files)",
+      "derived": true,
+      "description": "field pipeline source files hashed",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/source-binding.json",
+          "pointer": "/field_pipeline_source_files"
+        }
+      ],
+      "name": "HmcFieldPipelineFiles",
+      "raw": 36,
+      "value": "36"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "sealed sweep-v3 catalogue hash prefix (the bound file hashes to it)",
+      "format": "sha_short",
+      "name": "HmcSweepCatalogueSha",
+      "raw": "583bd039d33fc7158ff03424a9d75426072c933e339d9a7660d84b2e7eaef2a9",
+      "source": {
+        "artifact": "artifacts/confirmation-dataset.json",
+        "pointer": "/sealed_sources/l1a_geometry_sweep_v3/catalogue_byte_sha256"
+      },
+      "value": "583bd039d33f"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "sealed sweep-v3 manifest hash prefix (the bound file hashes to it)",
+      "format": "sha_short",
+      "name": "HmcSweepManifestSha",
+      "raw": "b8670c488ebccd69569525437ab2c8a13af9ea14c4be4e56f1ed651c8057abf3",
+      "source": {
+        "artifact": "artifacts/confirmation-dataset.json",
+        "pointer": "/sealed_sources/l1a_geometry_sweep_v3/manifest_file_sha256"
+      },
+      "value": "b8670c488ebc"
+    },
+    {
+      "bundle": "results",
+      "derivation": "count of manifest file entries verified",
+      "derived": true,
+      "description": "bundle files verified byte for byte",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "manifest.json",
+          "pointer": "/artifacts"
+        }
+      ],
+      "name": "HmcVerifiedFiles",
+      "raw": 133,
+      "value": "133"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "manifest artifact entries (files and directories)",
+      "format": "int",
+      "name": "HmcArtifactCount",
+      "raw": 142,
+      "source": {
+        "artifact": "manifest.json",
+        "pointer": "/artifact_count"
+      },
+      "value": "142"
+    },
+    {
+      "bundle": "results",
+      "derivation": "none: every file hashes to its recorded byte_sha256",
+      "derived": true,
+      "description": "files accepted through an end-of-line tolerance",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "manifest.json",
+          "pointer": "/artifacts"
+        }
+      ],
+      "name": "HmcToleratedEolFiles",
+      "raw": 0,
+      "value": "0"
+    },
+    {
+      "bundle": "results",
+      "derivation": "count of transition records lock-acquired -> terminal",
+      "derived": true,
+      "description": "transitions in the lifecycle log",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "transitions/0009-terminal.json",
+          "pointer": "/sequence"
+        }
+      ],
+      "name": "HmcTransitionCount",
+      "raw": 9,
+      "value": "9"
+    },
+    {
+      "bundle": "results",
+      "derivation": "git diff --name-only <record>~1 <record>",
+      "derived": true,
+      "description": "files added by the record commit (results tree only)",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "manifest.json",
+          "pointer": "/artifacts"
+        }
+      ],
+      "name": "HmcRecordCommitFiles",
+      "raw": 134,
+      "value": "134"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "attempts",
+      "format": "int",
+      "name": "HmcAttemptCount",
+      "raw": 1,
+      "source": {
+        "artifact": "terminal.json",
+        "pointer": "/counts/attempt_count"
+      },
+      "value": "1"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "execution lock immutable",
+      "format": "bool",
+      "name": "HmcLockImmutable",
+      "raw": true,
+      "source": {
+        "artifact": "execution-lock.json",
+        "pointer": "/immutable"
+      },
+      "value": "true"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "clean detached worktree attested at lock",
+      "format": "bool",
+      "name": "HmcCleanWorktree",
+      "raw": true,
+      "source": {
+        "artifact": "execution-lock.json",
+        "pointer": "/clean_worktree_attested"
+      },
+      "value": "true"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "device record of the execution",
+      "format": "ident",
+      "name": "HmcDevice",
+      "raw": "cpu-only;cft_revival.fem_reference.solve;numpy-csr-pcg;PsiBicubicField-tracing;gpu-not-used",
+      "source": {
+        "artifact": "execution-lock.json",
+        "pointer": "/device"
+      },
+      "value": "cpu-\\allowbreak{}only;cft\\_\\allowbreak{}revival.fem\\_\\allowbreak{}reference.solve;numpy-\\allowbreak{}csr-\\allowbreak{}pcg;PsiBicubicField-\\allowbreak{}tracing;gpu-\\allowbreak{}not-\\allowbreak{}used"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "worker pool size (one design at a time)",
+      "format": "int",
+      "name": "HmcWorkerPool",
+      "raw": 1,
+      "source": {
+        "artifact": "artifacts/campaign-result.json",
+        "pointer": "/execution_mode/worker_pool_size"
+      },
+      "value": "1"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "CPU cores of the host",
+      "format": "int",
+      "name": "HmcCpuCount",
+      "raw": 24,
+      "source": {
+        "artifact": "artifacts/runtime.json",
+        "pointer": "/cpu_count"
+      },
+      "value": "24"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "BLAS threads pinned for bitwise determinism",
+      "format": "text",
+      "name": "HmcBlasThreads",
+      "raw": "1",
+      "source": {
+        "artifact": "artifacts/runtime.json",
+        "pointer": "/blas_threads/OPENBLAS_NUM_THREADS"
+      },
+      "value": "1"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "design stage wall time (s)",
+      "format": "sec0",
+      "name": "HmcStageWallS",
+      "raw": 3079.2892819000117,
+      "source": {
+        "artifact": "artifacts/campaign-result.json",
+        "pointer": "/execution_mode/stage_wall_s"
+      },
+      "value": "3079"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "design stage wall time (min)",
+      "format": "min1",
+      "name": "HmcStageWallMin",
+      "raw": 3079.2892819000117,
+      "source": {
+        "artifact": "artifacts/campaign-result.json",
+        "pointer": "/execution_mode/stage_wall_s"
+      },
+      "value": "51.3"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "assessment wall time (s)",
+      "format": "sec0",
+      "name": "HmcAssessmentWallS",
+      "raw": 304.73673110001255,
+      "source": {
+        "artifact": "artifacts/campaign-result.json",
+        "pointer": "/execution_mode/assessment_wall_s"
+      },
+      "value": "305"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "assessment wall time (min)",
+      "format": "min1",
+      "name": "HmcAssessmentWallMin",
+      "raw": 304.73673110001255,
+      "source": {
+        "artifact": "artifacts/campaign-result.json",
+        "pointer": "/execution_mode/assessment_wall_s"
+      },
+      "value": "5.1"
+    },
+    {
+      "bundle": "results",
+      "derivation": "difference of the transition timestamps 0009 - 0001",
+      "derived": true,
+      "description": "lock-acquired to terminal wall time (min)",
+      "format": "min1",
+      "inputs": [
+        {
+          "artifact": "transitions/0001-lock-acquired.json",
+          "pointer": "/recorded_at_utc"
+        },
+        {
+          "artifact": "transitions/0009-terminal.json",
+          "pointer": "/recorded_at_utc"
+        }
+      ],
+      "name": "HmcExecutionWallMin",
+      "raw": 3386.945749,
+      "value": "56.4"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "peak process RSS over the campaign (MB)",
+      "format": "mb0",
+      "name": "HmcPeakRssMb",
+      "raw": 239702016,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/peak_rss_bytes"
+      },
+      "value": "240"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "RAM budget (GB)",
+      "format": "gb1",
+      "name": "HmcRamBudgetGb",
+      "raw": 3505505894,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/ram_budget/budget_bytes"
+      },
+      "value": "3.5"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "free physical RAM at campaign start (GB)",
+      "format": "gb1",
+      "name": "HmcRamFreeAtStartGb",
+      "raw": 8763764736,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/ram_budget/free_at_start_bytes"
+      },
+      "value": "8.8"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "budget fraction of free RAM",
+      "format": "g",
+      "name": "HmcRamBudgetFraction",
+      "raw": 0.4,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/ram_budget/fraction"
+      },
+      "value": "0.4"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "peak RSS as a share of the budget",
+      "format": "pct1",
+      "name": "HmcRamFractionUsed",
+      "raw": 0.06837872285716944,
+      "source": {
+        "artifact": "artifacts/confirmation-dataset.json",
+        "pointer": "/headline/ram_budget_fraction_used"
+      },
+      "value": "6.8\\%"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "P2 DOF cap",
+      "format": "int_comma",
+      "name": "HmcDofCap",
+      "raw": 600000,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/ram_budget/maximum_p2_dofs"
+      },
+      "value": "600{,}000"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "CPU only (GPU not used)",
+      "format": "bool",
+      "name": "HmcGpuNotUsed",
+      "raw": true,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/p2/resources/cpu_only"
+      },
+      "value": "true"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "Python version string of the execution",
+      "format": "text",
+      "name": "HmcPythonVersion",
+      "raw": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+      "source": {
+        "artifact": "artifacts/runtime.json",
+        "pointer": "/python"
+      },
+      "value": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "numpy version of the execution",
+      "format": "text",
+      "name": "HmcNumpyVersion",
+      "raw": "2.5.2",
+      "source": {
+        "artifact": "artifacts/runtime.json",
+        "pointer": "/numpy"
+      },
+      "value": "2.5.2"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "designs confirmed",
+      "format": "int",
+      "name": "HmcDesignCount",
+      "raw": 15,
+      "source": {
+        "artifact": "artifacts/campaign-result.json",
+        "pointer": "/design_count"
+      },
+      "value": "15"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "declared designs",
+      "format": "int",
+      "name": "HmcDeclaredDesigns",
+      "raw": 15,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/design_sets/hemp_like_v3/design_count"
+      },
+      "value": "15"
+    },
+    {
+      "bundle": "results",
+      "derivation": "len(design-failures.failed)",
+      "derived": true,
+      "description": "failed designs",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/design-failures.json",
+          "pointer": "/failed"
+        }
+      ],
+      "name": "HmcFailedDesigns",
+      "raw": 0,
+      "value": "0"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "resolved designs",
+      "format": "int",
+      "name": "HmcResolvedDesigns",
+      "raw": 15,
+      "source": {
+        "artifact": "phases/development.json",
+        "pointer": "/fields/payload/resolved_design_count"
+      },
+      "value": "15"
+    },
+    {
+      "bundle": "results",
+      "derivation": "count of representative rows",
+      "derived": true,
+      "description": "representative designs with stored traces",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        }
+      ],
+      "name": "HmcRepresentatives",
+      "raw": 4,
+      "value": "4"
+    },
+    {
+      "bundle": "results",
+      "derivation": "design ordinals of the representative rows (protocol order)",
+      "derived": true,
+      "description": "representative design ordinals",
+      "format": "list_short_designs",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        }
+      ],
+      "name": "HmcRepresentativeIds",
+      "raw": [
+        "l1a-gs-v3-000-78dcc2bb4c",
+        "l1a-gs-v3-015-3ce63a512e",
+        "l1a-gs-v3-036-4a814065a1",
+        "l1a-gs-v3-106-ccec1c8b2f"
+      ],
+      "value": "000, 015, 036, 106"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "HEMP-like rule of the sealed catalogue",
+      "format": "text",
+      "name": "HmcHempLikeRule",
+      "raw": "a design is HEMP-like iff it has at least one wall cusp inside the straight dielectric and every such cusp has rho_conservative >= 1.5 (the sealed catalogue's hemp_like_rule)",
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/design_sets/hemp_like_v3/rule"
+      },
+      "value": "a design is HEMP-like iff it has at least one wall cusp inside the straight dielectric and every such cusp has rho\\_conservative >= 1.5 (the sealed catalogue's hemp\\_like\\_rule)"
+    },
+    {
+      "bundle": "results",
+      "derivation": "design record descriptors.accepted.hemp_like_threshold.rho, verified equal across records",
+      "derived": true,
+      "description": "HEMP-like threshold on rho (equal in every design record)",
+      "format": "fixed1",
+      "inputs": [
+        {
+          "artifact": "artifacts/designs/hemp_like_v3/l1a-gs-v3-000-78dcc2bb4c.json",
+          "pointer": "/descriptors/accepted/hemp_like_threshold/rho"
+        }
+      ],
+      "name": "HmcRhoThreshold",
+      "raw": 1.5,
+      "value": "1.5"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "HEMP-like designs of the sealed sweep-v3 catalogue",
+      "format": "int",
+      "name": "HmcSweepHempLikeCount",
+      "raw": 15,
+      "source": {
+        "artifact": "artifacts/confirmation-dataset.json",
+        "pointer": "/sealed_sources/l1a_geometry_sweep_v3/hemp_like_design_count"
+      },
+      "value": "15"
+    },
+    {
+      "bundle": "results",
+      "derivation": "histogram of derived.stage_count",
+      "derived": true,
+      "description": "designs with 3 magnet stages",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        }
+      ],
+      "name": "HmcStageThreeDesigns",
+      "raw": 10,
+      "value": "10"
+    },
+    {
+      "bundle": "results",
+      "derivation": "histogram of derived.stage_count",
+      "derived": true,
+      "description": "designs with 4 magnet stages",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        }
+      ],
+      "name": "HmcStageFourDesigns",
+      "raw": 2,
+      "value": "2"
+    },
+    {
+      "bundle": "results",
+      "derivation": "histogram of derived.stage_count",
+      "derived": true,
+      "description": "designs with 5 magnet stages",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        }
+      ],
+      "name": "HmcStageFiveDesigns",
+      "raw": 3,
+      "value": "3"
+    },
+    {
+      "bundle": "results",
+      "derivation": "estimands.l1a_wall_cusp_count_histogram (equal to the P2 histogram)",
+      "derived": true,
+      "description": "designs with 2 wall cusps (both field models)",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/estimands/l1a_wall_cusp_count_histogram"
+        }
+      ],
+      "name": "HmcCuspTwoDesigns",
+      "raw": 10,
+      "value": "10"
+    },
+    {
+      "bundle": "results",
+      "derivation": "estimands.l1a_wall_cusp_count_histogram (equal to the P2 histogram)",
+      "derived": true,
+      "description": "designs with 3 wall cusps (both field models)",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/estimands/l1a_wall_cusp_count_histogram"
+        }
+      ],
+      "name": "HmcCuspThreeDesigns",
+      "raw": 3,
+      "value": "3"
+    },
+    {
+      "bundle": "results",
+      "derivation": "estimands.l1a_wall_cusp_count_histogram (equal to the P2 histogram)",
+      "derived": true,
+      "description": "designs with 4 wall cusps (both field models)",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/estimands/l1a_wall_cusp_count_histogram"
+        }
+      ],
+      "name": "HmcCuspFourDesigns",
+      "raw": 2,
+      "value": "2"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "matched wall cusps over every design",
+      "format": "int",
+      "name": "HmcMatchedCusps",
+      "raw": 37,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/confirmation/cusp_position_shift/matched_cusp_count"
+      },
+      "value": "37"
+    },
+    {
+      "bundle": "results",
+      "derivation": "min over rows of derived.x_w (recomputed as pi r_w / L)",
+      "derived": true,
+      "description": "smallest x_w of the set",
+      "format": "fixed2",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        }
+      ],
+      "name": "HmcXwMin",
+      "raw": 2.247333063658038,
+      "value": "2.25"
+    },
+    {
+      "bundle": "results",
+      "derivation": "max over rows of derived.x_w",
+      "derived": true,
+      "description": "largest x_w of the set",
+      "format": "fixed2",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        }
+      ],
+      "name": "HmcXwMax",
+      "raw": 3.2423969622885394,
+      "value": "3.24"
+    },
+    {
+      "bundle": "results",
+      "derivation": "min over rows of derived.wall_radius_over_pitch",
+      "derived": true,
+      "description": "smallest r_w / L of the set",
+      "format": "fixed3",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        }
+      ],
+      "name": "HmcRwOverLMin",
+      "raw": 0.7153483317100598,
+      "value": "0.715"
+    },
+    {
+      "bundle": "results",
+      "derivation": "max over rows of derived.wall_radius_over_pitch",
+      "derived": true,
+      "description": "largest r_w / L of the set",
+      "format": "fixed3",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        }
+      ],
+      "name": "HmcRwOverLMax",
+      "raw": 1.0320870080287337,
+      "value": "1.032"
+    },
+    {
+      "bundle": "results",
+      "derivation": "min over rows of comparison.l1a_min_rho_conservative",
+      "derived": true,
+      "description": "smallest per-design minimum rho under L1a",
+      "format": "fixed3",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        }
+      ],
+      "name": "HmcLOneARhoMinMin",
+      "raw": 1.512606292621774,
+      "value": "1.513"
+    },
+    {
+      "bundle": "results",
+      "derivation": "max over rows of comparison.l1a_min_rho_conservative",
+      "derived": true,
+      "description": "largest per-design minimum rho under L1a",
+      "format": "fixed3",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        }
+      ],
+      "name": "HmcLOneARhoMinMax",
+      "raw": 2.5604035984374143,
+      "value": "2.560"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "soft-iron relative permeability",
+      "format": "fixed0",
+      "name": "HmcIronMuR",
+      "raw": 4000.0,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/p2/materials/soft_iron_relative_permeability"
+      },
+      "value": "4000"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "magnet recoil relative permeability",
+      "format": "fixed2",
+      "name": "HmcMagnetRecoilMuR",
+      "raw": 1.05,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/p2/materials/magnet_recoil_relative_permeability"
+      },
+      "value": "1.05"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "materials statement of the frozen protocol",
+      "format": "text",
+      "name": "HmcMaterialsStatement",
+      "raw": "linear isotropic mu_r; no saturation, no B-H curve; the pole pieces sit exactly in the inter-magnet gaps and the return yoke outside the shield shell (geometry v1.1 regions pole-XX and return-yoke)",
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/p2/materials/statement"
+      },
+      "value": "linear isotropic mu\\_r; no saturation, no B-H curve; the pole pieces sit exactly in the inter-magnet gaps and the return yoke outside the shield shell (geometry v1.1 regions pole-XX and return-yoke)"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "regions at unit permeability",
+      "format": "text",
+      "name": "HmcVacuumLikeRegions",
+      "raw": "plasma placeholder, BN dielectric, Al shield, copper anode at mu_r = 1",
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/p2/materials/vacuum_like_regions"
+      },
+      "value": "plasma placeholder, BN dielectric, Al shield, copper anode at mu\\_r = 1"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "level-0 elements across the bore radius",
+      "format": "int",
+      "name": "HmcBoreElements",
+      "raw": 8,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/p2/mesh/bore_elements"
+      },
+      "value": "8"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "level-0 elements across the thinnest feature",
+      "format": "int",
+      "name": "HmcFeatureElements",
+      "raw": 3,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/p2/mesh/feature_elements"
+      },
+      "value": "3"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "outer-boundary padding factor",
+      "format": "g",
+      "name": "HmcPaddingFactor",
+      "raw": 0.5,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/p2/mesh/padding_factor"
+      },
+      "value": "0.5"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "level-0 minimum-angle rejection gate of v1.1 (degrees)",
+      "format": "fixed0",
+      "name": "HmcAngleGateDeg",
+      "raw": 5.0,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/p2/mesh/reject_below_angle_deg"
+      },
+      "value": "5"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "nested adaptive levels",
+      "format": "int",
+      "name": "HmcAdaptiveLevels",
+      "raw": 2,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/p2/adaptivity/levels"
+      },
+      "value": "2"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "Dorfler marking fraction",
+      "format": "g",
+      "name": "HmcDorflerTheta",
+      "raw": 0.5,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/p2/adaptivity/dorfler_theta"
+      },
+      "value": "0.5"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "relative true-residual tolerance of every solve",
+      "format": "sci1",
+      "name": "HmcSolverRelTol",
+      "raw": 2e-10,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/p2/solver/relative_tolerance"
+      },
+      "value": "$2.0\\times10^{-10}$"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "iteration cap of every solve",
+      "format": "int_comma",
+      "name": "HmcSolverMaxIter",
+      "raw": 16000,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/p2/solver/max_iterations"
+      },
+      "value": "16{,}000"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "solver backend",
+      "format": "text",
+      "name": "HmcSolverBackend",
+      "raw": "numpy CSR PCG (IC0 below 15000 free DOFs, Jacobi above); CPU only, no CUDA, no Warp",
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/p2/solver/backend"
+      },
+      "value": "numpy CSR PCG (IC0 below 15000 free DOFs, Jacobi above); CPU only, no CUDA, no Warp"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "radial sampling intervals across the bore",
+      "format": "int",
+      "name": "HmcRadialIntervals",
+      "raw": 32,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/p2/sampling/radial_intervals"
+      },
+      "value": "32"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "refinement factor of the second sampling",
+      "format": "int",
+      "name": "HmcSamplingRefinement",
+      "raw": 2,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/p2/sampling/refinement"
+      },
+      "value": "2"
+    },
+    {
+      "bundle": "results",
+      "derivation": "min over rows of p2.levels[0].p2_dofs",
+      "derived": true,
+      "description": "smallest level-0 DOF count",
+      "format": "int_comma",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        }
+      ],
+      "name": "HmcLevelZeroDofsMin",
+      "raw": 24369,
+      "value": "24{,}369"
+    },
+    {
+      "bundle": "results",
+      "derivation": "max over rows of p2.levels[0].p2_dofs",
+      "derived": true,
+      "description": "largest level-0 DOF count",
+      "format": "int_comma",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        }
+      ],
+      "name": "HmcLevelZeroDofsMax",
+      "raw": 116883,
+      "value": "116{,}883"
+    },
+    {
+      "bundle": "results",
+      "derivation": "min over rows of p2.levels[1].p2_dofs",
+      "derived": true,
+      "description": "smallest level-1 DOF count",
+      "format": "int_comma",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        }
+      ],
+      "name": "HmcLevelOneDofsMin",
+      "raw": 50037,
+      "value": "50{,}037"
+    },
+    {
+      "bundle": "results",
+      "derivation": "max over rows of p2.levels[1].p2_dofs",
+      "derived": true,
+      "description": "largest level-1 DOF count",
+      "format": "int_comma",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        }
+      ],
+      "name": "HmcLevelOneDofsMax",
+      "raw": 466005,
+      "value": "466{,}005"
+    },
+    {
+      "bundle": "results",
+      "derivation": "median over rows of p2.levels[1].p2_dofs",
+      "derived": true,
+      "description": "median level-1 DOF count",
+      "format": "int_comma",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        }
+      ],
+      "name": "HmcLevelOneDofsMedian",
+      "raw": 232049,
+      "value": "232{,}049"
+    },
+    {
+      "bundle": "results",
+      "derivation": "min over rows of p2.levels[0].iterations",
+      "derived": true,
+      "description": "fewest level-0 PCG iterations",
+      "format": "int_comma",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        }
+      ],
+      "name": "HmcLevelZeroItersMin",
+      "raw": 949,
+      "value": "949"
+    },
+    {
+      "bundle": "results",
+      "derivation": "max over rows of p2.levels[0].iterations",
+      "derived": true,
+      "description": "most level-0 PCG iterations",
+      "format": "int_comma",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        }
+      ],
+      "name": "HmcLevelZeroItersMax",
+      "raw": 3227,
+      "value": "3{,}227"
+    },
+    {
+      "bundle": "results",
+      "derivation": "min over rows of p2.levels[1].iterations",
+      "derived": true,
+      "description": "fewest level-1 PCG iterations",
+      "format": "int_comma",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        }
+      ],
+      "name": "HmcLevelOneItersMin",
+      "raw": 1183,
+      "value": "1{,}183"
+    },
+    {
+      "bundle": "results",
+      "derivation": "max over rows of p2.levels[1].iterations",
+      "derived": true,
+      "description": "most level-1 PCG iterations",
+      "format": "int_comma",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        }
+      ],
+      "name": "HmcLevelOneItersMax",
+      "raw": 5455,
+      "value": "5{,}455"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "largest relative true residual over every solve",
+      "format": "sci2",
+      "name": "HmcResidualMax",
+      "raw": 1.9998663339378087e-10,
+      "source": {
+        "artifact": "artifacts/confirmation-dataset.json",
+        "pointer": "/headline/p2_relative_true_residual_max"
+      },
+      "value": "$2.00\\times10^{-10}$"
+    },
+    {
+      "bundle": "results",
+      "derivation": "count over rows and levels of converged == true",
+      "derived": true,
+      "description": "converged P2 solves",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        }
+      ],
+      "name": "HmcSolvesConverged",
+      "raw": 30,
+      "value": "30"
+    },
+    {
+      "bundle": "results",
+      "derivation": "2 x design count",
+      "derived": true,
+      "description": "P2 solves (two levels per design)",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        }
+      ],
+      "name": "HmcSolvesTotal",
+      "raw": 30,
+      "value": "30"
+    },
+    {
+      "bundle": "results",
+      "derivation": "min over rows of p2.total_seconds",
+      "derived": true,
+      "description": "shortest per-design P2 time (s)",
+      "format": "sec0",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        }
+      ],
+      "name": "HmcSolveSecondsMin",
+      "raw": 28.299127299978863,
+      "value": "28"
+    },
+    {
+      "bundle": "results",
+      "derivation": "median over rows of p2.total_seconds",
+      "derived": true,
+      "description": "median per-design P2 time (s)",
+      "format": "sec0",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        }
+      ],
+      "name": "HmcSolveSecondsMedian",
+      "raw": 137.26429089999874,
+      "value": "137"
+    },
+    {
+      "bundle": "results",
+      "derivation": "max over rows of p2.total_seconds",
+      "derived": true,
+      "description": "longest per-design P2 time (s)",
+      "format": "sec0",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        }
+      ],
+      "name": "HmcSolveSecondsMax",
+      "raw": 359.57431050000014,
+      "value": "360"
+    },
+    {
+      "bundle": "results",
+      "derivation": "sum over rows of p2.total_seconds",
+      "derived": true,
+      "description": "summed per-design P2 time (s)",
+      "format": "sec0",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        }
+      ],
+      "name": "HmcSolveSecondsTotal",
+      "raw": 2260.393740499887,
+      "value": "2260"
+    },
+    {
+      "bundle": "results",
+      "derivation": "max over rows of p2.peak_rss_bytes",
+      "derived": true,
+      "description": "largest per-design peak RSS (MB)",
+      "format": "mb0",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        }
+      ],
+      "name": "HmcDesignRssMaxMb",
+      "raw": 221929472,
+      "value": "222"
+    },
+    {
+      "bundle": "results",
+      "derivation": "len(designs[0].p2.regions)",
+      "derived": true,
+      "description": "material regions of the first design",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs/0/p2/regions"
+        }
+      ],
+      "name": "HmcRegionCount",
+      "raw": 14,
+      "value": "14"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "imported definition source",
+      "format": "text",
+      "name": "HmcDefinitionSource",
+      "raw": "experiments.cusp_topology_search_v3_1.topology (characterize_map, compare_resolutions, tracing_grid, bicubic_field) and experiments.l1a_geometry_sweep_v3.descriptors (design_descriptors: Koch rho readings, HEMP-like flag, wall harmonics, profiles) imported unchanged; protocol.json#definition_v3 of cusp topology search v3.1 (result commit cec47f12) is the definition authority and is bound by hash in dependency_source_sha256",
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/definition_v3_import/source"
+      },
+      "value": "experiments.cusp\\_topology\\_search\\_v3\\_1.topology (characterize\\_map, compare\\_resolutions, tracing\\_grid, bicubic\\_field) and experiments.l1a\\_geometry\\_sweep\\_v3.descriptors (design\\_descriptors: Koch rho readings, HEMP-like flag, wall harmonics, profiles) imported unchanged; protocol.json\\#definition\\_v3 of cusp topology search v3.1 (result commit cec47f12) is the definition authority and is bound by hash in dependency\\_source\\_sha256"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "stability tolerance of the imported definition (mm)",
+      "format": "mm2",
+      "name": "HmcStabilityToleranceMm",
+      "raw": 0.00025,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/definition_v3_import/stability_tolerance_m"
+      },
+      "value": "0.25"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "boundary-ambiguity tolerance (mm)",
+      "format": "mm2",
+      "name": "HmcBoundaryAmbiguityMm",
+      "raw": 0.00025,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/definition_v3_import/numerical_parameters/boundary_ambiguity_tolerance_m"
+      },
+      "value": "0.25"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "wall samples per cell",
+      "format": "int",
+      "name": "HmcWallSamplesPerCell",
+      "raw": 400,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/definition_v3_import/numerical_parameters/wall_samples_per_cell"
+      },
+      "value": "400"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "trace-to-flux-root tolerance (um)",
+      "format": "um0",
+      "name": "HmcFluxRootToleranceUm",
+      "raw": 5e-05,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/definition_v3_import/numerical_parameters/trace_flux_root_tolerance_m"
+      },
+      "value": "50"
+    },
+    {
+      "bundle": "results",
+      "derivation": "protocol.definition_v3_import.numerical_parameters == cusp_topology_search_v3_1/protocol.json#definition_v3/numerical_parameters at the bound revision",
+      "derived": true,
+      "description": "imported numerical parameters equal the frozen cusp topology v3.1 protocol",
+      "format": "bool",
+      "inputs": [
+        {
+          "artifact": "artifacts/protocol.json",
+          "pointer": "/definition_v3_import/numerical_parameters"
+        }
+      ],
+      "name": "HmcDefinitionParametersEqual",
+      "raw": true,
+      "value": "true"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "cusp-position tolerance rule",
+      "format": "text",
+      "name": "HmcToleranceRule",
+      "raw": "tolerance_m(design) = max(wall_radius_m / bore_elements, l1a_dz_m) = max(r_w / 8, 0.0004514): one level-0 P2 bore element (two level-1 bore elements), never below the L1a axial grid step; 0.45-0.53 mm over the 15 designs",
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/comparison/cusp_position_tolerance_rule"
+      },
+      "value": "tolerance\\_m(design) = max(wall\\_radius\\_m / bore\\_elements, l1a\\_dz\\_m) = max(r\\_w / 8, 0.0004514): one level-0 P2 bore element (two level-1 bore elements), never below the L1a axial grid step; 0.45-0.53 mm over the 15 designs"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "L1a axial grid step (mm)",
+      "format": "mm3",
+      "name": "HmcLOneADzMm",
+      "raw": 0.0004513888888888889,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/comparison/l1a_dz_m"
+      },
+      "value": "0.451"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "smallest design tolerance (mm)",
+      "format": "mm2",
+      "name": "HmcToleranceMinMm",
+      "raw": 0.0004513888888888889,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/confirmation/cusp_position_shift/tolerance_m/min"
+      },
+      "value": "0.45"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "largest design tolerance (mm)",
+      "format": "mm2",
+      "name": "HmcToleranceMaxMm",
+      "raw": 0.0005229379374895871,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/confirmation/cusp_position_shift/tolerance_m/max"
+      },
+      "value": "0.52"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "median design tolerance (mm)",
+      "format": "mm2",
+      "name": "HmcToleranceMedianMm",
+      "raw": 0.0004513888888888889,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/confirmation/cusp_position_shift/tolerance_m/median"
+      },
+      "value": "0.45"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "strict and boundary-tolerant count agreement rule",
+      "format": "text",
+      "name": "HmcCountAgreementRule",
+      "raw": "STRICT: P2 wall_cusp_count == L1a wall_cusp_count (and cell_count). BOUNDARY-TOLERANT: strict, or every unmatched cusp on either side lies within boundary_ambiguity_tolerance_m (0.25 mm) of a straight-section end (a boundary classification, the v3.1 wall_cusp_count_change_is_boundary_classification concept)",
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/comparison/count_agreement"
+      },
+      "value": "STRICT: P2 wall\\_cusp\\_count == L1a wall\\_cusp\\_count (and cell\\_count). BOUNDARY-TOLERANT: strict, or every unmatched cusp on either side lies within boundary\\_ambiguity\\_tolerance\\_m (0.25 mm) of a straight-section end (a boundary classification, the v3.1 wall\\_cusp\\_count\\_change\\_is\\_boundary\\_classification concept)"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "cusp matching rule",
+      "format": "text",
+      "name": "HmcMatchingRule",
+      "raw": "cusps (and axis nulls inside the L1a window) are matched by the v3.1 sorted nearest-neighbour bijection (_match_sorted) within the design's tolerance; unmatched cusps on either side are reported",
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/comparison/matching"
+      },
+      "value": "cusps (and axis nulls inside the L1a window) are matched by the v3.1 sorted nearest-neighbour bijection (\\_match\\_sorted) within the design's tolerance; unmatched cusps on either side are reported"
+    },
+    {
+      "bundle": "results",
+      "derivation": "len(gates.campaign)",
+      "derived": true,
+      "description": "binding integrity gates",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/gates.json",
+          "pointer": "/campaign"
+        }
+      ],
+      "name": "HmcBindingGateCount",
+      "raw": 11,
+      "value": "11"
+    },
+    {
+      "bundle": "results",
+      "derivation": "count of true values in gates.campaign",
+      "derived": true,
+      "description": "binding integrity gates true",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/gates.json",
+          "pointer": "/campaign"
+        }
+      ],
+      "name": "HmcBindingGatesTrue",
+      "raw": 11,
+      "value": "11"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "every binding gate passed",
+      "format": "bool",
+      "name": "HmcGatesPassed",
+      "raw": true,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/passed"
+      },
+      "value": "true"
+    },
+    {
+      "bundle": "results",
+      "derivation": "len(gates.replays)",
+      "derived": true,
+      "description": "determinism replays",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/gates.json",
+          "pointer": "/replays"
+        }
+      ],
+      "name": "HmcReplayDesigns",
+      "raw": 1,
+      "value": "1"
+    },
+    {
+      "bundle": "results",
+      "derivation": "count of replays with bit_identical",
+      "derived": true,
+      "description": "bit-identical replays",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/gates.json",
+          "pointer": "/replays"
+        }
+      ],
+      "name": "HmcReplaysBitIdentical",
+      "raw": 1,
+      "value": "1"
+    },
+    {
+      "bundle": "results",
+      "derivation": "gates.replays[0].key",
+      "derived": true,
+      "description": "replayed design ordinal",
+      "format": "ident",
+      "inputs": [
+        {
+          "artifact": "artifacts/gates.json",
+          "pointer": "/replays/0/key"
+        }
+      ],
+      "name": "HmcReplayDesign",
+      "raw": "015",
+      "value": "015"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "designs stable between the 1x and 2x sampling",
+      "format": "int",
+      "name": "HmcSamplingStable",
+      "raw": 15,
+      "source": {
+        "artifact": "artifacts/confirmation-dataset.json",
+        "pointer": "/headline/sampling_stable_count"
+      },
+      "value": "15"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "designs stable between the level-0 and level-1 maps",
+      "format": "int",
+      "name": "HmcDiscStable",
+      "raw": 15,
+      "source": {
+        "artifact": "artifacts/confirmation-dataset.json",
+        "pointer": "/headline/p2_discretisation_stable_count"
+      },
+      "value": "15"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "identity proven for every design",
+      "format": "bool",
+      "name": "HmcIdentityProven",
+      "raw": true,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/campaign/identity_proven"
+      },
+      "value": "true"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "hash bindings equal the frozen authorities",
+      "format": "bool",
+      "name": "HmcHashBindings",
+      "raw": true,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/campaign/hash_bindings"
+      },
+      "value": "true"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "designs with strict cusp-count agreement",
+      "format": "int",
+      "name": "HmcGateBAgreeStrict",
+      "raw": 15,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/confirmation/cusp_count_unchanged/agreeing_designs_strict"
+      },
+      "value": "15"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "designs with boundary-tolerant cusp-count agreement",
+      "format": "int",
+      "name": "HmcGateBAgreeTolerant",
+      "raw": 15,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/confirmation/cusp_count_unchanged/agreeing_designs_boundary_tolerant"
+      },
+      "value": "15"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "strict agreement fraction",
+      "format": "fixed2",
+      "name": "HmcGateBFractionStrict",
+      "raw": 1.0,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/confirmation/cusp_count_unchanged/fraction_strict"
+      },
+      "value": "1.00"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "gate (b) threshold",
+      "format": "fixed1",
+      "name": "HmcGateBThreshold",
+      "raw": 1.0,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/confirmation/cusp_count_unchanged/pass_threshold"
+      },
+      "value": "1.0"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "gate (b) passed",
+      "format": "bool",
+      "name": "HmcGateBPassed",
+      "raw": true,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/confirmation/cusp_count_unchanged/passed"
+      },
+      "value": "true"
+    },
+    {
+      "bundle": "results",
+      "derivation": "len(disagreeing_designs)",
+      "derived": true,
+      "description": "designs whose cusp count changed",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/gates.json",
+          "pointer": "/confirmation/cusp_count_unchanged/disagreeing_designs"
+        }
+      ],
+      "name": "HmcGateBDisagreeing",
+      "raw": 0,
+      "value": "0"
+    },
+    {
+      "bundle": "results",
+      "derivation": "count over rows of comparison.cell_count_agreement",
+      "derived": true,
+      "description": "designs whose cell count agrees",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        }
+      ],
+      "name": "HmcCellCountsAgree",
+      "raw": 15,
+      "value": "15"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "largest matched-cusp shift in tolerance units",
+      "format": "fixed2",
+      "name": "HmcGateCMaxShiftOverTol",
+      "raw": 0.8023324858192963,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/confirmation/cusp_position_shift/max_shift_over_tolerance"
+      },
+      "value": "0.80"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "gate (c) threshold in tolerance units",
+      "format": "fixed1",
+      "name": "HmcGateCThreshold",
+      "raw": 1.0,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/confirmation/cusp_position_shift/pass_threshold"
+      },
+      "value": "1.0"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "gate (c) passed",
+      "format": "bool",
+      "name": "HmcGateCPassed",
+      "raw": true,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/confirmation/cusp_position_shift/passed"
+      },
+      "value": "true"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "every design's cusp matching is a bijection",
+      "format": "bool",
+      "name": "HmcAllBijective",
+      "raw": true,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/confirmation/cusp_position_shift/all_designs_bijective"
+      },
+      "value": "true"
+    },
+    {
+      "bundle": "results",
+      "derivation": "count over rows of comparison.cusp_match.bijection",
+      "derived": true,
+      "description": "designs whose cusp matching is a bijection",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        }
+      ],
+      "name": "HmcBijectiveDesigns",
+      "raw": 15,
+      "value": "15"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "largest matched-cusp shift (mm)",
+      "format": "mm3",
+      "name": "HmcShiftMaxMm",
+      "raw": 0.0003621639692934324,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/confirmation/cusp_position_shift/shift_m/max"
+      },
+      "value": "0.362"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "median matched-cusp shift (mm)",
+      "format": "mm3",
+      "name": "HmcShiftMedianMm",
+      "raw": 0.0002671743195241487,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/confirmation/cusp_position_shift/shift_m/median"
+      },
+      "value": "0.267"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "mean matched-cusp shift (mm)",
+      "format": "mm3",
+      "name": "HmcShiftMeanMm",
+      "raw": 0.0002433271081205591,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/confirmation/cusp_position_shift/shift_m/mean"
+      },
+      "value": "0.243"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "smallest matched-cusp shift (um)",
+      "format": "um1",
+      "name": "HmcShiftMinUm",
+      "raw": 1.3036083879331556e-06,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/confirmation/cusp_position_shift/shift_m/min"
+      },
+      "value": "1.3"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "median shift in tolerance units",
+      "format": "fixed2",
+      "name": "HmcShiftOverTolMedian",
+      "raw": 0.5411543274515939,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/confirmation/cusp_position_shift/shift_over_tolerance/median"
+      },
+      "value": "0.54"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "mean shift in tolerance units",
+      "format": "fixed2",
+      "name": "HmcShiftOverTolMean",
+      "raw": 0.5098202097427231,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/confirmation/cusp_position_shift/shift_over_tolerance/mean"
+      },
+      "value": "0.51"
+    },
+    {
+      "bundle": "results",
+      "derivation": "len(designs_exceeding_tolerance)",
+      "derived": true,
+      "description": "designs with a cusp beyond its tolerance",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/gates.json",
+          "pointer": "/confirmation/cusp_position_shift/designs_exceeding_tolerance"
+        }
+      ],
+      "name": "HmcDesignsExceeding",
+      "raw": 0,
+      "value": "0"
+    },
+    {
+      "bundle": "results",
+      "derivation": "argmax over matched pairs of shift_m",
+      "derived": true,
+      "description": "design of the largest cusp shift",
+      "format": "ident",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        },
+        {
+          "artifact": "artifacts/gates.json",
+          "pointer": "/confirmation/cusp_position_shift"
+        }
+      ],
+      "name": "HmcMaxShiftDesign",
+      "raw": "076",
+      "value": "076"
+    },
+    {
+      "bundle": "results",
+      "derivation": "argmin over matched pairs of shift_m",
+      "derived": true,
+      "description": "design of the smallest cusp shift",
+      "format": "ident",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        },
+        {
+          "artifact": "artifacts/gates.json",
+          "pointer": "/confirmation/cusp_position_shift"
+        }
+      ],
+      "name": "HmcMinShiftDesign",
+      "raw": "015",
+      "value": "015"
+    },
+    {
+      "bundle": "results",
+      "derivation": "count over matched pairs of shift_m > definition stability tolerance",
+      "derived": true,
+      "description": "matched cusps whose shift exceeds the imported stability tolerance",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        },
+        {
+          "artifact": "artifacts/gates.json",
+          "pointer": "/confirmation/cusp_position_shift"
+        }
+      ],
+      "name": "HmcShiftsAboveStability",
+      "raw": 22,
+      "value": "22"
+    },
+    {
+      "bundle": "results",
+      "derivation": "count over matched pairs of shift_m > p2_discretisation.max_wall_intersection_shift_m (verified to be every pair)",
+      "derived": true,
+      "description": "matched cusps whose shift exceeds the design's level-0 -> level-1 P2 discretisation shift",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        },
+        {
+          "artifact": "artifacts/gates.json",
+          "pointer": "/confirmation/cusp_position_shift"
+        }
+      ],
+      "name": "HmcShiftsAboveDiscretisation",
+      "raw": 37,
+      "value": "37"
+    },
+    {
+      "bundle": "results",
+      "derivation": "shift_m / tolerance_m of the largest pair (tolerance_m = r_w / bore elements when that exceeds the L1a step)",
+      "derived": true,
+      "description": "largest shift in level-0 bore elements (tolerance = one bore element for that design)",
+      "format": "fixed2",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        },
+        {
+          "artifact": "artifacts/gates.json",
+          "pointer": "/confirmation/cusp_position_shift"
+        }
+      ],
+      "name": "HmcMaxShiftInBoreElements",
+      "raw": 0.8023324858192963,
+      "value": "0.80"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "designs that remain HEMP-like under P2",
+      "format": "int",
+      "name": "HmcPreservedCount",
+      "raw": 14,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/confirmation/hemp_like_preserved/preserved_count"
+      },
+      "value": "14"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "share of designs that remain HEMP-like",
+      "format": "pct0",
+      "name": "HmcPreservedFraction",
+      "raw": 0.9333333333333333,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/confirmation/hemp_like_preserved/fraction"
+      },
+      "value": "93\\%"
+    },
+    {
+      "bundle": "results",
+      "derivation": "len(lost_designs)",
+      "derived": true,
+      "description": "designs that lose the HEMP-like flag under P2",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/gates.json",
+          "pointer": "/confirmation/hemp_like_preserved/lost_designs"
+        }
+      ],
+      "name": "HmcLostDesigns",
+      "raw": 1,
+      "value": "1"
+    },
+    {
+      "bundle": "results",
+      "derivation": "lost_designs[0]",
+      "derived": true,
+      "description": "ordinal of the design that loses the flag",
+      "format": "ident",
+      "inputs": [
+        {
+          "artifact": "artifacts/gates.json",
+          "pointer": "/confirmation/hemp_like_preserved/lost_designs/0"
+        }
+      ],
+      "name": "HmcLostDesign",
+      "raw": "028",
+      "value": "028"
+    },
+    {
+      "bundle": "results",
+      "derivation": "comparison.l1a_min_rho_conservative of the lost design",
+      "derived": true,
+      "description": "minimum rho of the lost design under L1a",
+      "format": "fixed3",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        }
+      ],
+      "name": "HmcLostDesignLOneARho",
+      "raw": 1.5150770513776666,
+      "value": "1.515"
+    },
+    {
+      "bundle": "results",
+      "derivation": "comparison.p2_min_rho_conservative of the lost design",
+      "derived": true,
+      "description": "minimum rho of the lost design under P2",
+      "format": "fixed3",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        }
+      ],
+      "name": "HmcLostDesignPTwoRho",
+      "raw": 1.463778208091294,
+      "value": "1.464"
+    },
+    {
+      "bundle": "results",
+      "derivation": "comparison.max_cusp_shift_over_tolerance of the lost design",
+      "derived": true,
+      "description": "largest cusp shift of the lost design in tolerance units",
+      "format": "fixed2",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        }
+      ],
+      "name": "HmcLostDesignShiftOverTol",
+      "raw": 0.7742217931357839,
+      "value": "0.77"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "smallest per-cusp rho ratio P2 / L1a",
+      "format": "fixed2",
+      "name": "HmcRhoRatioMin",
+      "raw": 0.942536584332938,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/confirmation/hemp_like_preserved/rho_conservative_ratio_p2_over_l1a/min"
+      },
+      "value": "0.94"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "median per-cusp rho ratio",
+      "format": "fixed2",
+      "name": "HmcRhoRatioMedian",
+      "raw": 1.0598508574421766,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/confirmation/hemp_like_preserved/rho_conservative_ratio_p2_over_l1a/median"
+      },
+      "value": "1.06"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "largest per-cusp rho ratio",
+      "format": "fixed2",
+      "name": "HmcRhoRatioMax",
+      "raw": 1.4459048971630442,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/confirmation/hemp_like_preserved/rho_conservative_ratio_p2_over_l1a/max"
+      },
+      "value": "1.45"
+    },
+    {
+      "bundle": "results",
+      "derivation": "count over matched pairs of rho ratio < 1",
+      "derived": true,
+      "description": "matched cusps whose rho falls under iron",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        },
+        {
+          "artifact": "artifacts/gates.json",
+          "pointer": "/confirmation/cusp_position_shift"
+        }
+      ],
+      "name": "HmcRhoRatioBelowOneCusps",
+      "raw": 14,
+      "value": "14"
+    },
+    {
+      "bundle": "results",
+      "derivation": "count over designs with a matched pair of rho ratio < 1",
+      "derived": true,
+      "description": "designs with a cusp whose rho falls under iron",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        },
+        {
+          "artifact": "artifacts/gates.json",
+          "pointer": "/confirmation/cusp_position_shift"
+        }
+      ],
+      "name": "HmcRhoRatioBelowOneDesigns",
+      "raw": 8,
+      "value": "8"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "smallest per-cusp wall field ratio P2 / L1a at equal magnet strength",
+      "format": "fixed2",
+      "name": "HmcWallBRatioMin",
+      "raw": 1.0547158205359815,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/confirmation/hemp_like_preserved/wall_b_ratio_p2_over_l1a_per_cusp/min"
+      },
+      "value": "1.05"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "median per-cusp wall field ratio",
+      "format": "fixed2",
+      "name": "HmcWallBRatioMedian",
+      "raw": 1.2252323629590833,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/confirmation/hemp_like_preserved/wall_b_ratio_p2_over_l1a_per_cusp/median"
+      },
+      "value": "1.23"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "largest per-cusp wall field ratio",
+      "format": "fixed2",
+      "name": "HmcWallBRatioMax",
+      "raw": 1.5252332413152598,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/confirmation/hemp_like_preserved/wall_b_ratio_p2_over_l1a_per_cusp/max"
+      },
+      "value": "1.53"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "smallest wall field change at a cusp (percent)",
+      "format": "ratio_pct0",
+      "name": "HmcWallBRaiseMinPct",
+      "raw": 1.0547158205359815,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/confirmation/hemp_like_preserved/wall_b_ratio_p2_over_l1a_per_cusp/min"
+      },
+      "value": "$+$5\\%"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "largest wall field change at a cusp (percent)",
+      "format": "ratio_pct0",
+      "name": "HmcWallBRaiseMaxPct",
+      "raw": 1.5252332413152598,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/confirmation/hemp_like_preserved/wall_b_ratio_p2_over_l1a_per_cusp/max"
+      },
+      "value": "$+$53\\%"
+    },
+    {
+      "bundle": "results",
+      "derivation": "count over matched pairs of wall field ratio > 1",
+      "derived": true,
+      "description": "matched cusps whose wall field rises under iron",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        },
+        {
+          "artifact": "artifacts/gates.json",
+          "pointer": "/confirmation/cusp_position_shift"
+        }
+      ],
+      "name": "HmcWallBRatioAboveOneCusps",
+      "raw": 37,
+      "value": "37"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "smallest per-design peak wall field ratio",
+      "format": "fixed2",
+      "name": "HmcPeakWallRatioMin",
+      "raw": 0.9294601238726473,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/confirmation/hemp_like_preserved/peak_wall_b_ratio_p2_over_l1a/min"
+      },
+      "value": "0.93"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "median per-design peak wall field ratio",
+      "format": "fixed2",
+      "name": "HmcPeakWallRatioMedian",
+      "raw": 1.195183085309595,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/confirmation/hemp_like_preserved/peak_wall_b_ratio_p2_over_l1a/median"
+      },
+      "value": "1.20"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "largest per-design peak wall field ratio",
+      "format": "fixed2",
+      "name": "HmcPeakWallRatioMax",
+      "raw": 1.390105647738947,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/confirmation/hemp_like_preserved/peak_wall_b_ratio_p2_over_l1a/max"
+      },
+      "value": "1.39"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "smallest per-design peak wall field ratio before the magnet-strength scaling",
+      "format": "fixed2",
+      "name": "HmcPeakWallUnscaledMin",
+      "raw": 0.9070108942220335,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/confirmation/hemp_like_preserved/peak_wall_b_ratio_unscaled/min"
+      },
+      "value": "0.91"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "largest per-design peak wall field ratio before the magnet-strength scaling",
+      "format": "fixed2",
+      "name": "HmcPeakWallUnscaledMax",
+      "raw": 1.5496568955861525,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/confirmation/hemp_like_preserved/peak_wall_b_ratio_unscaled/max"
+      },
+      "value": "1.55"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "smallest per-design axis peak ratio",
+      "format": "fixed2",
+      "name": "HmcAxisPeakRatioMin",
+      "raw": 0.9766238209161009,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/confirmation/hemp_like_preserved/axis_peak_b_ratio_p2_over_l1a/min"
+      },
+      "value": "0.98"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "median per-design axis peak ratio",
+      "format": "fixed2",
+      "name": "HmcAxisPeakRatioMedian",
+      "raw": 1.1775446157679763,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/confirmation/hemp_like_preserved/axis_peak_b_ratio_p2_over_l1a/median"
+      },
+      "value": "1.18"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "largest per-design axis peak ratio",
+      "format": "fixed2",
+      "name": "HmcAxisPeakRatioMax",
+      "raw": 1.345591831654561,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/confirmation/hemp_like_preserved/axis_peak_b_ratio_p2_over_l1a/max"
+      },
+      "value": "1.35"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "smallest per-design minimum rho under P2",
+      "format": "fixed3",
+      "name": "HmcPTwoRhoMinMin",
+      "raw": 1.463778208091294,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/confirmation/hemp_like_preserved/p2_min_rho_conservative/min"
+      },
+      "value": "1.464"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "largest per-design minimum rho under P2",
+      "format": "fixed3",
+      "name": "HmcPTwoRhoMinMax",
+      "raw": 2.927676383018529,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/confirmation/hemp_like_preserved/p2_min_rho_conservative/max"
+      },
+      "value": "2.928"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "median per-design minimum rho under P2",
+      "format": "fixed3",
+      "name": "HmcPTwoRhoMinMedian",
+      "raw": 1.7378115629151702,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/confirmation/hemp_like_preserved/p2_min_rho_conservative/median"
+      },
+      "value": "1.738"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "median per-design minimum rho under L1a",
+      "format": "fixed3",
+      "name": "HmcLOneARhoMinMedian",
+      "raw": 1.6743500396115267,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/confirmation/hemp_like_preserved/l1a_min_rho_conservative/median"
+      },
+      "value": "1.674"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "lower edge of the descriptive wall field ratio band",
+      "format": "fixed1",
+      "name": "HmcBandLo",
+      "raw": 0.5,
+      "source": {
+        "artifact": "artifacts/confirmation-dataset.json",
+        "pointer": "/designs/0/comparison/wall_b_ratio_band_descriptive/0"
+      },
+      "value": "0.5"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "upper edge of the descriptive wall field ratio band",
+      "format": "fixed1",
+      "name": "HmcBandHi",
+      "raw": 2.0,
+      "source": {
+        "artifact": "artifacts/confirmation-dataset.json",
+        "pointer": "/designs/0/comparison/wall_b_ratio_band_descriptive/1"
+      },
+      "value": "2.0"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "designs inside the descriptive band",
+      "format": "int",
+      "name": "HmcInBandCount",
+      "raw": 15,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/confirmation/hemp_like_preserved/peak_wall_b_ratio_in_band_count"
+      },
+      "value": "15"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "estimand statement of reported (d)",
+      "format": "text",
+      "name": "HmcReportedDEstimand",
+      "raw": "fraction of the 15 designs that remain HEMP-like (rho_conservative >= 1.5 at every wall cusp) under the material-aware P2 map; reported with the per-cusp rho ratio P2 / L1a; the wall |B| ratio band [0.5, 2.0] is descriptive, not a gate",
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/definitions/confirmation/hemp_like_preserved/estimand"
+      },
+      "value": "fraction of the 15 designs that remain HEMP-like (rho\\_conservative >= 1.5 at every wall cusp) under the material-aware P2 map; reported with the per-cusp rho ratio P2 / L1a; the wall |B| ratio band [0.5, 2.0] is descriptive, not a gate"
+    },
+    {
+      "bundle": "results",
+      "derivation": "count over rows of p2_rho.rho_wall < 1",
+      "derived": true,
+      "description": "P2 cusps whose wall reading is below one (no cusp is the wall field maximum)",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        }
+      ],
+      "name": "HmcPTwoWallBelowOneCusps",
+      "raw": 37,
+      "value": "37"
+    },
+    {
+      "bundle": "results",
+      "derivation": "sum over rows of len(p2_rho)",
+      "derived": true,
+      "description": "P2 wall cusps over every design",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        }
+      ],
+      "name": "HmcPTwoCuspsTotal",
+      "raw": 37,
+      "value": "37"
+    },
+    {
+      "bundle": "results",
+      "derivation": "max over rows of p2_rho.rho_wall",
+      "derived": true,
+      "description": "largest P2 wall reading",
+      "format": "fixed2",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        }
+      ],
+      "name": "HmcPTwoRhoWallMax",
+      "raw": 0.8517014131146499,
+      "value": "0.85"
+    },
+    {
+      "bundle": "results",
+      "derivation": "count over rows of p2_rho.cusp_is_wall_maximum",
+      "derived": true,
+      "description": "P2 cusps that are the wall field maximum of their neighbourhood",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        }
+      ],
+      "name": "HmcCuspIsWallMaximumPTwo",
+      "raw": 0,
+      "value": "0"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "designs with the same channel axis-null count under both fields",
+      "format": "int",
+      "name": "HmcChannelNullCountEqual",
+      "raw": 15,
+      "source": {
+        "artifact": "artifacts/confirmation-dataset.json",
+        "pointer": "/headline/channel_axis_null_count_equal_count"
+      },
+      "value": "15"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "designs whose channel axis nulls are in bijection within the cusp tolerance",
+      "format": "int",
+      "name": "HmcChannelNullBijection",
+      "raw": 6,
+      "source": {
+        "artifact": "artifacts/confirmation-dataset.json",
+        "pointer": "/headline/channel_axis_null_bijection_count"
+      },
+      "value": "6"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "designs whose pooled axis nulls (all zones) are in bijection",
+      "format": "int",
+      "name": "HmcPooledNullBijection",
+      "raw": 0,
+      "source": {
+        "artifact": "artifacts/confirmation-dataset.json",
+        "pointer": "/headline/axis_null_bijection_count"
+      },
+      "value": "0"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "largest sorted channel axis-null shift (mm)",
+      "format": "mm2",
+      "name": "HmcChannelNullShiftMaxMm",
+      "raw": 0.0010724508771368093,
+      "source": {
+        "artifact": "artifacts/confirmation-dataset.json",
+        "pointer": "/headline/channel_axis_null_sorted_shift_m/max"
+      },
+      "value": "1.07"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "median sorted channel axis-null shift (mm)",
+      "format": "mm2",
+      "name": "HmcChannelNullShiftMedianMm",
+      "raw": 0.0004685912108400407,
+      "source": {
+        "artifact": "artifacts/confirmation-dataset.json",
+        "pointer": "/headline/channel_axis_null_sorted_shift_m/median"
+      },
+      "value": "0.47"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "smallest sorted channel axis-null shift (um)",
+      "format": "um1",
+      "name": "HmcChannelNullShiftMinUm",
+      "raw": 1.234491341666269e-06,
+      "source": {
+        "artifact": "artifacts/confirmation-dataset.json",
+        "pointer": "/headline/channel_axis_null_sorted_shift_m/min"
+      },
+      "value": "1.2"
+    },
+    {
+      "bundle": "results",
+      "derivation": "count over rows of channel_axis_nulls.max_sorted_shift_m > cusp_position_tolerance_m",
+      "derived": true,
+      "description": "designs whose channel axis nulls move beyond the cusp tolerance",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        }
+      ],
+      "name": "HmcChannelNullsBeyondTolDesigns",
+      "raw": 9,
+      "value": "9"
+    },
+    {
+      "bundle": "results",
+      "derivation": "count over rows of p2_axis_null_count > l1a_axis_null_count",
+      "derived": true,
+      "description": "designs with more axis nulls under P2 than under L1a",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        }
+      ],
+      "name": "HmcMorePTwoNullDesigns",
+      "raw": 9,
+      "value": "9"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "smallest shift of an axis null outside the straight section (mm)",
+      "format": "mm2",
+      "name": "HmcOutsideNullShiftMinMm",
+      "raw": 0.0010888136237901577,
+      "source": {
+        "artifact": "artifacts/confirmation-dataset.json",
+        "pointer": "/headline/outside_channel_axis_null_shift_m/min"
+      },
+      "value": "1.09"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "largest shift of an axis null outside the straight section (mm)",
+      "format": "mm2",
+      "name": "HmcOutsideNullShiftMaxMm",
+      "raw": 0.0017519192592770107,
+      "source": {
+        "artifact": "artifacts/confirmation-dataset.json",
+        "pointer": "/headline/outside_channel_axis_null_shift_m/max"
+      },
+      "value": "1.75"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "paired axis nulls outside the straight section",
+      "format": "int",
+      "name": "HmcOutsideNullPairs",
+      "raw": 10,
+      "source": {
+        "artifact": "artifacts/confirmation-dataset.json",
+        "pointer": "/headline/outside_channel_axis_null_shift_m/count"
+      },
+      "value": "10"
+    },
+    {
+      "bundle": "results",
+      "derivation": "sum over rows of len(outside_channel_axis_nulls.l1a_z_m)",
+      "derived": true,
+      "description": "axis nulls outside the straight section under L1a",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        }
+      ],
+      "name": "HmcLOneAOutsideNulls",
+      "raw": 11,
+      "value": "11"
+    },
+    {
+      "bundle": "results",
+      "derivation": "sum over rows of len(outside_channel_axis_nulls.p2_z_m)",
+      "derived": true,
+      "description": "axis nulls outside the straight section under P2",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        }
+      ],
+      "name": "HmcPTwoOutsideNulls",
+      "raw": 29,
+      "value": "29"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "largest axis-null-to-cusp lean under L1a (mm)",
+      "format": "mm2",
+      "name": "HmcLeanLOneAMaxMm",
+      "raw": 0.000463299811208474,
+      "source": {
+        "artifact": "artifacts/confirmation-dataset.json",
+        "pointer": "/headline/separatrix_lean_l1a_m/max"
+      },
+      "value": "0.46"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "largest axis-null-to-cusp lean under P2 (mm)",
+      "format": "mm2",
+      "name": "HmcLeanPTwoMaxMm",
+      "raw": 0.0011445245108789607,
+      "source": {
+        "artifact": "artifacts/confirmation-dataset.json",
+        "pointer": "/headline/separatrix_lean_p2_m/max"
+      },
+      "value": "1.14"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "median lean under L1a (um)",
+      "format": "um0",
+      "name": "HmcLeanLOneAMedianUm",
+      "raw": 8.633568906891292e-05,
+      "source": {
+        "artifact": "artifacts/confirmation-dataset.json",
+        "pointer": "/headline/separatrix_lean_l1a_m/median"
+      },
+      "value": "86"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "median lean under P2 (um)",
+      "format": "um0",
+      "name": "HmcLeanPTwoMedianUm",
+      "raw": 0.00014668308653937104,
+      "source": {
+        "artifact": "artifacts/confirmation-dataset.json",
+        "pointer": "/headline/separatrix_lean_p2_m/median"
+      },
+      "value": "147"
+    },
+    {
+      "bundle": "results",
+      "derivation": "estimands.l1a_axis_null_count_histogram",
+      "derived": true,
+      "description": "designs with 2 axis nulls under L1a",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/estimands/l1a_axis_null_count_histogram"
+        }
+      ],
+      "name": "HmcLOneANullTwoDesigns",
+      "raw": 6,
+      "value": "6"
+    },
+    {
+      "bundle": "results",
+      "derivation": "estimands.p2_axis_null_count_histogram",
+      "derived": true,
+      "description": "designs with 2 axis nulls under P2",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/estimands/p2_axis_null_count_histogram"
+        }
+      ],
+      "name": "HmcPTwoNullTwoDesigns",
+      "raw": 1,
+      "value": "1"
+    },
+    {
+      "bundle": "results",
+      "derivation": "estimands.l1a_axis_null_count_histogram",
+      "derived": true,
+      "description": "designs with 3 axis nulls under L1a",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/estimands/l1a_axis_null_count_histogram"
+        }
+      ],
+      "name": "HmcLOneANullThreeDesigns",
+      "raw": 1,
+      "value": "1"
+    },
+    {
+      "bundle": "results",
+      "derivation": "estimands.p2_axis_null_count_histogram",
+      "derived": true,
+      "description": "designs with 3 axis nulls under P2",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/estimands/p2_axis_null_count_histogram"
+        }
+      ],
+      "name": "HmcPTwoNullThreeDesigns",
+      "raw": 0,
+      "value": "0"
+    },
+    {
+      "bundle": "results",
+      "derivation": "estimands.l1a_axis_null_count_histogram",
+      "derived": true,
+      "description": "designs with 4 axis nulls under L1a",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/estimands/l1a_axis_null_count_histogram"
+        }
+      ],
+      "name": "HmcLOneANullFourDesigns",
+      "raw": 7,
+      "value": "7"
+    },
+    {
+      "bundle": "results",
+      "derivation": "estimands.p2_axis_null_count_histogram",
+      "derived": true,
+      "description": "designs with 4 axis nulls under P2",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/estimands/p2_axis_null_count_histogram"
+        }
+      ],
+      "name": "HmcPTwoNullFourDesigns",
+      "raw": 9,
+      "value": "9"
+    },
+    {
+      "bundle": "results",
+      "derivation": "estimands.l1a_axis_null_count_histogram",
+      "derived": true,
+      "description": "designs with 5 axis nulls under L1a",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/estimands/l1a_axis_null_count_histogram"
+        }
+      ],
+      "name": "HmcLOneANullFiveDesigns",
+      "raw": 1,
+      "value": "1"
+    },
+    {
+      "bundle": "results",
+      "derivation": "estimands.p2_axis_null_count_histogram",
+      "derived": true,
+      "description": "designs with 5 axis nulls under P2",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/estimands/p2_axis_null_count_histogram"
+        }
+      ],
+      "name": "HmcPTwoNullFiveDesigns",
+      "raw": 2,
+      "value": "2"
+    },
+    {
+      "bundle": "results",
+      "derivation": "estimands.l1a_axis_null_count_histogram",
+      "derived": true,
+      "description": "designs with 6 axis nulls under L1a",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/estimands/l1a_axis_null_count_histogram"
+        }
+      ],
+      "name": "HmcLOneANullSixDesigns",
+      "raw": 0,
+      "value": "0"
+    },
+    {
+      "bundle": "results",
+      "derivation": "estimands.p2_axis_null_count_histogram",
+      "derived": true,
+      "description": "designs with 6 axis nulls under P2",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/estimands/p2_axis_null_count_histogram"
+        }
+      ],
+      "name": "HmcPTwoNullSixDesigns",
+      "raw": 3,
+      "value": "3"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "largest separatrix angle to the wall normal under L1a (degrees)",
+      "format": "deg1",
+      "name": "HmcAngleLOneAMaxDeg",
+      "raw": 6.88441734873739,
+      "source": {
+        "artifact": "artifacts/confirmation-dataset.json",
+        "pointer": "/estimands/angle_to_wall_normal_deg_l1a/max"
+      },
+      "value": "6.9"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "largest separatrix angle to the wall normal under P2 (degrees)",
+      "format": "deg1",
+      "name": "HmcAnglePTwoMaxDeg",
+      "raw": 11.608827202171188,
+      "source": {
+        "artifact": "artifacts/confirmation-dataset.json",
+        "pointer": "/estimands/angle_to_wall_normal_deg_p2/max"
+      },
+      "value": "11.6"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "median separatrix angle under L1a (degrees)",
+      "format": "deg1",
+      "name": "HmcAngleLOneAMedianDeg",
+      "raw": 1.576012327169306,
+      "source": {
+        "artifact": "artifacts/confirmation-dataset.json",
+        "pointer": "/estimands/angle_to_wall_normal_deg_l1a/median"
+      },
+      "value": "1.6"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "median separatrix angle under P2 (degrees)",
+      "format": "deg1",
+      "name": "HmcAnglePTwoMedianDeg",
+      "raw": 2.6015747112221232,
+      "source": {
+        "artifact": "artifacts/confirmation-dataset.json",
+        "pointer": "/estimands/angle_to_wall_normal_deg_p2/median"
+      },
+      "value": "2.6"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "median third-harmonic content of the L1a wall field",
+      "format": "fixed3",
+      "name": "HmcLOneABThreeMedian",
+      "raw": 0.054117736003173496,
+      "source": {
+        "artifact": "artifacts/confirmation-dataset.json",
+        "pointer": "/estimands/l1a_wall_b3_over_b1/median"
+      },
+      "value": "0.054"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "median third-harmonic content of the P2 wall field",
+      "format": "fixed3",
+      "name": "HmcPTwoBThreeMedian",
+      "raw": 0.018607359066820935,
+      "source": {
+        "artifact": "artifacts/confirmation-dataset.json",
+        "pointer": "/estimands/p2_wall_b3_over_b1/median"
+      },
+      "value": "0.019"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "largest level-0 -> level-1 cusp shift (um)",
+      "format": "um1",
+      "name": "HmcDiscShiftMaxUm",
+      "raw": 1.4220098524617836e-06,
+      "source": {
+        "artifact": "artifacts/confirmation-dataset.json",
+        "pointer": "/headline/p2_discretisation_max_wall_intersection_shift_m/max"
+      },
+      "value": "1.4"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "median level-0 -> level-1 cusp shift (um)",
+      "format": "um1",
+      "name": "HmcDiscShiftMedianUm",
+      "raw": 9.796548468832267e-07,
+      "source": {
+        "artifact": "artifacts/confirmation-dataset.json",
+        "pointer": "/headline/p2_discretisation_max_wall_intersection_shift_m/median"
+      },
+      "value": "1.0"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "largest level-0 -> level-1 axis-null shift (um)",
+      "format": "um1",
+      "name": "HmcDiscNullShiftMaxUm",
+      "raw": 5.611338980502506e-06,
+      "source": {
+        "artifact": "artifacts/confirmation-dataset.json",
+        "pointer": "/estimands/p2_discretisation_max_axis_null_shift_m/max"
+      },
+      "value": "5.6"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "largest relative rho difference between the two levels",
+      "format": "sci1",
+      "name": "HmcDiscRhoSensitivityMax",
+      "raw": 0.0011525637813725393,
+      "source": {
+        "artifact": "artifacts/confirmation-dataset.json",
+        "pointer": "/estimands/p2_discretisation_rho_sensitivity_max/max"
+      },
+      "value": "$1.2\\times10^{-3}$"
+    },
+    {
+      "bundle": "results",
+      "derivation": "count over rows of p2_discretisation_rho_sensitivity.hemp_like_flag_agrees",
+      "derived": true,
+      "description": "designs whose HEMP-like flag agrees between the two P2 levels",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        }
+      ],
+      "name": "HmcHempFlagStableLevels",
+      "raw": 15,
+      "value": "15"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "largest 1x -> 2x sampling cusp shift (nm)",
+      "format": "nm0",
+      "name": "HmcSamplingShiftMaxNm",
+      "raw": 6.239435475056954e-08,
+      "source": {
+        "artifact": "artifacts/confirmation-dataset.json",
+        "pointer": "/estimands/sampling_max_wall_intersection_shift_m/max"
+      },
+      "value": "62"
+    },
+    {
+      "bundle": "results",
+      "derivation": "min(shift_m) / max(p2_discretisation.max_wall_intersection_shift_m)",
+      "derived": true,
+      "description": "smallest matched-cusp shift over the largest discretisation shift",
+      "format": "fixed2",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        },
+        {
+          "artifact": "artifacts/gates.json",
+          "pointer": "/confirmation/cusp_position_shift"
+        }
+      ],
+      "name": "HmcShiftMinOverDiscMax",
+      "raw": 0.9167365371458915,
+      "value": "0.92"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "designs exercised by the non-evidentiary shakedown",
+      "format": "int",
+      "name": "HmcShakedownDesigns",
+      "raw": 5,
+      "source": {
+        "artifact": "artifacts/shakedown.json",
+        "pointer": "/design_count"
+      },
+      "value": "5"
+    },
+    {
+      "bundle": "results",
+      "derivation": "protocol.shakedown.designs.hemp_like_v3",
+      "derived": true,
+      "description": "shakedown design ordinals",
+      "format": "list_short_designs",
+      "inputs": [
+        {
+          "artifact": "artifacts/protocol.json",
+          "pointer": "/shakedown/designs/hemp_like_v3"
+        }
+      ],
+      "name": "HmcShakedownDesignIds",
+      "raw": [
+        "l1a-gs-v3-015-3ce63a512e",
+        "l1a-gs-v3-036-4a814065a1",
+        "l1a-gs-v3-106-ccec1c8b2f",
+        "l1a-gs-v3-028-f012c0bf33",
+        "l1a-gs-v3-048-aabacb3a59"
+      ],
+      "value": "015, 036, 106, 028, 048"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "shakedown passed",
+      "format": "bool",
+      "name": "HmcShakedownPassed",
+      "raw": true,
+      "source": {
+        "artifact": "artifacts/shakedown.json",
+        "pointer": "/passed"
+      },
+      "value": "true"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "shakedown evidentiary",
+      "format": "bool",
+      "name": "HmcShakedownEvidentiary",
+      "raw": false,
+      "source": {
+        "artifact": "artifacts/shakedown.json",
+        "pointer": "/evidentiary"
+      },
+      "value": "false"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "shakedown outcomes enter an estimand",
+      "format": "bool",
+      "name": "HmcShakedownEnterEstimand",
+      "raw": false,
+      "source": {
+        "artifact": "artifacts/shakedown.json",
+        "pointer": "/outcomes_enter_estimand"
+      },
+      "value": "false"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "designs whose level-0 mesh the whole-set preflight built",
+      "format": "int",
+      "name": "HmcPreflightDesigns",
+      "raw": 15,
+      "source": {
+        "artifact": "artifacts/shakedown.json",
+        "pointer": "/mesh_preflight/design_count"
+      },
+      "value": "15"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "designs that passed the whole-set preflight",
+      "format": "int",
+      "name": "HmcPreflightPassed",
+      "raw": 15,
+      "source": {
+        "artifact": "artifacts/shakedown.json",
+        "pointer": "/mesh_preflight/passed_count"
+      },
+      "value": "15"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "smallest level-0 minimum angle over the set (degrees)",
+      "format": "deg1",
+      "name": "HmcPreflightMinAngleDeg",
+      "raw": 5.314978675079004,
+      "source": {
+        "artifact": "artifacts/shakedown.json",
+        "pointer": "/mesh_preflight/minimum_angle_deg"
+      },
+      "value": "5.3"
+    },
+    {
+      "bundle": "results",
+      "derivation": "len(mesh_preflight.designs_with_elements_below_10deg)",
+      "derived": true,
+      "description": "designs with level-0 elements below the qualification's sliver threshold",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/shakedown.json",
+          "pointer": "/mesh_preflight/designs_with_elements_below_10deg"
+        }
+      ],
+      "name": "HmcPreflightBelowTenDesigns",
+      "raw": 2,
+      "value": "2"
+    },
+    {
+      "bundle": "results",
+      "derivation": "mesh_quality.sliver.threshold_deg of every recorded level",
+      "derived": true,
+      "description": "sliver threshold of the mesh-quality record (degrees)",
+      "format": "fixed0",
+      "inputs": [
+        {
+          "artifact": "artifacts/designs/hemp_like_v3/l1a-gs-v3-000-78dcc2bb4c.json",
+          "pointer": "/evidence/p2/levels/0/mesh_quality/sliver/threshold_deg"
+        }
+      ],
+      "name": "HmcSliverThresholdDeg",
+      "raw": 10.0,
+      "value": "10"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "whole-set preflight wall time (s)",
+      "format": "sec0",
+      "name": "HmcPreflightSeconds",
+      "raw": 50.38142640001024,
+      "source": {
+        "artifact": "artifacts/shakedown.json",
+        "pointer": "/mesh_preflight/seconds"
+      },
+      "value": "50"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "shakedown timing projection (s)",
+      "format": "sec0",
+      "name": "HmcTimingProjectedS",
+      "raw": 6017.68606320005,
+      "source": {
+        "artifact": "artifacts/shakedown.json",
+        "pointer": "/timing_projection/projected_wall_seconds_at_pool"
+      },
+      "value": "6018"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "shakedown timing projection (min)",
+      "format": "min1",
+      "name": "HmcTimingProjectedMin",
+      "raw": 6017.68606320005,
+      "source": {
+        "artifact": "artifacts/shakedown.json",
+        "pointer": "/timing_projection/projected_wall_seconds_at_pool"
+      },
+      "value": "100.3"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "wall-clock budget (min)",
+      "format": "min1",
+      "name": "HmcTimingBudgetMin",
+      "raw": 5400.0,
+      "source": {
+        "artifact": "artifacts/shakedown.json",
+        "pointer": "/timing_projection/budget_wall_seconds"
+      },
+      "value": "90.0"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "projection within budget",
+      "format": "bool",
+      "name": "HmcTimingWithinBudget",
+      "raw": false,
+      "source": {
+        "artifact": "artifacts/shakedown.json",
+        "pointer": "/timing_projection/within_budget"
+      },
+      "value": "false"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "contention factor of the projection",
+      "format": "g",
+      "name": "HmcTimingContentionFactor",
+      "raw": 1.5,
+      "source": {
+        "artifact": "artifacts/shakedown.json",
+        "pointer": "/timing_projection/contention_factor"
+      },
+      "value": "1.5"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "mean shakedown seconds per design",
+      "format": "sec0",
+      "name": "HmcTimingMeanSecondsPerDesign",
+      "raw": 250.73691930000206,
+      "source": {
+        "artifact": "artifacts/shakedown.json",
+        "pointer": "/timing_projection/mean_seconds_per_design"
+      },
+      "value": "251"
+    },
+    {
+      "bundle": "results",
+      "derivation": "campaign-result.execution_mode.stage_wall_s <= shakedown.timing_projection.budget_wall_seconds",
+      "derived": true,
+      "description": "the recorded design stage finished within the budget",
+      "format": "bool",
+      "inputs": [
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/execution_mode/stage_wall_s"
+        },
+        {
+          "artifact": "artifacts/shakedown.json",
+          "pointer": "/timing_projection/budget_wall_seconds"
+        }
+      ],
+      "name": "HmcStageWithinBudget",
+      "raw": true,
+      "value": "true"
+    },
+    {
+      "bundle": "results",
+      "derivation": "|shakedown designs \u2229 declared designs|",
+      "derived": true,
+      "description": "shakedown designs that are also evidentiary designs",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/protocol.json",
+          "pointer": "/shakedown/designs/hemp_like_v3"
+        }
+      ],
+      "name": "HmcShakedownOverlapDesigns",
+      "raw": 5,
+      "value": "5"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "shakedown design rule",
+      "format": "text",
+      "name": "HmcShakedownDesignRule",
+      "raw": "smallest x_w (015, three cusps, four stages), largest x_w (036, three stages), the five-stage four-cusp design with the largest x_w (106): the three extremes of the set; plus the two designs whose level-0 meshes failed the v1 10 deg gate (028, 048), so the relaxed gate and the sliver disclosure are exercised on real inputs before the freeze",
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/shakedown/design_rule"
+      },
+      "value": "smallest x\\_w (015, three cusps, four stages), largest x\\_w (036, three stages), the five-stage four-cusp design with the largest x\\_w (106): the three extremes of the set; plus the two designs whose level-0 meshes failed the v1 10 deg gate (028, 048), so the relaxed gate and the sliver disclosure are exercised on real inputs before the freeze"
+    },
+    {
+      "bundle": "results",
+      "derivation": "sha256(v1 results/manifest.json)",
+      "derived": true,
+      "description": "v1 results manifest SHA-256 prefix",
+      "format": "sha_short",
+      "inputs": [
+        {
+          "artifact": "manifest.json",
+          "pointer": ""
+        }
+      ],
+      "name": "HmcVOneManifestSha",
+      "raw": "37ace02f630c3eecc5de2f9712e47eb1e5ab58646aa0d56055102fe9e1a2faac",
+      "value": "37ace02f630c"
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "predecessor statement of the frozen protocol",
+      "format": "text",
+      "name": "HmcPredecessorStatement",
+      "raw": "13/15 designs resolved; designs 028 and 048 failed the 10 deg level-0 mesh angle gate before any solve; no assessment, gates or verdict were produced. v1.1 changes only the angle gate (10 -> 5 deg, disclosed) and adds the whole-set mesh preflight to the shakedown; every other declaration, tolerance and threshold is identical.",
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/predecessor/statement"
+      },
+      "value": "13/15 designs resolved; designs 028 and 048 failed the 10 deg level-0 mesh angle gate before any solve; no assessment, gates or verdict were produced. v1.1 changes only the angle gate (10 -> 5 deg, disclosed) and adds the whole-set mesh preflight to the shakedown; every other declaration, tolerance and threshold is identical."
+    },
+    {
+      "bundle": "results",
+      "derived": false,
+      "description": "angle-gate disclosure of the frozen protocol",
+      "format": "text",
+      "name": "HmcAngleGateDisclosure",
+      "raw": "v1 (recorded development_rejection, commit 978c71be) used the fem_reference qualification's 10 deg gate and lost two designs before any solve: 028 (exit taper 0.254 mm long and 0.83 mm high -> three 5.3 deg sliver triangles in the exit dielectric) and 048 (injector end and first magnet edge 0.045 mm apart -> the structured body-fitted axial grid inherits a 0.045 mm interval; 13,816 anisotropic 9.3 deg triangles, mostly in the anode / injector zone). Both are geometric near-coincidences of the body-fitted mesher, not resolution effects (5.3 / 9.3 deg at 3, 4 and 5 feature elements; improve_mesh_quality exceeds 1.5M DOFs). v1.1 gates at 5 deg, records per level the count, fraction and regions of the elements below 10 deg (sliver disclosure), and relies on the true-residual convergence gate and the level-0 vs level-1 discretisation sensitivity for the numerical quality of the bore field.",
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/p2/mesh/angle_gate_disclosure"
+      },
+      "value": "v1 (recorded development\\_rejection, commit 978c71be) used the fem\\_reference qualification's 10 deg gate and lost two designs before any solve: 028 (exit taper 0.254 mm long and 0.83 mm high -> three 5.3 deg sliver triangles in the exit dielectric) and 048 (injector end and first magnet edge 0.045 mm apart -> the structured body-fitted axial grid inherits a 0.045 mm interval; 13,816 anisotropic 9.3 deg triangles, mostly in the anode / injector zone). Both are geometric near-coincidences of the body-fitted mesher, not resolution effects (5.3 / 9.3 deg at 3, 4 and 5 feature elements; improve\\_mesh\\_quality exceeds 1.5M DOFs). v1.1 gates at 5 deg, records per level the count, fraction and regions of the elements below 10 deg (sliver disclosure), and relies on the true-residual convergence gate and the level-0 vs level-1 discretisation sensitivity for the numerical quality of the bore field."
+    },
+    {
+      "bundle": "results",
+      "derivation": "len(diff(v1 protocol, v1.1 protocol)) == the declared change set",
+      "derived": true,
+      "description": "protocol paths that differ between v1 and v1.1",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/protocol.json",
+          "pointer": ""
+        }
+      ],
+      "name": "HmcProtocolChangedPaths",
+      "raw": 12,
+      "value": "12"
+    },
+    {
+      "bundle": "results",
+      "derivation": "diff(v1 protocol, v1.1 protocol) (identity, predecessor block, angle gate, shakedown set and preflight)",
+      "derived": true,
+      "description": "the differing protocol paths",
+      "format": "list_clauses",
+      "inputs": [
+        {
+          "artifact": "artifacts/protocol.json",
+          "pointer": ""
+        }
+      ],
+      "name": "HmcProtocolChangedPathList",
+      "raw": [
+        "execution/git_common_lock",
+        "experiment_id",
+        "p2/mesh/angle_gate_disclosure",
+        "p2/mesh/reject_below_angle_deg",
+        "p2/mesh/whole_set_preflight",
+        "predecessor",
+        "schema_version",
+        "shakedown/design_rule",
+        "shakedown/designs/hemp_like_v3",
+        "shakedown/prepare_requires",
+        "shakedown/whole_set_mesh_preflight",
+        "title"
+      ],
+      "value": "execution/git\\_common\\_lock; experiment\\_id; p2/mesh/angle\\_gate\\_disclosure; p2/mesh/reject\\_below\\_angle\\_deg; p2/mesh/whole\\_set\\_preflight; predecessor; schema\\_version; shakedown/design\\_rule; shakedown/designs/hemp\\_like\\_v3; shakedown/prepare\\_requires; shakedown/whole\\_set\\_mesh\\_preflight; title"
+    },
+    {
+      "bundle": "results",
+      "derivation": "count of the declared declaration changes",
+      "derived": true,
+      "description": "numerical declarations changed between v1 and v1.1 (the angle gate; the whole-set preflight)",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/protocol.json",
+          "pointer": "/predecessor/statement"
+        }
+      ],
+      "name": "HmcProtocolDeclarationsChanged",
+      "raw": 2,
+      "value": "2"
+    },
+    {
+      "bundle": "results",
+      "derivation": "block equality of the two sealed protocols",
+      "derived": true,
+      "description": "comparison, gates, definition import, design sets, solver, materials, adaptivity, sampling, resources, claim boundary and outputs are identical between v1 and v1.1",
+      "format": "bool",
+      "inputs": [
+        {
+          "artifact": "artifacts/protocol.json",
+          "pointer": "/comparison"
+        },
+        {
+          "artifact": "artifacts/protocol.json",
+          "pointer": "/gates"
+        }
+      ],
+      "name": "HmcProtocolBlocksUnchanged",
+      "raw": true,
+      "value": "true"
+    },
+    {
+      "bundle": "results",
+      "derivation": "design-failures.failed[0]",
+      "derived": true,
+      "description": "first design v1 rejected",
+      "format": "ident",
+      "inputs": [
+        {
+          "artifact": "artifacts/protocol.json",
+          "pointer": "/predecessor"
+        }
+      ],
+      "name": "HmcSliverDesignA",
+      "raw": "028",
+      "value": "028"
+    },
+    {
+      "bundle": "results",
+      "derivation": "design-failures.failed[1]",
+      "derived": true,
+      "description": "second design v1 rejected",
+      "format": "ident",
+      "inputs": [
+        {
+          "artifact": "artifacts/protocol.json",
+          "pointer": "/predecessor"
+        }
+      ],
+      "name": "HmcSliverDesignB",
+      "raw": "048",
+      "value": "048"
+    },
+    {
+      "bundle": "results",
+      "derivation": "record evidence.p2.levels[0].mesh_quality.minimum_angle_deg",
+      "derived": true,
+      "description": "level-0 minimum angle of the first rejected design (degrees)",
+      "format": "deg1",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        }
+      ],
+      "name": "HmcSliverAMinAngleDeg",
+      "raw": 5.314978675079004,
+      "value": "5.3"
+    },
+    {
+      "bundle": "results",
+      "derivation": "record evidence.p2.levels[0].mesh_quality.minimum_angle_deg",
+      "derived": true,
+      "description": "level-0 minimum angle of the second rejected design (degrees)",
+      "format": "deg1",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        }
+      ],
+      "name": "HmcSliverBMinAngleDeg",
+      "raw": 5.553001380243498,
+      "value": "5.6"
+    },
+    {
+      "bundle": "results",
+      "derivation": "record evidence.p2.levels[0].mesh_quality.sliver.elements_below_threshold",
+      "derived": true,
+      "description": "level-0 elements of the first rejected design below the sliver threshold",
+      "format": "int_comma",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        }
+      ],
+      "name": "HmcSliverABelowTen",
+      "raw": 3,
+      "value": "3"
+    },
+    {
+      "bundle": "results",
+      "derivation": "record evidence.p2.levels[0].mesh_quality.sliver.elements_below_threshold",
+      "derived": true,
+      "description": "level-0 elements of the second rejected design below the sliver threshold",
+      "format": "int_comma",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        }
+      ],
+      "name": "HmcSliverBBelowTen",
+      "raw": 13816,
+      "value": "13{,}816"
+    },
+    {
+      "bundle": "results",
+      "derivation": "record evidence.p2.levels[0].mesh_quality.sliver.element_count",
+      "derived": true,
+      "description": "level-0 elements of the first rejected design",
+      "format": "int_comma",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        }
+      ],
+      "name": "HmcSliverAElements",
+      "raw": 29158,
+      "value": "29{,}158"
+    },
+    {
+      "bundle": "results",
+      "derivation": "record evidence.p2.levels[0].mesh_quality.sliver.element_count",
+      "derived": true,
+      "description": "level-0 elements of the second rejected design",
+      "format": "int_comma",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        }
+      ],
+      "name": "HmcSliverBElements",
+      "raw": 46582,
+      "value": "46{,}582"
+    },
+    {
+      "bundle": "results",
+      "derivation": "record evidence.p2.levels[1].mesh_quality.minimum_angle_deg",
+      "derived": true,
+      "description": "level-1 minimum angle of the first rejected design (degrees)",
+      "format": "deg1",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        }
+      ],
+      "name": "HmcSliverALevelOneMinAngleDeg",
+      "raw": 5.314978675079004,
+      "value": "5.3"
+    },
+    {
+      "bundle": "results",
+      "derivation": "record evidence.p2.levels[1].mesh_quality.minimum_angle_deg",
+      "derived": true,
+      "description": "level-1 minimum angle of the second rejected design (degrees)",
+      "format": "deg1",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        }
+      ],
+      "name": "HmcSliverBLevelOneMinAngleDeg",
+      "raw": 5.553001380243432,
+      "value": "5.6"
+    },
+    {
+      "bundle": "results",
+      "derivation": "comparison.max_cusp_shift_over_tolerance",
+      "derived": true,
+      "description": "largest cusp shift of the first rejected design in tolerance units",
+      "format": "fixed2",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        }
+      ],
+      "name": "HmcSliverAShiftOverTol",
+      "raw": 0.7742217931357839,
+      "value": "0.77"
+    },
+    {
+      "bundle": "results",
+      "derivation": "comparison.max_cusp_shift_over_tolerance",
+      "derived": true,
+      "description": "largest cusp shift of the second rejected design in tolerance units",
+      "format": "fixed2",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/designs"
+        }
+      ],
+      "name": "HmcSliverBShiftOverTol",
+      "raw": 0.6680049913788976,
+      "value": "0.67"
+    },
+    {
+      "bundle": "results",
+      "derivation": "regex checks of the note against the v1 bundle (commits, counts, gate, stage time, no verdict)",
+      "derived": true,
+      "description": "POSTHOC_REJECTION.md names the recorded v1 facts",
+      "format": "bool",
+      "inputs": [
+        {
+          "artifact": "artifacts/protocol.json",
+          "pointer": "/predecessor"
+        }
+      ],
+      "name": "HmcRejectionNoteBound",
+      "raw": true,
+      "value": "true"
+    },
+    {
+      "bundle": "results",
+      "derivation": "classification token NOT_HARDWARE_VALID",
+      "derived": true,
+      "description": "not hardware-valid",
+      "format": "bool",
+      "inputs": [
+        {
+          "artifact": "artifacts/campaign-result.json",
+          "pointer": "/classification"
+        }
+      ],
+      "name": "HmcNotHardwareValid",
+      "raw": true,
+      "value": "true"
+    },
+    {
+      "bundle": "results",
+      "derivation": "protocol.p2.materials.statement",
+      "derived": true,
+      "description": "linear isotropic materials only (no saturation, no B-H curve)",
+      "format": "bool",
+      "inputs": [
+        {
+          "artifact": "artifacts/protocol.json",
+          "pointer": "/p2/materials/statement"
+        }
+      ],
+      "name": "HmcLinearMaterials",
+      "raw": true,
+      "value": "true"
+    },
+    {
+      "bundle": "results",
+      "derivation": "claim_boundary.field_level names the two-level screening configuration",
+      "derived": true,
+      "description": "not the three-level P2-qualified chain",
+      "format": "bool",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/claim_boundary/field_level"
+        }
+      ],
+      "name": "HmcNotPTwoQualifiedChain",
+      "raw": true,
+      "value": "true"
+    },
+    {
+      "bundle": "results",
+      "derivation": "claim_boundary.what_is_not_claimed names design recommendation",
+      "derived": true,
+      "description": "a design recommendation is made",
+      "format": "bool",
+      "inputs": [
+        {
+          "artifact": "artifacts/confirmation-dataset.json",
+          "pointer": "/claim_boundary/what_is_not_claimed"
+        }
+      ],
+      "name": "HmcDesignRecommendation",
+      "raw": false,
+      "value": "false"
+    },
+    {
+      "bundle": "lineage",
+      "derived": false,
+      "description": "level-0 minimum-angle rejection gate of v1 (degrees)",
+      "format": "fixed0",
+      "name": "HmcVOneAngleGateDeg",
+      "raw": 10.0,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/p2/mesh/reject_below_angle_deg"
+      },
+      "value": "10"
+    },
+    {
+      "bundle": "lineage",
+      "derived": false,
+      "description": "experiment identifier of the rejected predecessor",
+      "format": "ident",
+      "name": "HmcVOneExperimentId",
+      "raw": "l1b-hemp-confirmation-v1",
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/experiment_id"
+      },
+      "value": "l1b-\\allowbreak{}hemp-\\allowbreak{}confirmation-\\allowbreak{}v1"
+    },
+    {
+      "bundle": "lineage",
+      "derived": false,
+      "description": "terminal state of the v1 execution",
+      "format": "ident",
+      "name": "HmcVOneTerminalState",
+      "raw": "development_rejection",
+      "source": {
+        "artifact": "terminal.json",
+        "pointer": "/state"
+      },
+      "value": "development\\_\\allowbreak{}rejection"
+    },
+    {
+      "bundle": "lineage",
+      "derived": false,
+      "description": "designs resolved by v1 before the rejection",
+      "format": "int",
+      "name": "HmcVOneResolved",
+      "raw": 13,
+      "source": {
+        "artifact": "terminal.json",
+        "pointer": "/payload/resolved_design_count"
+      },
+      "value": "13"
+    },
+    {
+      "bundle": "lineage",
+      "derived": false,
+      "description": "designs v1 failed at the mesh gate",
+      "format": "int",
+      "name": "HmcVOneFailed",
+      "raw": 2,
+      "source": {
+        "artifact": "terminal.json",
+        "pointer": "/payload/failed_design_count"
+      },
+      "value": "2"
+    },
+    {
+      "bundle": "lineage",
+      "derivation": "design-failures.failed[*].key",
+      "derived": true,
+      "description": "designs v1 rejected",
+      "format": "list_short_designs",
+      "inputs": [
+        {
+          "artifact": "artifacts/design-failures.json",
+          "pointer": "/failed"
+        }
+      ],
+      "name": "HmcVOneFailedDesigns",
+      "raw": [
+        "l1a-gs-v3-028-f012c0bf33",
+        "l1a-gs-v3-048-aabacb3a59"
+      ],
+      "value": "028, 048"
+    },
+    {
+      "bundle": "lineage",
+      "derived": false,
+      "description": "stage at which v1 failed the designs",
+      "format": "ident",
+      "name": "HmcVOneFailureStage",
+      "raw": "resolve",
+      "source": {
+        "artifact": "artifacts/design-failures.json",
+        "pointer": "/failed/0/stage"
+      },
+      "value": "resolve"
+    },
+    {
+      "bundle": "lineage",
+      "derived": false,
+      "description": "recorded failure reason",
+      "format": "text",
+      "name": "HmcVOneFailureReason",
+      "raw": "ValueError: level 0 mesh violates the minimum-angle rejection gate",
+      "source": {
+        "artifact": "artifacts/design-failures.json",
+        "pointer": "/failed/0/reason"
+      },
+      "value": "ValueError: level 0 mesh violates the minimum-angle rejection gate"
+    },
+    {
+      "bundle": "lineage",
+      "derived": false,
+      "description": "v1 design stage wall time (min)",
+      "format": "min1",
+      "name": "HmcVOneStageWallMin",
+      "raw": 2738.1153885000094,
+      "source": {
+        "artifact": "terminal.json",
+        "pointer": "/payload/stage_wall_s"
+      },
+      "value": "45.6"
+    },
+    {
+      "bundle": "lineage",
+      "derivation": "difference of the v1 transition timestamps 0007 - 0001",
+      "derived": true,
+      "description": "v1 lock-acquired to terminal wall time (min)",
+      "format": "min1",
+      "inputs": [
+        {
+          "artifact": "transitions/0001-lock-acquired.json",
+          "pointer": "/recorded_at_utc"
+        },
+        {
+          "artifact": "transitions/0007-terminal.json",
+          "pointer": "/recorded_at_utc"
+        }
+      ],
+      "name": "HmcVOneExecutionWallMin",
+      "raw": 2740.741375,
+      "value": "45.7"
+    },
+    {
+      "bundle": "lineage",
+      "derivation": "count of v1 manifest file entries verified",
+      "derived": true,
+      "description": "v1 bundle files verified byte for byte",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "manifest.json",
+          "pointer": "/artifacts"
+        }
+      ],
+      "name": "HmcVOneVerifiedFiles",
+      "raw": 103,
+      "value": "103"
+    },
+    {
+      "bundle": "lineage",
+      "derived": false,
+      "description": "v1 manifest artifact entries",
+      "format": "int",
+      "name": "HmcVOneArtifactCount",
+      "raw": 112,
+      "source": {
+        "artifact": "manifest.json",
+        "pointer": "/artifact_count"
+      },
+      "value": "112"
+    },
+    {
+      "bundle": "lineage",
+      "derivation": "count of artifacts/designs/*.json in the v1 bundle",
+      "derived": true,
+      "description": "v1 design records (resolved designs)",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "manifest.json",
+          "pointer": "/artifacts"
+        }
+      ],
+      "name": "HmcVOneRecords",
+      "raw": 13,
+      "value": "13"
+    },
+    {
+      "bundle": "lineage",
+      "derived": false,
+      "description": "v1 assessment accesses (none: no verdict was produced)",
+      "format": "int",
+      "name": "HmcVOneAssessmentAccess",
+      "raw": 0,
+      "source": {
+        "artifact": "terminal.json",
+        "pointer": "/counts/assessment_access_count"
+      },
+      "value": "0"
+    },
+    {
+      "bundle": "lineage",
+      "derived": false,
+      "description": "v1 attempts",
+      "format": "int",
+      "name": "HmcVOneAttemptCount",
+      "raw": 1,
+      "source": {
+        "artifact": "terminal.json",
+        "pointer": "/counts/attempt_count"
+      },
+      "value": "1"
+    },
+    {
+      "bundle": "lineage",
+      "derived": false,
+      "description": "v1 lock immutable",
+      "format": "bool",
+      "name": "HmcVOneLockImmutable",
+      "raw": true,
+      "source": {
+        "artifact": "execution-lock.json",
+        "pointer": "/immutable"
+      },
+      "value": "true"
+    },
+    {
+      "bundle": "lineage",
+      "derived": false,
+      "description": "designs exercised by the v1 shakedown",
+      "format": "int",
+      "name": "HmcVOneShakedownDesigns",
+      "raw": 3,
+      "source": {
+        "artifact": "artifacts/shakedown.json",
+        "pointer": "/design_count"
+      },
+      "value": "3"
+    },
+    {
+      "bundle": "lineage",
+      "derivation": "count of v1 transition records",
+      "derived": true,
+      "description": "v1 transitions",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "transitions/0007-terminal.json",
+          "pointer": "/sequence"
+        }
+      ],
+      "name": "HmcVOneTransitionCount",
+      "raw": 7,
+      "value": "7"
+    }
+  ],
+  "manuscript_integration": {
+    "artifact_claim_id": "CLM-088",
+    "artifact_id": "TAB-L1B-HEMP-CONFIRMATION-V1-1",
+    "gate_id": "GATE-L1B-HEMP-CONFIRMATION-V1-1",
+    "gate_kind": "numerical-screening",
+    "generated_binding": "\\input{generated/l1b-hemp-confirmation-v1-1.tex}",
+    "generated_tex_path": "paper/generated/l1b-hemp-confirmation-v1-1.tex",
+    "manifest_id": "L1B-HEMP-CONFIRMATION-V1-1-20260904-15-V1",
+    "manifest_path": "paper/evidence/manifests/l1b-hemp-confirmation-v1-1.json",
+    "prose_claim_ids": [
+      "CLM-086",
+      "CLM-087",
+      "CLM-089",
+      "CLM-090",
+      "CLM-091",
+      "CLM-092",
+      "CLM-093"
+    ],
+    "rule": "Every number in the section is a macro defined here; each macro is bound below to an artifact path, JSON pointer, formatter and SHA-256, or to a stated derivation over such inputs. Claim-bearing sentences are exact EvidenceClaim bodies registered in paper/evidence/claims.json; the numerical-screening gate in paper/evidence/result-gates.json names the typed manifest that admits the section at its recorded outcome (an accepted material-aware confirmation at the verdict the campaign recorded) without opening any physics level. The confirmed object is the L1a cusp topology (count and wall-cusp positions) of fifteen field maps under a linear-iron P2 field; every wall-field and Koch-ratio ratio is a ratio of two field models and never a probability, nothing here is a saturation, plasma, mirror-probability, thrust, efficiency or design-recommendation claim, and the predecessor's development rejection is disclosed alongside.",
+    "section_binding": "\\input{sections/l1b-hemp-confirmation-v1-1.tex}",
+    "section_heading": "Material-aware confirmation of the HEMP-like designs under a linear-iron P2 field",
+    "section_path": "paper/sections/l1b-hemp-confirmation-v1-1.tex",
+    "status": "admitted",
+    "table_macros": [
+      "HmcDesignTable",
+      "HmcGateTable",
+      "HmcFieldTable",
+      "HmcDisclosureTable"
+    ]
+  },
+  "output": {
+    "path": "paper/generated/l1b-hemp-confirmation-v1-1.tex",
+    "sha256": "1a3752f888432f9ed98b14c7e5a22e1e25f0a03a6eabafc96cf287d7a810ab9f"
+  },
+  "recorded_outcome": "accepted-material-aware-confirmation",
+  "reference_artifacts": {
+    "files": {
+      "modern/experiments/cusp_topology_search_v3_1/protocol.json": {
+        "bytes": 26743,
+        "git_blob": "e6eb046f127699a2b537c19c80b1c6c44078e752",
+        "git_blob_sha256": "f6077edde3a4e4326f2dda9df4429452d88cb8c7145a620f0243ae48795090f8",
+        "revision": "cec47f12f5909c5886424bf5d46ac20ce06f1ac5",
+        "role": "reference-cusp-topology-protocol",
+        "sha256": "f6077edde3a4e4326f2dda9df4429452d88cb8c7145a620f0243ae48795090f8"
+      },
+      "modern/experiments/l1a_geometry_sweep_v3/design-authorities.json": {
+        "bytes": 170503,
+        "git_blob": "c9311f6e6442ef5c2585d0d544e88d3e330e35f3",
+        "git_blob_sha256": "d8aaed8c1893ad10dd608c3b2ac3f66ebede61ecf97d916e30755aa221b40e4b",
+        "revision": "2cfe8223630fbef6bfe8099a5dcecaf4eb8c6b44",
+        "role": "reference-sweep-v3-design-authorities",
+        "sha256": "d8aaed8c1893ad10dd608c3b2ac3f66ebede61ecf97d916e30755aa221b40e4b"
+      },
+      "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/cusp-cell-catalogue-v3.json": {
+        "bytes": 1701733,
+        "git_blob": "1fc34338d303911e80e21b6ec7102e7e942eadb3",
+        "git_blob_sha256": "583bd039d33fc7158ff03424a9d75426072c933e339d9a7660d84b2e7eaef2a9",
+        "revision": "2cfe8223630fbef6bfe8099a5dcecaf4eb8c6b44",
+        "role": "reference-sweep-v3-catalogue",
+        "sha256": "583bd039d33fc7158ff03424a9d75426072c933e339d9a7660d84b2e7eaef2a9"
+      },
+      "modern/experiments/l1a_geometry_sweep_v3/results/manifest.json": {
+        "bytes": 343893,
+        "git_blob": "19b2e1a194e56dbca2b7ad2fbc314bb3e9e7224c",
+        "git_blob_sha256": "b8670c488ebccd69569525437ab2c8a13af9ea14c4be4e56f1ed651c8057abf3",
+        "revision": "2cfe8223630fbef6bfe8099a5dcecaf4eb8c6b44",
+        "role": "reference-sweep-v3-manifest",
+        "sha256": "b8670c488ebccd69569525437ab2c8a13af9ea14c4be4e56f1ed651c8057abf3"
+      }
+    },
+    "rule": "the sweep-v3 wall-cusp catalogue and results manifest and the sweep-v3 design authorities (must hash to the identities the campaign sealed; the declared designs must be exactly the catalogue's HEMP-like Sobol entries in catalogue order, and every L1a reference must equal its catalogue entry) and the frozen cusp topology v3.1 protocol (whose definition parameters the imported definition must equal), each bound at its own admitted revision"
+  },
+  "schema_version": "1.0",
+  "screening_model": "adaptive quadratic finite-element magnetostatics (cft_revival.fem_reference, numpy CPU) with LINEAR soft-iron poles and return yoke and recoil-remanence SmCo-like magnets on two nested levels, sampled into the cusp topology search v3.1 definition and compared with the sealed linear-vacuum L1a records of the fifteen HEMP-like sweep-v3 designs (a confirmation of field-map descriptors under two field models; not the three-level P2-qualified chain, no saturation or B-H curve, not hardware-valid)",
+  "tables": {
+    "HmcDesignTable": {
+      "rows": 15,
+      "source": "artifacts/campaign-result.json#/agreement_table, artifacts/confirmation-dataset.json#/designs (recomputed)"
+    },
+    "HmcDisclosureTable": {
+      "rows": 15,
+      "source": "v1 results bundle (terminal.json, design-failures.json, protocol.json), artifacts/protocol.json#/predecessor and #/p2/mesh, artifacts/shakedown.json#/mesh_preflight and #/timing_projection, design records mesh_quality"
+    },
+    "HmcFieldTable": {
+      "rows": 13,
+      "source": "artifacts/protocol.json#/p2, artifacts/campaign-result.json#/execution_mode, artifacts/gates.json#/ram_budget, artifacts/runtime.json, transitions"
+    },
+    "HmcGateTable": {
+      "rows": 24,
+      "source": "artifacts/gates.json#/confirmation, artifacts/confirmation-dataset.json#/headline, #/designs/*/comparison (recomputed)"
+    }
+  },
+  "topology_label": "SCREENING_P2_MATERIAL_FIELD_SEPARATRIX_CUSP_TOPOLOGY",
+  "verdict": "CONFIRMED"
+}

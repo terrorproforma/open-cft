@@ -315,6 +315,32 @@
       "status": "verified"
     },
     {
+      "artifact_claim_count": 4,
+      "artifact_claim_note": "The generated file defines the evidence macros and four table macros (\\HmcDesignTable, \\HmcGateTable, \\HmcFieldTable, \\HmcDisclosureTable); each table body is wrapped in its own ArtifactClaim bound to CLM-088, so exactly four ArtifactClaim macros are required. The tables report a material-aware confirmation of field-map descriptors: the per-design agreement between the linear-vacuum record and the linear-iron P2 map, the verdict with its predeclared gates and reported quantities, the field model and solve evidence, and the disclosures; every ratio is a ratio of two field models and nothing in them is a plasma, mirror-probability or performance quantity.",
+      "claim_ids": [
+        "CLM-088"
+      ],
+      "evidence_file": "paper/evidence/l1b-hemp-confirmation-v1-1.json",
+      "generator_command": "python paper/scripts/generate_l1b_hemp_confirmation_v1_1_evidence.py",
+      "generator_module": "generate_l1b_hemp_confirmation_v1_1_evidence",
+      "generator_path": "paper/scripts/generate_l1b_hemp_confirmation_v1_1_evidence.py",
+      "id": "TAB-L1B-HEMP-CONFIRMATION-V1-1",
+      "kind": "table",
+      "manifest_id": "L1B-HEMP-CONFIRMATION-V1-1-20260904-15-V1",
+      "manuscript_binding": "\\input{generated/l1b-hemp-confirmation-v1-1.tex}",
+      "manuscript_label": "tab:l1b-hemp-confirmation-designs",
+      "manuscript_labels": [
+        "tab:l1b-hemp-confirmation-designs",
+        "tab:l1b-hemp-confirmation-gates",
+        "tab:l1b-hemp-confirmation-field",
+        "tab:l1b-hemp-confirmation-disclosures"
+      ],
+      "output_path": "paper/generated/l1b-hemp-confirmation-v1-1.tex",
+      "required_gate": "GATE-L1B-HEMP-CONFIRMATION-V1-1",
+      "sidecar_path": "paper/generated/l1b-hemp-confirmation-v1-1.provenance.json",
+      "status": "verified"
+    },
+    {
       "id": "FIG-MULTIFIDELITY-PARETO",
       "kind": "figure",
       "status": "planned",

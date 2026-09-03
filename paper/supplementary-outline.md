@@ -295,9 +295,10 @@
   screening fields and never probabilities; that the declared iron pole pieces
   are vacuum in the field; that the hypothesis is admitted at its recorded
   outcome (not held as preregistered; I_1 an upper envelope); that the
-  material-aware confirmation is queued and unreported; that no HEMP-like
-  design is a design recommendation; and that the legacy-design-space reading
-  is a labelled Discussion interpretation.
+  material-aware confirmation was queued within the sweep and is admitted as
+  the separate campaign of S4k; that no HEMP-like design is a design
+  recommendation; and that the legacy-design-space reading is a labelled
+  Discussion interpretation.
 
 ## S4j. Orbit wall-loss geometry screening v2 (accepted screening dataset from the catalogue cells)
 
@@ -348,6 +349,62 @@
   published post hoc after a descriptor-cap failure with every artifact durable
   and nothing rerun; and that the closure-exhaustion reading (CLM-085) is a
   labelled Discussion interpretation naming a kinetic sweep as future work.
+
+## S4k. L1b/P2 material-aware HEMP confirmation v1.1 (accepted material-aware confirmation)
+
+- Typed confirmation manifest `paper/evidence/manifests/l1b-hemp-confirmation-v1-1.json`
+  (`paper-material-aware-confirmation-manifest` 1.0) and the hash-bound
+  evidence file `paper/evidence/l1b-hemp-confirmation-v1-1.json`.
+- Commit chain on `feat/sota-foundation` (rebased from
+  `origin/exp/l1b-hemp-confirmation-v1`; the bundle's lock and the protocol's
+  predecessor block name the pre-rebase commits `ead9b525` / `b9449ee5` /
+  `978c71be` as strings): v1 code `6e9f056c`, v1 preregistration `fb143eb2`,
+  v1 record `2d8d6705` (`development_rejection`, 104 files), v1.1 code + v1
+  `POSTHOC_REJECTION.md` `b6125fe7`, v1.1 preregistration `c8692ff2`, v1.1
+  record `54cd3e82` (134 files, results only), dashboard `560909f7`. The sealed
+  experiment-code, dependency-source and field-pipeline hashes recompute from
+  the blobs at `c8692ff2`.
+- References bound at their admitted revisions: the sweep-v3 wall-cusp
+  catalogue, results manifest and design authorities (`2cfe8223`; the declared
+  designs are exactly the catalogue's 15 HEMP-like Sobol entries) and the
+  frozen cusp-topology-v3.1 protocol (`cec47f12`; the imported definition
+  parameters equal it). Lineage: the whole v1 bundle, its frozen files and the
+  rejection note.
+- Field model verbatim: soft-iron poles (one per inter-magnet gap) and return
+  yoke at μr 4000, recoil-remanence SmCo-like magnets at μr 1.05, every other
+  region at μr 1; body-fitted graded mesh (8 bore elements, 3 feature elements,
+  padding 0.5, 5° level-0 angle gate); two nested Dörfler (θ 0.5) / red levels,
+  numpy CSR PCG at relative true residual 2e-10 within 16,000 iterations, RAM
+  guard 0.4 × free at start, DOF cap 600,000; level-1 map sampled on 32 radial
+  intervals at 1× and 2×, post-scaled by the L1a magnet-strength scale;
+  cusp topology v3.1 definition imported unchanged on the sealed L1a axis
+  window; tolerance max(r_w/8, L1a dz) = 0.451–0.523 mm.
+- Tables regenerated at every check: the per-design agreement table (15 rows:
+  stages, x_w 2.25–3.24, r_w/L 0.715–1.032, cusps 2/3/4, matched, largest shift
+  and tolerance ratio, channel null shift, wall |B| ratio range, axis ratio,
+  ρ_min L1a → P2, HEMP-like under P2, level-1 DOFs 50,037–466,005); the
+  verdict with gates (a) 30/30 converged (residual ≤ 2.0e-10), (b) 15/15,
+  (c) 37 cusps, 0.80 of tolerance, shifts 0.0013–0.362 mm (22 of 37 above the
+  0.25 mm stability tolerance, all above the ≤ 1.4 µm P2 discretisation shift),
+  (d) 14/15 preserved (028: 1.515 → 1.464), ρ ratio 0.94/1.06/1.45, wall ratio
+  1.05/1.23/1.53, peak wall 0.93–1.39, axis 0.98–1.35, channel nulls equal
+  15/15 but in bijection 6/15 (max shift 1.07 mm), outside nulls 11 → 29, lean
+  0.46 → 1.14 mm; the field model and solve evidence (3079 s stage, 305 s
+  assessment, 56.4 min lock to terminal, 240 MB peak RSS = 6.8 % of 3.5 GB);
+  the disclosures.
+- Explicit statements that every ratio is a ratio of two field models at equal
+  magnet strength and never a probability; that the verdict is admitted as
+  recorded and is not a positive finding about the thruster; that the materials
+  are linear and the field is not the three-level qualified chain; that the
+  axis nulls and any threshold near the design value are not robust while the
+  wall-cusp count and positions are; that the predecessor's development
+  rejection, the relaxed angle gate with the sliver record (028: 5.3°, 3 of
+  29,158 level-0 elements below 10°; 048: 5.6°, 13,816 of 46,582), the shakedown
+  overlap (5 of 15 evidentiary designs) and over-budget timing projection
+  (100.3 vs 90 min; stage 51.3 min) and the campaign's own out-of-scope
+  paper-admission statement are disclosed; and that the material-question
+  reading (CLM-093) is a labelled Discussion interpretation with no design
+  recommendation.
 
 ## S5. Controlled performance benchmark
 

@@ -1442,3 +1442,200 @@
   column.
 - The checker phrase "exhausted" did not match the claim's "exhausts the
   collisionless"; the checker now requires the claim's wording.
+
+## 2026-09-04 - Admitting the L1b/P2 material-aware HEMP confirmation v1.1
+
+### Scope
+
+- Worktree `uni-project-paper-hemp` on `paper/l1b-hemp-confirmation-claim` from
+  `origin/feat/sota-foundation` (`560909f7`). Admitted
+  `modern/experiments/l1b_hemp_confirmation_v1_1` (v1.1 code + v1 post-hoc
+  rejection note `b6125fe7`, preregistration `c8692ff2`, record `54cd3e82`
+  results only, dashboard `560909f7`; predecessor v1 code `6e9f056c`,
+  preregistration `fb143eb2`, record `2d8d6705` = `development_rejection`)
+  through the eighth `numerical-screening` gate
+  `GATE-L1B-HEMP-CONFIRMATION-V1-1` at a SIXTH recorded outcome,
+  `accepted-material-aware-confirmation`, justified on the gate: every earlier
+  outcome names a study on L1a linear-vacuum fields (at most one P2 row), and
+  this study solves a linear-iron P2 field for every design and classifies the
+  comparison by a preregistered verdict rule, so reusing
+  `accepted-topology-screening` would have been false. The kind description
+  was amended to name the outcome; no new kind. New manifest type
+  `paper-material-aware-confirmation-manifest` 1.0. Section 16, CLM-086..093.
+- Did not touch `results/`, the frozen preregistration files, the GPU or the
+  live PIC worktree.
+
+### Added
+
+- `paper/scripts/generate_l1b_hemp_confirmation_v1_1_evidence.py` (320
+  `\Hmc...` macros, ~2.3 s): byte-verifies the 134-file bundle (133 manifest
+  entries + manifest; sidecars; no stray file in the tree) and the 104-file v1
+  rejection bundle; frozen == sealed for both campaigns; both record commits
+  carry only `results/`, both preregistration commits freeze exactly the two
+  authority files, the dashboard commit changes no code; recomputes the sealed
+  experiment-code, dependency-source and field-pipeline hashes (name NUL bytes
+  NUL) from the blobs at the REBASED preregistration commit `c8692ff2` through
+  one `git cat-file --batch` call (the bundle's lock names the pre-rebase
+  `ead9b525` of `origin/exp/l1b-hemp-confirmation-v1`; recorded as a string,
+  never resolved, so regeneration is a pure function of HEAD-reachable content);
+  binds the sweep-v3 catalogue, manifest and design authorities (`2cfe8223`) and
+  the frozen v3.1 protocol (`cec47f12`) as references (declared designs ==
+  catalogue's HEMP-like Sobol entries in order; imported definition parameters
+  == v3.1); per design recomputes x_w, r_w/L, the tolerance max(r_w/8, L1a dz),
+  every shift / tolerance ratio / wall-field ratio / magnet-strength scaling /
+  rho ratio, every conservative Koch ratio from wall |B| over the larger adjacent
+  axis peak, every HEMP-like flag, count agreement, bijection, channel and
+  outside axis-null populations, separatrix lean, level structure and
+  convergence (residual, iteration cap, DOF cap, mesh-angle gate from the
+  records' `mesh_quality`), material regions, discretisation and sampling
+  stability, the field grid (payload hash + identity), the agreement-table row
+  and the CSV row; re-derives gates (b), (c), the verdict and reported (d) and
+  every headline/estimand distribution; verifies the v1 rejection (2 failures at
+  `resolve` with the angle-gate reason, 13 + 2 = 15, no assessment access,
+  transitions end in `development-rejected -> terminal`), proves the v1 -> v1.1
+  protocol diff is exactly the 12 declared paths with the comparison / gates /
+  definition import / design set / solver / materials / adaptivity / sampling /
+  resources / claim boundary / outputs blocks identical, verifies
+  `POSTHOC_REJECTION.md` by regex against the v1 bundle, requires the two
+  rejected designs' v1.1 level-0 meshes to fall below the v1 gate; cross-checks
+  the dashboard payload (identity, sealed sources, verdict, confirmation,
+  headline, estimands, agreement table, claim boundary, gates, execution,
+  protocol blocks, every design row, predecessor block, angle-gate block) against
+  both bundles; four `\ArtifactClaim` tables (per-design agreement; verdict +
+  gates + reported; field model + solve evidence; disclosures).
+- `paper/sections/l1b-hemp-confirmation-v1-1.tex` (Method; Execution and
+  integrity; Results: cusp count and positions; Reported: field ratios, the
+  HEMP-like flag and the axis nulls; Disclosures; Scope box), digit-free (`L1a`,
+  `v3.1`, `v3`, `v1`, `v1.1`, `zero`, `one` as macros); standalone driver.
+- `claims.json`: CLM-086 (abstract), CLM-087/089/090/091/092 (section), CLM-088
+  (tables), CLM-093 (Discussion interpretation: the topology is a property of
+  the magnet arrangement under linear iron; absolute-field / rho thresholds near
+  1.5 and axis-null positions are not robust; no recommendation); amended
+  CLM-028 (topology Discussion: "remains open" -> confirmed for the 15 designs
+  in Section 16, open beyond them; bound to the manifest), CLM-075 (sweep-v3
+  scope box: queued status kept as recorded, now cites Section 16), CLM-076
+  (sweep-v3 Discussion: "this paper does not report" -> Section 16 reports it,
+  one design's ratio does not survive; bound to the manifest); manifest entry
+  and gate record. `result-gates.json` (184 metric constraints; kind description
+  amended), `manifest-schemas.json` (44 roles incl. `*-sidecar`, `phase`,
+  `counter`, `access`), `figure-table-contract.json`
+  (`TAB-L1B-HEMP-CONFIRMATION-V1-1`, four ArtifactClaims).
+- `manuscript.tex`: `\HempConfirmationEvidenceRevision`, preamble `\input`,
+  eleventh date line, abstract sentence, Introduction contribution, eighth-gate
+  paragraph in Section 3.1, Section 14 intro ("not run within this campaign and
+  admitted ... in Section 16"), Section 16 "Preregistered material-aware
+  confirmation of the HEMP-like sweep designs", L1 note, Discussion (CLM-028 and
+  the P2-row sentence amended; CLM-076 amended; new paragraph with CLM-093),
+  Limitations (sweep-v3 sentence amended; a confirmation sentence with the
+  verdict, the lost design, the axis-null shift, the linear-material boundary,
+  the predecessor rejection, the shakedown overlap), data availability,
+  Conclusion.
+- `check_paper.py`: `HEMP_CONFIRMATION_METRIC_MACROS` (168) and
+  `HEMP_CONFIRMATION_POLICY_METRICS` (16; `verdict_admitted_as_recorded` true,
+  `positive_finding_accepted` false, `axis_null_positions_robust_within_tolerance`
+  false, `absolute_field_or_rho_threshold_robust` false, ...), sixth entry in
+  `SCREENING_OUTCOMES`, `_check_hemp_confirmation` (every results-tree file must
+  be bound; lineage must bind the whole v1 bundle and the rejection note, checked
+  in two batched `git cat-file` calls; recomputed source hashes equal between
+  manifest and evidence; the outcome must not be an L1a screening outcome, must
+  be justified as a sixth outcome and named by the kind description; as-recorded
+  verdict / gate / preservation / non-robustness / wall-field-rise / lineage /
+  shakedown findings; as-recorded wording of CLM-089/090/091/092/093;
+  CLM-075/076/028 must cite Section 16; superseded "does not report" wording
+  refused; Limitations must carry the boundary), renderer, required section,
+  trackable paths; the sweep-v3 checker's CLM-076 phrase list now requires the
+  Section 16 reference instead of "not report".
+- Tests: `test_l1b_hemp_confirmation_admission.py` (19) and
+  `test_l1b_hemp_confirmation_evidence.py` (9); the cusp-topology, sweep-v3 and
+  both geometry-screening admission tests updated for the sixth outcome and the
+  CLM-028 / CLM-076 manifest sets. README, notation, author checklist,
+  supplementary outline (S4k).
+
+### Numbers verified against the bundle
+
+- 15 designs (10 three-stage, 2 four-stage, 3 five-stage; 10/3/2 with 2/3/4
+  cusps), x_w 2.25-3.24, r_w/L 0.715-1.032; 30/30 solves converged, largest
+  relative true residual 2.00e-10; level 0 24,369-116,883 DOFs (949-3,227 PCG
+  iterations), level 1 50,037-466,005 (1,183-5,455); 11/11 binding gates, 1/1
+  replay bit-identical (design 015), sampling stable 15/15 (largest 62 nm),
+  discretisation stable 15/15 (largest cusp shift 1.4 um, axis-null 5.6 um,
+  rho 1.2e-3); stage 3079 s, assessment 305 s, lock-to-terminal 56.4 min; peak
+  RSS 240 MB = 6.8 % of the 3.5 GB budget; one worker of 24 cores, BLAS 1.
+- Gate (b) 15/15 strict and boundary-tolerant; gate (c) 37 cusps, 15/15
+  bijective, shifts 1.3 um-0.362 mm (median 0.267, mean 0.243), max 0.80 of
+  tolerance at design 076, tolerance 0.451-0.523 mm (median 0.451); 22/37 shifts
+  above the 0.25 mm stability tolerance, 37/37 above the design's P2
+  discretisation shift; verdict CONFIRMED.
+- Reported (d): preserved 14/15, lost 028 (rho 1.515 -> 1.464; its cusps within
+  0.77 of tolerance); rho ratio 0.94/1.06/1.45 (below one at 14 cusps of 8
+  designs); wall |B| ratio 1.05/1.23/1.53 (above one at 37/37 = +5 % to +53 %);
+  peak wall 0.93/1.20/1.39 (unscaled 0.91-1.55); axis peak 0.98/1.18/1.35;
+  P2 rho_min 1.464-2.928 (median 1.738 vs 1.674 L1a); wall reading < 1 at 37/37
+  P2 cusps (max 0.85; 0 cusps at the wall maximum).
+- Axis nulls: channel count equal 15/15, bijection within the cusp tolerance
+  6/15, sorted shifts median 0.47 / max 1.07 mm, beyond tolerance in 9 designs;
+  pooled bijection 0/15; outside nulls 11 (L1a) -> 29 (P2), more in 9 designs,
+  10 paired outside nulls moved 1.09-1.75 mm; lean max 0.46 -> 1.14 mm (medians
+  86 -> 147 um); angle to wall normal max 6.9 -> 11.6 deg.
+- Lineage: v1 `development_rejection`, 13 resolved / 2 failed (028, 048) at
+  `resolve`, stage 45.6 min, 0 assessment accesses, 103 + 1 files, 112 artifact
+  entries; protocol diff 12 paths (2 declarations); slivers 028: 5.3 deg min
+  angle, 3 of 29,158 level-0 elements below 10 deg; 048: 5.6 deg, 13,816 of
+  46,582 (level 1 keeps 5.3 / 5.6); whole-set preflight 15/15, minimum 5.3 deg;
+  shakedown 5 designs (015, 036, 106, 028, 048), all evidentiary; timing
+  projection 100.3 min vs 90.0 budget (within budget: false; contention 1.5),
+  recorded stage 51.3 min.
+- Brief corrections: the brief's "0.45-0.53 mm" tolerance is 0.451-0.523 mm at
+  three decimals (0.52 at two); the brief's "9.3 deg" for design 048 is the
+  rejection note's description of the sliver population (13,816 anisotropic
+  triangles), while the recorded level-0 minimum angle of 048 is 5.6 deg - the
+  paper reports the recorded minimum and the checklist explains the difference.
+  The shakedown record's `disclosure` string still says "three REAL designs"
+  although v1.1 ran five; the paper does not quote that string (the protocol's
+  `shakedown.design_rule` and `design_count` 5 are used instead).
+
+### Validation
+
+- `python paper/scripts/check_paper.py`: before the commit only "accepted
+  manifest is not committed at HEAD" (100 s); after the commit green (102 s
+  warm).
+- `python -m unittest discover -s paper/tests`: 285 tests (257 + 28), 919 s;
+  two failures on the first full run were test/driver fixes (below), 285/285
+  after them.
+- `python paper/scripts/verify_reproducible_build.py`: two clean builds
+  byte-identical (211 s for both), `paper/build/manuscript.pdf` 73 pages,
+  784,052 bytes, SHA-256
+  `105b522562509809e750bdf5a0c5fbcde7d87f78714d8ff113e78194d8b0309b`; no
+  overfull box, no LaTeX error, no undefined reference (the pre-existing
+  `sec:mdo-l0-v2` duplicate label is unchanged).
+- Rendered `%TEMP%\paper-hemp-pages\` (Section 16 pp54-60: intro p54,
+  subsection p55, design table p57, disclosure table and scope box p60;
+  Discussion CLM-093 p65) with `pdftoppm` and inspected the four tables.
+- ruff 0.16.6 (installed into `%TEMP%\rufftool`, not globally): clean under
+  E4/E7/E9/F on every touched script and test, and under B/C4 on the new files;
+  the 16 pre-existing findings are all in untouched, hash-bound generators.
+
+### Corrections during validation
+
+- `channel_axis_null_shift_m` (count 9) is the per-design
+  `channel_axis_null_match.max_difference_m` where a match exists, not the
+  bijection count (6); `max_axis_null_shift_m` is the pooled analogue. Both
+  recompute from the rows once read that way.
+- The dataset rows carry a 12-key subset of the records' level blocks (the
+  records add `mesh_quality`, `adaptivity`, `allocation_preflight`, ...);
+  compare key by key, and read the sliver record from the records.
+- `manifest.json` is not self-listed by the bundle manifest; the macro loader
+  resolves it from the parsed manifest, and the evidence test treats it as such.
+- The first `_check_hemp_confirmation` took 12 s because the 109 lineage entries
+  went through per-file `git rev-parse` + `cat-file`; batching them through
+  `_committed_blobs` cut the checker to 4.3 s (the generic manifest validation of
+  138 source files still takes ~10 s).
+- The sweep-v3 checker compares claim phrases against the raw `authorized_tex`;
+  storing the amended CLM-075/076/028 texts with the section's line breaks broke
+  "no HEMP-like design is a design recommendation" across a newline. All
+  amended and new claim texts are stored whitespace-normalised.
+- The amended CLM-075 adds `\ref{sec:l1b-hemp-confirmation}` to the sweep-v3
+  section, so its standalone driver needed a label target for that section
+  (`l1a-sweep-v3-standalone.tex`), and the sweep-v3 admission test asserted the
+  CLM-076 manifest set in two places (both now include the confirmation
+  manifest).

@@ -1,0 +1,267 @@
+% Results subsection: L1b/P2 material-aware HEMP confirmation v1.1 (the fifteen HEMP-like
+% designs of the accepted L1a geometry sweep v3 re-solved with linear soft-iron poles and yoke
+% and recoil-remanence magnets; accepted material-aware confirmation at the recorded verdict).
+%
+% Every quantity in this file is an \Hmc... macro defined in
+% paper/generated/l1b-hemp-confirmation-v1-1.tex, which
+% paper/scripts/generate_l1b_hemp_confirmation_v1_1_evidence.py writes from the sealed
+% results bundle of modern/experiments/l1b_hemp_confirmation_v1_1 and the byte-verified
+% rejection bundle of its predecessor modern/experiments/l1b_hemp_confirmation_v1;
+% paper/evidence/l1b-hemp-confirmation-v1-1.json records the artifact path, JSON pointer and
+% SHA-256 behind each macro, or the derivation of a derived macro. No numeric literal is
+% typed here (the level names, the field level, the version tokens and the Bessel symbol are
+% macros).
+%
+% Status: admitted. manuscript.tex binds this file once through
+% \input{sections/l1b-hemp-confirmation-v1-1.tex}. Admission is governed by the
+% numerical-screening gate GATE-L1B-HEMP-CONFIRMATION-V1-1 in
+% paper/evidence/result-gates.json (recorded outcome accepted-material-aware-confirmation),
+% the typed manifest paper/evidence/manifests/l1b-hemp-confirmation-v1-1.json and the claim
+% records bound to manifest L1B-HEMP-CONFIRMATION-V1-1-20260904-15-V1. Every \EvidenceClaim
+% body below must equal its registered authorized_tex exactly; paper/scripts/check_paper.py
+% verifies that, the macro-only rule, the classification, topology-label, recorded-outcome,
+% campaign-status and verdict strings, the as-recorded gate outcomes, the lineage disclosure
+% and the presence of the registered non-claims. The standalone driver
+% paper/sections/l1b-hemp-confirmation-v1-1-standalone.tex compiles this file on its own.
+\subsection{Material-aware confirmation of the HEMP-like designs under a linear-iron P2 field}
+\label{sec:l1b-hemp-confirmation-screening}
+
+\paragraph{Method.}
+The campaign takes the \HmcDesignCount{} HEMP-like designs of the sweep of
+Section~\ref{sec:l1a-sweep-v3}, the sealed catalogue's Sobol entries with
+$\rho \ge \HmcRhoThreshold$ at every wall cusp (\HmcStageThreeDesigns,
+\HmcStageFourDesigns{} and \HmcStageFiveDesigns{} designs of three, four and five stages;
+\HmcCuspTwoDesigns, \HmcCuspThreeDesigns{} and \HmcCuspFourDesigns{} designs with two, three
+and four wall cusps; $x_w$ from \HmcXwMin{} to \HmcXwMax, $r_w/L$ from \HmcRwOverLMin{} to
+\HmcRwOverLMax; catalogue hash prefix \texttt{\HmcSweepCatalogueSha} at results revision
+\texttt{\HmcSweepResultsCommit}), rebuilds each with the sweep's own builder with its identity
+proven against the sealed design authorities and the sealed \HmcFieldModelLevelLOneA{} record
+bytes, and solves its material-aware field with the adaptive quadratic finite-element
+magnetostatic reference of the modern workstream: soft-iron pole pieces in the inter-magnet
+gaps and a soft-iron return yoke at relative permeability \HmcIronMuR, recoil-remanence
+SmCo-like magnets at \HmcMagnetRecoilMuR{} with axial, alternating remanence, and every other
+region (\HmcVacuumLikeRegions) at unit permeability. The materials are linear and isotropic
+(no saturation, no $B$--$H$ curve: \HmcLinearMaterials). The mesh is body-fitted and graded
+(\HmcBoreElements{} elements across the bore radius, \HmcFeatureElements{} across the
+thinnest feature, padding factor \HmcPaddingFactor, level-\HmcLevelZeroToken{}
+minimum-angle gate \HmcAngleGateDeg$^\circ$); \HmcAdaptiveLevels{} nested levels are solved
+(D\"orfler fraction \HmcDorflerTheta, red refinement, the level-\HmcLevelOneToken{} solution
+prolonged from level \HmcLevelZeroToken) at a relative true residual of \HmcSolverRelTol{}
+within \HmcSolverMaxIter{} iterations under a memory guard of \HmcRamBudgetFraction{} of the
+free memory at start and a cap of \HmcDofCap{} degrees of freedom
+(\texttt{\HmcSolverBackend}). The accepted map is the level-\HmcLevelOneToken{} solution
+sampled on a regular grid of \HmcRadialIntervals{} radial intervals across the bore and
+post-scaled by the design's sealed magnet-strength scale, so that both fields carry the same
+magnet strength; the coarse map is the level-\HmcLevelZeroToken{} solution and the refined
+map the same level-\HmcLevelOneToken{} solution at $\times$\HmcSamplingRefinement{} sampling.
+Each map is characterised with the literature cusp definition of
+Section~\ref{sec:cusp-topology}, imported unchanged from the frozen protocol of the topology
+search (version \HmcTopologyVersion, commit \texttt{\HmcTopologyResultsCommit}; numerical
+parameters equal: \HmcDefinitionParametersEqual), on the sealed \HmcFieldModelLevelLOneA{}
+axis window, and the sweep's descriptors (the Koch ratio readings, the HEMP-like flag, the
+wall harmonics) are evaluated on it. The comparison matches the wall cusps of the accepted P2
+map to the sealed \HmcFieldModelLevelLOneA{} cusps by the definition's sorted
+nearest-neighbour bijection within a per-design tolerance of one level-\HmcLevelZeroToken{}
+bore element, never below the \HmcFieldModelLevelLOneA{} axial step
+($\max(r_w/\HmcBoreElements, \Delta z)$ with $\Delta z = \HmcLOneADzMm$~mm;
+\HmcToleranceMinMm{}--\HmcToleranceMaxMm~mm over the set); the tolerance is a discretisation
+quantity fixed before any outcome was read. Two confirmation gates were predeclared: (b) the
+fraction of designs whose wall-cusp count is unchanged (boundary-tolerant, with the strict
+fraction reported) must reach \HmcGateBThreshold; (c) every matched cusp must shift by at
+most its design tolerance and every design's matching must be a bijection (largest shift
+over tolerance at most \HmcGateCThreshold); \HmcVerdictRule. The HEMP-like preservation, the
+wall-field and Koch-ratio ratios, the axis nulls and the discretisation sensitivity are
+reported and never gated. Binding for the whole bundle are \HmcBindingGateCount{} integrity
+gates: every design resolved and identity-proven, every solve converged (gate (a)), every
+axis null converged and every separatrix trace terminating cleanly, flux-consistent wall
+traces, sampling stability at \HmcStabilityToleranceMm~mm, the axis window reproduced, the
+memory policy, a bit-identical determinism replay and the hash bindings.
+
+The protocol of experiment \texttt{\HmcExperimentId} was frozen at preregistration commit
+\texttt{\HmcPreregCommit} after a disclosed non-evidentiary shakedown of the complete
+production path on \HmcShakedownDesigns{} real designs of the set (passed:
+\HmcShakedownPassed; evidentiary: \HmcShakedownEvidentiary) that also built and gated the
+level-\HmcLevelZeroToken{} mesh of every one of the \HmcPreflightDesigns{} designs (passed:
+\HmcPreflightPassed; smallest minimum angle \HmcPreflightMinAngleDeg$^\circ$), and executed
+exactly \HmcAttemptCount{} time under an immutable Git-common lock (immutable:
+\HmcLockImmutable; clean detached worktree attested: \HmcCleanWorktree) on \HmcWorkerPool{}
+worker of \HmcCpuCount{} CPU cores, one design at a time, the GPU untouched
+(\texttt{\HmcDevice}; design stage \HmcStageWallMin~min, assessment \HmcAssessmentWallMin~min,
+lock to terminal \HmcExecutionWallMin~min; peak RSS \HmcPeakRssMb~MB, \HmcRamFractionUsed{} of
+the budget). The results are committed at \texttt{\HmcResultsCommit} (manifest hash prefix
+\texttt{\HmcManifestSha}; \HmcVerifiedFiles{} files verified byte for byte against the
+manifest, \HmcToleratedEolFiles{} accepted through any end-of-line tolerance; protocol
+\texttt{\HmcProtocolSha}, experiment code \texttt{\HmcExperimentCodeSha} over
+\HmcExperimentCodeFiles{} files, dependency sources \texttt{\HmcDependencySourceSha} over
+\HmcDependencySourceFiles{} files including the imported definition, field pipeline
+\texttt{\HmcFieldPipelineSha} over \HmcFieldPipelineFiles{} files, each recomputed by the
+checker from the blobs at the preregistration commit), together with the results dashboard
+(commit \texttt{\HmcDashboardCommit}) whose embedded extraction of this bundle and of the
+predecessor's the evidence generator requires to agree with the sealed artifacts. The
+campaign chain was developed on a pushed experiment branch and rebased onto the evidence
+branch before this admission; the execution lock therefore names the pre-rebase
+preregistration commit \texttt{\HmcLockCommit}, and the checker binds the rebased commit by
+recomputing the sealed code hashes from its blobs.
+
+\paragraph{Execution and integrity.}
+\EvidenceClaim{CLM-087}{The single execution terminated in state
+\texttt{\HmcTerminalState} with campaign status \texttt{\HmcCampaignStatus}:
+\HmcResolvedDesigns{} of \HmcDeclaredDesigns{} declared designs were rebuilt with their
+identities proven, solved on both P2 levels, sampled and characterised (\HmcFailedDesigns{}
+failures), \HmcSolvesConverged{} of \HmcSolvesTotal{} solves converged with a largest relative
+true residual of \HmcResidualMax{} (gate (a); level-\HmcLevelZeroToken{}
+\HmcLevelZeroDofsMin{}--\HmcLevelZeroDofsMax{} and level-\HmcLevelOneToken{}
+\HmcLevelOneDofsMin{}--\HmcLevelOneDofsMax{} degrees of freedom,
+\HmcLevelZeroItersMin{}--\HmcLevelZeroItersMax{} and
+\HmcLevelOneItersMin{}--\HmcLevelOneItersMax{} iterations), \HmcBindingGatesTrue{} of
+\HmcBindingGateCount{} binding integrity gates held, the \HmcReplayDesigns{} determinism
+replay of design \texttt{\HmcReplayDesign} was bit-identical (\HmcReplaysBitIdentical{} of
+\HmcReplayDesigns), \HmcSamplingStable{} of \HmcDesignCount{} designs were stable between the
+$\times$\HmcSamplingRefinement{} samplings of the accepted solution (largest cusp shift
+\HmcSamplingShiftMaxNm~nm) and \HmcDiscStable{} of \HmcDesignCount{} between the
+level-\HmcLevelZeroToken{} and level-\HmcLevelOneToken{} maps, where the largest cusp shift
+is \HmcDiscShiftMaxUm~$\mu$m, the largest axis-null shift \HmcDiscNullShiftMaxUm~$\mu$m and
+the largest relative change of $\rho$ is \HmcDiscRhoSensitivityMax, with the HEMP-like flag
+agreeing between the levels for \HmcHempFlagStableLevels{} of \HmcDesignCount{} designs. The
+per-design P2 time ran from \HmcSolveSecondsMin{} to \HmcSolveSecondsMax~s (median
+\HmcSolveSecondsMedian~s) and the peak RSS over the campaign was \HmcPeakRssMb~MB against a
+budget of \HmcRamBudgetGb~GB.}
+
+\paragraph{Results: cusp count and positions.}
+\EvidenceClaim{CLM-089}{Under the linear-iron P2 field every one of the \HmcDesignCount{}
+designs keeps its wall-cusp count and its cell count: gate (b) holds strictly for
+\HmcGateBAgreeStrict{} of \HmcDesignCount{} designs and boundary-tolerantly for
+\HmcGateBAgreeTolerant{} (threshold \HmcGateBThreshold; passed: \HmcGateBPassed). All
+\HmcMatchedCusps{} wall cusps of the \HmcFieldModelLevelLOneA{} records are matched to P2
+cusps bijectively in \HmcBijectiveDesigns{} of \HmcDesignCount{} designs, and every matched
+cusp lies within its design tolerance: the shifts run from \HmcShiftMinUm~$\mu$m to
+\HmcShiftMaxMm~mm (median \HmcShiftMedianMm~mm, mean \HmcShiftMeanMm~mm), the largest being
+\HmcGateCMaxShiftOverTol{} of the tolerance at design \texttt{\HmcMaxShiftDesign} against a
+threshold of \HmcGateCThreshold{} (gate (c) passed: \HmcGateCPassed; \HmcDesignsExceeding{}
+designs exceed their tolerance), so the recorded verdict is \texttt{\HmcVerdict}. The shifts
+are displacements of the separatrix foot and not P2 discretisation: every one of the
+\HmcMatchedCusps{} shifts exceeds its design's level-\HmcLevelZeroToken-to-level-\HmcLevelOneToken{}
+cusp shift (largest \HmcDiscShiftMaxUm~$\mu$m; smallest shift over largest discretisation
+shift \HmcShiftMinOverDiscMax), \HmcShiftsAboveStability{} of the \HmcMatchedCusps{} exceed
+the \HmcStabilityToleranceMm~mm stability tolerance of the definition, and none exceeds the
+bore-element tolerance (\HmcToleranceMinMm{}--\HmcToleranceMaxMm~mm). The wall-cusp count and
+positions of these designs are therefore robust to the linear iron within one
+level-\HmcLevelZeroToken{} bore element; the confirmation is a statement about two field
+models and not about a plasma.}
+Table~\ref{tab:l1b-hemp-confirmation-designs} lists every design and
+Table~\ref{tab:l1b-hemp-confirmation-gates} the gates and reported quantities.
+\HmcDesignTable
+\HmcGateTable
+
+\paragraph{Reported: field ratios, the HEMP-like flag and the axis nulls.}
+\EvidenceClaim{CLM-090}{At equal magnet strength the iron raises the wall field at every
+matched cusp: the per-cusp wall $|B|$ ratio P2 over \HmcFieldModelLevelLOneA{} runs from
+\HmcWallBRatioMin{} to \HmcWallBRatioMax{} (median \HmcWallBRatioMedian; above one at
+\HmcWallBRatioAboveOneCusps{} of \HmcMatchedCusps{} cusps, that is \HmcWallBRaiseMinPct{} to
+\HmcWallBRaiseMaxPct), the per-design peak wall field ratio from \HmcPeakWallRatioMin{} to
+\HmcPeakWallRatioMax{} (median \HmcPeakWallRatioMedian; before the magnet-strength scaling
+\HmcPeakWallUnscaledMin{} to \HmcPeakWallUnscaledMax) and the axis $|B_z|$ peak ratio from
+\HmcAxisPeakRatioMin{} to \HmcAxisPeakRatioMax{} (median \HmcAxisPeakRatioMedian), so that the
+conservative Koch ratio, a wall-to-axis ratio, changes less than either field: its per-cusp
+ratio P2 over \HmcFieldModelLevelLOneA{} runs from \HmcRhoRatioMin{} to \HmcRhoRatioMax{}
+(median \HmcRhoRatioMedian), falling at \HmcRhoRatioBelowOneCusps{} cusps of
+\HmcRhoRatioBelowOneDesigns{} designs. The HEMP-like flag ($\rho \ge \HmcRhoThreshold$ at
+every cusp) is preserved for \HmcPreservedCount{} of \HmcDesignCount{} designs
+(\HmcPreservedFraction): design \texttt{\HmcLostDesign}, whose \HmcFieldModelLevelLOneA{}
+minimum ratio of \HmcLostDesignLOneARho{} sits closest to the threshold, falls to
+\HmcLostDesignPTwoRho{} under iron while keeping its cusps within \HmcLostDesignShiftOverTol{}
+of its tolerance; the per-design minimum ratio under P2 runs from \HmcPTwoRhoMinMin{} to
+\HmcPTwoRhoMinMax{} (median \HmcPTwoRhoMinMedian, against \HmcLOneARhoMinMedian{} under
+\HmcFieldModelLevelLOneA), and at every one of the \HmcPTwoCuspsTotal{} P2 cusps the wall
+reading stays below one (largest \HmcPTwoRhoWallMax; \HmcCuspIsWallMaximumPTwo{} cusps are
+the wall field maximum of their neighbourhood), as in the \HmcFieldModelLevelLOneA{} fields.
+The axis nulls are not robust within the cusp tolerance: the channel axis-null count is
+unchanged in \HmcChannelNullCountEqual{} of \HmcDesignCount{} designs, but the sorted channel
+nulls move by up to \HmcChannelNullShiftMaxMm~mm (median \HmcChannelNullShiftMedianMm~mm),
+beyond the cusp tolerance in \HmcChannelNullsBeyondTolDesigns{} designs and in bijection
+within it in only \HmcChannelNullBijection; the iron adds nulls outside the straight section
+(\HmcPTwoOutsideNulls{} under P2 against \HmcLOneAOutsideNulls{} under
+\HmcFieldModelLevelLOneA, more in \HmcMorePTwoNullDesigns{} designs; the
+\HmcOutsideNullPairs{} paired outside nulls move by
+\HmcOutsideNullShiftMinMm{}--\HmcOutsideNullShiftMaxMm~mm), and the lean of a separatrix from
+its axis null to its wall cusp grows from at most \HmcLeanLOneAMaxMm~mm to at most
+\HmcLeanPTwoMaxMm~mm (medians \HmcLeanLOneAMedianUm{} and \HmcLeanPTwoMedianUm~$\mu$m;
+largest angle to the wall normal \HmcAngleLOneAMaxDeg$^\circ$ against
+\HmcAnglePTwoMaxDeg$^\circ$). Every ratio here is a ratio of two field models at equal magnet
+strength and never a probability; an absolute field value or a Koch ratio near the design
+threshold is therefore not robust to the iron, whereas the wall-cusp count and positions
+are.}
+Table~\ref{tab:l1b-hemp-confirmation-field} records the field model and the solve evidence.
+\HmcFieldTable
+
+\paragraph{Disclosures.}
+\EvidenceClaim{CLM-091}{Three disclosures are admitted with the confirmation. First, the
+campaign is the re-preregistration of a predecessor, \texttt{\HmcVOneExperimentId}, that was
+executed once at its own preregistration (commit \texttt{\HmcVOnePreregCommit}; lock
+\texttt{\HmcVOneLockCommit}) and ended in the terminal state
+\texttt{\HmcVOneTerminalState} (record \texttt{\HmcVOneResultsCommit};
+\HmcVOneVerifiedFiles{} files verified byte for byte): \HmcVOneResolved{} of
+\HmcDeclaredDesigns{} designs were resolved in \HmcVOneStageWallMin~min and \HmcVOneFailed{}
+(\texttt{\HmcVOneFailedDesigns}) failed at the \texttt{\HmcVOneFailureStage} stage before any
+solve because their level-\HmcLevelZeroToken{} meshes fell below the
+\HmcVOneAngleGateDeg$^\circ$ minimum-angle gate inherited from the reference's qualification
+campaign; no assessment, gate or verdict exists for it (\HmcVOneAssessmentAccess{} assessment
+accesses) and its \HmcVOneRecords{} resolved records enter no estimand here. The
+re-preregistration changed \HmcProtocolDeclarationsChanged{} declarations, the angle gate
+(\HmcVOneAngleGateDeg$^\circ$ to \HmcAngleGateDeg$^\circ$, disclosed in the protocol) and a
+whole-set mesh preflight in the shakedown, and the two protocols differ at exactly
+\HmcProtocolChangedPaths{} paths (identity, predecessor block, angle gate, shakedown set and
+preflight) with the comparison, gates, definition import, design set, solver, materials,
+adaptivity, sampling, resources and claim boundary identical (\HmcProtocolBlocksUnchanged);
+the post-hoc rejection note bound at commit \texttt{\HmcCodeCommit} names the recorded
+commits, counts, gate and stage time (\HmcRejectionNoteBound). Second, the relaxed gate
+admits geometric slivers of the body-fitted mesher that no refinement removes: design
+\texttt{\HmcSliverDesignA} has a level-\HmcLevelZeroToken{} minimum angle of
+\HmcSliverAMinAngleDeg$^\circ$ with \HmcSliverABelowTen{} of \HmcSliverAElements{} elements
+below \HmcSliverThresholdDeg$^\circ$, and design \texttt{\HmcSliverDesignB} one of
+\HmcSliverBMinAngleDeg$^\circ$ with \HmcSliverBBelowTen{} of \HmcSliverBElements{} elements
+below it (level \HmcLevelOneToken: \HmcSliverALevelOneMinAngleDeg$^\circ$ and
+\HmcSliverBLevelOneMinAngleDeg$^\circ$); both designs converged at every level and kept their
+cusps within \HmcSliverAShiftOverTol{} and \HmcSliverBShiftOverTol{} of their tolerances, and
+the whole-set preflight passed \HmcPreflightPassed{} of \HmcPreflightDesigns{} designs with
+\HmcPreflightBelowTenDesigns{} designs carrying such elements. Third, the
+\HmcShakedownDesigns{} shakedown designs (\texttt{\HmcShakedownDesignIds}) are evidentiary
+designs, so their informational verdict was known before the freeze while the thresholds,
+the tolerance rule and every numerical parameter were fixed before the shakedown and are not
+tuned on it (outcomes enter an estimand: \HmcShakedownEnterEstimand); the shakedown's timing
+projection of \HmcTimingProjectedMin~min at a contention factor of
+\HmcTimingContentionFactor{} exceeded the \HmcTimingBudgetMin~min budget (within budget:
+\HmcTimingWithinBudget) and the campaign was launched regardless, its design stage finishing
+in \HmcStageWallMin~min (within budget: \HmcStageWithinBudget); and the campaign's own record
+declares paper admission out of its scope (\HmcPaperAdmissionRecord), so this admission is
+the paper's act under its gate and not the campaign's.}
+Table~\ref{tab:l1b-hemp-confirmation-disclosures} lists the disclosures with the values the
+evidence generator verified against the two bundles.
+\HmcDisclosureTable
+
+\paragraph{Scope.}
+The boxed statement is the only interpretation offered here; it repeats the claim boundary
+sealed with the campaign.
+\par\medskip\noindent
+\fbox{\begin{minipage}{0.94\linewidth}
+\textbf{Model-bounded scope.}
+\EvidenceClaim{CLM-092}{The study is a material-aware confirmation classified
+\texttt{\HmcClassification}, carrying the topology label \texttt{\HmcTopologyLabel} and
+admitted at the recorded outcome \texttt{\HmcRecordedOutcome}: its field is the adaptive
+quadratic finite-element magnetostatic reference with linear soft-iron poles and yoke and
+recoil-remanence magnets on \HmcAdaptiveLevels{} nested levels (\HmcFieldLevelStatement),
+the two-level screening configuration and not the three-level qualified chain of the
+wall-loss campaign's field (\HmcNotPTwoQualifiedChain), and its materials are linear
+(\HmcLinearMaterials): what is not claimed is \HmcWhatNotClaimed. What is confirmed is
+\HmcWhatConfirmed, and the verdict \texttt{\HmcVerdict} is admitted as recorded under the
+frozen tolerance rule and is not a positive finding about the thruster. The Koch ratio and
+every wall-field or axis-field ratio are ratios of two field models at equal magnet strength
+and never probabilities (\HmcMirrorDescriptorsNotProbabilities), no plasma,
+mirror-probability, wall-loss, thrust or efficiency quantity is computed or published
+(forbidden: \HmcForbidPlasmaPerformance; mirror-probability publication forbidden:
+\HmcForbidMirrorProbability), the HEMP-like preservation and the axis-null readings are
+reported and not gated, no design is recommended (\HmcDesignRecommendation), the result is
+not hardware-valid (\HmcNotHardwareValid), the shakedown outcomes are not evidence
+(\HmcShakedownNotEvidence), and the study opens no physics level.}
+\end{minipage}}
+\par\medskip

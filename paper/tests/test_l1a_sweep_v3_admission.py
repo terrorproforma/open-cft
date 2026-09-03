@@ -66,7 +66,8 @@ class SweepV3AdmissionTests(unittest.TestCase):
         self.assertEqual(self.gate["recorded_outcome"], "accepted-screening")
         self.assertEqual(swt.RECORDED_OUTCOME, "accepted-screening")
         # The outcome vocabulary is unchanged: the sweep reuses the sweep-v2 outcome and justifies it.
-        self.assertEqual(len(check_paper.SCREENING_OUTCOMES), 5)
+        # Five outcomes at this admission; the material-aware confirmation later added a sixth.
+        self.assertEqual(len(check_paper.SCREENING_OUTCOMES), 6)
         justification = self.gate["recorded_outcome_justification"]
         for phrase in ("accepted_l1a_sweep_v3", "same kind of object", "did not hold as preregistered", "never that a positive finding, a design recommendation or a material-aware field is accepted"):
             self.assertIn(phrase, justification)
@@ -332,7 +333,8 @@ class SweepV3AdmissionTests(unittest.TestCase):
         self.assertIn("could not contain a HEMP-like cusp", earlier_box["authorized_tex"])
         self.assertEqual(set(earlier_box["manifest_ids"]), {MANIFEST_ID, SWEEP_V2_MANIFEST_ID})
         discussion = records["CLM-076"]
-        self.assertEqual(set(discussion["manifest_ids"]), {MANIFEST_ID, SWEEP_V2_MANIFEST_ID})
+        # The material-aware confirmation admission added its manifest (CLM-076 now reports the confirmation).
+        self.assertEqual(set(discussion["manifest_ids"]), {MANIFEST_ID, SWEEP_V2_MANIFEST_ID, "L1B-HEMP-CONFIRMATION-V1-1-20260904-15-V1"})
         self.assertIn("Read as interpretation", discussion["authorized_tex"])
         self.assertIn("never their ratio", discussion["authorized_tex"])
         self.assertIn("could not contain a HEMP-like", discussion["authorized_tex"])
@@ -443,10 +445,13 @@ class SweepV3AdmissionTests(unittest.TestCase):
         for claim_id in swt.PROSE_CLAIM_IDS:
             record = next(c for c in self.matrix["claims"] if c["id"] == claim_id)
             self.assertIn(MANIFEST_ID, record["manifest_ids"])
-        # Claims that compare against the sweep-v2 box are bound to that manifest as well.
-        for claim_id in ("CLM-070", "CLM-072", "CLM-074", "CLM-076"):
+        # Claims that compare against the sweep-v2 box are bound to that manifest as well
+        # (CLM-076 additionally reads the material-aware confirmation's macros).
+        for claim_id in ("CLM-070", "CLM-072", "CLM-074"):
             record = next(c for c in self.matrix["claims"] if c["id"] == claim_id)
             self.assertEqual(set(record["manifest_ids"]), {MANIFEST_ID, SWEEP_V2_MANIFEST_ID})
+        record = next(c for c in self.matrix["claims"] if c["id"] == "CLM-076")
+        self.assertEqual(set(record["manifest_ids"]), {MANIFEST_ID, SWEEP_V2_MANIFEST_ID, "L1B-HEMP-CONFIRMATION-V1-1-20260904-15-V1"})
 
     def test_scope_claims_register_the_boundary(self) -> None:
         record = next(c for c in self.matrix["claims"] if c["id"] == "CLM-070")

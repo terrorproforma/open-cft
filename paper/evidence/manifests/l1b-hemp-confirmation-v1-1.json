@@ -1,0 +1,1970 @@
+{
+  "classification": "P2_MATERIAL_AWARE_FIELD_CONFIRMATION_NOT_HARDWARE_VALID",
+  "code_revision": "b6125fe7a3c4f310ff564c0102c1617ccc68b00a",
+  "code_revision_subject": "feat(l1b-hemp-confirmation-v1.1): re-preregistration after the recorded v1 rejection; v1 posthoc record",
+  "dashboard": {
+    "files": [
+      {
+        "git_blob": "a8e4d95c2cf2dbd675719aa2c06c6e272beb8a20",
+        "git_blob_sha256": "0d32de359e7721aa78e59e14b21f4c398abe615dcd755de74404fa7c4000dfd0",
+        "path": "modern/visualization/generate_l1b_hemp_confirmation_v1_dashboard.py",
+        "role": "dashboard-generator"
+      },
+      {
+        "git_blob": "ded5f4b035cf5f04f45bd3dfd27daa570db7b31b",
+        "git_blob_sha256": "ef756b4e7f56a4b0b2fa26ddc67794823d62e59514556916906a4a20cb0ebafa",
+        "path": "modern/visualization/l1b-hemp-confirmation-v1.template.html",
+        "role": "dashboard-template"
+      },
+      {
+        "git_blob": "34dffde19712e77a541f1ed3de68d548353d0f53",
+        "git_blob_sha256": "4391620c6144cdb8ad77cb6faaeedbb2f05366e842e3b05daedb864064803df6",
+        "path": "modern/visualization/l1b-hemp-confirmation-v1.html",
+        "role": "dashboard-html"
+      }
+    ],
+    "path": "modern/visualization/l1b-hemp-confirmation-v1.html",
+    "revision": "560909f77ad64ff0215437ecd85e12bee6e8d4ea",
+    "rule": "the committed dashboard byte-verifies both bundles against their manifests, re-derives the verdict and the headline counts from the per-design rows, embeds its own extraction and pins the manifest SHA-256 and the lock commit of each bundle; the generator requires that extraction (identity, sealed sources, verdict, confirmation, headline, estimands, agreement table, claim boundary, gates, execution, protocol blocks, every design row, the predecessor record and the angle-gate block) to equal the sealed artifacts before writing any macro",
+    "subject": "docs(l1b-hemp-confirmation): dashboard l1b-hemp-confirmation-v1.html (v1.1 CONFIRMED + v1 rejection record), launch log"
+  },
+  "document_type": "paper-material-aware-confirmation-manifest",
+  "evidence_level": {
+    "justification": "The study is a preregistered, single-execution numerical confirmation: for each of the 15 HEMP-like designs of the accepted L1a geometry sweep v3 (the sealed catalogue's Sobol entries with Koch rho_conservative >= 1.5 at every wall cusp), the material-aware field is solved with the adaptive quadratic finite-element magnetostatic reference of the modern workstream (soft-iron poles mu_r 4000 in the inter-magnet gaps, a soft-iron return yoke, recoil-remanence SmCo-like magnets at mu_r 1.05; linear isotropic materials; two nested Dorfler/red levels at relative true residual 2e-10; CPU only, one design at a time, GPU untouched), sampled into the cusp topology search v3.1 definition on the sealed L1a axis window, post-scaled by the design's L1a magnet-strength scale, and compared with the sealed L1a record: wall-cusp count (strict and boundary-tolerant), sorted nearest-neighbour cusp matching within max(r_w / 8, L1a dz), wall |B| and Koch-rho ratios, channel and outside axis nulls, separatrix lean, level-0 vs level-1 discretisation and 1x vs 2x sampling stability. Its recorded outcome is the verdict CONFIRMED (gate (b) 15/15 cusp counts unchanged; gate (c) 37/37 matched cusps within tolerance, every matching a bijection, largest shift 0.80 of tolerance) with the reported HEMP-like preservation 14/15. The framework admits accepted numerical evidence through a typed committed manifest, hashed artifacts at a resolvable revision, exact registered claim text and generated artifacts with provenance sidecars; that pattern is applied here through the numerical-screening gate GATE-L1B-HEMP-CONFIRMATION-V1-1 at the new recorded outcome accepted-material-aware-confirmation. The field is the two-level screening configuration of the finite-element reference and not its three-level P2-qualified chain; the materials are linear; every ratio is a ratio of two field models and never a probability; nothing here is a saturation, plasma, mirror-probability, thrust, efficiency or design-recommendation claim. It is not the L1 field-resolved reduction of GATE-L1 (no manufactured solution, no L0 mapping, no performance model, no geometry response), not L2 and not L3, and it opens none of those gates. The predecessor campaign's development rejection (v1: 2/15 level-0 meshes below the inherited 10 deg angle gate) is bound as lineage and disclosed.",
+    "name": "numerical-screening",
+    "opens_gate": null,
+    "relation_to_levels": {
+      "L0": "independent of the algebraic L0 model; no mapping is claimed and no L0 quantity is computed",
+      "L1": "solves a linear-iron P2 field for fifteen screened designs on two nested adaptive levels and compares cusp descriptors with the L1a records; no field-resolved reduction, no manufactured solution, no L0 mapping, no geometry-response prediction",
+      "L2": "not coupled to any plasma model; no plasma quantity is computed",
+      "L3": "no particle-in-cell or experimental content; not hardware-valid"
+    }
+  },
+  "evidence_revision": "54cd3e82b7c879110cb7242c5f6210d1ac59fc92",
+  "evidence_revision_note": "The results tree first exists at this record commit, which carries only results/ (134 files). The dashboard and launch log follow in the next commit and are bound at their own revision. The campaign chain was developed on origin/exp/l1b-hemp-confirmation-v1 and rebased onto feat/sota-foundation: the bundle's execution lock names the pre-rebase preregistration commit ead9b525 and the protocol's predecessor block the pre-rebase v1 commits b9449ee5 / 978c71be; the generator records those identifiers as strings and recomputes the sealed experiment-code, dependency-source and field-pipeline hashes from the blobs at the rebased preregistration commit, which must equal.",
+  "evidence_revision_subject": "record L1b HEMP confirmation v1.1 result: CONFIRMED (15/15 cusp counts, 37 cusps within 0.80 tolerance)",
+  "execution_lock_commit_recorded": "ead9b52569c28d201df853da4f2f9e0db2bef993",
+  "experiment_id": "l1b-hemp-confirmation-v1-1",
+  "experiment_path": "modern/experiments/l1b_hemp_confirmation_v1_1",
+  "gate_id": "GATE-L1B-HEMP-CONFIRMATION-V1-1",
+  "gate_kind": "numerical-screening",
+  "level": "numerical-screening",
+  "lineage": {
+    "angle_gate_deg": 10.0,
+    "cited_for_numbers": false,
+    "code_commit": "6e9f056cc01bb00d6c9cdba3f98b997ee01b4dcc",
+    "declarations_changed": [
+      "p2/mesh/reject_below_angle_deg",
+      "shakedown/whole_set_mesh_preflight"
+    ],
+    "experiment_id": "l1b-hemp-confirmation-v1",
+    "failed_design_count": 2,
+    "failed_designs": [
+      "l1a-gs-v3-028-f012c0bf33",
+      "l1a-gs-v3-048-aabacb3a59"
+    ],
+    "files": [
+      {
+        "git_blob": "deccdc4726075a72ead1efe53be45129c3499597",
+        "git_blob_sha256": "fea344341b34c96556072d2d1ed9456df38c48f08e75e7ef4be201a17a34ce77",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/access/0001.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-access"
+      },
+      {
+        "git_blob": "93b13fe08507a852ecb454ec97fcd6033d91105b",
+        "git_blob_sha256": "227e36238eca4ad9c316ddfe1e729ed9902bb15c3f7ddbd998a44dd6a76820ea",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/access/0001.json.sha256.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-access-sidecar"
+      },
+      {
+        "git_blob": "be16207befc943d2ddb385e3616a944afad5179b",
+        "git_blob_sha256": "43ec7641d391634bb71f0019fb64a75da32450a6928f8ed43e2458949fe8f51c",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/access/0002.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-access"
+      },
+      {
+        "git_blob": "2e367665d3febadc53ceb68464d6b02720f389a0",
+        "git_blob_sha256": "bb7145a8dd62378a71184a95d0ba331ca69330615b51dbd30384794bc23b7ac3",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/access/0002.json.sha256.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-access-sidecar"
+      },
+      {
+        "git_blob": "9af1a324f61030b5efc9dca4e8d7f87b672195e1",
+        "git_blob_sha256": "993c05b50f826e67da74f97a1bc1bb130cc8fc61146319fe99a9cff0bd24ee71",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/access/0003.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-access"
+      },
+      {
+        "git_blob": "c60bd3ad4656e942ef2c6c0cc887ae9437fb8d8b",
+        "git_blob_sha256": "f3c32d4b02c6595e17132565d416155d67ebc4b39f2baf5d818884237ffbe022",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/access/0003.json.sha256.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-access-sidecar"
+      },
+      {
+        "git_blob": "25c9df03fd8384756c34f7ebf206708797dee5ca",
+        "git_blob_sha256": "36aac526138b7dbf974b6dcb5782789f8104521ad7a0366d921dd584d1ef34d2",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/authorities.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-authorities"
+      },
+      {
+        "git_blob": "9294699ed255d99b074929b688e15d9f7ef77e6c",
+        "git_blob_sha256": "dcbe693997e35b88d114ccbaf37ad3e1e4034d786e62ea4f41c1ae63c7b531ee",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/authorities.json.sha256.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-authorities-sidecar"
+      },
+      {
+        "git_blob": "5c06991834a34d835fa14d2467e65d419a281f1a",
+        "git_blob_sha256": "c8ca1a56ac207265318f57de156163001c1e99ae2cf58dcdafb95454e58d5e08",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/campaign-plan.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-campaign-plan"
+      },
+      {
+        "git_blob": "50336fff6ea7fbe08a87a10d78f6cc91cf15fc2c",
+        "git_blob_sha256": "61823e24d8bfd3208295a4e8280b2bf0ec70d15a701c9dbca4c13f1660f1c37e",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/campaign-plan.json.sha256.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-campaign-plan-sidecar"
+      },
+      {
+        "git_blob": "996ad282663feda70b862e93a3f330554ad355c7",
+        "git_blob_sha256": "aa38fe4c8fef1f2e681b0d86a5018b71ae89bf7a6c048b568f23307f9834542c",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/design-authorities.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-design-authorities"
+      },
+      {
+        "git_blob": "b2b72588540fc2033dec737e3d5316858e34568b",
+        "git_blob_sha256": "a37a3d07ec6669505ad36f03ff882bf973be89327276a461d6b9c1e7fd84d340",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/design-authorities.json.sha256.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-design-authorities-sidecar"
+      },
+      {
+        "git_blob": "fb3e1764b028f4cadf84952e8b79e09203a69abc",
+        "git_blob_sha256": "55c47e2bb60011e77d923863e11dcedf3963f137f66a6c2585c7bb93c907acbd",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/design-failures.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-design-failures"
+      },
+      {
+        "git_blob": "2af5f8a213b6d2b2faa8ae6454308000bae1b3f5",
+        "git_blob_sha256": "e7af24addce779453b82139f4d6fa41c1c816a2bb8fec0bb2820ca7ada9064b3",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/design-failures.json.sha256.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-design-failures-sidecar"
+      },
+      {
+        "git_blob": "4de1526b20d0af54a4561a68991fcfd94e4b3147",
+        "git_blob_sha256": "9fafc8de950861cd6c4b0fcf97d0ecb162ab91e34604bacd60a5ea40b976b6c2",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-000-78dcc2bb4c.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-design-record"
+      },
+      {
+        "git_blob": "3cffe9fd291b351923ed566c26b5d775fe235159",
+        "git_blob_sha256": "3ce02fe2302458aa35ec4d5d2d11b17d3d4fa15e9e292625e10ef7ac4e473871",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-000-78dcc2bb4c.json.sha256.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-design-record-sidecar"
+      },
+      {
+        "git_blob": "3be0a26e74ed7b8dfef9b05afb1364ce351dbb47",
+        "git_blob_sha256": "f1d986797383515772e01652cfcc20003c81a46abf0606a433e22d32481eae81",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-005-0e7f21e31d.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-design-record"
+      },
+      {
+        "git_blob": "6b78c19b117df8c9bc8606bc1e401a8c0cfd164b",
+        "git_blob_sha256": "1eb898f48d91a610e30f16ffc29a174e0f7028e183cbe0d4f8d544e9b1d14c2a",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-005-0e7f21e31d.json.sha256.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-design-record-sidecar"
+      },
+      {
+        "git_blob": "4f03f9a21cce4b2e0807efe3585a4ceb5f92f269",
+        "git_blob_sha256": "224e4a5702c4b708b7a92235641c6bc33e38ce9771615151ba7e550df685e8be",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-015-3ce63a512e.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-design-record"
+      },
+      {
+        "git_blob": "7ff8bc948ef4e74d7f769561236ca27843cbfe1e",
+        "git_blob_sha256": "0a4091abc5c6ea076eb1082bba52af7c2865db8bc49db6ab20487e472af23933",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-015-3ce63a512e.json.sha256.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-design-record-sidecar"
+      },
+      {
+        "git_blob": "c861b5aac67b4b381e6ad7ad859c3f240e52e6cf",
+        "git_blob_sha256": "03f7b5f4c11f7a406c77b087104dae7e0a940480503f385161285e1bee653f70",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-020-b6aa9b10ad.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-design-record"
+      },
+      {
+        "git_blob": "4bd83c43eaa1a3b019a13c6624e614baec29375e",
+        "git_blob_sha256": "e9a8a6a340681bdb89bbf341416a6a81de633550a00a3e03354b7254cbb5f4df",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-020-b6aa9b10ad.json.sha256.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-design-record-sidecar"
+      },
+      {
+        "git_blob": "c5d5fc747eb3e176051e8d007e3fc062ca4faa60",
+        "git_blob_sha256": "5f9057dc6dcd3aa97376e5f01fd5a7722dc8b930cc3ee63a738856e7f38b3a2d",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-036-4a814065a1.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-design-record"
+      },
+      {
+        "git_blob": "cc5440eccc3cdebdcb6645e4da970e1a25f384e1",
+        "git_blob_sha256": "c48960a71296b4d57148a4210599389660b919a2b961825caf579efb3219f91c",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-036-4a814065a1.json.sha256.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-design-record-sidecar"
+      },
+      {
+        "git_blob": "a065f5ff913b6e156ff093bdf2f78d1416189212",
+        "git_blob_sha256": "d2132aa33f353a1e0401bc85aadd8f977ab2176dd43d163c0422d144db4f3a02",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-056-effcbc8686.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-design-record"
+      },
+      {
+        "git_blob": "0aa2d2fc4dc6fd57cd2767b5ae5c144fe74adf75",
+        "git_blob_sha256": "d7b37f0900948a0b6452c29a5fbd84b2491c5bccee4a898bd493100060a1acfa",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-056-effcbc8686.json.sha256.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-design-record-sidecar"
+      },
+      {
+        "git_blob": "2a98dce2a11c0b9c461b808927db8691a2d2991d",
+        "git_blob_sha256": "9996a81c679b603dae20f5c98d4058391d3d11a87c6dc69eb56f2a22afeb54cb",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-063-f3fd134978.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-design-record"
+      },
+      {
+        "git_blob": "b2d51cea383316f6463e838060a109d5a63a92be",
+        "git_blob_sha256": "4adac897c0cc1bea0273af9ef811f558f422160d6fd1caa05435328344186a9c",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-063-f3fd134978.json.sha256.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-design-record-sidecar"
+      },
+      {
+        "git_blob": "1865c0db1542e1909659e174984c8b4c9fb82178",
+        "git_blob_sha256": "4ab7c9864cf2941ddc68a11ab418ef8da1105290db0c9edb7166436ca82a27bf",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-068-71057b61d4.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-design-record"
+      },
+      {
+        "git_blob": "e6b60c027bceeb27dc20c708b1ba3d11e4fa011e",
+        "git_blob_sha256": "0b5dbcadb03e78a2affa397b40e51757f3e7f593024303f44dff09a666da90f5",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-068-71057b61d4.json.sha256.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-design-record-sidecar"
+      },
+      {
+        "git_blob": "974a957eb1a183a62c459785bc368c3135d0192b",
+        "git_blob_sha256": "a07ff7427f83bb26f43e9d12201fd9486d8a03c9d05e4b6e4ebcf4d66cf6731e",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-076-c57391dd35.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-design-record"
+      },
+      {
+        "git_blob": "5174e233170c54d7679e82e77e934449acdf9e69",
+        "git_blob_sha256": "02aea4de0f30f1e67091a48fb01da7a3d8dc71ab56ed886c549c7c35f812f83d",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-076-c57391dd35.json.sha256.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-design-record-sidecar"
+      },
+      {
+        "git_blob": "6292ba191021a3b69364b7275305bf4a358ee333",
+        "git_blob_sha256": "5f665463b9bd488e5557d4f7c3d2e9251d5e68ab0c0afc82cbfc9a3932fde9f6",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-090-c761e36e9c.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-design-record"
+      },
+      {
+        "git_blob": "17027a2a4ec5c0e7d45863a3ba8ce3a775db4605",
+        "git_blob_sha256": "16ea3f90e20fa74bdd4188044f25734a91ebe7da8b9a50e34c617b41c8b05c34",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-090-c761e36e9c.json.sha256.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-design-record-sidecar"
+      },
+      {
+        "git_blob": "8e2532de1bb5fc554168041d7431dd4b9edc4965",
+        "git_blob_sha256": "4d417de66d77a6fec4f1c628c7912667f9dd187a68e5c5df3b7a3c3ea7499a5e",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-106-ccec1c8b2f.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-design-record"
+      },
+      {
+        "git_blob": "16edabdd8fb252d301b7c6502da1b3e1ffc181f9",
+        "git_blob_sha256": "8885c1c4e4407c36919f2a30c2a61ae8c913abb270b23c6a8f91c24cfc879507",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-106-ccec1c8b2f.json.sha256.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-design-record-sidecar"
+      },
+      {
+        "git_blob": "f128bf47857c9651a8fc58246e601c0975a2bf86",
+        "git_blob_sha256": "90df78d0e06a85bb8815655a4b6470ab3dca116f3c009e58aae27a6343fac6ec",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-116-7865daa491.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-design-record"
+      },
+      {
+        "git_blob": "28b1467b9cc08355b4399268bed859940869ecb3",
+        "git_blob_sha256": "25f9abbbd71da6f628ac11c77041c3f576a61de8b74c8b3bc815d2dc54af05e2",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-116-7865daa491.json.sha256.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-design-record-sidecar"
+      },
+      {
+        "git_blob": "99f6e8ffc47cee3a6e06f2edbf8de9d62eee0af8",
+        "git_blob_sha256": "68d54949709eb47c10ab7dc3abecfbf65ccb7e6dd931874a0b838baf9b0d3f5c",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-124-f740cfc79a.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-design-record"
+      },
+      {
+        "git_blob": "5ec9eae42cc483f8d278d9aed385aa65f2e8334c",
+        "git_blob_sha256": "4080539419ed9e0edebb326b14ab4475b16ec892ccb28744c349e590ffb5dd65",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-124-f740cfc79a.json.sha256.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-design-record-sidecar"
+      },
+      {
+        "git_blob": "0fe46c435acee8783de6aa73d4cff2218d223917",
+        "git_blob_sha256": "bc1ba1a2ce2701b5b90b21a2d54d6951beb3015105e120394424cb7b3c1067cc",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-000-78dcc2bb4c.json.gz",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-field-grid"
+      },
+      {
+        "git_blob": "653a7ab7defb292b756a9b7161be11965f2bbcd0",
+        "git_blob_sha256": "412f2ea86a6ab4f51dd9f669d227885ace9c3efbdd3591bd5674e266a57329ba",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-000-78dcc2bb4c.json.gz.sha256.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-field-grid-sidecar"
+      },
+      {
+        "git_blob": "381178fd0d9a300912bf11ad07d4d07967aaa185",
+        "git_blob_sha256": "80c249dcd59621a8c816b16a01a7c2ff2267130e8f315152753a08c1a60581de",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-005-0e7f21e31d.json.gz",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-field-grid"
+      },
+      {
+        "git_blob": "31b522b2257de19fd61787eef233d4b3ef5064a6",
+        "git_blob_sha256": "b0c1440629f1ab63f17d4cec4189c332432828d023a1ce291b22a4ad976b8eae",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-005-0e7f21e31d.json.gz.sha256.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-field-grid-sidecar"
+      },
+      {
+        "git_blob": "7f4607c533bd34e79803cfdbc3412b16f82309d4",
+        "git_blob_sha256": "da3b2229e4895e8bd666eec2f4c3bf0ba9ff19b36d2856127d1cde762aee1ae7",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-015-3ce63a512e.json.gz",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-field-grid"
+      },
+      {
+        "git_blob": "b1ad008da8f2103dedcbf16ff35e621571fcdaae",
+        "git_blob_sha256": "2d60a3a16aa35cf63b6d9d3bf1a43256d6caf675d784a67f7da4213456370aa3",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-015-3ce63a512e.json.gz.sha256.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-field-grid-sidecar"
+      },
+      {
+        "git_blob": "f54060542e30d7b262aa27d1517af248277673a5",
+        "git_blob_sha256": "b8b6b5dc05571c60071f8bf6bada78e8ea8984df434e1657ee72c04f8aefa6f6",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-020-b6aa9b10ad.json.gz",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-field-grid"
+      },
+      {
+        "git_blob": "73f81b3ae27b15479ae17d63afade9bc4d0a51bf",
+        "git_blob_sha256": "d6a44941e1c76d7b31c5a73fcb020b0672928f641e1b79a86e65780b1480a2c5",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-020-b6aa9b10ad.json.gz.sha256.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-field-grid-sidecar"
+      },
+      {
+        "git_blob": "3436b6c03c5ad225821887e488ac8c4698741e7c",
+        "git_blob_sha256": "98aca2ea01fe32bf2295c77de1ddcc25349615f0f401620dc676c01ec3986a21",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-036-4a814065a1.json.gz",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-field-grid"
+      },
+      {
+        "git_blob": "2c2be6c2a64c7700c1074df0cfa435e5e03a7049",
+        "git_blob_sha256": "a202eba120627083288a889622a16e43cb3cf7c1dc1e39e3f2088d94ef324f1b",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-036-4a814065a1.json.gz.sha256.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-field-grid-sidecar"
+      },
+      {
+        "git_blob": "3ad1c66a4e393fb688947bd2ca642882b7f254ca",
+        "git_blob_sha256": "b9df23fd2d65a662f1f16c093ed3daaf455a0292485e639c6b80abc1e612e3b0",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-056-effcbc8686.json.gz",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-field-grid"
+      },
+      {
+        "git_blob": "35dae83fbc275a89a347eb0b4506e4255b03040d",
+        "git_blob_sha256": "b5ccc99cba3dc438c6d97b89eeaad8ea44b02e20a218fe3aa7b649b4a6ca039b",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-056-effcbc8686.json.gz.sha256.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-field-grid-sidecar"
+      },
+      {
+        "git_blob": "395bf7893329a7d7c932e05a97de22ecb8f36ad0",
+        "git_blob_sha256": "f6db69fa9d9a7c4daf203b3616b7b257da17ea0cac4e4b0619d39d1b44414abd",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-063-f3fd134978.json.gz",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-field-grid"
+      },
+      {
+        "git_blob": "14b80c9d124d56701e2316b925696bb84b591c32",
+        "git_blob_sha256": "9c7e42c96b33fcd3a97681029524012804882f75348fad6f30c3af815564989c",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-063-f3fd134978.json.gz.sha256.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-field-grid-sidecar"
+      },
+      {
+        "git_blob": "d7fdef17913bd2cfaaa531df2ef580ec61369597",
+        "git_blob_sha256": "7f6558af35970492d44ee18f5636ae067f032f87f7cb889a44ea431312ae5272",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-068-71057b61d4.json.gz",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-field-grid"
+      },
+      {
+        "git_blob": "3b8c442f2fe0a25d4fa035c5524bbc66266f68fa",
+        "git_blob_sha256": "8a790b005cada9205b6944731c1b6ee5775f8bd3f9dc79c23420173b513bc1e7",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-068-71057b61d4.json.gz.sha256.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-field-grid-sidecar"
+      },
+      {
+        "git_blob": "eadf9f10f563ea133b7814d6eb5c28e15d07828f",
+        "git_blob_sha256": "3e2e3e3bf12c759a5435baddd06425e6b471607337140ebe178f8102f1c127ff",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-076-c57391dd35.json.gz",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-field-grid"
+      },
+      {
+        "git_blob": "3470163bdcb7f5887e8c75c9136de01fdcafeab6",
+        "git_blob_sha256": "27122db16f6a18e151149ebd6337c67823c9fdf9f1017611f080ba850de320ec",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-076-c57391dd35.json.gz.sha256.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-field-grid-sidecar"
+      },
+      {
+        "git_blob": "86207dc1c0c3babc372074762b699f5610b46669",
+        "git_blob_sha256": "58356e8948553c087709f56a0acb20eee68119b1ee3bfe8da0b57cb14a584f9c",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-090-c761e36e9c.json.gz",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-field-grid"
+      },
+      {
+        "git_blob": "73222ce38a29e9553d4469e2dadde0073380fafd",
+        "git_blob_sha256": "30aa31adc42f79be347d679afb757fdb6cb40dbc420294a59f92635cdedbdb5b",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-090-c761e36e9c.json.gz.sha256.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-field-grid-sidecar"
+      },
+      {
+        "git_blob": "fa5663f181455e4decaf63f652d066d7d1792fd8",
+        "git_blob_sha256": "9b250dea49e4b93fca1556da5cb220f9201ce44483614e3dab0992b87d30475d",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-106-ccec1c8b2f.json.gz",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-field-grid"
+      },
+      {
+        "git_blob": "3d2f7df79e2a44dd27f4e502f000a2368ebe3ab5",
+        "git_blob_sha256": "1dc94d4cef22c47ae2c48c1c5f402e811d7367ef6181936e75d55cb81e666067",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-106-ccec1c8b2f.json.gz.sha256.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-field-grid-sidecar"
+      },
+      {
+        "git_blob": "b4fabf3bdf07022da584c87834d3d203db0b4994",
+        "git_blob_sha256": "11e3c214f65ee5dc73608d7924cbca53474898a3093177a7d1b19d47d894b886",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-116-7865daa491.json.gz",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-field-grid"
+      },
+      {
+        "git_blob": "4c654b8325dd60dcdda99f5b2ee2e8458fb80271",
+        "git_blob_sha256": "59a0a369e72fcb8f1cc0ccf1ce54173cf14b4bc65ca8084220c8444ab4bcf3d5",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-116-7865daa491.json.gz.sha256.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-field-grid-sidecar"
+      },
+      {
+        "git_blob": "9a955bbd8dc0b46009a800edb941e9a269d746a7",
+        "git_blob_sha256": "556424186422b3f739be08ce950074d5b553e6051d6ecd1779195a21e5d39af2",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-124-f740cfc79a.json.gz",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-field-grid"
+      },
+      {
+        "git_blob": "a6a2658b4b368daada64b178b5996631a81eaccb",
+        "git_blob_sha256": "017f33b19fae02009fbbeaffdfeafb40cf9e051305cf5325fc56188f15467c9b",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-124-f740cfc79a.json.gz.sha256.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-field-grid-sidecar"
+      },
+      {
+        "git_blob": "5840c6fdd51df0d8657db5672c47e6ae4e126554",
+        "git_blob_sha256": "cdb2a624f2f342c86486b3348f71068653a1ebff908adc17d8ba7b2fe931ad88",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/protocol.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-protocol"
+      },
+      {
+        "git_blob": "512d187df7429cb8b970e29715c268f835679d70",
+        "git_blob_sha256": "907d9240f6bade906da15429b623d19c692e5cc54bb3ee80a03e85241cd2b077",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/protocol.json.sha256.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-protocol-sidecar"
+      },
+      {
+        "git_blob": "b468fdb1543351ace58d9f0b929378b8b549d629",
+        "git_blob_sha256": "5dfdab1a853d0cd85ce9156b23d1515153ddebfd03049b2f61d56f4768d3e6e1",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/runtime.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-runtime"
+      },
+      {
+        "git_blob": "036ca009158cba10f6580593395bb68434f1ca33",
+        "git_blob_sha256": "d566ea4546fe1d160f30f013a9fbabb367bc94d7352725d8edb39b9a0f433f20",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/runtime.json.sha256.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-runtime-sidecar"
+      },
+      {
+        "git_blob": "a383baf275f1ae207a123e42adf97ef6d73c854e",
+        "git_blob_sha256": "8a21f9e62833f7322f472a187d08f9df25b65b7b8cb019a547e79441ff040786",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/shakedown.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-shakedown"
+      },
+      {
+        "git_blob": "11a2829fc56af79dedee2281c2299d6da38b2c22",
+        "git_blob_sha256": "ff0d4e19ffe2c45823f0d3a06ab401b191d64f749c1de42265695672be0f2327",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/shakedown.json.sha256.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-shakedown-sidecar"
+      },
+      {
+        "git_blob": "813176cc614b71763a0326273e0901faa82d5b50",
+        "git_blob_sha256": "cd7fca68fa2d917c2458158a4ada80a5fe95206d80f2f7504865944a996a6684",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/source-binding.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-source-binding"
+      },
+      {
+        "git_blob": "1ea6f2d634da2e4a17122f421df488883fda94f9",
+        "git_blob_sha256": "f62076f631d6eb21368dde1c05e2b52f38fb656c2b67c4e55b39c45de8316802",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/artifacts/source-binding.json.sha256.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-source-binding-sidecar"
+      },
+      {
+        "git_blob": "1c0c77dcec78a11ef759f124e5edf9bb510f6841",
+        "git_blob_sha256": "6e47114f3e718a38dcbd3182a6c21844b1f6fa669d8a24c85a7df1061e3465bd",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/counters/0001.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-counter"
+      },
+      {
+        "git_blob": "ccbe43f2195a61a4a9881962455baaecf75cf3a5",
+        "git_blob_sha256": "0ec8b50d211147661dcb81366f8800fc4d6dad770db5158c5a54f533a7f45b5b",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/counters/0001.json.sha256.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-counter-sidecar"
+      },
+      {
+        "git_blob": "f137dfad8cedcff9d252a3d9804b5da3f4085691",
+        "git_blob_sha256": "7e1ed389d58e5c5f968465aa3513e4389fe2809b215eaa3956ff88f426fac209",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/counters/0002.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-counter"
+      },
+      {
+        "git_blob": "1b90d6d9efeaf649819e4aa70b34ba7140aee938",
+        "git_blob_sha256": "6df280a92c2af55f050e3a0df4ea1a0ac07e29baa10a062bccd91b1b1c0b3a24",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/counters/0002.json.sha256.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-counter-sidecar"
+      },
+      {
+        "git_blob": "292ff34e36ca22f05297d7dd4c2787c12bebacb5",
+        "git_blob_sha256": "1e1ea415eb3f614c3a280cbb3d4662ddf6be9eda06c8e9711a68af30a9efa08c",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/counters/0003.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-counter"
+      },
+      {
+        "git_blob": "febc792f1cb4a09a582ffa02425354588e02e904",
+        "git_blob_sha256": "6eb5e682d18303e3877081189a0e3747c3b6fe4a55d461132def71066e5054b5",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/counters/0003.json.sha256.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-counter-sidecar"
+      },
+      {
+        "git_blob": "4557633ddf42ecf90fec79e4f9ceca38bf01f4fe",
+        "git_blob_sha256": "ab3b1500409a149c115cc3f5f0e5602e2545f3f2eb933e7461bb7ee323ffe27c",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/counters/0004.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-counter"
+      },
+      {
+        "git_blob": "5288108e53e98506d84ed2a070a121f50b1576fd",
+        "git_blob_sha256": "b174b7f1123a48d88959dff5b744172ef0c9463cad02894085387463b7a4ef46",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/counters/0004.json.sha256.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-counter-sidecar"
+      },
+      {
+        "git_blob": "cb3fcd21e57481f5599b28b199ee2aecdf4c420b",
+        "git_blob_sha256": "a2c218d6bd6d5887ea42584f34d24df595b3c43b1f011914f7b1b045983dd461",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/execution-lock.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-execution-lock"
+      },
+      {
+        "git_blob": "bf0bd0dcc9db4abdf901e4016e7f21c9f514d969",
+        "git_blob_sha256": "37ace02f630c3eecc5de2f9712e47eb1e5ab58646aa0d56055102fe9e1a2faac",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/manifest.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-results-manifest"
+      },
+      {
+        "git_blob": "c698e22e57dcd2e39c9c8177d361d7287f517194",
+        "git_blob_sha256": "101fc31253454242452d567ee30dbd0b9791af02a63c984d618e3602919fdb7f",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/phases/development.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-phase"
+      },
+      {
+        "git_blob": "97ede1e94d2bcc3c3f3d07d25b7013585fd95a40",
+        "git_blob_sha256": "4927f62977495a538a4c440c97ec294b8a8e1f29dd4ed9ff7ffc4b82e8598b8c",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/phases/development.json.sha256.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-phase-sidecar"
+      },
+      {
+        "git_blob": "11275fb0cc046bd7929e27d571337373bc9f1a11",
+        "git_blob_sha256": "16b0e2aec38bbfcd7a3dd4527c911f88e044ab77387b6fcfef940b31abe2e220",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/phases/prebundle.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-phase"
+      },
+      {
+        "git_blob": "97c2838e00161d12d5d927e5d1bb99e5e9476783",
+        "git_blob_sha256": "8926ee2eb684dde24da2d6ccfbbd12d9abdbaa829e44fded8b8963bd6e25d97a",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/phases/prebundle.json.sha256.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-phase-sidecar"
+      },
+      {
+        "git_blob": "10bfe8f117f8da597329ec026c5ad77ad6106759",
+        "git_blob_sha256": "8d04b8ee3f64919378faca5b02effd9b89c829447ec5683012733ba54b48010a",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/terminal.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-terminal-record"
+      },
+      {
+        "git_blob": "a3240adc218a65ddee08cce8d5995d4b5a7b018b",
+        "git_blob_sha256": "f5c14f1dfd0caacae013573955d8c2376189f753905cd0ade857a1568346e6da",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/terminal.json.sha256.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-terminal-record-sidecar"
+      },
+      {
+        "git_blob": "91aa28ffa1a8c5732a816bfea600ea5c8a939c0d",
+        "git_blob_sha256": "2a9dfa1feafc9d8d642cb9c383c4aa64ca4e2a4488fe2cf1955d175c5b3e7a70",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/transitions/0001-lock-acquired.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-transition"
+      },
+      {
+        "git_blob": "1824912212769369162fd9ccd0187ce72d8ba86d",
+        "git_blob_sha256": "5bffbd4b3985c4998db6baca2eb4d5c02edc78f041188d4559afe7150cc485ff",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/transitions/0001-lock-acquired.json.sha256.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-transition-sidecar"
+      },
+      {
+        "git_blob": "cce4668abd4956e749b6df5c5db8d8d8c9a01dee",
+        "git_blob_sha256": "8dac4a5c21d26748006031b2fa3d76f9521f5b867cc89943592edd638f880eeb",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/transitions/0002-cache-prepared.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-transition"
+      },
+      {
+        "git_blob": "b081d54fd683ad7180b96af1578e0668295e8779",
+        "git_blob_sha256": "98182a71ffabeef60c7b8341d4016c9755182a9860ed7f05c4ec94239a149cf2",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/transitions/0002-cache-prepared.json.sha256.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-transition-sidecar"
+      },
+      {
+        "git_blob": "581c3dcaa63c342f5ae66b049b853a204a76e8fb",
+        "git_blob_sha256": "be2572c8dedece9251884ad2bf817bd5071344289c30e428d6494877f032a1de",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/transitions/0003-prebundle-started.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-transition"
+      },
+      {
+        "git_blob": "04afd8de24423d5fd2a2367de01c586a6192b24a",
+        "git_blob_sha256": "34dff544fb6093b9aebe632d65e843240eff77d18a2e9426493325c75788eb29",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/transitions/0003-prebundle-started.json.sha256.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-transition-sidecar"
+      },
+      {
+        "git_blob": "be84d5f1069cd9d0a293ba108c34f221d16e277e",
+        "git_blob_sha256": "02e07a0834e783e39d1a6f94e357a33bc6b0e759062b0fa18fbdd7fd737870b9",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/transitions/0004-prebundle-completed.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-transition"
+      },
+      {
+        "git_blob": "208a79050a995d7f6cf0b75793b9bf1ea03bfe8e",
+        "git_blob_sha256": "52b37795345c5c34a941085014d7935d245c3db682998ceec867550619bbd413",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/transitions/0004-prebundle-completed.json.sha256.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-transition-sidecar"
+      },
+      {
+        "git_blob": "acc39b53666b613087c6cff916a0ce51f43f4a9b",
+        "git_blob_sha256": "54f81e9444423f39ebb7d72f44901dae4ae71517ad5fab10a7106aa3d8901171",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/transitions/0005-development-started.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-transition"
+      },
+      {
+        "git_blob": "d0b16b948f70cc0b5753c58b65d5f2149392d2b5",
+        "git_blob_sha256": "986e0fd75a075dea42b30cebf2549264b19b36708e896f6d8c8a5bf3f9191784",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/transitions/0005-development-started.json.sha256.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-transition-sidecar"
+      },
+      {
+        "git_blob": "574255513a5de79639e2eb28cfafda4efb8f92d3",
+        "git_blob_sha256": "8d40d25f4d5708e3eea70d5a7b5d0187dcde94c33ce85f1957bdaf8f469374fa",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/transitions/0006-development-rejected.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-transition"
+      },
+      {
+        "git_blob": "5a76583661606d5b3340884d50875ffaa5fdbf08",
+        "git_blob_sha256": "114eeeaf53268353af566deba72604d5a8cf174461830e82a323e3d3ab95675c",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/transitions/0006-development-rejected.json.sha256.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-transition-sidecar"
+      },
+      {
+        "git_blob": "b98f35043199073d6225d1a865eee3bc6ff42fcd",
+        "git_blob_sha256": "85e6e360c83c7a438ff0c7b1c7e0aca5e403e35530fd0a88a13ac7a841562392",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/transitions/0007-terminal.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-transition"
+      },
+      {
+        "git_blob": "fa4b45b7bdc3bada107fd1e4b3ac49238a831bfc",
+        "git_blob_sha256": "322247a46ac7bf1a0aa37e258b8eea3feec3b9a39108ef32cf492e6ef7eb592a",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/results/transitions/0007-terminal.json.sha256.json",
+        "revision": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+        "role": "lineage-transition-sidecar"
+      },
+      {
+        "git_blob": "72407ecc5477f9094368541a3076640645e851be",
+        "git_blob_sha256": "d29e2ef41433b29b96a11150e826fd2714f24afdfffe475b00ba42066e7f5b32",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/protocol.json",
+        "revision": "fb143eb2280abafc1bce3910f4311f8fdff5fd7f",
+        "role": "lineage-preregistered-protocol"
+      },
+      {
+        "git_blob": "25c9df03fd8384756c34f7ebf206708797dee5ca",
+        "git_blob_sha256": "36aac526138b7dbf974b6dcb5782789f8104521ad7a0366d921dd584d1ef34d2",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/authorities.json",
+        "revision": "fb143eb2280abafc1bce3910f4311f8fdff5fd7f",
+        "role": "lineage-preregistered-authorities"
+      },
+      {
+        "git_blob": "a383baf275f1ae207a123e42adf97ef6d73c854e",
+        "git_blob_sha256": "8a21f9e62833f7322f472a187d08f9df25b65b7b8cb019a547e79441ff040786",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/shakedown.json",
+        "revision": "fb143eb2280abafc1bce3910f4311f8fdff5fd7f",
+        "role": "lineage-preregistered-shakedown"
+      },
+      {
+        "git_blob": "996ad282663feda70b862e93a3f330554ad355c7",
+        "git_blob_sha256": "aa38fe4c8fef1f2e681b0d86a5018b71ae89bf7a6c048b568f23307f9834542c",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/design-authorities.json",
+        "revision": "fb143eb2280abafc1bce3910f4311f8fdff5fd7f",
+        "role": "lineage-preregistered-design-authorities"
+      },
+      {
+        "git_blob": "a219bee2c7da0a740e6704b3a0c46b72bf3b6a10",
+        "git_blob_sha256": "a606968797bb0674c045f1b47efeb6081642ddd873955377f1ae2551ba4a35e4",
+        "note": "the v1 post-hoc rejection note: one execution, 13/15 designs resolved, designs 028 and 048 failed the 10 deg level-0 mesh-angle gate before any solve, no verdict; bound at the v1.1 code commit",
+        "path": "modern/experiments/l1b_hemp_confirmation_v1/POSTHOC_REJECTION.md",
+        "revision": "b6125fe7a3c4f310ff564c0102c1617ccc68b00a",
+        "role": "lineage-posthoc-rejection"
+      }
+    ],
+    "lock_commit_recorded": "b9449ee58240d2ab2789571a7ab28ead19dca2d1",
+    "manifest_git_blob": "bf0bd0dcc9db4abdf901e4016e7f21c9f514d969",
+    "manifest_sha256": "37ace02f630c3eecc5de2f9712e47eb1e5ab58646aa0d56055102fe9e1a2faac",
+    "posthoc_rejection_commit": "b6125fe7a3c4f310ff564c0102c1617ccc68b00a",
+    "preregistration_commit": "fb143eb2280abafc1bce3910f4311f8fdff5fd7f",
+    "protocol_paths_changed": [
+      "execution/git_common_lock",
+      "experiment_id",
+      "p2/mesh/angle_gate_disclosure",
+      "p2/mesh/reject_below_angle_deg",
+      "p2/mesh/whole_set_preflight",
+      "predecessor",
+      "schema_version",
+      "shakedown/design_rule",
+      "shakedown/designs/hemp_like_v3",
+      "shakedown/prepare_requires",
+      "shakedown/whole_set_mesh_preflight",
+      "title"
+    ],
+    "resolved_design_count": 13,
+    "result_commit_recorded_prefix": "978c71be",
+    "results_commit": "2d8d670593f11045601f911acd1fa11ccf9bda21",
+    "results_commit_subject": "record L1b HEMP confirmation v1 result: development_rejection (2/15 level-0 meshes fail the 10 deg gate)",
+    "results_tree": "695c37494d8a3029f14696deccd64db1303f7f4e",
+    "rule": "the recorded development rejection of l1b_hemp_confirmation_v1 is byte-verified from its own bundle (every file, sidecar, terminal record, lock and transition), its two failures must be the level-0 mesh-angle rejection at the resolve stage, its resolved count plus failures must equal the declared set, the v1.1 protocol must differ from the v1 protocol at exactly the declared paths, the post-hoc rejection note bound at the v1.1 code commit must name the recorded commits, counts, gate, stage time and the absence of a verdict, and the two rejected designs' v1.1 level-0 meshes must fall below the v1 gate; the rejection is disclosed as lineage and never cited for a confirmation number",
+    "terminal_state": "development_rejection"
+  },
+  "manifest_id": "L1B-HEMP-CONFIRMATION-V1-1-20260904-15-V1",
+  "metrics": {
+    "absolute_field_or_rho_threshold_robust": false,
+    "adaptive_levels": 2,
+    "all_designs_bijective": true,
+    "angle_gate_deg": 5.0,
+    "assessment_wall_s": 304.73673110001255,
+    "attempt_count": 1,
+    "axis_null_positions_robust_within_tolerance": false,
+    "axis_peak_b_ratio_maximum": 1.345591831654561,
+    "axis_peak_b_ratio_median": 1.1775446157679763,
+    "axis_peak_b_ratio_minimum": 0.9766238209161009,
+    "bijective_designs": 15,
+    "binding_gate_count": 11,
+    "binding_gates_true": 11,
+    "bore_elements": 8,
+    "campaign_status": "accepted_l1b_confirmation_confirmed",
+    "cell_counts_agree": 15,
+    "channel_axis_null_bijection": 6,
+    "channel_axis_null_count_equal": 15,
+    "channel_axis_null_shift_maximum_m": 0.0010724508771368093,
+    "channel_axis_null_shift_median_m": 0.0004685912108400407,
+    "channel_axis_nulls_beyond_tolerance_designs": 9,
+    "classification": "P2_MATERIAL_AWARE_FIELD_CONFIRMATION_NOT_HARDWARE_VALID",
+    "cpu_count": 24,
+    "cpu_only": true,
+    "cusp_four_designs": 2,
+    "cusp_three_designs": 3,
+    "cusp_two_designs": 10,
+    "declared_count": 15,
+    "definition_parameters_equal": true,
+    "design_recommendation": false,
+    "design_recommendation_claimed": false,
+    "designs_exceeding_tolerance": 0,
+    "discretisation_axis_null_shift_maximum_m": 5.611338980502506e-06,
+    "discretisation_shift_maximum_m": 1.4220098524617836e-06,
+    "discretisation_stable_count": 15,
+    "evaluated_count": 15,
+    "failed_cases_count": 0,
+    "feature_elements": 3,
+    "field_is_p2_qualified_chain": false,
+    "forbid_mirror_probability_publication": true,
+    "forbid_plasma_performance_publication": true,
+    "gate_b_agreeing_boundary_tolerant": 15,
+    "gate_b_agreeing_strict": 15,
+    "gate_b_disagreeing_designs": 0,
+    "gate_b_pass_threshold": 1.0,
+    "gate_b_passed": true,
+    "gate_c_max_shift_over_tolerance": 0.8023324858192963,
+    "gate_c_pass_threshold": 1.0,
+    "gate_c_passed": true,
+    "gates_passed": true,
+    "hardware_or_experimental_validation": false,
+    "hemp_flag_stable_levels": 15,
+    "hemp_like_flag_preserved_for_every_design": false,
+    "hemp_like_lost_count": 1,
+    "hemp_like_lost_design": "028",
+    "hemp_like_preserved_count": 14,
+    "hemp_like_preserved_fraction": 0.9333333333333333,
+    "in_band_count": 15,
+    "l1a_dz_m": 0.0004513888888888889,
+    "l1a_outside_nulls": 11,
+    "level0_dofs_maximum": 116883,
+    "level0_dofs_minimum": 24369,
+    "level1_dofs_maximum": 466005,
+    "level1_dofs_minimum": 50037,
+    "linear_materials": true,
+    "lost_design_l1a_min_rho": 1.5150770513776666,
+    "lost_design_p2_min_rho": 1.463778208091294,
+    "magnet_recoil_relative_permeability": 1.05,
+    "matched_cusp_count": 37,
+    "max_shift_design": "076",
+    "maximum_p2_dofs": 600000,
+    "mirror_probability_publication_forbidden": true,
+    "mirror_ratios_are_field_descriptors_not_probabilities": true,
+    "more_p2_null_designs": 9,
+    "not_hardware_valid": true,
+    "not_p2_qualified_chain": true,
+    "outside_null_shift_maximum_m": 0.0017519192592770107,
+    "outside_null_shift_minimum_m": 0.0010888136237901577,
+    "p2_cusps_at_wall_maximum": 0,
+    "p2_min_rho_maximum": 2.927676383018529,
+    "p2_min_rho_minimum": 1.463778208091294,
+    "p2_outside_nulls": 29,
+    "peak_rss_bytes": 239702016,
+    "peak_wall_b_ratio_maximum": 1.390105647738947,
+    "peak_wall_b_ratio_median": 1.195183085309595,
+    "peak_wall_b_ratio_minimum": 0.9294601238726473,
+    "physics_level_opened": false,
+    "plasma_or_performance_claim_forbidden": true,
+    "pooled_axis_null_bijection": 0,
+    "positive_finding_accepted": false,
+    "predecessor_angle_gate_deg": 10.0,
+    "predecessor_artifact_count": 112,
+    "predecessor_assessment_access_count": 0,
+    "predecessor_failed": 2,
+    "predecessor_failure_stage": "resolve",
+    "predecessor_records": 13,
+    "predecessor_rejection_disclosed": true,
+    "predecessor_resolved": 13,
+    "predecessor_stage_wall_s": 2738.1153885000094,
+    "predecessor_terminal_state": "development_rejection",
+    "predecessor_verified_file_count": 103,
+    "preflight_below_threshold_designs": 2,
+    "preflight_designs": 15,
+    "preflight_minimum_angle_deg": 5.314978675079004,
+    "preflight_passed": 15,
+    "preregistered_one_shot": true,
+    "protocol_blocks_unchanged": true,
+    "protocol_declarations_changed": 2,
+    "protocol_paths_changed": 12,
+    "radial_intervals": 32,
+    "ram_budget_bytes": 3505505894,
+    "ram_budget_fraction": 0.4,
+    "record_commit_files": 134,
+    "recorded_outcome": "accepted-material-aware-confirmation",
+    "rejection_note_bound": true,
+    "relative_true_residual_maximum": 1.9998663339378087e-10,
+    "replay_designs": 1,
+    "replays_bit_identical": 1,
+    "representative_count": 4,
+    "resolved_design_count": 15,
+    "rho_is_probability": false,
+    "rho_ratio_below_one_cusps": 14,
+    "rho_ratio_below_one_designs": 8,
+    "rho_ratio_maximum": 1.4459048971630442,
+    "rho_ratio_median": 1.0598508574421766,
+    "rho_ratio_minimum": 0.942536584332938,
+    "rho_threshold": 1.5,
+    "sampling_refinement": 2,
+    "sampling_shift_maximum_m": 6.239435475056954e-08,
+    "sampling_stable_count": 15,
+    "saturation_or_bh_nonlinearity_modelled": false,
+    "screening_model": "adaptive quadratic finite-element magnetostatics (cft_revival.fem_reference, numpy CPU) with LINEAR soft-iron poles and return yoke and recoil-remanence SmCo-like magnets on two nested levels, sampled into the cusp topology search v3.1 definition and compared with the sealed linear-vacuum L1a records of the fifteen HEMP-like sweep-v3 designs (a confirmation of field-map descriptors under two field models; not the three-level P2-qualified chain, no saturation or B-H curve, not hardware-valid)",
+    "separatrix_lean_l1a_maximum_m": 0.000463299811208474,
+    "separatrix_lean_p2_maximum_m": 0.0011445245108789607,
+    "shakedown_designs": 5,
+    "shakedown_evidentiary": false,
+    "shakedown_outcomes_are_not_evidence": true,
+    "shakedown_overlap_designs": 5,
+    "shakedown_passed": true,
+    "shift_maximum_m": 0.0003621639692934324,
+    "shift_mean_m": 0.0002433271081205591,
+    "shift_median_m": 0.0002671743195241487,
+    "shift_minimum_m": 1.3036083879331556e-06,
+    "shift_over_tolerance_median": 0.5411543274515939,
+    "shifts_above_discretisation": 37,
+    "shifts_above_stability_tolerance": 22,
+    "sliver_a_elements_below_threshold": 3,
+    "sliver_a_minimum_angle_deg": 5.314978675079004,
+    "sliver_b_elements_below_threshold": 13816,
+    "sliver_b_minimum_angle_deg": 5.553001380243498,
+    "soft_iron_relative_permeability": 4000.0,
+    "solver_max_iterations": 16000,
+    "solver_relative_tolerance": 2e-10,
+    "solves_converged": 30,
+    "solves_total": 30,
+    "stability_tolerance_m": 0.00025,
+    "stage_five_designs": 3,
+    "stage_four_designs": 2,
+    "stage_three_designs": 10,
+    "stage_wall_s": 3079.2892819000117,
+    "stage_within_budget": true,
+    "sweep_hemp_like_count": 15,
+    "terminal_state": "accepted_result",
+    "timing_projected_s": 6017.68606320005,
+    "timing_within_budget": false,
+    "tolerance_maximum_m": 0.0005229379374895871,
+    "tolerance_median_m": 0.0004513888888888889,
+    "tolerance_minimum_m": 0.0004513888888888889,
+    "tolerated_eol_file_count": 0,
+    "topology_label": "SCREENING_P2_MATERIAL_FIELD_SEPARATRIX_CUSP_TOPOLOGY",
+    "transition_count": 9,
+    "verdict": "CONFIRMED",
+    "verdict_admitted_as_recorded": true,
+    "verified_file_count": 133,
+    "wall_b_ratio_above_one_cusps": 37,
+    "wall_b_ratio_maximum": 1.5252332413152598,
+    "wall_b_ratio_median": 1.2252323629590833,
+    "wall_b_ratio_minimum": 1.0547158205359815,
+    "wall_cusp_positions_robust_within_tolerance": true,
+    "wall_radius_over_pitch_maximum": 1.0320870080287337,
+    "wall_radius_over_pitch_minimum": 0.7153483317100598,
+    "worker_pool_size": 1,
+    "x_w_maximum": 3.2423969622885394,
+    "x_w_minimum": 2.247333063658038
+  },
+  "model_fidelity": "adaptive-quadratic-FEM-magnetostatics-with-linear-soft-iron-and-recoil-magnets-two-nested-levels-compared-with-linear-vacuum-L1a-records",
+  "paper_evidence_file": {
+    "document_type": "paper-l1b-hemp-confirmation-v1-1-evidence",
+    "generator": "paper/scripts/generate_l1b_hemp_confirmation_v1_1_evidence.py",
+    "generator_command": "python paper/scripts/generate_l1b_hemp_confirmation_v1_1_evidence.py",
+    "macro_count": 320,
+    "macro_prefix": "Hmc",
+    "path": "paper/evidence/l1b-hemp-confirmation-v1-1.json",
+    "rule": "check_paper.py regenerates the evidence file, the generated TeX and the sidecar from the sealed bundle and requires byte identity with the committed files; every macro therefore traces to a verified artifact hash at every check, and on the way the verdict, both gates, the reported preservation, every headline distribution, every matched cusp's shift, wall-field and rho ratios, the tolerance rule, the design records, field grids, agreement table and CSV rows, the predecessor's rejection bundle and the v1 -> v1.1 protocol diff are recomputed or byte-verified.",
+    "schema_version": "1.0"
+  },
+  "permitted_claim_scope": [
+    "terminal state, campaign status, verdict, design, cusp, solve, gate, replay and stability counts of the single execution",
+    "the predeclared gates (b) and (c) at their recorded outcome (every cusp count unchanged; every matched cusp within its tolerance, largest shift 0.80 of tolerance, every matching a bijection) and the verdict CONFIRMED under the frozen rule",
+    "the reported preservation of the HEMP-like flag (14 of 15; design 028 crosses the rho threshold), the per-cusp rho and wall-field ratios, the peak wall and axis ratios, stated as ratios of two field models at equal magnet strength",
+    "the axis-null populations (channel and outside the straight section), their shifts and the separatrix lean, stated as observations that the axis nulls are not robust within the cusp tolerance",
+    "the P2 model as frozen (linear soft iron, recoil magnets, mesh, levels, solver, sampling) and its solve evidence (DOFs, iterations, residual, timing, RSS, budget)",
+    "the three disclosures: the predecessor's development rejection with its counts, commits, gate and the absence of a verdict; the relaxed angle gate with the sliver record and the whole-set preflight; the shakedown's overlap with the evidentiary set, its timing projection and the campaign's own paper-admission statement",
+    "the classification string, the topology label, the recorded outcome and the sealed claim boundary"
+  ],
+  "posthoc_audit": null,
+  "posthoc_audit_note": "no post-hoc audit exists for the accepted bundle; every one of its 134 files (133 manifest entries plus the manifest) is verified byte for byte by the generator and the checker and no end-of-line tolerance is needed. The predecessor's development rejection and its post-hoc rejection note are bound under lineage, not as an audit of this bundle.",
+  "preregistration_revision": "c8692ff2cb6d4b8605fc00176f919b830ff9e685",
+  "preregistration_revision_subject": "preregister L1b HEMP confirmation v1.1",
+  "prohibited_inferences": [
+    "saturation, B-H nonlinearity, temperature dependence or any nonlinear material behaviour",
+    "plasma state, confinement, mirror or cusp-loss probability, wall loss, thrust, efficiency or any thruster performance",
+    "reading the Koch ratio, a wall-field ratio or any mirror descriptor as a probability",
+    "that any design is recommended, or that the HEMP-like flag of every design is robust to iron (design 028 crosses the threshold)",
+    "that the axis-null positions or any absolute field or rho threshold near the design value are robust to iron",
+    "P2 qualification of the confirmation field (the three-level qualified chain was not run) or hardware validation",
+    "that the verdict is a positive finding accepted about the physical thruster rather than an as-recorded confirmation of field-map descriptors",
+    "that the predecessor campaign produced a verdict, or that its rejected designs were excluded from the confirmation",
+    "field-resolved reduction, L0 mapping or geometry-response prediction (GATE-L1 stays closed)",
+    "opening of GATE-L1, GATE-L2 or GATE-L3"
+  ],
+  "recorded_outcome": "accepted-material-aware-confirmation",
+  "recorded_outcome_justification": "The five earlier numerical-screening outcomes name studies on L1a linear-vacuum equivalent-current fields (a field-only screening, a null, a characterization, a test-particle dataset, and the literature cusp definition on those fields plus one P2-qualified row). This study is a different object: the same literature cusp definition applied verbatim to the material-aware P2 field (adaptive quadratic finite elements with LINEAR soft-iron poles and yoke and recoil-remanence magnets, two nested levels) of fifteen designs already screened on L1a fields, compared with their sealed L1a records under predeclared count and position tolerances, and classified by a preregistered verdict rule as CONFIRMED / PARTIALLY_CONFIRMED / DISCONFIRMED. Reusing accepted-topology-screening would state that the fields are L1a fields with one P2 row, which is false here, so a sixth outcome value, accepted-material-aware-confirmation, is added and the kind's description is amended to name it. Its meaning is the same as every other outcome: the study is admitted exactly as recorded (verdict CONFIRMED under the frozen tolerance rule; the sealed status is accepted_l1b_confirmation_confirmed), never as a positive finding about the thruster. What is confirmed is a property of two field models (the L1a separatrix-cusp count and wall-cusp positions survive the linear-iron field within one level-0 bore element), not saturation, plasma, mirror probability, thrust, efficiency or a design recommendation, and the field is not the three-level P2-qualified chain.",
+  "reference_files": [
+    {
+      "git_blob": "e6eb046f127699a2b537c19c80b1c6c44078e752",
+      "git_blob_sha256": "f6077edde3a4e4326f2dda9df4429452d88cb8c7145a620f0243ae48795090f8",
+      "note": "the frozen cusp topology v3.1 protocol whose definition parameters the confirmation imports verbatim",
+      "path": "modern/experiments/cusp_topology_search_v3_1/protocol.json",
+      "revision": "cec47f12f5909c5886424bf5d46ac20ce06f1ac5",
+      "role": "reference-cusp-topology-protocol"
+    },
+    {
+      "git_blob": "c9311f6e6442ef5c2585d0d544e88d3e330e35f3",
+      "git_blob_sha256": "d8aaed8c1893ad10dd608c3b2ac3f66ebede61ecf97d916e30755aa221b40e4b",
+      "note": "the frozen sweep-v3 design authorities every rebuilt design's identity was proven against (must hash to sealed_sources.design_authorities_file_sha256)",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/design-authorities.json",
+      "revision": "2cfe8223630fbef6bfe8099a5dcecaf4eb8c6b44",
+      "role": "reference-sweep-v3-design-authorities"
+    },
+    {
+      "git_blob": "1fc34338d303911e80e21b6ec7102e7e942eadb3",
+      "git_blob_sha256": "583bd039d33fc7158ff03424a9d75426072c933e339d9a7660d84b2e7eaef2a9",
+      "note": "the sealed sweep-v3 wall-cusp catalogue whose HEMP-like Sobol entries are the declared designs (must hash to sealed_sources.catalogue_byte_sha256)",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/cusp-cell-catalogue-v3.json",
+      "revision": "2cfe8223630fbef6bfe8099a5dcecaf4eb8c6b44",
+      "role": "reference-sweep-v3-catalogue"
+    },
+    {
+      "git_blob": "19b2e1a194e56dbca2b7ad2fbc314bb3e9e7224c",
+      "git_blob_sha256": "b8670c488ebccd69569525437ab2c8a13af9ea14c4be4e56f1ed651c8057abf3",
+      "note": "the sealed sweep-v3 results manifest the L1a record bytes were verified against (must hash to sealed_sources.manifest_file_sha256)",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/manifest.json",
+      "revision": "2cfe8223630fbef6bfe8099a5dcecaf4eb8c6b44",
+      "role": "reference-sweep-v3-manifest"
+    }
+  ],
+  "results_bundle": {
+    "artifact_count": 142,
+    "manifest_git_blob": "577c4640cf8a561f10a9ea2157dc49e400cc544d",
+    "manifest_path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/manifest.json",
+    "manifest_sha256": "0d8bec9f08901973c9d120dc71009fdcec8abc135c6544dec14e0c7c86b0b0ce",
+    "recomputation_rule": "the verdict, gates (b) and (c), reported (d), every headline and estimand distribution, the tolerance rule max(r_w / bore elements, L1a dz), x_w and r_w / L, every matched cusp's shift, tolerance ratio, wall-field ratio, magnet-strength scaling and rho ratio, every conservative Koch ratio from the wall field and the adjacent axis peaks, every HEMP-like flag against the recorded threshold, the channel and outside axis-null populations, the separatrix lean, the level structure, convergence, DOF cap and mesh-angle gate of every solve, the material regions, and the agreement-table and CSV rows are recomputed from the per-design rows, records and grids and must equal the sealed values (counts exactly; floats within a relative tolerance of 1e-09)",
+    "results_tree": "19d1f6df0e0d8485e336d3c5522c22438fd49090",
+    "source_hashes_recomputed_at_preregistration": {
+      "dependency_source_sha256": "c6b037fb8662f31c43615e8673353eea004254884c889f14097da2ebf037b0e7",
+      "experiment_code_sha256": "094b8cf8ffc1906e9fc36f98addb8685857d6fd9745b4bd44d63c4d1225aaf89",
+      "field_pipeline_source_sha256": "32254bf65742a5eb5a79c31df364fc3bc4620866f6961a5168b10aae828e53ce"
+    },
+    "tolerance_rule": "none: every manifest file entry must hash to its recorded byte_sha256 with its recorded size, and the results tree carries no file the manifest does not bind",
+    "tolerated_eol_files": [],
+    "verified_file_count": 133
+  },
+  "schema_version": "1.0",
+  "screening_model": "adaptive quadratic finite-element magnetostatics (cft_revival.fem_reference, numpy CPU) with LINEAR soft-iron poles and return yoke and recoil-remanence SmCo-like magnets on two nested levels, sampled into the cusp topology search v3.1 definition and compared with the sealed linear-vacuum L1a records of the fifteen HEMP-like sweep-v3 designs (a confirmation of field-map descriptors under two field models; not the three-level P2-qualified chain, no saturation or B-H curve, not hardware-valid)",
+  "section_heading": "Material-aware confirmation of the HEMP-like designs under a linear-iron P2 field",
+  "source_files": [
+    {
+      "git_blob": "46e8e6c0c88aac2b1476534d2dedb754a797b70b",
+      "git_blob_sha256": "21d790c2ff7b6db5eee577f37846de95fcf8c45630c58dbcf80f4acaff7999ac",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/access/0001.json",
+      "role": "access"
+    },
+    {
+      "git_blob": "4e5074eca399a4e1ef440caea05f15d430a7c7c4",
+      "git_blob_sha256": "15a95495d3bafa2d7a1251b3b4c9b5bd6d0e7e5e1907e1cbca56c028be136446",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/access/0001.json.sha256.json",
+      "role": "access-sidecar"
+    },
+    {
+      "git_blob": "da7a5a04542ad85eff73f4e4549c4cc6c84d3a46",
+      "git_blob_sha256": "e7697c3d58cbd3ee7c913f738a2e96e2b550a98a5bf851357e36e7d5ff69aaef",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/access/0002.json",
+      "role": "access"
+    },
+    {
+      "git_blob": "be0044380daaaaf9c593fe8603c62143d9ed341f",
+      "git_blob_sha256": "94614484562bcb7f9eca9464db666345ab013b9bbdc8c96cf8e3bf1a095dff38",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/access/0002.json.sha256.json",
+      "role": "access-sidecar"
+    },
+    {
+      "git_blob": "d6acf12b0cbe33e96db0a88542ee9b8ff44446de",
+      "git_blob_sha256": "78192c5f47692eaac8a5122ddad99f40030de4797f0fa7d9c066736eeac36b7d",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/access/0003.json",
+      "role": "access"
+    },
+    {
+      "git_blob": "f53a82dc308f2b541ab52c8b7f5d0c13a6d53825",
+      "git_blob_sha256": "4881eb8efc35daa76320d70225c3e95530e93df04510733a8649551e10cf1cd3",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/access/0003.json.sha256.json",
+      "role": "access-sidecar"
+    },
+    {
+      "git_blob": "a9d456c80c719449377dd053a867923180d1f801",
+      "git_blob_sha256": "4a6bab9edaf83984754d11e57c72896ce3c9beff241f384d6b69602a30ea36a0",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/access/0004.json",
+      "role": "access"
+    },
+    {
+      "git_blob": "a29dc969799dc53c4c74a51d9d61647c76ae6764",
+      "git_blob_sha256": "7e12e759297e52230229746180ac6add06bb07ec2fa4bad29502550ad645d610",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/access/0004.json.sha256.json",
+      "role": "access-sidecar"
+    },
+    {
+      "git_blob": "951a6db43e7db03a44c78ecd34162481cc104e40",
+      "git_blob_sha256": "293f550b6a67d14894c58c477f5eb98c2a94098a09ad39caa4cc7031338c3cd6",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/access/0005.json",
+      "role": "access"
+    },
+    {
+      "git_blob": "b1f710452dfa6b1f0fa2471a5e258588d02dd776",
+      "git_blob_sha256": "64206d13857a8716cda7f44a86d19823d4bb48c71edb6fabfc8b7980eab7c6a9",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/access/0005.json.sha256.json",
+      "role": "access-sidecar"
+    },
+    {
+      "git_blob": "32175e164257a45d289636cca8a04e6bb78114dd",
+      "git_blob_sha256": "85090e8d4c674014186d9bf58df2fb7eced91a063d06a091134f34cbf2a7e5bb",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/authorities.json",
+      "role": "authorities"
+    },
+    {
+      "git_blob": "1f323a03365ecd1f429d26ad6cb6bf815821da3c",
+      "git_blob_sha256": "d220db644b94660428ad629109d267bc946bc25e76d618af6a1bf13cb96f49a6",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/authorities.json.sha256.json",
+      "role": "authorities-sidecar"
+    },
+    {
+      "git_blob": "5c06991834a34d835fa14d2467e65d419a281f1a",
+      "git_blob_sha256": "c8ca1a56ac207265318f57de156163001c1e99ae2cf58dcdafb95454e58d5e08",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/campaign-plan.json",
+      "role": "campaign-plan"
+    },
+    {
+      "git_blob": "50336fff6ea7fbe08a87a10d78f6cc91cf15fc2c",
+      "git_blob_sha256": "61823e24d8bfd3208295a4e8280b2bf0ec70d15a701c9dbca4c13f1660f1c37e",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/campaign-plan.json.sha256.json",
+      "role": "campaign-plan-sidecar"
+    },
+    {
+      "git_blob": "25d1d5ab55cb978abecde3d3ca5bd3cd280f3287",
+      "git_blob_sha256": "5cd80fde14c0dd2ab0fbd2fa0e1d8c401b2e9bde7c173eadeabf4ba2e8c7e2f7",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/campaign-result.json",
+      "role": "campaign-result"
+    },
+    {
+      "git_blob": "d35f783dcb29ca1517ff082a55068d4453ceb2b8",
+      "git_blob_sha256": "a3707eb86711f3636c8b2b8904ec4fba0f2e9ab3fa8f6c66b1f702a25220cc85",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/campaign-result.json.sha256.json",
+      "role": "campaign-result-sidecar"
+    },
+    {
+      "git_blob": "bfdad4716194b0342c89dea19cb1c8a3752bae31",
+      "git_blob_sha256": "8c741b2c39225a08f9e50f08f752c4b1dcabb34bd08de718657bb065c917f1ea",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/confirmation-dataset.csv",
+      "role": "dataset-csv"
+    },
+    {
+      "git_blob": "9b9785c4e7936e9cc3e3cdd66358cd02dc3792d9",
+      "git_blob_sha256": "d9f3d364b3c17854c4283d7eebb5db0879fba40a8ad83d50de1664d333c16218",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/confirmation-dataset.csv.sha256.json",
+      "role": "dataset-csv-sidecar"
+    },
+    {
+      "git_blob": "118c8c12f9f6ba6eb76fe01267356501f289a926",
+      "git_blob_sha256": "5d1af79e406173ae5d782f2eae297daabcf9b2d55b5d3c4db0d43816738ce4e2",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/confirmation-dataset.json",
+      "role": "primary-dataset"
+    },
+    {
+      "git_blob": "7460aedbac67485c783af6dc0412fda92e8c2b46",
+      "git_blob_sha256": "d637b09f8f303ad4ce3786877f7d94d2a7f14425aeea7bdc17247787781c7ac2",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/confirmation-dataset.json.sha256.json",
+      "role": "primary-dataset-sidecar"
+    },
+    {
+      "git_blob": "a1999af1eaed027b5360790dfcaca31f50381e85",
+      "git_blob_sha256": "80cbf24b78c6a7e9dea1150e90f529c2897b87c5d90b83aba42d0380a5f92368",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/design-authorities.json",
+      "role": "design-authorities"
+    },
+    {
+      "git_blob": "d18f3567ebf5a88372afd6cb2751be0ce7433f61",
+      "git_blob_sha256": "3143b7d2f573286b445b24f1b8ffc2340e4952067ca880457467c6d34266d9d7",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/design-authorities.json.sha256.json",
+      "role": "design-authorities-sidecar"
+    },
+    {
+      "git_blob": "a258acb03d171fe48be5f2ec5ff98064e63833df",
+      "git_blob_sha256": "29df25d8b1594a1a5ea5ae96ca2013984876122ffc2ba1e683fc8597aaf3e7ea",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/design-failures.json",
+      "role": "design-failures"
+    },
+    {
+      "git_blob": "e7b56b46dd4bb539d6161ae0a7934cc3c053863f",
+      "git_blob_sha256": "63027841d3b0659acd283284c6c7cb35f533b9d2f9995afd61d754fcd6664347",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/design-failures.json.sha256.json",
+      "role": "design-failures-sidecar"
+    },
+    {
+      "git_blob": "52b5b0e343e40f7fb0b3e17b114f3baa82ad21e2",
+      "git_blob_sha256": "fb64a8d9c4be8982a551507f17fa4cf40da35b17020b8a14e52698e8af5a3e0c",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-000-78dcc2bb4c.json",
+      "role": "design-record"
+    },
+    {
+      "git_blob": "192524e3486d401ab141099067e51e2f8c8f5f28",
+      "git_blob_sha256": "4ef518d25d628728a710c40ef9345174f0f9c74fdafbe4a32a9afcb3d9b21e58",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-000-78dcc2bb4c.json.sha256.json",
+      "role": "design-record-sidecar"
+    },
+    {
+      "git_blob": "7c7f351af717d2f91a0741bda09454cf29847a0c",
+      "git_blob_sha256": "7e3575a58e1daaaf8d715d59505e64d1726413276f251ce5dde3bdb06f85040c",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-005-0e7f21e31d.json",
+      "role": "design-record"
+    },
+    {
+      "git_blob": "7b93a78c15341f6a59616df749ec6715daf038fe",
+      "git_blob_sha256": "04c9379cdfc9d12578f7bde2d921b0c0eae39cd653331f1575c028901b888e7f",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-005-0e7f21e31d.json.sha256.json",
+      "role": "design-record-sidecar"
+    },
+    {
+      "git_blob": "3ad43fde6c30dbbcb6ac222799eae147fbf99d9b",
+      "git_blob_sha256": "06a15133c33a37aea9c35061a3b34d060b37cc0efb181175cb3226d400084195",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-015-3ce63a512e.json",
+      "role": "design-record"
+    },
+    {
+      "git_blob": "8ca30d627b3dd234928f69cc4913a50a79cde5ba",
+      "git_blob_sha256": "5989deae43f194d80cff6ab74cc1289581a3c855fd3bdc5f945d6b28a5220da6",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-015-3ce63a512e.json.sha256.json",
+      "role": "design-record-sidecar"
+    },
+    {
+      "git_blob": "af651580187bf80b5e7c6c3b9fb28bda4c2ace60",
+      "git_blob_sha256": "87bb045f55b4b02a93fc4a2a25885e02436e8ff494006f68383c74f331afb388",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-020-b6aa9b10ad.json",
+      "role": "design-record"
+    },
+    {
+      "git_blob": "85bdd1cc29009d5af4f566a5a91a3a70055c6b31",
+      "git_blob_sha256": "216d81000c9ed173406ffdfa28d7a34527aa5d2092911af9bfc82b56d3ffbe2c",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-020-b6aa9b10ad.json.sha256.json",
+      "role": "design-record-sidecar"
+    },
+    {
+      "git_blob": "773c8d873a3f8ee217dcff65e3eb0a9d9284a9c0",
+      "git_blob_sha256": "89487b849c348cf48a9d4c232e213b332168ba3d597067a86a68be1066e38f7e",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-028-f012c0bf33.json",
+      "role": "design-record"
+    },
+    {
+      "git_blob": "09b48ce5b0776e2000e3ed0df2f8a51d88297a01",
+      "git_blob_sha256": "c4069b72d8987f8798c5ed87db52b92e2603bc6836df83f4a260df13137ad991",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-028-f012c0bf33.json.sha256.json",
+      "role": "design-record-sidecar"
+    },
+    {
+      "git_blob": "58e2c64520b1f05d2f9d4a16087093f11b297313",
+      "git_blob_sha256": "2698604412cafe2e0c7973c8290ec15ebf31410e9a1e7a43c5b77b86aa0c17b5",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-036-4a814065a1.json",
+      "role": "design-record"
+    },
+    {
+      "git_blob": "f93b62eeece24dd39077d176cfc9d8a64b148ead",
+      "git_blob_sha256": "9fdda4d54a686f1eead2fa17c4af2b8e91765569cd150edc29014780efcb45f2",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-036-4a814065a1.json.sha256.json",
+      "role": "design-record-sidecar"
+    },
+    {
+      "git_blob": "af30ff0e048bcf9dc6840c2a1a291635605da9bd",
+      "git_blob_sha256": "1c2ef0fe58d855c9788ab778884bd301cef4d3cf8494dadd9d9b399d5366553d",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-048-aabacb3a59.json",
+      "role": "design-record"
+    },
+    {
+      "git_blob": "7f0f69e5915b4a275bd76e8e7a8736d8dac6c43c",
+      "git_blob_sha256": "58cd9e3ec8311fe4a940764750cfe027048d0215b9cfb8cc3e5517e704d541f5",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-048-aabacb3a59.json.sha256.json",
+      "role": "design-record-sidecar"
+    },
+    {
+      "git_blob": "b5557dd9a3718ec4aab897f73f6a0894b277a6bf",
+      "git_blob_sha256": "527900ea38b1eec5cb06b2f8e90946921376e88a2dfb7b2323fb4209c7bb74a7",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-056-effcbc8686.json",
+      "role": "design-record"
+    },
+    {
+      "git_blob": "9f67b3ee2403eda5f45b5eb55210e21f8ea31b46",
+      "git_blob_sha256": "16379ef964ccd173d88c6c94f88673da45d2cffee343f997056f20b8f97e3fb7",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-056-effcbc8686.json.sha256.json",
+      "role": "design-record-sidecar"
+    },
+    {
+      "git_blob": "59b2512a3da899dca60caa899e7f03e509c43f85",
+      "git_blob_sha256": "833ea41944731378b392c5cbdce63a4e8cd6d230445d180ae6cd0214a27c3e42",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-063-f3fd134978.json",
+      "role": "design-record"
+    },
+    {
+      "git_blob": "730aa35e47a97906a1f9266578f2814be816506f",
+      "git_blob_sha256": "c90174120aa87ca4527de90f1b06ba8addf8e4669449ee44d2c2b3e39063b68a",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-063-f3fd134978.json.sha256.json",
+      "role": "design-record-sidecar"
+    },
+    {
+      "git_blob": "86ffe82a4714588a5a6a42e4f27492ecf7b080d1",
+      "git_blob_sha256": "758d62a9a9ee5e9b4def4951a3af5d57ec597907e61253dc3cfdbf76c44c2e2f",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-068-71057b61d4.json",
+      "role": "design-record"
+    },
+    {
+      "git_blob": "7fc97bdb802aa52b0f33ce26adc21e0389e2f3cb",
+      "git_blob_sha256": "1b2ab1d27e59dab4e46dfa9457021907b2160ac4a0dfa0d4f5ed9df8c42c7aae",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-068-71057b61d4.json.sha256.json",
+      "role": "design-record-sidecar"
+    },
+    {
+      "git_blob": "b0932e392b87ee8e1d96f64508ccdd425969ed09",
+      "git_blob_sha256": "33c8ebc0d7fbe65280405c704f6f701daacb347fc003a070cca3fb6ccf12792f",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-076-c57391dd35.json",
+      "role": "design-record"
+    },
+    {
+      "git_blob": "1e89490efd4f057991a6cffcc66fd6d23c543e26",
+      "git_blob_sha256": "861abf0f89469c62f4efc24b5e743d0ef69fb416a54e81ac4c41e6c93c9287a7",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-076-c57391dd35.json.sha256.json",
+      "role": "design-record-sidecar"
+    },
+    {
+      "git_blob": "a35f8ba1ede0e6bf98b161ffcabe242be2600d4b",
+      "git_blob_sha256": "af142b433b7263cb3161f5a5a4a26e611f1d24e50763d5d2ef47e09e253d0c65",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-090-c761e36e9c.json",
+      "role": "design-record"
+    },
+    {
+      "git_blob": "5eed83af9e8b8016fe2a8cdd5f5fd8b70ecbbf7c",
+      "git_blob_sha256": "c5e6c86613d8793255421e90aa303df2e3155ec33512c8c04f1902702a527070",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-090-c761e36e9c.json.sha256.json",
+      "role": "design-record-sidecar"
+    },
+    {
+      "git_blob": "24325e15fcc17b09bd9d44585c3befd15e92442c",
+      "git_blob_sha256": "d9b37d5400963a8efd16f799eab6d67881206796deda36c53034533b81bdf367",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-106-ccec1c8b2f.json",
+      "role": "design-record"
+    },
+    {
+      "git_blob": "d1eacba61dd8e229eb52c5cb5074d7c72303fb43",
+      "git_blob_sha256": "ab8dbaf9c761c3946d1e5e0d28a7db9294eaaea4b9623d9ce6a9a34573d11d5a",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-106-ccec1c8b2f.json.sha256.json",
+      "role": "design-record-sidecar"
+    },
+    {
+      "git_blob": "d898675cfbb689c494367b35e46910c5c3d5840e",
+      "git_blob_sha256": "8486876953c9c394885d49b7d3c65c7a6757d1ae2317921d8b6e1fab738ce465",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-116-7865daa491.json",
+      "role": "design-record"
+    },
+    {
+      "git_blob": "657aac9ce5d6a7a02c4292606f0b563626218be6",
+      "git_blob_sha256": "ade08e1f0c8c2149259b96f20e29c6dbb800180c7ecc6ce161971e8ab9c77835",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-116-7865daa491.json.sha256.json",
+      "role": "design-record-sidecar"
+    },
+    {
+      "git_blob": "27bf30ab36277657f62fc454a3fbffc512f93e7d",
+      "git_blob_sha256": "9c2593750b7cce8983e3338d3a4e1911a42b5eb338a9746336399f00759de2d2",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-124-f740cfc79a.json",
+      "role": "design-record"
+    },
+    {
+      "git_blob": "6b1d36f838a5d2002138cd7d3c40fad535efcf2c",
+      "git_blob_sha256": "42b94b35396d5bbd02ecdbdf8095cc64b4ec45e3221a01e27e1af4aa015a3df3",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/designs/hemp_like_v3/l1a-gs-v3-124-f740cfc79a.json.sha256.json",
+      "role": "design-record-sidecar"
+    },
+    {
+      "git_blob": "0fe46c435acee8783de6aa73d4cff2218d223917",
+      "git_blob_sha256": "bc1ba1a2ce2701b5b90b21a2d54d6951beb3015105e120394424cb7b3c1067cc",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-000-78dcc2bb4c.json.gz",
+      "role": "field-grid"
+    },
+    {
+      "git_blob": "653a7ab7defb292b756a9b7161be11965f2bbcd0",
+      "git_blob_sha256": "412f2ea86a6ab4f51dd9f669d227885ace9c3efbdd3591bd5674e266a57329ba",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-000-78dcc2bb4c.json.gz.sha256.json",
+      "role": "field-grid-sidecar"
+    },
+    {
+      "git_blob": "381178fd0d9a300912bf11ad07d4d07967aaa185",
+      "git_blob_sha256": "80c249dcd59621a8c816b16a01a7c2ff2267130e8f315152753a08c1a60581de",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-005-0e7f21e31d.json.gz",
+      "role": "field-grid"
+    },
+    {
+      "git_blob": "31b522b2257de19fd61787eef233d4b3ef5064a6",
+      "git_blob_sha256": "b0c1440629f1ab63f17d4cec4189c332432828d023a1ce291b22a4ad976b8eae",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-005-0e7f21e31d.json.gz.sha256.json",
+      "role": "field-grid-sidecar"
+    },
+    {
+      "git_blob": "7f4607c533bd34e79803cfdbc3412b16f82309d4",
+      "git_blob_sha256": "da3b2229e4895e8bd666eec2f4c3bf0ba9ff19b36d2856127d1cde762aee1ae7",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-015-3ce63a512e.json.gz",
+      "role": "field-grid"
+    },
+    {
+      "git_blob": "b1ad008da8f2103dedcbf16ff35e621571fcdaae",
+      "git_blob_sha256": "2d60a3a16aa35cf63b6d9d3bf1a43256d6caf675d784a67f7da4213456370aa3",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-015-3ce63a512e.json.gz.sha256.json",
+      "role": "field-grid-sidecar"
+    },
+    {
+      "git_blob": "f54060542e30d7b262aa27d1517af248277673a5",
+      "git_blob_sha256": "b8b6b5dc05571c60071f8bf6bada78e8ea8984df434e1657ee72c04f8aefa6f6",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-020-b6aa9b10ad.json.gz",
+      "role": "field-grid"
+    },
+    {
+      "git_blob": "73f81b3ae27b15479ae17d63afade9bc4d0a51bf",
+      "git_blob_sha256": "d6a44941e1c76d7b31c5a73fcb020b0672928f641e1b79a86e65780b1480a2c5",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-020-b6aa9b10ad.json.gz.sha256.json",
+      "role": "field-grid-sidecar"
+    },
+    {
+      "git_blob": "d6b45024a75e3fbfa0f62fb5c35030dd38042069",
+      "git_blob_sha256": "afe3b0c6069d5e5b319f9e47ae2fcba7285720fb7a2a3f0e8f36bb9fa16f9ee5",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-028-f012c0bf33.json.gz",
+      "role": "field-grid"
+    },
+    {
+      "git_blob": "e29b5650c367175300ab17256b72b6e710c8ea7e",
+      "git_blob_sha256": "8f6439b5e272e8342b436c32777e5a8018fe218ad9c9bb9da7d21c7a99f4e64b",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-028-f012c0bf33.json.gz.sha256.json",
+      "role": "field-grid-sidecar"
+    },
+    {
+      "git_blob": "3436b6c03c5ad225821887e488ac8c4698741e7c",
+      "git_blob_sha256": "98aca2ea01fe32bf2295c77de1ddcc25349615f0f401620dc676c01ec3986a21",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-036-4a814065a1.json.gz",
+      "role": "field-grid"
+    },
+    {
+      "git_blob": "2c2be6c2a64c7700c1074df0cfa435e5e03a7049",
+      "git_blob_sha256": "a202eba120627083288a889622a16e43cb3cf7c1dc1e39e3f2088d94ef324f1b",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-036-4a814065a1.json.gz.sha256.json",
+      "role": "field-grid-sidecar"
+    },
+    {
+      "git_blob": "bddd3c0dc490ae199b9cd87bba5f7c3cec6026de",
+      "git_blob_sha256": "e43775ed58efa67f8f2393850d6d1177a2d14303dfc25b69e23a3d2a824458bf",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-048-aabacb3a59.json.gz",
+      "role": "field-grid"
+    },
+    {
+      "git_blob": "87b21a85ed2d63561cdaa03ade2811f10da47eb5",
+      "git_blob_sha256": "be9d5f092b9a258f221427eef94d3505c3b1d7b7534e727100999c1dada11e52",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-048-aabacb3a59.json.gz.sha256.json",
+      "role": "field-grid-sidecar"
+    },
+    {
+      "git_blob": "3ad1c66a4e393fb688947bd2ca642882b7f254ca",
+      "git_blob_sha256": "b9df23fd2d65a662f1f16c093ed3daaf455a0292485e639c6b80abc1e612e3b0",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-056-effcbc8686.json.gz",
+      "role": "field-grid"
+    },
+    {
+      "git_blob": "35dae83fbc275a89a347eb0b4506e4255b03040d",
+      "git_blob_sha256": "b5ccc99cba3dc438c6d97b89eeaad8ea44b02e20a218fe3aa7b649b4a6ca039b",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-056-effcbc8686.json.gz.sha256.json",
+      "role": "field-grid-sidecar"
+    },
+    {
+      "git_blob": "395bf7893329a7d7c932e05a97de22ecb8f36ad0",
+      "git_blob_sha256": "f6db69fa9d9a7c4daf203b3616b7b257da17ea0cac4e4b0619d39d1b44414abd",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-063-f3fd134978.json.gz",
+      "role": "field-grid"
+    },
+    {
+      "git_blob": "14b80c9d124d56701e2316b925696bb84b591c32",
+      "git_blob_sha256": "9c7e42c96b33fcd3a97681029524012804882f75348fad6f30c3af815564989c",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-063-f3fd134978.json.gz.sha256.json",
+      "role": "field-grid-sidecar"
+    },
+    {
+      "git_blob": "d7fdef17913bd2cfaaa531df2ef580ec61369597",
+      "git_blob_sha256": "7f6558af35970492d44ee18f5636ae067f032f87f7cb889a44ea431312ae5272",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-068-71057b61d4.json.gz",
+      "role": "field-grid"
+    },
+    {
+      "git_blob": "3b8c442f2fe0a25d4fa035c5524bbc66266f68fa",
+      "git_blob_sha256": "8a790b005cada9205b6944731c1b6ee5775f8bd3f9dc79c23420173b513bc1e7",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-068-71057b61d4.json.gz.sha256.json",
+      "role": "field-grid-sidecar"
+    },
+    {
+      "git_blob": "eadf9f10f563ea133b7814d6eb5c28e15d07828f",
+      "git_blob_sha256": "3e2e3e3bf12c759a5435baddd06425e6b471607337140ebe178f8102f1c127ff",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-076-c57391dd35.json.gz",
+      "role": "field-grid"
+    },
+    {
+      "git_blob": "3470163bdcb7f5887e8c75c9136de01fdcafeab6",
+      "git_blob_sha256": "27122db16f6a18e151149ebd6337c67823c9fdf9f1017611f080ba850de320ec",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-076-c57391dd35.json.gz.sha256.json",
+      "role": "field-grid-sidecar"
+    },
+    {
+      "git_blob": "86207dc1c0c3babc372074762b699f5610b46669",
+      "git_blob_sha256": "58356e8948553c087709f56a0acb20eee68119b1ee3bfe8da0b57cb14a584f9c",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-090-c761e36e9c.json.gz",
+      "role": "field-grid"
+    },
+    {
+      "git_blob": "73222ce38a29e9553d4469e2dadde0073380fafd",
+      "git_blob_sha256": "30aa31adc42f79be347d679afb757fdb6cb40dbc420294a59f92635cdedbdb5b",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-090-c761e36e9c.json.gz.sha256.json",
+      "role": "field-grid-sidecar"
+    },
+    {
+      "git_blob": "fa5663f181455e4decaf63f652d066d7d1792fd8",
+      "git_blob_sha256": "9b250dea49e4b93fca1556da5cb220f9201ce44483614e3dab0992b87d30475d",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-106-ccec1c8b2f.json.gz",
+      "role": "field-grid"
+    },
+    {
+      "git_blob": "3d2f7df79e2a44dd27f4e502f000a2368ebe3ab5",
+      "git_blob_sha256": "1dc94d4cef22c47ae2c48c1c5f402e811d7367ef6181936e75d55cb81e666067",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-106-ccec1c8b2f.json.gz.sha256.json",
+      "role": "field-grid-sidecar"
+    },
+    {
+      "git_blob": "b4fabf3bdf07022da584c87834d3d203db0b4994",
+      "git_blob_sha256": "11e3c214f65ee5dc73608d7924cbca53474898a3093177a7d1b19d47d894b886",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-116-7865daa491.json.gz",
+      "role": "field-grid"
+    },
+    {
+      "git_blob": "4c654b8325dd60dcdda99f5b2ee2e8458fb80271",
+      "git_blob_sha256": "59a0a369e72fcb8f1cc0ccf1ce54173cf14b4bc65ca8084220c8444ab4bcf3d5",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-116-7865daa491.json.gz.sha256.json",
+      "role": "field-grid-sidecar"
+    },
+    {
+      "git_blob": "9a955bbd8dc0b46009a800edb941e9a269d746a7",
+      "git_blob_sha256": "556424186422b3f739be08ce950074d5b553e6051d6ecd1779195a21e5d39af2",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-124-f740cfc79a.json.gz",
+      "role": "field-grid"
+    },
+    {
+      "git_blob": "a6a2658b4b368daada64b178b5996631a81eaccb",
+      "git_blob_sha256": "017f33b19fae02009fbbeaffdfeafb40cf9e051305cf5325fc56188f15467c9b",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/fields/hemp_like_v3/l1a-gs-v3-124-f740cfc79a.json.gz.sha256.json",
+      "role": "field-grid-sidecar"
+    },
+    {
+      "git_blob": "7a363ce67e021d6e63ee59762bd867e35b58e5a1",
+      "git_blob_sha256": "ff378b36aafdcdd8aba88e1cd38ba797092db88fd3f7214cbe35316dd8115762",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/gates.json",
+      "role": "binding-gates"
+    },
+    {
+      "git_blob": "1ca355f528d71833026255f285bdf1e57681d8cf",
+      "git_blob_sha256": "860ce3b9084c86679f97b2b9e9dd91addcaf6dae8a71369ffe4bc5dc6b73ae30",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/gates.json.sha256.json",
+      "role": "binding-gates-sidecar"
+    },
+    {
+      "git_blob": "d1865318c1abcdcb3b7639fd73f7fc40d68c414d",
+      "git_blob_sha256": "0db3a36e1f17d4e1506878334f97d120cf38d0e46565889f093aa3b9b4c50d36",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/protocol.json",
+      "role": "protocol"
+    },
+    {
+      "git_blob": "0d39972d7fc766007a634bab78d3a9281019551d",
+      "git_blob_sha256": "85f69a15dbfa944d9e435f5606a23e36ac28b8a2bb1475cce00029a28415949e",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/protocol.json.sha256.json",
+      "role": "protocol-sidecar"
+    },
+    {
+      "git_blob": "d9e02803af088166f2b66fd9730bd01a61e907ec",
+      "git_blob_sha256": "eed3bb098c11c9f8135a2bb3df8bfa55424ac3a82afa13c33bd99627b433479d",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/runtime.json",
+      "role": "runtime"
+    },
+    {
+      "git_blob": "94a040fdb9642b832768a2cd8ead437a37edf3c9",
+      "git_blob_sha256": "4ba41a9c2ef72bcfdee16913cb2b5c575f0db22855b2445aee3268291dd1cadf",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/runtime.json.sha256.json",
+      "role": "runtime-sidecar"
+    },
+    {
+      "git_blob": "6f85f676b066ca262ac0fce6fe10dd1079b9f328",
+      "git_blob_sha256": "256207f9970be8eefa0acb1d7c259b77f3c529be73cd86bf594de944e34943f5",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/shakedown.json",
+      "role": "shakedown"
+    },
+    {
+      "git_blob": "15fe29a75d1ebbe45e2a76db504ab2e0f8228873",
+      "git_blob_sha256": "e31e304be47a934fb1cfc2ba4185d070a03b513481c8441a1100cbe0e314bd8e",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/shakedown.json.sha256.json",
+      "role": "shakedown-sidecar"
+    },
+    {
+      "git_blob": "60a3f9d9c41855741b4db3954885f7177c439845",
+      "git_blob_sha256": "ef0830c6b47099c1d72e63064a0f8a3083af4b966512e0f33e5e14f2159df2ed",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/source-binding.json",
+      "role": "source-binding"
+    },
+    {
+      "git_blob": "88cccb9b497cbb4b867ad21f9adb2128fe8399a5",
+      "git_blob_sha256": "eb00968d3fb7f442f94e17487909f14158a85f9200965c469561bd8b5bc055fd",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/artifacts/source-binding.json.sha256.json",
+      "role": "source-binding-sidecar"
+    },
+    {
+      "git_blob": "f6c4082025021ddb7922ea915637749ff06ed8cb",
+      "git_blob_sha256": "b0a05741189a6a6c0d6722d19a99c78fe1e956f86cf69a0e3acba869eb18dedd",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/counters/0001.json",
+      "role": "counter"
+    },
+    {
+      "git_blob": "79d3731098bc3f433191dd2b06b06dded7a9a5f5",
+      "git_blob_sha256": "4d559685301fe82e6bd962fee91ce20f5237f4f13fa33f3c867ed436637754a8",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/counters/0001.json.sha256.json",
+      "role": "counter-sidecar"
+    },
+    {
+      "git_blob": "b3f13a91dbb719b1569b86a8fc6d5c0da9466213",
+      "git_blob_sha256": "2acdb11020c224d1b67e09c8b92f793112d3fc69fe403ad4680d3395f74f0d87",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/counters/0002.json",
+      "role": "counter"
+    },
+    {
+      "git_blob": "34d5dabf7f477262d47fc140bf3475224b368a73",
+      "git_blob_sha256": "ef723f1b601fab6a426de6f34615fe471efcea27bdeb4b96e439ad8c7f243f20",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/counters/0002.json.sha256.json",
+      "role": "counter-sidecar"
+    },
+    {
+      "git_blob": "25751b198f6e82a0c7c5b89cc5a865d22529711b",
+      "git_blob_sha256": "ed147cd7f0990a080c02bb7f7ad53fd6bba1b49e0e199f3fd5953a2372ae286c",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/counters/0003.json",
+      "role": "counter"
+    },
+    {
+      "git_blob": "f2df995a883840de188b4d44895e95d06a7f9f1e",
+      "git_blob_sha256": "1d505aa062762a95ac375d74e21fbe29b6af1f58303797449596e5c9594e7967",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/counters/0003.json.sha256.json",
+      "role": "counter-sidecar"
+    },
+    {
+      "git_blob": "1cfae21c15879a865daaffd2be20d7546ac68c30",
+      "git_blob_sha256": "5af63ab62bdcd670c3e0780d025ade351d048078ae1f4f4a55a34fa44f59b345",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/counters/0004.json",
+      "role": "counter"
+    },
+    {
+      "git_blob": "e7bf6c86b21be461d88bc4502d6246afed1442c8",
+      "git_blob_sha256": "74f8ae1ab5a864fe5a181494eaa25f59baf4bf16e6f68497e28950811eaaf380",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/counters/0004.json.sha256.json",
+      "role": "counter-sidecar"
+    },
+    {
+      "git_blob": "751cc372cacf3a8ae5a500678f9737cc259e1eb3",
+      "git_blob_sha256": "18ce2c362d466ada3ef238eb7a9980be4fd7e73f04fcfb5ae6e131ec830be9ae",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/counters/0005.json",
+      "role": "counter"
+    },
+    {
+      "git_blob": "9c223d42976c681eae5b835eed5d67f637fce348",
+      "git_blob_sha256": "be054ea36a74f389868814e1c2e98650f621edd8083b86111c4ab905eca3abfd",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/counters/0005.json.sha256.json",
+      "role": "counter-sidecar"
+    },
+    {
+      "git_blob": "14bbce0dc69da94e74a00ab329a04196dd44055b",
+      "git_blob_sha256": "c24e1aaf8f58d5b690c9f5ae439bca82c2821388599e0ac3b65afb3a3864ac00",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/counters/0006.json",
+      "role": "counter"
+    },
+    {
+      "git_blob": "80b54d07cd9b0edec5e705f9329b9a2caea54232",
+      "git_blob_sha256": "dd74ffd59391a89387a5889fbb26d70eeb0f918de062da3335bd74f529f8dd39",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/counters/0006.json.sha256.json",
+      "role": "counter-sidecar"
+    },
+    {
+      "git_blob": "60fa3d9894a2a20a62d5f889612e2916feda90d7",
+      "git_blob_sha256": "35f8816ffcb017e414b98e981d12226aa73d823cf78a83bf229091b1b3ffc23b",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/execution-lock.json",
+      "role": "execution-lock"
+    },
+    {
+      "git_blob": "577c4640cf8a561f10a9ea2157dc49e400cc544d",
+      "git_blob_sha256": "0d8bec9f08901973c9d120dc71009fdcec8abc135c6544dec14e0c7c86b0b0ce",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/manifest.json",
+      "role": "results-manifest"
+    },
+    {
+      "git_blob": "d268af0f3fb62f709bdeec21d9f855950bda25ee",
+      "git_blob_sha256": "fbbdac4c092ed517618452dc0c944f66e1900b31f0c5392cc4dabc5a03ed3cb0",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/phases/assessment.json",
+      "role": "phase"
+    },
+    {
+      "git_blob": "4b03b30d8ed7db5b8e783c0742d01d354adaaffb",
+      "git_blob_sha256": "c507b65fa3adf504e316f940d54016f48156b9b1827fd2c8225c62d0857aab36",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/phases/assessment.json.sha256.json",
+      "role": "phase-sidecar"
+    },
+    {
+      "git_blob": "21f3e2dba91ce38e8c940f737ad5c3af9b5cc148",
+      "git_blob_sha256": "598b985b9a632c2bfdf2a6735aada3c41ca6c4302bf62b0627e618a4df10f56e",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/phases/development.json",
+      "role": "phase"
+    },
+    {
+      "git_blob": "ad598c6f375a32015dd6e2200b5c2916c8aacf6a",
+      "git_blob_sha256": "73995c7262eb816443105f5453501b26ce454e306fe6236ada6af89a9d543f2e",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/phases/development.json.sha256.json",
+      "role": "phase-sidecar"
+    },
+    {
+      "git_blob": "e4441fc5a6f9c07a07d3c8d1fa2e62c1ed731056",
+      "git_blob_sha256": "7e0cc1bb440df0b8776d286b8f252cad7181a29dc4904cfceca3b666c03c3424",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/phases/prebundle.json",
+      "role": "phase"
+    },
+    {
+      "git_blob": "4a323ac84c2d34df9516e69a19a217a7d8600a1b",
+      "git_blob_sha256": "e577b411b3fe585caacd48cd9246942ab319ad9a7d96ab5ff9d3b37515b9c1f0",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/phases/prebundle.json.sha256.json",
+      "role": "phase-sidecar"
+    },
+    {
+      "git_blob": "9698e1d3c1ce5064cc895c2192981e27e4ce6974",
+      "git_blob_sha256": "c4a2531733302635ef0c222c1a6d81532b9a27ba065c774dd5432c7522dba2d1",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/terminal.json",
+      "role": "terminal-record"
+    },
+    {
+      "git_blob": "7fa94aaa197f6bfd6e8fe524c5877337aa75f2ed",
+      "git_blob_sha256": "e37ab39da8b1f60fe464cd16906bac90bfdfc9f81d91c47a40c4a738c38ff3c2",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/terminal.json.sha256.json",
+      "role": "terminal-record-sidecar"
+    },
+    {
+      "git_blob": "62535fe2505ab003fef08e84eb9a1c65ad065a06",
+      "git_blob_sha256": "eb91dd8289825af1ace3297050c2bb2ce45e95e1791de4da303eae965334d341",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/transitions/0001-lock-acquired.json",
+      "role": "transition"
+    },
+    {
+      "git_blob": "7ca1d35a7efa7e9b629b014d4d21fe87af2ad065",
+      "git_blob_sha256": "22d7d4c204768324be29f564082d614280fbf2c46e0a8c4438679e954c0d2cef",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/transitions/0001-lock-acquired.json.sha256.json",
+      "role": "transition-sidecar"
+    },
+    {
+      "git_blob": "94b2aa78426d45149e0ef1e82c70fb9517d0edb1",
+      "git_blob_sha256": "0f88d3c36a95e0cba9d4bf9d548cf61a34708c2f14f8979054bac6667c2b5aa1",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/transitions/0002-cache-prepared.json",
+      "role": "transition"
+    },
+    {
+      "git_blob": "6051c35913fb86b6d6a266fa548ff99992fcafad",
+      "git_blob_sha256": "dc3fae890b1817c410a188cccce93d88da7b612646dbde2dac8d3198585e95c8",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/transitions/0002-cache-prepared.json.sha256.json",
+      "role": "transition-sidecar"
+    },
+    {
+      "git_blob": "6dca65d93d19ced8507fd238e829bc373a0b1991",
+      "git_blob_sha256": "11656de5ae2120d1550be443a576e16866886e239b55ac0386eb198a95564ac5",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/transitions/0003-prebundle-started.json",
+      "role": "transition"
+    },
+    {
+      "git_blob": "6f82545bea3b9eb8e964e1478826b9e9173a609e",
+      "git_blob_sha256": "7f4bbe3a982b2be8ac9ac379dc2d2a26df7d65234bbcb25ca7ecd30237ae1618",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/transitions/0003-prebundle-started.json.sha256.json",
+      "role": "transition-sidecar"
+    },
+    {
+      "git_blob": "622283a10052bcc2f787f168d46612fc5ed0ff7a",
+      "git_blob_sha256": "0de665e1dd935f7a4bf7aba3d41fb37a5e1a0ee5f5482c64e49c4e5dabf2a741",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/transitions/0004-prebundle-completed.json",
+      "role": "transition"
+    },
+    {
+      "git_blob": "e86d7dd9e3a671c50cc474d0146a083dbf1d0333",
+      "git_blob_sha256": "174eeb036a7af24499ac9ece083baedfaca0f2f542bf2d43d75fb3f03b82a1a7",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/transitions/0004-prebundle-completed.json.sha256.json",
+      "role": "transition-sidecar"
+    },
+    {
+      "git_blob": "f4dc238c0adefb48783412004d65ab69aa62d486",
+      "git_blob_sha256": "8d1820d9ffff4059a80c6e708e0230e471b27b2ce67c70b9766daeb44592dcd1",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/transitions/0005-development-started.json",
+      "role": "transition"
+    },
+    {
+      "git_blob": "44534e945ec42ad01a64d607223f559deed316e4",
+      "git_blob_sha256": "ccfca531ec1ec9d8655352c210672b58154979dc6ac8927824db0d8852fb7865",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/transitions/0005-development-started.json.sha256.json",
+      "role": "transition-sidecar"
+    },
+    {
+      "git_blob": "f1520ff24d2f6bdfe306e5a31190ebd0afaf5e53",
+      "git_blob_sha256": "4e699c417652ba64c64c07031180abd3862977f15818a70d3019ef5d70c41959",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/transitions/0006-development-accepted.json",
+      "role": "transition"
+    },
+    {
+      "git_blob": "c38f2a58171d9e8ecc8fad0a640d64391b3447ff",
+      "git_blob_sha256": "b11b19a24c8ae0ec92dbda10b7698a6c20b537b2307e00cfd355f534a2a63434",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/transitions/0006-development-accepted.json.sha256.json",
+      "role": "transition-sidecar"
+    },
+    {
+      "git_blob": "a4d952e3fd875e5720ef10ea9d485b1db875612c",
+      "git_blob_sha256": "ab76491e12a9d80e2b09c8716ca98ce4a973bf3fa5ef70efa9892d8f79f52528",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/transitions/0007-assessment-started.json",
+      "role": "transition"
+    },
+    {
+      "git_blob": "26edbe84b0c9f60efecc393785fa052b21d36580",
+      "git_blob_sha256": "4af6999996326c381b63f35bb9aee3584de5f8b4a262633e3eed1269680bf88a",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/transitions/0007-assessment-started.json.sha256.json",
+      "role": "transition-sidecar"
+    },
+    {
+      "git_blob": "b0fec3fe19a89354ca404c9b3015776b2b948eed",
+      "git_blob_sha256": "737d4566ba19a5e6de9a03058068be533a013566f58d719a5a390d6827418f09",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/transitions/0008-assessment-accepted.json",
+      "role": "transition"
+    },
+    {
+      "git_blob": "ded3cf54d37d5fadd960242814a3c8fba811e993",
+      "git_blob_sha256": "bab5d26efefff8e0a1606361992702a09b723fce2288461c372debbaf48b58ae",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/transitions/0008-assessment-accepted.json.sha256.json",
+      "role": "transition-sidecar"
+    },
+    {
+      "git_blob": "cc3490292b7928a1df48f499d2c64ffa08549527",
+      "git_blob_sha256": "d85c15bba48d7c1fb06a470e437d4dd16849cfb557b5d319d4542e2e73fe966e",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/transitions/0009-terminal.json",
+      "role": "transition"
+    },
+    {
+      "git_blob": "9325f02a94c5a1bdb22a6e9e6f16624274d9b1f2",
+      "git_blob_sha256": "86514463ac0a4c43146a63d926bdb6ed8c4d633e20cf2c28fdcc92e482904163",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/results/transitions/0009-terminal.json.sha256.json",
+      "role": "transition-sidecar"
+    },
+    {
+      "git_blob": "00487fbb24a478d9e87739d8b9b5d8c9d6f81839",
+      "git_blob_sha256": "a5bb98e8cce38281b5711b04628d8305e6bdf50f9ecaad44392fcfb13a08e716",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/protocol.json",
+      "role": "preregistered-protocol"
+    },
+    {
+      "git_blob": "32175e164257a45d289636cca8a04e6bb78114dd",
+      "git_blob_sha256": "85090e8d4c674014186d9bf58df2fb7eced91a063d06a091134f34cbf2a7e5bb",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/authorities.json",
+      "role": "preregistered-authorities"
+    },
+    {
+      "git_blob": "6f85f676b066ca262ac0fce6fe10dd1079b9f328",
+      "git_blob_sha256": "256207f9970be8eefa0acb1d7c259b77f3c529be73cd86bf594de944e34943f5",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/shakedown.json",
+      "role": "preregistered-shakedown"
+    },
+    {
+      "git_blob": "a1999af1eaed027b5360790dfcaca31f50381e85",
+      "git_blob_sha256": "80cbf24b78c6a7e9dea1150e90f529c2897b87c5d90b83aba42d0380a5f92368",
+      "path": "modern/experiments/l1b_hemp_confirmation_v1_1/design-authorities.json",
+      "role": "preregistered-design-authorities"
+    }
+  ],
+  "status": "accepted",
+  "topology_label": "SCREENING_P2_MATERIAL_FIELD_SEPARATRIX_CUSP_TOPOLOGY",
+  "verdict": "CONFIRMED"
+}
