@@ -1,0 +1,537 @@
+{
+  "schema_version": "cft-revival.mdo-l0-campaign-v2.protocol/1.0.0",
+  "experiment_id": "mdo-l0-campaign-v2",
+  "status": "preregistered_pending_single_execution",
+  "classification": "l0_model_optimisation_over_screened_design_catalogue_with_test_particle_wall_loss_closure_not_thruster_performance",
+  "claim_boundary": {
+    "statement": "This campaign optimises the corrected L0 conservation model (cft_revival.physics, L0-conservation-reduced-performance) over a DISCRETE CATALOGUE of 96 screened designs times a continuous operating point, with each design's per-cell wall-loss probabilities taken DIRECTLY from the accepted screening dataset of orbit_wall_loss_geometry_screening_v1 (classification SCREENING_L1A_FIELD_TEST_PARTICLE_WALL_LOSS) through a DECLARED closure. It makes no thruster-performance claim, no plasma claim, and no claim about any physical cusped-field thruster. Its estimands are properties of the optimisers on this mixed design space (hypervolume attained per evaluation budget, Pareto-set size, seed variance, constraint handling, which catalogue designs the optimisers select) and of the declared evaluation chain (robust-vs-nominal fronts, CL-1 vs CL-2 fronts, sensitivity to the binomial uncertainty width of the screening counts).",
+    "closure_identification": "CL-1 identifies the collisionless test-particle wall-hit probability of a launch cell (an orbit_mc screening estimand on an L1a field, no electric field, no collisions, no sheath) with the closure's per-cusp survival factor (1 - p_k). The v1 scenario analysis (v1 protocol scenario v4_per_cell_jeffreys; paper claim CLM-033) showed that this quantity is NOT the Kornfeld per-cusp probability of a sustained discharge: feeding the v4 per-cell wall-hit estimates into CL-1 gives a beam of ~1e-7 of the produced ions. Every number produced here is therefore conditional on this identification. A design that 'wins' here wins UNDER THIS DECLARED CLOSURE ONLY; it is not shown to be a better thruster.",
+    "why_no_surrogate": "Two surrogates over the screening dataset were REJECTED on predeclared gates (wall_loss_geometry_surrogate_v1, result b400d924, rejected_surrogate; wall_loss_geometry_surrogate_v2, result a2b503be, rejected_surrogate). No surrogate may be used; the geometry enters only through the 96 screened designs themselves (a categorical design index with their sealed geometry and counts), so no interpolation between designs is claimed or performed.",
+    "why_the_catalogue_is_the_design_space": "v1 excluded geometry because no geometry-to-L0 map existed. The screening dataset supplies, for exactly 96 designs, a measured per-cell P(wall) with binomial uncertainty; the campaign's design space is therefore this discrete catalogue (no continuous geometry variables), and the geometry -> performance link reported here is the link under CL-1 between a design's screening P(wall) and its position on the recorded fronts.",
+    "relation_to_v1": "v1 (mdo_l0_campaign_v1, accepted c553124b, audited e9f9af16 ACCEPTED WITH DISCLOSURES) optimised the operating point only, with independent U[0, 0.45] cusp probabilities as a wide prior. v2 keeps v1's L0 chain, objectives, comparison scales, reference point, CVaR(0.25) robust formulation, worst-sampled-case constraint and the identical 64 radical-inverse unit rows, so hypervolumes are comparable; only the design identity (catalogue index + operating point), the source of the cusp probabilities (screening counts, per design) and the optimiser adaptations to the mixed space differ.",
+    "forbidden_readings": [
+      "any statement that a design 'performs' in thrust, Isp or efficiency",
+      "any statement about a physical thruster, the DM9.2 device, or Yeo 2020",
+      "any statement that a catalogue design is a better thruster than another (it is better under CL-1 on the L0 model only)",
+      "any statement that BoTorch, NSGA-III or LHS is 'better' beyond the recorded budget, seeds and model",
+      "any use of these fronts as calibration, validation or design recommendation",
+      "any reading of the screening P(wall) as a plasma cusp-loss probability"
+    ]
+  },
+  "authority": {
+    "base_commit": "783a82c6",
+    "l0_model": {
+      "package": "cft_revival.physics",
+      "fidelity": "L0-conservation-reduced-performance",
+      "accepted_evidence": "modern/docs/FIRST_RESULTS.md (8,192-point CPU/CUDA parity sweep, config/l0-deterministic-sweep.json)",
+      "backend_used_here": "python-reference (cft_revival.physics.reference.evaluate_performance, CPU, no Warp)"
+    },
+    "v1_campaign": {
+      "experiment": "modern/experiments/mdo_l0_campaign_v1",
+      "preregistration_commit": "4898d0fd",
+      "result_commit": "c553124b",
+      "dashboard_commit": "e642f38c",
+      "paper_gate": "GATE-MDO-L0-V1 (ba6875f6)",
+      "posthoc_audit_commit": "e9f9af16",
+      "posthoc_audit_verdict": "ACCEPTED WITH DISCLOSURES (F9, F10, F22, F26, F27, F28)"
+    },
+    "screening_dataset": {
+      "experiment": "modern/experiments/orbit_wall_loss_geometry_screening_v1",
+      "preregistration_commit": "c86bfca3",
+      "result_commit": "ab7c2897",
+      "merge_commit": "22e2156b",
+      "paper_gate": "GATE-WALL-LOSS-GEOMETRY-SCREENING-V1 (3003325d, recorded outcome accepted-screening-dataset)",
+      "classification": "SCREENING_L1A_FIELD_TEST_PARTICLE_WALL_LOSS",
+      "launches": "512 per design at the accepted-2N timestep (converged N -> 2N); four axial launch cells of 128 launches each"
+    },
+    "rejected_surrogates": [
+      {
+        "experiment": "modern/experiments/wall_loss_geometry_surrogate_v1",
+        "result_commit": "b400d924",
+        "outcome": "rejected_surrogate"
+      },
+      {
+        "experiment": "modern/experiments/wall_loss_geometry_surrogate_v2",
+        "result_commit": "a2b503be",
+        "outcome": "rejected_surrogate"
+      }
+    ],
+    "four_cell_closure_analysis": {
+      "document": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+      "commit": "266d8a99",
+      "paper_gate": "GATE-FOUR-CELL-CLOSURE-V1 (d09ffee2)",
+      "finding": "the corrected Kornfeld four-cell power balance has no admissible root for any interior cusp probability p_1..p_3 > 0 (solutions only for p_1 = p_2 = p_3 = 0 at phi_4 = Ua); the proposed correction is PROPOSED_NOT_ACCEPTED",
+      "consequence": "the corrected solver is not an admissible evaluation chain for interior wall-loss probabilities; the declared closure CL-1 is kept"
+    }
+  },
+  "design_space": {
+    "catalogue": {
+      "name": "catalogue_index",
+      "kind": "categorical",
+      "size": 96,
+      "source_classification": "SCREENING_L1A_FIELD_TEST_PARTICLE_WALL_LOSS",
+      "index_rule": "catalogue index k = sweep_index = position in geometry-wall-loss-dataset.json#designs (0..95); case ids l1a-gs-v2-000.. -095",
+      "statement": "each catalogue member is one accepted sweep-v2 design with its sealed geometry (geometry_sha256) and its accepted-2N wall-hit counts; the optimisers choose a member, never a geometry value",
+      "unit_coordinate_rule": "for LHS/shared initial designs a unit coordinate u maps to k = min(95, floor(96 u))"
+    },
+    "operating_point": [
+      {
+        "name": "discharge_voltage_v",
+        "lower": 150.0,
+        "upper": 500.0,
+        "units": "V",
+        "legacy": "anode_voltage_v (Ua)",
+        "bound_rule": "v1's accepted L0 domain (config/l0-deterministic-sweep.json)"
+      },
+      {
+        "name": "anode_current_a",
+        "lower": 0.1,
+        "upper": 2.5,
+        "units": "A",
+        "legacy": "anode_current_a (Ia)",
+        "bound_rule": "v1's accepted L0 domain"
+      },
+      {
+        "name": "propellant_mass_flow_kg_per_s",
+        "lower": 2e-07,
+        "upper": 2e-06,
+        "units": "kg/s",
+        "legacy": "mass_flow_sccm (mdot)",
+        "bound_rule": "v1's accepted L0 domain"
+      }
+    ]
+  },
+  "catalogue_binding": {
+    "experiment": "modern/experiments/orbit_wall_loss_geometry_screening_v1",
+    "classification": "SCREENING_L1A_FIELD_TEST_PARTICLE_WALL_LOSS",
+    "dataset_path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/geometry-wall-loss-dataset.json",
+    "dataset_file_sha256": "9104e3bf0694f7c1c88d1c7bc377b43b24cbc42a94bd75eed2cfa6dc21f5114a",
+    "dataset_bytes": 2659656,
+    "dataset_git_blob": "858de21adf1b3ea40237d5e7f0531a2013eb58e2",
+    "manifest_path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/manifest.json",
+    "manifest_file_sha256": "39bd52133fefd3adae45e9593e7312b8e9027322ca3142d59912bbc13e2e027a",
+    "manifest_git_blob": "ff3b3cd8a4cb59047b6856031faaadb941f11877",
+    "manifest_state": "accepted_result",
+    "screening_preregistration_commit": "c86bfca37fdf285f4f2a53a01c2f32f14516d868",
+    "screening_result_commit": "ab7c28977963822b2ad6eac451d2bafef5185e6c",
+    "screening_merge_commit": "22e2156b5f66f5e85bc4d2238da2ce6a2936bd46",
+    "design_count": 96,
+    "reported_case": "accepted-2N",
+    "cells": [
+      "gs1-cell-1",
+      "gs1-cell-2",
+      "gs1-cell-3",
+      "gs1-cell-4"
+    ],
+    "cell_trials": 128,
+    "pooled_trials": 512
+  },
+  "catalogue_binding_identity": {
+    "catalogue_sha256": "6b82f5d4d2a2674a80a8e3ef7fcb0e7ce7514c4a30cc63079c516f1ef13b78ae",
+    "rule": "sha256 of the canonical JSON of the 96 consumed design records (index, ids, geometry_sha256, counts, geometry, design values)",
+    "designs_with_a_saturated_cell_128_of_128": 73,
+    "pooled_wall_hit_probability_range": [
+      0.375,
+      0.869140625
+    ]
+  },
+  "uncertain_inputs": {
+    "per_design_inputs": [
+      {
+        "name": "wall_loss_probability_cell_1",
+        "distribution": "jeffreys-beta-posterior",
+        "parameters": "Beta(s_k + 1/2, n_k - s_k + 1/2) with s_k the design's accepted-2N wall_hit successes in cell k and n_k = 128",
+        "trials": 128,
+        "units": "1",
+        "meaning": "P(wall | launch cell 1, design) of the screening dataset, identified with the CL-1 per-cusp loss probability p_1 (see claim_boundary.closure_identification)"
+      },
+      {
+        "name": "wall_loss_probability_cell_2",
+        "distribution": "jeffreys-beta-posterior",
+        "parameters": "Beta(s_k + 1/2, n_k - s_k + 1/2) with s_k the design's accepted-2N wall_hit successes in cell k and n_k = 128",
+        "trials": 128,
+        "units": "1",
+        "meaning": "P(wall | launch cell 2, design) of the screening dataset, identified with the CL-1 per-cusp loss probability p_2 (see claim_boundary.closure_identification)"
+      },
+      {
+        "name": "wall_loss_probability_cell_3",
+        "distribution": "jeffreys-beta-posterior",
+        "parameters": "Beta(s_k + 1/2, n_k - s_k + 1/2) with s_k the design's accepted-2N wall_hit successes in cell k and n_k = 128",
+        "trials": 128,
+        "units": "1",
+        "meaning": "P(wall | launch cell 3, design) of the screening dataset, identified with the CL-1 per-cusp loss probability p_3 (see claim_boundary.closure_identification)"
+      },
+      {
+        "name": "wall_loss_probability_cell_4",
+        "distribution": "jeffreys-beta-posterior",
+        "parameters": "Beta(s_k + 1/2, n_k - s_k + 1/2) with s_k the design's accepted-2N wall_hit successes in cell k and n_k = 128",
+        "trials": 128,
+        "units": "1",
+        "meaning": "P(wall | launch cell 4, design) of the screening dataset, identified with the CL-1 per-cusp loss probability p_4 (see claim_boundary.closure_identification)"
+      }
+    ],
+    "pooled_input": {
+      "name": "wall_loss_probability_pooled",
+      "distribution": "jeffreys-beta-posterior",
+      "parameters": "Beta(s + 1/2, n - s + 1/2) with s the design's accepted-2N pooled wall_hit successes and n = 512",
+      "trials": 512,
+      "units": "1",
+      "used_by": "CL-2-pooled-test-particle-wall-loss-survival",
+      "quantile_coordinate": "the first radical-inverse coordinate (base 2), shared with p_1"
+    },
+    "shared_inputs": [
+      {
+        "name": "ionized_number_fraction",
+        "distribution": "uniform",
+        "lower": 0.65,
+        "upper": 0.98,
+        "units": "1",
+        "meaning": "produced ionisation number fraction before cusp losses (L0 sweep range; v1)"
+      },
+      {
+        "name": "xe_double_plus_fraction_of_ions",
+        "distribution": "uniform",
+        "lower": 0.0,
+        "upper": 0.15,
+        "units": "1",
+        "meaning": "Xe2+ share of ions (L0 sweep range; v1)"
+      },
+      {
+        "name": "axial_momentum_fraction_of_ion_momentum",
+        "distribution": "uniform",
+        "lower": 0.75,
+        "upper": 0.98,
+        "units": "1",
+        "meaning": "divergence factor (L0 sweep range; v1)"
+      }
+    ],
+    "sample": {
+      "method": "deterministic prime-base radical-inverse (Halton) rows with the physics-workflow digital offset 17 + seed*104729 (identical unit rows to v1); coordinates 1-4 are pushed through the design's per-cell Beta posterior quantile function (pure-Python regularised incomplete beta, bisection + safeguarded Newton, cross-checked against scipy to 1e-13 in the tests), coordinates 5-7 are affine on the shared uniform ranges",
+      "bases": [
+        2,
+        3,
+        5,
+        7,
+        11,
+        13,
+        17
+      ],
+      "seed": 20260903,
+      "count": 64,
+      "jeffreys_prior": 0.5,
+      "unit_rows_sha256": "bb27e5b04db400acc341b6f57213b7b19602b5c633b443b6a0a9509922a03c93",
+      "catalogue_sample_sha256": "ede6f281f9995503f53b2dc1a758c69b464cd9906280f371b64c0281ff221247",
+      "frozen": true,
+      "platform_note": "the unit rows are exact in binary floating point on every platform; the Beta quantiles use libm (lgamma, exp, log) and are frozen on the producing platform (Windows, CPython 3.12.10); the sealed artifacts/uncertain-sample.json carries the values"
+    },
+    "nominal": "per design the Jeffreys posterior mean (s + 1/2)/(n + 1) of every count at full double precision; shared inputs at their prior midpoints (eta = 0.815, zeta = 0.075, gamma = 0.865)",
+    "rounding_policy": "no rounded probability is frozen anywhere; every probability is computed from the counts by the stated rule at full double precision (v1 audit F22)",
+    "sensitivity_widths": {
+      "width_scales": [
+        0.25,
+        1.0,
+        4.0,
+        "point"
+      ],
+      "rule": "re-evaluate every recorded design with the per-cell posterior Beta(w s + 1/2, w (n - s) + 1/2), w in {1/4, 1, 4} (posterior standard deviation ~ 1/sqrt(w) of the campaign's, mean approximately fixed), and with the point estimate (posterior mean, no binomial width); recompute the robust nondominated set and compare with the campaign front (size, shared designs, Jaccard, hypervolume, common-feasible-set agreement up to roundoff ties); reported, not gated"
+    }
+  },
+  "closures": {
+    "CL-1": {
+      "id": "CL-1-multiplicative-cusp-survival-per-cell-test-particle-wall-loss",
+      "role": "campaign",
+      "statement": "S(p) = prod_{k=1..4} (1 - p_k) with p_k := P(wall | launch cell k, design) from the screening counts. The exhaust ionised number fraction is eta_m = eta_ion * S(p); the complement recombines at the dielectric wall and leaves as neutrals. The anode current is unaffected (the wall current is a closed electron-ion loop outside the anode circuit).",
+      "identification_disclosure": "declares the identification of a collisionless test-particle wall-hit probability (orbit_mc screening estimand) with the closure's per-cusp survival factor; the v1 scenario analysis showed this quantity is not the Kornfeld per-cusp probability of a sustained discharge, so every result is conditional on this declared identification",
+      "relation_to_corrected_model": "applies the corrected cusp-current relation jic[k] = p[k] * je[k-1] (dielectric neutrality) of cft_revival.plasma as a multiplicative cascade over the four launch cells; the corrected four-cell solver itself has no root for interior p (global-plasma-closure-analysis.md, 266d8a99) and is not used",
+      "status": "declared assumption; not derived; not validated"
+    },
+    "CL-2": {
+      "id": "CL-2-pooled-test-particle-wall-loss-survival",
+      "role": "sensitivity",
+      "statement": "S = 1 - p_pooled with p_pooled := P(wall | design) pooled over all 512 launches of the accepted-2N case (Jeffreys Beta posterior of the pooled counts)",
+      "use": "every recorded design is re-evaluated under CL-2 with the campaign posterior width; the CL-2 robust nondominated set and its overlap with the CL-1 set are reported, not gated",
+      "status": "declared sensitivity closure; not derived; not validated"
+    },
+    "fixed": {
+      "cathode_input_power_w": 15.0,
+      "ppu_efficiency_fraction": 0.9,
+      "note": "PPU efficiency only constructs an admissible PPU boundary; no PPU objective is used (v1)"
+    }
+  },
+  "l0_operating_point": {
+    "charge_state_fractions": "neutral = 1 - eta_m; xe_double_plus = eta_m * zeta; xe_plus = 1 - neutral - xe_double_plus (as in cft_revival.physics.workflows.sweep_points_from_config)",
+    "beam_current_a": "mdot * (e / m_Xe) * (xe_plus + 2 * xe_double_plus)",
+    "beam_current_fraction_of_anode_current": "beam_current_a / anode_current_a (must lie in (0, 1]; L0 rejects > 1)",
+    "power_boundaries": "cathode 15 W; PPU input = (Ua * Ia + 15 W) / 0.9"
+  },
+  "objectives": [
+    {
+      "name": "axial_thrust_n",
+      "direction": "maximize",
+      "units": "N",
+      "definition": "IdealPerformanceResult.axial_thrust_n = gamma * mdot * (xe_plus * v_plus + xe_double_plus * v_double_plus), v_z = sqrt(2 z e Ua / m_Xe)",
+      "comparison_scale": 0.06
+    },
+    {
+      "name": "specific_impulse_s",
+      "direction": "maximize",
+      "units": "s",
+      "definition": "IdealPerformanceResult.specific_impulse_s = gamma * (xe_plus * v_plus + xe_double_plus * v_double_plus) / g0",
+      "comparison_scale": 3000.0
+    },
+    {
+      "name": "thruster_electrical_to_beam_efficiency",
+      "direction": "maximize",
+      "units": "1",
+      "definition": "ReportedPowerBudget.thruster_electrical_to_beam_efficiency = Ua * I_beam / (Ua * Ia + P_cathode); L0's ledgered thruster-boundary efficiency, NOT the legacy total_efficiency (AUDIT.md S3)",
+      "comparison_scale": 1.0
+    },
+    {
+      "name": "anode_input_power_w",
+      "direction": "minimize",
+      "units": "W",
+      "definition": "ReportedPowerBudget.anode_input_power_w = Ua * Ia",
+      "comparison_scale": 1300.0
+    }
+  ],
+  "reference_point": {
+    "axial_thrust_n": 0.0,
+    "specific_impulse_s": 0.0,
+    "thruster_electrical_to_beam_efficiency": 0.0,
+    "anode_input_power_w": 1300.0,
+    "normalization": "v1's: maximise objectives (value - reference) / comparison_scale; minimise (reference - value) / comparison_scale; hypervolume in this dimensionless all-maximise frame against the origin with the exact recursive slicing algorithm (model.hypervolume); identical units and scales to v1 so hypervolumes are comparable"
+  },
+  "constraints": [
+    {
+      "name": "robust_beam_current_margin_a",
+      "sense": ">=",
+      "threshold": 0.0,
+      "units": "A",
+      "violation_scale": 0.1,
+      "definition": "Ia - max over the design's frozen 64 draws of beam_current_a(mdot, theta); a negative margin violates the L0 domain (beam current <= anode current) for at least one draw; the design then has NO robust objectives (fail-closed, failure code beam_current_exceeds_anode_current) and never enters a front or hypervolume",
+      "role": "optimised (worst-sampled-case robust constraint)"
+    },
+    {
+      "name": "nominal_beam_current_margin_a",
+      "sense": ">=",
+      "threshold": 0.0,
+      "units": "A",
+      "violation_scale": 0.1,
+      "definition": "Ia - beam_current_a(mdot, nominal theta of the design)",
+      "role": "analysis only (nominal front)"
+    }
+  ],
+  "l0_domain_checks": "every L0 evaluation goes through XenonOperatingPoint validation and prepare_operating_point; any PhysicsValidationError on a design with non-negative robust margin is a runtime failure of the campaign, never a silently dropped point",
+  "robust_formulation": {
+    "risk_measure": "CVaR",
+    "tail_fraction": 0.25,
+    "tail_count": 16,
+    "definition": "for each objective the mean of the 16 worst of the design's 64 sample values (lower tail for maximise, upper tail for minimise); the optimisers see exactly these four robust objectives and the robust constraint",
+    "nominal_front": "the nondominated set of the SAME evaluated designs under each design's nominal theta and the nominal constraint (re-evaluation, not a separate optimisation)",
+    "predeclared_expectation": "Under CL-1 every objective is separable, f_j(k, x, theta) = g_j(x) * h_j(k, theta) with g_j > 0 (anode power has h = 1), so WITHIN one catalogue design the ratio CVaR/nominal of each objective is constant over operating points (relative spread <= 1e-9, reported per design); ACROSS designs it varies with the design's own posterior. The catalogue therefore enters the fronts through a per-design multiplier on thrust, Isp and efficiency and through the feasible set (the worst sampled beam current). Reported, not tuned."
+  },
+  "optimizers": {
+    "qlognehvi": {
+      "library": "botorch",
+      "model": "ModelListGP of five MixedSingleTaskGP models (one per objective fitted on feasible observations, one for the constraint on all observations); inputs [catalogue index (categorical, cat_dims=[0], CategoricalKernel), u_Ua, u_Ia, u_mdot (unit cube, Matern-5/2 ARD via get_covar_module_with_dim_scaled_prior(use_rbf_kernel=False))]; BoTorch's mixed kernel = ScaleKernel(cont + ScaleKernel(cat)) + ScaleKernel(cont * cat); Standardize outcome transform; Gaussian likelihood with noise floor fit_noise_floor; the recorded model label is read from the fitted objects' class names",
+      "acquisition": "qLogNoisyExpectedHypervolumeImprovement via cft_revival.optimization.botorch_adapter.build_qlognehvi (prune_baseline, cache_pending, strict-negative constraint callable, IdentityMCMultiOutputObjective on the objective indices)",
+      "candidate_stage": "optimize_acqf_discrete over a candidate set = every catalogue design x candidates_per_design LHS operating points (stdlib random.Random(seed*1000 + iteration), fresh each iteration), q chosen sequentially greedy with unique=True, max_batch_size 1024",
+      "refinement_stage": "for each of the q members in order: optimize_acqf (L-BFGS-B, num_restarts 1, batch_initial_conditions = the member, fixed_features = its catalogue index, every other member pending, maxiter refine_maxiter); the refined operating point replaces the member iff its acquisition value (with the same pending set) is not lower than the member's; both values are recorded",
+      "why_this_optimiser": "the catalogue index has no neighbourhood structure, so the categorical dimension is enumerated exhaustively at every iteration instead of being explored by local moves (optimize_acqf_mixed_alternating), and the continuous coordinates are then refined by gradient ascent; measured on 2026-09-03 under CPU contention: ~40-50 s candidate stage + ~15 s refinement per 8-point batch versus ~100 s for optimize_acqf_mixed_alternating at reduced settings",
+      "objective_transform": "cft_revival.optimization.botorch_adapter.transform_model_output_values: physical objectives divided by comparison_scale then sign-transformed to all-maximise; constraint (0 - margin)/0.1 - 1e-12",
+      "reference_point_transform": "same transform applied to the declared reference point",
+      "mc_samples": 32,
+      "sampler": "SobolQMCNormalSampler(seed = seed*1000 + iteration)",
+      "batch_size": 8,
+      "candidates_per_design": 8,
+      "refine_maxiter": 30,
+      "fit_noise_floor": 1e-06,
+      "dtype": "float64",
+      "device": "cpu",
+      "torch_threads": 12,
+      "device_note": "cpu declared (v1 measured GP fits and acquisition 20-40x slower on the PIC-occupied cuda:0); torch.set_num_threads(12) is part of the contract because the recorded numbers are replayed bit-exactly only with the same thread count (v1 audit); a CUDA float64 probe is still recorded in the development stage",
+      "seed_policy": "torch.manual_seed(seed); candidate values are recorded so the L0 replay does not depend on floating-point reproducibility of the acquisition optimiser",
+      "label_policy": "optimizer.acquisition and optimizer.model in every run artifact are generated from the arguments actually passed / the fitted objects and are re-derived by the binding gate labels_consistent (v1 audit F28)"
+    },
+    "nsga3": {
+      "library": "pymoo",
+      "algorithm": "NSGA3",
+      "variables": "catalogue_index Choice(options=range(96)); discharge_voltage_v, anode_current_a, propellant_mass_flow_kg_per_s Real(bounds=(0, 1)) in the unit cube",
+      "reference_directions": "energy, 4 objectives, 32 points, seed 1",
+      "reference_direction_seed": 1,
+      "population_size": 32,
+      "generations": 5,
+      "initial_population": "the shared 32-row LHS of the seed mapped to mixed-variable individuals",
+      "sampling_and_mating": "Population of the shared initial design; MixedVariableMating(eliminate_duplicates=MixedVariableDuplicateElimination())",
+      "eliminate_duplicates": true,
+      "eliminate_duplicates_implementation": "MixedVariableDuplicateElimination on the population and inside mating (v1 audit F27); the binding gate nsga3_duplicates_eliminated requires every NSGA-III evaluation to be a distinct design",
+      "constraint_handling": "pymoo feasibility-first with G = -margin/0.1 <= 0",
+      "infeasible_placeholder": "objective placeholder = reference point (zero attained hypervolume) for pymoo's internal ranking only; never recorded as an observation, never in any front or hypervolume",
+      "generation_count_policy": "declared_generations (5) and pymoo's post-incremented counter pymoo_n_gen (6) are recorded as separate fields (v1 audit F28)",
+      "seed_policy": "pymoo minimize(seed=seed)"
+    },
+    "lhs": {
+      "library": "python stdlib random.Random (Mersenne Twister), numpy",
+      "design": "two-stage Latin hypercube in the 4-dimensional unit cube: stage 1 = the shared 32-point LHS of the seed, stage 2 = one 128-point LHS from the continuation of the same seeded stream; the first coordinate maps to the catalogue index (32 strata over 96 designs, so the shared initial design covers 32 distinct designs), the other three to the operating point",
+      "seed_policy": "random.Random(seed); the first 32 rows are the shared initial design of the seed",
+      "note": "dependency-free by design so the baseline and the shared initial design replay on any interpreter"
+    }
+  },
+  "budget": {
+    "strategies": [
+      "qlognehvi",
+      "nsga3",
+      "lhs"
+    ],
+    "seeds": [
+      101,
+      202,
+      303
+    ],
+    "evaluations_per_run": 160,
+    "initial_design": 32,
+    "qlognehvi_batch_size": 8,
+    "qlognehvi_iterations": 16,
+    "nsga3_population_size": 32,
+    "nsga3_generations": 5,
+    "total_evaluations": 1440,
+    "fairness": [
+      "same initial observations per seed across strategies (the 32-row LHS of the seed, mapped identically to catalogue index + operating point)",
+      "same evaluation budget",
+      "same constraint and failure policy",
+      "same reference point and normalization"
+    ],
+    "sizing": "v1 used 96 evaluations for three continuous variables; the catalogue adds a 96-level categorical, so the budget is raised to 160 = 32 + 128: the shared initial design covers one third of the catalogue (32 distinct designs) and the total is 1.67 evaluations per catalogue member, enough for an optimiser to revisit every promising design while the whole execution stays inside ~1.5 h of CPU: one design evaluation (64 + 1 L0 points) takes ~5 ms; qLogNEHVI's cost is dominated by the hypervolume partitioning (~60 s per 8-point batch under contention, 16 batches x 3 seeds ~ 50 min); NSGA-III and LHS take seconds; the parallel dense reference ~2-5 min"
+  },
+  "dense_reference": {
+    "designs": 96,
+    "points_per_design": 1024,
+    "total_evaluations": 98304,
+    "seed": 20260903,
+    "method": "every catalogue design x one fixed 1024-point operating-point grid (cft_revival.optimization.sampling.initial_designs, shifted Halton with boundary challenges; v1's construction with 1024 instead of 8192 points)",
+    "cost_note": "96 x 8192 = 786,432 design evaluations (~51 million L0 points) would take ~70 min sequentially; 96 x 1024 = 98,304 (~6.4 million L0 points, ~10 min sequential, ~1-3 min on 12 workers) is declared instead",
+    "max_workers": 12,
+    "parallelism_note": "evaluated in parallel by design with concurrent.futures.ProcessPoolExecutor (<= 12 workers); every worker evaluates a pure deterministic function of (design, grid), so the result is independent of the worker count and replays bit-exactly",
+    "storage": "the full columnar record is hashed (columns_sha256) and its fronts, per-design summaries and grid are sealed; the 98,304 rows themselves are not stored (~40 MB) and are recomputed by the audit replay",
+    "purpose": "reference robust and nominal fronts and hypervolumes for the attained-fraction metric, and the exhaustive picture of which catalogue designs can appear on a front under CL-1; NOT an optimiser run and not part of the benchmark"
+  },
+  "shakedown": {
+    "purpose": "NON-EVIDENTIARY end-to-end run of exactly the production code path (catalogue binding, prebundle, development with the parallel dense reference, assessment, gates, export) on the real catalogue and L0 model with a small budget and a disjoint seed namespace into a temporary result root; prepare refuses without a passing shakedown whose protocol, code hashes and import scope match; execute re-verifies",
+    "seeds": [
+      900101,
+      900202
+    ],
+    "seed_namespace_rule": "evidentiary seeds are < 1000; shakedown seeds are >= 900000",
+    "evaluations_per_run": 40,
+    "initial_design": 8,
+    "qlognehvi_batch_size": 8,
+    "qlognehvi_iterations": 4,
+    "nsga3_population_size": 8,
+    "nsga3_generations": 5,
+    "dense_reference_points_per_design": 32,
+    "outcomes_enter_estimand": false
+  },
+  "metrics": [
+    "hypervolume versus evaluations per (strategy, seed) after every evaluation",
+    "final hypervolume and attained fraction of the dense-reference robust hypervolume",
+    "Pareto-set size per run and the catalogue designs on it",
+    "constraint violation (infeasible evaluation) counts per run",
+    "wall-clock per run, GP fit / candidate-stage / refinement seconds per BO iteration",
+    "seed-repeat variance: mean, minimum, maximum and sample standard deviation of final hypervolume per strategy",
+    "robust versus nominal fronts of the pooled evaluated designs",
+    "CL-1 versus CL-2 robust fronts of the pooled designs (shared designs, Jaccard, hypervolume, catalogue members)",
+    "catalogue designs on the pooled robust front with their sealed geometry and screening P(wall) (point, Wilson-95, posterior mean)",
+    "sensitivity of the pooled robust front to the binomial uncertainty width (w in {1/4, 1, 4}, point estimate)",
+    "per-design separability of the robust/nominal ratio"
+  ],
+  "gates": {
+    "semantics": "Every binding gate is a recording-INTEGRITY gate: it tests that the declared pipeline ran once and recorded consistently (replay, fail-closed domain rule, budgets, shared initial designs, frozen sample and catalogue hashes, Pareto replay, code contract, import scope, duplicate elimination, label consistency). accepted_result therefore means 'recorded consistently', NOT that any optimiser is effective or that any design is good (v1 audit F26). Every efficacy statement is reported_not_binding and carries its seed count; three seeds support counts, never significance.",
+    "binding": {
+      "replay_bit_exact": "every recorded evaluation (design identity, margins, robust statistics, nominal objectives, survival statistics, sample result hash) is recomputed through model.evaluate_design on CPU and compared bit-exactly",
+      "l0_domain": "every successful evaluation has non-negative robust margin and all objectives finite; every infeasible evaluation has negative robust margin, code beam_current_exceeds_anode_current and no robust objectives",
+      "hypervolume_monotone": "every recorded hypervolume curve is non-decreasing in evaluations up to floating-point roundoff (relative decrease <= 1e-12; the exact slicing hypervolume of a growing set is monotone in exact arithmetic, but a new point with a negligible exclusive contribution changes the slicing order and moved the result by -2.1e-16 relative in the shakedown); the largest recorded decrease is written to the gate record",
+      "budget_exact": "every run recorded exactly evaluations_per_run evaluations",
+      "shared_initial_design": "for each seed the first initial_design (catalogue index, operating point) pairs are identical across the three strategies",
+      "sample_hash": "the frozen unit rows and the per-design catalogue sample recompute to uncertain_inputs.sample.unit_rows_sha256 / catalogue_sample_sha256",
+      "pareto_replay": "every design in every final Pareto set replays bit-exactly and is nondominated among its run's successful evaluations",
+      "code_contract": "package source hash, package versions and protocol hash equal the preregistered authorities",
+      "catalogue_binding": "the screening dataset and manifest on disk hash to the declared bytes, match their Git blobs at the screening result commit, the manifest entry carries the same byte hash, and the result commit is an ancestor of HEAD",
+      "code_hash_scope_matches_imports": "at the end of the assessment the set of repository files (cft_revival/** and the experiment package) present in sys.modules equals code_contract.source_hash_scope exactly (nothing bound that was never imported, nothing imported that is unbound; v1 audit F10)",
+      "nsga3_duplicates_eliminated": "every NSGA-III run evaluated evaluations_per_run DISTINCT designs (v1 audit F27)",
+      "labels_consistent": "every qLogNEHVI run's optimizer.acquisition equals the label rebuilt from its recorded arguments and its optimizer.model names MixedSingleTaskGP, CategoricalKernel, MaternKernel and Standardize; every NSGA-III run records declared_generations == generations, pymoo_n_gen separately, pymoo_reported_evaluations == evaluations_per_run and eliminate_duplicates == true; every LHS run records its two stage sizes (v1 audit F28)"
+    },
+    "reported_not_binding": {
+      "bo_beats_random": "final robust hypervolume of qlognehvi > lhs for >= 2 of 3 seeds (paired by seed); reported as a count of seeds",
+      "bo_beats_nsga3": "final robust hypervolume of qlognehvi > nsga3 for >= 2 of 3 seeds (paired by seed); reported as a count of seeds",
+      "hypervolume_vs_dense_reference": "final robust hypervolume of every run divided by the dense-reference robust hypervolume",
+      "robust_vs_nominal": "differences between the robust and nominal fronts of the pooled designs, including which catalogue designs each contains",
+      "closure_cl1_vs_cl2": "the pooled designs re-evaluated under CL-2: front size, shared designs and Jaccard with the CL-1 front, hypervolume, catalogue members",
+      "uncertainty_width_sensitivity": "the pooled designs re-evaluated under the rescaled posterior widths and the point estimate: front size, Jaccard with the campaign front, hypervolume, agreement on the common feasible set up to roundoff ties (relative tolerance 1e-9)",
+      "robust_front_catalogue_designs": "the catalogue designs on the pooled robust front with their sealed geometry and screening P(wall) (the geometry -> performance link under CL-1)",
+      "per_design_separability": "relative spread of the robust/nominal objective ratio within every design <= 1e-9"
+    },
+    "terminal_rule": "accepted_result iff every binding gate passes; the reported tests are recorded pass/fail and never change the terminal state"
+  },
+  "code_contract": {
+    "source_hash_scope": [
+      "modern/experiments/mdo_l0_campaign_v2/__init__.py",
+      "modern/experiments/mdo_l0_campaign_v2/catalogue.py",
+      "modern/experiments/mdo_l0_campaign_v2/experiment.py",
+      "modern/experiments/mdo_l0_campaign_v2/model.py",
+      "modern/experiments/mdo_l0_campaign_v2/optimizers.py",
+      "modern/experiments/mdo_l0_campaign_v2/run.py",
+      "modern/src/cft_revival/__init__.py",
+      "modern/src/cft_revival/experiment_runtime/__init__.py",
+      "modern/src/cft_revival/experiment_runtime/canonical.py",
+      "modern/src/cft_revival/experiment_runtime/contracts.py",
+      "modern/src/cft_revival/experiment_runtime/filesystem.py",
+      "modern/src/cft_revival/experiment_runtime/lifecycle.py",
+      "modern/src/cft_revival/experiment_runtime/platformfs.py",
+      "modern/src/cft_revival/kernels.py",
+      "modern/src/cft_revival/models.py",
+      "modern/src/cft_revival/optimization/__init__.py",
+      "modern/src/cft_revival/optimization/botorch_adapter.py",
+      "modern/src/cft_revival/optimization/campaign.py",
+      "modern/src/cft_revival/optimization/domain.py",
+      "modern/src/cft_revival/optimization/pareto.py",
+      "modern/src/cft_revival/optimization/sampling.py",
+      "modern/src/cft_revival/optimization/spec.py",
+      "modern/src/cft_revival/physics/__init__.py",
+      "modern/src/cft_revival/physics/fields.py",
+      "modern/src/cft_revival/physics/models.py",
+      "modern/src/cft_revival/physics/numerics.py",
+      "modern/src/cft_revival/physics/reference.py",
+      "modern/src/cft_revival/physics/workflows.py"
+    ],
+    "scope_rule": "explicit list (no globs) of every repository file under modern/src/cft_revival and modern/experiments/mdo_l0_campaign_v2 that the campaign imports (sys.modules trace of the shakedown process, including run.py as the entry module); bound to the imports actually made by the binding gate code_hash_scope_matches_imports and by an import-trace test in a fresh interpreter (v1 audit F10: v1 bound the never-imported active_learning/surrogates packages and missed experiment_runtime, models, kernels and run.py)",
+    "source_hash_line_endings": "LF; the hash is over working-tree bytes and fails closed if any hashed file contains a carriage return",
+    "data_dependencies": "the screening dataset and manifest are data, not code; they are bound by catalogue_binding (bytes, Git blobs, manifest entry, ancestry), not by the source hash",
+    "package_versions": {
+      "torch": "2.13.0+cu130",
+      "botorch": "0.18.1",
+      "gpytorch": "1.15.2",
+      "pymoo": "0.6.2",
+      "numpy": "2.5.2",
+      "scipy": "1.18.1"
+    },
+    "package_versions_note": "scipy is pinned because pymoo and BoTorch import it; the campaign code itself does not call scipy (the Beta quantile is pure Python)",
+    "python": "3.12"
+  },
+  "execution": {
+    "git_common_lock": "mdo-l0-campaign-v2.execution.lock",
+    "device": "cpu (L0 python-reference, GP fits, acquisition, dense reference); no Warp or CUDA batch jobs are launched",
+    "cpu_budget": "<= 12 CPUs: torch 12 threads, dense-reference pool <= 12 workers",
+    "sequential_runs": "strategies x seeds run sequentially in the declared order qlognehvi, nsga3, lhs per seed; each completed run is checkpointed to the working cache and written as an artifact",
+    "single_execution": "one immutable attempt from the pushed preregistration commit; failure is recorded, never patched or rerun",
+    "result_commit_policy": "the result commit contains files under modern/experiments/mdo_l0_campaign_v2/results/ only; the spec index pointer and any test or documentation change follow in a separate commit (v1 audit F9)"
+  },
+  "v1_audit_disclosures_closed": {
+    "F9": "result commit strictly results/ (execution.result_commit_policy)",
+    "F10": "explicit import-bound hash scope + binding gate code_hash_scope_matches_imports + import-trace test (code_contract.scope_rule)",
+    "F22": "no rounded probabilities frozen; posterior means computed from counts by rule (uncertain_inputs.rounding_policy)",
+    "F26": "gate semantics declared: integrity gates only, acceptance != efficacy; seed counts on every efficacy statement (gates.semantics)",
+    "F27": "NSGA-III MixedVariableDuplicateElimination + binding gate nsga3_duplicates_eliminated",
+    "F28": "labels generated from arguments / fitted objects + binding gate labels_consistent; declared_generations and pymoo_n_gen recorded separately"
+  },
+  "prior_campaign_disclosure": "spec/optimization/campaign-v1.json#benchmark.results stays null (no F3 verification exists); a separate instance index spec/optimization/mdo-l0-campaign-v2.json points at this campaign."
+}

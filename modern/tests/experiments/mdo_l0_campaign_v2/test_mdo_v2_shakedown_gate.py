@@ -1,0 +1,188 @@
+"""Shakedown disjointness, the prepare/execute gate, and lifecycle-aware contracts."""
+
+from __future__ import annotations
+
+import copy
+import hashlib
+from pathlib import Path
+
+import pytest
+
+from cft_revival.experiment_runtime import semantic_sha256
+from cft_revival.experiment_runtime.canonical import strict_json_file
+
+from experiments.mdo_l0_campaign_v2 import experiment, run
+from experiments.mdo_l0_campaign_v2.experiment import (
+    AUTHORITIES_PATH,
+    RESULTS_ROOT,
+    SHAKEDOWN_PATH,
+    design_sha256,
+    evidentiary_plan,
+    protocol,
+    shakedown_disjointness,
+    shakedown_plan,
+    verify_shakedown_record,
+)
+
+RECORDED = RESULTS_ROOT / "manifest.json"
+
+
+def test_shakedown_design_is_disjoint_from_the_evidentiary_design() -> None:
+    value = protocol()
+    report = shakedown_disjointness(value)
+    assert report["proven"] is True
+    assert report["seed_overlap"] == [] and report["run_id_overlap"] == []
+    assert report["seed_namespace_rule_holds"] is True
+    assert report["initial_design_overlap_count"] == 0
+    assert report["shakedown_budget_smaller"] is True
+    assert report["shakedown_design_sha256"] != report["evidentiary_design_sha256"]
+    assert design_sha256(value, shakedown_plan(value)) == report["shakedown_design_sha256"]
+    assert design_sha256(value, evidentiary_plan(value)) == report["evidentiary_design_sha256"]
+
+
+def test_disjointness_fails_when_a_seed_is_shared() -> None:
+    value = copy.deepcopy(protocol())
+    value["shakedown"]["seeds"] = [value["budget"]["seeds"][0], 900202]
+    report = shakedown_disjointness(value)
+    assert report["proven"] is False
+    assert report["seed_overlap"] == [value["budget"]["seeds"][0]]
+
+
+def _live_record() -> dict:
+    if not SHAKEDOWN_PATH.is_file():
+        pytest.skip("shakedown.json not yet produced")
+    return strict_json_file(SHAKEDOWN_PATH)
+
+
+def _require_ml_runtime() -> None:
+    for name in ("torch", "botorch", "gpytorch", "pymoo"):
+        pytest.importorskip(name)
+
+
+def _recorded_lifecycle() -> bool:
+    return RECORDED.is_file()
+
+
+def test_shakedown_record_passes_the_gate_or_is_bound_to_the_recorded_bundle() -> None:
+    value = protocol()
+    record = _live_record()
+    assert record["import_scope"]["matches"] is True
+    assert sorted(record["import_scope"]["declared"]) == sorted(value["code_contract"]["source_hash_scope"])
+    if _recorded_lifecycle():
+        bundle_copy = (RESULTS_ROOT / "artifacts" / "shakedown.json").read_bytes()
+        assert bundle_copy == SHAKEDOWN_PATH.read_bytes()
+        authorities = strict_json_file(AUTHORITIES_PATH)
+        assert authorities["shakedown_file_sha256"] == hashlib.sha256(bundle_copy).hexdigest()
+        assert authorities["shakedown_semantic_sha256"] == semantic_sha256(record)
+        assert authorities["protocol_semantic_sha256"] == semantic_sha256(value)
+        assert record["protocol_semantic_sha256"] == semantic_sha256(value)
+        assert record["passed"] is True and record["evidentiary"] is False
+        return
+    _require_ml_runtime()
+    checks = verify_shakedown_record(value, record)
+    assert checks and all(checks.values())
+    assert record["evidentiary"] is False and record["outcomes_enter_estimand"] is False
+    assert record["runtime"]["terminal_state"] == "accepted_result"
+    assert record["runtime"]["bundle_validated"] is True
+    assert set(record["runs"]) == {run_id.split(":", 1)[1] for run_id in shakedown_plan(value).run_ids}
+    assert all(item["evaluations"] == item["budget"] for item in record["runs"].values())
+    assert all(item["passed"] for item in record["gates"]["binding"].values())
+
+
+@pytest.mark.parametrize(
+    "tamper, expected",
+    [
+        (lambda r: r.__setitem__("passed", False), "passed"),
+        (lambda r: r.__setitem__("evidentiary", True), "declared_non_evidentiary"),
+        (lambda r: r.__setitem__("protocol_semantic_sha256", "0" * 64), "protocol_semantic_sha256_current"),
+        (lambda r: r.__setitem__("source_sha256", "0" * 64), "source_sha256_current"),
+        (lambda r: r["package_versions"].__setitem__("torch", "0.0.0"), "package_versions_current"),
+        (lambda r: r["disjointness"].__setitem__("proven", False), "disjointness_proven"),
+        (lambda r: r.__setitem__("shakedown_design_sha256", "0" * 64), "shakedown_design_sha256_current"),
+        (lambda r: r["runs"].pop(next(iter(r["runs"]))), "all_runs_present"),
+        (lambda r: next(iter(r["runs"].values())).__setitem__("evaluations", 1), "all_runs_budget_exact"),
+        (lambda r: next(iter(r["gates"]["binding"].values())).__setitem__("passed", False), "all_binding_gates_passed"),
+        (lambda r: r["import_scope"].__setitem__("matches", False), "import_scope_matched"),
+        (lambda r: r["import_scope"]["declared"].pop(), "import_scope_matched"),
+        (lambda r: r["runtime"].__setitem__("terminal_state", "runtime_failure"), "runtime_accepted_and_bundle_validated"),
+        (lambda r: r.__setitem__("schema_version", "other"), "schema_version"),
+    ],
+)
+def test_tampered_shakedown_records_are_refused(tamper, expected) -> None:
+    if _recorded_lifecycle():
+        pytest.skip("live gate binding is superseded by the recorded bundle after execution")
+    _require_ml_runtime()
+    value = protocol()
+    record = copy.deepcopy(_live_record())
+    verify_shakedown_record(value, record)
+    tamper(record)
+    with pytest.raises(ValueError, match=expected):
+        verify_shakedown_record(value, record)
+
+
+def test_protocol_edit_after_shakedown_is_refused() -> None:
+    if _recorded_lifecycle():
+        pytest.skip("live gate binding is superseded by the recorded bundle after execution")
+    _require_ml_runtime()
+    record = _live_record()
+    value = copy.deepcopy(protocol())
+    value["budget"]["seeds"] = [101, 202, 304]
+    with pytest.raises(ValueError, match="protocol_semantic_sha256_current"):
+        verify_shakedown_record(value, record)
+
+
+def test_prepare_refuses_without_a_shakedown(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    monkeypatch.setattr(run, "SHAKEDOWN_PATH", tmp_path / "missing-shakedown.json")
+    with pytest.raises(RuntimeError, match="shakedown.json is missing"):
+        run.shakedown_gate(protocol())
+
+
+def test_prepare_refuses_a_non_object_shakedown(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    path = tmp_path / "shakedown.json"
+    path.write_bytes(b"[]")
+    monkeypatch.setattr(run, "SHAKEDOWN_PATH", path)
+    with pytest.raises(RuntimeError, match="not an object"):
+        run.shakedown_gate(protocol())
+
+
+def test_shakedown_refuses_after_prepare_or_results(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    _require_ml_runtime()
+    existing = tmp_path / "authorities.json"
+    existing.write_bytes(b"{}")
+    monkeypatch.setattr(run, "FROZEN_OUTPUTS", (existing,))
+    with pytest.raises(RuntimeError, match="only BEFORE prepare"):
+        run.shakedown()
+    monkeypatch.setattr(run, "FROZEN_OUTPUTS", ())
+    results = tmp_path / "results"
+    results.mkdir()
+    monkeypatch.setattr(run, "RESULTS_ROOT", results)
+    with pytest.raises(RuntimeError, match="results root already exists"):
+        run.shakedown()
+
+
+def test_bind_preregistration_requires_the_exact_subject_and_isolation_prefixes() -> None:
+    assert run.SUBJECT == "preregister MDO L0 campaign v2"
+    assert run.REMOTE_BRANCH == "origin/exp/mdo-l0-campaign-v2"
+    assert run.EXPERIMENT_PREFIX == "modern/experiments/mdo_l0_campaign_v2/"
+    assert run.TESTS_PREFIX == "modern/tests/experiments/mdo_l0_campaign_v2/"
+    assert protocol()["execution"]["git_common_lock"] == "mdo-l0-campaign-v2.execution.lock"
+
+
+def test_frozen_authorities_bind_protocol_source_catalogue_and_shakedown_when_present() -> None:
+    if not AUTHORITIES_PATH.is_file():
+        pytest.skip("authorities.json not yet prepared")
+    value = protocol()
+    authorities = strict_json_file(AUTHORITIES_PATH)
+    record = _live_record()
+    assert authorities["protocol_semantic_sha256"] == semantic_sha256(value)
+    assert authorities["evidentiary_design_sha256"] == design_sha256(value, evidentiary_plan(value))
+    assert authorities["shakedown_file_sha256"] == hashlib.sha256(SHAKEDOWN_PATH.read_bytes()).hexdigest()
+    assert authorities["shakedown_semantic_sha256"] == semantic_sha256(record)
+    assert authorities["source_sha256"] == record["source_sha256"]
+    assert authorities["catalogue_sample_sha256"] == value["uncertain_inputs"]["sample"]["catalogue_sample_sha256"]
+    assert authorities["catalogue_sha256"] == value["catalogue_binding_identity"]["catalogue_sha256"]
+    if not _recorded_lifecycle():
+        assert experiment.source_hash_report(value)["source_sha256"] == authorities["source_sha256"]
+    else:
+        contract = strict_json_file(RESULTS_ROOT / "artifacts" / "code-contract.json")
+        assert contract["source_sha256"] == authorities["source_sha256"]
