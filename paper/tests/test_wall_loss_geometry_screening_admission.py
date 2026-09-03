@@ -367,7 +367,9 @@ class GeometryScreeningAdmissionTests(unittest.TestCase):
         self.assertNotIn("no consumer model has ingested it", self.flattened)
         self.assertNotIn("statement is field-specific", self.manuscript)
         self.assertIn("zero reflections are a launch-position\nresult", self.manuscript)
-        self.assertIn("stratifies its launches\nby catalogue cell is planned; no result of it exists", self.manuscript)
+        # The catalogue-cell screening is now admitted (Section 15): the "planned" wording is gone.
+        self.assertNotIn("is planned; no result of it exists", self.manuscript)
+        self.assertIn("which stratifies its launches by catalogue cell, is the one admitted in\nSection~\\ref{sec:wall-loss-geometry-screening-v2}", self.manuscript)
         self.assertIn("planned bridge", self.manuscript)
         self.assertIn("refined-field diagnostic exists\nfor four representative designs only", self.manuscript)
         self.assertIn("wall-loss geometry screening at Git revision \\GeometryScreeningEvidenceRevision", self.manuscript)

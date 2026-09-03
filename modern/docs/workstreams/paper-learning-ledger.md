@@ -493,3 +493,46 @@
 - [tool] `pdflatex` compile of the whole manuscript takes ~3.5 min per clean
   build here; run `verify_reproducible_build.py` in the background alongside
   the test suite and read both logs afterwards.
+
+## 2026-09-04 - Admitting the wall-loss geometry screening v2 (catalogue cells)
+
+- [self] A post-hoc event that is not an audit (the runtime's recovery published
+  the manifest after the locked attempt died at publication) is bound as a
+  *disclosure source* group: the disclosure note plus the code that performed
+  the recovery and the cap that prevents a recurrence, at the commit that added
+  them, with the disclosed hashes and counts verified against the committed
+  bundle. `posthoc_audit` stays null and the checker refuses one; the
+  results-bundle block carries `manifest_published_posthoc: true` and
+  `published_inside_locked_attempt: false` so the boundary is machine-readable.
+- [self] Verify a disclosure by regex against the bundle, not by trusting it:
+  the disclosed `manifest_byte_sha256` must equal `sha256(manifest.json)`, the
+  disclosed `terminal_byte_sha256` the manifest's binding, the file/artifact/
+  transition counts the inventory, the results commit prefix the record commit,
+  and the descriptor arithmetic (files > cap > pin cap) must describe the
+  overflow. Also prove "nothing changed" with git: the record commit touches only
+  `results/`, the disclosure commit only Markdown under the experiment.
+- [self] Replay a paired control from the endpoint tables, orbit by orbit
+  (launch key of the 2N case -> termination of its N-step partner), rather than
+  trusting per-cell counts; the standard error must be recomputed with the
+  experiment's own construction (per-design +1/-1/0 differences, `pstdev`).
+- [self] When the brief's numbers do not match the artifacts, report the
+  artifacts: the "6 straight-exit designs at 1.0" were 4 of 6, and the exit-side
+  "direction structure 0.53-0.61 / 0.37-0.47" is really a one-sided split
+  (one launch direction ~1, the other ~0, wall side = last-stage polarity in
+  82/90). Derive the actual structure as macros and say so in the devlog.
+- [self] Reuse the existing recorded outcome when the study is the same kind of
+  object with a different launch design; justify on the gate and have the
+  checker require the word "reused" in the justification. A new manifest type is
+  still needed because the file roles and the metric set differ.
+- [self] A macro-only section that must say "2N" needs the time-step names as
+  macros (derived from the protocol's policy keys), and must refer to earlier
+  campaigns by section reference, never by version token (v1/v4 carry digits).
+- [tool] The first `check_paper.py` in a fresh worktree took 350 s on a cold
+  file cache against 107 s warm; profile before optimising (the new generator
+  itself is ~6 s: 17k files, 51 MB, 1105 gzipped endpoint tables).
+- [tool] `unittest discover -s paper/tests -t .` fails ("start directory is not
+  importable") because `paper/` has no `__init__.py`; use the documented
+  `-s paper/tests` form.
+- [tool] PowerShell double-quoted strings pass `\\` through unchanged, so an
+  inline `python -c` regex with `\\\\newcommand` silently matches nothing;
+  write the check as a temp `.py` under `%TEMP%` instead.

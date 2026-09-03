@@ -136,7 +136,40 @@
   construction, never probabilities or loss fractions.
 - **Cusp-cell catalogue** — the per-design record of axis nulls, wall cusps,
   cells and mirror descriptors sealed by the topology screening; a consumer
-  contract under its labels, ingested by no admitted consumer.
+  contract under its labels, whose first admitted consumer is the wall-loss
+  geometry screening v2 (its launch cells).
+- **Screening dataset (wall-loss geometry screening v2, catalogue cells)** —
+  collisionless prescribed-field test-particle electron orbits (orbit_mc 1.7,
+  numpy CPU) launched at the midpoints of the 377 separatrix-bounded catalogue
+  cells of the 96 accepted sweep-v2 designs in their re-solved L1a screening
+  fields (label `SCREENING_L1A_FIELD_TEST_PARTICLE_WALL_LOSS`) plus one
+  launch-design row on the P2-qualified field of the wall-loss campaign (label
+  `P2_QUALIFIED_FIELD_SCREENING_LAUNCH_DESIGN`, not a replication); per-cell
+  wall-access, reflection, escape and timeout fractions with Wilson intervals
+  and floors, a frozen two-stage allocation (128 launches per cell, top-up to
+  512 when the stage-1 Wilson width exceeds 0.10), a paired N→2N control over
+  one eighth of every cell's launches, declared design averages and a pooled
+  comparison with the v1 screening. Its results manifest was published post hoc
+  (disclosed).
+- **Wall-access fraction (screening v2)** — the fraction of the launches of one
+  catalogue cell (two radius bands, two energies, two pitch angles, both
+  directions, scrambled-Sobol gyrophase) that first reach the straight
+  dielectric wall; a collisionless geometric property of the field lines
+  through the launch plane, never a loss probability, a per-cusp transit loss
+  or a cusp probability for the plasma network without a declared closure.
+- **Position class (screening v2)** — anode-side partial cell (anode plane to
+  the first wall cusp), interior cell (between consecutive wall cusps) or
+  exit-side partial cell (last wall cusp to the end of the straight
+  dielectric), as the catalogue defines them.
+- **Jeffreys floor (screening v2)** — \(\sqrt{\tilde p(1-\tilde p)/n}\) with
+  \(\tilde p=(k+\tfrac12)/(n+1)\), the label-precision floor of a per-cell
+  fraction; a cell is "surrogate-ready" when it is at most 0.02. Readiness is
+  a precision statement about a screening label, not a fitted surrogate.
+- **Direction split (screening v2)** — the exit-side value near one half of the
+  divergent-exit designs decomposes into one parallel launch direction that
+  reaches the wall in nearly every launch and one that reaches it in nearly
+  none; the wall-reaching direction equals the last stage's polarity in 82 of
+  90 designs. An observation of this launch design, never a design rule.
 - **Screening dataset (wall-loss geometry screening)** — collisionless
   prescribed-field test-particle electron orbits (orbit_mc 1.7, numpy CPU)
   integrated in the re-solved L1a screening fields of all 96 accepted sweep-v2

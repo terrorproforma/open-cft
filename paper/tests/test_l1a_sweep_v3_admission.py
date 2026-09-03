@@ -490,7 +490,7 @@ class SweepV3AdmissionTests(unittest.TestCase):
         self.assertIn("none of its HEMP-like designs is a design recommendation", self.manuscript)
         self.assertIn("no material-aware field and no reduced performance model, and it leaves this gate\nclosed", self.manuscript)
         # The topology admission's sentences stay in place.
-        self.assertIn("launches from the catalogue cells is future work and no result of it\nexists", self.manuscript)
+        self.assertIn("launches from the catalogue cells is admitted in\nSection~\\ref{sec:wall-loss-geometry-screening-v2}", self.manuscript)
         self.assertIn("not the separatrix-bounded\ncells of the catalogue admitted in Section~\\ref{sec:cusp-topology}", self.manuscript)
 
 

@@ -299,6 +299,56 @@
   design is a design recommendation; and that the legacy-design-space reading
   is a labelled Discussion interpretation.
 
+## S4j. Orbit wall-loss geometry screening v2 (accepted screening dataset from the catalogue cells)
+
+- Typed screening manifest `paper/evidence/manifests/wall-loss-geometry-screening-v2.json`
+  (`paper-orbit-cell-screening-manifest` 1.0) and the hash-bound evidence file
+  `paper/evidence/wall-loss-geometry-screening-v2.json`.
+- Preregistration commit `cef1ee59` (frozen authorities, design authorities,
+  shakedown; protocol committed with the code), record commit `26029b72`
+  (sealed bundle of 16,957 files, results only: dataset in JSON and CSV form,
+  allocation decisions, catalogue binding, v1 comparison, coupling-consumer
+  record, 1,105 case summaries, handoffs, endpoint tables and orbit sidecars,
+  full orbit artifacts for the four representatives and the P2 row, 97 fields
+  and field-evidence records, gates, campaign plan and result, lock and nine
+  transitions), disclosure and runtime-fix commit `bb756418`
+  (`POSTHOC_FINALIZATION.md`, `experiment_runtime/recovery.py`, the
+  `MAX_PINNED_DESCRIPTORS = 4096` cap in `lifecycle.py`, `test_recovery.py`),
+  dashboard commit `eef7ac82`.
+- References bound at their admitted revisions: the cusp-cell catalogue and the
+  topology v3.1 manifest (`cec47f12`; the catalogue must hash to the identity
+  the campaign bound and every dataset cell equals its catalogue cell), the v1
+  dataset and manifest (`ab7c2897`; the comparison's v1 values are re-read from
+  it), the wall-loss v4 coupling export (`6922a3cf`; the labelled reference row)
+  and the sweep-v2 results manifest (`f30cb42e`; field identity proofs).
+- Launch design verbatim: catalogue cells launched at their midpoints (one
+  injector-zone midpoint and 13 short sweep cells flagged, not moved); 8 strata
+  (5/25 eV × 20/70° × ±1) × scrambled Sobol (Joe–Kuo direction numbers, LMS +
+  digital shift; radius band 0.650–0.700 or 0.775–0.825 r_w, radius in band,
+  gyrophase); stage 1 = 128 launches per cell, top-up to 512 iff the stage-1
+  Wilson width > 0.10 (117 topped up, 260 saturated; replayed by the main
+  process); control = 1/8 of every cell's final launches at 2N (11,648 orbits;
+  2 discordant; bias −8.6e-5 ± 8.6e-5; gate 0.02 passed); case sizes 128/16/64
+  fixed by the orbit_mc 1.7 Wilson-exactness defect (734 / 1238 of the first
+  4000 sizes inexact; recomputed).
+- Tables regenerated at every check: dataset and allocation summary;
+  per-cell-class distributions (anode-side median 0.984, interior 1.000 in all
+  181 cells, exit-side median 0.500; saturation, top-up, readiness, floors,
+  reflections) with the P2 row; reflections (10,407; 65 exit-side + 1
+  anode-side cells), escapes, the exit-side direction split (wall-reaching
+  direction = last-stage polarity in 82/90) and the paired control; the pooled
+  v1 comparison (Spearman +0.15 / +0.35, mean Δ +0.038 / +0.220, overlap
+  45 % / 0 %); the disclosures.
+- Explicit statements that every per-cell value is a collisionless geometric
+  wall-access fraction and never a loss probability; that the P2 row is a
+  launch-design variant and not a replication of the wall-loss campaign; that
+  the design values are declared averages; that the direction and polarity
+  readings are observations and no design rule; that readiness is label
+  precision and no surrogate has been fitted or accepted; that the manifest was
+  published post hoc after a descriptor-cap failure with every artifact durable
+  and nothing rerun; and that the closure-exhaustion reading (CLM-085) is a
+  labelled Discussion interpretation naming a kinetic sweep as future work.
+
 ## S5. Controlled performance benchmark
 
 This supplement remains closed until a benchmark manifest records kernel

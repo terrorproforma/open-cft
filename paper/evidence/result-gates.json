@@ -1549,6 +1549,385 @@
         "field-resolved reduction, L0 mapping or geometry-response prediction (GATE-L1 stays closed)",
         "opening of GATE-L1, GATE-L2 or GATE-L3"
       ]
+    },
+    {
+      "accepted_manuscript_binding": "\\input{sections/wall-loss-geometry-screening-v2.tex}",
+      "checks": [
+        "typed manifest under paper/evidence/manifests with every source file bound by Git blob and SHA-256 at the results revision (the record commit, which carries only results/), committed at HEAD; the dashboard generator, template and HTML bound at the dashboard revision and equal to the checkout by LF-normalised SHA-256; the catalogue, the v1 dataset and manifest, the v4 export and the sweep manifest bound as references at their admitted revisions and hashing to the identities the bundle recorded; POSTHOC_FINALIZATION.md, the recovery and lifecycle modules and the recovery tests bound at the disclosure revision",
+        "evidence file, generated macros and sidecar regenerate byte-identically from the sealed bundle, which re-verifies every one of the bundle's files against its manifest with no end-of-line tolerance, replays the frozen allocation rule and the paired N -> 2N control orbit by orbit from the endpoint tables, recomputes every per-cell, per-case and per-stratum Wilson interval, both floors, the readiness flags, the design averages, the pooled control gate with its standard error, every headline statistic and the v1 comparison, cross-checks the dataset against every per-case summary, handoff, orbit sidecar and endpoint table, and requires the dashboard's embedded extraction to equal the sealed artifacts",
+        "the disclosure's manifest and terminal hashes, file, artifact and transition counts, results commit and descriptor arithmetic equal the committed bundle; the pin cap in the runtime equals the disclosed cap; the disclosure commit changes only Markdown under the experiment and the results commit only results/; the Wilson-exactness scan behind the case-size constraint is recomputed",
+        "every mapped manifest metric equals the raw artifact value behind its macro with type equality; policy metrics carry their fixed values (manifest_published_posthoc true, evidence_durable_before_recovery true, interior_cells_saturated true, access_fraction_is_loss_probability false among them); the results tree is unchanged since the evidence revision",
+        "preregistration strictly precedes the results revision, which precedes the disclosure and dashboard revisions; the frozen protocol, authorities, shakedown and design-authorities blobs are unchanged and equal the sealed copies; the recorded outcome accepted-screening-dataset (reused from the v1 screening, justified on the gate) agrees between gate, manifest, evidence file and generator",
+        "the section is input exactly once, uses only generated macros, types no literal digit, uses the classification, P2-label, recorded-outcome, campaign-status, field-status, interior-saturation, post-hoc-publication, descriptor-cap and pin-cap macros whose renderings equal their strings, and contains every registered non-claim",
+        "every EvidenceClaim in the section is a registered screening prose claim bound to the manifest and allowed under the section heading with the required as-recorded wording (interior cells lost every launch; never a loss probability; published post hoc; not a replication; declared averages); the Discussion interpretation (the collisionless chain is exhausted as a closure source, the surrogate/optimisation iteration is deferred, a kinetic sweep is future work and not evidence) stays outside the section and is bound to the manifest; Section 11 cites this section instead of announcing a plan; the Limitations carry the post-hoc publication and saturation statements; the artifact claim authorizes the five generated tables, each wrapped in the registered ArtifactClaim"
+      ],
+      "dashboard_revision": "eef7ac827c2595fb3219bd65f8ea1016c210199b",
+      "dependencies": [
+        "GATE-WALL-LOSS-GEOMETRY-SCREENING-V1",
+        "GATE-CUSP-TOPOLOGY-V3-1",
+        "GATE-WALL-LOSS-V4",
+        "GATE-L1A-SWEEP-V2"
+      ],
+      "disclosure_revision": "bb756418b6281c0193f1580c11fb7c32d9898e2e",
+      "evidence_file": "paper/evidence/wall-loss-geometry-screening-v2.json",
+      "evidence_revision": "26029b72222e2b408e87fca3493940b0516b0f5d",
+      "generated_macros": "paper/generated/wall-loss-geometry-screening-v2.tex",
+      "id": "GATE-WALL-LOSS-GEOMETRY-SCREENING-V2",
+      "kind": "numerical-screening",
+      "manifest_path": "paper/evidence/manifests/wall-loss-geometry-screening-v2.json",
+      "manuscript_revision_macro": "GeometryScreeningTwoEvidenceRevision",
+      "metric_constraints": {
+        "accepted_physical_orbit_evidence": {
+          "equals": false
+        },
+        "access_fraction_is_loss_probability": {
+          "equals": false
+        },
+        "anode_side_cell_count": {
+          "equals": 96
+        },
+        "anode_side_cells_at_one": {
+          "equals": 34
+        },
+        "anode_side_cells_topped_up": {
+          "equals": 32
+        },
+        "anode_side_cells_with_reflections": {
+          "equals": 1
+        },
+        "attempt_count": {
+          "equals": 1
+        },
+        "campaign_status": {
+          "equals": "accepted_screening_dataset"
+        },
+        "case_count": {
+          "equals": 1105
+        },
+        "case_sizes_wilson_exact": {
+          "equals": true
+        },
+        "catalogue_cells_are_demonstrated_confinement_cells": {
+          "equals": false
+        },
+        "cell_count": {
+          "equals": 377
+        },
+        "cells_saturated_after_stage1": {
+          "equals": 260
+        },
+        "cells_surrogate_ready": {
+          "equals": 294
+        },
+        "cells_topped_up": {
+          "equals": 117
+        },
+        "classification": {
+          "equals": "SCREENING_L1A_FIELD_TEST_PARTICLE_WALL_LOSS"
+        },
+        "code_files_changed_after_record": {
+          "equals": 0
+        },
+        "consumed_handoffs": {
+          "equals": 1105
+        },
+        "consumed_verified_handoffs": {
+          "equals": 1105
+        },
+        "control_discordant": {
+          "equals": 2
+        },
+        "control_flag_true_design_count": {
+          "equals": 97
+        },
+        "control_gate_passed": {
+          "equals": true
+        },
+        "control_launches": {
+          "equals": 11648
+        },
+        "control_n": {
+          "equals": 11648
+        },
+        "cross_resolution_design_count": {
+          "equals": 97
+        },
+        "declared_count": {
+          "equals": 97
+        },
+        "descriptor_cap": {
+          "equals": 8192
+        },
+        "design_rule_claimed": {
+          "equals": false
+        },
+        "designs_with_reflections": {
+          "equals": 66
+        },
+        "disclosed_file_count": {
+          "equals": 16957
+        },
+        "divergent_exit_design_count": {
+          "equals": 90
+        },
+        "evaluated_count": {
+          "equals": 97
+        },
+        "evidence_durable_before_recovery": {
+          "equals": true
+        },
+        "exact_authority_replays": {
+          "equals": 1105
+        },
+        "excluded_design_count": {
+          "equals": 0
+        },
+        "exit_side_cell_count": {
+          "equals": 96
+        },
+        "exit_side_cells_at_one": {
+          "equals": 11
+        },
+        "exit_side_cells_topped_up": {
+          "equals": 83
+        },
+        "exit_side_cells_with_reflections": {
+          "equals": 65
+        },
+        "exit_wall_side_equals_last_polarity": {
+          "equals": 82
+        },
+        "failed_cases_count": {
+          "equals": 0
+        },
+        "failed_design_count": {
+          "equals": 0
+        },
+        "field_p2_qualified": {
+          "equals": false
+        },
+        "final_launches": {
+          "equals": 93184
+        },
+        "final_launches_per_topped_up_cell": {
+          "equals": 512
+        },
+        "hardware_or_experimental_validation": {
+          "equals": false
+        },
+        "identity_proven_designs": {
+          "equals": 97
+        },
+        "injector_zone_flagged_cells": {
+          "equals": 1
+        },
+        "interior_cell_count": {
+          "equals": 181
+        },
+        "interior_cells_at_one": {
+          "equals": 181
+        },
+        "interior_cells_saturated": {
+          "equals": true
+        },
+        "interior_cells_topped_up": {
+          "equals": 0
+        },
+        "interior_cells_with_reflections": {
+          "equals": 0
+        },
+        "interior_designs_all_saturated": {
+          "equals": 96
+        },
+        "known_defect_full_count_inexact": {
+          "equals": 1238
+        },
+        "known_defect_zero_count_inexact": {
+          "equals": 734
+        },
+        "manifest_published_posthoc": {
+          "equals": true
+        },
+        "mirror_formula_publication_forbidden": {
+          "equals": true
+        },
+        "not_accepted_physical_orbit_evidence": {
+          "equals": true
+        },
+        "not_p2_qualified": {
+          "equals": true
+        },
+        "numerical_failures": {
+          "equals": 0
+        },
+        "orbit_count": {
+          "equals": 104832
+        },
+        "orbit_mc_contract_matches": {
+          "equals": true
+        },
+        "orbit_mc_package_version": {
+          "equals": "1.7.0"
+        },
+        "orbits_rerun_after_recovery": {
+          "equals": 0
+        },
+        "p2_cell_count": {
+          "equals": 4
+        },
+        "p2_exit_side_reflections": {
+          "equals": 350
+        },
+        "p2_row_count": {
+          "equals": 1
+        },
+        "p2_row_is_not_v4_replication": {
+          "equals": true
+        },
+        "p2_row_is_v4_replication": {
+          "equals": false
+        },
+        "p2_row_label": {
+          "equals": "P2_QUALIFIED_FIELD_SCREENING_LAUNCH_DESIGN"
+        },
+        "p2_row_reflections": {
+          "equals": 350
+        },
+        "permanent_magnet_material_model": {
+          "equals": false
+        },
+        "physics_level_opened": {
+          "equals": false
+        },
+        "pic_or_self_consistent_claim_forbidden": {
+          "equals": true
+        },
+        "pin_cap": {
+          "equals": 4096
+        },
+        "plasma_or_performance_claim_forbidden": {
+          "equals": true
+        },
+        "pooled_design_values_are_estimands": {
+          "equals": false
+        },
+        "preregistered_one_shot": {
+          "equals": true
+        },
+        "recorded_outcome": {
+          "equals": "accepted-screening-dataset"
+        },
+        "reference_design_in_screening_set": {
+          "equals": false
+        },
+        "reference_export_consumed": {
+          "equals": true
+        },
+        "screening_model": {
+          "equals": "collisionless prescribed-field relativistic-Boris test-particle electron orbits (orbit_mc) launched at the midpoints of the separatrix-bounded catalogue cells in linear-vacuum L1a equivalent-current axisymmetric screening fields (not P2-qualified; not a permanent-magnet or nonlinear-iron material model), plus one screening launch-design row on the P2-qualified field (not a replication of the accepted wall-loss campaign)"
+        },
+        "sealed_case_count": {
+          "equals": 1105
+        },
+        "sealed_design_count": {
+          "equals": 97
+        },
+        "shakedown_evidentiary": {
+          "equals": false
+        },
+        "shakedown_passed": {
+          "equals": true
+        },
+        "short_cells": {
+          "equals": 14
+        },
+        "stage1_launches": {
+          "equals": 48256
+        },
+        "stage1_launches_per_cell": {
+          "equals": 128
+        },
+        "stage2_launches": {
+          "equals": 44928
+        },
+        "straight_design_count": {
+          "equals": 6
+        },
+        "strata_per_cell": {
+          "equals": 8
+        },
+        "surrogate_fitted_or_accepted": {
+          "equals": false
+        },
+        "surrogate_or_mdo_input_requires_label": {
+          "equals": true
+        },
+        "sweep_cell_count": {
+          "equals": 373
+        },
+        "sweep_design_count": {
+          "equals": 96
+        },
+        "terminal_state": {
+          "equals": "accepted_result"
+        },
+        "timeout_free_design_count": {
+          "equals": 97
+        },
+        "timeouts": {
+          "equals": 0
+        },
+        "timing_within_budget_expected": {
+          "equals": true
+        },
+        "tolerated_eol_file_count": {
+          "equals": 0
+        },
+        "total_reflections": {
+          "equals": 10407
+        },
+        "v1_comparison_design_count": {
+          "equals": 96
+        },
+        "validator_calls_passed": {
+          "equals": 16549
+        },
+        "validator_failures": {
+          "equals": 0
+        },
+        "verified_file_count": {
+          "equals": 16957
+        }
+      },
+      "opens_level": null,
+      "preregistration_revision": "cef1ee59bce5e7bcd2bc7e696d9c8b52394682b1",
+      "prohibited_inferences": [
+        "accepted physical-orbit evidence of the kind admitted for the P2-qualified wall-loss campaign, or a replication of it by the P2 row",
+        "a loss probability, a per-cusp transit loss, a cusp probability for the plasma network, a physical electron loss rate, plasma state, confinement or any thruster performance",
+        "particle-in-cell or self-consistent plasma behaviour",
+        "a design rule or optimum from the direction split, the polarity association or the design averages",
+        "mirror or loss-cone wall-loss formulas for these fields",
+        "permanent-magnet or nonlinear-iron material behaviour, or P2 qualification of the screening fields",
+        "that the catalogue cells confine a plasma or that any surrogate has been fitted or accepted on these labels",
+        "that the results manifest was published inside the locked attempt",
+        "hardware or experimental validation",
+        "field-resolved reduction, L0 mapping or geometry-response prediction (GATE-L1 stays closed)",
+        "opening of GATE-L1, GATE-L2 or GATE-L3"
+      ],
+      "recorded_outcome": "accepted-screening-dataset",
+      "recorded_outcome_justification": "The numerical-screening outcome accepted-screening-dataset names a collisionless test-particle wall-loss dataset integrated in L1a linear-vacuum screening fields over a design space, accepted as surrogate and optimisation input only when carried with its label; it was added for the fixed-fraction screening v1. This study is the same kind of object with a different launch design (the separatrix-bounded catalogue cells, scrambled-Sobol launch sets, a frozen two-stage allocation and a paired time-step control) and one launch-design row on the P2-qualified field; its sealed status is accepted_screening_dataset. The outcome is therefore reused rather than multiplied, so that accepted keeps meaning admitted as recorded and never that a physical finding, a loss probability or a design rule is accepted.",
+      "reference_revisions": {
+        "cusp_topology_v3_1_results": "cec47f12f5909c5886424bf5d46ac20ce06f1ac5",
+        "screening_v1_results": "ab7c28977963822b2ad6eac451d2bafef5185e6c",
+        "sweep_v2_results": "f30cb42ec4a8633bf634a3d32ffa5b11f66be97a",
+        "wall_loss_v4_results": "6922a3cf97d261735266aa1a5a0c0c9683e021ca"
+      },
+      "required_manifest_document_type": "paper-orbit-cell-screening-manifest",
+      "required_manifest_schema_version": "1.0",
+      "section_heading": "Collisionless wall access from the catalogue cells of the accepted sweep designs",
+      "section_path": "paper/sections/wall-loss-geometry-screening-v2.tex",
+      "status": "accepted",
+      "title": "Preregistered orbit wall-loss geometry screening v2: accepted collisionless test-particle wall-access dataset from the catalogue cells of the accepted L1a sweep designs"
     }
   ]
 }

@@ -134,7 +134,48 @@ the 9 cells 0.22–0.48 pitch away), so the zero count is a launch-position resu
 and the screening's reflections are the mirror reflections the field predicts;
 the Limitations add that every electron of these fields is non-adiabatic at the
 wall cusps (Mendel α 9.93–1190, ε 0.05–0.75, μ-variation medians ordered by ε),
-so a per-cusp loss probability cannot be a loss-cone number. The
+so a per-cusp loss probability cannot be a loss-cone number. A seventh
+`numerical-screening` gate, `GATE-WALL-LOSS-GEOMETRY-SCREENING-V2`, admits the
+orbit wall-loss geometry screening v2
+`modern/experiments/orbit_wall_loss_geometry_screening_v2` (results
+`26029b72222e2b408e87fca3493940b0516b0f5d`, preregistration `cef1ee59…`,
+runtime fix and disclosure `bb756418…`, dashboard `eef7ac82…`) at the recorded
+outcome `accepted-screening-dataset`, the v1 outcome reused: 104,832
+collisionless test-particle electron orbits launched at the midpoints of the 377
+separatrix-bounded catalogue cells (cusp topology v3.1 at `cec47f12…`: 96
+anode-side partials, 181 interior, 96 exit-side partials of the 96 sweep-v2
+designs plus the 4 cells of the P2 row `divergent-exit-stack`, labelled
+`P2_QUALIFIED_FIELD_SCREENING_LAUNCH_DESIGN`), 8 strata × scrambled Sobol
+(stage 1 = 128 launches per cell, top-up to 512 where the stage-1 Wilson width
+exceeds 0.10, replayed by code; 117 cells topped up, 260 saturated), a 1/8 paired
+N→2N control (11,648 orbits, 2 discordant, bias −0.9e-4 ± 0.9e-4), 1,105 cases,
+16,549 validators / 0 failed, 97/97 sealed, cross-resolution 2× diagnostic for
+every design (max rms 1.04 % vs gate 5 %). All 181 interior cells are at
+P(wall) = 1.000 (read in the Discussion as the field-maximum result of the PPM
+analysis: the mid-planes sit at the magnet-stage centres); anode-side median
+0.984 (min 0.307; 34 at one), exit-side median 0.500
+(0.248–1.000; the value near one half is a direction split whose wall-reaching
+direction equals the last stage's polarity in 82 of 90 divergent-exit designs);
+10,407 reflections (11.2 %) in 65 exit-side cells and 1 anode-side cell, none
+interior; Jeffreys floor median 0.0055, max 0.0242; 294/377 cells (78 %)
+surrogate-ready; v1 vs v2 pooled (launch-weighted) Spearman +0.15, mean Δ +0.038,
+|Δ| 0.113, 45 % interval overlap; P2 row 0.605 / 1.0 / 1.0 / 0.170 with 350
+reflections in its 28 µm exit-side cell. Three disclosures are admitted with the
+dataset and verified by the generator: (i) the results manifest was published
+post hoc by a fail-closed runtime recovery after the locked attempt's publication
+step hit the Windows CRT 8192-descriptor cap on 16,957 files, with the terminal
+record and every sidecar-attested artifact durable and nothing rerun (the
+disclosed manifest and terminal hashes must equal the committed bundle's; a 4096
+pin cap was added); (ii) the frozen orbit_mc 1.7 launch-id grammar and the
+Wilson-exactness defect (734 of the first 4000 case sizes have a positive
+zero-count lower bound, 1238 an inexact full-count upper bound; recomputed) that
+fixed the 128/16/64 case sizes; (iii) one cell (`l1a-gs-v2-088`, 0.16 mm) with its
+midpoint inside the injector zone and 13 sweep cells under 1 mm, flagged not
+moved. Every per-cell value is a collisionless geometric wall-access fraction and
+never a loss probability; the Discussion (CLM-085) reads the interior saturation
+as the exhaustion of the collisionless geometry-to-wall-loss chain as a closure
+source, defers the surrogate/optimisation iteration on these labels and names a
+kinetic (PIC) design sweep as future work that is not evidence. The
 checked evidence is enumerated in `evidence/claims.json`. Concurrent or later work is not
 publishable merely because files exist in a working tree: a planned section
 opens only when its gate in `evidence/result-gates.json` names an accepted,
@@ -170,8 +211,12 @@ claimed or recomputed. The geometry screening is classified
 positions, its geometry associations (rank correlations with chamber length,
 wall radius, stage pitch and stage count) are observations of one launch
 design and not a design rule, its refined-field diagnostic exists for four
-representatives only, and no surrogate consuming it is admitted; the one
-optimisation consuming it is the catalogue campaign, classified
+representatives only, and no surrogate consuming it is admitted; its successor,
+the catalogue-cell screening v2, carries the same classification (plus
+`P2_QUALIFIED_FIELD_SCREENING_LAUNCH_DESIGN` for its P2 row), launches from the
+catalogue cells, records unit access in every interior cell, and is admitted
+with its post-hoc manifest publication disclosed; the one
+optimisation consuming the v1 dataset is the catalogue campaign, classified
 `l0_model_optimisation_over_screened_design_catalogue_with_test_particle_wall_loss_closure_not_thruster_performance`:
 its closure identifies a collisionless test-particle wall-hit probability on a
 linear-vacuum screening field with a per-cusp survival factor by declaration
@@ -217,12 +262,32 @@ it does not modify the environment.
   file roles, and required metrics.
 - `evidence/result-gates.json` — explicit L1/L2/L3 admission criteria
   (`physics-level` gates), the accepted `numerical-campaign` gates
-  `GATE-WALL-LOSS-V4`, `GATE-MDO-L0-V1` and `GATE-MDO-L0-V2`, the six
+  `GATE-WALL-LOSS-V4`, `GATE-MDO-L0-V1` and `GATE-MDO-L0-V2`, the seven
   `numerical-screening` gates `GATE-L1A-SWEEP-V2`, `GATE-FOUR-CELL-V2`,
   `GATE-TOPOLOGY-CHAR-V1`, `GATE-WALL-LOSS-GEOMETRY-SCREENING-V1`,
-  `GATE-CUSP-TOPOLOGY-V3-1` and `GATE-L1A-SWEEP-V3`, each carrying its
+  `GATE-CUSP-TOPOLOGY-V3-1`, `GATE-L1A-SWEEP-V3` and
+  `GATE-WALL-LOSS-GEOMETRY-SCREENING-V2`, each carrying its
   `recorded_outcome`, and the `analytic-consistency` gate
   `GATE-FOUR-CELL-CLOSURE-V1`.
+- `evidence/manifests/wall-loss-geometry-screening-v2.json` — typed screening
+  manifest (`paper-orbit-cell-screening-manifest` 1.0) binding the sealed
+  bundle's top-level artifacts, every transition, the representatives' and the
+  P2 row's sample cases (summary, handoff, endpoints, orbit artifact and
+  sidecar), fields and field evidence and the frozen preregistration files at the
+  record commit; the results dashboard at its revision; the cusp-cell catalogue
+  and topology manifest, the v1 dataset and manifest, the wall-loss export and
+  the sweep manifest as references at their revisions; `POSTHOC_FINALIZATION.md`,
+  the runtime recovery and lifecycle modules and the recovery tests as disclosure
+  sources at the disclosure revision; plus the metrics the checker compares with
+  the raw artifact values behind the `\Wlh...` macros.
+- `evidence/wall-loss-geometry-screening-v2.json`,
+  `generated/wall-loss-geometry-screening-v2.tex`,
+  `generated/wall-loss-geometry-screening-v2.provenance.json` — the hash-bound
+  evidence file, the generated `\Wlh...` macros with five `\ArtifactClaim`
+  tables, and the provenance sidecar, regenerated by the checker at every run.
+- `sections/wall-loss-geometry-screening-v2.tex` — the macro-only results
+  subsection of Section 15; `sections/wall-loss-geometry-screening-v2-standalone.tex`
+  compiles it on its own.
 - `evidence/manifests/l1a-sweep-v3.json` — typed screening manifest
   (`paper-l1a-regime-screening-manifest` 1.0) binding the sealed bundle's
   top-level artifacts, the HEMP-like and representative designs' records and
@@ -759,4 +824,99 @@ wording, a Discussion interpretation (CLM-076) not bound to the manifest, or a
 ```powershell
 python paper/scripts/generate_l1a_sweep_v3_evidence.py
 python -m unittest discover -s paper/tests -p "test_l1a_sweep_v3*" -v
+```
+
+## Admitted screening dataset: orbit wall-loss geometry screening v2 (catalogue cells)
+
+`paper/scripts/generate_wall_loss_geometry_screening_v2_evidence.py` reads the
+sealed results bundle of
+`modern/experiments/orbit_wall_loss_geometry_screening_v2` (16,957 files verified
+byte for byte against `results/manifest.json`, every artifact paired with a
+manifest-bound sidecar; no end-of-line tolerance exists or is granted), requires
+the frozen `protocol.json`, `authorities.json`, `shakedown.json` and
+`design-authorities.json` to equal the sealed copies and to carry the same blob
+at the preregistration and record commits, requires the record commit to carry
+only `results/` and the disclosure commit to change only Markdown under the
+experiment, binds the cusp-cell catalogue (`cec47f12`; must hash to
+`dataset.catalogue_file_sha256`) and requires every dataset cell to equal its
+catalogue cell field by field with the midpoint launch plane, wall area,
+length/pitch, short-cell and injector-zone flags recomputed, replays the frozen
+two-stage allocation rule from every stage-1 case (stage-1 Wilson width > 0.10 ⇔
+topped up ⇔ three stage-2 blocks present), pools the stage counts and recomputes
+every per-cell, per-case and per-stratum Wilson interval, both floors and the
+readiness flag, replays the paired N→2N control orbit by orbit from the gzipped
+endpoint tables (launch keys of the control case matched to their N-step
+partners; wall_N, wall_2N and discordance recomputed for every cell), recomputes
+the wall-area- and launch-weighted design averages, the pooled control gate with
+the experiment's standard error, every headline statistic (position-class
+summary, floors, readiness, least/most designs, P2 row) and the v1 comparison
+from the bound v1 dataset (`ab7c2897`; Spearman, mean differences, interval
+overlap, per-design rows), cross-checks every case summary, handoff, orbit
+sidecar and consumer row, verifies every field-evidence record (cross-resolution
+for all 97 designs), cross-checks the committed results dashboard
+(`modern/visualization/wall-loss-geometry-screening-v2.html`, its generator and
+template at `eef7ac82`) against the same bundle, binds `POSTHOC_FINALIZATION.md`,
+`experiment_runtime/recovery.py`, `lifecycle.py` and `test_recovery.py` at
+`bb756418` and requires the disclosed manifest and terminal hashes, file,
+artifact and transition counts, results commit and descriptor arithmetic to
+equal the committed bundle and the `MAX_PINNED_DESCRIPTORS` constant to equal
+the disclosed cap, recomputes the Wilson-exactness scan behind the case-size
+constraint (734 / 1238 of the first 4000), and writes
+`paper/evidence/wall-loss-geometry-screening-v2.json` (every `\Wlh...` macro
+with its artifact path, JSON pointer, formatter and SHA-256, or its derivation
+and inputs), `paper/generated/wall-loss-geometry-screening-v2.tex` (macros plus
+five tables wrapped in `\ArtifactClaim`: dataset and allocation summary,
+per-cell-class distributions with saturation and floors, reflections and the
+paired control with the exit-side direction split, the pooled v1 comparison,
+the disclosures) and the provenance sidecar. Derived macros include the
+per-class floor medians, the exit-side direction split and its last-polarity
+association, the execution wall time from the transition log and the
+disclosure values.
+
+The subsection `paper/sections/wall-loss-geometry-screening-v2.tex` renders
+numbers only through macros (the time-step policy names `N`/`2N` included); its
+execution, cell-class, reflection/control/comparison, floors, disclosure and
+scope statements are exact `\EvidenceClaim` bodies (CLM-078, CLM-080, CLM-081,
+CLM-082, CLM-083, CLM-084), the abstract sentence is CLM-077, the tables are
+CLM-079 and the labelled Discussion interpretation (the collisionless
+geometry-to-wall-loss chain is exhausted as a closure source; the
+surrogate/optimisation iteration on these labels is deferred; a kinetic sweep is
+future work, not evidence) is CLM-085. The gate reuses the `numerical-screening`
+kind at the existing outcome `accepted-screening-dataset` (the v1 outcome; the
+study is the same kind of object with a different launch design) and justifies
+the reuse on the gate; `opens_level` is null. The shared flag
+`stable_multicell_wall_cusp_topology_demonstrated` is not reused (it was defined
+against the frozen wall-null definition); the boundary is carried by explicit
+flags (`manifest_published_posthoc` true, `evidence_durable_before_recovery`
+true, `interior_cells_saturated` true, `access_fraction_is_loss_probability`
+false, `p2_row_is_v4_replication` false, `pooled_design_values_are_estimands`
+false, `catalogue_cells_are_demonstrated_confinement_cells` false,
+`surrogate_fitted_or_accepted` false). Section 11's "planned" wording now cites
+Section 15, and the topology screening's Limitations sentence names this
+screening as the catalogue's first admitted consumer.
+
+`check_paper.py` regenerates the three generated files at every run and fails
+closed on any byte difference, any artifact hash mismatch, any manifest metric
+that differs (in value or type) from the raw artifact value behind its macro, any
+policy metric off its fixed value, a dashboard checkout that differs from the
+blob bound at the dashboard revision, a results tree changed since the evidence
+revision, a frozen file changed since preregistration, a reference or
+disclosure-source file that differs from its bound blob or from the evidence
+binding, a disclosure that names other hashes than the committed bundle's, a
+results-bundle block that does not disclose the post-hoc publication, a recorded
+outcome that disagrees anywhere or a gate that does not justify the reuse, an
+interior-saturation, reflection-structure, control or disclosure finding that
+does not hold in the evidence, a literal digit or undefined macro in the section,
+a classification, P2-label, recorded-outcome or campaign-status macro that does
+not render its string, a missing registered non-claim, a claim lacking its
+as-recorded wording, an interpretation claim inside the results section, a
+Discussion interpretation (CLM-085) not bound to the manifest or lacking its
+wording, the superseded planning wording anywhere in the manuscript, Limitations
+without the post-hoc publication and saturation statements, or a
+`\GeometryScreeningTwoEvidenceRevision` macro that does not spell the manifest
+revision.
+
+```powershell
+python paper/scripts/generate_wall_loss_geometry_screening_v2_evidence.py
+python -m unittest discover -s paper/tests -p "test_wall_loss_geometry_screening_v2*" -v
 ```

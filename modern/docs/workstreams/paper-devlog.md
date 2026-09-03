@@ -1296,3 +1296,149 @@
 - Rendered the Discussion, Limitations and Section 11 pages to
   `%TEMP%\paper-sweep3-pages\` (`B-p*.png`) with `pdftoppm` and read the two
   re-scoped claims.
+
+## 2026-09-04 - Admitting the wall-loss geometry screening v2 (catalogue cells)
+
+### Scope
+
+- Worktree `uni-project-paper-scr2` on `paper/screening-v2-claim` from
+  `origin/feat/sota-foundation` (`ba852122`). Admitted
+  `modern/experiments/orbit_wall_loss_geometry_screening_v2` (preregistration
+  `cef1ee59`, record `26029b72` results only, runtime fix + disclosure
+  `bb756418`, dashboard `eef7ac82`) through the seventh `numerical-screening`
+  gate `GATE-WALL-LOSS-GEOMETRY-SCREENING-V2` at the recorded outcome
+  `accepted-screening-dataset` (the v1 outcome, reused and justified on the
+  gate; no sixth outcome value). New manifest type
+  `paper-orbit-cell-screening-manifest` 1.0. Section 15, CLM-077..085.
+- Did not touch `results/`, the frozen preregistration files, `FYP/` or the GPU.
+
+### Added
+
+- `paper/scripts/generate_wall_loss_geometry_screening_v2_evidence.py` (380
+  `\Wlh...` macros, ~6 s warm): byte-verifies the 16,957-file bundle with
+  sidecars; frozen == sealed; record commit carries only `results/` and the
+  disclosure commit only Markdown under the experiment; binds the cusp-cell
+  catalogue and topology manifest (`cec47f12`), the v1 dataset and manifest
+  (`ab7c2897`), the v4 export (`6922a3cf`) and the sweep manifest (`f30cb42e`)
+  as references that must hash to the identities the bundle recorded; every
+  dataset cell equals its catalogue cell field by field (midpoint launch plane,
+  wall area, length/pitch, short-cell and injector flags recomputed); replays the
+  frozen two-stage rule from every stage-1 case (width > 0.10 <=> topped up <=>
+  three stage-2 blocks); recomputes every per-cell, per-case and per-stratum
+  Wilson interval, both floors and the readiness flag; replays the paired N->2N
+  control orbit by orbit from the gzipped endpoint tables (launch keys matched
+  to N-step partners; every endpoint row's block, stratum, band and launch plane
+  checked); recomputes design averages (area and launch weighted), the pooled
+  control gate with the experiment's `pstdev` standard error, every headline
+  statistic and the v1 comparison from the bound v1 dataset; cross-checks every
+  summary, handoff, orbit sidecar and consumer row and every field-evidence
+  record (cross-resolution for all 97); cross-checks the dashboard payload;
+  binds `POSTHOC_FINALIZATION.md`, `recovery.py`, `lifecycle.py` and
+  `test_recovery.py` at `bb756418` and requires the disclosed manifest/terminal
+  hashes, counts, results commit and descriptor arithmetic to equal the bundle
+  and `MAX_PINNED_DESCRIPTORS` to equal the disclosed 4096; recomputes the
+  Wilson-exactness scan (734 / 1238 of the first 4000 case sizes) behind the
+  128/16/64 case-size constraint; five `\ArtifactClaim` tables (dataset and
+  allocation; per-cell-class distributions + P2 row; reflections, direction
+  split and control; v1 comparison; disclosures).
+- `paper/sections/wall-loss-geometry-screening-v2.tex` (Method; Results; Wall
+  access by cell class; Reflections, control and the fixed-fraction screening;
+  Floors and readiness; Disclosures; Scope box), digit-free (time-step names
+  `N`/`2N` as macros); standalone driver.
+- `claims.json`: CLM-077 (abstract), CLM-078/080/081/082/083/084 (section),
+  CLM-079 (tables), CLM-085 (Discussion interpretation: the collisionless
+  geometry-to-wall-loss chain is exhausted as a closure source; the
+  surrogate/optimisation iteration on these labels is deferred; a kinetic PIC
+  design sweep is future work, not evidence); manifest entry and gate record.
+  `result-gates.json` (107 metric constraints; `disclosure_revision`),
+  `manifest-schemas.json`, `figure-table-contract.json`
+  (`TAB-WALL-LOSS-GEOMETRY-SCREENING-V2`, five ArtifactClaims).
+- `manuscript.tex`: `\GeometryScreeningTwoEvidenceRevision`, preamble `\input`,
+  tenth date line, abstract sentence, seventh-gate paragraph in Section 3.1,
+  Section 15 "Preregistered wall-access screening from the catalogue cells of
+  the accepted sweep geometries" (pages 46-53), Section 11 now cites Section 15
+  instead of "planned / future work", Discussion paragraph (CLM-085, page 57)
+  plus one sentence in the multi-cell paragraph, Limitations (post-hoc
+  publication with the descriptor-cap macros; interior saturation; P2 row;
+  declared averages; case-size constraint; the topology catalogue's first
+  admitted consumer), L1 note, data availability, Conclusion.
+- `check_paper.py`: `GEOMETRY_SCREENING_V2_METRIC_MACROS` (119) and
+  `GEOMETRY_SCREENING_V2_POLICY_METRICS` (17; incl. `manifest_published_posthoc`
+  true, `evidence_durable_before_recovery` true, `interior_cells_saturated` true,
+  `access_fraction_is_loss_probability` false), `_check_geometry_screening_v2`
+  (reference group via `_check_bound_files_at_revision`; disclosure-source group
+  with the `disclosure-` role prefix and the verified block equal between manifest
+  and evidence; `posthoc_audit` must stay null; the interior-saturation,
+  reflection-structure, control and disclosure findings must hold; as-recorded
+  wording of CLM-080/081/082/083/084/085; Section 11 must cite the new section and
+  the superseded wording must be absent; Limitations must carry the post-hoc and
+  saturation macros), `_render_geometry_screening_v2_tables`, required section,
+  trackable paths, schema type.
+- Tests: `test_wall_loss_geometry_screening_v2_admission.py` (19) and
+  `test_wall_loss_geometry_screening_v2_evidence.py` (10); the v1, cusp-topology
+  and sweep-v3 admission tests updated for the "planned / no admitted consumer"
+  wording that this admission retires. README, notation, author checklist,
+  supplementary outline (S4j).
+
+### Numbers verified against the bundle
+
+- 97 designs (96 + P2), 377 cells (96 / 181 / 96 / 4), 1,105 cases, 104,832
+  orbits (48,256 / 44,928 / 11,648), 16,549 validators / 0 failed, 0 timeouts,
+  energy drift 0, 97/97 sealed, lock-to-terminal 85.9 min (case pool 70.4).
+  117 topped up (32 anode / 83 exit / 2 P2), 260 saturated; Jeffreys floor
+  median 0.0055, max 0.0242; 294/377 (78.0 %) ready. Cross-resolution for 97/97,
+  max rms 1.04 % (gate 5 %); interpolation max 0.87 %.
+- Interior 181/181 at 1.000 in 96/96 designs; anode-side median 0.984 (min 0.307,
+  34 at one, 30 saturated at 118-127/128); exit-side median 0.500 (0.248-1.000;
+  11 at one = 7 divergent + 4 straight). The exit-side "0.5" is a direction split:
+  pooled D+1 0.566 / D-1 0.418, per-design fractions 0-1, the two directions
+  differ by >= 0.8 in 60/90 divergent designs (median split 0.982), and the
+  wall-reaching direction equals the last stage's polarity in 82/90. (The brief's
+  "6 straight-exit designs at 1.0" and "D+1 0.53-0.61 / D-1 0.37-0.47" are not
+  what the artifacts hold: 4 of the 6 straight designs are at one, one at 0.992,
+  one (088) at 0.316; the direction fractions are one-sided, not banded.)
+- Reflections 10,407 (11.2 %) in 65 exit-side + 1 anode-side cells, none interior,
+  66 designs (65 + P2); escapes 4,336 / 6,761 / 5,578 / 0. Control 11,648, wall
+  8,263 -> 8,262, 2 discordant (0.017 %), bias -8.6e-5 +- 8.6e-5, gate passed,
+  flag true 97/97. v1 vs v2 launch-weighted Spearman +0.15, mean diff +0.038, mean
+  |diff| 0.113, overlap 45 % (area-weighted +0.35 / +0.220 / 0 %). P2 row 0.605
+  [0.562, 0.647] / 1.0 / 1.0 / 0.170 [0.140, 0.205], 350 reflections in the 28 um
+  exit cell; v4 own value 0.645 [0.602, 0.685].
+- Disclosures: 16,957 files vs 8,192 descriptors; pin cap 4,096; validate 16,968
+  artifacts; manifest `876dc7e1...` and terminal `a495d12b...` equal the bundle;
+  0 orbits rerun, 0 code files changed after the record; 734 / 1238 of 4000
+  inexact; injector-zone cell `l1a-gs-v2-088` cell-01 0.16 mm; 14 short cells
+  (12 exit + 1 anode sweep, 1 P2 at 28 um).
+
+### Validation
+
+- `python paper/scripts/check_paper.py`: before the WIP commit only "accepted
+  manifest is not committed at HEAD"; after it green (about 107 s warm; the
+  first run in the fresh worktree took 350 s on a cold file cache).
+- `python -m unittest discover -s paper/tests`: 257 tests (228 + 29).
+- `python paper/scripts/verify_reproducible_build.py`: two clean builds
+  byte-identical, `paper/build/manuscript.pdf` 65 pages, 734,328 bytes, SHA-256
+  `ba7441c972a345e9390fd548ae58cd41fa43c15a984a653d38f9a2dd56f534b6`; no
+  overfull box, no LaTeX error, no undefined reference (the pre-existing
+  `sec:mdo-l0-v2` duplicate label is unchanged).
+- Rendered `%TEMP%\paper-scr2-pages\` (abstract p1; Section 3.1 p5; Section 11
+  p24; Section 15 pp46-53; Discussion pp55-58; Limitations pp59-60; data
+  availability pp61-62; Conclusion and bibliography pp63-65) with `pdftoppm`
+  and inspected the five tables and the CLM-085 paragraph.
+
+### Corrections during validation
+
+- Record fields again differed from my first guess: the dataset's
+  `field_source` is a five-key subset of the protocol's; `launch_design` carries
+  radii, not per-cell counts; `allocation_replay` in the dataset is the
+  (checks, passed) subset of the allocation artifact's replay block; control
+  cases have unequal (and sometimes fewer than eight) strata. Each check was
+  corrected to the recorded structure.
+- Protocol prose macros ("49,152 N/2N pairs", "the same 96 fields", "8-point
+  gyrophase grids") trip `find_unregistered_claims` in the generated file;
+  dropped rather than sliced.
+- A disclosure-table row "yes (16,957 files, 9 transitions)" matched the
+  quantitative-claim scan ("957 files"); reworded to a "file / transition count"
+  column.
+- The checker phrase "exhausted" did not match the claim's "exhausts the
+  collisionless"; the checker now requires the claim's wording.

@@ -288,6 +288,33 @@
       "required_gate": "GATE-L1"
     },
     {
+      "artifact_claim_count": 5,
+      "artifact_claim_note": "The generated file defines the evidence macros and five table macros (\\WlhDatasetTable, \\WlhCellClassTable, \\WlhControlTable, \\WlhComparisonTable, \\WlhDisclosureTable); each table body is wrapped in its own ArtifactClaim bound to CLM-079, so exactly five ArtifactClaim macros are required. The tables report a screening dataset on linear-vacuum fields launched from the catalogue cells: dataset and allocation summary, per-cell-class wall-access distributions with saturation and floors, reflections and the paired control, the pooled comparison with the fixed-fraction screening, and the disclosures; every per-cell value is a collisionless geometric access fraction and nothing in them is physical-orbit, plasma or performance evidence.",
+      "claim_ids": [
+        "CLM-079"
+      ],
+      "evidence_file": "paper/evidence/wall-loss-geometry-screening-v2.json",
+      "generator_command": "python paper/scripts/generate_wall_loss_geometry_screening_v2_evidence.py",
+      "generator_module": "generate_wall_loss_geometry_screening_v2_evidence",
+      "generator_path": "paper/scripts/generate_wall_loss_geometry_screening_v2_evidence.py",
+      "id": "TAB-WALL-LOSS-GEOMETRY-SCREENING-V2",
+      "kind": "table",
+      "manifest_id": "WALL-LOSS-GEOMETRY-SCREENING-V2-20260903-377-V1",
+      "manuscript_binding": "\\input{generated/wall-loss-geometry-screening-v2.tex}",
+      "manuscript_label": "tab:wall-loss-geometry-screening-v2-dataset",
+      "manuscript_labels": [
+        "tab:wall-loss-geometry-screening-v2-dataset",
+        "tab:wall-loss-geometry-screening-v2-cells",
+        "tab:wall-loss-geometry-screening-v2-control",
+        "tab:wall-loss-geometry-screening-v2-comparison",
+        "tab:wall-loss-geometry-screening-v2-disclosures"
+      ],
+      "output_path": "paper/generated/wall-loss-geometry-screening-v2.tex",
+      "required_gate": "GATE-WALL-LOSS-GEOMETRY-SCREENING-V2",
+      "sidecar_path": "paper/generated/wall-loss-geometry-screening-v2.provenance.json",
+      "status": "verified"
+    },
+    {
       "id": "FIG-MULTIFIDELITY-PARETO",
       "kind": "figure",
       "status": "planned",

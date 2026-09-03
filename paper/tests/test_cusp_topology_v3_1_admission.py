@@ -360,7 +360,7 @@ class CuspTopologyAdmissionTests(unittest.TestCase):
         self.assertIn("differ from the literature's; the same fields\nare screened under the literature definition", self.manuscript)
         self.assertIn("those definitions differ from the literature's", self.manuscript)
         self.assertIn("not the separatrix-bounded\ncells of the catalogue admitted in Section~\\ref{sec:cusp-topology}", self.manuscript)
-        self.assertIn("launches from the catalogue cells is future work and no result of it\nexists", self.manuscript)
+        self.assertIn("launches from the catalogue cells is admitted in\nSection~\\ref{sec:wall-loss-geometry-screening-v2}", self.manuscript)
 
     def test_revision_macro_must_spell_the_manifest_revision(self) -> None:
         tampered = self.manuscript.replace("cec47f12\\allowbreak{}f5909c58", "cec47f13\\allowbreak{}f5909c58")
@@ -457,7 +457,9 @@ class CuspTopologyAdmissionTests(unittest.TestCase):
         self.assertIn("cusp topology screening at Git revision \\CuspTopologyEvidenceRevision", self.manuscript)
         self.assertIn("\\cite{Gildea2012,Kornfeld2007,Koch2011,Lewerentz2023}", self.manuscript)
         # The new Limitations sentence and the L1 note exist; the stale wording is gone.
-        self.assertIn("its catalogue is a\nconsumer contract under its labels that no admitted consumer has yet\ningested", self.manuscript)
+        # The catalogue's first admitted consumer is the catalogue-cell screening (Section 15).
+        self.assertIn("its catalogue is a\nconsumer contract under its labels whose first admitted consumer is the\ncatalogue-cell screening of Section~\\ref{sec:wall-loss-geometry-screening-v2}", self.manuscript)
+        self.assertNotIn("no admitted consumer has yet", self.manuscript)
         self.assertIn("The admitted cusp topology screening\ncharacterises prescribed field maps", self.manuscript)
         self.assertNotIn("its cells were never shown to exist", self.flattened)
 

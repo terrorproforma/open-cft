@@ -1,0 +1,313 @@
+% Results subsection: orbit wall-loss geometry screening v2 (collisionless test-particle
+% wall-access dataset launched from the separatrix-bounded catalogue cells of every accepted
+% L1a sweep design plus one launch-design row on the P2-qualified field; accepted screening
+% dataset).
+%
+% Every quantity in this file is a \Wlh... macro defined in
+% paper/generated/wall-loss-geometry-screening-v2.tex, which
+% paper/scripts/generate_wall_loss_geometry_screening_v2_evidence.py writes from the
+% sealed results bundle of modern/experiments/orbit_wall_loss_geometry_screening_v2;
+% paper/evidence/wall-loss-geometry-screening-v2.json records the artifact path, JSON
+% pointer and SHA-256 behind each macro, or the derivation of a derived macro. No
+% numeric literal is typed here.
+%
+% Status: admitted. manuscript.tex binds this file once through
+% \input{sections/wall-loss-geometry-screening-v2.tex}. Admission is governed by the
+% numerical-screening gate GATE-WALL-LOSS-GEOMETRY-SCREENING-V2 in
+% paper/evidence/result-gates.json (recorded outcome accepted-screening-dataset), the
+% typed manifest paper/evidence/manifests/wall-loss-geometry-screening-v2.json and the
+% claim records bound to manifest WALL-LOSS-GEOMETRY-SCREENING-V2-20260903-377-V1.
+% Every \EvidenceClaim body below must equal its registered authorized_tex exactly;
+% paper/scripts/check_paper.py verifies that, the macro-only rule, the classification,
+% recorded-outcome, campaign-status and field-status strings, the interior-saturation
+% and post-hoc-publication findings and the presence of the registered non-claims. The
+% standalone driver paper/sections/wall-loss-geometry-screening-v2-standalone.tex
+% compiles this file on its own.
+\subsection{Collisionless wall access from the catalogue cells of the accepted sweep designs}
+\label{sec:wall-loss-geometry-screening-v2-screening}
+
+\paragraph{Method.}
+The screening integrates collisionless prescribed-field test-particle electron
+orbits (orbit\_mc \WlhOrbitMcVersion, \texttt{\WlhBackend}; contract matches:
+\WlhOrbitMcContractMatches) in the re-solved fields of every accepted design of the
+geometry sweep of Section~\ref{sec:l1a-sweep-v2}, launched from the separatrix-bounded
+wall cells of the catalogue admitted in Section~\ref{sec:cusp-topology}
+(catalogue hash prefix \texttt{\WlhCatalogueSha}, \WlhCatalogueDesigns{} catalogue
+designs at results revision \texttt{\WlhCatalogueResultCommit}; the
+\WlhSweepDesignCount{} sweep designs carry \WlhSweepCellCount{} cells, \WlhAnodeCells{}
+anode-side partial cells between the anode plane and the first wall cusp,
+\WlhInteriorCells{} interior cells between consecutive wall cusps and \WlhExitCells{}
+exit-side partial cells between the last wall cusp and the end of the straight
+dielectric). The cells are bound by the catalogue bytes and their descriptors are
+carried as cell geometry only; the catalogue's mirror ratios are field ratios, never
+probabilities. Every cell launches at its midpoint (\texttt{\WlhLaunchPlaneRule}): a
+midpoint inside the injector zone is flagged and never moved
+(\WlhInjectorFlaggedCells{} such cell, design \texttt{\WlhInjectorFlaggedDesign},
+\WlhInjectorFlaggedLengthMm~mm long), and cells shorter than
+\WlhShortCellLengthMm~mm are flagged (\WlhShortCells{} cells). Each cell receives
+\WlhStrataPerCell{} equal-weight strata of kinetic energy \WlhEnergies~eV, pitch
+angle \WlhPitches$^\circ$ and parallel direction \WlhDirections; within a stratum the
+launch radius band (\WlhBandOneLo--\WlhBandOneHi{} or \WlhBandTwoLo--\WlhBandTwoHi{} of
+the wall radius), the radius inside the band and the gyrophase are drawn from an
+independent scrambled Sobol' sequence per design, cell and stratum
+(\WlhSobolGenerator), so no two designs share a launch set. The frozen two-stage
+allocation rule gives every cell \WlhStageOnePerCell{} launches
+(\WlhStageOnePointsPerStratum{} points per stratum) and tops a cell up to
+\WlhFinalPerTopped{} (\WlhStageTwoBlocks{} further blocks, \WlhStageTwoPointsPerStratum{}
+points per stratum) only when its stage-one Wilson interval for the wall-access
+fraction is wider than \WlhWidthThreshold; the rule is evaluated by code inside the
+single execution and replayed by the main process from the endpoint terminations. A
+frozen-seed subset of \WlhControlFraction{} of every cell's final launches
+(\WlhControlOfStageOne{} or \WlhControlOfTopped{} launches) is re-integrated at the
+halved time step (maximum gyro-rotation per step \WlhRotationN{} and
+\WlhRotationTwoN~rad; policies \texttt{\WlhTimestepN} and \texttt{\WlhTimestepControl}) and
+paired orbit by orbit with its \texttt{\WlhTimestepN}-step partner; the pooled paired
+difference is the campaign-binding control gate (\WlhControlGateMax) and the
+per-design paired flag decides sealing. Per cell the stage counts are pooled with
+equal weights into \texttt{\WlhEstimator} estimates with \texttt{\WlhIntervalMethod}
+intervals for the wall, reflection, escape and timeout fractions, with the binomial
+floor and the Jeffreys floor recorded; a cell is surrogate-ready when its Jeffreys
+floor is at most \WlhReadinessFloor. The estimand of every cell is a collisionless
+geometric wall-access fraction of the launch distribution (\WlhEstimandStatement);
+design values are wall-area-weighted and launch-weighted averages of the per-cell
+fractions and are declared averages, not estimands in their own right.
+
+Every sweep design is rebuilt with the sweep's own case builder and re-solved with the
+accepted linear-vacuum \WlhFieldModelLevel{} solver (\texttt{\WlhResolveSolver},
+\WlhGridRadial$\times$\WlhGridAxial{} intervals) with its identity proven against the
+sealed sweep record (manifest prefix \texttt{\WlhSweepManifestSha}, raw results
+\texttt{\WlhSweepRawSha}); the \WlhStoredMapDesigns{} representatives reproduce their
+stored maps node-wise within \WlhStoredPsiMaxDiff~Wb and \WlhStoredBMaxDiff~T. Unlike
+the fixed-fraction screening of Section~\ref{sec:wall-loss-geometry-screening}, the
+\WlhRefinement$\times$ refined re-solve and the cross-resolution diagnostic run for every
+design: \WlhCrossResolutionDesigns{} of \WlhDesignCount{} designs, largest cross-resolution
+rms error \WlhCrossResolutionRmsMax{} against a gate of \WlhCrossResolutionGate{} and
+largest interpolation rms error \WlhInterpolationRmsMax{} against \WlhInterpolationGate;
+\WlhIdentityProvenDesigns{} of \WlhDesignCount{} designs passed every field check. The
+sweep fields keep the status \texttt{\WlhFieldStatus}. One further row integrates the
+divergent-exit design of Section~\ref{sec:wall-loss-v4} on its qualified field through the
+hash-bound adapter of that campaign (\WlhPTwoFieldLevel) with this campaign's launch
+design in its \WlhPTwoCellCount{} catalogue cells; it carries the label
+\texttt{\WlhPTwoLabel} and is a launch-design row, not a replication of that campaign's
+accepted evidence (not a replication: \WlhPTwoNotReplication). Wall-hit authority is the
+straight cylindrical dielectric as in that campaign; each orbit may travel
+\WlhMaxPathLengths{} channel lengths within \WlhMaxTimeFactor{} times the transit time of
+a \WlhSlowestEnergy~eV electron over that path (event tolerance \WlhEventTolerance~m,
+step budget \WlhMaxSteps, Lorentz-factor guard \WlhMaxGamma; largest step count of any
+case \WlhStepsMax). Binding for the whole dataset are the field-adapter gates, the
+campaign preflight, zero numerical failures, the exact energy gate (\WlhEnergyGate),
+equality of final and event velocity, the wall-endpoint gate (\WlhWallEndpointGate~m),
+earliest-event ordering, the runtime rotation bound, the catalogue binding, the frozen
+stage-one authority, Wilson-exact case sizes, the allocation-rule replay, exact
+deterministic replay of every case and a cross-process determinism sample
+(\WlhPerDesignChecks{} per-design checks and \WlhManufacturedChecks{} manufactured
+checks: numpy versus Warp CPU relative velocity difference \WlhCpuParityDiff; CUDA
+parity \texttt{\WlhCudaParityStatus}). Timeouts and the comparison with the
+fixed-fraction screening are reported, never gated, and the magnetic-moment variation
+is \texttt{\WlhMuRole} (per-design medians from \WlhMuMedianMin{} to \WlhMuMedianMax,
+largest single value \WlhMuMaxMax).
+
+The protocol was frozen at preregistration commit \texttt{\WlhPreregCommit} after a
+disclosed non-evidentiary shakedown on \WlhShakedownDesigns{} real designs at
+\WlhShakedownBlock{} launches per cell block (\WlhShakedownCases{} cases,
+\WlhShakedownValidators{} validator calls; disjoint from the evidentiary design:
+\WlhShakedownDisjoint; passed: \WlhShakedownPassed; evidentiary:
+\WlhShakedownEvidentiary), whose timing projection under the planning assumption of
+\WlhPlanningToppedFraction{} topped-up cells (\WlhTimingProjectedMin~min against a budget
+of \WlhTimingBudgetMin~min; within budget: \WlhTimingWithinBudget) admitted the
+campaign while the worst case of every cell topped up (\WlhTimingWorstMin~min) did not
+(\WlhTimingWorstWithinBudget). It was executed exactly \WlhAttemptCount{} time under an
+immutable Git-common lock (immutable: \WlhLockImmutable) on \WlhWorkerPool{} of
+\WlhCpuCount{} CPU cores (\texttt{\WlhDevice}; lock to terminal \WlhExecutionWallMin~min,
+case pool \WlhCasesWallMin~min). The results are committed at
+\texttt{\WlhResultsCommit} (manifest hash prefix \texttt{\WlhManifestSha},
+\WlhVerifiedFiles{} files verified byte for byte, \WlhToleratedEolFiles{} accepted
+through any end-of-line tolerance; orbit\_mc source \texttt{\WlhOrbitMcSourceSha}, field
+pipeline \texttt{\WlhFieldPipelineSha} over \WlhFieldPipelineFiles{} files, protocol
+\texttt{\WlhProtocolSha}, experiment code \texttt{\WlhExperimentCodeSha} over
+\WlhExperimentCodeFiles{} files), the disclosure of the post-hoc manifest publication
+and the runtime fix at \texttt{\WlhDisclosureCommit}, and the results dashboard at
+\texttt{\WlhDashboardCommit}, whose embedded extraction the evidence generator requires
+to agree with the sealed artifacts.
+
+\paragraph{Results.}
+\EvidenceClaim{CLM-078}{The single execution terminated in state
+\texttt{\WlhTerminalState} with campaign status \texttt{\WlhCampaignStatus}:
+\WlhDesignCount{} of \WlhDeclaredDesigns{} declared designs (\WlhSweepDesignCount{}
+sweep designs and \WlhPTwoRowCount{} launch-design row on the qualified field;
+\WlhExcludedDesigns{} excluded) were screened in \WlhCellCount{} catalogue cells and
+\WlhCaseCount{} cases, \WlhOrbitCount{} orbits in all (\WlhStageOneLaunches{} at stage
+one, \WlhStageTwoLaunches{} at stage two, \WlhControlLaunches{} in the control), with
+\WlhValidatorsPassed{} validator calls and \WlhValidatorsFailed{} failures,
+\WlhSealedCases{} of \WlhCaseCount{} cases sealed and re-integrated by the exact
+authority replay (\WlhReplayCount{} replays), the allocation rule and the control
+selection replayed for every design, \WlhTimeouts{} timeouts, \WlhNumericalFailures{}
+numerical failures and a largest relative kinetic-energy drift of \WlhEnergyErrorMax{}
+against a gate of \WlhEnergyGate. The frozen rule topped up \WlhCellsToppedUp{} cells
+(\WlhAnodeToppedUp{} anode-side, \WlhExitToppedUp{} exit-side and the P2 row's
+topped-up cells) and left \WlhCellsSaturated{} saturated at \WlhStageOnePerCell{}
+launches (\WlhFractionSaturated), against the planning assumption of
+\WlhPlanningToppedFraction{} topped up; \WlhSealedDesigns{} of \WlhDesignCount{} designs
+carry a true paired control flag and are sealed.}
+Table~\ref{tab:wall-loss-geometry-screening-v2-dataset} summarises the dataset and
+its allocation.
+\WlhDatasetTable
+
+\paragraph{Wall access by cell class.}
+\EvidenceClaim{CLM-080}{Within the model classified as \texttt{\WlhClassification},
+every one of the \WlhInteriorCells{} interior cells of the \WlhSweepDesignCount{} sweep
+designs lost every launch to the dielectric: the interior wall-access fraction is
+\WlhInteriorPMin{} in every cell (\WlhInteriorAtOne{} of \WlhInteriorCells{} cells at
+one, \WlhInteriorToppedUp{} topped up, \WlhInteriorReflections{} reflections,
+\WlhInteriorEscapeMean{} mean escape fraction), in \WlhInteriorDesignsAllSaturated{}
+of \WlhSweepDesignCount{} designs (every interior cell saturated at one:
+\WlhInteriorAllSaturated). Structure exists only in the partial cells. The anode-side
+cells run from \WlhAnodePMin{} to \WlhAnodePMax{} (median \WlhAnodePMedian, mean
+\WlhAnodePMean; \WlhAnodeAtOne{} at one, \WlhAnodeSaturatedBelowOne{} saturated below a
+full count with \WlhAnodeSaturatedBelowOneMin{} to \WlhAnodeSaturatedBelowOneMax{} wall
+hits of \WlhStageOnePerCell, \WlhAnodeToppedUp{} topped up; mean escape fraction
+\WlhAnodeEscapeMean). The exit-side cells run from \WlhExitPMin{} to \WlhExitPMax{}
+(median \WlhExitPMedian, quartiles \WlhExitPQOne{} and \WlhExitPQThree, mean
+\WlhExitPMean; \WlhExitAtOne{} at one, \WlhExitToppedUp{} topped up; mean reflection
+fraction \WlhExitReflectedMean, mean escape fraction \WlhExitEscapeMean): over the
+\WlhDivergentDesigns{} divergent-exit designs the exit-side value runs from
+\WlhDivergentExitPMin{} to \WlhDivergentExitPMax{} (median \WlhDivergentExitPMedian;
+\WlhDivergentExitAtOne{} at one), and its median near one half is a direction split:
+pooled over those designs the launches with parallel direction $+$ reach the wall with
+fraction \WlhExitDirPlusPooled{} and those with direction $-$ with \WlhExitDirMinusPooled,
+the two directions differ by at least \WlhExitOneSidedThreshold{} in
+\WlhExitOneSidedDesigns{} of \WlhDivergentDesigns{} designs (median split
+\WlhExitDirectionSplitMedian), and the wall-reaching direction equals the last magnet
+stage's polarity in \WlhExitWallSideLastPolarity{} designs and differs from it in
+\WlhExitWallSideNotLastPolarity; over the \WlhStraightDesigns{} straight designs the
+exit-side value runs from \WlhStraightExitPMin{} to \WlhStraightExitPMax{}
+(\WlhStraightExitAtOne{} at one). The P2 launch-design row (\texttt{\WlhPTwoLabel})
+gives \WlhPTwoAnodeP{} [\WlhPTwoAnodeLo, \WlhPTwoAnodeHi] in its \WlhPTwoAnodeLengthMm~mm
+anode-side cell over \WlhPTwoAnodeN{} launches, \WlhPTwoInteriorPMin{} in each of its
+\WlhPTwoInteriorCells{} interior cells and \WlhPTwoExitP{} [\WlhPTwoExitLo,
+\WlhPTwoExitHi] with \WlhPTwoExitReflections{} reflections in its
+\WlhPTwoExitLengthUm~$\mu$m exit-side cell over \WlhPTwoExitN{} launches (wall-area
+weighted design value \WlhPTwoPooledArea), where that campaign's own launch design had
+recorded \WlhVFourP{} [\WlhVFourLo, \WlhVFourHi] over \WlhVFourTrials{} launches and no
+reflection; the row is a different launch distribution on the same field and is
+not a replication of that evidence. Every one of these fractions is the collisionless
+geometric wall access of the launch distribution from the cell midpoint and is never a
+loss probability; the direction and polarity readings are observations of this launch
+design and no design rule.}
+Table~\ref{tab:wall-loss-geometry-screening-v2-cells} gives the per-class
+distributions.
+\WlhCellClassTable
+
+\paragraph{Reflections, control and the fixed-fraction screening.}
+\EvidenceClaim{CLM-081}{Reflections occurred in \WlhReflectionsFinal{} of the
+\WlhFinalLaunches{} final launches (\WlhReflectionShareFinal), in
+\WlhExitCellsWithReflections{} of the \WlhExitCells{} exit-side cells,
+\WlhAnodeCellsWithReflections{} anode-side cell and \WlhInteriorCellsWithReflections{}
+interior cells of the sweep designs and in the P2 row's exit-side cell
+(\WlhPTwoReflections), so \WlhDesignsWithReflections{} of \WlhDesignCount{} designs
+recorded a reflection; \WlhEscapesFinal{} launches escaped (\WlhEscapeAnode{} through
+the anode plane, \WlhEscapeExit{} through the exit plane, \WlhEscapeDivergent{} radially
+into a divergent exit section, \WlhEscapeUnclassified{} unclassified). The paired
+control re-integrated \WlhControlN{} launches at the halved time step: \WlhControlWallN{}
+reached the wall at the reported step and \WlhControlWallTwoN{} at the halved step,
+\WlhControlDiscordant{} orbits changed termination (\WlhControlDiscordanceRate), the
+estimated bias of the reported fractions is \WlhControlBias{} $\pm$ \WlhControlBiasSe{}
+against a gate of \WlhControlGateMax{} (passed: \WlhControlPassed), and the paired flag
+held for \WlhControlFlagDesigns{} of \WlhDesignCount{} designs (per-design control sizes
+\WlhDesignControlNMin{} to \WlhDesignControlNMax, largest quantum \WlhDesignQuantumMax).
+Against the fixed-fraction screening of Section~\ref{sec:wall-loss-geometry-screening}
+over the same \WlhComparisonDesigns{} fields, whose pooled values run from
+\WlhVOnePooledMin{} to \WlhVOnePooledMax{} (median \WlhVOnePooledMedian), the
+launch-weighted design values of this screening run from \WlhPooledLaunchMin{} to
+\WlhPooledLaunchMax{} (median \WlhPooledLaunchMedian) with a Spearman rank correlation of
+\WlhSpearmanLaunch, a mean difference of \WlhMeanDiffLaunch, a mean absolute difference
+of \WlhMeanAbsDiffLaunch{} and overlapping intervals in \WlhOverlapLaunch{} of the
+designs, and the wall-area-weighted values run from \WlhPooledAreaMin{} to
+\WlhPooledAreaMax{} (median \WlhPooledAreaMedian; correlation \WlhSpearmanArea, mean
+difference \WlhMeanDiffArea, overlap \WlhOverlapArea): the same fields ranked by
+different cells give a different ranking, as the protocol anticipated, and the
+comparison is reported, never gated.}
+Table~\ref{tab:wall-loss-geometry-screening-v2-control} gives the reflection, escape
+and control record and Table~\ref{tab:wall-loss-geometry-screening-v2-comparison} the
+pooled comparison.
+\WlhControlTable
+\WlhComparisonTable
+
+\paragraph{Floors and readiness.}
+\EvidenceClaim{CLM-082}{The Jeffreys floor of the per-cell wall-access fraction has a
+median of \WlhFloorMedian{} and a maximum of \WlhFloorMax{} over the \WlhCellCount{}
+cells (a saturated cell at a full count of \WlhStageOnePerCell{} has floor
+\WlhFloorFullAtStageOne; a topped-up cell at one half of \WlhFinalPerTopped{} has floor
+\WlhFloorHalfAtFinal, above the readiness threshold of \WlhReadinessFloor{} by the frozen
+rule), so \WlhCellsReady{} of \WlhCellCount{} cells (\WlhFractionReady) are
+surrogate-ready under the frozen rule: \WlhSaturatedReady{} of the \WlhCellsSaturated{}
+saturated cells and \WlhToppedReady{} of the \WlhCellsToppedUp{} topped-up cells
+(\WlhAnodeReady{} anode-side, \WlhInteriorReady{} interior and \WlhExitReady{}
+exit-side cells of the sweep designs; per-class floor medians \WlhAnodeFloorMedian,
+\WlhInteriorFloorMedian{} and \WlhExitFloorMedian). Readiness is a precision statement
+about a screening label under its classification, not a statement that any surrogate
+has been fitted or accepted.}
+
+\paragraph{Disclosures.}
+\EvidenceClaim{CLM-083}{Three disclosures are admitted with the dataset. First, the
+runtime's own publication of the results manifest failed inside the locked attempt: the
+bundle has \WlhDisclosedFileCount{} files and the Windows C runtime allows
+\WlhDescriptorCap{} low-level descriptors, and the publication step pinned every file.
+The failure occurred after the terminal record (\texttt{\WlhTerminalState}, hash prefix
+\texttt{\WlhTerminalSha}), the \WlhTransitionCount{} transitions and every
+sidecar-attested artifact were durable (\WlhEvidenceDurableBeforeRecovery); a
+fail-closed recovery that rebuilds the manifest with the runtime's own inventory and
+validates it through the runtime's own validator, refusing published, crashed or
+tampered bundles (\WlhRecoveryRefusals{} refusal conditions), was added to the shared
+runtime together with a pin cap of \WlhPinCap{} descriptors and applied once, after
+which the runtime's validator returned \texttt{\WlhTerminalState} with
+\WlhDisclosedArtifactCount{} artifacts; the manifest was therefore published post hoc
+(\WlhManifestPublishedPosthoc), \WlhOrbitsRerun{} orbits were re-integrated,
+\WlhCodeFilesChangedAfterRecord{} experiment code files changed after the record, and the
+manifest hash the disclosure names equals the committed bundle's
+(\texttt{\WlhManifestSha}). Second, two design constraints come from the frozen
+orbit\_mc package: its launch-id grammar fixed the encoding of the cell and Sobol indices,
+and its artifact validator requires the Wilson lower bound not to exceed the estimate,
+whereas the zero-count lower bound is a positive round-off for \WlhDefectZeroInexact{}
+of the first \WlhDefectScanN{} case sizes and the full-count upper bound is below one
+for \WlhDefectFullInexact{} of them (recomputed here; the case sizes used are exact at
+both ends: \WlhDefectCaseSizesExact), which forced \WlhStageOnePerCell-launch cases and
+a control of \WlhControlFraction{} of every cell. Third, the midpoint of
+\WlhInjectorFlaggedCells{} cell (design \texttt{\WlhInjectorFlaggedDesign},
+\WlhInjectorFlaggedLengthMm~mm) lies inside the injector zone and is flagged, not moved,
+and \WlhShortCells{} cells are shorter than \WlhShortCellLengthMm~mm
+(\WlhShortSweepExitCells{} exit-side and \WlhShortSweepAnodeCells{} anode-side sweep
+cells and the P2 row's \WlhShortCellLengthMinUm~$\mu$m exit-side cell).}
+Table~\ref{tab:wall-loss-geometry-screening-v2-disclosures} lists the disclosures with
+the values the evidence generator verified against the bundle.
+\WlhDisclosureTable
+
+\paragraph{Scope.}
+The boxed statement is the only interpretation offered here; it repeats the claim
+boundary sealed with the dataset.
+\par\medskip\noindent
+\fbox{\begin{minipage}{0.94\linewidth}
+\textbf{Model-bounded scope.}
+\EvidenceClaim{CLM-084}{The dataset is screening only, classified
+\texttt{\WlhClassification} and admitted at the recorded outcome
+\texttt{\WlhRecordedOutcome}: its sweep fields are the re-solved linear-vacuum
+\WlhFieldModelLevel{} screening fields of the accepted sweep (status
+\texttt{\WlhFieldStatus}), not P2-qualified (\WlhNotPTwoQualified), so no number here is
+accepted physical-orbit evidence (\WlhNotAcceptedPhysicalOrbit); the P2 row is a
+launch-design row on the qualified field carrying the label \texttt{\WlhPTwoLabel} and
+is not a replication of the accepted wall-loss campaign (\WlhPTwoNotReplication); the
+orbits are collisionless prescribed-field test particles without electric field,
+collisions, sheath or self-consistent plasma; the result is not a particle-in-cell or
+self-consistent plasma calculation (forbidden: \WlhForbidPic), not a plasma or
+performance quantity (forbidden: \WlhForbidPerformance), publishes no mirror-formula
+loss estimate (forbidden: \WlhForbidMirror) and carries no hardware or experimental
+validation (claimed: \WlhHardwareValidation). Every per-cell value is a collisionless
+geometric wall-access fraction of the launch distribution from the cell midpoint and is
+never a loss probability, a per-cusp transit loss or a cusp probability for the plasma
+network without a declared closure; the catalogue cells are geometric properties of the
+field maps under the literature definition and not demonstrated confinement cells; the
+design values are declared averages of the per-cell structure and not estimands; the
+direction and polarity readings are observations and no design rule. The dataset is
+usable as \WlhUsableAs, each use carrying the label, and it opens no physics level.}
+\end{minipage}}
+\par\medskip

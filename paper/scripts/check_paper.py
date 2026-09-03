@@ -19,6 +19,7 @@ import generate_mdo_l0_v2_evidence as mdo_l0_v2
 import generate_tables
 import generate_topology_screening_evidence as topology_screening
 import generate_wall_loss_geometry_screening_v1_evidence as geometry_screening
+import generate_wall_loss_geometry_screening_v2_evidence as geometry_screening_v2
 import generate_wall_loss_v4_evidence as wall_loss_v4
 
 
@@ -37,6 +38,7 @@ REQUIRED_SECTIONS = (
     "Preregistered catalogue optimisation of the L0 model over the screened sweep designs",
     "Preregistered cusp topology under the literature definition",
     "Preregistered geometry sweep into the HEMP-like regime",
+    "Preregistered wall-access screening from the catalogue cells of the accepted sweep geometries",
     "Planned L1 result: field-resolved reduction",
     "Planned L2 result: coupled hybrid model",
     "Planned L3 result: PIC and experimental comparison",
@@ -271,6 +273,158 @@ GEOMETRY_SCREENING_POLICY_METRICS = {
     "field_p2_qualified": False,
     "design_rule_claimed": False,
     "surrogate_or_mdo_input_requires_label": True,
+}
+
+# Orbit wall-loss geometry screening v2 manifest metric -> evidence macro whose raw
+# artifact value it must equal (type-equal).  The study is a numerical-screening gate at
+# the recorded outcome accepted-screening-dataset (the v1 outcome, reused): collisionless
+# test-particle wall-access fractions launched at the midpoints of the separatrix-bounded
+# catalogue cells of every accepted sweep design (plus one launch-design row on the P2
+# field), admitted as screening input only, with the post-hoc manifest publication and
+# the two frozen-package design constraints disclosed.
+GEOMETRY_SCREENING_V2_METRIC_MACROS = {
+    "classification": "WlhClassification",
+    "p2_row_label": "WlhPTwoLabel",
+    "recorded_outcome": "WlhRecordedOutcome",
+    "screening_model": "WlhScreeningModel",
+    "campaign_status": "WlhCampaignStatus",
+    "terminal_state": "WlhTerminalState",
+    "attempt_count": "WlhAttemptCount",
+    "declared_count": "WlhDeclaredDesigns",
+    "evaluated_count": "WlhDesignCount",
+    "sweep_design_count": "WlhSweepDesignCount",
+    "p2_row_count": "WlhPTwoRowCount",
+    "failed_cases_count": "WlhFailedCases",
+    "failed_design_count": "WlhFailedDesigns",
+    "excluded_design_count": "WlhExcludedDesigns",
+    "cell_count": "WlhCellCount",
+    "sweep_cell_count": "WlhSweepCellCount",
+    "p2_cell_count": "WlhPTwoCellCount",
+    "anode_side_cell_count": "WlhAnodeCells",
+    "interior_cell_count": "WlhInteriorCells",
+    "exit_side_cell_count": "WlhExitCells",
+    "case_count": "WlhCaseCount",
+    "orbit_count": "WlhOrbitCount",
+    "stage1_launches": "WlhStageOneLaunches",
+    "stage2_launches": "WlhStageTwoLaunches",
+    "control_launches": "WlhControlLaunches",
+    "final_launches": "WlhFinalLaunches",
+    "stage1_launches_per_cell": "WlhStageOnePerCell",
+    "final_launches_per_topped_up_cell": "WlhFinalPerTopped",
+    "strata_per_cell": "WlhStrataPerCell",
+    "wilson_width_threshold": "WlhWidthThreshold",
+    "control_fraction": "WlhControlFraction",
+    "validator_calls_passed": "WlhValidatorsPassed",
+    "validator_failures": "WlhValidatorsFailed",
+    "sealed_case_count": "WlhSealedCases",
+    "exact_authority_replays": "WlhReplayCount",
+    "sealed_design_count": "WlhSealedDesigns",
+    "control_flag_true_design_count": "WlhControlFlagDesigns",
+    "timeout_free_design_count": "WlhTimeoutFreeDesigns",
+    "timeouts": "WlhTimeouts",
+    "numerical_failures": "WlhNumericalFailures",
+    "maximum_relative_energy_error": "WlhEnergyErrorMax",
+    "identity_proven_designs": "WlhIdentityProvenDesigns",
+    "cross_resolution_design_count": "WlhCrossResolutionDesigns",
+    "maximum_interpolation_relative_rms": "WlhInterpolationRmsMax",
+    "maximum_cross_resolution_relative_rms": "WlhCrossResolutionRmsMax",
+    "cells_topped_up": "WlhCellsToppedUp",
+    "cells_saturated_after_stage1": "WlhCellsSaturated",
+    "anode_side_cells_topped_up": "WlhAnodeToppedUp",
+    "interior_cells_topped_up": "WlhInteriorToppedUp",
+    "exit_side_cells_topped_up": "WlhExitToppedUp",
+    "anode_side_cells_at_one": "WlhAnodeAtOne",
+    "interior_cells_at_one": "WlhInteriorAtOne",
+    "exit_side_cells_at_one": "WlhExitAtOne",
+    "interior_wall_access_minimum": "WlhInteriorPMin",
+    "interior_designs_all_saturated": "WlhInteriorDesignsAllSaturated",
+    "anode_side_wall_access_minimum": "WlhAnodePMin",
+    "anode_side_wall_access_median": "WlhAnodePMedian",
+    "exit_side_wall_access_minimum": "WlhExitPMin",
+    "exit_side_wall_access_median": "WlhExitPMedian",
+    "exit_side_wall_access_maximum": "WlhExitPMax",
+    "divergent_exit_design_count": "WlhDivergentDesigns",
+    "straight_design_count": "WlhStraightDesigns",
+    "exit_wall_side_equals_last_polarity": "WlhExitWallSideLastPolarity",
+    "cells_surrogate_ready": "WlhCellsReady",
+    "jeffreys_floor_median": "WlhFloorMedian",
+    "jeffreys_floor_maximum": "WlhFloorMax",
+    "surrogate_readiness_floor": "WlhReadinessFloor",
+    "total_reflections": "WlhReflectionsFinal",
+    "designs_with_reflections": "WlhDesignsWithReflections",
+    "anode_side_cells_with_reflections": "WlhAnodeCellsWithReflections",
+    "interior_cells_with_reflections": "WlhInteriorCellsWithReflections",
+    "exit_side_cells_with_reflections": "WlhExitCellsWithReflections",
+    "p2_row_reflections": "WlhPTwoReflections",
+    "control_n": "WlhControlN",
+    "control_discordant": "WlhControlDiscordant",
+    "control_bias_2n_minus_n": "WlhControlBias",
+    "control_bias_standard_error": "WlhControlBiasSe",
+    "control_gate": "WlhControlGateMax",
+    "control_gate_passed": "WlhControlPassed",
+    "v1_comparison_design_count": "WlhComparisonDesigns",
+    "v1_spearman_launch_weighted": "WlhSpearmanLaunch",
+    "v1_mean_difference_launch_weighted": "WlhMeanDiffLaunch",
+    "v1_mean_absolute_difference_launch_weighted": "WlhMeanAbsDiffLaunch",
+    "v1_interval_overlap_launch_weighted": "WlhOverlapLaunch",
+    "p2_anode_side_wall_access": "WlhPTwoAnodeP",
+    "p2_interior_wall_access_minimum": "WlhPTwoInteriorPMin",
+    "p2_exit_side_wall_access": "WlhPTwoExitP",
+    "p2_exit_side_reflections": "WlhPTwoExitReflections",
+    "consumed_handoffs": "WlhConsumedCases",
+    "consumed_verified_handoffs": "WlhConsumedVerified",
+    "reference_export_consumed": "WlhVFourConsumed",
+    "reference_design_in_screening_set": "WlhVFourInScreeningSet",
+    "orbit_mc_package_version": "WlhOrbitMcVersion",
+    "orbit_mc_contract_matches": "WlhOrbitMcContractMatches",
+    "shakedown_passed": "WlhShakedownPassed",
+    "shakedown_evidentiary": "WlhShakedownEvidentiary",
+    "timing_within_budget_expected": "WlhTimingWithinBudget",
+    "disclosed_file_count": "WlhDisclosedFileCount",
+    "descriptor_cap": "WlhDescriptorCap",
+    "pin_cap": "WlhPinCap",
+    "orbits_rerun_after_recovery": "WlhOrbitsRerun",
+    "code_files_changed_after_record": "WlhCodeFilesChangedAfterRecord",
+    "known_defect_zero_count_inexact": "WlhDefectZeroInexact",
+    "known_defect_full_count_inexact": "WlhDefectFullInexact",
+    "case_sizes_wilson_exact": "WlhDefectCaseSizesExact",
+    "injector_zone_flagged_cells": "WlhInjectorFlaggedCells",
+    "short_cells": "WlhShortCells",
+    "not_accepted_physical_orbit_evidence": "WlhNotAcceptedPhysicalOrbit",
+    "not_p2_qualified": "WlhNotPTwoQualified",
+    "plasma_or_performance_claim_forbidden": "WlhForbidPerformance",
+    "pic_or_self_consistent_claim_forbidden": "WlhForbidPic",
+    "mirror_formula_publication_forbidden": "WlhForbidMirror",
+    "hardware_or_experimental_validation": "WlhHardwareValidation",
+    "p2_row_is_not_v4_replication": "WlhPTwoNotReplication",
+    "manifest_published_posthoc": "WlhManifestPublishedPosthoc",
+    "evidence_durable_before_recovery": "WlhEvidenceDurableBeforeRecovery",
+    "interior_cells_saturated": "WlhInteriorAllSaturated",
+    "tolerated_eol_file_count": "WlhToleratedEolFiles",
+    "verified_file_count": "WlhVerifiedFiles",
+}
+# Policy metrics the v2 geometry-screening manifest must carry with exactly these values.
+# The shared flag stable_multicell_wall_cusp_topology_demonstrated is not reused: it was
+# defined against the frozen wall-null definition, whereas this study's cells are the
+# literature-definition catalogue cells; the boundary is carried by explicit flags.
+GEOMETRY_SCREENING_V2_POLICY_METRICS = {
+    "preregistered_one_shot": True,
+    "hardware_or_experimental_validation": False,
+    "permanent_magnet_material_model": False,
+    "plasma_or_performance_claim_forbidden": True,
+    "physics_level_opened": False,
+    "accepted_physical_orbit_evidence": False,
+    "field_p2_qualified": False,
+    "design_rule_claimed": False,
+    "surrogate_or_mdo_input_requires_label": True,
+    "manifest_published_posthoc": True,
+    "evidence_durable_before_recovery": True,
+    "interior_cells_saturated": True,
+    "access_fraction_is_loss_probability": False,
+    "p2_row_is_v4_replication": False,
+    "pooled_design_values_are_estimands": False,
+    "catalogue_cells_are_demonstrated_confinement_cells": False,
+    "surrogate_fitted_or_accepted": False,
 }
 
 # Cusp topology search v3.1 manifest metric -> evidence macro whose raw artifact value it
@@ -1202,6 +1356,50 @@ EXPECTED_MANIFEST_TYPES = {
             ]
         ),
         "required_metrics": sorted({*GEOMETRY_SCREENING_METRIC_MACROS, *GEOMETRY_SCREENING_POLICY_METRICS}),
+    },
+    "paper-orbit-cell-screening-manifest": {
+        "supported_versions": ["1.0"],
+        "level": "numerical-screening",
+        "required_file_roles": sorted(
+            [
+                "allocation-decisions",
+                "authorities",
+                "binding-gates",
+                "campaign-plan",
+                "campaign-result",
+                "case-summary",
+                "catalogue-binding",
+                "coupling-consumer-record",
+                "dataset-csv",
+                "design-authorities",
+                "design-exclusions",
+                "endpoints",
+                "execution-lock",
+                "field",
+                "field-evidence",
+                "field-pipeline-binding",
+                "handoff",
+                "manufactured-gates",
+                "orbit-artifact",
+                "orbit-artifact-sidecar",
+                "orbit-mc-contract",
+                "preregistered-authorities",
+                "preregistered-design-authorities",
+                "preregistered-protocol",
+                "preregistered-shakedown",
+                "primary-dataset",
+                "primary-dataset-sidecar",
+                "protocol",
+                "results-manifest",
+                "runtime",
+                "shakedown",
+                "terminal-record",
+                "terminal-record-sidecar",
+                "transition",
+                "v1-comparison",
+            ]
+        ),
+        "required_metrics": sorted({*GEOMETRY_SCREENING_V2_METRIC_MACROS, *GEOMETRY_SCREENING_V2_POLICY_METRICS}),
     },
     "paper-separatrix-topology-screening-manifest": {
         "supported_versions": ["1.0"],
@@ -3580,6 +3778,402 @@ def _check_geometry_screening(
         errors.append(f"{label}: section heading must appear exactly once in the flattened manuscript")
 
 
+def _check_geometry_screening_v2(
+    repo: Path,
+    gate: dict[str, Any],
+    payload: dict[str, Any],
+    manuscript: str,
+    flattened: str,
+    matrix: dict[str, Any],
+    errors: list[str],
+) -> None:
+    """Verify the admitted orbit wall-loss geometry screening v2 end to end.
+
+    The seventh ``numerical-screening`` gate admits the catalogue-cell wall-access
+    dataset at the recorded outcome ``accepted-screening-dataset`` (the v1 outcome,
+    reused because the study is the same kind of object).  Beyond the typed-manifest
+    validation already performed, this check mirrors ``_check_geometry_screening``:
+    byte-identical regeneration of evidence/TeX/sidecar from the sealed bundle (which
+    re-verifies every one of the bundle's files, replays the allocation rule and the
+    paired N -> 2N control from the endpoint tables, recomputes every interval, floor,
+    pooled value, headline statistic and the v1 comparison, and cross-checks the
+    committed dashboard), artifact hashes on disk with no end-of-line tolerance, the
+    dashboard bound at its revision and equal to the checkout, the reference files
+    (catalogue, v1 dataset and manifest, v4 export, sweep manifest) and the
+    disclosure sources (POSTHOC_FINALIZATION.md, the recovery and lifecycle modules,
+    the recovery tests) bound at their revisions and equal to the evidence bindings,
+    metric == raw macro value with type equality, policy metrics, results tree
+    unchanged, preregistration -> results -> disclosure -> dashboard chain with the
+    frozen files unchanged, the recorded outcome and classification agreeing
+    everywhere, the interior-saturation and post-hoc-publication findings recorded as
+    admitted, the macro-only section with no literal digit, the five ArtifactClaim
+    tables, the registered non-claims, the required wording of the headline,
+    disclosure, scope and Discussion claims, the Section 11 wording that cites this
+    section instead of a plan, the Limitations sentences, bindings exactly once, the
+    revision macro and the claim-matrix cross-references.
+    """
+
+    module = geometry_screening_v2
+    gate_id = str(gate.get("id"))
+    label = f"{gate_id} screening"
+    if payload.get("experiment_id") != module.EXPERIMENT_ID:
+        errors.append(f"{label}: manifest experiment_id is not the registered screening study")
+        return
+    try:
+        evidence_bytes, tex_bytes, sidecar_bytes = module.render(repo)
+    except (OSError, ValueError, KeyError, TypeError, json.JSONDecodeError) as exc:
+        errors.append(f"{label}: evidence regeneration from the sealed bundle failed: {exc}")
+        return
+    evidence = json.loads(evidence_bytes)
+    evidence_meta = payload.get("paper_evidence_file")
+    if not isinstance(evidence_meta, dict) or evidence_meta.get("path") != module.EVIDENCE_PATH.as_posix():
+        errors.append(f"{label}: manifest paper_evidence_file.path differs from the registered evidence file")
+        return
+    for path, expected, name in (
+        (repo / module.EVIDENCE_PATH, evidence_bytes, "evidence file"),
+        (repo / module.OUTPUT_PATH, tex_bytes, "generated TeX"),
+        (repo / module.SIDECAR_PATH, sidecar_bytes, "provenance sidecar"),
+    ):
+        if not path.is_file() or path.read_bytes() != expected:
+            errors.append(f"{label}: committed {name} differs from regeneration")
+    if evidence_meta.get("document_type") != evidence.get("document_type"):
+        errors.append(f"{label}: evidence document_type differs from the manifest")
+    if evidence_meta.get("macro_count") != len(evidence.get("macros", [])):
+        errors.append(f"{label}: evidence macro count differs from the manifest")
+    if evidence_meta.get("macro_prefix") != module.MACRO_PREFIX:
+        errors.append(f"{label}: evidence macro prefix differs from the manifest")
+
+    # Artifact hashes on disk (independent of the generator); no tolerance of any kind.
+    results_root = repo / module.RESULTS
+    for relative, meta in evidence.get("artifacts", {}).items():
+        artifact = results_root / relative
+        if not artifact.is_file():
+            errors.append(f"{label}: evidence artifact missing on disk: {relative}")
+            continue
+        raw = artifact.read_bytes()
+        if sha256_bytes(raw) != meta.get("sha256") or len(raw) != meta.get("bytes"):
+            errors.append(f"{label}: evidence artifact hash mismatch: {relative}")
+    bundle = payload.get("results_bundle", {})
+    bundle_manifest = results_root / "manifest.json"
+    if not bundle_manifest.is_file():
+        errors.append(f"{label}: results manifest is missing on disk")
+    else:
+        digest = sha256_bytes(bundle_manifest.read_bytes())
+        if digest != evidence["bundle"]["manifest_sha256"] or digest != bundle.get("manifest_sha256"):
+            errors.append(f"{label}: results manifest SHA-256 differs from the evidence bindings")
+    if evidence["bundle"].get("tolerated_eol_files") != [] or bundle.get("tolerated_eol_files") != []:
+        errors.append(f"{label}: an end-of-line tolerance is declared for a bundle that needs none")
+    if bundle.get("verified_file_count") != evidence["bundle"].get("verified_file_count") or bundle.get("artifact_count") != evidence["bundle"].get("artifact_count"):
+        errors.append(f"{label}: bundle file counts differ between manifest and evidence file")
+    if bundle.get("manifest_published_posthoc") is not True or bundle.get("published_inside_locked_attempt") is not False:
+        errors.append(f"{label}: the results bundle block must disclose the post-hoc manifest publication")
+
+    # Revisions.
+    head = _run_git(repo, "rev-parse", "HEAD")
+    revision = str(payload.get("evidence_revision"))
+    if revision != module.RESULTS_COMMIT_SHA or evidence.get("evidence_revision") != revision or gate.get("evidence_revision") != revision:
+        errors.append(f"{label}: evidence revision differs between gate, manifest, evidence file and generator")
+    try:
+        committed_blob = _run_git(repo, "rev-parse", f"{revision}:{evidence['bundle']['manifest_path']}")
+    except RuntimeError as exc:
+        errors.append(f"{label}: results manifest is not committed at the evidence revision: {exc}")
+        committed_blob = None
+    if committed_blob is not None and (
+        committed_blob != evidence["binding"]["manifest_git_blob"]
+        or committed_blob != bundle.get("manifest_git_blob")
+    ):
+        errors.append(f"{label}: results manifest Git blob differs from the evidence bindings")
+    try:
+        results_tree = _run_git(repo, "rev-parse", f"{revision}:{module.RESULTS.as_posix()}")
+        head_tree = _run_git(repo, "rev-parse", f"HEAD:{module.RESULTS.as_posix()}")
+    except RuntimeError as exc:
+        errors.append(f"{label}: results tree cannot be resolved: {exc}")
+    else:
+        if results_tree != bundle.get("results_tree") or results_tree != evidence["binding"].get("results_tree"):
+            errors.append(f"{label}: results tree differs from the manifest binding")
+        if head_tree != results_tree:
+            errors.append(f"{label}: results tree changed after the evidence revision")
+    prereg = payload.get("preregistration_revision")
+    if not _resolves_to_commit(repo, prereg) or prereg != module.PREREGISTRATION_COMMIT_SHA:
+        errors.append(f"{label}: preregistration_revision is not the registered resolvable commit")
+    else:
+        prereg = str(prereg)
+        if evidence["binding"].get("preregistration_commit") != prereg or gate.get("preregistration_revision") != prereg:
+            errors.append(f"{label}: preregistration commit differs between gate, manifest and evidence file")
+        if not _is_ancestor(repo, prereg, revision) or prereg == revision:
+            errors.append(f"{label}: preregistration must strictly precede the results revision")
+        frozen_roles = {"preregistered-protocol", "preregistered-authorities", "preregistered-shakedown", "preregistered-design-authorities"}
+        seen_roles: set[str] = set()
+        for source in payload.get("source_files", []):
+            if isinstance(source, dict) and str(source.get("role", "")).startswith("preregistered-"):
+                seen_roles.add(str(source["role"]))
+                try:
+                    frozen = _run_git(repo, "rev-parse", f"{prereg}:{source['path']}")
+                except RuntimeError as exc:
+                    errors.append(f"{label}: frozen file missing at preregistration: {exc}")
+                    continue
+                if frozen != source.get("git_blob"):
+                    errors.append(f"{label}: {source['path']} changed after preregistration")
+        if seen_roles != frozen_roles:
+            errors.append(f"{label}: frozen preregistration files are not all bound")
+    if payload.get("posthoc_audit") is not None:
+        errors.append(f"{label}: manifest binds a post-hoc audit; the post-hoc publication is a disclosure source, not an audit")
+    _check_bound_files_at_revision(repo, payload.get("reference_files"), evidence.get("reference_artifacts", {}).get("files", {}), errors, f"{label} reference", role_prefix="reference-")
+    disclosure = payload.get("disclosure_sources")
+    if not isinstance(disclosure, dict) or disclosure.get("revision") != module.DISCLOSURE_COMMIT_SHA or gate.get("disclosure_revision") != module.DISCLOSURE_COMMIT_SHA:
+        errors.append(f"{label}: disclosure sources must bind the registered disclosure revision")
+    else:
+        files = disclosure.get("files")
+        expected_files = evidence.get("disclosure_sources", {}).get("files", {})
+        _check_bound_files_at_revision(
+            repo,
+            [dict(entry, revision=disclosure["revision"]) for entry in files] if isinstance(files, list) else files,
+            expected_files, errors, f"{label} disclosure sources", role_prefix="disclosure-",
+        )
+        roles = {entry.get("role") for entry in files if isinstance(entry, dict)} if isinstance(files, list) else set()
+        if roles != {"disclosure-posthoc-finalization", "disclosure-runtime-recovery-module", "disclosure-runtime-lifecycle-module", "disclosure-runtime-recovery-tests"}:
+            errors.append(f"{label}: disclosure sources must bind the finalization note, the recovery and lifecycle modules and the recovery tests")
+        verified = evidence.get("disclosure_sources", {}).get("verified", {})
+        if verified.get("manifest_sha256_matches_bundle") is not True or verified.get("terminal_sha256_matches_bundle") is not True or verified.get("nothing_rerun_stated") is not True:
+            errors.append(f"{label}: the disclosure does not bind the committed bundle or does not state that nothing was rerun")
+        if disclosure.get("verified") != verified:
+            errors.append(f"{label}: disclosure verification block differs between manifest and evidence file")
+        if not _is_ancestor(repo, revision, disclosure["revision"]) or not _is_ancestor(repo, disclosure["revision"], head):
+            errors.append(f"{label}: disclosure revision does not chain results -> disclosure -> HEAD")
+    dashboard = payload.get("dashboard")
+    if not isinstance(dashboard, dict) or not _resolves_to_commit(repo, dashboard.get("revision")):
+        errors.append(f"{label}: dashboard must bind a resolvable revision")
+    else:
+        dashboard_revision = str(dashboard["revision"])
+        if dashboard_revision != module.DASHBOARD_COMMIT_SHA or gate.get("dashboard_revision") != dashboard_revision:
+            errors.append(f"{label}: dashboard revision differs between gate, manifest and generator")
+        if evidence["binding"].get("dashboard_commit") != dashboard_revision:
+            errors.append(f"{label}: evidence dashboard commit differs from the manifest")
+        if not _is_ancestor(repo, revision, dashboard_revision) or not _is_ancestor(repo, dashboard_revision, head):
+            errors.append(f"{label}: dashboard revision does not chain results -> dashboard -> HEAD")
+        files = dashboard.get("files")
+        _validate_source_files(
+            repo, dashboard_revision, files, {"dashboard-generator", "dashboard-template", "dashboard-html"}, errors, f"{label} dashboard"
+        )
+        expected_lf = {
+            "dashboard-generator": (module.DASHBOARD_GENERATOR.as_posix(), evidence["dashboard"].get("generator_sha256_lf")),
+            "dashboard-template": (module.DASHBOARD_TEMPLATE.as_posix(), evidence["dashboard"].get("template_sha256_lf")),
+            "dashboard-html": (module.DASHBOARD_HTML.as_posix(), evidence["dashboard"].get("html_sha256_lf")),
+        }
+        for entry in files if isinstance(files, list) else []:
+            if not isinstance(entry, dict):
+                continue
+            role = str(entry.get("role"))
+            if role not in expected_lf:
+                continue
+            path, digest = expected_lf[role]
+            if entry.get("path") != path or entry.get("git_blob_sha256") != digest:
+                errors.append(f"{label}: {role} checkout differs from the blob bound at the dashboard revision")
+        if evidence["dashboard"].get("payload_manifest_sha256") != evidence["bundle"]["manifest_sha256"]:
+            errors.append(f"{label}: dashboard payload names a different results manifest")
+
+    # Metrics against the raw artifact values behind the macros (type-equal), then policy.
+    raw = {item["name"]: item["raw"] for item in evidence.get("macros", [])}
+    values = {item["name"]: item["value"] for item in evidence.get("macros", [])}
+    metrics = payload.get("metrics")
+    if not isinstance(metrics, dict):
+        errors.append(f"{label}: metrics must be an object")
+        return
+    for metric, macro in GEOMETRY_SCREENING_V2_METRIC_MACROS.items():
+        if macro not in raw:
+            errors.append(f"{label}: evidence lacks macro {macro}")
+        elif metric not in metrics:
+            errors.append(f"{label}: manifest lacks metric {metric!r}")
+        elif metrics[metric] != raw[macro] or type(metrics[metric]) is not type(raw[macro]):
+            errors.append(f"{label}: metric {metric!r} differs from artifact value")
+    for metric, expected in GEOMETRY_SCREENING_V2_POLICY_METRICS.items():
+        if metrics.get(metric) is not expected:
+            errors.append(f"{label}: policy metric {metric!r} must be {expected!r}")
+    if raw.get("WlhAttemptCount") != 1 or raw.get("WlhFailedCases") != 0 or raw.get("WlhSealedDesigns") != raw.get("WlhDesignCount") or raw.get("WlhControlFlagDesigns") != raw.get("WlhDesignCount"):
+        errors.append(f"{label}: the dataset must be a single attempt with every case sealed and every design's paired control flag true")
+    if raw.get("WlhInteriorAllSaturated") is not True or raw.get("WlhInteriorAtOne") != raw.get("WlhInteriorCells") or raw.get("WlhInteriorDesignsAllSaturated") != raw.get("WlhSweepDesignCount") or raw.get("WlhInteriorToppedUp") != 0:
+        errors.append(f"{label}: the recorded interior-saturation finding does not hold in the evidence")
+    if raw.get("WlhInteriorCellsWithReflections") != 0 or raw.get("WlhDesignsWithReflections", 0) >= raw.get("WlhDesignCount", 0):
+        errors.append(f"{label}: the recorded reflection structure (partial cells only, not every design) does not hold in the evidence")
+    if raw.get("WlhToleratedEolFiles") != 0 or raw.get("WlhNumericalFailures") != 0 or raw.get("WlhTimeouts") != 0 or raw.get("WlhControlPassed") is not True:
+        errors.append(f"{label}: tolerance, failure, timeout or control-gate values differ from the admitted record")
+    if raw.get("WlhManifestPublishedPosthoc") is not True or raw.get("WlhEvidenceDurableBeforeRecovery") is not True or raw.get("WlhOrbitsRerun") != 0 or raw.get("WlhCodeFilesChangedAfterRecord") != 0:
+        errors.append(f"{label}: the post-hoc publication disclosure does not hold in the evidence")
+    if raw.get("WlhDefectCaseSizesExact") is not True or raw.get("WlhCrossResolutionDesigns") != raw.get("WlhDesignCount") or raw.get("WlhInjectorFlaggedCells") != 1:
+        errors.append(f"{label}: the design-constraint or launch-plane disclosures do not hold in the evidence")
+    outcome = gate.get("recorded_outcome")
+    if outcome not in SCREENING_OUTCOMES:
+        errors.append(f"{label}: gate recorded_outcome is not a recognized screening outcome")
+    if not (outcome == payload.get("recorded_outcome") == metrics.get("recorded_outcome") == evidence.get("recorded_outcome") == module.RECORDED_OUTCOME == geometry_screening.RECORDED_OUTCOME):
+        errors.append(f"{label}: recorded_outcome differs between gate, manifest, evidence file and generator (the v1 outcome is reused)")
+    if not isinstance(gate.get("recorded_outcome_justification"), str) or "reused" not in gate["recorded_outcome_justification"]:
+        errors.append(f"{label}: the gate must justify reusing the v1 recorded outcome")
+    if tex_unescape(values.get("WlhRecordedOutcome", "")) != outcome:
+        errors.append(f"{label}: \\WlhRecordedOutcome macro does not render the recorded outcome")
+    if not (module.CAMPAIGN_STATUS == evidence.get("campaign_status") == metrics.get("campaign_status")):
+        errors.append(f"{label}: campaign status differs between generator, evidence file and manifest")
+    if tex_unescape(values.get("WlhCampaignStatus", "")) != module.CAMPAIGN_STATUS:
+        errors.append(f"{label}: \\WlhCampaignStatus macro does not render the campaign status")
+    if not (module.SCREENING_MODEL == payload.get("screening_model") == metrics.get("screening_model") == evidence.get("screening_model")):
+        errors.append(f"{label}: screening_model differs between manifest, evidence file and generator")
+    classification = payload.get("classification")
+    expected = gate.get("metric_constraints", {}).get("classification", {}).get("equals")
+    if not (classification == module.CLASSIFICATION == expected == evidence.get("classification") == metrics.get("classification") == geometry_screening.CLASSIFICATION):
+        errors.append(f"{label}: classification differs between gate, manifest, evidence and generator")
+    if tex_unescape(values.get("WlhClassification", "")) != classification:
+        errors.append(f"{label}: \\WlhClassification macro does not render the classification string")
+    if not (payload.get("p2_row_label") == module.P2_LABEL == evidence.get("p2_row_label") == metrics.get("p2_row_label")):
+        errors.append(f"{label}: P2 row label differs between manifest, evidence and generator")
+    if tex_unescape(values.get("WlhPTwoLabel", "")) != module.P2_LABEL:
+        errors.append(f"{label}: \\WlhPTwoLabel macro does not render the P2 row label")
+    if gate.get("opens_level") is not None or payload.get("evidence_level", {}).get("opens_gate") is not None:
+        errors.append(f"{label}: a screening study cannot open a physics level")
+    if payload.get("gate_kind") != SCREENING_GATE_KIND or evidence.get("manuscript_integration", {}).get("gate_kind") != SCREENING_GATE_KIND:
+        errors.append(f"{label}: gate kind differs between manifest and evidence file")
+
+    # Manuscript bindings.
+    binding = gate.get("accepted_manuscript_binding")
+    if binding != module.SECTION_BINDING or manuscript.count(binding) != 1:
+        errors.append(f"{label}: section binding must be the registered \\input and occur exactly once in manuscript.tex")
+    generated_binding = module.GENERATED_BINDING
+    document_start = manuscript.find("\\begin{document}")
+    if manuscript.count(generated_binding) != 1 or manuscript.find(generated_binding) > document_start:
+        errors.append(f"{label}: generated macro file must be input exactly once in the preamble")
+    macro_name = gate.get("manuscript_revision_macro")
+    if macro_name != module.REVISION_MACRO:
+        errors.append(f"{label}: gate manuscript_revision_macro differs from the registration")
+    else:
+        definitions = [
+            macro
+            for macro in extract_macros(manuscript, "newcommand", 2)
+            if macro.arguments[0] == f"\\{macro_name}"
+        ]
+        rendered = ""
+        if len(definitions) == 1:
+            body = re.sub(r"(?m)(?<!\\)%.*$", "", definitions[0].arguments[1])
+            rendered = re.sub(r"\\texttt\{|\}|\s", "", tex_unescape(body))
+        if rendered != revision:
+            errors.append(f"{label}: \\{macro_name} does not spell the manifest revision")
+
+    # Section content.
+    try:
+        section = (repo / module.SECTION_PATH).read_text(encoding="utf-8")
+    except OSError as exc:
+        errors.append(f"{label}: section unreadable: {exc}")
+        return
+    heading = gate.get("section_heading")
+    if heading != module.SECTION_HEADING or payload.get("section_heading") != heading or f"\\subsection{{{heading}}}" not in section:
+        errors.append(f"{label}: section heading differs between gate, manifest, generator and section")
+    prefix = module.MACRO_PREFIX
+    defined = set(re.findall(rf"\\newcommand\{{\\({prefix}[A-Za-z]+)\}}", tex_bytes.decode("utf-8")))
+    used = set(re.findall(rf"\\({prefix}[A-Za-z]+)", section))
+    if not used:
+        errors.append(f"{label}: section uses no evidence macro")
+    for name in sorted(used - defined):
+        errors.append(f"{label}: section uses undefined macro \\{name}")
+    for required in (*module.TABLE_MACROS, "WlhClassification", "WlhPTwoLabel", "WlhRecordedOutcome", "WlhCampaignStatus", "WlhFieldStatus", "WlhInteriorAtOne", "WlhInteriorAllSaturated", "WlhManifestPublishedPosthoc", "WlhDescriptorCap", "WlhPinCap", "WlhPTwoNotReplication"):
+        if required not in used:
+            errors.append(f"{label}: section must use \\{required}")
+    digits = section_literal_digits(section, prefix)
+    if digits:
+        errors.append(f"{label}: section types {len(digits)} literal digit(s); every number must be a macro")
+    if "\\input{" in re.sub(r"(?m)(?<!\\)%.*$", "", section):
+        errors.append(f"{label}: section must not input further files")
+    for finding in find_unregistered_claims(section):
+        errors.append(f"{label}: {finding}")
+    artifact_macros = extract_macros(tex_bytes.decode("utf-8"), "ArtifactClaim", 3)
+    if len(artifact_macros) != len(module.TABLE_MACROS) or any(
+        macro.arguments[:2] != (module.ARTIFACT_CLAIM_ID, module.ARTIFACT_ID) for macro in artifact_macros
+    ):
+        errors.append(f"{label}: generated tables are not each wrapped in the registered ArtifactClaim")
+
+    # Claim-matrix cross-references.
+    integration = evidence.get("manuscript_integration", {})
+    if integration.get("status") != "admitted":
+        errors.append(f"{label}: evidence file does not record admission")
+    if integration.get("gate_id") != gate_id or not (
+        integration.get("manifest_id") == payload.get("manifest_id") == module.MANIFEST_ID
+    ):
+        errors.append(f"{label}: evidence file names a different gate or manifest")
+    if integration.get("manifest_path") != gate.get("manifest_path") or integration.get("manifest_path") != module.MANIFEST_PATH.as_posix():
+        errors.append(f"{label}: evidence file names a different manifest path")
+    if integration.get("section_binding") != binding or integration.get("section_heading") != heading:
+        errors.append(f"{label}: evidence file names a different section binding or heading")
+    records = {
+        claim.get("id"): claim
+        for claim in matrix.get("claims", [])
+        if isinstance(claim, dict) and isinstance(claim.get("id"), str)
+    }
+    manifest_id = payload.get("manifest_id")
+    section_claims = set(re.findall(r"\\EvidenceClaim\{(CLM-\d+)\}", section))
+    prose_ids = integration.get("prose_claim_ids", [])
+    if not section_claims or not section_claims <= set(prose_ids):
+        errors.append(f"{label}: section claims are not all registered as screening prose claims")
+    normalized_section = _normalize_tex(section)
+    for claim_id in prose_ids:
+        record = records.get(claim_id)
+        if record is None or record.get("status") != "verified":
+            errors.append(f"{label}: prose claim {claim_id} is not a verified claim record")
+            continue
+        if manifest_id not in record.get("manifest_ids", []):
+            errors.append(f"{label}: claim {claim_id} is not bound to manifest {manifest_id}")
+        if not isinstance(record.get("authorized_tex"), str):
+            errors.append(f"{label}: claim {claim_id} must be a prose claim")
+        if "classification" in record and record["classification"] != classification:
+            errors.append(f"{label}: claim {claim_id} names a different classification")
+        if "recorded_outcome" in record and record["recorded_outcome"] != outcome:
+            errors.append(f"{label}: claim {claim_id} names a different recorded outcome")
+        for phrase in record.get("non_claims", []):
+            if _normalize_tex(str(phrase)) not in normalized_section:
+                errors.append(f"{label}: non-claim of {claim_id} is absent from the section: {phrase!r}")
+        if claim_id in section_claims and heading not in record.get("allowed_locations", []):
+            errors.append(f"{label}: claim {claim_id} does not allow the section heading")
+        if record.get("claim_class") == "interpretation" and claim_id in section_claims:
+            errors.append(f"{label}: interpretation claim {claim_id} must not appear inside the results section")
+    if not any(records.get(claim_id, {}).get("non_claims") for claim_id in prose_ids):
+        errors.append(f"{label}: no screening claim registers non_claims")
+    # The headline, disclosure and scope claims must be worded as recorded and bounded.
+    for claim_id, required in (
+        ("CLM-080", ("lost every launch to the dielectric", "Structure exists only in the partial cells", "\\WlhInteriorAtOne", "\\WlhInteriorCells", "\\WlhInteriorAllSaturated", "never a loss probability", "no design rule", "not a replication")),
+        ("CLM-081", ("reported, never gated", "\\WlhControlDiscordant", "\\WlhControlBias", "\\WlhSpearmanLaunch", "\\WlhOverlapLaunch")),
+        ("CLM-082", ("\\WlhCellsReady", "\\WlhFloorMedian", "\\WlhFloorMax", "not a statement that any surrogate has been fitted or accepted")),
+        ("CLM-083", ("published post hoc", "\\WlhDisclosedFileCount", "\\WlhDescriptorCap", "\\WlhPinCap", "\\WlhManifestSha", "\\WlhOrbitsRerun", "\\WlhCodeFilesChangedAfterRecord", "\\WlhDefectZeroInexact", "\\WlhDefectFullInexact", "\\WlhInjectorFlaggedCells", "\\WlhShortCells")),
+        ("CLM-084", ("never a loss probability", "not demonstrated confinement cells", "declared averages", "not a replication", "opens no physics level", "\\WlhUsableAs")),
+    ):
+        text = _normalize_tex(str(records.get(claim_id, {}).get("authorized_tex", "")))
+        for phrase in required:
+            if phrase not in text:
+                errors.append(f"{label}: claim {claim_id} lacks the required wording {phrase!r}")
+    # The Discussion interpretation: the collisionless geometry -> wall-loss chain is exhausted as a
+    # closure source; the surrogate/MDO iteration on these labels is deferred; the kinetic route is
+    # future work, not evidence.
+    record = records.get("CLM-085", {})
+    if "CLM-085" not in prose_ids or record.get("claim_class") != "interpretation" or manifest_id not in record.get("manifest_ids", []):
+        errors.append(f"{label}: Discussion claim CLM-085 must be an interpretation bound to manifest {manifest_id}")
+    text = _normalize_tex(str(record.get("authorized_tex", "")))
+    for phrase in ("Read as interpretation", "\\WlhInteriorAtOne", "\\WlhInteriorCells", "exhausts the collisionless", "deferred", "kinetic", "future work", "not evidence", "sheath"):
+        if phrase not in text:
+            errors.append(f"{label}: Discussion claim CLM-085 lacks the required wording {phrase!r}")
+    # Section 11 must cite this section instead of announcing a plan, and the topology
+    # catalogue's Limitations sentence must name its admitted consumer.
+    if "Section~\\ref{sec:wall-loss-geometry-screening-v2}" not in manuscript:
+        errors.append(f"{label}: the manuscript must cite the catalogue-cell screening section by its label")
+    for stale in ("is planned; no result of it exists", "is future work and no result of it\nexists", "no admitted consumer has yet\ningested", "no admitted consumer has yet ingested"):
+        if stale in flattened:
+            errors.append(f"{label}: superseded planning wording remains in the manuscript: {stale!r}")
+    for required in ("\\WlhDescriptorCap", "\\WlhInteriorAtOne", "post hoc"):
+        if required not in manuscript[manuscript.find("\\section{Limitations}"):manuscript.find("\\section{Reproducibility and data availability}")]:
+            errors.append(f"{label}: the Limitations must carry the post-hoc publication and saturation statements ({required!r})")
+    artifact_claim = integration.get("artifact_claim_id")
+    record = records.get(artifact_claim, {})
+    if artifact_claim != module.ARTIFACT_CLAIM_ID or integration.get("artifact_id") not in record.get("authorized_artifact_ids", []):
+        errors.append(f"{label}: artifact claim {artifact_claim} does not authorize the generated tables")
+    if manifest_id not in record.get("manifest_ids", []):
+        errors.append(f"{label}: artifact claim {artifact_claim} is not bound to manifest {manifest_id}")
+    if flattened.count(f"\\subsection{{{heading}}}") != 1:
+        errors.append(f"{label}: section heading must appear exactly once in the flattened manuscript")
+
+
 def _committed_blobs(repo: Path, revision: str, paths: list[str]) -> dict[str, tuple[str, str]]:
     """Path -> (git blob, blob SHA-256) at ``revision`` for many files in two git calls."""
 
@@ -4461,6 +5055,7 @@ CAMPAIGN_CHECKERS = {
     "paper-test-particle-campaign-manifest": _check_wall_loss_campaign,
     "paper-l1a-screening-manifest": _check_topology_screening,
     "paper-orbit-screening-manifest": _check_geometry_screening,
+    "paper-orbit-cell-screening-manifest": _check_geometry_screening_v2,
     "paper-separatrix-topology-screening-manifest": _check_cusp_topology_screening,
     "paper-l1a-regime-screening-manifest": _check_l1a_sweep_v3_screening,
     "paper-mdo-campaign-manifest": _check_mdo_campaign,
@@ -4777,6 +5372,15 @@ def _render_geometry_screening_tables(repo: Path, item: dict[str, Any]) -> tuple
     return output, sidecar
 
 
+def _render_geometry_screening_v2_tables(repo: Path, item: dict[str, Any]) -> tuple[bytes, bytes]:
+    if item.get("id") != geometry_screening_v2.ARTIFACT_ID or item.get("required_gate") != geometry_screening_v2.GATE_ID:
+        raise ValueError(f"{item.get('id')}: contract item or gate differs from the generator registration")
+    if item.get("evidence_file") != geometry_screening_v2.EVIDENCE_PATH.as_posix():
+        raise ValueError(f"{item.get('id')}: contract evidence file differs from the generator registration")
+    _evidence, output, sidecar = geometry_screening_v2.render(repo)
+    return output, sidecar
+
+
 def _render_cusp_topology_tables(repo: Path, item: dict[str, Any]) -> tuple[bytes, bytes]:
     if item.get("id") != cusp_topology.ARTIFACT_ID or item.get("required_gate") != cusp_topology.GATE_ID:
         raise ValueError(f"{item.get('id')}: contract item or gate differs from the generator registration")
@@ -4804,6 +5408,7 @@ ARTIFACT_RENDERERS = {
     "generate_mdo_l0_v2_evidence": _render_mdo_v2_tables,
     "generate_four_cell_closure_evidence": _render_four_cell_closure_tables,
     "generate_wall_loss_geometry_screening_v1_evidence": _render_geometry_screening_tables,
+    "generate_wall_loss_geometry_screening_v2_evidence": _render_geometry_screening_v2_tables,
     "generate_cusp_topology_v3_1_evidence": _render_cusp_topology_tables,
     "generate_l1a_sweep_v3_evidence": _render_sweep_v3_tables,
 }
@@ -4954,6 +5559,11 @@ def _check_submission_and_build_config(repo: Path, manuscript: str, errors: list
         geometry_screening.OUTPUT_PATH.as_posix(),
         geometry_screening.SIDECAR_PATH.as_posix(),
         geometry_screening.SECTION_PATH.as_posix(),
+        geometry_screening_v2.EVIDENCE_PATH.as_posix(),
+        geometry_screening_v2.MANIFEST_PATH.as_posix(),
+        geometry_screening_v2.OUTPUT_PATH.as_posix(),
+        geometry_screening_v2.SIDECAR_PATH.as_posix(),
+        geometry_screening_v2.SECTION_PATH.as_posix(),
         cusp_topology.EVIDENCE_PATH.as_posix(),
         cusp_topology.MANIFEST_PATH.as_posix(),
         cusp_topology.OUTPUT_PATH.as_posix(),

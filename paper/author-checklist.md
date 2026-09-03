@@ -125,7 +125,8 @@
   prescribed field maps under the literature definition; mirror ratios are
   field ratios and never probabilities; no plasma, confinement, wall-loss or
   performance quantity; iron sensitivity of the P2 row untested; the catalogue
-  is a consumer contract under its labels with no admitted consumer.
+  is a consumer contract under its labels whose first admitted consumer is the
+  catalogue-cell screening v2 (Section 15).
 - [ ] Keep every number of the topology section a `\Ctv...` macro (including
   the version tokens `v3.1`, `v3`, `v2`, `v1` and the field level `L1a`); never
   type a digit into `paper/sections/cusp-topology-v3-1.tex`.
@@ -139,8 +140,39 @@
   cell confines a plasma is not decided anywhere in the paper (CLM-028,
   CLM-044).
 - [ ] Say that the geometry screening's launch cells are channel fractions and
-  not the catalogue cells; a screening launched from the catalogue is future
-  work with no result.
+  not the catalogue cells; the screening launched from the catalogue cells is
+  the admitted v2 screening of Section 15 (never "planned" or "future work").
+- [ ] Describe the wall-loss geometry screening v2 only as
+  `SCREENING_L1A_FIELD_TEST_PARTICLE_WALL_LOSS` (sweep rows) and
+  `P2_QUALIFIED_FIELD_SCREENING_LAUNCH_DESIGN` (the P2 row) admitted at
+  `accepted-screening-dataset` (the v1 outcome, reused): every per-cell value is
+  a collisionless geometric wall-access fraction of the launch distribution from
+  the cell midpoint and never a loss probability, a per-cusp transit loss or a
+  cusp probability; the interior saturation (181/181 cells at one) is a
+  field-line property of the mid-plane launch, not a loss statement; the P2 row
+  is a launch-design variant and not a replication of the wall-loss campaign;
+  the design values are declared averages, not estimands; the direction split
+  and its polarity association are observations, not a design rule.
+- [ ] Disclose, never smooth over, that the v2 results manifest was published
+  post hoc by the runtime's fail-closed recovery after the locked attempt's
+  publication step hit the Windows CRT 8192-descriptor cap on 16,957 files, with
+  the terminal record and every sidecar-attested artifact durable and nothing
+  rerun; cite `POSTHOC_FINALIZATION.md` (bound at `bb756418`) and state that the
+  bundle was not published inside the locked attempt.
+- [ ] Report the frozen orbit_mc 1.7 constraints (launch-id grammar; Wilson-exact
+  case sizes 128/16/64 forced by the validator's round-off at zero and full
+  counts) and the launch-plane flags (one injector-zone midpoint, 13 short
+  sweep cells, the 28 µm P2 exit cell) as design constraints and flags, not as
+  exclusions or corrections.
+- [ ] Keep every number of the v2 section a `\Wlh...` macro (including the
+  time-step policy names `N`/`2N`); never type a digit into
+  `paper/sections/wall-loss-geometry-screening-v2.tex`.
+- [ ] Keep the Discussion's closure-exhaustion paragraph labelled as
+  interpretation (CLM-085): from the catalogue cells the collisionless access
+  fraction is unity in every interior cell of every design, so the
+  surrogate/optimisation iteration on these labels is deferred and a kinetic
+  (PIC) design sweep is the route to a sheath-limited closure; that sweep is
+  future work and not evidence.
 - [ ] Describe the L1a geometry sweep v3 only as
   `L1a_FIELD_ONLY_SCREENING_NOT_HARDWARE_VALID` admitted at
   `accepted-screening` (the sweep-v2 outcome): the Koch ratio and every mirror
