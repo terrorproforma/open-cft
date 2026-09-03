@@ -1,0 +1,210 @@
+{
+  "schema_version": "cft-revival.cusp-topology-search-v3.1.protocol/1.0.0",
+  "experiment_id": "cusp-topology-search-v3.1",
+  "status": "preregistered_pending_single_execution",
+  "classification": "SCREENING_L1A_FIELD_SEPARATRIX_CUSP_TOPOLOGY",
+  "p2_row_classification": "P2_QUALIFIED_FIELD_SEPARATRIX_CUSP_TOPOLOGY",
+  "classification_statement": "Magnetic-topology screening of prescribed vacuum field maps under the HEMP/DCFT literature definition of a wall cusp (axis null -> separatrix -> dielectric-wall intersection). The L1a design sets are linear-vacuum equivalent-current screening fields (not P2-qualified, not hardware-valid); the single P2 row is the qualified divergent-exit-stack FEM field. No number here is a plasma, mirror-probability, wall-loss or performance claim; cells and mirror ratios are geometric field descriptors for consumers that carry this label.",
+  "purpose": "Test whether the accepted L1a designs (and the sealed four-cell v2 candidates and characterization v1 cases) exhibit multi-cell wall-cusp topology under the literature definition, after the frozen v1/v2 definition (a wall-side X-type vector null with prominence/separation criteria) returned 0/56 and 0/128 by construction: in a periodic-permanent-magnet stack the vector nulls sit on the axis and the wall cusp is where the separatrix emanating from an axis null meets the dielectric wall.",
+  "relation_to_prior_nulls": "The paper's Section 8 nulls (CLM-018..028, CLM-044/052) remain true under their frozen definition; this campaign tests a different, literature-standard definition on the same and larger design sets and records the result at its own outcome. No v1/v2 artifact is edited.",
+  "relation_to_v3": "v3.1 is the corrected re-preregistration of cusp topology search v3 (preregistration 69159934, result 8cbcdbe6, terminal state assessment_rejection). The definition, every tolerance, the design sets, the field pipeline and the gates are identical to v3; the only change is the extraction of the sealed characterization-v1 axis roots used by the held-out check (see prior_campaign_disclosure.v3). v3's bundle stays recorded and is never cited for a number.",
+  "definition_v3": {
+    "literature_basis": [
+      {"key": "gildea2012", "citation": "Gildea, S. R., Development of the plasma thruster particle-in-cell simulator to complement empirical studies of a low-power cusped-field thruster, Ph.D. thesis, MIT, 2012", "locator": "http://hdl.handle.net/1721.1/79338", "used_for": "point cusps on the axis where each ring-cusp separatrix intersects the centreline; the field strength goes to zero only there; a separatrix is the surface on which the magnetic vector potential is zero valued"},
+      {"key": "kornfeld2007", "citation": "Kornfeld, G., Koch, N., Harmann, H.-P., Physics and Evolution of HEMP-Thrusters, IEPC-2007-108, 2007", "locator": "https://electricrocket.org/IEPC/IEPC-2007-108.pdf", "used_for": "three magnet rings define four plasma cells separated by three neutral or cusp flux lines"},
+      {"key": "koch2011", "citation": "Koch, N. et al., The HEMPT Concept - A Survey on Theoretical Considerations and Experimental Evidences, IEPC-2011-236, 2011", "locator": "https://electricrocket.org/IEPC/IEPC-2011-236.pdf", "used_for": "PPM stack of axially magnetised rings in opposite magnetisation; cusps at the magnet ends; the exit cusp is formed by the stray field of the last magnet"},
+      {"key": "lewerentz2023", "citation": "Lewerentz, L., Schneider, R., Simplified Optimization of the Magnetic Configuration of HEMP-Thrusters, Applied Sciences 13(6), 3491, 2023", "doi": "10.3390/app13063491", "used_for": "field lines traced from the axis region until they hit the ideal wall r = R; separatrix; mirror ratio B_max/B_0 between the on-axis start point and the wall end point as the configuration descriptor"},
+      {"key": "parnell1996", "citation": "Parnell, C. E., Smith, J. M., Neukirch, T., Priest, E. R., The structure of three-dimensional magnetic neutral points, Physics of Plasmas 3, 759-770, 1996", "doi": "10.1063/1.871810", "used_for": "Jacobian classification of magnetic nulls"},
+      {"key": "haynes2010", "citation": "Haynes, A. L., Parnell, C. E., A method for finding three-dimensional magnetic skeletons, Physics of Plasmas 17(9), 092903, 2010", "doi": "10.1063/1.3467499", "used_for": "separatrix construction by field-line tracing from null eigen-directions"},
+      {"key": "murphy2015", "citation": "Murphy, N. A., Parnell, C. E., Haynes, A. L., The appearance, motion, and disappearance of three-dimensional magnetic null points, Physics of Plasmas 22(10), 102117, 2015", "doi": "10.1063/1.4934929", "used_for": "null counts depend on resolution near degenerate configurations; cross-resolution correspondence"}
+    ],
+    "review_document": "modern/docs/literature/reduced-models-cusp-topology-blockers.md, Section 3 (commit 66879e00)",
+    "axis_null": {
+      "statement": "A point (0, z_k) on the symmetry axis where B_z(0, z) changes sign; B_r == 0 on the axis identically. Detected as a sign change of B_z(0, z) = 2 g(0, z) between consecutive samples (grid nodes plus the window ends) of the C1 axis-regular bicubic interpolant of g = (psi - psi_axis)/r^2 (orbit_mc PsiBicubicField, the accepted orbit v4/screening interpolant), refined by bisection until the bracket width is <= axis_root_bracket_tolerance_m; an exact node zero counts only when the neighbouring nonzero values have opposite signs (a tangency is not a null).",
+      "search_window": "[max(z_grid_min + axis_window_margin_mesh_factor*mesh, straight_z_min - axis_window_pitch_factor*pitch), min(z_grid_max - margin, chamber_length + axis_window_pitch_factor*pitch)], computed from the ACCEPTED map's mesh and reused verbatim for the refined map",
+      "classification": "the topology characterization v1 Jacobian/winding-index classification (imported unchanged from experiments.cft_topology_characterization_v1.experiment.local_topology with its frozen parameters: central finite differences of the symmetry-extended (B_r, B_z) on the bilinear map at steps 1.5 and 0.75 mesh cells, maximum relative Jacobian change 0.3, determinant tolerance 1e-3 of the Frobenius scale, winding index on a circle of 2 mesh cells with 32 samples, index tolerance 0.25) AND the analytic Jacobian of the bicubic interpolant (J = [[dBr/dr, dBr/dz], [dBz/dr, dBz/dz]] at the null; on the axis J = diag(-g_z, 2 g_z) so every simple axis null is X-type with eigen-directions e_r (separatrix) and e_z (axis); the divergence identity 2 J_rr + J_zz = 0 is recorded as a residual)",
+      "convergence_criteria": "bracket width <= 1e-12 m within 200 bisections (converged=true), v1 jacobian_converged=true, v1 classification == analytic classification == X; anything else is recorded and fails the every_null_converged gate"
+    },
+    "separatrix": {
+      "statement": "The field line leaving the axis X-null along its radial eigen-direction, seeded at (seed_radius_cell_fraction*dr, z_k) and integrated in the direction that increases r (sign of B_r at the seed) with the event-aware RK4 field-line integrator scheme of coupling v4 (RK4 on the unit field direction with fixed arc-length step trace_step_cell_fraction*min(dr, dz); a wall crossing by any RK stage halves the step, at most wall_event_max_halvings times; the endpoint is snapped to r = r_w when within wall_tolerance_m), sampling the C1 bicubic interpolant. Termination classes: wall (reaches r = r_w), domain_z (leaves the axial extent of the map), null (|B| below null_field_floor_relative * max|B|), step_limit, wall_event_unresolved, degenerate_seed.",
+      "wall_intersection_record": "z_c, |B|(r_w, z_c), B_r (wall-normal component), B_z, angle to the wall normal atan2(|B_z|, |B_r|), path length, step count, psi drift along the trace",
+      "flux_root_cross_check": "the separatrix is the g = 0 contour of the axis-regular flux variable, so z_c must coincide with the root of psi(r_w, z) - psi_axis nearest to z_c on the same interpolant within trace_flux_root_tolerance_m (binding integrity check)",
+      "existing_integrator_comparison": "the same trace repeated with cft_revival.coupling.v4_records._rk4_step on the bilinear grid map (the v4 field-line step); its wall intersection is reported per trace (not gated: a different interpolant)"
+    },
+    "wall_cusp_and_cell": {
+      "cusp": "a separatrix-wall intersection with straight_z_min <= z_c <= straight_z_max (the straight cylindrical dielectric; z = straight_z_min is the anode plane for the L1a sets and the start of the regular field domain for the P2 row; z = straight_z_max is chamber.exit_start, the end of the straight dielectric). Intersections outside are recorded with zone anode_side / divergent_exit / downstream_stray_field (the literature's exit cusp when downstream of the last magnet).",
+      "boundary_ambiguity": "a cusp or intersection within boundary_ambiguity_tolerance_m of straight_z_min or straight_z_max is flagged boundary_ambiguous (reported; the refinement-stability gate is evaluated on the wall intersections, not on their inside/outside classification)",
+      "cell": "the wall interval between consecutive cusps (interior), plus [straight_z_min, z_c,1] (anode_partial) and [z_c,K, straight_z_max] (exit_partial); a design without any cusp has one unbounded cell",
+      "mirror_descriptors": "wall_mirror_ratio = min(|B|(r_w, z_c) over the cell's bounding cusps) / min |B|(r_w, z) over the cell (wall_samples_per_cell + 1 samples); wall_mirror_ratio_strong_end uses the stronger cusp; axis_mirror_ratio = min cusp |B| / max |B_z(0, z)| over the axis interval between the generating nulls (Lewerentz R_m with r_0 -> 0; the literal minimum of |B| on the axis between two nulls is zero at the nulls by definition and is therefore not a descriptor). Partial cells use the neighbouring axis null outside the straight section when one lies in the window, else the section end.",
+      "legacy_target": "four_wall_cusps := exactly four cusps inside the straight dielectric (the v2 requirement of four geometry-registered cusps); four_cells := exactly four cells (three cusps) as in Kornfeld's three cusp lines / four plasma cells"
+    },
+    "stability": {
+      "statement": "Every design is characterized on its accepted map and on a refined map (L1a sets: the same discrete problem re-solved with 2x radial and axial intervals; P2: the level-2 FEM checkpoint on a 2x regular grid). stable := identical axis-null count in the shared window AND identical number of wall-reaching separatrices AND max |dz_k| <= stability_tolerance_m AND max |dz_c| <= stability_tolerance_m (sorted correspondence).",
+      "held_out_checks": "characterization_v1: every sealed v1 primary-map axis root inside the plasma channel must match a v3 axis null within held_out_tolerance_m with the same X classification, and every v3 channel null must match a v1 root (binding); a sealed v1 axis root is a clustered root (not on the finite-box boundary) whose members include an axis-detected raw detection (method axis_sign_change or axis_grid) - NOT a root whose clustered centroid r_m happens to be exactly 0.0, because v1 merges the axis detection with a neighbouring bilinear Newton root and reports the centroid (v3 POSTHOC_AUDIT); sweep_v2: every sealed axis_null_positions_m entry inside the v3 window must match a v3 null within held_out_tolerance_m and vice versa (binding); the sweep's 'axis cusp' QoI is the local maximum of |B_z| on the axis (stage centres), NOT a null - its count per cell is reported"
+    },
+    "numerical_parameters": {
+      "axis_root_bracket_tolerance_m": 1e-12,
+      "axis_root_max_bisections": 200,
+      "axis_window_margin_mesh_factor": 2.5,
+      "axis_window_pitch_factor": 1.0,
+      "seed_radius_cell_fraction": 0.25,
+      "trace_step_cell_fraction": 0.1,
+      "trace_max_steps": 400000,
+      "wall_tolerance_m": 1e-09,
+      "wall_event_max_halvings": 64,
+      "null_field_floor_relative": 1e-13,
+      "flux_root_search_half_width_cells": 2.0,
+      "trace_flux_root_tolerance_m": 5e-05,
+      "boundary_ambiguity_tolerance_m": 0.00025,
+      "wall_samples_per_cell": 400,
+      "axis_samples_per_interval": 400,
+      "jacobian_step_cell_fraction": 0.001,
+      "path_subsample_stride": 8,
+      "path_max_points": 400
+    },
+    "stability_tolerance_m": 0.00025,
+    "held_out_tolerance_m": 0.00025,
+    "minimum_certificate_dense_to_bound_ratio": 0.001,
+    "tracing_grid_rule": "radial nodes 0..first node >= wall radius (at least three radial cells across the bore) and the full axial extent of the solved map; the interpolant is built with the solver's B_r/B_z as reference maps (5 % consistency check of PsiBicubicField)"
+  },
+  "design_sets": {
+    "sweep_v2": {
+      "included": true,
+      "design_count": 96,
+      "why": "the accepted L1a geometry sweep v2 designs, the same 96 fields as the wall-loss geometry screening; re-solved with the screening's identity-proven CPU pipeline (rebuilt case hashes == sealed raw record, QoI replay under the sweep's tolerances, node-wise agreement for the four stored representatives)",
+      "source": "modern/experiments/l1a_geometry_sweep_v2/results (bound through modern/experiments/orbit_wall_loss_geometry_screening_v1/protocol.json#field_source)",
+      "refinement": 2,
+      "stored_map_node_tolerance": {"psi_max_abs_wb": 1e-15, "b_max_abs_t": 1e-09},
+      "straight_z_min_m": 0.0,
+      "keep_paths_for": "representatives (the screening's four representative designs)"
+    },
+    "four_cell_v2": {
+      "included": true,
+      "design_count": 128,
+      "why": "the sealed candidate set of the preregistered four-cell topology search v2 IS reproducible from its sealed records (sampling identities, source and material hashes equal the dataset for 128/128; the geometry hash equals the dataset once the recorded CRLF-era protocol byte hash is substituted into the geometry evidence note, as disclosed in the v2 POSTHOC_AUDIT), so the literature definition is evaluated on exactly the designs that returned 0/128 under the frozen v2 definition",
+      "source": "modern/experiments/four_cell_topology_search_v2/results/dataset.json (sidecar and payload integrity verified) and representatives v2-006, v2-010",
+      "representative_ids": ["v2-006", "v2-010"],
+      "refinement": 2,
+      "stored_map_node_tolerance": {"psi_max_abs_wb": 1e-15, "b_max_abs_t": 1e-09},
+      "straight_z_min_m": 0.0,
+      "note": "the v2 candidates carry alternating_strength_ratio in [0.16, 0.42] (even stages weaker than odd stages) and first_polarity +1; their axis topology is therefore not that of an equal-strength PPM stack"
+    },
+    "characterization_v1": {
+      "included": true,
+      "design_count": 56,
+      "why": "the 56 cases of the topology characterization v1 are the held-out reference for the axis-null machinery: v1 already recorded the clustered axis roots with Jacobian classifications on the same geometries (equal-strength alternating stacks of 2-8 stages); v3 must find the same nulls",
+      "source": "modern/experiments/cft_topology_characterization_v1/results/dataset.json (manifest identity verified) and the seven stored representatives",
+      "refinement": 2,
+      "stored_map_node_tolerance": {"psi_max_abs_wb": 1e-15, "b_max_abs_t": 1e-09},
+      "straight_z_min_m": 0.0
+    },
+    "p2_divergent_exit": {
+      "included": true,
+      "design_count": 1,
+      "why": "the P2-qualified divergent-exit-stack FEM field (iron poles and return yoke; the field of orbit v4 and of the PIC steady-state runs) tests the definition on a non-L1a field; it is a P2-qualified row, not an L1a screening row",
+      "source": "modern/experiments/cft_orbit_wall_loss_v4/protocol.json#field_adapter (hash-bound level-1 and level-2 checkpoints under modern/examples/fem_reference)",
+      "geometry": "cft_revival.geometry.generators.divergent_exit_stack (wall 2 mm, straight dielectric to exit_start 18 mm, chamber 24 mm, four stages at 3/9/15/21 mm, pitch 6 mm)",
+      "straight_z_min_m": 0.001,
+      "consistency_references": {
+        "topology_dashboard_wall_abs_br_maxima_m": [0.00605, 0.01205, 0.01815],
+        "topology_dashboard_wall_abs_br_maxima_source": "modern/visualization/plasma-topology-results.html P2 panel, wall_normal_maxima (dashboard_derived_display_diagnostic_not_accepted_cusp_evidence)",
+        "pic_axis_null_planes_m": [0.006, 0.012, 0.01795],
+        "pic_axis_null_planes_source": "pic2d steady-state dashboard cusp planes (B_z sign change on the axis of the sampled P2 field map)",
+        "role": "consistency check reported per cusp; not a gate"
+      }
+    }
+  },
+  "representatives_with_paths": "sweep_v2: the screening's four representatives; four_cell_v2: v2-006, v2-010; characterization_v1: the seven v1 representatives; p2_divergent_exit: the single row. Every other design stores separatrix endpoints and diagnostics without the sampled path.",
+  "estimands": {
+    "per_design": ["wall_cusp_count", "wall_cusps[].z_c_m (and z_c / L)", "cells[].length_m", "cells[].wall_mirror_ratio", "cells[].axis_mirror_ratio", "wall_cusps[].angle_to_wall_normal_deg", "stable", "axis_null_count", "outside intersections (anode-side / exit stray field)"],
+    "per_set_and_pooled": ["distribution of wall_cusp_count", "four_wall_cusp_fraction (legacy target)", "four_cell_fraction", "z_c range and z_c/L range", "cell length range", "wall and axis mirror-ratio ranges", "separatrix angle range", "stable_design_count", "cusp distance to the nearest inter-magnet gap centre vs to the nearest stage centre"],
+    "consistency": ["P2 wall cusps vs the topology dashboard's wall |B_r| maxima and the PIC axis-null planes (differences reported, not gated)", "sweep axis |B_z| peaks per cell (reported)"],
+    "held_out": ["characterization_v1 axis-null correspondence (binding)", "sweep_v2 axis-null correspondence (binding)"]
+  },
+  "gates": {
+    "binding_integrity": {
+      "all_declared_designs_resolved": "every declared design rebuilt, identity-proven and solved/sampled on both maps (no exclusions)",
+      "every_null_converged": "every axis null in every map: converged bracket, v1 Jacobian converged, X classification agreeing with the analytic Jacobian",
+      "every_trace_terminates_cleanly": "every separatrix trace on every map terminates as wall or domain_z (no null, step_limit, wall_event_unresolved, degenerate_seed)",
+      "every_wall_trace_flux_consistent": "every wall-reaching trace agrees with the flux root within trace_flux_root_tolerance_m",
+      "refinement_stability": "stable == true for every design",
+      "held_out_correspondence": "characterization_v1 and sweep_v2 axis-null correspondences hold for every design of those sets",
+      "determinism_replay": "re-characterizing the replay designs in the main process reproduces the worker's canonical topology bytes exactly, and re-solving their accepted fields reproduces the field identity",
+      "hash_bindings": "protocol, experiment code, dependency sources, field pipeline sources and sealed-source identities equal the preregistered authorities"
+    },
+    "reported_not_binding": ["four_wall_cusp_fraction", "four_cell_fraction", "wall_cusp_count distribution", "mirror-ratio ranges", "P2 consistency differences", "v4 bilinear integrator differences", "boundary-ambiguous cusps"]
+  },
+  "catalogue": {
+    "path": "artifacts/cusp-cell-catalogue.json",
+    "schema_version": "cft-revival.cusp-cell-catalogue/1.0.0",
+    "consumer_contract": "one entry per design (set_id, design_id, label, geometry, axis nulls, wall cusps with z_c/|B|/angle, cells with z_start/z_end/kind/mirror descriptors, stable flag) so the geometry screening's launch design and the MDO closures can define cells by actual separatrix intersections instead of channel fractions; consumers must carry the entry's label (SCREENING_L1A_FIELD_SEPARATRIX_CUSP_TOPOLOGY or P2_QUALIFIED_FIELD_SEPARATRIX_CUSP_TOPOLOGY) and must not read the mirror descriptors as probabilities",
+    "loader": "experiments.cusp_topology_search_v3_1.catalogue.load_catalogue (validates the schema and every entry against the bundle manifest)"
+  },
+  "shakedown": {
+    "evidentiary": false,
+    "outcomes_enter_estimand": false,
+    "purpose": "Exercise the complete production path (design binding, identity proofs, CPU re-solves at both resolutions, tracing grids, bicubic interpolants, axis nulls, v1 classification import, separatrix traces, flux-root cross-check, v4 bilinear comparison, cells, stability, held-out correspondence, gates, catalogue, publication through the shared ExperimentRuntime into a temporary root, validate_bundle) on REAL designs of every set before the preregistration freeze.",
+    "designs": {
+      "sweep_v2": ["l1a-gs-v2-000-48d2ccedd5", "l1a-gs-v2-049-cf0a7d1028", "l1a-gs-v2-095-27f6ceb96c"],
+      "four_cell_v2": ["v2-006", "v2-010"],
+      "characterization_v1": ["topology-s02-p0-r0-neg", "topology-s05-p0-r0-neg", "topology-s08-p0-r0-neg"],
+      "p2_divergent_exit": ["divergent-exit-stack"]
+    },
+    "design_rule": "first, median and last of the sorted sweep list (000 is a representative, exercising the stored-map path); the two stored v2 representatives; the smallest and largest v1 representatives plus topology-s05-p0-r0-neg (a v3 failing design whose sealed axis clusters are multi-member, exercising the corrected held-out extraction); the P2 row (the only row of its set, so its topology is known before the freeze and is reported as such)",
+    "record_path": "shakedown.json",
+    "prepare_requires": ["shakedown.json exists", "passed == true", "protocol_semantic_sha256 equals the current protocol", "experiment_code_sha256, dependency_source_sha256 and field_pipeline_source_sha256 equal the current sources", "timing projection recorded"]
+  },
+  "execution": {
+    "shared_experiment_runtime_only": true,
+    "real_field_shakedown_before_prepare": true,
+    "clean_detached_pushed_preregistration_required": true,
+    "git_common_lock": "cusp-topology-search-v3.1.execution.lock",
+    "attempt": 1,
+    "single_execution": true,
+    "no_patch_or_rerun": true,
+    "parallel_designs": true,
+    "max_design_workers": 12,
+    "cpu_budget_note": "at most 12 of the 24 logical CPUs; the GPU runs a PIC case and is not touched; every solve is cft_revival.fields.solve_problem_cpu",
+    "replay_designs": {
+      "sweep_v2": ["l1a-gs-v2-000-48d2ccedd5"],
+      "four_cell_v2": ["v2-006"],
+      "characterization_v1": ["topology-s04-p0-r0-neg"],
+      "p2_divergent_exit": ["divergent-exit-stack"]
+    },
+    "parallel_determinism_rule": "each design's record is a pure function of (protocol, design identity); workers return canonical payloads with their SHA-256; the main process re-solves and re-characterizes the replay designs and requires byte-identical canonical topology payloads"
+  },
+  "publication_policy": {
+    "per_design": ["artifacts/designs/<set>/<design_id>.json (identity, solver evidence, both characterizations, stability, held-out comparison; separatrix paths for representatives only)", "artifacts/fields/<set>/<design_id>.json.gz (accepted tracing grid r, z, psi, Br, Bz as gzip of canonical JSON; its payload SHA-256 is recorded in the design record)"],
+    "campaign": ["artifacts/protocol.json", "artifacts/design-authorities.json", "artifacts/authorities.json + artifacts/shakedown.json (evidentiary run)", "artifacts/source-binding.json", "artifacts/topology-dataset.json", "artifacts/topology-dataset.csv", "artifacts/cusp-cell-catalogue.json", "artifacts/gates.json", "artifacts/campaign-result.json"]
+  },
+  "claim_boundary": {
+    "field_level": "L1a linear-vacuum equivalent-current FDM for sweep_v2 / four_cell_v2 / characterization_v1 (not P2, not hardware-valid); P2 adaptive FEM with iron for the single divergent-exit-stack row",
+    "definition_source": "the HEMP/DCFT literature cited in definition_v3.literature_basis",
+    "iron_sensitivity": "not tested as a with/without comparison; the P2 row contains iron poles and a return yoke, the L1a rows contain none",
+    "forbid_plasma_performance_publication": true,
+    "forbid_mirror_probability_publication": true,
+    "mirror_ratios_are_field_descriptors_not_probabilities": true,
+    "shakedown_outcomes_are_not_evidence": true,
+    "usable_as": ["cell definitions for the wall-loss geometry screening's launch design (labelled)", "cell/cusp descriptors for MDO closures (labelled)", "input to the paper's Discussion on the Section 8 nulls (definition scope)"]
+  },
+  "prior_campaign_disclosure": {
+    "v3": {
+      "experiment": "modern/experiments/cusp_topology_search_v3",
+      "preregistration_commit": "691599340355818ff64d3834d45110768a751589",
+      "result_commit": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "terminal_state": "assessment_rejection",
+      "status": "gates_failed",
+      "failing_gate": "held_out_correspondence",
+      "failing_design_count": 14,
+      "root_cause": "the v3 held-out reference kept sealed v1 axis roots with clustered centroid r_m == 0.0; 26 of the 206 sealed axis clusters (22 inside the channel, in exactly the 14 failing 5-8 stage designs) carry a bilinear Newton member at r <= 1.6e-8 m and were dropped, so 22 genuine v3 nulls counted as unmatched",
+      "every_other_gate": "true (281/281 resolved, converged, clean traces, flux-consistent, stable, replay bit-identical)",
+      "post_hoc_audit": "modern/experiments/cusp_topology_search_v3/POSTHOC_AUDIT.md (read-only; under the member-method filter the correspondence is 56/56, max difference 1.76e-5 m)",
+      "what_v3_1_changes": "only fields._resolve_characterization's reference extraction (member method filter) and this disclosure; the definition, tolerances, design sets, gates and field pipeline are byte-identical in intent and the dependency sources are unchanged",
+      "shakedown_lesson": "the v3 shakedown designs had single-member axis clusters only; v3.1's shakedown adds topology-s05-p0-r0-neg (multi-member clusters) so the corrected path is exercised on the defect's own case before the freeze"
+    },
+    "characterization_v1": "0 stable eligible cusps / 0 stable eligible cells over 56 designs under the wall-side X-null definition; 1276 clustered roots recorded; axis nulls found and excluded as descriptors",
+    "four_cell_v2": "0/128 stable four-cell candidates (TOPOLOGY_COUNT and TOPOLOGY_UNSTABLE for every candidate) under the frozen v2 definition",
+    "sweep_v2": "3-5 axis |B_z| peaks ('axis cusps') per design; axis nulls recorded as QoIs; no wall-cusp definition applied",
+    "paper": "Section 8 (CLM-018..028) and Discussion (CLM-044, CLM-052) scope the nulls to the frozen cusp/cell definition"
+  }
+}
