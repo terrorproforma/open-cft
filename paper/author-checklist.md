@@ -132,6 +132,26 @@
 - [ ] Say that the geometry screening's launch cells are channel fractions and
   not the catalogue cells; a screening launched from the catalogue is future
   work with no result.
+- [ ] Describe the L1a geometry sweep v3 only as
+  `L1a_FIELD_ONLY_SCREENING_NOT_HARDWARE_VALID` admitted at
+  `accepted-screening` (the sweep-v2 outcome): the Koch ratio and every mirror
+  descriptor are field ratios of linear-vacuum screening fields and never
+  probabilities; the declared iron pole pieces are vacuum in the field; the
+  preregistered hypothesis is reported at its recorded outcome (neither H1 nor
+  H2 held; I_1(x_w) is an upper envelope); the material-aware confirmation is
+  queued, not run; no HEMP-like design is a design recommendation.
+- [ ] Keep every number of the sweep-v3 section a `\Swt...` macro (including
+  the version tokens `v3`, `v2`, `v3.1`, `v4`, the field levels `L1a`/`L1b` and
+  the digit-bearing symbols `I_1`, `b_3/b_1`, `R^2`, `H1`, `H2`); never type a
+  digit into `paper/sections/l1a-sweep-v3.tex`.
+- [ ] Keep the Discussion's legacy-design-space paragraph labelled as
+  interpretation (CLM-076): the legacy parameterisation never varied r_w/L into
+  the HEMP band, so in the screening field its design space could not contain a
+  HEMP-like cusp; whether the widened-box ratios survive a material-aware field
+  is not reported.
+- [ ] Cite the TWT/PPM review's launch-position analysis as a recorded analysis
+  of the geometry screening's sealed orbits (bound at `beb4772c` through the
+  sweep-v3 manifest), never as a result of the sweep or a new orbit result.
 
 ## Methods and uncertainty
 
@@ -174,6 +194,11 @@
   every estimand from the rows and reproduces the predecessor's audit; about
   five seconds) and confirm `git status` shows no change to the three generated
   topology files.
+- [ ] Run `python paper/scripts/generate_l1a_sweep_v3_evidence.py` (it verifies
+  the 979-file bundle, re-derives every estimand and the hypothesis statistics
+  from the rows and re-reads the review's committed check output; about five
+  seconds) and confirm `git status` shows no change to the three generated
+  sweep-v3 files.
 - [ ] Run `python paper/scripts/check_paper.py`.
 - [ ] Run `python -m unittest discover -s paper/tests -v`.
 - [ ] Run `python paper/scripts/verify_reproducible_build.py` and require two

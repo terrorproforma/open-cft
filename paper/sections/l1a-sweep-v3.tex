@@ -1,0 +1,218 @@
+% Results subsection: L1a geometry sweep v3 (the HEMP-like wall-radius-to-pitch regime;
+% accepted field-only design-space screening).
+%
+% Every quantity in this file is a \Swt... macro defined in
+% paper/generated/l1a-sweep-v3.tex, which paper/scripts/generate_l1a_sweep_v3_evidence.py
+% writes from the sealed results bundle of modern/experiments/l1a_geometry_sweep_v3 (and,
+% for the launch-position and adiabaticity macros read in the Discussion, from the
+% committed output of the TWT/PPM review's read-only check script, bound as the
+% definition/hypothesis source); paper/evidence/l1a-sweep-v3.json records the artifact
+% path, JSON pointer and SHA-256 behind each macro, or the derivation of a derived macro.
+% No numeric literal is typed here.
+%
+% Status: admitted. manuscript.tex binds this file once through
+% \input{sections/l1a-sweep-v3.tex}. Admission is governed by the numerical-screening
+% gate GATE-L1A-SWEEP-V3 in paper/evidence/result-gates.json (recorded outcome
+% accepted-screening), the typed manifest paper/evidence/manifests/l1a-sweep-v3.json and
+% the claim records bound to manifest L1A-SWEEP-V3-20260903-128-V1. Every \EvidenceClaim
+% body below must equal its registered authorized_tex exactly; paper/scripts/check_paper.py
+% verifies that, the macro-only rule, the classification, recorded-outcome and
+% campaign-status strings and the presence of the registered non-claims. The standalone
+% driver paper/sections/l1a-sweep-v3-standalone.tex compiles this file on its own.
+\subsection{Geometry sweep into the HEMP-like wall-radius-to-pitch regime}
+\label{sec:l1a-sweep-v3-screening}
+
+\paragraph{Design space and method.}
+The campaign draws \SwtSobolDesigns{} designs by scrambled Sobol sampling (seed
+\SwtSeed) over the \SwtVariableCount{} design variables of the accepted sweep of
+Section~\ref{sec:l1a-sweep-v2}, keeping that sweep's builder rules, stage-count
+mapping (\SwtStageMapping), alternating full-strength polarity, linear-vacuum
+\SwtFieldModelLevel{} equivalent-current solver, domain
+(\SwtGridRadial$\times$\SwtGridAxial{} intervals, radius \SwtDomainRadiusMm{}~mm),
+solver tolerance (\SwtSolverRelTol) and the \SwtVTwoGateCount{} metric gates
+verbatim, and widening \SwtWidenedVariableCount{} of the variables: the stage pitch
+to \SwtBoxPitchLoMm{}--\SwtBoxPitchHiMm{}~mm (against
+\SwtVTwoBoxPitchLoMm{}--\SwtVTwoBoxPitchHiMm), the wall radius to
+\SwtBoxRadiusLoMm{}--\SwtBoxRadiusHiMm{}~mm (against
+\SwtVTwoBoxRadiusLoMm{}--\SwtVTwoBoxRadiusHiMm), the magnet radial clearance to
+\SwtBoxClearanceLoMm{}--\SwtBoxClearanceHiMm{}~mm and the magnet radial thickness to
+\SwtBoxThicknessLoMm{}--\SwtBoxThicknessHiMm{}~mm, so that the wall-radius-to-pitch
+ratio spans $r_w/L$ from \SwtBoxRwOverLLo{} to \SwtBoxRwOverLHi{}
+($x_w = \pi r_w/L$ from \SwtBoxXwLo{} to \SwtBoxXwHi) and the sweep-\SwtPriorVersion{}
+box is a strict subset (Table~\ref{tab:l1a-sweep-v3-box}). The widened bounds were
+fixed from six corner solves against the metric gates before preregistration and
+without reading any ratio. The \SwtHeldOutDesigns{} accepted designs of the earlier
+sweep are rebuilt through the identity-proven pipeline of the geometry screening of
+Section~\ref{sec:wall-loss-geometry-screening} and re-solved as a held-out set. Every
+design is solved on the accepted map and on a \SwtRefinement$\times$ refined map;
+the wall cusps and cells are found with the literature definition of
+Section~\ref{sec:cusp-topology} imported unchanged from the frozen protocol of the
+topology search (version \SwtTopologyVersion, commit
+\texttt{\SwtTopologyResultsCommit}), and at every wall cusp the campaign reports the
+HEMP design ratio of Koch et al.\ in four readings, of which the binding classifier is
+the conservative one, $\rho = |B|(r_w, z_c)$ over the larger of the two adjacent axis
+peaks; a design is HEMP-like when every one of its wall cusps has
+$\rho \ge \SwtRhoThreshold$, the smaller of the two design values the THALES team
+reported. The single-harmonic field theory reviewed in the bound literature review
+(commit \texttt{\SwtLiteratureCommit}; sources \SwtLiteratureKeys) predicts
+$\rho = \SwtIOne(x_w)$ for an infinite stack, hence the threshold
+$\SwtXStarSymbol = \SwtXStar$ ($r_w/L = \SwtRwOverLStar$) at which
+$\SwtIOne(\SwtXStarSymbol) = \SwtRhoThreshold$; the preregistered hypothesis
+(\SwtHOne: $\rho$ tracks $\SwtIOne(x_w)$; \SwtHTwo: $\SwtXStarSymbol$ classifies the
+designs) is reported at whatever value the campaign measures and is not a gate. The
+protocol of experiment \texttt{\SwtExperimentId} was frozen at preregistration commit
+\texttt{\SwtPreregCommit} after a disclosed non-evidentiary shakedown of the complete
+production path on \SwtShakedownDesigns{} real designs of both sets (passed:
+\SwtShakedownPassed; evidentiary: \SwtShakedownEvidentiary) at commit
+\texttt{\SwtShakedownCommit}, and executed exactly \SwtAttemptCount{} time under an
+immutable Git-common lock (immutable: \SwtLockImmutable) on \SwtWorkerPool{} of
+\SwtCpuCount{} CPU cores (\texttt{\SwtDevice}; design stage \SwtStageWallMin{}~min,
+assessment \SwtAssessmentWallMin{}~min). The results are committed at
+\texttt{\SwtResultsCommit} (manifest hash prefix \texttt{\SwtManifestSha};
+\SwtVerifiedFiles{} files verified byte for byte, \SwtToleratedEolFiles{} accepted
+through any end-of-line tolerance; protocol \texttt{\SwtProtocolSha}, experiment code
+\texttt{\SwtExperimentCodeSha}, dependency sources \texttt{\SwtDependencySourceSha}
+over \SwtDependencySourceFiles{} files including the imported definition, field
+pipeline \texttt{\SwtFieldPipelineSha} over \SwtFieldPipelineFiles{} files), together
+with the results dashboard (commit \texttt{\SwtDashboardCommit}) whose embedded
+extraction the evidence generator requires to agree with the sealed artifacts.
+\SwtDesignBoxTable
+
+\paragraph{Execution and integrity.}
+\EvidenceClaim{CLM-070}{The single execution terminated in state
+\texttt{\SwtTerminalState} with campaign status \texttt{\SwtCampaignStatus}:
+\SwtDesignCount{} of \SwtDeclaredDesigns{} declared designs (the \SwtSobolDesigns{}
+Sobol designs of the widened box and the \SwtHeldOutDesigns{} held-out designs) were
+built or rebuilt with their identities proven, solved on both maps and characterised
+(\SwtFailedDesigns{} failures), \SwtBindingGatesTrue{} of \SwtBindingGateCount{}
+binding integrity gates held, the \SwtReplayDesigns{} determinism replays were
+bit-identical in \SwtReplaysBitIdentical{} cases, every design passed the
+\SwtVTwoGateCount{} sweep-\SwtPriorVersion{} metric gates verbatim
+(\SwtVTwoGatesPassed{} of \SwtDesignCount; largest boundary-to-peak ratio
+\SwtVTwoGateBoundaryObserved{} against \SwtVTwoGateBoundaryLimit, smallest topology
+confidence \SwtVTwoGateConfidenceObserved{} against \SwtVTwoGateConfidenceLimit), and
+\SwtStableDesigns{} of \SwtDesignCount{} designs were stable under refinement with a
+largest wall-intersection shift of \SwtMaxWallShiftUm{}~$\mu$m and a largest axis-null
+shift of \SwtMaxAxisShiftUm{}~$\mu$m against a tolerance of
+\SwtStabilityToleranceUm{}~$\mu$m; the per-design resolution sensitivity of $\rho$ has
+a median of \SwtRhoSensitivityMedian{} and a maximum of \SwtRhoSensitivityMax, and the
+HEMP-like classification agreed between the two maps for \SwtHempFlagStableDesigns{}
+of \SwtDesignCount{} designs. The held-out set was reproduced: \SwtHeldOutPassed{} of
+\SwtHeldOutCount{} designs replayed their sealed sweep quantities within that sweep's
+own tolerances (\SwtHeldOutQoiReplay{} of \SwtHeldOutCount), their
+\SwtHeldOutRefNulls{} sealed axis nulls are in bijection with the \SwtHeldOutNulls{}
+nulls found here (largest difference \SwtHeldOutMaxUm{}~$\mu$m against
+\SwtHeldOutToleranceUm{}~$\mu$m), and the \SwtHeldOutStoredReps{} stored
+representative maps were reproduced node-wise.}
+
+\paragraph{Results: the HEMP-like regime.}
+\EvidenceClaim{CLM-072}{Under the imported literature definition the
+\SwtSobolDesigns{} Sobol designs carry \SwtSobolCuspCount{} wall cusps
+(\SwtSobolHistTwo, \SwtSobolHistThree{} and \SwtSobolHistFour{} designs with two,
+three and four cusps; \SwtSobolNMinusOne{} designs with one cusp fewer than magnet
+stages) whose Koch ratio $\rho$ in the conservative reading runs from \SwtSobolRhoMin{}
+to \SwtSobolRhoMax{} (median \SwtSobolRhoMedian), against \SwtHeldOutRhoMin{} to
+\SwtHeldOutRhoMax{} over the \SwtHeldOutCuspCount{} cusps of the held-out
+sweep-\SwtPriorVersion{} designs. \SwtHempLikeCount{} of the \SwtSobolDesigns{} designs
+(\SwtHempLikeFraction) are HEMP-like, with $\rho \ge \SwtRhoThreshold$ at every wall
+cusp: by $x_w$ band, \SwtBandBelowStarHempLike{} of \SwtBandBelowStarDesigns{} designs
+below $\SwtXStarSymbol = \SwtXStarTwo$, \SwtBandOneHempLike{} of \SwtBandOneDesigns{}
+in $[\SwtXStarSymbol, \SwtBandOneHi)$, \SwtBandTwoHempLike{} of \SwtBandTwoDesigns{} in
+$[\SwtBandTwoLo, \SwtBandTwoHi)$ and \SwtBandThreeHempLike{} of \SwtBandThreeDesigns{}
+in $[\SwtBandThreeLo, \SwtBandThreeHi)$. The HEMP-like designs span $x_w$ from
+\SwtHempRegionXwMin{} to \SwtHempRegionXwMax{} ($r_w/L$ from \SwtHempRegionRwOverLMin{}
+to \SwtHempRegionRwOverLMax) with \SwtHempRegionStageThree, \SwtHempRegionStageFour{}
+and \SwtHempRegionStageFive{} designs of three, four and five stages and per-design
+minimum ratios from \SwtHempRegionMinRhoMin{} to \SwtHempRegionMinRhoMax;
+\SwtFiveStageFourCuspHempLike{} of the \SwtSobolStageFiveDesigns{} five-stage designs
+(\SwtFiveStageFourCuspIds) carry the four wall cusps of the legacy target and are
+HEMP-like. In the sweep-\SwtPriorVersion{} region (the \SwtHeldOutDesigns{} held-out
+designs plus the \SwtSobolInsideVTwoBox{} Sobol designs inside the
+sweep-\SwtPriorVersion{} box; \SwtRegionDesigns{} designs, \SwtRegionCuspCount{} cusps)
+\SwtRegionHempLike{} designs are HEMP-like and the largest ratio at any cusp is
+\SwtRegionMaxRho. At every one of the \SwtPooledCuspCount{} cusps of both sets the wall
+reading is below one (largest \SwtPooledRhoWallMax; \SwtCuspIsWallMaximumCount{} cusps
+are the wall $|B|$ maximum of their neighbourhood), and the wall field is close to
+single-harmonic (median $\SwtBThreeOverBOne$ of \SwtWallBThreeMedian, largest
+\SwtWallBThreeMax). Every ratio is a field ratio of a linear-vacuum screening field
+and none is a probability.}
+Table~\ref{tab:l1a-sweep-v3-bands} resolves the ratio by $x_w$ band and
+Table~\ref{tab:l1a-sweep-v3-hemp-like} lists the HEMP-like designs.
+\SwtBandTable
+\SwtHempLikeTable
+
+\paragraph{The preregistered hypothesis.}
+\EvidenceClaim{CLM-073}{The preregistered hypothesis (\SwtHOne: $\rho$ tracks the
+single-harmonic prediction $\SwtIOne(x_w)$ with a least-squares slope through the
+origin in $[\SwtHOneSlopeLo, \SwtHOneSlopeHi]$ and at least
+\SwtHOneBandFractionRequired{} of the cusps within $\pm$\SwtBand{} of it; \SwtHTwo:
+the threshold $\SwtXStarSymbol = \SwtXStar$, where
+$\SwtIOne(\SwtXStarSymbol) = \SwtRhoThreshold$, classifies the designs with an accuracy
+of at least \SwtHTwoAccuracyRequired) did not hold as preregistered (\SwtHOne{} held:
+\SwtHOneAsPredicted; \SwtHTwo{} held: \SwtHTwoAsPredicted). Over the
+\SwtSobolCuspCount{} Sobol cusps the slope is \SwtSlope{} with
+$\SwtRSquaredSymbol = \SwtRSquared$, \SwtBandFraction{} of the cusps lie within the
+band, and $\rho/\SwtIOne$ has a median of \SwtRhoOverIOneMedian{}
+(\SwtRhoOverIOneMin{} to \SwtRhoOverIOneMax): \SwtEndCuspRhoOverIOneMedian{} at the
+\SwtEndCuspCount{} end cusps, where the largest value is \SwtEndCuspRhoOverIOneMax, and
+\SwtInteriorCuspRhoOverIOneMedian{} at the \SwtInteriorCuspCount{} interior cusps. The
+threshold predicted \SwtPredictedHempLike{} HEMP-like designs and \SwtHempLikeCount{}
+were realised (\SwtConfusionBoth{} predicted and realised, \SwtConfusionPredictedOnly{}
+predicted only, \SwtConfusionRealisedOnly{} realised only, \SwtConfusionNeither{}
+neither; accuracy \SwtAccuracy), and \SwtPredictedOnlyEndCuspFailures{} of the
+\SwtConfusionPredictedOnly{} predicted-only designs fall short only at their end
+cusps. The realised threshold from the fitted slope is $x_w = \SwtXStarFromSlope$
+($r_w/L = \SwtRwOverLStarFromSlope$), \SwtRealisedThresholdShift{} above the
+prediction; the smallest $x_w$ of a HEMP-like design is \SwtSmallestXwHempLike{} and
+the largest $x_w$ of a design that is not HEMP-like is \SwtLargestXwNotHempLike. As
+recorded, $\SwtIOne(x_w)$ is therefore an upper envelope of the realised ratio rather
+than its value: every end cusp lies below the infinite-stack prediction because the
+finite stack's end field raises the axis peak adjacent to it, the direction the
+frozen protocol anticipated, and the interior cusps lie closer to the prediction.}
+Table~\ref{tab:l1a-sweep-v3-hypothesis} sets the preregistered thresholds beside the
+observed statistics.
+\SwtHypothesisTable
+
+\paragraph{The earlier design box.}
+\EvidenceClaim{CLM-074}{In the field model and under the definition used here, the
+design box of the accepted sweep of Section~\ref{sec:l1a-sweep-v2} could not contain a
+HEMP-like cusp: that box spans $r_w/L$ from \SwtVTwoBoxRwOverLLo{} to
+\SwtVTwoBoxRwOverLHi{} ($x_w$ up to \SwtVTwoBoxXwHi{} at its corner and
+\SwtRegionXwMax{} realised by its designs), below the predicted threshold
+$\SwtXStarSymbol = \SwtXStarTwo$ and the realised threshold \SwtXStarFromSlope, and the
+largest Koch ratio at any of the \SwtRegionCuspCount{} cusps of its \SwtRegionDesigns{}
+designs is \SwtRegionMaxRho{} against the design value \SwtRhoThreshold, with
+$\rho/\SwtIOne$ there at a median of \SwtRegionRhoOverIOneMedian{} and
+\SwtRegionBandFraction{} of its cusps within the band. The widened box reaches the
+regime by extending the wall radius to \SwtBoxRadiusHiMm{}~mm and shortening the pitch
+to \SwtBoxPitchLoMm{}~mm ($r_w/L$ up to \SwtBoxRwOverLHi), with the builder rules,
+solver, domain and metric gates of the earlier sweep unchanged, and the first HEMP-like
+design appears at $x_w = \SwtSmallestXwHempLike$ ($r_w/L = \SwtHempRegionRwOverLMin$).}
+
+\paragraph{Scope.}
+The boxed statement is the only interpretation offered here; it repeats the
+claim boundary sealed with the campaign.
+\par\medskip\noindent
+\fbox{\begin{minipage}{0.94\linewidth}
+\textbf{Model-bounded scope.}
+\EvidenceClaim{CLM-075}{The study is a field-only design-space screening classified
+\texttt{\SwtClassification} and admitted at the recorded outcome
+\texttt{\SwtRecordedOutcome}: its fields are linear-vacuum \SwtFieldModelLevel{}
+equivalent-current models in which the declared soft-iron pole pieces and yoke are
+source-free vacuum (material response in the field: \SwtIronInField), no
+permanent-magnet or nonlinear-iron material model enters, and the fields are not
+P2-qualified. The Koch ratio and every mirror descriptor are field ratios and never
+probabilities (\SwtMirrorDescriptorsNotProbabilities; a probability:
+\SwtRhoIsProbability), no plasma, wall-loss, confinement or performance quantity is
+computed or published (forbidden: \SwtForbidPlasmaPerformance; mirror-probability
+publication forbidden: \SwtForbidMirrorProbability), the hypothesis tests and the
+HEMP-like counts are reported and not gated, and no hardware or experimental
+validation is claimed (\SwtHardwareValidation). The material-aware
+(\SwtMaterialLevel{} or P2) confirmation of $\rho$ that the protocol queues for every
+design with $r_w/L$ above one half has status \texttt{\SwtConfirmationStatus} (run:
+\SwtMaterialAwareConfirmationRun), so no HEMP-like design is a design recommendation;
+the catalogue is a consumer contract under the label \texttt{\SwtTopologyLabel},
+usable as \SwtUsableAs, and every consumer must carry the label; the study opens no
+physics level (\SwtPhysicsLevelOpened).}
+\end{minipage}}
+\par\medskip

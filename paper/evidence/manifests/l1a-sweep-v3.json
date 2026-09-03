@@ -1,0 +1,727 @@
+{
+  "classification": "L1a_FIELD_ONLY_SCREENING_NOT_HARDWARE_VALID",
+  "dashboard": {
+    "files": [
+      {
+        "git_blob": "d4fa34925192cc065a4b60ef647a1a451dbd3cff",
+        "git_blob_sha256": "84d819d6ca037b5d0bc82f33e0d036c3594b5be3d623f8264b27a127332b1d14",
+        "path": "modern/visualization/generate_l1a_geometry_sweep_v3_dashboard.py",
+        "role": "dashboard-generator"
+      },
+      {
+        "git_blob": "45ff2aed9bf447e6229c816ebbbe5e1f81f070a5",
+        "git_blob_sha256": "2761d0a8d49dd4de6af3e782ed6196e6b2aaf1e2b7766aacd2c24e8d2b9cfd6b",
+        "path": "modern/visualization/l1a-geometry-sweep-v3.template.html",
+        "role": "dashboard-template"
+      },
+      {
+        "git_blob": "c27feb1493ba4b87cfc127d2b189ae13a5240fbb",
+        "git_blob_sha256": "7b43971c09c3fba2b3bfff3b35679c584fda3654b35df254a6792df6ea0d363d",
+        "path": "modern/visualization/l1a-geometry-sweep-v3.html",
+        "role": "dashboard-html"
+      }
+    ],
+    "path": "modern/visualization/l1a-geometry-sweep-v3.html",
+    "revision": "44d0c63c2f3aaf73a6d4402e94522ceb9901c3fe",
+    "rule": "the committed dashboard byte-verifies the accepted bundle, embeds its own extraction and pins the manifest SHA-256 and the preregistration commit; the generator requires that extraction (identity incl. the sealed sources, headline, held-out, hypothesis block, estimands, gates, execution, confirmation queue, every per-design row and the catalogue counts) to equal the sealed artifacts before writing any macro",
+    "subject": "feat(visualization): L1a geometry sweep v3 dashboard (HEMP-like regime; rho vs I1(x_w), cusp maps, claim boundary) + experiment logs"
+  },
+  "definition_sources": {
+    "files": [
+      {
+        "git_blob": "d0cb0dfe9719a65ce4e1099392e44adde44c98cd",
+        "git_blob_sha256": "c0b06eda793d732f41e309f48990a6bd32a40766ec479e42505194ca40c131e4",
+        "note": "committed output the check script wrote; the launch-position, adiabaticity and magnetic-moment macros are derived from it",
+        "path": "modern/docs/literature/scripts/ppm_axis_field_check.output.json",
+        "role": "definition-source-check-output"
+      },
+      {
+        "git_blob": "e158c672ade524f2f48048cf5253d784655ae9d1",
+        "git_blob_sha256": "bee6672fcfcbc515596e810615aa17f00752e8fceef45e884783eb83a39fc021",
+        "note": "read-only check script of the review (fits the recorded fields, re-reads the geometry screening's sealed orbits by launch cell); never writes inside any results/ tree",
+        "path": "modern/docs/literature/scripts/ppm_axis_field_check.py",
+        "role": "definition-source-check-script"
+      },
+      {
+        "git_blob": "ca703fc84a2135529a22ca786a7a527686cb5dfc",
+        "git_blob_sha256": "af87bdddc6977bc64c4bf0c5336ca87f01fefe38e454dab7660dfb80943d60a0",
+        "note": "TWT/PPM literature review that fixed the Koch design ratio, the single-harmonic prediction and the preregistered hypothesis; also the recorded launch-position analysis read in the Discussion",
+        "path": "modern/docs/literature/twt-ppm-physics-for-hemp.md",
+        "role": "definition-source-review"
+      }
+    ],
+    "literature_keys": [
+      "koch2007",
+      "koch2011"
+    ],
+    "revision": "beb4772c9afc04be5c2c04d3e8a4fc8c16bb771e",
+    "rule": "the frozen protocol names the TWT/PPM review at its commit as the source of the Koch design ratio and of the single-harmonic hypothesis; the review, its read-only check script and the committed output the script wrote are bound at that commit and their checkouts equal the blobs (LF-normalised); the launch-position, adiabaticity and magnetic-moment macros are derived from the committed output and are a recorded analysis of the geometry screening's sealed orbits, not a result of this campaign",
+    "subject": "docs(literature): TWT/PPM physics inherited by HEMP design"
+  },
+  "document_type": "paper-l1a-regime-screening-manifest",
+  "evidence_level": {
+    "justification": "The study is a preregistered, single-execution numerical screening of a design space on L1a linear-vacuum equivalent-current fields: 128 scrambled-Sobol designs on a box that contains the sweep-v2 box and extends the wall-radius-to-pitch ratio to r_w / L = 1.24, plus the 96 accepted sweep-v2 designs rebuilt and re-solved as a held-out set, each solved on the accepted map and a 2x refined map, with the sweep-v2 builder rules and six metric gates verbatim, the cusp topology search v3.1 wall-cusp definition imported unchanged and the Koch design ratio reported per cusp as a field ratio. Its recorded outcome is accepted_l1a_sweep_v3 with all 11 binding integrity gates true; its preregistered hypothesis (H1: rho tracks I_1(x_w); H2: x* classifies the designs) was a reported test and did not hold as preregistered, and it is admitted at that recorded outcome. The framework admits accepted numerical evidence through a typed committed manifest, hashed artifacts at a resolvable revision, exact registered claim text and generated artifacts with provenance sidecars; that pattern is applied here through the numerical-screening gate GATE-L1A-SWEEP-V3 at the recorded outcome accepted-screening, the outcome of the sweep v2 whose box this study widens. The fields are not P2-qualified (the declared soft-iron pole pieces are vacuum in the field); the material-aware L1b/P2 confirmation the protocol queues for every design with r_w / L > 0.5 was not run. Nothing here is a plasma, wall-loss, confinement or performance quantity or a design recommendation; it is not the L1 field-resolved reduction of GATE-L1 (no manufactured solution, no L0 mapping, no performance model), not L2 and not L3, and it opens none of those gates.",
+    "name": "numerical-screening",
+    "opens_gate": null,
+    "relation_to_levels": {
+      "L0": "independent of the algebraic L0 model; no mapping is claimed and no L0 quantity is computed",
+      "L1": "solves linear-vacuum L1a screening fields on a wider design box; no field-resolved reduction, no material-aware field, no L0 mapping, no geometry-response prediction",
+      "L2": "not coupled to any plasma model; the Koch ratio and every mirror descriptor are geometric field ratios offered to consumers under their label",
+      "L3": "not particle-in-cell and not experimental; the launch-position analysis bound with the literature review re-reads sealed collisionless test-particle orbits of the geometry screening and is a recorded analysis, not a kinetic result"
+    },
+    "validation_status": "none: no measurement, facility, or hardware comparison exists",
+    "verification_tier": "code verification (identity proofs of every built and rebuilt field, the six sweep-v2 metric gates verbatim, every axis null converged and X-type, every separatrix trace clean and flux-consistent, bit-identical determinism replays, hash bindings to the frozen authorities) and solution verification at screening tier (refinement stability on a 2x map per design with the rho resolution sensitivity reported, held-out reproduction of the 96 accepted sweep-v2 designs: QoI replay, axis-null bijection and node-wise stored maps); no validation"
+  },
+  "evidence_revision": "2cfe8223630fbef6bfe8099a5dcecaf4eb8c6b44",
+  "evidence_revision_note": "The results tree first exists at this record commit; the dashboard was generated from the sealed bundle one commit later and is bound at its own revision.",
+  "evidence_revision_subject": "record L1a geometry sweep v3 result",
+  "experiment_id": "l1a-geometry-sweep-v3",
+  "experiment_path": "modern/experiments/l1a_geometry_sweep_v3",
+  "gate_id": "GATE-L1A-SWEEP-V3",
+  "gate_kind": "numerical-screening",
+  "level": "numerical-screening",
+  "manifest_id": "L1A-SWEEP-V3-20260903-128-V1",
+  "metrics": {
+    "attempt_count": 1,
+    "band_below_threshold_designs": 77,
+    "band_below_threshold_hemp_like": 0,
+    "binding_gate_count": 11,
+    "binding_gates_true": 11,
+    "box_wall_radius_over_pitch_maximum": 1.2353,
+    "box_x_w_maximum": 3.8808,
+    "campaign_status": "accepted_l1a_sweep_v3",
+    "catalogue_is_consumer_contract_under_label": true,
+    "classification": "L1a_FIELD_ONLY_SCREENING_NOT_HARDWARE_VALID",
+    "confirmation_status": "queued_not_run",
+    "declared_count": 224,
+    "design_set_count": 2,
+    "design_variable_count": 11,
+    "end_cusp_count": 256,
+    "end_cusp_rho_over_i1_median": 0.7993292218357171,
+    "evaluated_count": 224,
+    "failed_cases_count": 0,
+    "five_stage_four_cusp_hemp_like_count": 2,
+    "hardware_or_experimental_validation": false,
+    "held_out_design_count": 96,
+    "held_out_designs": 96,
+    "held_out_hemp_like_count": 0,
+    "held_out_max_difference_m": 2.7294298442819692e-05,
+    "held_out_nulls": 479,
+    "held_out_passed": 96,
+    "held_out_qoi_replay_passed": 96,
+    "held_out_reference_nulls": 479,
+    "held_out_rho_maximum": 0.9928855817435996,
+    "held_out_stored_representatives": 4,
+    "held_out_tolerance_m": 0.00025,
+    "held_out_wall_cusp_total": 277,
+    "hemp_like_count": 15,
+    "hemp_like_designs_are_design_recommendations": false,
+    "hemp_like_flag_stable_designs": 224,
+    "hemp_like_fraction": 0.1171875,
+    "hemp_like_wall_radius_over_pitch_maximum": 1.0320870080287337,
+    "hemp_like_wall_radius_over_pitch_minimum": 0.7153483317100598,
+    "hemp_like_x_w_maximum": 3.2423969622885394,
+    "hemp_like_x_w_minimum": 2.247333063658038,
+    "hypothesis_fraction_within_band": 0.7041095890410959,
+    "hypothesis_h1_held": false,
+    "hypothesis_h2_held": false,
+    "hypothesis_prediction_accuracy": 0.71875,
+    "hypothesis_r_squared": 0.3872990677967635,
+    "hypothesis_reported_not_gated": true,
+    "hypothesis_slope_through_origin": 0.6885026840953269,
+    "hypothesis_x_star_from_fitted_slope": 2.341406785525024,
+    "hypothesis_x_star_prediction": 1.9373184746065641,
+    "interior_cusp_count": 109,
+    "interior_cusp_rho_over_i1_median": 0.866825548293919,
+    "iron_in_field": false,
+    "literature_source_count": 2,
+    "material_aware_confirmation_run": false,
+    "maximum_axis_null_shift_m": 5.369273525301227e-05,
+    "maximum_wall_intersection_shift_m": 3.332735706386013e-05,
+    "mirror_probability_publication_forbidden": true,
+    "mirror_ratios_are_field_descriptors_not_probabilities": true,
+    "permanent_magnet_material_model": false,
+    "physics_level_opened": false,
+    "plasma_or_performance_claim_forbidden": true,
+    "pooled_cusp_count": 642,
+    "pooled_cusp_is_wall_maximum_count": 0,
+    "pooled_rho_wall_maximum": 0.9418079894303892,
+    "predicted_hemp_like_count": 51,
+    "predicted_only_end_cusp_failures": 28,
+    "preregistered_one_shot": true,
+    "recorded_outcome": "accepted-screening",
+    "replay_designs": 3,
+    "replays_bit_identical": 3,
+    "representative_count": 8,
+    "review_epsilon_maximum": 0.7516992216665618,
+    "review_epsilon_minimum": 0.05406892421316198,
+    "review_far_cells": 9,
+    "review_far_reflections_maximum": 88,
+    "review_far_reflections_minimum": 32,
+    "review_launch_cells": 16,
+    "review_mendel_alpha_maximum": 1194.2602509349747,
+    "review_mendel_alpha_minimum": 9.934450811298941,
+    "review_mu_ordered_by_epsilon": true,
+    "review_near_centre_cells": 7,
+    "review_near_centre_reflections_maximum": 1,
+    "rho_is_probability": false,
+    "rho_resolution_sensitivity_maximum": 0.08007255844184451,
+    "screening_model": "linear-vacuum L1a equivalent-current field-only screening of axisymmetric PPM-stack geometries (geometry schema v1.1, the sweep-v2 builder rules on a wider box reaching r_w / L = 1.24) with the cusp topology search v3.1 wall-cusp definition imported unchanged and the HEMP design ratio rho of Koch et al. reported per cusp as a field ratio; not P2-qualified, no permanent-magnet or nonlinear-iron material model (the declared soft-iron pole pieces and yoke are source-free vacuum in the field)",
+    "shakedown_evidentiary": false,
+    "shakedown_passed": true,
+    "sobol_design_count": 128,
+    "sobol_inside_sweep_v2_box": 6,
+    "sobol_n_minus_one_designs": 110,
+    "sobol_rho_maximum": 15.360276363600548,
+    "sobol_rho_median": 1.0131471963242542,
+    "sobol_rho_minimum": 0.340387551922235,
+    "sobol_wall_cusp_count_histogram": {
+      "2": 47,
+      "3": 53,
+      "4": 28
+    },
+    "sobol_wall_cusp_total": 365,
+    "stability_tolerance_m": 0.00025,
+    "stable_design_count": 224,
+    "sweep_v2_metric_gate_count": 6,
+    "sweep_v2_metric_gates_passed_designs": 224,
+    "sweep_v2_region_design_count": 102,
+    "sweep_v2_region_hemp_like_count": 0,
+    "sweep_v2_region_rho_maximum": 0.9928855817435996,
+    "terminal_state": "accepted_result",
+    "tolerated_eol_file_count": 0,
+    "topology_label": "SCREENING_L1A_FIELD_SEPARATRIX_CUSP_TOPOLOGY",
+    "verified_file_count": 979,
+    "wall_loss_launch_in_near_class": true,
+    "wall_loss_launch_offset_m": 0.0005000000000000002,
+    "widened_variable_count": 4
+  },
+  "model_fidelity": "L1a-linear-vacuum-field-only-design-space-screening-wider-box-with-literature-cusp-definition-and-Koch-ratio",
+  "paper_evidence_file": {
+    "document_type": "paper-l1a-sweep-v3-evidence",
+    "generator": "paper/scripts/generate_l1a_sweep_v3_evidence.py",
+    "generator_command": "python paper/scripts/generate_l1a_sweep_v3_evidence.py",
+    "macro_count": 353,
+    "macro_prefix": "Swt",
+    "path": "paper/evidence/l1a-sweep-v3.json",
+    "rule": "check_paper.py regenerates the evidence file, the generated TeX and the sidecar from the sealed bundle and requires byte identity with the committed files; every macro therefore traces to a verified artifact hash at every check, the headline, every per-set estimand and the preregistered hypothesis statistics are re-derived from the per-design rows on the way, every design record, field grid, catalogue entry and CSV row is cross-checked against its row, the sealed sweep-v2 manifest must hash to the identity the bundle recorded, the frozen topology protocol must carry the imported definition parameters, and the review's committed check output must be the blob at the review commit.",
+    "schema_version": "1.0"
+  },
+  "permitted_claim_scope": [
+    "terminal state, campaign status, design, gate, replay, stability, sensitivity and held-out counts of the single execution",
+    "the design box against the sweep-v2 box, the wall-radius-to-pitch and x_w ranges implied by the boxes and realised by the designs, and the Koch ratio per cusp in the conservative reading as a field ratio, with its ranges, histograms and band counts",
+    "the HEMP-like counts and their region (x_w, r_w / L, stage and cusp histograms), the five-stage four-cusp HEMP-like designs, the sweep-v2 region's zero count and largest ratio, and the wall reading below one at every cusp",
+    "the preregistered hypothesis statistics exactly as recorded (slope, R^2, band fraction, confusion table, accuracy, realised threshold, end- and interior-cusp medians) with the recorded outcome that neither H1 nor H2 held as preregistered, and the envelope reading that follows from the end-cusp values",
+    "the statement, bounded to the field model and the definition, that the sweep-v2 design box could not contain a HEMP-like cusp, and the labelled Discussion interpretation that the legacy parameterisation never sampled the ratio the HEMP criterion depends on",
+    "the recorded launch-position analysis of the bound literature review (launch cells by distance to the nearest magnet centre against their recorded reflections, the wall-loss campaign's launch offset from the magnet centres, the adiabaticity parameters and the magnetic-moment medians), cited as a recorded analysis of sealed orbits and never as a result of this campaign",
+    "the classification strings, the recorded outcome, the sealed claim boundary, the queued-not-run status of the material-aware confirmation and the catalogue's status as a consumer contract under its label"
+  ],
+  "posthoc_audit": null,
+  "posthoc_audit_note": "no post-hoc audit exists for the accepted bundle; every one of its 979 files is verified byte for byte by the generator and by the checker and no end-of-line tolerance is needed.",
+  "preregistration_revision": "1923ef7601bcc07acafa28ce54db687f025922b6",
+  "preregistration_revision_subject": "preregister L1a geometry sweep v3",
+  "prohibited_inferences": [
+    "plasma confinement, cusp-loss probabilities, wall-loss rates, thrust, efficiency or any thruster performance",
+    "reading the Koch ratio or any mirror descriptor as a probability or a loss fraction",
+    "that any HEMP-like design is a design recommendation, or that its ratio survives a material-aware field with iron pole pieces (the confirmation is queued, not run)",
+    "that the preregistered hypothesis held (it is admitted at its recorded outcome: not as predicted; I_1(x_w) is an upper envelope)",
+    "that a separatrix-bounded cell confines electrons or that the legacy multi-cell plasma picture is demonstrated",
+    "permanent-magnet or nonlinear-iron material behaviour, or P2 qualification of the screening fields",
+    "any kinetic-simulation, particle-in-cell or new orbit result (the launch-position analysis re-reads sealed screening orbits and is a recorded analysis)",
+    "hardware or experimental validation",
+    "field-resolved reduction, L0 mapping or geometry-response prediction (GATE-L1 stays closed)",
+    "opening of GATE-L1, GATE-L2 or GATE-L3"
+  ],
+  "recorded_outcome": "accepted-screening",
+  "recorded_outcome_justification": "The numerical-screening outcome accepted-screening names a field-only design-space screening on L1a linear-vacuum fields, the outcome at which the geometry sweep v2 is admitted. This study is the same kind of object: the sweep-v2 builder rules, solver, domain and metric gates applied verbatim on a wider design box, with the accepted sweep-v2 designs re-solved as a held-out set, the literature wall-cusp definition imported unchanged from the admitted cusp topology search and one further descriptor (the Koch design ratio) reported per cusp. Its sealed campaign status is accepted_l1a_sweep_v3 with every binding integrity gate true; the HEMP-like counts and the hypothesis outcome are reported, not gated, and are admitted exactly as recorded (the hypothesis did not hold as preregistered). A sixth outcome value would therefore not name a different kind of study; the existing outcome is reused so that accepted keeps meaning admitted as recorded, never that a positive finding, a design recommendation or a material-aware field is accepted.",
+  "reference_files": [
+    {
+      "git_blob": "a9ed08f3358aadf8a56184410db42a4d43c8f48d",
+      "git_blob_sha256": "27dac88359b7985487c72877fa63a74d658a439cb844272a89c5afa7e0ea8a38",
+      "note": "frozen protocol of the wall-loss campaign: the launch planes read for the launch-position reading",
+      "path": "modern/experiments/cft_orbit_wall_loss_v4/protocol.json",
+      "revision": "757e365f9f667620c7610663574294c3b71e1f51",
+      "role": "reference-wall-loss-protocol"
+    },
+    {
+      "git_blob": "e6eb046f127699a2b537c19c80b1c6c44078e752",
+      "git_blob_sha256": "f6077edde3a4e4326f2dda9df4429452d88cb8c7145a620f0243ae48795090f8",
+      "note": "frozen cusp-topology-v3.1 protocol whose definition_v3 parameters the sweep imported unchanged (dependency_source_sha256)",
+      "path": "modern/experiments/cusp_topology_search_v3_1/protocol.json",
+      "revision": "cec47f12f5909c5886424bf5d46ac20ce06f1ac5",
+      "role": "reference-topology-protocol"
+    },
+    {
+      "git_blob": "f73cb52bba83f82908ae190e57b15789a1f706ef",
+      "git_blob_sha256": "43fedee0057f2851a7282cd4c4ab9e33aaf620cdceca351d65d602a6fa78b9e9",
+      "note": "the topology screening's resolved P2 design record: stage centres of the wall-loss field for the launch-position reading",
+      "path": "modern/experiments/cusp_topology_search_v3_1/results/artifacts/designs/p2_divergent_exit/divergent-exit-stack.json",
+      "revision": "cec47f12f5909c5886424bf5d46ac20ce06f1ac5",
+      "role": "reference-topology-p2-record"
+    },
+    {
+      "git_blob": "cc2e29ba5bd1a6cd245bf6cc4a4f41a85ac83e82",
+      "git_blob_sha256": "768b345e946a45e623f83aaa18e01f8ec5bc7f823e81858a0a8c3a3e2e448754",
+      "note": "sealed sweep-v2 results manifest the held-out set was identity-proven against; must hash to sealed_sources.sweep_v2.manifest_file_sha256",
+      "path": "modern/experiments/l1a_geometry_sweep_v2/results/manifest.json",
+      "revision": "f30cb42ec4a8633bf634a3d32ffa5b11f66be97a",
+      "role": "reference-sweep-manifest"
+    }
+  ],
+  "results_bundle": {
+    "artifact_count": 990,
+    "manifest_git_blob": "19b2e1a194e56dbca2b7ad2fbc314bb3e9e7224c",
+    "manifest_path": "modern/experiments/l1a_geometry_sweep_v3/results/manifest.json",
+    "manifest_sha256": "b8670c488ebccd69569525437ab2c8a13af9ea14c4be4e56f1ed651c8057abf3",
+    "recomputation_rule": "the headline and every per-set estimand, including the preregistered hypothesis statistics, are re-derived from the per-design rows and must equal the sealed values (counts, histograms and medians exactly; sums recomputed with math.fsum within a relative tolerance of 1e-09); every design record, field grid, catalogue entry and CSV row must agree with its row; x_w, the Bessel prediction, every rho reading and every flag recompute from their inputs",
+    "results_tree": "5e41571aa23d7d96e8c0a8a716f685328b104ac7",
+    "tolerance_rule": "none: every manifest file entry must hash to its recorded byte_sha256 with its recorded size",
+    "tolerated_eol_files": [],
+    "verified_file_count": 979
+  },
+  "schema_version": "1.0",
+  "screening_model": "linear-vacuum L1a equivalent-current field-only screening of axisymmetric PPM-stack geometries (geometry schema v1.1, the sweep-v2 builder rules on a wider box reaching r_w / L = 1.24) with the cusp topology search v3.1 wall-cusp definition imported unchanged and the HEMP design ratio rho of Koch et al. reported per cusp as a field ratio; not P2-qualified, no permanent-magnet or nonlinear-iron material model (the declared soft-iron pole pieces and yoke are source-free vacuum in the field)",
+  "section_heading": "Geometry sweep into the HEMP-like wall-radius-to-pitch regime",
+  "source_files": [
+    {
+      "git_blob": "19b2e1a194e56dbca2b7ad2fbc314bb3e9e7224c",
+      "git_blob_sha256": "b8670c488ebccd69569525437ab2c8a13af9ea14c4be4e56f1ed651c8057abf3",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/manifest.json",
+      "role": "results-manifest"
+    },
+    {
+      "git_blob": "2ca6ab20c20cb82105abb89d257da381840095ea",
+      "git_blob_sha256": "d334c693172ef105a67e0f4be07272034747821b37f2a416ceab1f8317521164",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/terminal.json",
+      "role": "terminal-record"
+    },
+    {
+      "git_blob": "5d0b5e9703aad3f5097ff014c123968fa5dff48a",
+      "git_blob_sha256": "5affd5089c36c298dd48b3b1c743622660a08dfd8b8d5f5e6cec0b7a535b9c81",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/terminal.json.sha256.json",
+      "role": "terminal-record-sidecar"
+    },
+    {
+      "git_blob": "599e594450d5f48db20e1123fa533d04117c8499",
+      "git_blob_sha256": "40e3a1607ab1c85810a3e28124be5e0df88e4548fcfd5b1820b7e89c90a9115b",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/execution-lock.json",
+      "role": "execution-lock"
+    },
+    {
+      "git_blob": "ea5e406c1a52d934732100b8926a93d6578b3691",
+      "git_blob_sha256": "e664537851a44e3eead77be5f5707cd313028794e75b586ed336f60234f5c9c6",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/transitions/0001-lock-acquired.json",
+      "role": "transition"
+    },
+    {
+      "git_blob": "fd66d603020582e32feb32c2270db06c60b08233",
+      "git_blob_sha256": "a30d0782a85202a2c9af14abd2da9175131f6229c414d849d7e92d4998d85045",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/transitions/0009-terminal.json",
+      "role": "transition"
+    },
+    {
+      "git_blob": "a42bb06465f8a603a2bc0429ceed48f9f03a9692",
+      "git_blob_sha256": "2d5cd25c0460dd00761805e4f68e0f587d2b22b16915d1a6533b32f535ed2ee1",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/protocol.json",
+      "role": "protocol"
+    },
+    {
+      "git_blob": "1ddb5319cb2d426ea70bf729837f0bf4345b006d",
+      "git_blob_sha256": "fac661d308f77264375ade24468b153a819de6ff38bf1c49408e3f76f157d56b",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/authorities.json",
+      "role": "authorities"
+    },
+    {
+      "git_blob": "2450a567f2e2eb0584137172230a6d41eff351a6",
+      "git_blob_sha256": "0a6de079ad99c87cf2a7bed16dfb028de4dff66cbfebfd930bd9b08a49796845",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/shakedown.json",
+      "role": "shakedown"
+    },
+    {
+      "git_blob": "c9311f6e6442ef5c2585d0d544e88d3e330e35f3",
+      "git_blob_sha256": "d8aaed8c1893ad10dd608c3b2ac3f66ebede61ecf97d916e30755aa221b40e4b",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/design-authorities.json",
+      "role": "design-authorities"
+    },
+    {
+      "git_blob": "1100df298418ffbef99f6e8439903cabb84aab8e",
+      "git_blob_sha256": "35bd08352b0664f387f64dfbc587230a2c7909c5c95b6159eaf8e1d42feee416",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/campaign-plan.json",
+      "role": "campaign-plan"
+    },
+    {
+      "git_blob": "3d22ac2bfd769c331c7513c762433ca253c3789b",
+      "git_blob_sha256": "fafa66b20746fda862a64934087814b6a01458c6bb4a6e927769b994eeb5e009",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/campaign-result.json",
+      "role": "campaign-result"
+    },
+    {
+      "git_blob": "28cc46b10ab5375620147d8147de0cc729c4a434",
+      "git_blob_sha256": "07847a73c183316535fc49c46ae360babf0949669533e9b2d78f88066b744172",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/gates.json",
+      "role": "binding-gates"
+    },
+    {
+      "git_blob": "8c8247f4619a416f8d8a9146d930fd06545db075",
+      "git_blob_sha256": "44936a05a038fcda27ae08e149c38c500a5c58afcdeb126492342d53cd91e569",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/runtime.json",
+      "role": "runtime"
+    },
+    {
+      "git_blob": "c318557351681b0911e1e3d0764e54d1d0d90aa4",
+      "git_blob_sha256": "d365088f20482affd17e5569f325ba2fb8636af8fa9c05b1ef9a82daebe78fd8",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/design-failures.json",
+      "role": "design-failures"
+    },
+    {
+      "git_blob": "63e734dd748d642a1cf68ef1fd98e81e99ed160c",
+      "git_blob_sha256": "1a96b9322d021ce9112cf88d56a2208cacd14b125704c65d3a0255289b373753",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/source-binding.json",
+      "role": "source-binding"
+    },
+    {
+      "git_blob": "50b84c16f9caa5f6f9f7146b3865e82c16c9b716",
+      "git_blob_sha256": "4027399e86d0a62e4c9a7f5cb91e3e27d0af589dddfcdbeef9d98731738d27d0",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/sweep-dataset.json",
+      "role": "primary-dataset"
+    },
+    {
+      "git_blob": "f94f18bbca8d39c976329428f57ed378a523fb12",
+      "git_blob_sha256": "1ea93756ce2d64bf897a4ebc80115096c6d3350f162532752814d499f6b73199",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/sweep-dataset.json.sha256.json",
+      "role": "primary-dataset-sidecar"
+    },
+    {
+      "git_blob": "66e8ac7aaa4968a5a0e980cb5beb778ebdf3becc",
+      "git_blob_sha256": "7966787ae4a06d778affc82ebdd016d988a2059f9f6184110d31d7ca0d34365f",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/sweep-dataset.csv",
+      "role": "dataset-csv"
+    },
+    {
+      "git_blob": "1fc34338d303911e80e21b6ec7102e7e942eadb3",
+      "git_blob_sha256": "583bd039d33fc7158ff03424a9d75426072c933e339d9a7660d84b2e7eaef2a9",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/cusp-cell-catalogue-v3.json",
+      "role": "catalogue"
+    },
+    {
+      "git_blob": "3c21531b11fba63f445e620217ad6a678fbe557d",
+      "git_blob_sha256": "d64a18d5acfe76870e4b4c3bf31999785acee60483370aeac5b062230dbe1431",
+      "note": "HEMP-like or representative design bound individually; every bundle file is verified by the generator through the results manifest",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-000-78dcc2bb4c.json",
+      "role": "design-record"
+    },
+    {
+      "git_blob": "e52f6dab88681364ec8bbd0237e96386f7a4d324",
+      "git_blob_sha256": "d754b826f628edb383e55ea9ec9c4f4d6932495056566b8d0f7285bdbb7264d4",
+      "note": "HEMP-like or representative design bound individually; every bundle file is verified by the generator through the results manifest",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-000-78dcc2bb4c.json.gz",
+      "role": "field-grid"
+    },
+    {
+      "git_blob": "fae4f815c84011c20550f059d757d50c1a11c140",
+      "git_blob_sha256": "965d55bb84126ec7e3e34b8facf1d4e3213eb246077312021a3fb3ca88d223be",
+      "note": "HEMP-like or representative design bound individually; every bundle file is verified by the generator through the results manifest",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-005-0e7f21e31d.json",
+      "role": "design-record"
+    },
+    {
+      "git_blob": "b61ecce4bc398bce71eff8c8f1e9d7f90f53fe5b",
+      "git_blob_sha256": "34aa23b5794c5df86e889cb3f8097a37f99cebb5701c4327d3bbd6d55cd22553",
+      "note": "HEMP-like or representative design bound individually; every bundle file is verified by the generator through the results manifest",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-005-0e7f21e31d.json.gz",
+      "role": "field-grid"
+    },
+    {
+      "git_blob": "71735f62e2a7ef3e46336f0fd07e249f4bdf475f",
+      "git_blob_sha256": "33bd1dc02a325ecba3657d4e11408f188acca8dcae85a7c94681356ad2b61075",
+      "note": "HEMP-like or representative design bound individually; every bundle file is verified by the generator through the results manifest",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-015-3ce63a512e.json",
+      "role": "design-record"
+    },
+    {
+      "git_blob": "522b7ad2d85a26e2ad5ccc59f26b85ba01f420d1",
+      "git_blob_sha256": "d6f183308a7a5c71330c2fe20ab88689aef698009a0efdf3f59cc6c216da4b72",
+      "note": "HEMP-like or representative design bound individually; every bundle file is verified by the generator through the results manifest",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-015-3ce63a512e.json.gz",
+      "role": "field-grid"
+    },
+    {
+      "git_blob": "f2c90799f24b2ad3296f3d769e3fbba900a1a5c8",
+      "git_blob_sha256": "223751cf562fb06640b5a97d5c2f86193936df8338ea784e087b0ebbe744df83",
+      "note": "HEMP-like or representative design bound individually; every bundle file is verified by the generator through the results manifest",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-020-b6aa9b10ad.json",
+      "role": "design-record"
+    },
+    {
+      "git_blob": "b51c26020cd9d9f75c711161c9f1f4c88ea3ec73",
+      "git_blob_sha256": "e03f6ce3d4709ee0aa86e5d0b5ebcc1cfff6184d80bbbc19d66302f69620103d",
+      "note": "HEMP-like or representative design bound individually; every bundle file is verified by the generator through the results manifest",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-020-b6aa9b10ad.json.gz",
+      "role": "field-grid"
+    },
+    {
+      "git_blob": "a23c5677de6a1391a611ec2578b46a7ec195fc49",
+      "git_blob_sha256": "fadbcdae57d2ffac68d72dc8889d92c101663a993230db7504a5026ce0f538e9",
+      "note": "HEMP-like or representative design bound individually; every bundle file is verified by the generator through the results manifest",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-028-f012c0bf33.json",
+      "role": "design-record"
+    },
+    {
+      "git_blob": "3709f9681d882cc63312f5c12cd069badd0ef27c",
+      "git_blob_sha256": "2d590466a855b156c5a68e8fe485a2271277711bd7f9260d17ca117af744e48b",
+      "note": "HEMP-like or representative design bound individually; every bundle file is verified by the generator through the results manifest",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-028-f012c0bf33.json.gz",
+      "role": "field-grid"
+    },
+    {
+      "git_blob": "3dfae550218c617dd66d172ffdbb03e3550fc00a",
+      "git_blob_sha256": "ae3c4ae96abd594d834410f977eae79028f3b6556450e8b4fa064b33763dc30d",
+      "note": "HEMP-like or representative design bound individually; every bundle file is verified by the generator through the results manifest",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-030-f474b3d75a.json",
+      "role": "design-record"
+    },
+    {
+      "git_blob": "02b4cea2636fab8c307074c6203a198ac39d6a15",
+      "git_blob_sha256": "16f259057b7d99bfff5cbb4a46ac53a548a45d93737411bc94be672a8c4a65b4",
+      "note": "HEMP-like or representative design bound individually; every bundle file is verified by the generator through the results manifest",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-030-f474b3d75a.json.gz",
+      "role": "field-grid"
+    },
+    {
+      "git_blob": "cb30a846f8b7e3619e6e442b79d2301c9b1a49ae",
+      "git_blob_sha256": "a97af8d1c0d44912a60ddc7dce7126f93faeba5b0d3a3ffb9c0eec2b8c07f300",
+      "note": "HEMP-like or representative design bound individually; every bundle file is verified by the generator through the results manifest",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-036-4a814065a1.json",
+      "role": "design-record"
+    },
+    {
+      "git_blob": "58e3ad8850e14942ab1d2df1b53d7475e61aa7b9",
+      "git_blob_sha256": "dbe0bf23ecca8de7bb46f0032840fc8b094b80093fbb4e956d13b5550ae3079e",
+      "note": "HEMP-like or representative design bound individually; every bundle file is verified by the generator through the results manifest",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-036-4a814065a1.json.gz",
+      "role": "field-grid"
+    },
+    {
+      "git_blob": "a0895642cca7a3f8c686879cc40837e4b3b8f5d0",
+      "git_blob_sha256": "5e5a1722c59eb31516f0458a4d85cc7d800a077da9571d8d50360f26f9ce5bee",
+      "note": "HEMP-like or representative design bound individually; every bundle file is verified by the generator through the results manifest",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-048-aabacb3a59.json",
+      "role": "design-record"
+    },
+    {
+      "git_blob": "9fc6d46ec77e4bd14641267c87e231a6a12f4d42",
+      "git_blob_sha256": "5e216eaf9387cfe7ac12bdd87bf4c928c6b9d900131ecad28108d7e9d2840713",
+      "note": "HEMP-like or representative design bound individually; every bundle file is verified by the generator through the results manifest",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-048-aabacb3a59.json.gz",
+      "role": "field-grid"
+    },
+    {
+      "git_blob": "73d92778cc23e80a96c16aaea12137d034cf2a19",
+      "git_blob_sha256": "6cdc6f802e0ec8b373aa8058312c6fac25e20e76879f065b41442ab35fedfb08",
+      "note": "HEMP-like or representative design bound individually; every bundle file is verified by the generator through the results manifest",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-056-effcbc8686.json",
+      "role": "design-record"
+    },
+    {
+      "git_blob": "9cb5d54321d1a416fc8b50c3c973e806cc19f993",
+      "git_blob_sha256": "95367e66d206b006038b839d769df6cc90ec97e6d6fbccc7a8811f7af285719d",
+      "note": "HEMP-like or representative design bound individually; every bundle file is verified by the generator through the results manifest",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-056-effcbc8686.json.gz",
+      "role": "field-grid"
+    },
+    {
+      "git_blob": "c22ebe03ca4e67f9a54bcabb32e127961adf9589",
+      "git_blob_sha256": "07f0e70402159d25a5fb95abbd0705897f1deb4a814a8c2586d6bdb602b82546",
+      "note": "HEMP-like or representative design bound individually; every bundle file is verified by the generator through the results manifest",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-063-f3fd134978.json",
+      "role": "design-record"
+    },
+    {
+      "git_blob": "06ce562eded7e0ceffc12abd4b371269d369f0d7",
+      "git_blob_sha256": "0c3dc5fda3e596403782df53bb4b8de2e01935c52e8ce18274ae591b18613a29",
+      "note": "HEMP-like or representative design bound individually; every bundle file is verified by the generator through the results manifest",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-063-f3fd134978.json.gz",
+      "role": "field-grid"
+    },
+    {
+      "git_blob": "50e105722a469550cb0fb30921ffec4b5528be15",
+      "git_blob_sha256": "7c9506370e1a5eaf39dcb400629751eb6c6b36572dd001e40bf21720978da296",
+      "note": "HEMP-like or representative design bound individually; every bundle file is verified by the generator through the results manifest",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-068-71057b61d4.json",
+      "role": "design-record"
+    },
+    {
+      "git_blob": "8e52efe726b21917b16116b391643dafb9a7523c",
+      "git_blob_sha256": "943a3a6a372c3a9a5ef81f83c62ac73dc86ebf23baa66dccabd5d1009812808e",
+      "note": "HEMP-like or representative design bound individually; every bundle file is verified by the generator through the results manifest",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-068-71057b61d4.json.gz",
+      "role": "field-grid"
+    },
+    {
+      "git_blob": "f5e819ff80d6aa9bd128cfc49ebd184fbc3c2f3f",
+      "git_blob_sha256": "09d102b9064aa3015c0cff0f2d7868a861cfa588f562a2b5257b3778db529129",
+      "note": "HEMP-like or representative design bound individually; every bundle file is verified by the generator through the results manifest",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-076-c57391dd35.json",
+      "role": "design-record"
+    },
+    {
+      "git_blob": "be024e685376d1b49b166546d8a736b02213b06c",
+      "git_blob_sha256": "77d7e930b05330e02a641c2c9eee95a2c3839a916fa5fac5c404b8c9b899cbd0",
+      "note": "HEMP-like or representative design bound individually; every bundle file is verified by the generator through the results manifest",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-076-c57391dd35.json.gz",
+      "role": "field-grid"
+    },
+    {
+      "git_blob": "3dfa55b97c43177c8f9d2549755420af8732c3b7",
+      "git_blob_sha256": "f5fe092aaf9fd338743727439b7b3560338e8f2e20c29c5a1be60474630f2376",
+      "note": "HEMP-like or representative design bound individually; every bundle file is verified by the generator through the results manifest",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-079-9a64521785.json",
+      "role": "design-record"
+    },
+    {
+      "git_blob": "c9ec0dea27a4ca9bf5afd3d7cb783165b6621e78",
+      "git_blob_sha256": "893d6aa82e758616b01e094f4619366b11865751254a076fae6bc88f62ab1b45",
+      "note": "HEMP-like or representative design bound individually; every bundle file is verified by the generator through the results manifest",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-079-9a64521785.json.gz",
+      "role": "field-grid"
+    },
+    {
+      "git_blob": "d98e6e73b067655641e2e890e34f4981d938a668",
+      "git_blob_sha256": "37e4efcb4046dbda7c2670653f0a44011330343a7ec53845657cf192b4f03430",
+      "note": "HEMP-like or representative design bound individually; every bundle file is verified by the generator through the results manifest",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-090-c761e36e9c.json",
+      "role": "design-record"
+    },
+    {
+      "git_blob": "96025883e742b073d1b47a5cc8566391aa02d600",
+      "git_blob_sha256": "249d536496cb21385af98007254ee82a6ceae97295f277773d690075b83f0219",
+      "note": "HEMP-like or representative design bound individually; every bundle file is verified by the generator through the results manifest",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-090-c761e36e9c.json.gz",
+      "role": "field-grid"
+    },
+    {
+      "git_blob": "cabdf608a772b2609ce37de1c330f34192b35b2c",
+      "git_blob_sha256": "e9828c879ba76a8ff8313a3991f17102f99d475e805b3e109de3ca25a2654674",
+      "note": "HEMP-like or representative design bound individually; every bundle file is verified by the generator through the results manifest",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-106-ccec1c8b2f.json",
+      "role": "design-record"
+    },
+    {
+      "git_blob": "182dda89200900d8df52713b516db8939da456d4",
+      "git_blob_sha256": "001080145816cf952108dcddb732c619121a1e1237710a505df57367e720e71a",
+      "note": "HEMP-like or representative design bound individually; every bundle file is verified by the generator through the results manifest",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-106-ccec1c8b2f.json.gz",
+      "role": "field-grid"
+    },
+    {
+      "git_blob": "3fd84c72527f662d2cb90b49cb3ae953a3406f7b",
+      "git_blob_sha256": "1e5eda4052c9d0e412a89a09b5f5e9bda0e52e05095c1f59593003500cae9fbd",
+      "note": "HEMP-like or representative design bound individually; every bundle file is verified by the generator through the results manifest",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-116-7865daa491.json",
+      "role": "design-record"
+    },
+    {
+      "git_blob": "f6ac34683d6e9bc0f843c3f1361ecf87a0bfad99",
+      "git_blob_sha256": "ea1035de1197edfea7200ef69571805539893de871ac0b583c05647e4e7c88d3",
+      "note": "HEMP-like or representative design bound individually; every bundle file is verified by the generator through the results manifest",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-116-7865daa491.json.gz",
+      "role": "field-grid"
+    },
+    {
+      "git_blob": "4bdc770cede1a94fbec26a657e3139a8507b5ac7",
+      "git_blob_sha256": "5d4bc58370d7c3ac1df9a1034f903b36cac27841ecdef29dd6ed7d1c76212f61",
+      "note": "HEMP-like or representative design bound individually; every bundle file is verified by the generator through the results manifest",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sobol_v3/l1a-gs-v3-124-f740cfc79a.json",
+      "role": "design-record"
+    },
+    {
+      "git_blob": "07bc129d59852fad9f4501a5f5808535790bfdb5",
+      "git_blob_sha256": "33acb5311d4012657295f6887b46950543140bde33d9f3985c4146b5dd16fd60",
+      "note": "HEMP-like or representative design bound individually; every bundle file is verified by the generator through the results manifest",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sobol_v3/l1a-gs-v3-124-f740cfc79a.json.gz",
+      "role": "field-grid"
+    },
+    {
+      "git_blob": "734b624a06d20320654e77d5a6aa69315c5fd97e",
+      "git_blob_sha256": "985a2322b198b46155f7a46f029a091d4506e08ac7515a91b39ff306b4ca420c",
+      "note": "HEMP-like or representative design bound individually; every bundle file is verified by the generator through the results manifest",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-000-48d2ccedd5.json",
+      "role": "design-record"
+    },
+    {
+      "git_blob": "18acfa65de21589345173c7758fef88709ae7e8b",
+      "git_blob_sha256": "2115defb68daa787c35ef21a90c63d7076f8d9bc0cf284593bf842595f9b6328",
+      "note": "HEMP-like or representative design bound individually; every bundle file is verified by the generator through the results manifest",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-000-48d2ccedd5.json.gz",
+      "role": "field-grid"
+    },
+    {
+      "git_blob": "5f66b0797be2f15f3f5dbb39309976c381502002",
+      "git_blob_sha256": "9285e112f19fc9dad2a364959fecb5fe0993e4193ee467ef6c4d0befd0ff7b25",
+      "note": "HEMP-like or representative design bound individually; every bundle file is verified by the generator through the results manifest",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-032-570ad83ba6.json",
+      "role": "design-record"
+    },
+    {
+      "git_blob": "ed09fcd3eeb6688dcd820580e59218ccac9c9eff",
+      "git_blob_sha256": "37f4dcee157f1dd41dde4f37c2dc17ca99b1ee471d63c6a647fe29bf9c003b23",
+      "note": "HEMP-like or representative design bound individually; every bundle file is verified by the generator through the results manifest",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-032-570ad83ba6.json.gz",
+      "role": "field-grid"
+    },
+    {
+      "git_blob": "7b6a3e70dadb14a2fa0bfc3268e6b6983bbeecc3",
+      "git_blob_sha256": "c9933858f6eca7157f8e194d4d35904c2baf9a4006728c6f01b51d0865ec8188",
+      "note": "HEMP-like or representative design bound individually; every bundle file is verified by the generator through the results manifest",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-065-9e98f08f3b.json",
+      "role": "design-record"
+    },
+    {
+      "git_blob": "cd7ef8cfe02e03b17a207a7a15cc1900b01808d4",
+      "git_blob_sha256": "aad342aa132c4060a2db7975d917376627b5085ffc74bc11f8c70997374e4d8f",
+      "note": "HEMP-like or representative design bound individually; every bundle file is verified by the generator through the results manifest",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-065-9e98f08f3b.json.gz",
+      "role": "field-grid"
+    },
+    {
+      "git_blob": "b2c46c7d1f169d813debc15084c163a034880099",
+      "git_blob_sha256": "1fa8659b50af5425af7f0da6a66485f0c17526bdda889d1a5e6d38eb958b65f4",
+      "note": "HEMP-like or representative design bound individually; every bundle file is verified by the generator through the results manifest",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/designs/sweep_v2/l1a-gs-v2-068-375d1b1b13.json",
+      "role": "design-record"
+    },
+    {
+      "git_blob": "05765310fa72588ea4923c7806332e39c981aa9a",
+      "git_blob_sha256": "11898b54c6f1ad06458b07789bd8181b8e2884acdcd40f99e4b60ba714edf92c",
+      "note": "HEMP-like or representative design bound individually; every bundle file is verified by the generator through the results manifest",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/results/artifacts/fields/sweep_v2/l1a-gs-v2-068-375d1b1b13.json.gz",
+      "role": "field-grid"
+    },
+    {
+      "git_blob": "a6d40907e07dcae518f02b8aced0f6fee0a7d076",
+      "git_blob_sha256": "25396d2176c8a6f7b5b6e709d3469cefe59bdf9e2f675f2c3db8f0d265c93f35",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/protocol.json",
+      "role": "preregistered-protocol"
+    },
+    {
+      "git_blob": "1ddb5319cb2d426ea70bf729837f0bf4345b006d",
+      "git_blob_sha256": "fac661d308f77264375ade24468b153a819de6ff38bf1c49408e3f76f157d56b",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/authorities.json",
+      "role": "preregistered-authorities"
+    },
+    {
+      "git_blob": "2450a567f2e2eb0584137172230a6d41eff351a6",
+      "git_blob_sha256": "0a6de079ad99c87cf2a7bed16dfb028de4dff66cbfebfd930bd9b08a49796845",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/shakedown.json",
+      "role": "preregistered-shakedown"
+    },
+    {
+      "git_blob": "c9311f6e6442ef5c2585d0d544e88d3e330e35f3",
+      "git_blob_sha256": "d8aaed8c1893ad10dd608c3b2ac3f66ebede61ecf97d916e30755aa221b40e4b",
+      "path": "modern/experiments/l1a_geometry_sweep_v3/design-authorities.json",
+      "role": "preregistered-design-authorities"
+    }
+  ],
+  "status": "accepted",
+  "topology_label": "SCREENING_L1A_FIELD_SEPARATRIX_CUSP_TOPOLOGY"
+}

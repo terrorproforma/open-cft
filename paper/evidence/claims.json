@@ -160,6 +160,24 @@
       "lineage_posthoc_audit": "modern/experiments/cusp_topology_search_v3/POSTHOC_AUDIT.md",
       "definition_sources_revision": "66879e00834b09e2c7f942358b3ae4a51658cb6b",
       "evidence_file": "paper/evidence/cusp-topology-v3-1.json"
+    },
+    "L1A-SWEEP-V3-20260903-128-V1": {
+      "path": "paper/evidence/manifests/l1a-sweep-v3.json",
+      "document_type": "paper-l1a-regime-screening-manifest",
+      "schema_version": "1.0",
+      "gate_id": "GATE-L1A-SWEEP-V3",
+      "gate_kind": "numerical-screening",
+      "recorded_outcome": "accepted-screening",
+      "evidence_revision": "2cfe8223630fbef6bfe8099a5dcecaf4eb8c6b44",
+      "preregistration_revision": "1923ef7601bcc07acafa28ce54db687f025922b6",
+      "dashboard_revision": "44d0c63c2f3aaf73a6d4402e94522ceb9901c3fe",
+      "definition_sources_revision": "beb4772c9afc04be5c2c04d3e8a4fc8c16bb771e",
+      "reference_revisions": {
+        "sweep_v2_results": "f30cb42ec4a8633bf634a3d32ffa5b11f66be97a",
+        "cusp_topology_v3_1_results": "cec47f12f5909c5886424bf5d46ac20ce06f1ac5",
+        "wall_loss_v4_preregistration": "757e365f9f667620c7610663574294c3b71e1f51"
+      },
+      "evidence_file": "paper/evidence/l1a-sweep-v3.json"
     }
   },
   "claims": [
@@ -1887,6 +1905,248 @@
       ]
     },
     {
+      "id": "CLM-069",
+      "status": "verified",
+      "claim_class": "screening-summary",
+      "authorized_tex": "A preregistered one-shot geometry sweep of \\SwtSobolDesigns{} scrambled-Sobol designs on a box that widens the wall-radius-to-pitch ratio to \\SwtBoxRwOverLHi, with the \\SwtHeldOutDesigns{} accepted sweep designs re-solved as a held-out set, is admitted as a field-only design-space screening: \\SwtHempLikeCount{} of the \\SwtSobolDesigns{} designs reach the HEMP design ratio $\\rho \\ge \\SwtRhoThreshold$ at every wall cusp, none of the \\SwtRegionDesigns{} designs of the earlier sweep region does (largest ratio \\SwtRegionMaxRho), the single-harmonic prediction $I_1(x_w)$ proved an upper envelope of the realised ratio rather than its value (realised threshold $r_w/L = \\SwtRwOverLStarFromSlope$ against \\SwtRwOverLStarThree{} predicted), and the ratios are field ratios of linear-vacuum screening fields from which no plasma, wall-loss or performance claim follows.",
+      "allowed_locations": [
+        "Abstract"
+      ],
+      "manifest_ids": [
+        "L1A-SWEEP-V3-20260903-128-V1"
+      ],
+      "classification": "L1a_FIELD_ONLY_SCREENING_NOT_HARDWARE_VALID",
+      "recorded_outcome": "accepted-screening",
+      "permitted_scope": [
+        "existence, preregistered one-shot status and recorded outcome of the admitted widened-box sweep",
+        "macro-bound design counts, the HEMP-like count, the sweep-v2 region's zero count and largest ratio, and the hypothesis outcome as detailed by CLM-072, CLM-073 and CLM-074",
+        "the field-ratio boundary of the Koch ratio"
+      ],
+      "prohibited_inferences": [
+        "plasma confinement, cusp-loss probabilities, wall-loss rates or thruster performance",
+        "reading the Koch ratio as a probability",
+        "a design recommendation or a material-aware field result",
+        "permanent-magnet or nonlinear-iron material behaviour of the screening fields",
+        "hardware or experimental validation"
+      ]
+    },
+    {
+      "id": "CLM-070",
+      "status": "verified",
+      "claim_class": "quantitative-screening-result",
+      "authorized_tex": "The single execution terminated in state \\texttt{\\SwtTerminalState} with campaign status \\texttt{\\SwtCampaignStatus}: \\SwtDesignCount{} of \\SwtDeclaredDesigns{} declared designs (the \\SwtSobolDesigns{} Sobol designs of the widened box and the \\SwtHeldOutDesigns{} held-out designs) were built or rebuilt with their identities proven, solved on both maps and characterised (\\SwtFailedDesigns{} failures), \\SwtBindingGatesTrue{} of \\SwtBindingGateCount{} binding integrity gates held, the \\SwtReplayDesigns{} determinism replays were bit-identical in \\SwtReplaysBitIdentical{} cases, every design passed the \\SwtVTwoGateCount{} sweep-\\SwtPriorVersion{} metric gates verbatim (\\SwtVTwoGatesPassed{} of \\SwtDesignCount; largest boundary-to-peak ratio \\SwtVTwoGateBoundaryObserved{} against \\SwtVTwoGateBoundaryLimit, smallest topology confidence \\SwtVTwoGateConfidenceObserved{} against \\SwtVTwoGateConfidenceLimit), and \\SwtStableDesigns{} of \\SwtDesignCount{} designs were stable under refinement with a largest wall-intersection shift of \\SwtMaxWallShiftUm{}~$\\mu$m and a largest axis-null shift of \\SwtMaxAxisShiftUm{}~$\\mu$m against a tolerance of \\SwtStabilityToleranceUm{}~$\\mu$m; the per-design resolution sensitivity of $\\rho$ has a median of \\SwtRhoSensitivityMedian{} and a maximum of \\SwtRhoSensitivityMax, and the HEMP-like classification agreed between the two maps for \\SwtHempFlagStableDesigns{} of \\SwtDesignCount{} designs. The held-out set was reproduced: \\SwtHeldOutPassed{} of \\SwtHeldOutCount{} designs replayed their sealed sweep quantities within that sweep's own tolerances (\\SwtHeldOutQoiReplay{} of \\SwtHeldOutCount), their \\SwtHeldOutRefNulls{} sealed axis nulls are in bijection with the \\SwtHeldOutNulls{} nulls found here (largest difference \\SwtHeldOutMaxUm{}~$\\mu$m against \\SwtHeldOutToleranceUm{}~$\\mu$m), and the \\SwtHeldOutStoredReps{} stored representative maps were reproduced node-wise.",
+      "allowed_locations": [
+        "Geometry sweep into the HEMP-like wall-radius-to-pitch regime"
+      ],
+      "manifest_ids": [
+        "L1A-SWEEP-V3-20260903-128-V1",
+        "L1A-SWEEP-V2-20260902-96-V1"
+      ],
+      "gate_id": "GATE-L1A-SWEEP-V3",
+      "classification": "L1a_FIELD_ONLY_SCREENING_NOT_HARDWARE_VALID",
+      "recorded_outcome": "accepted-screening",
+      "evidence_level": "numerical-screening",
+      "evidence_level_justification": "The study is a preregistered, single-execution numerical screening of a design space on L1a linear-vacuum equivalent-current fields: 128 scrambled-Sobol designs on a box that contains the sweep-v2 box and extends the wall-radius-to-pitch ratio to r_w / L = 1.24, plus the 96 accepted sweep-v2 designs rebuilt and re-solved as a held-out set, each solved on the accepted map and a 2x refined map, with the sweep-v2 builder rules and six metric gates verbatim, the cusp topology search v3.1 wall-cusp definition imported unchanged and the Koch design ratio reported per cusp as a field ratio. Its recorded outcome is accepted_l1a_sweep_v3 with all 11 binding integrity gates true; its preregistered hypothesis (H1: rho tracks I_1(x_w); H2: x* classifies the designs) was a reported test and did not hold as preregistered, and it is admitted at that recorded outcome. The framework admits accepted numerical evidence through a typed committed manifest, hashed artifacts at a resolvable revision, exact registered claim text and generated artifacts with provenance sidecars; that pattern is applied here through the numerical-screening gate GATE-L1A-SWEEP-V3 at the recorded outcome accepted-screening, the outcome of the sweep v2 whose box this study widens. The fields are not P2-qualified (the declared soft-iron pole pieces are vacuum in the field); the material-aware L1b/P2 confirmation the protocol queues for every design with r_w / L > 0.5 was not run. Nothing here is a plasma, wall-loss, confinement or performance quantity or a design recommendation; it is not the L1 field-resolved reduction of GATE-L1 (no manufactured solution, no L0 mapping, no performance model), not L2 and not L3, and it opens none of those gates.",
+      "bindings": {
+        "evidence_file": "paper/evidence/l1a-sweep-v3.json",
+        "evidence_macros": "every \\Swt... macro in the authorized text is defined in paper/generated/l1a-sweep-v3.tex and bound in the evidence file to an artifact path, JSON pointer, formatter and SHA-256, or to a stated derivation over such inputs",
+        "results_commit": "2cfe8223630fbef6bfe8099a5dcecaf4eb8c6b44",
+        "preregistration_commit": "1923ef7601bcc07acafa28ce54db687f025922b6",
+        "dashboard_commit": "44d0c63c2f3aaf73a6d4402e94522ceb9901c3fe",
+        "definition_sources_commit": "beb4772c9afc04be5c2c04d3e8a4fc8c16bb771e",
+        "reference_commits": {
+          "sweep_v2_results": "f30cb42ec4a8633bf634a3d32ffa5b11f66be97a",
+          "cusp_topology_v3_1_results": "cec47f12f5909c5886424bf5d46ac20ce06f1ac5",
+          "wall_loss_v4_preregistration": "757e365f9f667620c7610663574294c3b71e1f51"
+        }
+      },
+      "non_claims": [
+        "reported at whatever value the campaign measures and is not a gate",
+        "field ratio of a linear-vacuum screening field and none is a probability",
+        "no plasma, wall-loss, confinement or performance quantity is computed or published",
+        "reported and not gated",
+        "no HEMP-like design is a design recommendation",
+        "the study opens no physics level"
+      ],
+      "permitted_scope": [
+        "terminal state, campaign status, design, failure, gate, replay and stability counts of the single execution with the recorded shifts, tolerances and resolution sensitivity",
+        "the sweep-v2 metric gates passed verbatim with the recorded extremes",
+        "held-out reproduction counts, axis-null bijection and largest difference, and the stored representative maps reproduced"
+      ],
+      "prohibited_inferences": [
+        "plasma confinement, cusp-loss probabilities, wall-loss rates or thruster performance",
+        "permanent-magnet or nonlinear-iron material behaviour of the fields",
+        "hardware or experimental validation",
+        "generalization beyond the screened design box and the stated definition"
+      ]
+    },
+    {
+      "id": "CLM-071",
+      "status": "verified",
+      "claim_class": "quantitative-generated-table",
+      "authorized_artifact_ids": [
+        "TAB-L1A-SWEEP-V3"
+      ],
+      "allowed_locations": [
+        "Geometry sweep into the HEMP-like wall-radius-to-pitch regime"
+      ],
+      "manifest_ids": [
+        "L1A-SWEEP-V3-20260903-128-V1"
+      ],
+      "permitted_scope": [
+        "the sweep-v2 box against the sweep-v3 box with the implied and realised ratio ranges, design counts, predicted and HEMP-like counts",
+        "the Koch ratio by x_w band with the single-harmonic prediction, predicted and realised HEMP-like counts, cusp counts, medians, ranges and rho / I_1 medians, plus the sweep-v2 region row",
+        "the preregistered hypothesis thresholds beside the observed statistics, including the end- and interior-cusp medians derived by the generator",
+        "the HEMP-like designs with their geometry, ratios, smallest rho / I_1, largest wall reading and the five-stage four-cusp flag"
+      ],
+      "prohibited_inferences": [
+        "plasma or confinement quantities",
+        "reading a ratio as a probability",
+        "a design recommendation from the HEMP-like list",
+        "any material-aware field result"
+      ]
+    },
+    {
+      "id": "CLM-072",
+      "status": "verified",
+      "claim_class": "quantitative-screening-result",
+      "authorized_tex": "Under the imported literature definition the \\SwtSobolDesigns{} Sobol designs carry \\SwtSobolCuspCount{} wall cusps (\\SwtSobolHistTwo, \\SwtSobolHistThree{} and \\SwtSobolHistFour{} designs with two, three and four cusps; \\SwtSobolNMinusOne{} designs with one cusp fewer than magnet stages) whose Koch ratio $\\rho$ in the conservative reading runs from \\SwtSobolRhoMin{} to \\SwtSobolRhoMax{} (median \\SwtSobolRhoMedian), against \\SwtHeldOutRhoMin{} to \\SwtHeldOutRhoMax{} over the \\SwtHeldOutCuspCount{} cusps of the held-out sweep-\\SwtPriorVersion{} designs. \\SwtHempLikeCount{} of the \\SwtSobolDesigns{} designs (\\SwtHempLikeFraction) are HEMP-like, with $\\rho \\ge \\SwtRhoThreshold$ at every wall cusp: by $x_w$ band, \\SwtBandBelowStarHempLike{} of \\SwtBandBelowStarDesigns{} designs below $\\SwtXStarSymbol = \\SwtXStarTwo$, \\SwtBandOneHempLike{} of \\SwtBandOneDesigns{} in $[\\SwtXStarSymbol, \\SwtBandOneHi)$, \\SwtBandTwoHempLike{} of \\SwtBandTwoDesigns{} in $[\\SwtBandTwoLo, \\SwtBandTwoHi)$ and \\SwtBandThreeHempLike{} of \\SwtBandThreeDesigns{} in $[\\SwtBandThreeLo, \\SwtBandThreeHi)$. The HEMP-like designs span $x_w$ from \\SwtHempRegionXwMin{} to \\SwtHempRegionXwMax{} ($r_w/L$ from \\SwtHempRegionRwOverLMin{} to \\SwtHempRegionRwOverLMax) with \\SwtHempRegionStageThree, \\SwtHempRegionStageFour{} and \\SwtHempRegionStageFive{} designs of three, four and five stages and per-design minimum ratios from \\SwtHempRegionMinRhoMin{} to \\SwtHempRegionMinRhoMax; \\SwtFiveStageFourCuspHempLike{} of the \\SwtSobolStageFiveDesigns{} five-stage designs (\\SwtFiveStageFourCuspIds) carry the four wall cusps of the legacy target and are HEMP-like. In the sweep-\\SwtPriorVersion{} region (the \\SwtHeldOutDesigns{} held-out designs plus the \\SwtSobolInsideVTwoBox{} Sobol designs inside the sweep-\\SwtPriorVersion{} box; \\SwtRegionDesigns{} designs, \\SwtRegionCuspCount{} cusps) \\SwtRegionHempLike{} designs are HEMP-like and the largest ratio at any cusp is \\SwtRegionMaxRho. At every one of the \\SwtPooledCuspCount{} cusps of both sets the wall reading is below one (largest \\SwtPooledRhoWallMax; \\SwtCuspIsWallMaximumCount{} cusps are the wall $|B|$ maximum of their neighbourhood), and the wall field is close to single-harmonic (median $\\SwtBThreeOverBOne$ of \\SwtWallBThreeMedian, largest \\SwtWallBThreeMax). Every ratio is a field ratio of a linear-vacuum screening field and none is a probability.",
+      "allowed_locations": [
+        "Geometry sweep into the HEMP-like wall-radius-to-pitch regime"
+      ],
+      "manifest_ids": [
+        "L1A-SWEEP-V3-20260903-128-V1",
+        "L1A-SWEEP-V2-20260902-96-V1"
+      ],
+      "gate_id": "GATE-L1A-SWEEP-V3",
+      "classification": "L1a_FIELD_ONLY_SCREENING_NOT_HARDWARE_VALID",
+      "recorded_outcome": "accepted-screening",
+      "permitted_scope": [
+        "the Sobol designs' wall-cusp histogram, N-1 count and Koch-ratio range against the held-out set's range, as field ratios",
+        "the HEMP-like count and fraction, the counts by x_w band, the HEMP-like region (x_w, r_w / L, stages, per-design minimum ratios) and the five-stage four-cusp HEMP-like designs",
+        "the sweep-v2 region's design and cusp counts, zero HEMP-like designs and largest ratio; the wall reading below one at every cusp; the wall harmonic content"
+      ],
+      "prohibited_inferences": [
+        "plasma confinement, cusp-loss probabilities, wall-loss rates or thruster performance",
+        "reading the Koch ratio or any mirror descriptor as a probability",
+        "that any HEMP-like design is a design recommendation or survives a material-aware field",
+        "permanent-magnet or nonlinear-iron material behaviour of the fields",
+        "hardware or experimental validation"
+      ]
+    },
+    {
+      "id": "CLM-073",
+      "status": "verified",
+      "claim_class": "quantitative-screening-result",
+      "authorized_tex": "The preregistered hypothesis (\\SwtHOne: $\\rho$ tracks the single-harmonic prediction $\\SwtIOne(x_w)$ with a least-squares slope through the origin in $[\\SwtHOneSlopeLo, \\SwtHOneSlopeHi]$ and at least \\SwtHOneBandFractionRequired{} of the cusps within $\\pm$\\SwtBand{} of it; \\SwtHTwo: the threshold $\\SwtXStarSymbol = \\SwtXStar$, where $\\SwtIOne(\\SwtXStarSymbol) = \\SwtRhoThreshold$, classifies the designs with an accuracy of at least \\SwtHTwoAccuracyRequired) did not hold as preregistered (\\SwtHOne{} held: \\SwtHOneAsPredicted; \\SwtHTwo{} held: \\SwtHTwoAsPredicted). Over the \\SwtSobolCuspCount{} Sobol cusps the slope is \\SwtSlope{} with $\\SwtRSquaredSymbol = \\SwtRSquared$, \\SwtBandFraction{} of the cusps lie within the band, and $\\rho/\\SwtIOne$ has a median of \\SwtRhoOverIOneMedian{} (\\SwtRhoOverIOneMin{} to \\SwtRhoOverIOneMax): \\SwtEndCuspRhoOverIOneMedian{} at the \\SwtEndCuspCount{} end cusps, where the largest value is \\SwtEndCuspRhoOverIOneMax, and \\SwtInteriorCuspRhoOverIOneMedian{} at the \\SwtInteriorCuspCount{} interior cusps. The threshold predicted \\SwtPredictedHempLike{} HEMP-like designs and \\SwtHempLikeCount{} were realised (\\SwtConfusionBoth{} predicted and realised, \\SwtConfusionPredictedOnly{} predicted only, \\SwtConfusionRealisedOnly{} realised only, \\SwtConfusionNeither{} neither; accuracy \\SwtAccuracy), and \\SwtPredictedOnlyEndCuspFailures{} of the \\SwtConfusionPredictedOnly{} predicted-only designs fall short only at their end cusps. The realised threshold from the fitted slope is $x_w = \\SwtXStarFromSlope$ ($r_w/L = \\SwtRwOverLStarFromSlope$), \\SwtRealisedThresholdShift{} above the prediction; the smallest $x_w$ of a HEMP-like design is \\SwtSmallestXwHempLike{} and the largest $x_w$ of a design that is not HEMP-like is \\SwtLargestXwNotHempLike. As recorded, $\\SwtIOne(x_w)$ is therefore an upper envelope of the realised ratio rather than its value: every end cusp lies below the infinite-stack prediction because the finite stack's end field raises the axis peak adjacent to it, the direction the frozen protocol anticipated, and the interior cusps lie closer to the prediction.",
+      "allowed_locations": [
+        "Geometry sweep into the HEMP-like wall-radius-to-pitch regime"
+      ],
+      "manifest_ids": [
+        "L1A-SWEEP-V3-20260903-128-V1"
+      ],
+      "gate_id": "GATE-L1A-SWEEP-V3",
+      "classification": "L1a_FIELD_ONLY_SCREENING_NOT_HARDWARE_VALID",
+      "recorded_outcome": "accepted-screening",
+      "permitted_scope": [
+        "the preregistered hypothesis statements and thresholds exactly as frozen, and the recorded outcome that neither held as preregistered",
+        "slope, R^2, band fraction, rho / I_1 distribution with end- and interior-cusp medians, confusion table, accuracy, end-cusp failure count, realised threshold and the smallest / largest x_w of the two classes",
+        "the recorded reading that I_1(x_w) is an upper envelope of the realised ratio, grounded in every end cusp lying below the prediction and in the direction the frozen protocol anticipated"
+      ],
+      "prohibited_inferences": [
+        "that the hypothesis held or that the single-harmonic prediction is the realised ratio",
+        "plasma confinement, cusp-loss probabilities or performance",
+        "reading a ratio as a probability",
+        "generalization of the realised threshold beyond the screened box and the linear-vacuum field model"
+      ]
+    },
+    {
+      "id": "CLM-074",
+      "status": "verified",
+      "claim_class": "quantitative-screening-result",
+      "authorized_tex": "In the field model and under the definition used here, the design box of the accepted sweep of Section~\\ref{sec:l1a-sweep-v2} could not contain a HEMP-like cusp: that box spans $r_w/L$ from \\SwtVTwoBoxRwOverLLo{} to \\SwtVTwoBoxRwOverLHi{} ($x_w$ up to \\SwtVTwoBoxXwHi{} at its corner and \\SwtRegionXwMax{} realised by its designs), below the predicted threshold $\\SwtXStarSymbol = \\SwtXStarTwo$ and the realised threshold \\SwtXStarFromSlope, and the largest Koch ratio at any of the \\SwtRegionCuspCount{} cusps of its \\SwtRegionDesigns{} designs is \\SwtRegionMaxRho{} against the design value \\SwtRhoThreshold, with $\\rho/\\SwtIOne$ there at a median of \\SwtRegionRhoOverIOneMedian{} and \\SwtRegionBandFraction{} of its cusps within the band. The widened box reaches the regime by extending the wall radius to \\SwtBoxRadiusHiMm{}~mm and shortening the pitch to \\SwtBoxPitchLoMm{}~mm ($r_w/L$ up to \\SwtBoxRwOverLHi), with the builder rules, solver, domain and metric gates of the earlier sweep unchanged, and the first HEMP-like design appears at $x_w = \\SwtSmallestXwHempLike$ ($r_w/L = \\SwtHempRegionRwOverLMin$).",
+      "allowed_locations": [
+        "Geometry sweep into the HEMP-like wall-radius-to-pitch regime"
+      ],
+      "manifest_ids": [
+        "L1A-SWEEP-V3-20260903-128-V1",
+        "L1A-SWEEP-V2-20260902-96-V1"
+      ],
+      "gate_id": "GATE-L1A-SWEEP-V3",
+      "classification": "L1a_FIELD_ONLY_SCREENING_NOT_HARDWARE_VALID",
+      "recorded_outcome": "accepted-screening",
+      "permitted_scope": [
+        "the statement, bounded to the field model and the definition, that the sweep-v2 design box could not contain a HEMP-like cusp: its ratio ranges implied and realised, both thresholds, the largest ratio at any of its cusps, the rho / I_1 median and band fraction there",
+        "how the widened box reaches the regime (the widened bounds, the unchanged rules) and where the first HEMP-like design appears"
+      ],
+      "prohibited_inferences": [
+        "any statement about the legacy design study beyond the accepted sweep box (that reading is the labelled Discussion interpretation CLM-076)",
+        "that a HEMP-like cusp confines electrons or that any design is recommended",
+        "permanent-magnet or nonlinear-iron material behaviour of the fields",
+        "plasma or performance quantities"
+      ]
+    },
+    {
+      "id": "CLM-075",
+      "status": "verified",
+      "claim_class": "screening-scope-limitation",
+      "authorized_tex": "The study is a field-only design-space screening classified \\texttt{\\SwtClassification} and admitted at the recorded outcome \\texttt{\\SwtRecordedOutcome}: its fields are linear-vacuum \\SwtFieldModelLevel{} equivalent-current models in which the declared soft-iron pole pieces and yoke are source-free vacuum (material response in the field: \\SwtIronInField), no permanent-magnet or nonlinear-iron material model enters, and the fields are not P2-qualified. The Koch ratio and every mirror descriptor are field ratios and never probabilities (\\SwtMirrorDescriptorsNotProbabilities; a probability: \\SwtRhoIsProbability), no plasma, wall-loss, confinement or performance quantity is computed or published (forbidden: \\SwtForbidPlasmaPerformance; mirror-probability publication forbidden: \\SwtForbidMirrorProbability), the hypothesis tests and the HEMP-like counts are reported and not gated, and no hardware or experimental validation is claimed (\\SwtHardwareValidation). The material-aware (\\SwtMaterialLevel{} or P2) confirmation of $\\rho$ that the protocol queues for every design with $r_w/L$ above one half has status \\texttt{\\SwtConfirmationStatus} (run: \\SwtMaterialAwareConfirmationRun), so no HEMP-like design is a design recommendation; the catalogue is a consumer contract under the label \\texttt{\\SwtTopologyLabel}, usable as \\SwtUsableAs, and every consumer must carry the label; the study opens no physics level (\\SwtPhysicsLevelOpened).",
+      "allowed_locations": [
+        "Geometry sweep into the HEMP-like wall-radius-to-pitch regime"
+      ],
+      "manifest_ids": [
+        "L1A-SWEEP-V3-20260903-128-V1"
+      ],
+      "gate_id": "GATE-L1A-SWEEP-V3",
+      "classification": "L1a_FIELD_ONLY_SCREENING_NOT_HARDWARE_VALID",
+      "recorded_outcome": "accepted-screening",
+      "permitted_scope": [
+        "model-bounded restatement of the classification strings, recorded outcome, field level and sealed claim boundary",
+        "the field-ratio status of the Koch ratio and every mirror descriptor, the reported-not-gated status of the hypothesis and counts, the queued-not-run status of the material-aware confirmation, the no-recommendation boundary and the catalogue's status as a consumer contract under its label with its permitted uses exactly as sealed"
+      ],
+      "prohibited_inferences": [
+        "plasma confinement, cusp-loss probabilities, wall-loss rates or performance",
+        "reading a ratio as a probability",
+        "a design recommendation or a material-aware field result",
+        "permanent-magnet or nonlinear-iron material behaviour, or P2 qualification of the fields",
+        "hardware or experimental validation",
+        "opening of GATE-L1, GATE-L2 or GATE-L3"
+      ]
+    },
+    {
+      "id": "CLM-076",
+      "status": "verified",
+      "claim_class": "interpretation",
+      "authorized_tex": "Read as interpretation, the sweep of Section~\\ref{sec:l1a-sweep-v3} says why the legacy design space could not have contained the HEMP cusp its closure presumed. The original parameterisation sampled the wall radius and the stage pitch but never their ratio into the band where a wall cusp is the field maximum of its cell: the accepted sweep box of Section~\\ref{sec:l1a-sweep-v2} reaches $r_w/L = \\SwtVTwoBoxRwOverLHi$ at its corner and \\SwtRegionRwOverLMax{} in its designs, below the single-harmonic threshold \\SwtRwOverLStarThree{} and the realised threshold \\SwtRwOverLStarFromSlope, and no cusp of its \\SwtRegionDesigns{} designs exceeds a Koch ratio of \\SwtRegionMaxRho{} against the design value \\SwtRhoThreshold; in the linear-vacuum screening field the design space of the legacy optimisation therefore could not contain a HEMP-like cusp, and the cusp-mirror closure it evaluated described a field its designs could not produce. The widened box reaches that regime at $r_w/L$ above about \\SwtRwOverLStarFromSlope, where \\SwtHempLikeCount{} of \\SwtSobolDesigns{} designs are HEMP-like, among them \\SwtFiveStageFourCuspHempLike{} five-stage designs with the four wall cusps of the legacy target; whether those ratios survive a material-aware field with iron pole pieces is the confirmation the protocol queues and this paper does not report, so no design of the widened box is recommended here.",
+      "allowed_locations": [
+        "Discussion"
+      ],
+      "manifest_ids": [
+        "L1A-SWEEP-V3-20260903-128-V1",
+        "L1A-SWEEP-V2-20260902-96-V1"
+      ],
+      "evidence": [
+        "SRC-AUDIT",
+        "SRC-PROVENANCE"
+      ],
+      "bibliography": [
+        "Muffatti2017",
+        "Koch2007"
+      ],
+      "permitted_scope": [
+        "labelled interpretation of the admitted widened-box sweep against the accepted sweep box: the ratio the HEMP criterion depends on was never sampled into its band, so in the linear-vacuum screening field the legacy design space could not contain a HEMP-like cusp",
+        "identification of the legacy parameterisation (wall radius, stage pitch, stage count) and its cusp-mirror closure as documented by the audit and provenance records",
+        "the queued, unreported material-aware confirmation and the no-recommendation boundary of the widened box"
+      ],
+      "prohibited_inferences": [
+        "that a HEMP-like cusp confines electrons or that any widened-box design performs better",
+        "any numerical value of the legacy publication run",
+        "mirror behaviour in collisional or self-consistent regimes",
+        "that the Koch ratios survive a material-aware field",
+        "opening of GATE-L1, GATE-L2 or GATE-L3"
+      ]
+    },
+    {
       "id": "GATE-L1",
       "status": "evidence-gate",
       "gate_registry_id": "GATE-L1"
@@ -1977,6 +2237,15 @@
       "gate_status": "accepted",
       "recorded_outcome": "accepted-topology-screening",
       "manifest_id": "CUSP-TOPOLOGY-V3-1-20260903-281-V1"
+    },
+    {
+      "id": "GATE-L1A-SWEEP-V3",
+      "status": "evidence-gate",
+      "gate_registry_id": "GATE-L1A-SWEEP-V3",
+      "kind": "numerical-screening",
+      "gate_status": "accepted",
+      "recorded_outcome": "accepted-screening",
+      "manifest_id": "L1A-SWEEP-V3-20260903-128-V1"
     }
   ]
 }

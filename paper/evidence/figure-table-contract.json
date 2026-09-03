@@ -249,6 +249,32 @@
       "required_gate": "A committed figure-specific manifest with source arrays"
     },
     {
+      "id": "TAB-L1A-SWEEP-V3",
+      "kind": "table",
+      "status": "verified",
+      "manuscript_label": "tab:l1a-sweep-v3-box",
+      "manuscript_labels": [
+        "tab:l1a-sweep-v3-box",
+        "tab:l1a-sweep-v3-bands",
+        "tab:l1a-sweep-v3-hypothesis",
+        "tab:l1a-sweep-v3-hemp-like"
+      ],
+      "manuscript_binding": "\\input{generated/l1a-sweep-v3.tex}",
+      "claim_ids": [
+        "CLM-071"
+      ],
+      "manifest_id": "L1A-SWEEP-V3-20260903-128-V1",
+      "generator_path": "paper/scripts/generate_l1a_sweep_v3_evidence.py",
+      "generator_module": "generate_l1a_sweep_v3_evidence",
+      "generator_command": "python paper/scripts/generate_l1a_sweep_v3_evidence.py",
+      "output_path": "paper/generated/l1a-sweep-v3.tex",
+      "sidecar_path": "paper/generated/l1a-sweep-v3.provenance.json",
+      "artifact_claim_count": 4,
+      "artifact_claim_note": "The generated file defines the evidence macros and four table macros (\\SwtDesignBoxTable, \\SwtBandTable, \\SwtHypothesisTable, \\SwtHempLikeTable); each table body is wrapped in its own ArtifactClaim bound to CLM-071, so exactly four ArtifactClaim macros are required. The tables report a field-only design-space screening on linear-vacuum fields: the sweep-v2 box against the widened box, the Koch design ratio by x_w band against the single-harmonic prediction, the preregistered hypothesis thresholds beside the observed statistics (not held as preregistered), and the HEMP-like designs; every ratio is a field ratio, none is a probability, and no design is recommended.",
+      "evidence_file": "paper/evidence/l1a-sweep-v3.json",
+      "required_gate": "GATE-L1A-SWEEP-V3"
+    },
+    {
       "id": "FIG-L1-CONVERGENCE",
       "kind": "figure",
       "status": "planned",

@@ -256,6 +256,49 @@
   and that the predecessor's rejection was a recording-layer defect disclosed
   as lineage.
 
+## S4i. L1a geometry sweep v3 (accepted field-only screening of the HEMP-like regime)
+
+- Typed screening manifest `paper/evidence/manifests/l1a-sweep-v3.json`
+  (`paper-l1a-regime-screening-manifest` 1.0) and the hash-bound evidence file
+  `paper/evidence/l1a-sweep-v3.json`.
+- Preregistration commit `1923ef76` (frozen protocol, authorities, shakedown,
+  design authorities), record commit `2cfe8223` (sealed bundle of 979 files:
+  sweep dataset in JSON and CSV form, wall-cusp catalogue v3, 224 design
+  records and accepted field grids, gates, source binding, campaign plan and
+  result, lock and transitions), dashboard commit `44d0c63c`.
+- Definition and hypothesis source bound at `beb4772c`: the TWT/PPM literature
+  review, its read-only check script and the committed output the script wrote
+  (the launch-position analysis of the geometry screening's sealed orbits by
+  launch cell, the Mendel and adiabaticity parameters and the magnetic-moment
+  medians are derived from that output and cited as a recorded analysis).
+- References bound at their admitted revisions: the sweep-v2 results manifest
+  (`f30cb42e`; must hash to the sealed-source identity the bundle recorded), the
+  frozen cusp-topology-v3.1 protocol (`cec47f12`; the imported definition
+  parameters must equal it), the topology screening's P2 design record
+  (`cec47f12`; stage centres of the wall-loss field) and the frozen wall-loss
+  protocol (`757e365f`; launch planes).
+- Design box verbatim: the sweep-v2 rules on a wider box (pitch 3.4-6.5 mm, wall
+  radius 1.4-4.2 mm, magnet clearance 0.35-1.6 mm, magnet thickness 2.2-5.0 mm;
+  r_w/L 0.215-1.235, x_w 0.68-3.88; the v2 box a strict subset), 128
+  scrambled-Sobol designs (seed 20260903) plus the 96 accepted sweep-v2 designs
+  re-solved as a held-out set; six sweep-v2 metric gates verbatim; 2x refined
+  map per design; Koch ratio in four readings with the conservative reading
+  binding and HEMP-like := rho >= 1.5 at every wall cusp; hypothesis H1/H2
+  preregistered as reported tests.
+- Tables regenerated at every check: the sweep-v2 box against the sweep-v3 box;
+  rho by x_w band against I_1(x_w) with predicted and realised HEMP-like counts;
+  the preregistered hypothesis thresholds beside the observed statistics (slope
+  0.689, R^2 0.39, 70 % in band, accuracy 0.72, end/interior rho/I_1 medians
+  0.80/0.87, realised threshold x_w 2.34); the 15 HEMP-like designs with the two
+  five-stage four-cusp designs flagged.
+- Explicit statements that the ratios are field ratios of linear-vacuum
+  screening fields and never probabilities; that the declared iron pole pieces
+  are vacuum in the field; that the hypothesis is admitted at its recorded
+  outcome (not held as preregistered; I_1 an upper envelope); that the
+  material-aware confirmation is queued and unreported; that no HEMP-like
+  design is a design recommendation; and that the legacy-design-space reading
+  is a labelled Discussion interpretation.
+
 ## S5. Controlled performance benchmark
 
 This supplement remains closed until a benchmark manifest records kernel

@@ -434,3 +434,39 @@
   + one `git cat-file --batch` per revision binds 65 files in two calls.
 - [tool] PowerShell `Measure-Command { python ... }` swallows the script's
   stdout; time with Python's `time.time()` inside the script instead.
+
+## 2026-09-03 - Admitting the L1a geometry sweep v3 (HEMP-like regime)
+
+- [self] Reuse an existing recorded outcome when the new study is the same kind
+  of object (same rules, gates and field level, one more descriptor) and
+  justify the reuse on the gate; add a new outcome only when the sealed status
+  names a different kind of thing. Each admission still gets its own manifest
+  type because the metric set differs.
+- [self] Admit a preregistered hypothesis at its recorded outcome with explicit
+  boolean macros (`hypothesis_h1_held: false`) that the checker requires to be
+  false, and word the claim as recorded ("did not hold as preregistered";
+  "upper envelope") with the checker enforcing the phrases; the generator
+  refuses if either hypothesis turns out to hold.
+- [self] Split end and interior cusps before pooling a per-cusp ratio and bind
+  the split as derived macros; the finite-stack end effect (rho/I_1 0.80 vs
+  0.87) is the recorded reason the envelope reading holds, and the generator
+  asserts the end-cusp median is below the interior one.
+- [self] Numbers computed with numpy in the experiment (pairwise sums) do not
+  recompute bit-exactly with `math.fsum`; compare sums within a declared
+  relative tolerance (1e-9) and keep counts, histograms and medians exact.
+  Record the tolerance in the evidence file's `recomputation_rule`.
+- [self] A macro-only section needs symbols with digits (`I_1`, `R^2`, `H1`,
+  `b_3/b_1`, `L1a`, `v3.1`) as macros; emit them through a whitelisted
+  `symbol` formatter so no arbitrary TeX can enter through the evidence file.
+- [self] A recorded analysis outside any bundle (the review's check output) is
+  bound as a definition-source file at its commit and read into derived
+  macros; the checker verifies the blob, so its numbers are macro-bound without
+  inventing a gate kind.
+- [tool] booktabs `\midrule` treats a following `[` as its optional argument:
+  never start a table row with a bracket; wrap intervals in `$...$`.
+- [tool] Text macros copied from protocol prose can carry quantitative phrases
+  ("128 points") that the unregistered-claim scan flags in the generated file;
+  slice the clause or derive a shorter statement.
+- [tool] `pdflatex` in the MiKTeX install accepts `--disable-installer`; the
+  standalone-section test compiles twice and asserts no overfull box, so table
+  column widths must be fixed before the suite passes.
