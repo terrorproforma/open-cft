@@ -1,0 +1,945 @@
+{
+ "reflections": {
+  "l1a-gs-v2-000-48d2ccedd5": {
+   "cells": [
+    {
+     "axis_b_at_launch_over_peak": 0.743062391216932,
+     "cell_id": "gs1-cell-1",
+     "dist_to_centre_over_pitch": 0.08500000000000003,
+     "dist_to_null_over_pitch": 0.36797799541290754,
+     "launch_z_m": 0.002223,
+     "orbits": 128,
+     "reflected": 0,
+     "wall_hit": 127
+    },
+    {
+     "axis_b_at_launch_over_peak": 0.7724099788452657,
+     "cell_id": "gs1-cell-2",
+     "dist_to_centre_over_pitch": 0.22499999999999995,
+     "dist_to_null_over_pitch": 0.3220220045870925,
+     "launch_z_m": 0.004845,
+     "orbits": 128,
+     "reflected": 32,
+     "wall_hit": 96
+    },
+    {
+     "axis_b_at_launch_over_peak": 0.20758429248260354,
+     "cell_id": "gs1-cell-3",
+     "dist_to_centre_over_pitch": 0.46499999999999986,
+     "dist_to_null_over_pitch": 0.08142583265239423,
+     "launch_z_m": 0.007467,
+     "orbits": 128,
+     "reflected": 54,
+     "wall_hit": 72
+    },
+    {
+     "axis_b_at_launch_over_peak": 0.7056018869396952,
+     "cell_id": "gs1-cell-4",
+     "dist_to_centre_over_pitch": 0.15500000000000025,
+     "dist_to_null_over_pitch": 0.577265263362614,
+     "launch_z_m": 0.010089,
+     "orbits": 128,
+     "reflected": 1,
+     "wall_hit": 124
+    }
+   ],
+   "mu_median": 0.4246288741958739,
+   "orbits": 512,
+   "reflected": 87,
+   "reflected_fraction_b_turn_below_launch": 0.22988505747126436,
+   "reflected_fraction_closer_to_centre_than_null": 0.45977011494252873,
+   "reflected_fraction_meeting_mirror_condition": 0.5977011494252874,
+   "reflected_fraction_pitch70": 0.9310344827586207,
+   "reflected_median_b_turn_over_b_launch": 1.1427433167616474,
+   "reflected_median_dist_to_null_over_pitch": 0.23912192466539756,
+   "reflected_median_dist_to_stage_centre_over_pitch": 0.3073039079869965,
+   "wall_hit_fraction_closer_to_null_than_centre": 0.8042959427207638,
+   "wall_hit_median_dist_to_null_over_pitch": 0.1790114802192571,
+   "wall_hits": 419
+  },
+  "l1a-gs-v2-032-570ad83ba6": {
+   "cells": [
+    {
+     "axis_b_at_launch_over_peak": 0.7811312483602355,
+     "cell_id": "gs1-cell-1",
+     "dist_to_centre_over_pitch": 0.024423865735834608,
+     "dist_to_null_over_pitch": 0.4149900693213447,
+     "launch_z_m": 0.002174219466835491,
+     "orbits": 128,
+     "reflected": 0,
+     "wall_hit": 98
+    },
+    {
+     "axis_b_at_launch_over_peak": 0.3987493364975433,
+     "cell_id": "gs1-cell-2",
+     "dist_to_centre_over_pitch": 0.4067284027924964,
+     "dist_to_null_over_pitch": 0.15385766215032431,
+     "launch_z_m": 0.0045326167333205325,
+     "orbits": 128,
+     "reflected": 37,
+     "wall_hit": 91
+    },
+    {
+     "axis_b_at_launch_over_peak": 0.8820701199404218,
+     "cell_id": "gs1-cell-3",
+     "dist_to_centre_over_pitch": 0.16211932867917278,
+     "dist_to_null_over_pitch": 0.39888138715072646,
+     "launch_z_m": 0.006891013999805575,
+     "orbits": 128,
+     "reflected": 0,
+     "wall_hit": 128
+    },
+    {
+     "axis_b_at_launch_over_peak": 0.4124938046125037,
+     "cell_id": "gs1-cell-4",
+     "dist_to_centre_over_pitch": 0.2690329398491578,
+     "dist_to_null_over_pitch": 0.16996634432094274,
+     "launch_z_m": 0.009249411266290617,
+     "orbits": 128,
+     "reflected": 35,
+     "wall_hit": 61
+    }
+   ],
+   "mu_median": 0.3239974275114645,
+   "orbits": 512,
+   "reflected": 72,
+   "reflected_fraction_b_turn_below_launch": 0.3194444444444444,
+   "reflected_fraction_closer_to_centre_than_null": 0.2777777777777778,
+   "reflected_fraction_meeting_mirror_condition": 0.5138888888888888,
+   "reflected_fraction_pitch70": 1.0,
+   "reflected_median_b_turn_over_b_launch": 1.0794110012120242,
+   "reflected_median_dist_to_null_over_pitch": 0.21120527149537677,
+   "reflected_median_dist_to_stage_centre_over_pitch": 0.29768087981606584,
+   "wall_hit_fraction_closer_to_null_than_centre": 0.8783068783068783,
+   "wall_hit_median_dist_to_null_over_pitch": 0.13895909744353196,
+   "wall_hits": 378
+  },
+  "l1a-gs-v2-065-9e98f08f3b": {
+   "cells": [
+    {
+     "axis_b_at_launch_over_peak": 0.021587238048122334,
+     "cell_id": "gs1-cell-1",
+     "dist_to_centre_over_pitch": 0.47500000000000003,
+     "dist_to_null_over_pitch": 0.0037274662979552256,
+     "launch_z_m": 0.00625227213647144,
+     "orbits": 128,
+     "reflected": 88,
+     "wall_hit": 39
+    },
+    {
+     "axis_b_at_launch_over_peak": 0.3334019690399097,
+     "cell_id": "gs1-cell-2",
+     "dist_to_centre_over_pitch": 0.3750000000000001,
+     "dist_to_null_over_pitch": 0.11472130727531808,
+     "launch_z_m": 0.01362674696410442,
+     "orbits": 128,
+     "reflected": 34,
+     "wall_hit": 94
+    },
+    {
+     "axis_b_at_launch_over_peak": 0.7632230765982182,
+     "cell_id": "gs1-cell-3",
+     "dist_to_centre_over_pitch": 0.22499999999999962,
+     "dist_to_null_over_pitch": 0.2863481666575525,
+     "launch_z_m": 0.021001221791737402,
+     "orbits": 128,
+     "reflected": 32,
+     "wall_hit": 96
+    },
+    {
+     "axis_b_at_launch_over_peak": 0.8073217968112054,
+     "cell_id": "gs1-cell-4",
+     "dist_to_centre_over_pitch": 0.07499999999999969,
+     "dist_to_null_over_pitch": 0.3956301418266396,
+     "launch_z_m": 0.02837569661937038,
+     "orbits": 128,
+     "reflected": 0,
+     "wall_hit": 128
+    }
+   ],
+   "mu_median": 0.10941679216600692,
+   "orbits": 512,
+   "reflected": 154,
+   "reflected_fraction_b_turn_below_launch": 0.18181818181818182,
+   "reflected_fraction_closer_to_centre_than_null": 0.22727272727272727,
+   "reflected_fraction_meeting_mirror_condition": 0.7077922077922078,
+   "reflected_fraction_pitch70": 0.8311688311688312,
+   "reflected_median_b_turn_over_b_launch": 1.1348528529778683,
+   "reflected_median_dist_to_null_over_pitch": 0.14430652583749712,
+   "reflected_median_dist_to_stage_centre_over_pitch": 0.34808579240890203,
+   "wall_hit_fraction_closer_to_null_than_centre": 0.9103641456582633,
+   "wall_hit_median_dist_to_null_over_pitch": 0.12059852172645516,
+   "wall_hits": 357
+  },
+  "l1a-gs-v2-068-375d1b1b13": {
+   "cells": [
+    {
+     "axis_b_at_launch_over_peak": 0.7462994496184371,
+     "cell_id": "gs1-cell-1",
+     "dist_to_centre_over_pitch": 0.06967906422354728,
+     "dist_to_null_over_pitch": 0.368296252853658,
+     "launch_z_m": 0.0022858866971209313,
+     "orbits": 128,
+     "reflected": 0,
+     "wall_hit": 92
+    },
+    {
+     "axis_b_at_launch_over_peak": 0.7173385506456501,
+     "cell_id": "gs1-cell-2",
+     "dist_to_centre_over_pitch": 0.27096280732935835,
+     "dist_to_null_over_pitch": 0.2910618755934365,
+     "launch_z_m": 0.004931618424176854,
+     "orbits": 128,
+     "reflected": 32,
+     "wall_hit": 96
+    },
+    {
+     "axis_b_at_launch_over_peak": 0.45597166285387203,
+     "cell_id": "gs1-cell-3",
+     "dist_to_centre_over_pitch": 0.3883953211177361,
+     "dist_to_null_over_pitch": 0.17362233220392154,
+     "launch_z_m": 0.007577350151232776,
+     "orbits": 128,
+     "reflected": 33,
+     "wall_hit": 95
+    },
+    {
+     "axis_b_at_launch_over_peak": 0.8262645196857986,
+     "cell_id": "gs1-cell-4",
+     "dist_to_centre_over_pitch": 0.047753449564830824,
+     "dist_to_null_over_pitch": 0.4857357962431729,
+     "launch_z_m": 0.010223081878288699,
+     "orbits": 128,
+     "reflected": 0,
+     "wall_hit": 67
+    }
+   ],
+   "mu_median": 0.19473271377728799,
+   "orbits": 512,
+   "reflected": 65,
+   "reflected_fraction_b_turn_below_launch": 0.06153846153846154,
+   "reflected_fraction_closer_to_centre_than_null": 0.49230769230769234,
+   "reflected_fraction_meeting_mirror_condition": 0.8153846153846154,
+   "reflected_fraction_pitch70": 1.0,
+   "reflected_median_b_turn_over_b_launch": 1.131994563788403,
+   "reflected_median_dist_to_null_over_pitch": 0.27279022511763623,
+   "reflected_median_dist_to_stage_centre_over_pitch": 0.2892274282040215,
+   "wall_hit_fraction_closer_to_null_than_centre": 0.8942857142857142,
+   "wall_hit_median_dist_to_null_over_pitch": 0.1290083740308526,
+   "wall_hits": 350
+  }
+ },
+ "results": [
+  {
+   "I1_over_I0_xw": 0.48494315735059085,
+   "I1_xw": 0.6471087364321026,
+   "axis_dz_m": 0.0004513888888888889,
+   "axis_peak_t": 0.11772427843379328,
+   "b1_t": 0.11151391147520429,
+   "b3_over_b1": 0.023395371509324154,
+   "b5_over_b1": 0.017858898200523894,
+   "bessel_wall_br_max_t": 0.13971425306323143,
+   "cusp_fields": [
+    {
+     "angle_fitted_deg": 6.3210068204218794,
+     "angle_recorded_deg": 0.034359637565935464,
+     "fitted_wall_br_t": -0.138917711646648,
+     "ratio_wall_cusp_over_axis_peak": 0.5516093544609713,
+     "ratio_wall_cusp_over_wall_centre": 0.44957304071174575,
+     "recorded_wall_b_t": 0.06493781323124835,
+     "recorded_wall_br_t": -0.06493780155456416,
+     "z_c_m": 0.0036213163825690488
+    },
+    {
+     "angle_fitted_deg": 6.938365231014542,
+     "angle_recorded_deg": 1.1175030383300868,
+     "fitted_wall_br_t": 0.13878556030240038,
+     "ratio_wall_cusp_over_axis_peak": 0.5497053651486588,
+     "ratio_wall_cusp_over_wall_centre": 0.37337007123984745,
+     "recorded_wall_b_t": 0.06471366746331071,
+     "recorded_wall_br_t": 0.06470135898371404,
+     "z_c_m": 0.007776418164079098
+    }
+   ],
+   "cusps": [
+    {
+     "fitted_null_m": 0.0035844459362509625,
+     "gap_m": 0.0038,
+     "recorded_null_m": 0.0036213163825690488,
+     "v3_angle_deg": 0.06103283076938087,
+     "v3_wall_b_t": 0.059411357570712996,
+     "v3_z_c_m": 0.003627979849237588
+    },
+    {
+     "fitted_null_m": 0.007819042607057371,
+     "gap_m": 0.0076,
+     "recorded_null_m": 0.007776418164079098,
+     "v3_angle_deg": 0.3823279389578946,
+     "v3_wall_b_t": 0.05949583507897738,
+     "v3_z_c_m": 0.007764660591564771
+    }
+   ],
+   "design_id": "l1a-gs-v2-000-48d2ccedd5",
+   "electrons": [
+    {
+     "energy_ev": 5.0,
+     "epsilon_wall_cusp": 0.3361701116560229,
+     "mendel_alpha": 49.672254056494715,
+     "nonadiabatic_radius_m": 0.00030189868078079105,
+     "period_over_lambda_c": 19.934343040390313,
+     "r_l_at_axis_peak_m": 6.761767777285397e-05,
+     "r_l_at_wall_cusp_m": 0.00011631663121665161,
+     "wall_cusp_scale_length_m": 0.00034600527287705307
+    },
+    {
+     "energy_ev": 25.0,
+     "epsilon_wall_cusp": 0.7516992216665618,
+     "mendel_alpha": 9.934450811298941,
+     "nonadiabatic_radius_m": 0.0004514438243578502,
+     "period_over_lambda_c": 8.914909225022514,
+     "r_l_at_axis_peak_m": 0.00015119772398077807,
+     "r_l_at_wall_cusp_m": 0.0002600918943142071,
+     "wall_cusp_scale_length_m": 0.00034600527287705307
+    }
+   ],
+   "field_lines": [
+    {
+     "b_launch_t": 0.14680117768596201,
+     "b_wall_t": 0.1405094065492685,
+     "launch_r_over_rw": 0.675,
+     "max_along_line_over_launch": 0.9999999999999997,
+     "ratio_wall_over_launch": 0.9571408674244227,
+     "reaches_wall": true,
+     "wall_hit_fraction_to_cusp": 0.8687668527571106
+    },
+    {
+     "b_launch_t": 0.16587697874435361,
+     "b_wall_t": 0.073695287549522,
+     "launch_r_over_rw": 0.8,
+     "max_along_line_over_launch": 0.9999999999999994,
+     "ratio_wall_over_launch": 0.4442767652713264,
+     "reaches_wall": true,
+     "wall_hit_fraction_to_cusp": 0.38740225714207044
+    }
+   ],
+   "fit_rms_over_peak": 0.0320639668115239,
+   "fit_rms_t": 0.0037747073566117466,
+   "fitted_phase_rad": -0.0013261215849536072,
+   "fitted_pitch_m": 0.004234596670806407,
+   "fundamental_wall_br_max_t": 0.07216161953378568,
+   "geometric_pitch_m": 0.0038,
+   "level": "L1a linear-vacuum equivalent-current FDM (no iron in the field)",
+   "magnet_axial_fraction": 0.4799999999999999,
+   "magnet_inner_radius_over_pitch": 0.5921052631578947,
+   "paraxial_wall_br_max_t": 0.06323366240738071,
+   "pitch_ratio": 1.1143675449490544,
+   "points_per_pitch": 8.418461538461537,
+   "recorded_wall_br_max_t": 0.06564223704464199,
+   "stage_count": 3,
+   "v3_axis_mirror_ratios": [
+    0.6322216033941405,
+    0.5038277468422078,
+    0.6385345138851382
+   ],
+   "v3_state": "accepted_topology_screening",
+   "v3_wall_mirror_ratios": [
+    1.8627616196351104,
+    1.0009498820496954,
+    1.8723998240176192
+   ],
+   "wall_fwhm_fundamental_m": 0.002533333333333333,
+   "wall_fwhm_recorded_m": 0.0029317,
+   "wall_harmonics": {
+    "wall_b1_over_axis_b1": 0.9764342598770026,
+    "wall_b1_over_wall_b1": 1.0,
+    "wall_b3_over_wall_b1": 0.005205529987488003,
+    "wall_b5_over_wall_b1": -0.0006120824123316353,
+    "wall_fit_rms_over_max": 0.12400517588654376
+   },
+   "wall_radius_m": 0.0014,
+   "wall_sampled_r_m": 0.0015,
+   "x_w": 1.1128306534769214
+  },
+  {
+   "I1_over_I0_xw": 0.44385979591187796,
+   "I1_xw": 0.5601764776295313,
+   "axis_dz_m": 0.0004513888888888889,
+   "axis_peak_t": 0.12158169078952817,
+   "b1_t": 0.11650209590445247,
+   "b3_over_b1": 0.014241836328429312,
+   "b5_over_b1": 0.018304373261038575,
+   "bessel_wall_br_max_t": 0.10905148843623916,
+   "cusp_fields": [
+    {
+     "angle_fitted_deg": 6.815562652826946,
+     "angle_recorded_deg": 3.742610962058761,
+     "fitted_wall_br_t": -0.10839539483217404,
+     "ratio_wall_cusp_over_axis_peak": 0.5321089700470989,
+     "ratio_wall_cusp_over_wall_centre": 0.5053276772476833,
+     "recorded_wall_b_t": 0.06469470826260068,
+     "recorded_wall_br_t": -0.064556737062428,
+     "z_c_m": 0.003894735153122694
+    },
+    {
+     "angle_fitted_deg": 6.693732434664099,
+     "angle_recorded_deg": 3.7849555508260404,
+     "fitted_wall_br_t": 0.10842998218459145,
+     "ratio_wall_cusp_over_axis_peak": 0.5313288620724219,
+     "ratio_wall_cusp_over_wall_centre": 0.40371134381411344,
+     "recorded_wall_b_t": 0.06459986141604106,
+     "recorded_wall_br_t": 0.06445895850941864,
+     "z_c_m": 0.008544744376253225
+    }
+   ],
+   "cusps": [
+    {
+     "fitted_null_m": 0.003846621152370561,
+     "gap_m": 0.004145920139970708,
+     "recorded_null_m": 0.003894735153122694,
+     "v3_angle_deg": 1.4910152262823622,
+     "v3_wall_b_t": 0.06127980356767455,
+     "v3_z_c_m": 0.003915800678022848
+    },
+    {
+     "fitted_null_m": 0.008592823646533836,
+     "gap_m": 0.008291840279941416,
+     "recorded_null_m": 0.008544744376253225,
+     "v3_angle_deg": 1.5042245703721282,
+     "v3_wall_b_t": 0.061315588941727346,
+     "v3_z_c_m": 0.008523374746501803
+    }
+   ],
+   "design_id": "l1a-gs-v2-032-570ad83ba6",
+   "electrons": [
+    {
+     "energy_ev": 5.0,
+     "epsilon_wall_cusp": 0.28351148036739954,
+     "mendel_alpha": 68.10698720719317,
+     "nonadiabatic_radius_m": 0.000312698628537901,
+     "period_over_lambda_c": 23.34214852273769,
+     "r_l_at_axis_peak_m": 6.472254146830976e-05,
+     "r_l_at_wall_cusp_m": 0.00011663771730030387,
+     "wall_cusp_scale_length_m": 0.000411403859727847
+    },
+    {
+     "energy_ev": 25.0,
+     "epsilon_wall_cusp": 0.6339509425031024,
+     "mendel_alpha": 13.621397441438631,
+     "nonadiabatic_radius_m": 0.0004675935130736975,
+     "period_over_lambda_c": 10.438926167547553,
+     "r_l_at_axis_peak_m": 0.0001447240023996897,
+     "r_l_at_wall_cusp_m": 0.0002608098646238827,
+     "wall_cusp_scale_length_m": 0.000411403859727847
+    }
+   ],
+   "field_lines": [
+    {
+     "b_launch_t": 0.14404360592832238,
+     "b_wall_t": 0.11231265487815016,
+     "launch_r_over_rw": 0.675,
+     "max_along_line_over_launch": 0.9999999999999998,
+     "ratio_wall_over_launch": 0.7797128803762252,
+     "reaches_wall": true,
+     "wall_hit_fraction_to_cusp": 0.8362468927343188
+    },
+    {
+     "b_launch_t": 0.1577164628650273,
+     "b_wall_t": 0.061725456106436455,
+     "launch_r_over_rw": 0.8,
+     "max_along_line_over_launch": 1.0,
+     "ratio_wall_over_launch": 0.39136977196388617,
+     "reaches_wall": true,
+     "wall_hit_fraction_to_cusp": 0.4660404626500707
+    }
+   ],
+   "fit_rms_over_peak": 0.03156091208041943,
+   "fit_rms_t": 0.0038372290535970397,
+   "fitted_phase_rad": -0.0005822960111566221,
+   "fitted_pitch_m": 0.004746202494163275,
+   "fundamental_wall_br_max_t": 0.0652617309312174,
+   "geometric_pitch_m": 0.004145920139970708,
+   "level": "L1a linear-vacuum equivalent-current FDM (no iron in the field)",
+   "magnet_axial_fraction": 0.5536487139023627,
+   "magnet_inner_radius_over_pitch": 0.8043924771417582,
+   "paraxial_wall_br_max_t": 0.06065823236757386,
+   "pitch_ratio": 1.144788691997528,
+   "points_per_pitch": 9.184807694704336,
+   "recorded_wall_br_max_t": 0.0652158105244016,
+   "stage_count": 3,
+   "v3_axis_mirror_ratios": [
+    0.6140026290207191,
+    0.5039569479580563,
+    0.6157151876556298
+   ],
+   "v3_state": "accepted_topology_screening",
+   "v3_wall_mirror_ratios": [
+    1.0,
+    1.004011111023517,
+    1.0
+   ],
+   "wall_fwhm_fundamental_m": 0.002763946759980472,
+   "wall_fwhm_recorded_m": 0.0029581140198691003,
+   "wall_harmonics": {
+    "wall_b1_over_axis_b1": 0.967818798106061,
+    "wall_b1_over_wall_b1": 1.0,
+    "wall_b3_over_wall_b1": -0.004753704691708476,
+    "wall_b5_over_wall_b1": -0.0001943677655213437,
+    "wall_fit_rms_over_max": 0.10009012562923472
+   },
+   "wall_radius_m": 0.0014200482373334775,
+   "wall_sampled_r_m": 0.0015,
+   "x_w": 0.9928756697970287
+  },
+  {
+   "I1_over_I0_xw": 0.41025202293932234,
+   "I1_xw": 0.4978544650118153,
+   "axis_dz_m": 0.0004513888888888889,
+   "axis_peak_t": 0.3718867476111333,
+   "b1_t": -0.35420631999127683,
+   "b3_over_b1": -0.0019646370192680316,
+   "b5_over_b1": 0.0011105057254920708,
+   "bessel_wall_br_max_t": 0.18453219489378897,
+   "cusp_fields": [
+    {
+     "angle_fitted_deg": 0.1657245514956473,
+     "angle_recorded_deg": 1.4690668185970934,
+     "fitted_wall_br_t": -0.1845319865446526,
+     "ratio_wall_cusp_over_axis_peak": 0.45661289198137894,
+     "ratio_wall_cusp_over_wall_centre": 0.4464955048631289,
+     "recorded_wall_b_t": 0.16867296371790408,
+     "recorded_wall_br_t": -0.16861752291363719,
+     "z_c_m": 0.006228369435266987
+    },
+    {
+     "angle_fitted_deg": 8.971074294931665,
+     "angle_recorded_deg": 0.682195977840292,
+     "fitted_wall_br_t": 0.18387644539134312,
+     "ratio_wall_cusp_over_axis_peak": 0.4731827716158231,
+     "ratio_wall_cusp_over_wall_centre": 0.39309148857583137,
+     "recorded_wall_b_t": 0.17479388311258603,
+     "recorded_wall_br_t": 0.17478149331679585,
+     "z_c_m": 0.012891086622630523
+    },
+    {
+     "angle_fitted_deg": 9.448325814345463,
+     "angle_recorded_deg": 0.33089703771929535,
+     "fitted_wall_br_t": -0.18380427895966844,
+     "ratio_wall_cusp_over_axis_peak": 0.469571466270505,
+     "ratio_wall_cusp_over_wall_centre": 0.41653056364831287,
+     "recorded_wall_b_t": 0.17462740536232907,
+     "recorded_wall_br_t": -0.17462449315901224,
+     "z_c_m": 0.01916498931612438
+    },
+    {
+     "angle_fitted_deg": 0.12101676874848702,
+     "angle_recorded_deg": 1.4393466895973872,
+     "fitted_wall_br_t": 0.18453209048013952,
+     "ratio_wall_cusp_over_axis_peak": 0.45240304146082094,
+     "ratio_wall_cusp_over_wall_centre": 0.3767751285954882,
+     "recorded_wall_b_t": 0.16824269569824937,
+     "recorded_wall_br_t": 0.16818961104991612,
+     "z_c_m": 0.025838683991584798
+    }
+   ],
+   "cusps": [
+    {
+     "fitted_null_m": 0.006226020289283403,
+     "gap_m": 0.006412586806637374,
+     "recorded_null_m": 0.006228369435266987,
+     "v3_angle_deg": 0.48289115468139904,
+     "v3_wall_b_t": 0.17558476303650242,
+     "v3_z_c_m": 0.006243778186810776
+    },
+    {
+     "fitted_null_m": 0.012763003207331126,
+     "gap_m": 0.01282517361327475,
+     "recorded_null_m": 0.012891086622630523,
+     "v3_angle_deg": 0.23275632077117375,
+     "v3_wall_b_t": 0.18183569441211064,
+     "v3_z_c_m": 0.012884240586995253
+    },
+    {
+     "fitted_null_m": 0.01929998612537885,
+     "gap_m": 0.019237760419912122,
+     "recorded_null_m": 0.01916498931612438,
+     "v3_angle_deg": 0.040709250247674994,
+     "v3_wall_b_t": 0.18166023308524973,
+     "v3_z_c_m": 0.019168999100517534
+    },
+    {
+     "fitted_null_m": 0.025836969043426576,
+     "gap_m": 0.025650347226549495,
+     "recorded_null_m": 0.025838683991584798,
+     "v3_angle_deg": 0.40078304978645585,
+     "v3_wall_b_t": 0.1752492251418214,
+     "v3_z_c_m": 0.025823668708119227
+    }
+   ],
+   "design_id": "l1a-gs-v2-065-9e98f08f3b",
+   "electrons": [
+    {
+     "energy_ev": 5.0,
+     "epsilon_wall_cusp": 0.05406892421316198,
+     "mendel_alpha": 1194.2602509349747,
+     "nonadiabatic_radius_m": 0.00021046517084623943,
+     "period_over_lambda_c": 97.74498456432329,
+     "r_l_at_axis_peak_m": 2.1287908509104594e-05,
+     "r_l_at_wall_cusp_m": 4.3945247339460925e-05,
+     "wall_cusp_scale_length_m": 0.0008127634862164199
+    },
+    {
+     "energy_ev": 25.0,
+     "epsilon_wall_cusp": 0.1209017900109145,
+     "mendel_alpha": 238.85205018699486,
+     "nonadiabatic_radius_m": 0.0003147188367144401,
+     "period_over_lambda_c": 43.7128859890989,
+     "r_l_at_axis_peak_m": 4.760121052515408e-05,
+     "r_l_at_wall_cusp_m": 9.82645603390764e-05,
+     "wall_cusp_scale_length_m": 0.0008127634862164199
+    }
+   ],
+   "field_lines": [
+    {
+     "b_launch_t": 0.3910433445862819,
+     "b_wall_t": 0.2548929427968306,
+     "launch_r_over_rw": 0.675,
+     "max_along_line_over_launch": 1.0,
+     "ratio_wall_over_launch": 0.6518278506095113,
+     "reaches_wall": true,
+     "wall_hit_fraction_to_cusp": 0.7275920062222824
+    },
+    {
+     "b_launch_t": 0.4071365616168906,
+     "b_wall_t": 0.31208800797691444,
+     "launch_r_over_rw": 0.8,
+     "max_along_line_over_launch": 1.0,
+     "ratio_wall_over_launch": 0.7665438022502744,
+     "reaches_wall": true,
+     "wall_hit_fraction_to_cusp": 0.5567965955807972
+    }
+   ],
+   "fit_rms_over_peak": 0.048576522118507624,
+   "fit_rms_t": 0.018064964820912077,
+   "fitted_phase_rad": -1.3399029234461165e-05,
+   "fitted_pitch_m": 0.006536982918047724,
+   "fundamental_wall_br_max_t": 0.17634319058079193,
+   "geometric_pitch_m": 0.006412586806637374,
+   "level": "L1a linear-vacuum equivalent-current FDM (no iron in the field)",
+   "magnet_axial_fraction": 0.6726887139023628,
+   "magnet_inner_radius_over_pitch": 0.4607265424899729,
+   "paraxial_wall_br_max_t": 0.16141465911712105,
+   "pitch_ratio": 1.0193987411260605,
+   "points_per_pitch": 14.206346156242796,
+   "recorded_wall_br_max_t": 0.17504993244318465,
+   "stage_count": 5,
+   "v3_axis_mirror_ratios": [
+    0.564968820052724,
+    0.472293035980977,
+    0.528200479777532,
+    0.4712313472767388,
+    0.5645228569932925
+   ],
+   "v3_state": "accepted_topology_screening",
+   "v3_wall_mirror_ratios": [
+    1.8720659231094163,
+    1.0001068187041005,
+    1.0,
+    1.0,
+    1.8698994881120239
+   ],
+   "wall_fwhm_fundamental_m": 0.004275057871091582,
+   "wall_fwhm_recorded_m": 0.0041970380649441605,
+   "wall_harmonics": {
+    "wall_b1_over_axis_b1": 0.9905162288902584,
+    "wall_b1_over_wall_b1": 1.0,
+    "wall_b3_over_wall_b1": -0.0036521602901345976,
+    "wall_b5_over_wall_b1": -0.0011263338498375146,
+    "wall_fit_rms_over_max": 0.05149959153793955
+   },
+   "wall_radius_m": 0.001944829578441349,
+   "wall_sampled_r_m": 0.001875,
+   "x_w": 0.9011016701937568
+  },
+  {
+   "I1_over_I0_xw": 0.45570293159834563,
+   "I1_xw": 0.5838888367854153,
+   "axis_dz_m": 0.0004513888888888889,
+   "axis_peak_t": 0.20831014913177545,
+   "b1_t": 0.2031932472898981,
+   "b3_over_b1": 0.016948981420782498,
+   "b5_over_b1": 0.017818708447313293,
+   "bessel_wall_br_max_t": 0.20355199437908522,
+   "cusp_fields": [
+    {
+     "angle_fitted_deg": 5.907187336944057,
+     "angle_recorded_deg": 3.8058363239525446,
+     "fitted_wall_br_t": -0.20261467694688404,
+     "ratio_wall_cusp_over_axis_peak": 0.5584986465190316,
+     "ratio_wall_cusp_over_wall_centre": 0.5194817581937826,
+     "recorded_wall_b_t": 0.11634093634627421,
+     "recorded_wall_br_t": -0.11608437110481985,
+     "z_c_m": 0.003763707382255502
+    },
+    {
+     "angle_fitted_deg": 5.876081374226849,
+     "angle_recorded_deg": 3.8944035331843394,
+     "fitted_wall_br_t": 0.20261895276255398,
+     "ratio_wall_cusp_over_axis_peak": 0.5577267914899965,
+     "ratio_wall_cusp_over_wall_centre": 0.41758197110159423,
+     "recorded_wall_b_t": 0.11618015111006781,
+     "recorded_wall_br_t": 0.11591188156678704,
+     "z_c_m": 0.008274024830771843
+    }
+   ],
+   "cusps": [
+    {
+     "fitted_null_m": 0.0037232725813584316,
+     "gap_m": 0.004012586806637374,
+     "recorded_null_m": 0.003763707382255502,
+     "v3_angle_deg": 1.5366907233058527,
+     "v3_wall_b_t": 0.12103894932153571,
+     "v3_z_c_m": 0.003787710541860107
+    },
+    {
+     "fitted_null_m": 0.008313986793593606,
+     "gap_m": 0.008025173613274749,
+     "recorded_null_m": 0.008274024830771843,
+     "v3_angle_deg": 1.5767035338759916,
+     "v3_wall_b_t": 0.12102614131887499,
+     "v3_z_c_m": 0.008249506554595389
+    }
+   ],
+   "design_id": "l1a-gs-v2-068-375d1b1b13",
+   "electrons": [
+    {
+     "energy_ev": 5.0,
+     "epsilon_wall_cusp": 0.1648592084709807,
+     "mendel_alpha": 193.825414872842,
+     "nonadiabatic_radius_m": 0.00023286553031078,
+     "period_over_lambda_c": 39.3777007833461,
+     "r_l_at_axis_peak_m": 3.710906653587301e-05,
+     "r_l_at_wall_cusp_m": 6.485701418144872e-05,
+     "wall_cusp_scale_length_m": 0.00039340850161163524
+    },
+    {
+     "energy_ev": 25.0,
+     "epsilon_wall_cusp": 0.368636396857922,
+     "mendel_alpha": 38.765082974568394,
+     "nonadiabatic_radius_m": 0.0003482151869386581,
+     "period_over_lambda_c": 17.61024314984172,
+     "r_l_at_axis_peak_m": 8.297839535577469e-05,
+     "r_l_at_wall_cusp_m": 0.00014502469252738721,
+     "wall_cusp_scale_length_m": 0.00039340850161163524
+    }
+   ],
+   "field_lines": [
+    {
+     "b_launch_t": 0.26292274429396495,
+     "b_wall_t": 0.20343623027397043,
+     "launch_r_over_rw": 0.675,
+     "max_along_line_over_launch": 1.0000000000000002,
+     "ratio_wall_over_launch": 0.7737490753044755,
+     "reaches_wall": true,
+     "wall_hit_fraction_to_cusp": 0.7983310806679083
+    },
+    {
+     "b_launch_t": 0.2954785666408549,
+     "b_wall_t": 0.1604294955645001,
+     "launch_r_over_rw": 0.8,
+     "max_along_line_over_launch": 1.0,
+     "ratio_wall_over_launch": 0.5429479958168918,
+     "reaches_wall": true,
+     "wall_hit_fraction_to_cusp": 0.36115151616796753
+    }
+   ],
+   "fit_rms_over_peak": 0.026826678158375996,
+   "fit_rms_t": 0.005588269327881447,
+   "fitted_phase_rad": 0.00017784402506035004,
+   "fitted_pitch_m": 0.004590714212235176,
+   "fundamental_wall_br_max_t": 0.11864226851130005,
+   "geometric_pitch_m": 0.004012586806637374,
+   "level": "L1a linear-vacuum equivalent-current FDM (no iron in the field)",
+   "magnet_axial_fraction": 0.5766887139023628,
+   "magnet_inner_radius_over_pitch": 0.7947570963888662,
+   "paraxial_wall_br_max_t": 0.10827810918726707,
+   "pitch_ratio": 1.1440784794092176,
+   "points_per_pitch": 8.889423079319721,
+   "recorded_wall_br_max_t": 0.11845918659792108,
+   "stage_count": 3,
+   "v3_axis_mirror_ratios": [
+    0.6927405812630363,
+    0.5753440428656007,
+    0.6944374383390742
+   ],
+   "v3_state": "accepted_topology_screening",
+   "v3_wall_mirror_ratios": [
+    1.0671590520966083,
+    1.000125775148297,
+    1.0008655200003773
+   ],
+   "wall_fwhm_fundamental_m": 0.0026750578710915828,
+   "wall_fwhm_recorded_m": 0.002854955512922492,
+   "wall_harmonics": {
+    "wall_b1_over_axis_b1": 0.9643358420544721,
+    "wall_b1_over_wall_b1": 1.0,
+    "wall_b3_over_wall_b1": -0.0037827299187246657,
+    "wall_b5_over_wall_b1": 3.26581326236785e-05,
+    "wall_fit_rms_over_max": 0.09138287906874955
+   },
+   "wall_radius_m": 0.0015040132519107369,
+   "wall_sampled_r_m": 0.0015,
+   "x_w": 1.026504539930895
+  },
+  {
+   "I1_over_I0_xw": 0.46518519934060315,
+   "I1_xw": 0.6036225597122992,
+   "axis_dz_m": 4.9999999999999914e-05,
+   "axis_peak_t": 0.1805037811120301,
+   "b1_t": -0.17581789139150003,
+   "b3_over_b1": 0.00010899301827317643,
+   "b5_over_b1": 0.0013062690431634813,
+   "bessel_wall_br_max_t": 0.1133806828807054,
+   "cusp_fields": [
+    {
+     "angle_fitted_deg": 0.5124070110951571,
+     "angle_recorded_deg": 0.4345255208497745,
+     "fitted_wall_br_t": -0.11337865042386201,
+     "ratio_wall_cusp_over_axis_peak": 0.5973539630709087,
+     "ratio_wall_cusp_over_wall_centre": 0.47766210683271854,
+     "recorded_wall_b_t": 0.10782464899655501,
+     "recorded_wall_br_t": -0.10782154821416706,
+     "z_c_m": 0.006031391258832997
+    },
+    {
+     "angle_fitted_deg": 0.0025933631929928418,
+     "angle_recorded_deg": 0.016889808069422214,
+     "fitted_wall_br_t": 0.11338068289017197,
+     "ratio_wall_cusp_over_axis_peak": 0.6123381148340884,
+     "ratio_wall_cusp_over_wall_centre": 0.47696105172133896,
+     "recorded_wall_b_t": 0.10663412642473873,
+     "recorded_wall_br_t": 0.10663412179165252,
+     "z_c_m": 0.012000005710991309
+    },
+    {
+     "angle_fitted_deg": 0.5151039059179666,
+     "angle_recorded_deg": 0.3945262484190167,
+     "fitted_wall_br_t": -0.11337860797390639,
+     "ratio_wall_cusp_over_axis_peak": 0.5973308957611837,
+     "ratio_wall_cusp_over_wall_centre": 0.48224839575688105,
+     "recorded_wall_b_t": 0.10781609380551567,
+     "recorded_wall_br_t": -0.10781353781980063,
+     "z_c_m": 0.017968730503805132
+    }
+   ],
+   "cusps": [
+    {
+     "fitted_null_m": 0.006038568425577644,
+     "gap_m": 0.006,
+     "recorded_null_m": 0.006031391258832997,
+     "v3_angle_deg": 0.1876810852226339,
+     "v3_wall_b_t": 0.10770527168755269,
+     "v3_z_c_m": 0.006028062818933392
+    },
+    {
+     "fitted_null_m": 0.012000047455233098,
+     "gap_m": 0.012,
+     "recorded_null_m": 0.012000005710991309,
+     "v3_angle_deg": 0.00018427131396596023,
+     "v3_wall_b_t": 0.10629171593542192,
+     "v3_z_c_m": 0.012000005466825737
+    },
+    {
+     "fitted_null_m": 0.01796152648488855,
+     "gap_m": 0.018000000000000002,
+     "recorded_null_m": 0.017968730503805132,
+     "v3_angle_deg": 0.1855872492541713,
+     "v3_wall_b_t": 0.10769583250038292,
+     "v3_z_c_m": 0.01797206288202682
+    }
+   ],
+   "design_id": "divergent-exit-stack (P2, level-1 checkpoint)",
+   "electrons": [
+    {
+     "energy_ev": 5.0,
+     "epsilon_wall_cusp": 0.08752620407113994,
+     "mendel_alpha": 244.71795868485066,
+     "nonadiabatic_radius_m": 0.00028527597005845173,
+     "period_over_lambda_c": 44.24639724857613,
+     "r_l_at_axis_peak_m": 4.2887055882900125e-05,
+     "r_l_at_wall_cusp_m": 7.019143395894981e-05,
+     "wall_cusp_scale_length_m": 0.0008019476533210478
+    },
+    {
+     "energy_ev": 25.0,
+     "epsilon_wall_cusp": 0.19571454211558775,
+     "mendel_alpha": 48.94359173697015,
+     "nonadiabatic_radius_m": 0.00042658707413860723,
+     "period_over_lambda_c": 19.78759040145518,
+     "r_l_at_axis_peak_m": 9.589837230899694e-05,
+     "r_l_at_wall_cusp_m": 0.00015695281777039898,
+     "wall_cusp_scale_length_m": 0.0008019476533210478
+    }
+   ],
+   "field_lines": [
+    {
+     "b_launch_t": 0.20049710232331322,
+     "b_wall_t": 0.13733689618744904,
+     "launch_r_over_rw": 0.675,
+     "max_along_line_over_launch": 1.0000000000000002,
+     "ratio_wall_over_launch": 0.6849819503425307,
+     "reaches_wall": true,
+     "wall_hit_fraction_to_cusp": 0.7250231097494003
+    },
+    {
+     "b_launch_t": 0.2115362194536583,
+     "b_wall_t": 0.15886484144836424,
+     "launch_r_over_rw": 0.8,
+     "max_along_line_over_launch": 1.0000000000000002,
+     "ratio_wall_over_launch": 0.7510053921672127,
+     "reaches_wall": true,
+     "wall_hit_fraction_to_cusp": 0.5734049106552819
+    }
+   ],
+   "fit_rms_over_peak": 0.007212443159713989,
+   "fit_rms_t": 0.0013018732613839727,
+   "fitted_phase_rad": -1.5708214707806574,
+   "fitted_pitch_m": 0.005961479029655456,
+   "fundamental_wall_br_max_t": 0.10612764561140825,
+   "geometric_pitch_m": 0.006,
+   "level": "P2 adaptive FEM, iron pole rings and return yoke in the source model",
+   "magnet_axial_fraction": 0.6666666666666666,
+   "magnet_inner_radius_over_pitch": 0.7333333333333334,
+   "paraxial_wall_br_max_t": 0.09328832258926135,
+   "pitch_ratio": 0.9935798382759092,
+   "points_per_pitch": 120.00000000000021,
+   "recorded_wall_br_max_t": 0.10786131373492315,
+   "stage_count": 4,
+   "v3_axis_mirror_ratios": [
+    0.5963310525673295,
+    0.6104166118562805,
+    0.6104008074795619,
+    36.93610790677282
+   ],
+   "v3_state": "accepted_topology_screening",
+   "v3_wall_mirror_ratios": [
+    1.0012526323272528,
+    0.9999999999999999,
+    1.0,
+    1.0013798437686414
+   ],
+   "wall_fwhm_fundamental_m": 0.004,
+   "wall_fwhm_recorded_m": 0.0038520000000000004,
+   "wall_harmonics": {
+    "wall_b1_over_axis_b1": 0.996857148753856,
+    "wall_b1_over_wall_b1": 1.0,
+    "wall_b3_over_wall_b1": 0.0022201261349966426,
+    "wall_b5_over_wall_b1": -8.955211021932292e-06,
+    "wall_fit_rms_over_max": 0.009825822195597413
+   },
+   "wall_radius_m": 0.002,
+   "wall_sampled_r_m": 0.002,
+   "x_w": 1.053964171629859
+  }
+ ],
+ "topology_catalogue": "cusp_topology_search_v3_1 (cusp-topology-search-v3.1), recorded status accepted_topology_screening"
+}
