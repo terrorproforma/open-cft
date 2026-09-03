@@ -141,5 +141,19 @@ modern/experiments/pic2d_cft_steady_state_v2/results*/*.log
 modern/experiments/pic2d_cft_steady_state_v2/results*/*.err
 # PIC-2D steady-state v3 (model v1.4): results stay untracked until the run ends
 modern/experiments/pic2d_cft_steady_state_v3/results*/
-# PIC-2D plume development run v1 (model v2.0): results stay untracked until the run ends
+# PIC-2D plume development run v1 (model v2.0): results stay untracked until the run ends;
+# attempt 3 (no ignition) is kept as a development record: summary (with the frames manifest),
+# run state, status/series/maps, final checkpoint metadata; the frames, the videos, the
+# particle checkpoint and the raw logs are not tracked.
 modern/experiments/pic2d_cft_plume_v1/results*/
+!modern/experiments/pic2d_cft_plume_v1/results-attempt3-no-ignition/
+!modern/experiments/pic2d_cft_plume_v1/results-attempt3-no-ignition/maps.npz
+!modern/experiments/pic2d_cft_plume_v1/results-attempt3-no-ignition/series.npz
+modern/experiments/pic2d_cft_plume_v1/results-attempt3-no-ignition/checkpoint/
+modern/experiments/pic2d_cft_plume_v1/results-attempt3-no-ignition/frames/
+modern/experiments/pic2d_cft_plume_v1/results-attempt3-no-ignition/video/
+modern/experiments/pic2d_cft_plume_v1/results-attempt3-no-ignition/checkpoint-final.npz*
+modern/experiments/pic2d_cft_plume_v1/results-attempt3-no-ignition/series.jsonl
+modern/experiments/pic2d_cft_plume_v1/results-attempt3-no-ignition/*.pid
+modern/experiments/pic2d_cft_plume_v1/results-attempt3-no-ignition/*.log
+modern/experiments/pic2d_cft_plume_v1/results-attempt3-no-ignition/*.err
