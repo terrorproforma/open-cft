@@ -1,0 +1,1 @@
+{"details":{"candidate":"botorch-stgp-logit","seeds":[1,2,3],"sizes":[20,30,40,50]},"kind":"solver","operation":"learning-curve","recorded_at_utc":{"__cft_type__":"aware-utc-datetime","value":"2026-09-03T04:07:58.610726Z"},"recorded_before_operation":true,"schema_version":"cft-revival.experiment-access/1.0.0","sequence":10}
