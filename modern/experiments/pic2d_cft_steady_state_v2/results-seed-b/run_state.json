@@ -1,0 +1,1 @@
+{"checkpoint_step":4040000,"checkpoint_time_s":6.0600000000000004e-06,"finished":true,"sessions":[{"pid":49716,"resumed_from_step":0,"started_utc":"2026-09-03T02:33:02.603813+00:00"}],"stop_reason":"wall_clock_budget_reached","wall_seconds_total":12751.388746900004}

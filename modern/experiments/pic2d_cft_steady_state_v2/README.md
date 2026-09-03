@@ -63,17 +63,24 @@ pair exists yet. Dashboard: `modern/visualization/pic2d-cft-steady-state.html`.
 
 | case | override | purpose | status |
 | --- | --- | --- | --- |
-| `seed-b` | RNG seed 20260904, 3.5 h wall budget | statistical variance of the plateau quantities | launched 2026-09-03T02:32Z (PID 49716) |
-| `w-half` | W = 4.2e4 (0.7 W, **not** W/2 — see the note in `variants.json`: W/2 projects to 4.3 h > the 3.5 h budget), 3.5 h wall budget | particle-resolution sensitivity | pending (after `seed-b`) |
+| `seed-b` | RNG seed 20260904, 3.5 h wall budget | statistical variance of the plateau quantities | **finished** `wall_clock_budget_reached` at step 4,040,000 (t = 6.06 µs = 2.53 τ_i, 3.99 ms/step under CPU contention): no plateau declaration (< 3 transits); compared to the base run over the common window 4.85–6.06 µs in the dashboard — I_d +0.40 %, I_beam +0.64 %, S +1.05 %, n_g −0.83 %, N_e +0.57 %. Small artifacts under `results-seed-b/` are tracked |
+| `w-0.7` (renamed from `w-half` before launch) | W = 4.2e4 (0.7 W, **not** W/2 — see the note in `variants.json`: W/2 projects to 4.3 h > the 3.5 h budget), 3.5 h wall budget | particle-resolution sensitivity | launched 2026-09-03T07:04Z (PID 9856) after `seed-b` ended; 2.4 ms/step at 0.36 M electrons |
 
 ```powershell
-python -m experiments.pic2d_cft_steady_state_v2.run --case seed-b run
 python -m experiments.pic2d_cft_steady_state_v2.run --case seed-b status
-python -m experiments.pic2d_cft_steady_state_v2.run --case w-half run      # only after seed-b has ended
+python -m experiments.pic2d_cft_steady_state_v2.run --case w-0.7 run       # only after seed-b has ended
+python -m experiments.pic2d_cft_steady_state_v2.run --case w-0.7 status
 ```
 
 Regenerate the dashboard after a variant finishes; finished variants are embedded
-automatically and the convergence table fills in.
+automatically, the convergence table fills in, and each finished variant gets a
+same-time-window statistical comparison against the headline (window means, batch-means
+standard errors, z-scores, pure shot-noise reference).
+
+A case the runner ended itself (plateau / wall budget / gate) already has its
+window-average maps: `finalize` refuses to re-finalize it (that would downgrade the maps to
+instantaneous ones) unless `--allow-refinalize` is passed. `finalize` is for runs that
+were killed or crashed between checkpoints.
 
 ## Running (from `modern/`)
 

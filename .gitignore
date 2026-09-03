@@ -123,6 +123,10 @@ modern/experiments/pic2d_cft_steady_state_v1/results/*.err
 !modern/experiments/pic2d_cft_steady_state_v2/results-attempt1-ng0-5e19-seed1e16/
 !modern/experiments/pic2d_cft_steady_state_v2/results-attempt1-ng0-5e19-seed1e16/maps.npz
 !modern/experiments/pic2d_cft_steady_state_v2/results-attempt1-ng0-5e19-seed1e16/series.npz
+# convergence pair (a): seed-b finished (wall budget, 2.53 transits) -> small artifacts tracked
+!modern/experiments/pic2d_cft_steady_state_v2/results-seed-b/
+!modern/experiments/pic2d_cft_steady_state_v2/results-seed-b/maps.npz
+!modern/experiments/pic2d_cft_steady_state_v2/results-seed-b/series.npz
 modern/experiments/pic2d_cft_steady_state_v2/results*/checkpoint/
 modern/experiments/pic2d_cft_steady_state_v2/results*/checkpoint-tmp/
 modern/experiments/pic2d_cft_steady_state_v2/results*/checkpoint-old/
@@ -131,6 +135,5 @@ modern/experiments/pic2d_cft_steady_state_v2/results*/series.jsonl
 modern/experiments/pic2d_cft_steady_state_v2/results*/*.pid
 modern/experiments/pic2d_cft_steady_state_v2/results*/*.log
 modern/experiments/pic2d_cft_steady_state_v2/results*/*.err
-# convergence pair (seed-b, w-half) results stay untracked until each case ends
-modern/experiments/pic2d_cft_steady_state_v2/results-seed-b/
-modern/experiments/pic2d_cft_steady_state_v2/results-w-half/
+# convergence pair (b): w-0.7 results stay untracked until the case ends
+modern/experiments/pic2d_cft_steady_state_v2/results-w-0.7/

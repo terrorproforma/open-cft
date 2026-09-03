@@ -8,11 +8,11 @@
       "wall_budget_seconds": 12600,
       "note": "convergence pair (a): identical configuration, different RNG seed -> statistical variance of the plateau quantities; 3.5 h wall budget (the base case took 2.8 h to its plateau at 3.2 transits)"
     },
-    "w-half": {
+    "w-0.7": {
       "id": "fine-w4.2e4-ng0-5.5e19-seed5e16-inventory-w0.7",
       "macro_weight": 42000.0,
       "wall_budget_seconds": 12600,
-      "note": "convergence pair (b): particle-resolution sensitivity. W/2 = 3e4 was NOT used: the base case ran at 2.0 ms/step with 2.0 M macro-particles at the plateau (launch-bound floor ~2 ms + ~0.5 ms per M), so W/2 (~4 M at plateau) projects to >= 3 ms/step x 5.1 M steps = 4.3 h > the 3.5 h budget; W x 0.7 = 4.2e4 (~2.9 M at plateau) projects to ~2.5 ms/step = 3.5 h for 5.1 M steps, i.e. it reaches the 3-transit floor (4.8 M steps, 3.3 h) inside the budget if the plateau is declared at the first eligible checkpoint - marginal, reported as such; the case is resumable if the budget stops it first"
+      "note": "RENAMED from w-half before launch (the case is W x 0.7, not W/2). convergence pair (b): particle-resolution sensitivity. W/2 = 3e4 was NOT used: the base case ran at 2.0 ms/step with 2.0 M macro-particles at the plateau (launch-bound floor ~2 ms + ~0.5 ms per M), so W/2 (~4 M at plateau) projects to >= 3 ms/step x 5.1 M steps = 4.3 h > the 3.5 h budget; W x 0.7 = 4.2e4 (~2.9 M at plateau) projects to ~2.5 ms/step = 3.5 h for 5.1 M steps, i.e. it reaches the 3-transit floor (4.8 M steps, 3.3 h) inside the budget if the plateau is declared at the first eligible checkpoint - marginal, reported as such; the case is resumable if the budget stops it first"
     }
   }
 }
