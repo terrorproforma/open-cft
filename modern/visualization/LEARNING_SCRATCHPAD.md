@@ -3,6 +3,18 @@
 Policy: committed with the shared `modern/visualization/` dashboards. Evidence
 directories, accepted packages and experiment-local dashboards stay read-only.
 
+## 2026-09-03 19:55 AEST - cusp topology search v3 dashboard
+
+- [self] When the accepted campaign is a corrected re-run, the dashboard must load the
+  rejected predecessor bundle too (byte-verified, expected state `assessment_rejection`)
+  and show its failing gate and root cause; a generator that only refuses non-accepted
+  bundles hides the lineage.
+- [self] Separatrix plots over the full solver z-range squash the channel into a sliver;
+  plot the axis search window (channel +/- one pitch) and clip the traces with an SVG
+  clipPath instead of trimming the sealed paths.
+- [tool] Edge `--dump-dom` under PowerShell redirection wrote 0 bytes while `--screenshot`
+  worked; use the screenshot (and the rendered cards in it) as the JS-execution proof.
+
 ## 2026-09-03 10:20 AEST - MDO L0 campaign v1 dashboard
 
 - [tool] `experiment_runtime` manifests key file digests as `byte_sha256` +

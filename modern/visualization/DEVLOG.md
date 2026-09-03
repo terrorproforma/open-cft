@@ -3,6 +3,29 @@
 Scope: the standalone dashboards under `modern/visualization/`. Experiment-local
 dashboards keep their own logs next to their generators.
 
+## 2026-09-03 19:55 AEST - cusp topology search v3 dashboard (v3.1 accepted bundle, v3 lineage)
+
+- New `generate_cusp_topology_search_v3_dashboard.py` -> `cusp-topology-search-v3.html`
+  (957,519 bytes) from the accepted bundle of `experiments/cusp_topology_search_v3_1`
+  (1212 files byte-verified; preregistration `1600cfd3`, result `cec47f12`) with the
+  recorded `assessment_rejection` bundle of `experiments/cusp_topology_search_v3` and the
+  sealed v1/v2 datasets as the lineage sources. Panels: claim boundary, headline cards,
+  wall-cusp and channel-null histograms per set, frozen-definition vs definition-v3 table
+  on the same designs, frozen definition text with the literature basis, separatrix plots
+  of the 14 representatives (axis nulls, traced separatrices, z_c markers, cells, stage
+  centres; window = channel +/- one pitch), z_c/L and gap-distance strips, mirror
+  descriptor strips (labelled field ratios), separatrix angles and refinement shifts,
+  held-out and P2 consistency tables, lineage (v3 rejection with root cause), all 281
+  designs, binding gates with replays, provenance.
+- Deterministic, offline (only the literature locators carry URLs, inside the JSON
+  payload); headless Edge renders every panel at 1400 px and 390 px; screenshots
+  `%TEMP%\cts_v3_dashboard\cusp-topology-search-v3-{desktop,top,representatives,narrow}.png`.
+- Tests `tests/visualization/test_cusp_topology_search_v3_dashboard.py` (9): byte-verified
+  identity, tamper refusal, refusal of the rejected v3 bundle as the main source,
+  payload/dataset trace, per-set summaries re-derived, representative plots vs sealed
+  records, lineage vs the v3 gates and the sealed v1/v2 datasets, offline determinism,
+  committed freshness.
+
 ## 2026-09-03 16:50 AEST - MDO L0 campaign v2 dashboard
 
 - New `generate_mdo_l0_campaign_v2_dashboard.py` -> `mdo-l0-campaign-v2.html`

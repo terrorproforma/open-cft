@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cusp topology search v3 (literature definition) - offline dashboard</title>
+<style>
+  :root { --ink: #1c2430; --muted: #5d6b7a; --line: #d6dde6; --bg: #f7f9fb; --panel: #ffffff; --accent: #0b5cad; --warn: #b7560b; --ok: #1e7f4b; --bad: #a92626; --set1: #0b5cad; --set2: #b7560b; --set3: #1e7f4b; --set4: #7a3ea1; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 14px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--ink); background: var(--bg); }
+  header { padding: 20px 24px 12px; background: var(--panel); border-bottom: 1px solid var(--line); }
+  h1 { margin: 0 0 6px; font-size: 22px; }
+  h2 { margin: 0 0 10px; font-size: 17px; }
+  h3 { margin: 12px 0 6px; font-size: 14px; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 12px; font-weight: 600; color: #fff; background: var(--accent); margin-right: 6px; }
+  .badge.p2 { background: var(--set4); }
+  .badge.warn { background: var(--warn); }
+  .badge.ok { background: var(--ok); }
+  .badge.bad { background: var(--bad); }
+  main { padding: 16px 24px 40px; display: grid; gap: 16px; grid-template-columns: repeat(12, 1fr); }
+  .panel { grid-column: span 12; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; }
+  .panel.half { grid-column: span 6; }
+  .panel.third { grid-column: span 4; }
+  @media (max-width: 1000px) { .panel.half, .panel.third { grid-column: span 12; } }
+  .small { font-size: 12px; color: var(--muted); }
+  code { font-family: ui-monospace, Consolas, monospace; font-size: 12px; word-break: break-all; }
+  table { border-collapse: collapse; width: 100%; font-size: 12.5px; }
+  th, td { text-align: left; padding: 4px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { background: #eef2f6; position: sticky; top: 0; }
+  .scroll { max-height: 460px; overflow: auto; border: 1px solid var(--line); border-radius: 6px; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; }
+  .card { border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; background: #fbfcfd; }
+  .card .v { font-size: 22px; font-weight: 700; }
+  .card .k { font-size: 12px; color: var(--muted); }
+  .box { border-left: 4px solid var(--warn); background: #fff8f0; padding: 8px 12px; border-radius: 4px; }
+  .box.ok { border-color: var(--ok); background: #f1faf4; }
+  .box.bad { border-color: var(--bad); background: #fdf2f2; }
+  svg { display: block; max-width: 100%; height: auto; }
+  svg text { font: 11px system-ui, sans-serif; fill: var(--ink); }
+  .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 12px; }
+  .legend span { display: inline-block; margin-right: 12px; }
+  .legend i { display: inline-block; width: 12px; height: 12px; border-radius: 2px; vertical-align: -2px; margin-right: 4px; }
+  ul.tight { margin: 4px 0; padding-left: 18px; }
+  ul.tight li { margin: 2px 0; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Cusp topology search v3 - literature definition (axis null &rarr; separatrix &rarr; wall intersection)</h1>
+  <div id="labels"></div>
+  <p class="small" id="statement"></p>
+</header>
+<main>
+  <section class="panel" id="claim"></section>
+  <section class="panel" id="headline"></section>
+  <section class="panel half" id="histograms"></section>
+  <section class="panel half" id="sidebyside"></section>
+  <section class="panel" id="definition"></section>
+  <section class="panel" id="representatives"></section>
+  <section class="panel third" id="zc"></section>
+  <section class="panel third" id="mirror"></section>
+  <section class="panel third" id="angles"></section>
+  <section class="panel half" id="heldout"></section>
+  <section class="panel half" id="p2"></section>
+  <section class="panel" id="lineage"></section>
+  <section class="panel" id="designs"></section>
+  <section class="panel" id="gates"></section>
+  <section class="panel" id="identity"></section>
+</main>
+<script id="payload" type="application/json">__PAYLOAD_JSON__</script>
+<script>
+(function () {
+  "use strict";
+  const DATA = JSON.parse(document.getElementById("payload").textContent.replace(/<\\\//g, "</"));
+  const SETS = ["sweep_v2", "four_cell_v2", "characterization_v1", "p2_divergent_exit"];
+  const COLORS = { sweep_v2: "var(--set1)", four_cell_v2: "var(--set2)", characterization_v1: "var(--set3)", p2_divergent_exit: "var(--set4)" };
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const mm = (v, d = 3) => (v === null || v === undefined) ? "-" : (v * 1e3).toFixed(d);
+  const num = (v, d = 3) => (v === null || v === undefined) ? "-" : Number(v).toFixed(d);
+  const pct = (v) => (v === null || v === undefined) ? "-" : (100 * v).toFixed(1) + " %";
+  const svgNs = "http://www.w3.org/2000/svg";
+
+  function el(tag, attrs, text) {
+    const node = document.createElementNS(svgNs, tag);
+    for (const k in attrs) node.setAttribute(k, attrs[k]);
+    if (text !== undefined) node.textContent = text;
+    return node;
+  }
+
+  // ------------------------------------------------------------- header
+  $("labels").innerHTML = `<span class="badge">${esc(DATA.classification)}</span><span class="badge p2">${esc(DATA.p2_classification)} (P2 row)</span><span class="badge ok">bundle ${esc(DATA.identity.state)}</span><span class="badge warn">screening: not plasma / mirror-probability / performance evidence</span>`;
+  $("statement").textContent = DATA.classification_statement;
+
+  // ------------------------------------------------------------- claim boundary
+  const cb = DATA.claim_boundary;
+  $("claim").innerHTML = `<h2>Claim boundary</h2><div class="box"><ul class="tight">
+    <li><b>Field level:</b> ${esc(cb.field_level)}</li>
+    <li><b>Definition source:</b> ${esc(cb.definition_source)}; the frozen v1/v2 definition (wall-side vector null) is a different object and its nulls stand under that definition.</li>
+    <li><b>Iron sensitivity:</b> ${esc(cb.iron_sensitivity)}</li>
+    <li><b>Mirror descriptors:</b> field ratios only (${cb.mirror_ratios_are_field_descriptors_not_probabilities ? "never probabilities" : "?"}); plasma/performance publication forbidden: ${cb.forbid_plasma_performance_publication}.</li>
+    <li><b>Usable as:</b> ${cb.usable_as.map(esc).join("; ")}</li>
+    <li><b>Relation to v3:</b> ${esc(DATA.relation_to_v3)}</li>
+  </ul></div>`;
+
+  // ------------------------------------------------------------- headline
+  const H = DATA.headline;
+  const hist = H.wall_cusp_count_histogram;
+  const histText = Object.keys(hist).map((k) => `${k}:${hist[k]}`).join(" / ");
+  $("headline").innerHTML = `<h2>Headline (reported, not gated) - ${H.design_count} designs, all binding integrity gates true</h2>
+  <div class="cards">
+    <div class="card"><div class="v">${H.design_count}</div><div class="k">designs (96 sweep-v2 + 128 four-cell-v2 + 56 characterization-v1 + 1 P2)</div></div>
+    <div class="card"><div class="v">${H.stable_design_count}/${H.design_count}</div><div class="k">stable under 2x refinement (max wall-intersection shift ${mm(H.max_wall_intersection_shift_m, 3)} mm; tolerance ${mm(DATA.definition.stability_tolerance_m, 2)} mm)</div></div>
+    <div class="card"><div class="v">${esc(histText)}</div><div class="k">wall-cusp count : designs (pooled)</div></div>
+    <div class="card"><div class="v">${pct(H.four_wall_cusp_fraction_by_set.sweep_v2)}</div><div class="k">sweep-v2 designs with exactly four wall cusps (legacy target)</div></div>
+    <div class="card"><div class="v">${pct(H.four_cell_fraction_by_set.sweep_v2)}</div><div class="k">sweep-v2 designs with four cells (three cusps)</div></div>
+    <div class="card"><div class="v">${pct(H.four_wall_cusp_fraction_by_set.four_cell_v2)}</div><div class="k">four-cell-v2 candidates with four wall cusps (all 128 have exactly one)</div></div>
+    <div class="card"><div class="v">${num(H.z_c_over_length.min, 2)} - ${num(H.z_c_over_length.max, 2)}</div><div class="k">z_c / L range over ${H.z_c_over_length.count} wall cusps (median ${num(H.z_c_over_length.median, 2)})</div></div>
+    <div class="card"><div class="v">${num(H.interior_wall_mirror_ratio.min, 3)} - ${num(H.interior_wall_mirror_ratio.max, 3)}</div><div class="k">wall mirror ratio of interior cells (median ${num(H.interior_wall_mirror_ratio.median, 3)}, n=${H.interior_wall_mirror_ratio.count})</div></div>
+    <div class="card"><div class="v">${num(H.interior_axis_mirror_ratio.min, 2)} - ${num(H.interior_axis_mirror_ratio.max, 1)}</div><div class="k">axis mirror ratio |B|(z_c)/max|B_z| axis, interior cells (median ${num(H.interior_axis_mirror_ratio.median, 2)})</div></div>
+    <div class="card"><div class="v">${num(H.angle_to_wall_normal_deg.median, 1)}&deg;</div><div class="k">median separatrix angle to the wall normal (max ${num(H.angle_to_wall_normal_deg.max, 1)}&deg;)</div></div>
+    <div class="card"><div class="v">${H.held_out.characterization_v1.passed_count}/${H.held_out.characterization_v1.design_count} &amp; ${H.held_out.sweep_v2.passed_count}/${H.held_out.sweep_v2.design_count}</div><div class="k">held-out axis-null correspondence (v1 roots: ${H.held_out.characterization_v1.reference_null_count} nulls, max ${mm(H.held_out.characterization_v1.max_difference_m, 4)} mm; sweep: ${H.held_out.sweep_v2.reference_null_count} nulls, max ${mm(H.held_out.sweep_v2.max_difference_m, 4)} mm)</div></div>
+    <div class="card"><div class="v">${mm(H.p2_consistency.max_abs_difference_axis_null_to_pic_plane_m, 3)} / ${mm(H.p2_consistency.max_abs_difference_to_dashboard_maximum_m, 3)} mm</div><div class="k">P2: max |axis null - PIC cusp plane| / max |z_c - dashboard wall |B_r| maximum| (consistency check, not a gate)</div></div>
+  </div>`;
+
+  // ------------------------------------------------------------- histograms per set
+  function barChart(container, series, title, xlabel) {
+    const keys = Array.from(new Set(series.flatMap((s) => Object.keys(s.hist)))).map(Number).sort((a, b) => a - b);
+    const W = 520, Hh = 240, mL = 40, mB = 36, mT = 24, mR = 10;
+    const svg = el("svg", { viewBox: `0 0 ${W} ${Hh}`, role: "img", "aria-label": title });
+    const maxV = Math.max(1, ...series.flatMap((s) => Object.values(s.hist)));
+    const gw = (W - mL - mR) / Math.max(1, keys.length);
+    const bw = gw / (series.length + 1);
+    svg.appendChild(el("text", { x: mL, y: 14, "font-weight": "600" }, title));
+    keys.forEach((k, i) => {
+      series.forEach((s, j) => {
+        const v = s.hist[String(k)] || 0;
+        const h = (Hh - mT - mB) * v / maxV;
+        const x = mL + i * gw + (j + 0.5) * bw;
+        svg.appendChild(el("rect", { x, y: Hh - mB - h, width: bw * 0.9, height: h, fill: s.color, opacity: 0.85 }));
+        if (v) svg.appendChild(el("text", { x: x + bw * 0.45, y: Hh - mB - h - 3, "text-anchor": "middle", "font-size": "10" }, String(v)));
+      });
+      svg.appendChild(el("text", { x: mL + i * gw + gw / 2, y: Hh - mB + 14, "text-anchor": "middle" }, String(k)));
+    });
+    svg.appendChild(el("line", { x1: mL, y1: Hh - mB, x2: W - mR, y2: Hh - mB, stroke: "#999" }));
+    svg.appendChild(el("text", { x: (mL + W - mR) / 2, y: Hh - 6, "text-anchor": "middle" }, xlabel));
+    container.appendChild(svg);
+  }
+  const histPanel = $("histograms");
+  histPanel.innerHTML = `<h2>Wall-cusp count per set (definition v3)</h2><div class="legend">${SETS.map((s) => `<span><i style="background:${COLORS[s]}"></i>${esc(DATA.by_set[s].label)}</span>`).join("")}</div>`;
+  barChart(histPanel, SETS.map((s) => ({ hist: DATA.by_set[s].cusp_histogram, color: COLORS[s] })), "designs per wall-cusp count", "wall cusps inside the straight dielectric");
+  barChart(histPanel, SETS.map((s) => ({ hist: DATA.by_set[s].channel_null_histogram, color: COLORS[s] })), "designs per channel axis-null count", "axis nulls with 0 <= z <= exit_start");
+
+  // ------------------------------------------------------------- side by side
+  const L = DATA.lineage.frozen_definition_results;
+  const B = DATA.by_set;
+  $("sidebyside").innerHTML = `<h2>Frozen v1/v2 definition vs literature definition (same designs)</h2>
+  <table><thead><tr><th>design set</th><th>frozen definition (v1/v2, recorded)</th><th>definition v3 (this campaign)</th></tr></thead><tbody>
+  <tr><td>characterization v1 - 56 cases, 2-8 equal-strength alternating stages</td>
+      <td>${L.characterization_v1.stable_eligible_cusp_count} stable eligible cusps, ${L.characterization_v1.stable_eligible_cell_count} stable eligible cells over ${L.characterization_v1.cases} cases (${L.characterization_v1.clustered_root_total} clustered roots; ${esc(L.characterization_v1.definition)})</td>
+      <td>wall cusps ${esc(Object.entries(B.characterization_v1.cusp_histogram).map(([k, v]) => `${k}:${v}`).join(", "))}; ${B.characterization_v1.with_cusps}/56 with at least one; four-wall-cusp fraction ${pct(B.characterization_v1.four_cusp_fraction)}; held-out axis nulls ${B.characterization_v1.held_out_passed}/${B.characterization_v1.held_out_applies}</td></tr>
+  <tr><td>four-cell search v2 - 128 sealed candidates (even stages at 16-42 % strength)</td>
+      <td>${L.four_cell_v2.stable_count}/${L.four_cell_v2.candidates} stable four-cell candidates (TOPOLOGY_COUNT ${L.four_cell_v2.failure_counts.TOPOLOGY_COUNT}, TOPOLOGY_UNSTABLE ${L.four_cell_v2.failure_counts.TOPOLOGY_UNSTABLE}; ${esc(L.four_cell_v2.definition)})</td>
+      <td>wall cusps ${esc(Object.entries(B.four_cell_v2.cusp_histogram).map(([k, v]) => `${k}:${v}`).join(", "))}: every candidate has exactly one wall cusp (one channel axis null) - the family is not an equal-strength PPM stack, so its zero four-cell count is by construction of definition AND source policy</td></tr>
+  <tr><td>L1a geometry sweep v2 - 96 accepted designs (3-5 equal-strength stages)</td>
+      <td>no wall-cusp definition applied; 3-5 axis |B_z| peaks ("axis cusps") recorded per design</td>
+      <td>wall cusps ${esc(Object.entries(B.sweep_v2.cusp_histogram).map(([k, v]) => `${k}:${v}`).join(", "))}; four-wall-cusp fraction ${pct(B.sweep_v2.four_cusp_fraction)}; four-cell fraction ${pct(B.sweep_v2.four_cell_fraction)}; every sealed axis null reproduced (${B.sweep_v2.held_out_passed}/96)</td></tr>
+  <tr><td>P2 divergent-exit-stack (orbit v4 / PIC field, iron)</td><td>topology dashboard: wall |B_r| maxima at 6.05 / 12.05 / 18.15 mm (display diagnostic); PIC cusp planes 6.0 / 12.0 / 17.95 mm</td>
+      <td>${B.p2_divergent_exit.cusp_histogram["3"] ? "three" : "?"} wall cusps: ${DATA.representatives.filter((r) => r.set === "p2_divergent_exit").map((r) => r.cusps.map((c) => mm(c.z_m, 3)).join(" / ")).join("")} mm; the third sits ${mm(0.018 - DATA.representatives.filter((r) => r.set === "p2_divergent_exit")[0].cusps[2].z_m, 3)} mm inside the 18 mm straight end (boundary-ambiguous flag)</td></tr>
+  </tbody></table>
+  <p class="small">Sealed source files: characterization v1 dataset <code>${esc(L.characterization_v1.dataset_file_sha256)}</code>; four-cell v2 dataset <code>${esc(L.four_cell_v2.dataset_file_sha256)}</code>.</p>`;
+
+  // ------------------------------------------------------------- definition
+  const D = DATA.definition;
+  $("definition").innerHTML = `<h2>Frozen definition v3</h2>
+  <ol>
+    <li><b>Axis null.</b> ${esc(D.axis_null)}</li>
+    <li><b>Separatrix.</b> ${esc(D.separatrix)}</li>
+    <li><b>Wall cusp.</b> ${esc(D.cusp)} <b>Cell.</b> ${esc(D.cell)}</li>
+    <li><b>Mirror descriptors.</b> ${esc(D.mirror_descriptors)}</li>
+    <li><b>Stability.</b> ${esc(D.stability)}</li>
+  </ol>
+  <h3>Literature basis</h3><ul class="tight">${D.literature_basis.map((b) => `<li>${esc(b.citation)}${b.doi ? ` - DOI ${esc(b.doi)}` : ""} - <span class="small">${esc(b.used_for)}</span></li>`).join("")}</ul>`;
+
+  // ------------------------------------------------------------- representatives
+  function separatrixPlot(rep) {
+    const W = 640, Hh = 230, mL = 44, mR = 12, mT = 26, mB = 34;
+    const z0 = rep.z_range_m[0], z1 = rep.z_range_m[1];
+    const rMax = rep.rw_m * 1.08;
+    const sx = (z) => mL + (z - z0) / (z1 - z0) * (W - mL - mR);
+    const sy = (r) => Hh - mB - (r / rMax) * (Hh - mT - mB);
+    const svg = el("svg", { viewBox: `0 0 ${W} ${Hh}`, role: "img", "aria-label": `separatrices of ${rep.id}` });
+    const clipId = `clip-${rep.set}-${rep.id}`.replace(/[^a-zA-Z0-9_-]/g, "_");
+    const defs = el("defs", {});
+    const clip = el("clipPath", { id: clipId });
+    clip.appendChild(el("rect", { x: mL, y: mT - 4, width: W - mL - mR, height: Hh - mT - mB + 8 }));
+    defs.appendChild(clip);
+    svg.appendChild(defs);
+    svg.appendChild(el("text", { x: mL, y: 14, "font-weight": "600" }, `${rep.set} / ${rep.id}  (r_w ${mm(rep.rw_m, 2)} mm, L ${mm(rep.L_m, 2)} mm, ${rep.stage_centres_m.length} stages, ${rep.grid_cells_across_bore.toFixed(1)} radial cells across the bore)`));
+    const clipped = el("g", { "clip-path": `url(#${clipId})` });
+    // cells shading
+    rep.cells.forEach((c, i) => {
+      clipped.appendChild(el("rect", { x: sx(c.z0), y: sy(rep.rw_m), width: Math.max(0, sx(c.z1) - sx(c.z0)), height: sy(0) - sy(rep.rw_m), fill: i % 2 ? "#eef4fb" : "#f7f9fc" }));
+    });
+    // straight dielectric wall
+    clipped.appendChild(el("line", { x1: sx(rep.straight_m[0]), y1: sy(rep.rw_m), x2: sx(rep.straight_m[1]), y2: sy(rep.rw_m), stroke: "#333", "stroke-width": 2.5 }));
+    // virtual wall extension
+    clipped.appendChild(el("line", { x1: sx(z0), y1: sy(rep.rw_m), x2: sx(z1), y2: sy(rep.rw_m), stroke: "#999", "stroke-dasharray": "3 4" }));
+    // axis
+    clipped.appendChild(el("line", { x1: sx(z0), y1: sy(0), x2: sx(z1), y2: sy(0), stroke: "#333" }));
+    // stage centres
+    rep.stage_centres_m.forEach((zc) => clipped.appendChild(el("line", { x1: sx(zc), y1: sy(rMax), x2: sx(zc), y2: sy(rMax * 0.94), stroke: "#7a3ea1", "stroke-width": 3 })));
+    // traces
+    rep.traces.forEach((t) => {
+      const d = t.path.map((p, i) => (i ? "L" : "M") + sx(p[1]).toFixed(1) + " " + sy(p[0]).toFixed(1)).join(" ");
+      clipped.appendChild(el("path", { d, fill: "none", stroke: t.reaches_wall ? "#0b5cad" : "#b7560b", "stroke-width": 1.6 }));
+    });
+    // nulls
+    rep.nulls.forEach((n) => clipped.appendChild(el("circle", { cx: sx(n.z_m), cy: sy(0), r: 3.5, fill: n.zone === "channel" ? "#1e7f4b" : "#999" })));
+    // cusps
+    rep.cusps.forEach((c) => {
+      clipped.appendChild(el("polygon", { points: `${sx(c.z_m)},${sy(rep.rw_m) - 1} ${sx(c.z_m) - 5},${sy(rep.rw_m) - 10} ${sx(c.z_m) + 5},${sy(rep.rw_m) - 10}`, fill: c.ambiguous ? "#b7560b" : "#a92626" }));
+      clipped.appendChild(el("text", { x: sx(c.z_m), y: sy(rep.rw_m) - 13, "text-anchor": "middle", "font-size": "10" }, mm(c.z_m, 2)));
+    });
+    rep.outside.forEach((o) => clipped.appendChild(el("polygon", { points: `${sx(o.z_m)},${sy(rep.rw_m) - 1} ${sx(o.z_m) - 5},${sy(rep.rw_m) - 10} ${sx(o.z_m) + 5},${sy(rep.rw_m) - 10}`, fill: "none", stroke: "#a92626" })));
+    svg.appendChild(clipped);
+    // axes labels
+    svg.appendChild(el("text", { x: sx(z0), y: Hh - 8 }, `z = ${mm(z0, 1)} mm`));
+    svg.appendChild(el("text", { x: sx(z1), y: Hh - 8, "text-anchor": "end" }, `${mm(z1, 1)} mm`));
+    svg.appendChild(el("text", { x: 4, y: sy(rep.rw_m) + 4 }, `r_w`));
+    svg.appendChild(el("text", { x: 4, y: sy(0) + 4 }, `axis`));
+    return svg;
+  }
+  const repPanel = $("representatives");
+  repPanel.innerHTML = `<h2>Separatrices of the representatives (accepted maps; blue = reaches the wall cylinder, orange = leaves the axial window)</h2>
+  <p class="small">Green dots: channel axis nulls; grey dots: nulls outside the straight section; red triangles: wall cusps (filled, labelled z_c in mm; orange = within 0.25 mm of a straight-section end); open triangles: intersections outside the straight dielectric (anode side / divergent exit / downstream stray field); thick black: straight dielectric wall; dashed: virtual r = r_w extension; purple ticks: stage centres; shaded bands: cells.</p>
+  <div class="grid2" id="repgrid"></div>`;
+  const repGrid = $("repgrid");
+  DATA.representatives.forEach((rep) => {
+    const wrap = document.createElement("div");
+    wrap.appendChild(separatrixPlot(rep));
+    const cells = rep.cells.map((c) => `<tr><td>${esc(c.id)}</td><td>${esc(c.kind)}</td><td>${mm(c.z0, 2)} - ${mm(c.z1, 2)}</td><td>${num(c.wall_b_min_t, 4)}</td><td>${c.wall_mirror === null ? "-" : num(c.wall_mirror, 3)}</td><td>${num(c.axis_bz_peak_t, 4)}</td><td>${c.axis_mirror === null ? "-" : num(c.axis_mirror, 3)}</td></tr>`).join("");
+    const cusps = rep.cusps.map((c) => `${esc(c.id)}: z_c ${mm(c.z_m, 3)} mm, |B| ${num(c.b_t, 4)} T, angle ${num(c.angle_deg, 1)}&deg;${c.ambiguous ? " (boundary-ambiguous)" : ""}`).join("<br>");
+    wrap.insertAdjacentHTML("beforeend", `<p class="small">${cusps || "no wall cusp inside the straight dielectric"}<br>stable: ${rep.stability.stable} (max wall-intersection shift ${mm(rep.stability.max_shift_m, 4)} mm vs the 2x refined map ${rep.refined_grid.radial_samples}x${rep.refined_grid.axial_samples})${rep.p2_consistency ? `<br>P2 consistency: axis nulls vs PIC planes max ${mm(rep.p2_consistency.max_abs_difference_axis_null_to_pic_plane_m, 3)} mm; z_c vs dashboard |B_r| maxima max ${mm(rep.p2_consistency.max_abs_difference_to_dashboard_maximum_m, 3)} mm` : ""}${rep.sweep_reference ? `<br>sweep record: axis nulls ${rep.sweep_reference.sweep_axis_null_positions_m.map((z) => mm(z, 2)).join(", ")} mm; axis |B_z| peaks ("axis cusps") ${rep.sweep_reference.sweep_axis_bz_peak_positions_m.map((z) => mm(z, 2)).join(", ")} mm` : ""}</p>
+    <div class="scroll" style="max-height:170px"><table><thead><tr><th>cell</th><th>kind</th><th>z (mm)</th><th>wall |B| min (T)</th><th>wall mirror</th><th>axis |B_z| peak (T)</th><th>axis mirror</th></tr></thead><tbody>${cells}</tbody></table></div>`);
+    repGrid.appendChild(wrap);
+  });
+
+  // ------------------------------------------------------------- distributions
+  function strip(container, title, series, xlabel, digits) {
+    const W = 420, Hh = 40 + 26 * series.length, mL = 150, mR = 14;
+    const all = series.flatMap((s) => s.values);
+    if (!all.length) { container.insertAdjacentHTML("beforeend", `<p class="small">${esc(title)}: no values</p>`); return; }
+    const lo = Math.min(...all), hi = Math.max(...all);
+    const sx = (v) => mL + (hi > lo ? (v - lo) / (hi - lo) : 0.5) * (W - mL - mR);
+    const svg = el("svg", { viewBox: `0 0 ${W} ${Hh}`, role: "img", "aria-label": title });
+    svg.appendChild(el("text", { x: 4, y: 14, "font-weight": "600" }, title));
+    series.forEach((s, i) => {
+      const y = 34 + i * 26;
+      svg.appendChild(el("text", { x: 4, y: y + 4, "font-size": "10" }, s.name));
+      svg.appendChild(el("line", { x1: mL, y1: y, x2: W - mR, y2: y, stroke: "#ddd" }));
+      s.values.forEach((v) => svg.appendChild(el("circle", { cx: sx(v), cy: y, r: 3, fill: s.color, opacity: 0.45 })));
+      if (s.values.length) svg.appendChild(el("line", { x1: sx(s.median), y1: y - 8, x2: sx(s.median), y2: y + 8, stroke: "#222", "stroke-width": 2 }));
+    });
+    svg.appendChild(el("text", { x: mL, y: Hh - 4, "font-size": "10" }, num(lo, digits)));
+    svg.appendChild(el("text", { x: W - mR, y: Hh - 4, "text-anchor": "end", "font-size": "10" }, num(hi, digits)));
+    svg.appendChild(el("text", { x: (mL + W - mR) / 2, y: Hh - 4, "text-anchor": "middle", "font-size": "10" }, xlabel));
+    container.appendChild(svg);
+  }
+  const names = { sweep_v2: "sweep v2 (96)", four_cell_v2: "four-cell v2 (128)", characterization_v1: "characterization v1 (56)", p2_divergent_exit: "P2 (1)" };
+  const zc = $("zc");
+  zc.innerHTML = "<h2>Cusp positions</h2>";
+  strip(zc, "z_c / L per set (median bar)", SETS.map((s) => ({ name: names[s], color: COLORS[s], values: B[s].z_c_over_L.values || [], median: B[s].z_c_over_L.median })), "z_c / chamber length", 2);
+  strip(zc, "|z_c - nearest inter-magnet gap centre| / pitch", SETS.map((s) => ({ name: names[s], color: COLORS[s], values: B[s].gap_distance_over_pitch.values || [], median: B[s].gap_distance_over_pitch.median })), "distance to gap centre / pitch", 2);
+  const mir = $("mirror");
+  mir.innerHTML = "<h2>Mirror descriptors (interior cells; field ratios, not probabilities)</h2>";
+  strip(mir, "wall mirror ratio min|B|(cusps) / min|B| along the wall", SETS.map((s) => ({ name: names[s], color: COLORS[s], values: B[s].interior_wall_mirror.values || [], median: B[s].interior_wall_mirror.median })), "wall mirror ratio", 3);
+  strip(mir, "axis mirror ratio min|B|(cusps) / max|B_z| on the axis between the nulls", SETS.map((s) => ({ name: names[s], color: COLORS[s], values: (B[s].interior_axis_mirror.values || []).map((v) => Math.log10(v)), median: B[s].interior_axis_mirror.median === undefined ? 0 : Math.log10(B[s].interior_axis_mirror.median) })), "log10(axis mirror ratio)", 2);
+  const ang = $("angles");
+  ang.innerHTML = "<h2>Separatrix angle to the wall normal</h2>";
+  strip(ang, "angle at z_c (deg)", SETS.map((s) => ({ name: names[s], color: COLORS[s], values: B[s].angle_deg.values || [], median: B[s].angle_deg.median })), "degrees (0 = normal incidence)", 1);
+  strip(ang, "max wall-intersection shift N -> 2N (mm)", SETS.map((s) => ({ name: names[s], color: COLORS[s], values: (B[s].max_shift_m.values || []).map((v) => v * 1e3), median: (B[s].max_shift_m.median || 0) * 1e3 })), "mm (tolerance 0.25)", 4);
+
+  // ------------------------------------------------------------- held-out and P2
+  const HO = DATA.held_out;
+  $("heldout").innerHTML = `<h2>Held-out checks (binding)</h2><table><thead><tr><th>set</th><th>reference</th><th>designs passed</th><th>reference nulls</th><th>v3 nulls</th><th>max difference</th></tr></thead><tbody>
+    <tr><td>characterization v1</td><td>sealed v1 primary-map axis roots inside the channel (clusters with an axis-detected member)</td><td>${HO.characterization_v1.passed_count}/${HO.characterization_v1.design_count}</td><td>${HO.characterization_v1.reference_null_count}</td><td>${HO.characterization_v1.observed_null_count}</td><td>${mm(HO.characterization_v1.max_difference_m, 4)} mm</td></tr>
+    <tr><td>sweep v2</td><td>sealed axis_null_positions_m inside the v3 window</td><td>${HO.sweep_v2.passed_count}/${HO.sweep_v2.design_count}</td><td>${HO.sweep_v2.reference_null_count}</td><td>${HO.sweep_v2.observed_null_count}</td><td>${mm(HO.sweep_v2.max_difference_m, 4)} mm</td></tr>
+  </tbody></table><p class="small">Tolerance ${mm(DATA.definition.held_out_tolerance_m, 2)} mm. The sweep's "axis cusp" QoI is the local maximum of |B_z| on the axis (stage centres), not a null; each interior cell of every sweep design contains exactly one such peak.</p>`;
+  const P2 = DATA.p2_consistency;
+  $("p2").innerHTML = `<h2>P2 divergent-exit-stack consistency (reported, not gated)</h2><table><thead><tr><th>cusp</th><th>axis null (mm)</th><th>z_c (mm)</th><th>nearest PIC cusp plane (mm)</th><th>null - plane (mm)</th><th>nearest dashboard wall |B_r| max (mm)</th><th>z_c - max (mm)</th></tr></thead><tbody>
+  ${P2.cusps.map((c) => `<tr><td>${esc(c.cusp_id)}</td><td>${mm(c.axis_null_z_m, 3)}</td><td>${mm(c.z_c_m, 3)}</td><td>${mm(c.nearest_pic_axis_null_plane_m, 2)}</td><td>${mm(c.difference_axis_null_to_pic_plane_m, 3)}</td><td>${mm(c.nearest_dashboard_wall_abs_br_maximum_m, 2)}</td><td>${mm(c.difference_to_dashboard_maximum_m, 3)}</td></tr>`).join("")}
+  </tbody></table><p class="small">References: ${esc(P2.references.pic_axis_null_planes_source)}; ${esc(P2.references.topology_dashboard_wall_abs_br_maxima_source)}. The P2 field carries iron poles and a return yoke (nonlinear material at P2); the L1a sets carry none - iron sensitivity is not a with/without comparison here.</p>`;
+
+  // ------------------------------------------------------------- lineage
+  const V3 = DATA.lineage.v3_recorded_rejection;
+  $("lineage").innerHTML = `<h2>Lineage: v3 recorded rejection and prior definitions</h2>
+  <div class="box bad"><b>cusp_topology_search_v3</b> (preregistration <code>${esc(V3.preregistration_commit_sha)}</code>, bundle <code>${esc(V3.manifest_file_sha256)}</code>): terminal state <b>${esc(V3.state)}</b> / ${esc(V3.status)}; failing gate(s) ${esc(Object.keys(V3.failing_gates).join(", "))} on ${V3.failing_design_count} designs; every other gate true; ${V3.stable_design_count} stable designs; wall-cusp histogram ${esc(Object.entries(V3.wall_cusp_count_histogram).map(([k, v]) => `${k}:${v}`).join(" / "))} (identical to v3.1 because the definition is unchanged). Root cause: ${esc(V3.root_cause)}. Its numbers are never cited; v3.1 is the accepted campaign.</div>
+  <p class="small">${esc(DATA.relation_to_prior_nulls)}</p>
+  <p class="small"><b>Prior disclosures:</b> characterization v1 - ${esc(DATA.prior_campaign_disclosure.characterization_v1)}; four-cell v2 - ${esc(DATA.prior_campaign_disclosure.four_cell_v2)}; sweep v2 - ${esc(DATA.prior_campaign_disclosure.sweep_v2)}; paper - ${esc(DATA.prior_campaign_disclosure.paper)}.</p>`;
+
+  // ------------------------------------------------------------- design table
+  const rows = DATA.designs.map((d) => `<tr><td>${esc(d.set)}</td><td>${esc(d.id)}${d.rep ? " *" : ""}</td><td>${d.stages}</td><td>${mm(d.rw_m, 2)}</td><td>${mm(d.L_m, 1)}</td><td>${d.channel_nulls}</td><td><b>${d.cusps}</b></td><td>${d.cells}</td><td>${d.z_c_m.map((z) => mm(z, 2)).join(", ")}</td><td>${d.wall_mirror.filter((v) => v !== null).length ? num(Math.min(...d.wall_mirror.filter((v) => v !== null)), 3) + " - " + num(Math.max(...d.wall_mirror.filter((v) => v !== null)), 3) : "-"}</td><td>${mm(d.max_shift_m, 4)}</td><td>${d.stable ? "yes" : "no"}</td><td>${d.held_out === null ? "n/a" : (d.held_out ? "pass" : "fail")}</td></tr>`).join("");
+  $("designs").innerHTML = `<h2>All ${DATA.designs.length} designs (* = representative with sampled separatrix paths)</h2><div class="scroll"><table><thead><tr><th>set</th><th>design</th><th>stages</th><th>r_w (mm)</th><th>L (mm)</th><th>channel nulls</th><th>wall cusps</th><th>cells</th><th>z_c (mm)</th><th>wall mirror range</th><th>max shift (mm)</th><th>stable</th><th>held-out</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+
+  // ------------------------------------------------------------- gates
+  const G = DATA.gates;
+  $("gates").innerHTML = `<h2>Binding integrity gates (all true) and replay</h2><table><thead><tr><th>gate</th><th>value</th><th>definition</th></tr></thead><tbody>
+  ${Object.keys(G.campaign).map((k) => `<tr><td>${esc(k)}</td><td><span class="badge ${G.campaign[k] ? "ok" : "bad"}">${G.campaign[k]}</span></td><td class="small">${esc(G.definitions[k] || "")}</td></tr>`).join("")}
+  </tbody></table><p class="small">Reported, not binding: ${G.reported_not_binding.map(esc).join("; ")}. Replays (main-process re-solve + re-characterization vs worker payload): ${G.replays.map((r) => `${esc(r.key)} bit-identical=${r.bit_identical}`).join("; ")}. Execution: ${DATA.execution.worker_pool_size} CPU workers, design stage ${num(DATA.execution.stage_wall_s, 0)} s, assessment ${num(DATA.execution.assessment_wall_s, 0)} s.</p>`;
+
+  // ------------------------------------------------------------- identity
+  const I = DATA.identity;
+  $("identity").innerHTML = `<h2>Provenance</h2><ul class="tight small">
+  <li>experiment <code>${esc(I.experiment_id)}</code>, preregistration commit <code>${esc(I.preregistration_commit_sha)}</code>, command <code>${esc(I.execution_command)}</code></li>
+  <li>manifest <code>${esc(I.manifest_file_sha256)}</code> (${I.verified_file_count} files byte-verified of ${I.artifact_count} artifacts); terminal <code>${esc(I.terminal_file_sha256)}</code>; lock <code>${esc(I.lock_file_sha256)}</code></li>
+  <li>protocol semantic <code>${esc(I.protocol_semantic_sha256)}</code>; protocol file (LF) <code>${esc(I.protocol_file_sha256_lf)}</code></li>
+  <li>experiment code <code>${esc(I.experiment_code_sha256)}</code>; dependency sources <code>${esc(I.dependency_source_sha256)}</code>; field pipeline <code>${esc(I.field_pipeline_source_sha256)}</code></li>
+  <li>catalogue <code>${esc(DATA.catalogue.schema_version)}</code>: ${DATA.catalogue.design_count} entries, ${DATA.catalogue.stable_design_count} stable - ${esc(DATA.catalogue.consumer_contract)}</li>
+  <li>generator <code>${esc(I.generator_sha256)}</code>; template <code>${esc(I.template_sha256)}</code></li>
+  </ul>`;
+})();
+</script>
+</body>
+</html>
