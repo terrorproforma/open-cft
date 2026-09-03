@@ -464,3 +464,129 @@ before a plateau is meaningful.
   (rebased over `cc7706b2` docs: final roadmap audit; fast-forwarded into
   feat/sota-foundation)
 - attempt-2 protocol/README + this entry: see the commit that carries them.
+
+## 2026-09-03 — Phase 4: v1.3 plateau finalized, convergence pair, steady-state dashboard
+
+### Plateau verification (steady-state v2, attempt 2)
+
+- `run_state.json`: `finished`, `plateau_reached_after_min_transit_times` at step
+  5 120 000 (7.68 µs = 3.2 ion transit times), 10 141 s wall in one session (PID 40636),
+  1.98 ms/step at the end with 999 k electrons + 1.008 M ions (peak 999 k / 1.008 M).
+- Criterion recomputed from `series.npz` with the runner's `evaluate_plateau`
+  (identical to the summary): trailing-20 % drifts I_d +0.084 %, N_e **+4.98 %**,
+  n_g −0.18 %; threshold 5 %; ≥ 3 transits. The electron-count drift passed by
+  0.02 % — the plasma was still slowly densifying (ω_pe Δt rose monotonically
+  0.06 → 0.115 over the run). Other drifts over the same window: I_beam −0.9 %,
+  N_i +4.9 %, S +0.2 %, φ_max −0.02 %. The criterion held as declared; it is a
+  marginal pass and is labelled so everywhere.
+- Window-averaged final state (steps 4 800 000–5 120 000, 1600 records):
+  I_d 3.444 ± 0.325 mA, I_beam,i 2.291 ± 0.272 mA (0.665 I_d), anode e⁻ 3.494 mA,
+  anode Xe⁺ 0.049 mA, wall Xe⁺ 3.724 mA, wall e⁻ 3.727 mA, returned e⁻ 1.843 mA of
+  3.000 mA injected. S = 3.934e16 s⁻¹ = 6.30 mA equivalent = 46.0 % of Q_in
+  (8.551e16 s⁻¹); 2.10 ionisations per injected electron (v2 at 1e20 static: 2.7;
+  attempt 1: 0.12). Ion balance closes: S·e = I_beam + I_wall,i + I_anode,i
+  (6.30 ≈ 2.29 + 3.72 + 0.05 = 6.06 mA; the 4 % gap is the still-growing inventory).
+- Neutrals: n_g window mean 2.969e19 vs analytic fixed point (Q_in − S)/c =
+  2.970e19 (−0.03 %), n_g/n_g0 = 0.540; check Q_in = S + c n_g:
+  3.934e16 + 1.5547e-3 × 2.969e19 = 8.55e16 ✓. Cumulative atom ledger: fed
+  6.567e11, ionised 2.552e11, effused 4.027e11, artificial 8.698e12 (= the
+  inventory drop (5.5 − 2.97)e19 × V, i.e. the artificial term did the depletion
+  that physical effusion would take 221 µs to do); closure 0.14 atoms = 7.4e-15 of
+  the inventory; max interval residual 1.6e-3 atoms. Trailing artificial rate
+  5.3e16 s⁻¹ looks large but is (V/τ_g)(n_g − n_g*) with V/τ_g = 11.4 m³/s: it
+  corresponds to n_g − n_g* = 4.7e15 m⁻³ = 0.016 % of n_g (n_g lags the slowly
+  rising S by τ_g).
+- Plasma: n_e mean 2.13e17 (0.93 × the projected 0-D n_eq of 2.3e17 — the 0-D
+  estimate landed), **peak 1.64e18 = 4.1 × n_max** at the node z = 14.30 mm,
+  r = 0.70 mm (grid Δr = Δz = 50 µm over the 3 mm exit radius). Cusp planes (B_z
+  sign change on axis and at the wall, sampled P2 map): z = 6.0, 12.0, 17.95 mm;
+  magnet mid-planes 3, 9, 15, 21 mm. The peak sits in the bottle between the 12.0
+  and 17.95 mm cusps near the 15 mm mid-plane (field lines axial, off axis); the
+  axial profile of max_r n_e is 7.3e17 at 8 mm, 5.9e17 at 10 mm, 2.7e17 at 12 mm
+  (cusp), 1.6e18 at 14 mm, 1.3e18 at 16 mm, 2.4e17 at 18 mm (cusp), 4.8e17 at
+  20 mm. Wall ion flux peaks 1.57e21 m⁻² s⁻¹ at z = 12.18 mm (cusp) with secondary
+  peaks near 19 and 7 mm — ions leave along the cusp lines; wall ion mean energy
+  up to 126 eV at 18.1 mm. Exit ion current density peaks on axis (460 A/m²) and
+  falls to 25 A/m² at r = 2.8 mm. ⟨T_e⟩ 7.5 eV from the kinetic energy series,
+  8.17 eV density-weighted from the maps, T_e max 59 eV; φ −10.7 … 337 V
+  (337 V > 300 V anode: the potential hump that traps the beam electrons).
+- Resolvability at the peak node: λ_D(1.64e18, 8.2 eV) = 16.6 µm → Δz/λ_D =
+  Δr/λ_D = 3.0 (design 1.5 at n_max, gate 2.0 on the *reference* density, not the
+  instantaneous peak — the gate did not trip because it is evaluated at n_max);
+  ω_pe Δt 0.108 at the peak, max observed 0.118 (gate 0.2). The mean density is
+  inside the budget; the peak region is under-resolved and reported as such (claim
+  boundary, dashboard, README).
+- Energy ledger: cumulative residual −2.86e-7 J = −4.4 % of the 6.51e-6 J electrode
+  work; interval RMS 1.5e-11 J; gross source turnover 9.3e-7 J. Same order as the
+  snapshot v2 fine cases (momentum-conserving scheme, ~27 particles per cell at n_eq).
+- Remaining physical simplifications (unchanged from v1.3): uniform neutral profile
+  despite the dynamic inventory (no depletion where the ionisation peak is — at 46 %
+  utilisation this is no longer a small correction), no ion–neutral elastic/CEX
+  collisions, no SEE / sputtering, Dirichlet 0 V exit plane with the electron
+  injection at fixed current, prescribed static B, electrostatic axisymmetric (no
+  azimuthal modes / anomalous transport), ion subcycling k = 8, one-cell cone
+  stair-step, 3 mA / 0.019 mg/s operating point far below a real CFT.
+- Committed `24ab82f4` chore(pic2d): steady-state v2 plateau results (development):
+  summary/status/series/maps/run_state/checkpoint-final metadata for `results/` and
+  the attempt-1 archive (needed by the history panel); particle checkpoints,
+  series.jsonl and logs untracked. `.gitignore` negation block mirrors v1.
+
+### Convergence pair
+
+- `variants.json` (new; `protocol.json` stays byte-frozen so the finished run keeps
+  verifying against its recorded protocol hash) declares `seed-b` (seed 20260904) and
+  `w-half` (W = 4.2e4 = 0.7 W). Runner: `--case NAME` merges the variant into
+  `case` / `stopping_rule.wall_budget_seconds` and writes to `results-NAME/`;
+  `load_variants` / `apply_case` with tests (distinct config identities, base
+  protocol untouched, unknown case fails closed).
+- W/2 rejected for the budget: the base case ran 2.0 ms/step with 2.0 M particles at
+  the plateau (launch-bound floor ~2 ms + ~0.5 ms per M), so W/2 (~4 M at plateau)
+  projects to ≥ 3 ms/step × 5.1 M steps = 4.3 h > 3.5 h. 0.7 W (~2.9 M) projects to
+  ~2.5 ms/step = 3.5 h for 5.1 M steps, i.e. it reaches the 3-transit floor (4.8 M
+  steps, 3.3 h) inside the budget only if the plateau is declared at the first
+  eligible checkpoint — marginal, recorded in the variant note; resumable if the
+  budget stops it first.
+- `seed-b` launched detached 2026-09-03T02:32:41Z (PID 49716,
+  `results-seed-b/{run.log,run.err,launch.pid,status.jsonl,checkpoint/}`), 3.5 h
+  budget. At 1.01 µs (step 674 200, 1127 s wall): N_e 367.6 k vs 366.0 k for the base
+  run at the same step (+0.4 %), N_i 374.3 k vs 372.7 k, I_d 1.38 vs 1.44 mA,
+  S 1.78e16 vs 2.28e16 s⁻¹ (interval-noisy), n_g 4.226e19 vs 4.242e19, T_e 7.26 vs
+  7.21 eV, ω_pe Δt 0.080 vs 0.083 — igniting on the same trajectory; the seed
+  changes nothing visible at this stage. Throughput 1.0 ms/step for the first
+  0.35 µs, 2.5–2.6 ms/step from 0.7 µs (the base ran 2.55 at the same step). ETA
+  to 4.8 M steps (3 transits) ≈ 2.9 h after launch, to 5.12 M ≈ 3.4 h — inside the
+  3.5 h budget if the average stays ≤ 2.5 ms/step (the base averaged 1.98).
+  `w-half` is launched only after `seed-b` ends (never two GPU campaigns).
+
+### Dashboard and docs
+
+- `modern/visualization/generate_pic2d_cft_steady_state.py` →
+  `pic2d-cft-steady-state.html` (1.8 MB, self-contained, byte-deterministic).
+  Headline: v1.3 plateau with a verification table (drifts colour-coded green/amber/
+  red, transits, window currents, S and utilisation, n_g vs fixed point, peak/mean
+  n_e, T_e, φ, both ledgers, peak node vs cusp planes, Δ/λ_D and ω_pe Δt at the
+  peak, particle counts, wall time); time series (counts, currents with a robust
+  0.2–99.8 % quantile y-range to clip the seed transient, n_g(t) vs (Q_in − S)/c
+  with the n_g0 ceiling, atom rates with the Q_in line, φ range, energy ledger,
+  ω_pe Δt with the 0.2 gate and the design value) with the trailing-20 % window
+  shaded and the 3-transit floor dotted; plateau-window maps with the cusp planes
+  dashed; wall/exit fluxes and the axial max_r n_e profile against the cusps and
+  n_max; convergence table (single column until the pair finishes) plus the
+  variant status table; neutral ledger and a-priori-vs-outcome budget table;
+  history panels: steady-state predecessors (v1.2 reference, v1.3 attempt 1),
+  snapshot v2 growth cases, snapshot v1 fail-closed cases (reused from the snapshot
+  generator by import). Inputs hash-verified via sidecars; a protocol file that
+  drifted from the run's recorded hash fails closed (test); history rows may
+  predate the current protocol and carry their own hash with a flag.
+- 9 dashboard tests (`test_pic2d_steady_state_dashboard.py`): hash binding, claim
+  phrases ("single seed", "under-resolved", "not preregistered", "not validated"),
+  determinism and checked-in HTML currency, offline self-containment, controls /
+  accessibility fragments, strict JSON round trip, node syntax check, tampering
+  rejection (8 mutations), protocol drift / tampered summary rejection.
+- Headless Chrome screenshots: `%TEMP%\pic2d-cft-steady-state-desktop.png`
+  (1440×5400) and `%TEMP%\pic2d-cft-steady-state-narrow.png` (430×11500).
+  Visual review fixed three defects: the currents y-range was dominated by the
+  seed-transient spike (0.49 A wall current in the first record), log-axis tick
+  labels showed log10 values, and n_g(t) was hidden under the fixed-point trace
+  (they coincide to 0.02 %; the fixed point is now drawn first).
+- Campaign proposal drafted: `docs/workstreams/pic2d-campaign-v1-proposal.md`.

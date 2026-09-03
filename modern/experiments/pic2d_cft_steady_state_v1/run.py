@@ -43,7 +43,7 @@ from pathlib import Path
 import shutil
 import sys
 import time
-from typing import Any, Callable
+from typing import Any, Callable, Mapping
 
 import numpy as np
 
@@ -96,6 +96,42 @@ NEUTRAL_SCALARS = (
 
 def load_protocol(path: Path = PROTOCOL_PATH) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def load_variants(protocol_path: Path) -> dict[str, Any]:
+    """Named variants from ``variants.json`` next to the protocol (empty if absent).
+
+    They live outside ``protocol.json`` so a finished base run stays hash-bound to
+    its (frozen) protocol file while convergence cases are added afterwards.
+    """
+
+    path = protocol_path.with_name("variants.json")
+    if not path.is_file():
+        return {}
+    return json.loads(path.read_text(encoding="utf-8")).get("variants", {})
+
+
+def apply_case(protocol: dict[str, Any], case_name: str | None, variants: Mapping[str, Any] | None = None) -> tuple[dict[str, Any], str]:
+    """Return (protocol with the named variant merged into ``case``/``stopping_rule``, results dir name).
+
+    A variant may override ``case`` keys (``id``, ``seed``, ``macro_weight``, cells) and
+    ``wall_budget_seconds``.  ``None`` is the base case with results dir ``results``; a
+    variant writes to ``results-<name>``.
+    """
+
+    if case_name is None:
+        return protocol, "results"
+    variants = dict(variants if variants is not None else protocol.get("variants") or {})
+    if case_name not in variants:
+        raise PIC2DValidationError(f"unknown case {case_name!r}; known: {sorted(variants)}")
+    variant = variants[case_name]
+    merged = json.loads(json.dumps(protocol))
+    merged["case"] = {**merged["case"], **{k: v for k, v in variant.items() if k in ("id", "seed", "macro_weight", "radial_cells", "axial_cells")}}
+    if "wall_budget_seconds" in variant:
+        merged["stopping_rule"]["wall_budget_seconds"] = variant["wall_budget_seconds"]
+    merged["case"]["variant"] = case_name
+    merged["case"]["variant_note"] = variant.get("note")
+    return merged, f"results-{case_name}"
 
 
 def protocol_budget(protocol: dict[str, Any]) -> dict[str, Any]:
@@ -747,6 +783,7 @@ def status(results: Path = RESULTS, protocol: dict[str, Any] | None = None) -> d
 
 def main(argv: list[str] | None = None, *, protocol_path: Path = PROTOCOL_PATH, results: Path = RESULTS) -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("--case", default=None, help="named variant from protocol['variants'] (results in results-<case>)")
     sub = parser.add_subparsers(dest="command", required=True)
     run_parser = sub.add_parser("run")
     run_parser.add_argument("--backend", default="warp-cuda")
@@ -758,7 +795,8 @@ def main(argv: list[str] | None = None, *, protocol_path: Path = PROTOCOL_PATH, 
     fin.add_argument("--stop-reason", default="finalized_from_checkpoint")
     sub.add_parser("status")
     args = parser.parse_args(argv)
-    protocol = load_protocol(protocol_path)
+    protocol, results_name = apply_case(load_protocol(protocol_path), args.case, load_variants(protocol_path))
+    results = results.parent / results_name
     if args.command == "run":
         run_steady_state(protocol, results, backend=args.backend, max_steps=args.max_steps, wall_budget_seconds=args.wall_budget_seconds,
                          require_same_code=not args.ignore_code_identity, protocol_path=protocol_path)

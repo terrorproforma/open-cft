@@ -273,3 +273,51 @@ File policy: `COMMITTED` workstream evidence (`modern/docs/workstreams/pic2d-*`)
   explicitly. Negating a directory (`!…/results/`) un-ignores *everything* inside;
   re-ignore what must stay out (checkpoint arrays, series.jsonl, logs, pids) and
   check `git status` before committing.
+
+## Phase 4 — plateau finalized, convergence pair, dashboard
+
+### Learned (what the plateau is, physically)
+
+- What made ignition work was the *seed density*, not the neutral density: the same
+  3 mA beam at 5e19 with a 1e16 seed returned 91–96 % and died; at 5.5e19 with a
+  5e16 seed the beam was absorbed from the first 100 ns. The seed builds the potential
+  hump (φ_max 337 V > the 300 V anode) that traps the beam electrons long enough to
+  collide. Once built, the structure is self-sustaining: 2.1 ionisations per injected
+  electron at the plateau.
+- The plateau is a *depletion* balance, not a loss balance: the static-background runs
+  (snapshot v2) had no saturation channel and grew past the budget; with the inventory
+  the ionisation eats 46 % of the feed, n_g falls to 0.54 n_g0, and S saturates where
+  Q_in = S + c n_g. The window mean sits on the analytic fixed point to 0.03 % — a
+  checkable statement, not a disclaimer.
+- Physical reading of the numbers: utilisation S/Q_in = 0.46 (a real CFT runs at
+  0.8–0.95 — the channel is too short/too low current for full utilisation at 0.019 mg/s);
+  beam fraction I_beam/I_d = 0.67 (0.5–0.7 is the range reported for HEMP-type
+  thrusters); wall ion current ≈ 1.6 × the beam current, concentrated at the cusp
+  planes (12.2 mm peak) with 126 eV mean impact energy near the last cusp — the
+  cusp-erosion signature; the density peak sits in the magnetic bottle between the last
+  two cusps, not at a cusp.
+- The 0-D projection worked for the *mean* (0.93 × n_eq) and failed for the *peak*
+  (4.1 × n_max): a bottle geometry concentrates the plasma in ~1/4 of the volume.
+  Budget the peak, not the mean, next time (or budget with a fill-factor ≤ 0.3).
+- A drift criterion on the electron count is weak when the plasma is still slowly
+  densifying: +4.98 % passed at the first eligible checkpoint while ω_pe Δt was still
+  rising monotonically. For the campaign, require two consecutive passing windows or add
+  ω_pe Δt / peak n_e to the tracked drifts.
+
+### Learned (tooling)
+
+- A finished run must stay hash-bound to its protocol file: put later additions
+  (variants) in a sibling file instead of editing the protocol; the dashboard then
+  verifies every embedded case against the frozen hash and fails closed on drift.
+- Runner variants as a `--case` merge (seed, W, wall budget) keep one code path and give
+  each case its own results dir and config identity; test that identities differ.
+- Throughput on this WDDM GPU: ~1.0 ms/step at ≤ 0.3 M particles, 2.5 ms/step from
+  ~0.35 M, 2.0 ms/step average over a 2 M-particle run. Budget with 2.5 ms/step for
+  runs that spend most of their time above 0.35 M.
+- Headless screenshots catch what tests cannot: a seed-transient spike hiding the whole
+  currents plot, log-axis labels in log10 units, and a trace hidden under a coincident
+  one. Review the screenshot before committing the HTML.
+- `Get-Content` in Windows PowerShell 5 reads UTF-8 markdown as ANSI (mojibake); append
+  to UTF-8 docs from Python and keep LF.
+- The maps' radial grid spans the exit radius (3 mm, Δr = 50 µm), not the bore (2 mm):
+  compute node coordinates from the config's `dr_m`, never from "bore / cells".

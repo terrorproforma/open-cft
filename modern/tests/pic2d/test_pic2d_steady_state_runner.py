@@ -217,6 +217,53 @@ def test_load_state_rebases_interval_bookkeeping():
     assert resumed.series[-1].ledger["interval_electrode_work_j"] == 0.0  # no previous sample in this session
 
 
+def test_apply_case_merges_variant_and_names_results_dir(tiny):
+    protocol, config, _, _ = tiny
+    protocol = copy.deepcopy(protocol)
+    protocol["variants"] = {
+        "seed-b": {"id": "tiny-seed-b", "seed": 7, "wall_budget_seconds": 5.0, "note": "other seed"},
+        "w-half": {"macro_weight": protocol["case"]["macro_weight"] / 2},
+    }
+    base, name = runner.apply_case(protocol, None)
+    assert base is protocol and name == "results"
+    seed_b, name = runner.apply_case(protocol, "seed-b")
+    assert name == "results-seed-b"
+    assert seed_b["case"]["seed"] == 7 and seed_b["case"]["id"] == "tiny-seed-b" and seed_b["case"]["variant"] == "seed-b"
+    assert seed_b["stopping_rule"]["wall_budget_seconds"] == 5.0
+    assert protocol["case"]["seed"] != 7  # the base protocol is untouched
+    cfg_b = runner.build_config(seed_b, backend="cpu")
+    assert cfg_b.seed == 7 and cfg_b.macro_weight == config.macro_weight
+    w_half, name = runner.apply_case(protocol, "w-half")
+    assert name == "results-w-half" and runner.build_config(w_half, backend="cpu").macro_weight == config.macro_weight / 2
+    # the two variants have distinct config identities from the base and each other
+    ids = {artifacts.config_identity(runner.build_config(p, backend="cpu")) for p in (protocol, seed_b, w_half)}
+    assert len(ids) == 3
+    with pytest.raises(runner.PIC2DValidationError):
+        runner.apply_case(protocol, "nope")
+
+
+def test_variants_load_from_sibling_file_and_keep_the_protocol_frozen(tiny, tmp_path: Path):
+    protocol, _, _, _ = tiny
+    protocol_path = tmp_path / "protocol.json"
+    protocol_path.write_text(json.dumps(protocol), encoding="utf-8")
+    assert runner.load_variants(protocol_path) == {}
+    (tmp_path / "variants.json").write_text(json.dumps({"variants": {"seed-b": {"seed": 11}}}), encoding="utf-8")
+    variants = runner.load_variants(protocol_path)
+    merged, name = runner.apply_case(runner.load_protocol(protocol_path), "seed-b", variants)
+    assert name == "results-seed-b" and merged["case"]["seed"] == 11
+    assert "variants" not in runner.load_protocol(protocol_path)
+    # the checked-in v2 variants are consistent with the frozen v2 protocol
+    v2 = Path(__file__).resolve().parents[2] / "experiments" / "pic2d_cft_steady_state_v2" / "protocol.json"
+    v2_variants = runner.load_variants(v2)
+    assert set(v2_variants) == {"seed-b", "w-half"}
+    base = runner.load_protocol(v2)
+    seed_b, _ = runner.apply_case(base, "seed-b", v2_variants)
+    w_half, _ = runner.apply_case(base, "w-half", v2_variants)
+    assert seed_b["case"]["seed"] != base["case"]["seed"] and seed_b["case"]["macro_weight"] == base["case"]["macro_weight"]
+    assert w_half["case"]["seed"] == base["case"]["seed"] and w_half["case"]["macro_weight"] == pytest.approx(0.7 * base["case"]["macro_weight"])
+    assert seed_b["stopping_rule"]["wall_budget_seconds"] == w_half["stopping_rule"]["wall_budget_seconds"] == 12600
+
+
 def test_finalize_writes_artifacts_from_checkpoint_without_stepping(tiny, tmp_path: Path):
     protocol, config, field, xs = tiny
     results = tmp_path / "killed"
