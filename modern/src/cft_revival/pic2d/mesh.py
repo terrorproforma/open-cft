@@ -11,7 +11,7 @@ this single cell mask so particles, fields and diagnostics share one geometry.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from math import pi
 
 import numpy as np
@@ -47,13 +47,28 @@ class MeshMasks:
     charge_to_source: np.ndarray
     top_plasma_cell: np.ndarray
     plasma_volume_m3: float
+    # v2.0 plume block (all-False / zero volume for a channel-only geometry):
+    # ``far_field_node``: outer plume boundary (r = R_plume for z >= z_exit, and z = z_max), Dirichlet at
+    # the reference potential; ``body_face_node``: front face of the thruster (z = z_exit, r > r_exit) -
+    # dielectric wall nodes up to ``body_dielectric_radius_m`` and grounded conductor nodes
+    # (``body_conductor_node``, Dirichlet at the reference potential) beyond; ``plume_cell``: cells
+    # downstream of the exit plane.
+    far_field_node: np.ndarray = field(default_factory=lambda: np.zeros((0, 0), dtype=bool))
+    body_face_node: np.ndarray = field(default_factory=lambda: np.zeros((0, 0), dtype=bool))
+    body_conductor_node: np.ndarray = field(default_factory=lambda: np.zeros((0, 0), dtype=bool))
+    plume_cell: np.ndarray = field(default_factory=lambda: np.zeros((0, 0), dtype=bool))
+    channel_volume_m3: float = 0.0
 
     @property
     def unknown_count(self) -> int:
         return int(np.count_nonzero(self.unknown_node))
 
+    @property
+    def has_plume(self) -> bool:
+        return bool(self.grid.geometry.has_plume)
+
     def to_dict(self) -> dict[str, object]:
-        return {
+        record: dict[str, object] = {
             "plasma_cells": int(np.count_nonzero(self.plasma_cell)),
             "plasma_nodes": int(np.count_nonzero(self.plasma_node)),
             "dirichlet_nodes": int(np.count_nonzero(self.dirichlet_node)),
@@ -62,6 +77,22 @@ class MeshMasks:
             "plasma_volume_m3": self.plasma_volume_m3,
             "wall_representation": "exact radial grid line in the straight bore; one-cell stair-step in the cone",
         }
+        if self.has_plume:
+            record["plume"] = {
+                "channel_cells": int(np.count_nonzero(self.plasma_cell & ~self.plume_cell)),
+                "plume_cells": int(np.count_nonzero(self.plume_cell)),
+                "channel_volume_m3": self.channel_volume_m3,
+                "plume_volume_m3": self.plasma_volume_m3 - self.channel_volume_m3,
+                "far_field_nodes": int(np.count_nonzero(self.far_field_node)),
+                "body_face_nodes": int(np.count_nonzero(self.body_face_node)),
+                "body_dielectric_nodes": int(np.count_nonzero(self.body_face_node & ~self.body_conductor_node)),
+                "body_conductor_nodes": int(np.count_nonzero(self.body_conductor_node)),
+                "boundary_representation": (
+                    "channel walls, exit lip and front face are internal boundaries of one bounding box (exit plane, exit lip "
+                    "and dielectric/conductor split on grid lines); far field Dirichlet at the reference potential"
+                ),
+            }
+        return record
 
 
 def build_mesh_masks(grid: Grid2D) -> MeshMasks:
@@ -88,6 +119,23 @@ def build_mesh_masks(grid: Grid2D) -> MeshMasks:
     anode_node[:, 0] = plasma_node[:, 0]
     exit_node = np.zeros_like(plasma_node)
     exit_node[:, nz] = plasma_node[:, nz]
+    far_field_node = np.zeros_like(plasma_node)
+    body_face_node = np.zeros_like(plasma_node)
+    body_conductor_node = np.zeros_like(plasma_node)
+    plume_cell = np.zeros_like(plasma_cell)
+    geometry = grid.geometry
+    if geometry.has_plume:
+        # v2.0: the far field is the whole outer plume boundary; the front face nodes are the
+        # exit-plane row outside the exit lip (dielectric ring, then grounded conductor).
+        j_exit = int(round(geometry.channel_length_m / dz))
+        i_exit = int(round(geometry.exit_radius_m / dr))
+        i_body = int(round(float(geometry.body_dielectric_radius_m) / dr))
+        plume_cell[:, j_exit:] = plasma_cell[:, j_exit:]
+        far_field_node[:, nz] = plasma_node[:, nz]
+        far_field_node[nr, j_exit:] = plasma_node[nr, j_exit:]
+        body_face_node[i_exit + 1:, j_exit] = plasma_node[i_exit + 1:, j_exit] & ~far_field_node[i_exit + 1:, j_exit]
+        body_conductor_node[i_body + 1:, j_exit] = body_face_node[i_body + 1:, j_exit]
+        exit_node = far_field_node | body_conductor_node
     dirichlet_node = anode_node | exit_node
     unknown_node = plasma_node & ~dirichlet_node
     axis_node = np.zeros_like(plasma_node)
@@ -160,10 +208,13 @@ def build_mesh_masks(grid: Grid2D) -> MeshMasks:
     if not np.isclose(plasma_volume, float(geometric_volume.sum()), rtol=1e-12, atol=0.0):
         raise PIC2DValidationError("geometric volumes do not partition the plasma volume")
 
+    channel_volume = float(np.sum((plasma_cell & ~plume_cell) * cell_volume[:, None])) if geometry.has_plume else plasma_volume
     return MeshMasks(
         grid, plasma_cell, plasma_node, dirichlet_node, anode_node, exit_node,
         unknown_node, wall_node, axis_node, cond_r, cond_z, diagonal,
         shape_volume, geometric_volume, charge_to_source, top_plasma_cell, plasma_volume,
+        far_field_node=far_field_node, body_face_node=body_face_node, body_conductor_node=body_conductor_node,
+        plume_cell=plume_cell, channel_volume_m3=channel_volume,
     )
 
 

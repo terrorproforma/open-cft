@@ -175,6 +175,18 @@ class BoundP2Evaluator:
         return radius * a_phi, -float(gradient[1]), a_phi / radius + float(gradient[0])
 
     def evaluate(self, radius: float, axial: float) -> tuple[float, float, float]:
+        return self.evaluate_with_regions(radius, axial)[0]
+
+    def evaluate_with_regions(self, radius: float, axial: float) -> tuple[tuple[float, float, float], frozenset[str]]:
+        """``(psi, B_r, B_z)`` plus the set of (allowed) material regions the point belongs to.
+
+        A point on a material interface matches elements on both sides; the values are
+        the element mean (``A_phi`` is continuous, its gradient is not across a permeable
+        interface) and the region set carries both names so the caller can decide the
+        material of a sampling node (v2.0 plume extent: a node on the front face of the
+        pole/yoke stack belongs to the plasma side).
+        """
+
         query_r = radius
         query_z = axial
         if query_r == self.bounds["r_max_m"]:
@@ -185,7 +197,8 @@ class BoundP2Evaluator:
             query_z = math.nextafter(query_z, self.bounds["z_min_m"])
         matches = self._matches(query_r, query_z)
         values = [self._evaluate_element(local, barycentric, query_r) for local, barycentric in matches]
-        return tuple(float(np.mean([item[index] for item in values])) for index in range(3))
+        regions = frozenset(str(self.region_ids[local]) for local, _ in matches)
+        return tuple(float(np.mean([item[index] for item in values])) for index in range(3)), regions
 
 
 __all__ = ["BoundP2Evaluator", "file_sha256"]

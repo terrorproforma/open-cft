@@ -1,0 +1,33 @@
+{
+  "schema": "cft.pic2d.p2-field-plume-extension.v1",
+  "extends": "modern/spec/pic2d/p2-field-authority-v1.json",
+  "purpose": "pic2d model v2.0 (plume block): evaluate the SAME hash-bound P2 A_phi solution over the L-shaped PIC bounding box that contains the channel and the plume. The channel authority file is untouched so every v1.x checkpoint keeps its field_sha256 binding.",
+  "bounding_box": {
+    "r_min_m": 0.0,
+    "r_max_m": 0.012,
+    "z_min_m": 0.0,
+    "z_max_m": 0.036
+  },
+  "bounding_box_justification": "R_plume = 12 mm = 4 r_exit = 6 r_bore is the outer radius of the return yoke of divergent-exit-stack (the P2 mesh region return-yoke spans r in [10, 12] mm, z in [0, 24] mm), so the far-field boundary r = R_plume continues the thruster's outer envelope; L_plume = 12 mm = 0.5 L_channel is bounded by the P2 FEM domain (z <= 36.25 mm): a longer plume would need a new FEM solve. Brandt et al. 2016 used a 20 x 5 mm plume box behind a 14 x 1.5 mm channel and found it 'still too small' for the plume current ratios; this box is 12 x 12 mm (axial x radial) behind a 24 x 2-3 mm channel and is declared a first development size.",
+  "sampling": "direct-p2-node-evaluation",
+  "sampling_justification": "The regular-psi-grid bicubic of the channel authority cannot be qualified over the plume box: its cells next to the pole faces (the 4.0-4.4 mm gap between the dielectric and the pole stack, and the first 0.25 mm row on the metal front face) see the permeability kink of B_z and fail the withheld mid-cell gate by 0.13-0.15 T against 0.02 T, while the channel (< 0.0005 T) and the plume interior z >= 24.5 mm (< 0.002 T) pass with a wide margin (measured 2026-09-03 on a 0.125 x 0.25 mm psi grid, 96 x 144 intervals). The v2.0 map therefore evaluates the quadratic A_phi elements directly at every plasma node of the PIC grid (no interpolation stage, ~0.15 ms per node); the cross-check against the qualified channel bicubic on the channel plasma nodes is recorded in the field provenance (channel_cross_check) and must stay under the authority's 0.02 T component bound.",
+  "plasma_regions": [
+    "injector-zone",
+    "channel-straight",
+    "channel-divergent-exit",
+    "dielectric-straight",
+    "dielectric-divergent-exit",
+    "ambient-background"
+  ],
+  "plasma_regions_justification": "The five channel regions of the authority plus ambient-background (the mu_0 air/vacuum region of the P2 problem that fills z > 24 mm and the 4.0-4.4 mm gap between the dielectric and the pole stack). Every plasma node of the L-shaped PIC domain lies in one of these regions or on their interface with a solid part.",
+  "solid_regions_sampled": [
+    "anode",
+    "magnet-01", "magnet-02", "magnet-03", "magnet-04",
+    "pole-01", "pole-02", "pole-03",
+    "shield-shell",
+    "return-yoke"
+  ],
+  "solid_regions_note": "Listed so that a query on a material interface (plasma node on the front face of the pole/magnet/shell/yoke stack, z = 24 mm, r > 4.4 mm) is not rejected as a disallowed region. Such nodes are evaluated 1 nm inside the plume so they carry the plasma-side limit of the field (B_z jumps by the permeability ratio across the metal face; the FEM A_phi itself is continuous). Nodes strictly inside solid parts are never evaluated: they are outside the plasma mask, never read by the bilinear gather, and the map is zero there so max_b_t (omega_ce dt gate) stays a plasma-region quantity.",
+  "front_face_note": "Plasma nodes on the thruster front face z = 24 mm, r > 4.4 mm carry the plasma-side (ambient) value of the P2 field; the field inside the metal is not part of the PIC. Declared v2.0 simplification: the pole faces are perfect conductors electrostatically (grounded) and the static B is the P2 solution without plasma-induced fields.",
+  "field_convention": "as the authority: B_r = -dA_phi/dz, B_z = A_phi/r + dA_phi/dr (2 dA_phi/dr on the axis)"
+}

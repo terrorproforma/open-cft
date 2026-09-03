@@ -20,11 +20,12 @@ import numpy as np
 
 from ..orbit_mc.artifacts import content_hash
 from ..orbit_mc.fields import PsiBicubicField
-from .models import Grid2D, PIC2DValidationError
+from .models import ChannelGeometry, Grid2D, PIC2DValidationError
 from .p2_field import BoundP2Evaluator, file_sha256
 
 SPEC_DIR = Path(__file__).resolve().parents[3] / "spec" / "pic2d"
 DEFAULT_AUTHORITY_PATH = SPEC_DIR / "p2-field-authority-v1.json"
+DEFAULT_PLUME_EXTENSION_PATH = SPEC_DIR / "p2-field-plume-extension-v1.json"
 
 
 @dataclass(frozen=True, slots=True)
@@ -212,6 +213,119 @@ def p2_field_map(repository_root: Path, grid: Grid2D, *, role: str = "primary") 
     return sample_field_map(field, grid, evidence), field
 
 
+# -- v2.0 plume domain: direct P2 node sampling ---------------------------------
+
+def load_plume_extension(path: Path = DEFAULT_PLUME_EXTENSION_PATH) -> dict[str, Any]:
+    extension = json.loads(path.read_text(encoding="utf-8"))
+    if extension.get("schema") != "cft.pic2d.p2-field-plume-extension.v1":
+        raise PIC2DValidationError("unsupported P2 field plume extension schema")
+    return extension
+
+
+def p2_plume_field_map(
+    repository_root: Path,
+    grid: Grid2D,
+    *,
+    role: str = "primary",
+    authority: Mapping[str, Any] | None = None,
+    extension: Mapping[str, Any] | None = None,
+    cross_check: bool = True,
+) -> MagneticFieldMap:
+    """Bound P2 field on the plasma nodes of an L-shaped (channel + plume) PIC grid.
+
+    v2.0: the regular-psi-grid bicubic of ``build_p2_psi_field`` cannot be qualified
+    over the plume box because its cells next to the pole faces (the 4.0-4.4 mm gap
+    and the first row on the metal front face) see the permeability kink of ``B_z``
+    (withheld-cell errors of 0.13-0.15 T against a 0.02 T gate, while the channel and
+    the plume interior sit at < 0.002 T).  The plume map therefore evaluates the
+    hash-bound quadratic ``A_phi`` solution *directly* at every plasma node (no
+    interpolation stage); nodes on the metal front face ``z = L_channel, r > r_lip``
+    are evaluated a hair inside the plume so they carry the plasma-side limit of the
+    field.  Nodes inside the thruster body are zero (outside the plasma mask, never
+    read by the bilinear gather; ``max_b_t`` stays a plasma-region quantity).  The
+    channel authority file and the v1.x field identities are untouched.  With
+    ``cross_check`` the direct sample is compared on the channel plasma nodes with the
+    qualified channel bicubic of the authority (evidence ``channel_cross_check``).
+    """
+
+    from .mesh import build_mesh_masks
+
+    geometry = grid.geometry
+    if not geometry.has_plume:
+        raise PIC2DValidationError("p2_plume_field_map needs a plume geometry; use p2_field_map for the channel box")
+    authority = dict(load_authority() if authority is None else authority)
+    extension = dict(load_plume_extension() if extension is None else extension)
+    declaration = authority["maps"][role]
+    bounds = extension["bounding_box"]
+    if geometry.max_radius_m > bounds["r_max_m"] + 1e-12 or geometry.domain_z_max_m > bounds["z_max_m"] + 1e-12 \
+            or geometry.z_min_m < bounds["z_min_m"] - 1e-12:
+        raise PIC2DValidationError("the PIC plume box exceeds the declared P2 plume-extension bounding box")
+    allowed = set(extension["plasma_regions"]) | set(extension["solid_regions_sampled"])
+    evaluator = BoundP2Evaluator(Path(repository_root) / declaration["checkpoint_path"], declaration, allowed_regions=allowed, bounds=bounds)
+    masks = build_mesh_masks(grid)
+    plasma = masks.plasma_node
+    b_r = np.zeros(grid.node_shape, dtype=np.float64)
+    b_z = np.zeros(grid.node_shape, dtype=np.float64)
+    z_exit = geometry.z_max_m
+    nudge = 1.0e-9  # metres: inside the plume by far less than any element size
+    regions_seen: set[str] = set()
+    for i, radius in enumerate(grid.r_m):
+        for j, axial in enumerate(grid.z_m):
+            if not plasma[i, j]:
+                continue
+            query_z = float(axial)
+            if masks.body_face_node[i, j]:
+                query_z = z_exit + nudge  # plasma-side limit on the metal/dielectric front face
+            (_, br, bz), regions = evaluator.evaluate_with_regions(float(radius), query_z)
+            regions_seen |= regions
+            b_r[i, j], b_z[i, j] = br, bz
+    b_r[0, :] = 0.0
+    evidence: dict[str, Any] = {
+        "role": role,
+        "design_id": authority["design_id"],
+        "checkpoint_path": declaration["checkpoint_path"],
+        "checkpoint_file_sha256": declaration["checkpoint_file_sha256"],
+        "checkpoint_payload_sha256": declaration["checkpoint_payload_sha256"],
+        "checkpoint_sidecar_sha256": declaration["sidecar_file_sha256"],
+        "mesh_sha256": declaration["mesh_sha256"],
+        "run_sha256": declaration["run_sha256"],
+        "authority_file_sha256": file_sha256(DEFAULT_AUTHORITY_PATH),
+        "plume_extension_file_sha256": file_sha256(DEFAULT_PLUME_EXTENSION_PATH),
+        "p2_classification": evaluator.classification,
+        "kind": "p2-direct-node-sample-plume-domain",
+        "node_sampling": "direct quadratic A_phi evaluation on the plasma nodes of the L-shaped domain (plasma-side limit on the "
+                         "front face); zero on thruster-body nodes",
+        "bounding_box": dict(bounds),
+        "plasma_nodes_sampled": int(plasma.sum()),
+        "regions_touched": sorted(regions_seen),
+        "bounding_box_justification": extension["bounding_box_justification"],
+        "front_face_note": extension["front_face_note"],
+    }
+    if cross_check:
+        channel_grid = Grid2D(
+            ChannelGeometry(geometry.bore_radius_m, geometry.z_min_m, geometry.z_max_m, geometry.cone_start_z_m, geometry.exit_radius_m),
+            int(round(geometry.exit_radius_m / grid.dr_m)), int(round(geometry.channel_length_m / grid.dz_m)),
+        )
+        psi_field, channel_evidence = build_p2_psi_field(repository_root, role=role, authority=authority)
+        channel_map = sample_field_map(psi_field, channel_grid, channel_evidence)
+        nr_c, nz_c = channel_grid.node_shape
+        channel_plasma = build_mesh_masks(channel_grid).plasma_node
+        d_r = (b_r[:nr_c, :nz_c] - channel_map.b_r_t)[channel_plasma]
+        d_z = (b_z[:nr_c, :nz_c] - channel_map.b_z_t)[channel_plasma]
+        diff = np.hypot(d_r, d_z)
+        evidence["channel_cross_check"] = {
+            "channel_field_map_sha256": channel_map.sha256,
+            "nodes": int(channel_plasma.sum()),
+            "max_abs_diff_t": float(diff.max()),
+            "rms_diff_t": float(np.sqrt(np.mean(diff**2))),
+            "channel_max_b_t": channel_map.max_b_t,
+            "note": "direct P2 node values vs the qualified channel bicubic (v1.x field) on the channel plasma nodes",
+        }
+        if evidence["channel_cross_check"]["max_abs_diff_t"] > authority["maximum_b_component_absolute_error_t"]:
+            raise PIC2DValidationError(f"plume-domain P2 sample disagrees with the qualified channel field: {evidence['channel_cross_check']}")
+    return MagneticFieldMap(grid, b_r, b_z, evidence)
+
+
 def uniform_field_map(grid: Grid2D, b_z_t: float) -> MagneticFieldMap:
     b_r = np.zeros(grid.node_shape, dtype=np.float64)
     b_z = np.full(grid.node_shape, float(b_z_t), dtype=np.float64)
@@ -237,7 +351,9 @@ __all__ = [
     "build_p2_psi_field",
     "linear_psi_field_map",
     "load_authority",
+    "load_plume_extension",
     "p2_field_map",
+    "p2_plume_field_map",
     "sample_field_map",
     "uniform_field_map",
     "zero_field_map",

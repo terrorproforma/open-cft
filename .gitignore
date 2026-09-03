@@ -141,3 +141,5 @@ modern/experiments/pic2d_cft_steady_state_v2/results*/*.log
 modern/experiments/pic2d_cft_steady_state_v2/results*/*.err
 # PIC-2D steady-state v3 (model v1.4): results stay untracked until the run ends
 modern/experiments/pic2d_cft_steady_state_v3/results*/
+# PIC-2D plume development run v1 (model v2.0): results stay untracked until the run ends
+modern/experiments/pic2d_cft_plume_v1/results*/

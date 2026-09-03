@@ -81,9 +81,13 @@ def test_one_step_gather_push_parity_and_identical_field(device: str):
         y = getattr(b.electrons, name)
         reference = scale if scale is not None else float(np.max(np.abs(x)))
         assert np.max(np.abs(x - y)) <= 64.0 * np.finfo(float).eps * reference, name
-    for key, value in a.cumulative.items():
-        if key.startswith("ke_") or key == "field_work_j":
-            assert value == pytest.approx(b.cumulative[key], rel=1e-9, abs=1e-300), key  # float64 atomics
+        pz_scale = max(abs(v) for k, v in a.cumulative.items() if k.startswith("pz_"))
+        for key, value in a.cumulative.items():
+            if key.startswith("pz_"):
+                # float64 atomics; the electric part of the impulse is pure round-off when E == 0
+                assert value == pytest.approx(b.cumulative[key], rel=1e-9, abs=1e-9 * pz_scale), key
+            elif key.startswith("ke_") or key == "field_work_j":
+                assert value == pytest.approx(b.cumulative[key], rel=1e-9, abs=1e-300), key  # float64 atomics
         else:
             assert value == b.cumulative[key], key  # exact integer counts
 
@@ -103,6 +107,62 @@ def test_multi_step_collisionless_parity(device: str):
         assert a.cumulative[key] == b.cumulative[key]
     assert np.max(np.abs(a.phi_v - b.phi_v)) < 1e-9 * 300.0
     assert np.max(np.abs(a.surface_charge_c - b.surface_charge_c)) <= 1e-9 * max(np.max(np.abs(a.surface_charge_c)), 1e-300)
+
+
+@pytest.mark.parametrize("device", DEVICES)
+def test_l_shaped_plume_domain_with_cathode_parity(device: str):
+    """v2.0 (tiny): L-shaped mask, internal walls / front face, far-field exits, cathode emission,
+    momentum ledger and plume histograms agree between the numpy reference and the Warp backend."""
+
+    from cft_revival.pic2d.simulation import CathodeConfig
+
+    geometry = ChannelGeometry(2.0e-3, 0.0, 8.0e-3, 6.0e-3, 3.0e-3, plume_radius_m=6.0e-3, plume_length_m=4.0e-3,
+                               body_dielectric_radius_m=4.0e-3)
+    grid = Grid2D(geometry, 24, 48)
+    field = uniform_field_map(grid, 0.02)
+
+    def make(cathode: CathodeConfig | None) -> PIC2DConfig:
+        return PIC2DConfig(
+            grid=grid, potentials=BoundaryPotentials(300.0, 0.0), dt_s=5e-12, macro_weight=2e5, seed=5, cathode=cathode,
+            seed_plasma=SeedPlasmaConfig(1e15, 5.0), poisson=PoissonConfig2D(), reference_density_per_m3=1e15,
+            reference_electron_temperature_ev=5.0, limits=StabilityLimits(max_cell_debye_ratio=2.0), series_interval_steps=20,
+            runtime_stability_check_steps=20,
+        )
+
+    # (a) seed plasma only: the L-shaped mask, internal walls, front face and far-field exits are bitwise-comparable
+    config = make(None)
+    cpu = Simulation(config, field, backend="cpu")
+    gpu = Simulation(config, field, backend=_backend_name(device), device=device)
+    cpu.run(40)
+    gpu.run(40)
+    a, b = cpu.state, gpu.state
+    assert a.electrons.count == b.electrons.count and a.ions.count == b.ions.count
+    for key in ("anode_electrons", "exit_electrons", "wall_electrons", "anode_ions", "exit_ions", "wall_ions", "body_face_electrons"):
+        assert a.cumulative[key] == b.cumulative[key], key
+    assert a.cumulative["exit_electrons"] > 0 and a.cumulative["body_face_electrons"] > 0
+    assert np.max(np.abs(a.phi_v - b.phi_v)) < 1e-9 * 300.0
+    da, db = cpu.diagnostic_arrays(), gpu.diagnostic_arrays()
+    for key in ("plume_ion_counts_per_theta", "iedf_ion_counts", "sample_count_e"):
+        assert np.array_equal(da[key], db[key]), key
+    ra, rb = cpu.series[-1], gpu.series[-1]
+    assert ra.momentum is not None and rb.momentum is not None
+    for key in ("thrust_flux_n", "force_on_thruster_n", "absorbed_momentum_rate_n", "electrostatic_force_thruster_n"):
+        assert ra.momentum[key] == pytest.approx(rb.momentum[key], rel=1e-8, abs=1e-30), key
+    assert ra.plume["charge_fraction_of_peak"] == pytest.approx(rb.plume["charge_fraction_of_peak"], rel=1e-9, abs=1e-12)
+    # (b) with the cathode: the emission samples use each backend's RNG stream (not bitwise, like the v1.x
+    # injection); the emitted count is deterministic and both ledgers close to round-off
+    config = make(CathodeConfig(3.5e-3, 4.5e-3, 9.0e-3, 10.0e-3, 2.0, 2e-3))
+    cpu = Simulation(config, field, backend="cpu")
+    gpu = Simulation(config, field, backend=_backend_name(device), device=device)
+    cpu.run(40)
+    gpu.run(40)
+    a, b = cpu.state, gpu.state
+    assert a.cumulative["injected_electrons"] == b.cumulative["injected_electrons"] > 0
+    assert np.all(a.electrons.z_m[-int(a.cumulative["injected_electrons"]) // 4:] >= 0.0)
+    for sim in (cpu, gpu):
+        momentum = sim.series[-1].momentum
+        assert abs(momentum["interval_ledger_residual_kg_m_s"]) <= 1e-9 * max(abs(momentum["momentum_z_kg_m_s"]), 1e-30) + 1e-40
+    assert np.mean(a.phi_v[cpu.masks.plasma_node]) == pytest.approx(np.mean(b.phi_v[cpu.masks.plasma_node]), rel=0.02)
 
 
 @pytest.mark.parametrize("device", DEVICES)

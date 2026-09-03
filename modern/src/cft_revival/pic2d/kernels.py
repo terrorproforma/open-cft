@@ -164,7 +164,11 @@ def classify_boundary(masks: MeshMasks, r_m: np.ndarray, z_m: np.ndarray) -> np.
     geometry = grid.geometry
     codes = np.full(r_m.shape, BOUNDARY_INSIDE, dtype=np.int8)
     anode = z_m < geometry.z_min_m
-    exit_plane = z_m >= geometry.z_max_m
+    exit_plane = z_m >= geometry.domain_z_max_m
+    if geometry.has_plume:
+        # v2.0: the far-field boundary is the whole outer plume boundary (r = R_plume downstream of
+        # the exit plane and z = z_max); crossing it is a plume exit, not a wall hit.
+        exit_plane |= (z_m >= geometry.z_max_m) & (r_m >= geometry.max_radius_m)
     codes[anode] = BOUNDARY_ANODE
     codes[exit_plane] = BOUNDARY_EXIT
     remaining = ~(anode | exit_plane)

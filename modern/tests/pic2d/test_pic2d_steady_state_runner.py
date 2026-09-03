@@ -453,3 +453,67 @@ def test_v14_peak_gate_stops_the_run_fail_closed(tiny, tmp_path: Path):
     assert summary["stop_reason"] == "runtime_stability_gate_stopped_run"
     assert "peak-node Debye gate" in summary["stability_gate_message"]
     assert summary["steps_completed"] <= 20
+
+
+# -- v2.0 plume protocol -------------------------------------------------------------------
+
+PLUME_PROTOCOL = Path(__file__).resolve().parents[2] / "experiments" / "pic2d_cft_plume_v1" / "protocol.json"
+
+
+def _tiny_plume_protocol() -> dict:
+    """The real plume protocol shrunk to 0.25 mm cells (body radius moved to a 0.25 mm line) for a CPU run."""
+
+    protocol = copy.deepcopy(runner.load_protocol(PLUME_PROTOCOL))
+    protocol["geometry"]["body_dielectric_radius_m"] = 0.0045
+    protocol["case"].update({"radial_cells": 48, "axial_cells": 144, "macro_weight": 6.0e5})
+    protocol["numerics"].update({"dt_s": 5.0e-12, "device_sync_steps": 20, "series_interval_steps": 20, "checkpoint_every_steps": 100,
+                                 "averaging_window_steps": 200})
+    protocol["numerics"]["stability_reference"]["density_per_m3"] = 1.0e16
+    protocol["operating_point"]["seed_plasma_density_per_m3"] = 5.0e15
+    return protocol
+
+
+def test_plume_protocol_builds_the_v20_config_and_runs_with_the_v20_artifacts(tmp_path: Path):
+    from cft_revival.pic2d.fields import uniform_field_map
+
+    real = runner.build_config(runner.load_protocol(PLUME_PROTOCOL), backend="cpu")
+    assert real.grid.geometry.has_plume and real.grid.cell_shape == (240, 720) and real.grid.dr_m == pytest.approx(5e-5)
+    assert real.cathode is not None and real.cathode.current_rule == "continuity" and real.injection is None
+    assert real.seed_plasma.region == "channel" and real.plume_boundary_gate.max_charge_fraction == 0.25
+    assert real.neutral_inventory.wall_recycling and real.peak_debye_gate is not None
+    assert runner.protocol_budget(runner.load_protocol(PLUME_PROTOCOL))["ion_transit_time_s"] == 3.1e-6
+
+    protocol = _tiny_plume_protocol()
+    config = runner.build_config(protocol, backend="cpu")
+    field = uniform_field_map(config.grid, 0.02)
+    xs = XenonCrossSections.from_file()
+    results = tmp_path / "plume"
+    runner.run_steady_state(protocol, results, backend="cpu", field_map=field, cross_sections=xs, max_steps=400, log=lambda _: None)
+    samples = [json.loads(l) for l in (results / "status.jsonl").read_text(encoding="utf-8").splitlines()]
+    samples = [s for s in samples if "event" not in s]
+    assert all("thrust" in s and "plume" in s and "cathode_emission_a" in s for s in samples)
+    assert all(abs(s["thrust"]["interval_ledger_residual_kg_m_s"]) < 1e-25 for s in samples)
+    assert samples[-1]["plume"]["far_field_phi_max_abs_deviation_v"] == 0.0 and samples[-1]["plume"]["gate_enforced"] is False
+    with np.load(results / "series.npz") as series:   # closed before the resume rewrites the file (Windows lock)
+        for key in ("momentum_thrust_total_n", "momentum_closure_fraction", "momentum_electrostatic_force_thruster_n",
+                    "momentum_cathode_emission_next_a", "plume_exit_plane_axis_potential_v", "plume_charge_fraction_of_peak"):
+            assert key in series.files and series[key].size == 20, key
+    with np.load(results / "maps.npz") as maps:
+        for key in ("plume_ion_current_per_sr_a", "plume_ion_counts_per_theta", "iedf_ion_counts", "iedf_edges_ev", "sample_count_e"):
+            assert key in maps.files, key
+        assert maps["sample_count_e"].shape == tuple(config.grid.node_shape)
+    summary = artifacts.read_canonical_json(results / "summary.json")
+    plume = summary["plume"]
+    assert plume is not None and plume["window_step_range"] == [200, 400] and plume["window_samples"] == 10
+    for key in ("thrust_flux_n", "cold_gas_thrust_n", "thrust_total_n", "thrust_balance_n", "electrostatic_force_thruster_n",
+                "exit_plane_axis_potential_v", "specific_impulse_s", "anode_efficiency", "mass_flow_kg_per_s"):
+        assert plume[key] is not None and np.isfinite(plume[key]), key
+    assert plume["thrust_total_n"] == pytest.approx(plume["thrust_flux_n"] + plume["cold_gas_thrust_n"])
+    assert plume["cold_gas_thrust_n"] > 0.0 and plume["ledger_residual_max_kg_m_s"] < 1e-25
+    assert 0.0 <= plume["exit_plane_axis_potential_v"] <= 300.0
+    assert summary["provenance"]["v2_0_options"]["cathode"]["current_rule"] == "continuity"
+    assert summary["window_currents_a"]["cathode_emission_a"] >= 0.003 * 0.99
+    # resume continues the same run (two sessions) and keeps the v2.0 blocks
+    runner.run_steady_state(protocol, results, backend="cpu", field_map=field, cross_sections=xs, max_steps=600, log=lambda _: None)
+    resumed = artifacts.read_canonical_json(results / "summary.json")
+    assert resumed["steps_completed"] == 600 and len(resumed["sessions"]) == 2 and resumed["plume"] is not None
