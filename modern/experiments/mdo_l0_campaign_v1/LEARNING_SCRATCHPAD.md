@@ -28,3 +28,20 @@
 - [self] The 4-D hypervolume slicing recursion is fast enough only with the
   nondominated pre-filter and a vectorised 2-D sweep; the pure-Python version
   was O(n^4) on the dense front.
+- [self] Exact front-set equality is fragile: L0 recomputes anode power as
+  `Ua * I_beam / beam_fraction`, one ulp off `Ua * Ia` depending on theta,
+  so a design tied in power under one prior lost dominance under another.
+  Compare fronts with roundoff-aware dominance and report both.
+- [self] A worst-case constraint over a finite QMC sample enforces the worst
+  sampled case, not the worst case of the prior's support (max sampled S was
+  0.704, not 1). Declare the sampled support explicitly, or add the support
+  vertex to the sample.
+- [self] Canonical typed JSON round trips break re-hashing: tuples become
+  `__cft_type__` tagged objects that `canonical_value` refuses on re-parse.
+  Records that must be re-hashed after loading must be written from plain
+  lists/dicts only.
+- [tool] PowerShell `Start-Process -RedirectStandardError` delivers the log
+  with multi-minute lag; read the runtime's checkpoints or the terminal
+  output file instead of trusting the stderr tail.
+- [tool] Headless Edge clamps `--window-size` widths below ~500 px; a 390 px
+  iframe host page gives a true narrow viewport (as the v4 dashboard notes).

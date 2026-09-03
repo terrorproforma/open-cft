@@ -128,3 +128,20 @@
   verification); the instance index `spec/optimization/mdo-l0-campaign-v1.json`
   points at the campaign and receives the recorded bundle pointer after the
   single execution.
+
+## 2026-09-03 MDO L0 campaign v1 recorded (first optimiser run on the new physics)
+
+- Preregistration `4898d0fd`, result `c553124b` on `exp/mdo-l0-campaign-v1`;
+  terminal `accepted_result`, 8/8 binding gates, 864 evaluations, 28 min.
+- Robust hypervolume at 96 evaluations: qLogNEHVI 0.003863/0.003877/0.003860,
+  NSGA-III 0.002926/0.003505/0.003271, LHS 0.002844/0.003213/0.002804 (seeds
+  101/202/303); BO beats random 3/3 and NSGA-III 3/3; BO seed std 9.2e-6; the
+  8192-point dense reference reaches 0.003798, so BO attains 1.02x of it with
+  96 evaluations. The predeclared design-set invariance to the cusp prior
+  holds on the common feasible set. Robust vs nominal fronts: 114 vs 62
+  designs, 24 shared.
+- This is an optimiser-comparison and evaluation-chain result on the L0
+  model under closure CL-1 and declared priors. It is not a thruster
+  performance result and `campaign-v1.json#benchmark.results` stays null.
+- Dashboard `modern/visualization/mdo-l0-campaign-v1.html` (generator
+  `generate_mdo_l0_campaign_v1_dashboard.py`, 6 tests).

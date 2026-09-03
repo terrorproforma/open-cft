@@ -50,6 +50,33 @@ tuning: BO beats random (>= 2 of 3 seeds), BO beats NSGA-III, design-set
 invariance to the cusp prior on the common feasible set, robust-vs-nominal
 front differences.
 
+## Recorded result (single execution, `accepted_result`)
+
+Preregistration `4898d0fd`, result `c553124b`, manifest
+`2a326f3c...`, 143 manifest entries, 8/8 binding gates, 864 evaluations
+(130 infeasible), 28 min wall clock (BO acquisition 510-530 s per seed).
+
+| strategy | seed 101 | seed 202 | seed 303 | mean ± std |
+|---|---|---|---|---|
+| qLogNEHVI | 0.003863 | 0.003877 | 0.003860 | 0.003867 ± 9.2e-6 |
+| NSGA-III | 0.002926 | 0.003505 | 0.003271 | 0.003234 ± 2.9e-4 |
+| LHS | 0.002844 | 0.003213 | 0.002804 | 0.002954 ± 2.3e-4 |
+
+Robust hypervolume after 96 evaluations; dense 8192-point reference
+0.003798 (BO attains 1.02x with 1/85 of the evaluations). BO beats random
+3/3 seeds and NSGA-III 3/3 (predeclared, reported, not binding). The robust
+nondominated design set is identical on the common feasible set under all
+four alternative cusp priors (the predeclared separability expectation);
+robust and nominal fronts share 24 designs (114 vs 62, Jaccard 0.158) and
+differ through the feasible set (anode-current margin). Scenario
+`v4_per_cell_jeffreys` (cells 2-3 at 0.9996) gives survival 6.9e-8 and zero
+thrust under CL-1, i.e. the v4 collisionless wall-hit estimand cannot be the
+Kornfeld cusp probability of a sustained discharge. Scenario `no_wall_loss`
+(S = 1, outside the sampled support whose maximum S is 0.704) makes 110 of
+the 114 robust-Pareto designs violate the anode-current constraint: the
+worst case over a finite sample is not the worst case over the prior's
+support. Dashboard: `modern/visualization/mdo-l0-campaign-v1.html`.
+
 ## Findings recorded before preregistration
 
 * The corrected four-cell discharge solver (`cft_revival.plasma`) does not

@@ -55,3 +55,37 @@
   `8b5a8293...`, evidentiary design `648ad3c5...`, 9 runs. Tests/support commit
   `a1a53300`; preregistration commit follows with the exact subject
   `preregister MDO L0 campaign v1`.
+
+## 2026-09-03 09:33-10:20 AEST — preregistration, execution, record
+
+- `feat/sota-foundation` had moved (`cc7706b2..8babb31e`, pic2d commits);
+  both commits were rebased onto `8babb31e` BEFORE the preregistration was
+  pushed: tests `fdc6b37d`, preregistration `4898d0fd` (source hash still
+  `da21671f...`). Pushed `origin/exp/mdo-l0-campaign-v1`.
+- Detached at `4898d0fd`, clean worktree, `run execute` (PID 30936, venv
+  interpreter): prebundle re-verified protocol/source/package/shakedown
+  authorities; development: cpu + cuda:0 float64 probes, dense reference
+  8192 designs in 28.6 s (6576 feasible; robust HV 0.003798, nominal HV
+  0.04677; separability spread ~1e-15; replay 32/32); assessment 1600 s.
+- Terminal `accepted_result`, manifest `2a326f3c...`, 143 entries, 8/8
+  binding gates. Hypervolume: qLogNEHVI 0.003863/0.003877/0.003860,
+  NSGA-III 0.002926/0.003505/0.003271, LHS 0.002844/0.003213/0.002804;
+  BO beats random 3/3, NSGA-III 3/3; BO seed std 9.2e-6. Pareto sizes BO
+  28/30/27, NSGA-III 31/24/32, LHS 19/18/24; infeasible BO 18/14/11,
+  NSGA-III 7/17/8, LHS 18/18/19. BO acquisition 510-530 s per seed (GP fits
+  7 s, L0 evaluations 0.4 s); NSGA-III/LHS ~1 s.
+- Design-set invariance on the common feasible set: identical (exactly, and
+  up to ties) for cusp priors U[0, 0], U[0, 0.2], U[0, 0.45], U[0, 0.7];
+  unrestricted Jaccard 0.00/0.01/1.00/0.41 because the feasible set moves
+  (397/480/644/687 feasible of 734 unique designs).
+- Robust vs nominal pooled fronts: 114 vs 62 designs, 24 shared, Jaccard
+  0.158; the nominal front reaches efficiency 0.89 and Isp 725 s where the
+  robust CVaR front reaches 0.255 and 413 s at the same anode powers.
+- Scenarios on the robust-Pareto designs: no_wall_loss S=1 -> 110/114
+  infeasible (sampled max S 0.704 bounds the enforced constraint);
+  v4_per_cell_jeffreys S=6.9e-8 -> thrust 0.
+- Result commit `c553124b` (results force-added past `.gitignore:48
+  Results/`; test manifest key fix; instance index pointer). Dashboard
+  `visualization/mdo-l0-campaign-v1.html` (340,268 bytes, 137 files
+  verified, 0 JS errors headless, screenshots under %TEMP%\mdo_scratch).
+- Not observed anywhere in this campaign: any thruster-performance claim.
