@@ -47,10 +47,15 @@ from .models import (
 )
 from .poisson import Poisson2D, apply_operator, boundary_potential_array
 from .simulation import (
+    CATHODE_RATE_KEY,
+    IEDF_BINS,
+    THETA_BINS,
     DiagnosticAccumulator,
     PIC2DConfig,
     SimulationState,
     StepTally,
+    iedf_max_ev,
+    neutral_shape_cells,
     peak_node_debye,
 )
 
@@ -70,6 +75,35 @@ THOMAS_LANES = PARTICLE_BLOCK
 # Per-step RNG streams read from the device seed table (v1.4): 0 = MCC, 1 = injection,
 # 2 = anomalous scattering.  Row = steps since the last host sync.
 SEED_STREAMS = 3
+
+# Interval statistics slots (float64 device array, read once per host sync).
+STATS_WORK = 0
+STATS_MAX_SPEED2 = 1
+STATS_INVALID = 2
+STATS_PEAK_DENSITY = 3
+STATS_E_COUNTS = 4          # anode, exit, wall (electrons)
+STATS_E_ENERGY = 7
+STATS_I_COUNTS = 10         # anode, exit, wall (ions)
+STATS_I_ENERGY = 13
+STATS_MCC = 16              # candidates, elastic, excitation, ionization, null
+STATS_KE_INJECTED = 21
+STATS_KE_BORN = 22
+STATS_OVERFLOW = 23
+STATS_INJECTED = 24         # v1.4: injected macro-electrons (device-side injection control)
+STATS_ANOMALOUS = 25        # v1.4: Bohm-scattering hook tally
+STATS_CARRY = 26            # v1.4: injection carry after the latest step (overwritten, not accumulated)
+# v2.0 momentum ledger (kg m/s, macro weight applied) and plume tallies
+STATS_PZ_IMPULSE = 27       # m W (v_z^+ - v_z^-) over pushes (E and B)
+STATS_PZ_ELECTRIC = 28      # q E_z W dt over pushes
+STATS_PZ_COLLISIONS = 29    # m_e W dv_z in MCC and Bohm scattering
+STATS_PZ_BORN = 30          # momentum of ionisation products
+STATS_PZ_INJECTED = 31      # momentum of emitted electrons
+STATS_E_PZ = 32             # anode, exit, wall (electrons)
+STATS_I_PZ = 35             # anode, exit, wall (ions)
+STATS_BODY_FACE_E = 38      # front-face hits (electrons)
+STATS_BODY_FACE_I = 39      # front-face hits (ions)
+STATS_ION_PLUME = 40        # ionisation events downstream of the exit plane
+STATS_SIZE = 41
 
 
 def padded_dim(count: int, block: int) -> int:
@@ -506,10 +540,15 @@ if wp is not None:
         stats: wp.array(dtype=F64), count_slot: int, energy_slot: int,
         accumulate: int, wall_columns: wp.array(dtype=F64), wall_column_energy: wp.array(dtype=F64),
         exit_bins: wp.array(dtype=F64),
+        # v2.0 plume block: far-field side boundary, front face, momentum tallies and plume histograms
+        has_plume: int, z_exit: F64, r_outer: F64, r_exit: F64, pz_slot: int, body_slot: int, is_ion: int,
+        side_bins: wp.array(dtype=F64), theta_bins: wp.array(dtype=F64), iedf_bins: wp.array(dtype=F64), iedf_scale: F64,
+        theta_scale: F64,
     ):
         # stats layout (see WarpBackend.STATS): counts at count_slot+code-1, energies at
-        # energy_slot+code-1, work at 0, max speed^2 at 1, invalid at 2.
-        # No early returns: the per-particle work and speed^2 are reduced per
+        # energy_slot+code-1, momenta at pz_slot+code-1, work at 0, max speed^2 at 1, invalid at 2,
+        # total impulse at STATS_PZ_IMPULSE, electric impulse at STATS_PZ_ELECTRIC.
+        # No early returns: the per-particle work, speed^2 and impulses are reduced per
         # block with tile sums (launch dim padded to PARTICLE_BLOCK).
         p = wp.tid()
         active = 0
@@ -518,6 +557,8 @@ if wp is not None:
                 active = 1
         work = F64(0.0)
         speed2 = F64(0.0)
+        dpz = F64(0.0)
+        epz = F64(0.0)
         if active != 0:
             rp = r[p]
             zp = z[p]
@@ -561,11 +602,15 @@ if wp is not None:
             k_after = kinetic_energy(vr_new, vt_new, vz_new, mass_weight)
             work = k_after - k_before
             speed2 = vr_new * vr_new + vt_new * vt_new + vz_new * vz_new
+            dpz = mass_weight * (vz_new - vz0)
+            epz = charge * weight * dt * ez
             # boundary classification (identical to kernels.classify_boundary)
             code = 0
             if z_new < z_min:
                 code = 1
             elif z_new >= z_max:
+                code = 2
+            elif has_plume != 0 and z_new >= z_exit and r_new >= r_outer:
                 code = 2
             else:
                 fi = int(wp.floor(r_new / dr))
@@ -591,6 +636,9 @@ if wp is not None:
                 else:
                     wp.atomic_add(stats, count_slot + code - 1, F64(1.0))
                     wp.atomic_add(stats, energy_slot + code - 1, k_after)
+                    wp.atomic_add(stats, pz_slot + code - 1, mass_weight * vz_new)
+                    if code == 3 and has_plume != 0 and r_new >= r_exit:
+                        wp.atomic_add(stats, body_slot, F64(1.0))
                     if code == 3:
                         # renormalised bilinear surface deposit on plasma nodes
                         gr = wp.clamp(r_new / dr, F64(0.0), F64(nr) - F64(1.0e-12))
@@ -633,11 +681,23 @@ if wp is not None:
                                 wp.atomic_add(wall_column_energy, col, k_after)
                     elif code == 2:
                         if accumulate != 0:
-                            bin_index = wp.clamp(int(r_new / dr), 0, nr - 1)
-                            wp.atomic_add(exit_bins, bin_index, F64(1.0))
+                            if z_new >= z_max:
+                                bin_index = wp.clamp(int(r_new / dr), 0, nr - 1)
+                                wp.atomic_add(exit_bins, bin_index, F64(1.0))
+                            else:
+                                side_index = wp.clamp(int((z_new - z_min) / dz), 0, nz - 1)
+                                wp.atomic_add(side_bins, side_index, F64(1.0))
+                            if is_ion != 0:
+                                # ion current per solid angle about the aperture centre and the IEDF (as the CPU reference)
+                                theta = wp.degrees(wp.atan2(r_new, wp.max(z_new - z_exit, F64(0.0))))
+                                wp.atomic_add(theta_bins, wp.clamp(int(theta * theta_scale), 0, THETA_BINS - 1), F64(1.0))
+                                energy_ev = k_after / (weight * F64(1.602176634e-19))
+                                wp.atomic_add(iedf_bins, wp.clamp(int(energy_ev * iedf_scale), 0, IEDF_BINS - 1), F64(1.0))
         # block reductions (deterministic tree order) replace 2 same-address atomics per particle
         block_work = wp.tile_sum(wp.tile(work))
         wp.tile_atomic_add(stats, block_work, offset=0)
+        wp.tile_atomic_add(stats, wp.tile_sum(wp.tile(dpz)), offset=STATS_PZ_IMPULSE)
+        wp.tile_atomic_add(stats, wp.tile_sum(wp.tile(epz)), offset=STATS_PZ_ELECTRIC)
         block_speed = wp.tile_extract(wp.tile_max(wp.tile(speed2)), 0)
         if p % wp.block_dim() == 0:
             wp.atomic_max(stats, 1, block_speed)
@@ -676,6 +736,9 @@ if wp is not None:
         ionize: wp.array(dtype=wp.int32), sec_vr: wp.array(dtype=F64), sec_vt: wp.array(dtype=F64), sec_vz: wp.array(dtype=F64),
         ion_vr: wp.array(dtype=F64), ion_vt: wp.array(dtype=F64), ion_vz: wp.array(dtype=F64),
         stats: wp.array(dtype=F64), tally_slot: int, flag_bound: int,
+        # v2.0: positions + cell-centred neutral density shape (two-zone field), plume-birth and momentum tallies
+        r: wp.array(dtype=F64), z: wp.array(dtype=F64), shape_cell: wp.array(dtype=F64), has_plume: int, z_exit: F64,
+        dr: F64, dz: F64, z_min: F64, nr: int, nz: int, mass_weight: F64,
     ):
         # No early returns: the five tallies (candidates, elastic, excitation,
         # ionisation, null) are reduced per block with tile sums.
@@ -686,6 +749,8 @@ if wp is not None:
             ionize[p] = 0
         candidate = F64(0.0)
         outcome = 4  # 0 elastic, 1 excitation, 2 ionisation, 3 null, 4 no candidate
+        dpz = F64(0.0)
+        plume_birth = F64(0.0)
         active = 0
         if p < slots[0]:
             if alive[p] != 0:
@@ -704,9 +769,14 @@ if wp is not None:
                 m_e = F64(9.1093837139e-31)
                 ev = F64(1.602176634e-19)
                 energy = F64(0.5) * m_e * speed2 / ev
-                nu0 = neutral_density * sigma_lookup(table, points, step_ev, max_ev, energy, 0) * speed
-                nu1 = neutral_density * sigma_lookup(table, points, step_ev, max_ev, energy, 1) * speed
-                nu2 = neutral_density * sigma_lookup(table, points, step_ev, max_ev, energy, 2) * speed
+                density = neutral_density
+                if has_plume != 0:
+                    ci = wp.clamp(int(wp.floor(r[p] / dr)), 0, nr - 1)
+                    cj = wp.clamp(int(wp.floor((z[p] - z_min) / dz)), 0, nz - 1)
+                    density = neutral_density * shape_cell[ci * nz + cj]
+                nu0 = density * sigma_lookup(table, points, step_ev, max_ev, energy, 0) * speed
+                nu1 = density * sigma_lookup(table, points, step_ev, max_ev, energy, 1) * speed
+                nu2 = density * sigma_lookup(table, points, step_ev, max_ev, energy, 2) * speed
                 if energy < threshold_exc:
                     nu1 = F64(0.0)
                 if energy < threshold_ion:
@@ -757,8 +827,12 @@ if wp is not None:
                     ion_vz[p] = ion_thermal * rad2 * wp.cos(F64(6.283185307179586) * u10)
                     ionize[p] = 1
                     outcome = 2
+                    if has_plume != 0 and z[p] >= z_exit:
+                        plume_birth = F64(1.0)
                 else:
                     outcome = 3
+                if outcome < 3:
+                    dpz = mass_weight * (vz[p] - vzp)
         e_flag = F64(0.0)
         x_flag = F64(0.0)
         i_flag = F64(0.0)
@@ -776,6 +850,8 @@ if wp is not None:
         wp.tile_atomic_add(stats, wp.tile_sum(wp.tile(x_flag)), offset=tally_slot + 2)
         wp.tile_atomic_add(stats, wp.tile_sum(wp.tile(i_flag)), offset=tally_slot + 3)
         wp.tile_atomic_add(stats, wp.tile_sum(wp.tile(n_flag)), offset=tally_slot + 4)
+        wp.tile_atomic_add(stats, wp.tile_sum(wp.tile(dpz)), offset=STATS_PZ_COLLISIONS)
+        wp.tile_atomic_add(stats, wp.tile_sum(wp.tile(plume_birth)), offset=STATS_ION_PLUME)
 
     @wp.kernel
     def spawn_kernel(
@@ -838,10 +914,11 @@ if wp is not None:
         slots[0] = slots[0] + int(ctrl[1])
 
     @wp.kernel
-    def inject_control_kernel(ctrl: wp.array(dtype=F64), rate_per_step: F64, stats: wp.array(dtype=F64), count_slot: int):
-        # ctrl[0] = fractional carry, ctrl[1] = macro-electrons to inject this step.  Same
-        # arithmetic as the v1.0-v1.3 host bookkeeping (expected = rate + carry; floor).
-        expected = rate_per_step + ctrl[0]
+    def inject_control_kernel(ctrl: wp.array(dtype=F64), stats: wp.array(dtype=F64), count_slot: int):
+        # ctrl[0] = fractional carry, ctrl[1] = macro-electrons to inject this step, ctrl[2] = rate per
+        # step (device-resident so the continuity rule can change it between syncs without a
+        # re-capture, v2.0).  Same arithmetic as the v1.0-v1.3 host bookkeeping (expected = rate + carry; floor).
+        expected = ctrl[2] + ctrl[0]
         n = wp.floor(expected)
         ctrl[0] = expected - n
         ctrl[1] = n
@@ -862,6 +939,9 @@ if wp is not None:
         r: wp.array(dtype=F64), z: wp.array(dtype=F64), vr: wp.array(dtype=F64), vt: wp.array(dtype=F64),
         vz: wp.array(dtype=F64), alive: wp.array(dtype=wp.int32), stats: wp.array(dtype=F64), slot: int, mass_weight: F64,
         overflow_slot: int,
+        # v2.0: mode 0 = legacy exit-plane half-Maxwellian; mode 1 = cathode annulus (uniform in volume,
+        # isotropic Maxwellian): r^2 = r_in2 + u (r_out2 - r_in2), z = z_start + u z_span
+        mode: int, r_in2: F64, r_span2: F64, z_start: F64, z_span: F64, pz_slot: int,
     ):
         k = wp.tid()
         if F64(k) >= ctrl[1]:
@@ -880,17 +960,23 @@ if wp is not None:
         u5 = F64(wp.randf(state))
         u6 = wp.max(F64(wp.randf(state)), F64(1.0e-30))
         d = base + k
-        r[d] = r_max * wp.sqrt(u0) * (F64(1.0) - F64(1.0e-9))
-        z[d] = z_max - F64(0.5) * dz * u1 - F64(1.0e-9) * dz
         rad1 = wp.sqrt(F64(-2.0) * wp.log(u2))
         vrk = thermal * rad1 * wp.cos(F64(6.283185307179586) * u3)
         vtk = thermal * rad1 * wp.sin(F64(6.283185307179586) * u3)
-        vzk = -thermal * wp.sqrt(F64(-2.0) * wp.log(u6))
+        if mode == 0:
+            r[d] = r_max * wp.sqrt(u0) * (F64(1.0) - F64(1.0e-9))
+            z[d] = z_max - F64(0.5) * dz * u1 - F64(1.0e-9) * dz
+            vzk = -thermal * wp.sqrt(F64(-2.0) * wp.log(u6))
+        else:
+            r[d] = wp.sqrt(r_in2 + u0 * r_span2)
+            z[d] = z_start + u1 * z_span
+            vzk = thermal * wp.sqrt(F64(-2.0) * wp.log(wp.max(u4, F64(1.0e-30)))) * wp.cos(F64(6.283185307179586) * u5)
         vr[d] = vrk
         vt[d] = vtk
         vz[d] = vzk
         alive[d] = 1
         wp.atomic_add(stats, slot, kinetic_energy(vrk, vtk, vzk, mass_weight))
+        wp.atomic_add(stats, pz_slot, mass_weight * vzk)
 
     @wp.kernel
     def bohm_kernel(
@@ -898,12 +984,13 @@ if wp is not None:
         alive: wp.array(dtype=wp.int32), slots: wp.array(dtype=wp.int32),
         seed_table: wp.array(dtype=wp.int32), counter: wp.array(dtype=wp.int32),
         b_r: wp.array(dtype=F64), b_z: wp.array(dtype=F64), dr: F64, dz: F64, z_min: F64, nr: int, nz: int,
-        alpha_dt_e_over_m: F64, stats: wp.array(dtype=F64), tally_slot: int,
+        alpha_dt_e_over_m: F64, stats: wp.array(dtype=F64), tally_slot: int, mass_weight: F64,
     ):
         # v1.4 sensitivity hook: isotropic speed-preserving redirection with probability
         # 1 - exp(-alpha omega_ce dt) at the particle's |B| (same map as the CPU reference).
         p = wp.tid()
         hit = F64(0.0)
+        dpz = F64(0.0)
         active = 0
         if p < slots[0]:
             if alive[p] != 0:
@@ -932,11 +1019,13 @@ if wp is not None:
                 u1 = F64(wp.randf(state))
                 u2 = F64(wp.randf(state))
                 v = isotropic(speed, u1, u2)
+                dpz = mass_weight * (v[2] - vz[p])
                 vr[p] = v[0]
                 vt[p] = v[1]
                 vz[p] = v[2]
                 hit = F64(1.0)
         wp.tile_atomic_add(stats, wp.tile_sum(wp.tile(hit)), offset=tally_slot)
+        wp.tile_atomic_add(stats, wp.tile_sum(wp.tile(dpz)), offset=STATS_PZ_COLLISIONS)
 
     @wp.kernel
     def compact_kernel(
@@ -967,6 +1056,20 @@ if wp is not None:
         while p < count:
             if alive[p] != 0:
                 acc += kinetic_energy(vr[p], vt[p], vz[p], mass_weight)
+            p += threads
+        partial[k] = acc
+
+    @wp.kernel
+    def momentum_sum_kernel(vz: wp.array(dtype=F64), alive: wp.array(dtype=wp.int32), slots: wp.array(dtype=wp.int32), slot: int,
+                            threads: int, mass_weight: F64, partial: wp.array(dtype=F64)):
+        # v2.0: sum of m W v_z over the flagged particles (series momentum, born momentum)
+        k = wp.tid()
+        count = slots[slot]
+        acc = F64(0.0)
+        p = k
+        while p < count:
+            if alive[p] != 0:
+                acc += mass_weight * vz[p]
             p += threads
         partial[k] = acc
 
@@ -1346,24 +1449,6 @@ class DeviceSpecies:
 
 
 # Per-interval device statistics (float64; counts are exact integers in binary64).
-STATS_WORK = 0
-STATS_MAX_SPEED2 = 1
-STATS_INVALID = 2
-STATS_PEAK_DENSITY = 3
-STATS_E_COUNTS = 4          # anode, exit, wall (electrons)
-STATS_E_ENERGY = 7
-STATS_I_COUNTS = 10         # anode, exit, wall (ions)
-STATS_I_ENERGY = 13
-STATS_MCC = 16              # candidates, elastic, excitation, ionization, null
-STATS_KE_INJECTED = 21
-STATS_KE_BORN = 22
-STATS_OVERFLOW = 23
-STATS_INJECTED = 24         # v1.4: injected macro-electrons (device-side injection control)
-STATS_ANOMALOUS = 25        # v1.4: Bohm-scattering hook tally
-STATS_CARRY = 26            # v1.4: injection carry after the latest step (overwritten, not accumulated)
-STATS_SIZE = 27
-
-
 def birth_bound(candidates: int, probability: float) -> int:
     """Upper bound on ionisations in one step: mean + 8 sigma of Binomial(n, P) + slack.
 
@@ -1455,18 +1540,27 @@ class WarpBackend:
         self.q_e, self.q_i, self.surface, self.phi, self.e_r, self.e_z = (zeros() for _ in range(6))
         self.stats = wp.zeros(STATS_SIZE, dtype=wp.float64, device=dev)
         self.slots = wp.zeros(2, dtype=wp.int32, device=dev)
-        self.sample_out = wp.zeros(4, dtype=wp.float64, device=dev)
+        self.sample_out = wp.zeros(5, dtype=wp.float64, device=dev)
         # v1.4: device-side per-step state so that a whole step has fixed kernel arguments
         # (graph-capturable): seed table for the sync interval, steps-since-sync counter,
         # injection control [carry, count].
         self.seed_table = wp.zeros(SEED_STREAMS * self.sync_interval, dtype=wp.int32, device=dev)
         self.step_counter = wp.zeros(1, dtype=wp.int32, device=dev)
-        self.inject_ctrl = wp.zeros(2, dtype=wp.float64, device=dev)
-        self.injection_rate_per_step = (
-            config.injection.electron_current_a * config.dt_s / (ELEMENTARY_CHARGE_C * config.macro_weight)
-            if config.injection is not None and config.injection.electron_current_a > 0.0 else 0.0
-        )
-        self.max_inject_per_step = int(np.floor(self.injection_rate_per_step)) + 1
+        self.inject_ctrl = wp.zeros(3, dtype=wp.float64, device=dev)     # [carry, count this step, rate per step]
+        # emission: legacy exit-plane injection or the v2.0 cathode region; the rate is device-resident
+        # (``inject_ctrl[2]``) and, under the continuity rule, updated by the driver at series records
+        self.emission_rate_per_step = config.initial_emission_rate_per_step
+        self.emission_enabled = config.emission_peak_current_a > 0.0
+        peak_rate = config.emission_peak_current_a * config.dt_s / (ELEMENTARY_CHARGE_C * config.macro_weight)
+        self.max_inject_per_step = int(np.floor(peak_rate)) + 1
+        # v2.0 plume block: two-zone neutral shape per cell and the far-field/plume histograms
+        self.has_plume = bool(masks.has_plume)
+        self.neutral_shape = f64(neutral_shape_cells(masks))
+        self.d_side_e = wp.zeros(self.nz, dtype=wp.float64, device=dev)
+        self.d_side_i = wp.zeros(self.nz, dtype=wp.float64, device=dev)
+        self.d_theta_i = wp.zeros(THETA_BINS, dtype=wp.float64, device=dev)
+        self.d_iedf_i = wp.zeros(IEDF_BINS, dtype=wp.float64, device=dev)
+        self.iedf_max_ev = iedf_max_ev(config)
         # CUDA-graph capture of the whole step (v1.4): one graph per step variant
         # (ion push?, ion redeposit?, accumulate?) and per particle-array allocation.
         self.step_graph = bool(step_graph) and self.device.is_cuda and config.poisson.method == "device-direct"
@@ -1514,6 +1608,10 @@ class WarpBackend:
     @property
     def step_index(self) -> int:
         return int(self.state_meta["step"])
+
+    @property
+    def time_s(self) -> float:
+        return float(self.state_meta["time_s"])
 
     def _alloc_species(self, capacity: int) -> DeviceSpecies:
         dev = self.device
@@ -1618,8 +1716,8 @@ class WarpBackend:
 
         bound = species.bound
         injected_per_step = 0
-        if is_electron and self.config.injection is not None:
-            injected_per_step = int(self.config.injection.electron_current_a * self.config.dt_s / (ELEMENTARY_CHARGE_C * self.config.macro_weight)) + 1
+        if is_electron and self.emission_enabled:
+            injected_per_step = self.max_inject_per_step
         electrons = self.species["e"].bound if "e" in self.species else bound
         for _ in range(steps):
             births = birth_bound(electrons, self.probability) if self.mcc is not None else 0
@@ -1635,8 +1733,33 @@ class WarpBackend:
             raise PIC2DValidationError("neutral scale requires MCC")
         self.mcc.set_neutral_scale(scale)
 
+    def set_emission_rate(self, rate_per_step: float) -> None:
+        """v2.0: cathode emission rate (macro-electrons per step) for the coming steps; device-resident, graph-safe."""
+
+        if not isfinite(rate_per_step) or rate_per_step < 0.0:
+            raise PIC2DValidationError("emission rate must be finite and non-negative")
+        peak = self.config.emission_peak_current_a * self.config.dt_s / (ELEMENTARY_CHARGE_C * self.config.macro_weight)
+        if rate_per_step > peak * (1.0 + 1e-12):
+            raise PIC2DValidationError("emission rate exceeds the configured peak current (device injection buffer)")
+        self.emission_rate_per_step = float(rate_per_step)
+        self.state_meta["cumulative"][CATHODE_RATE_KEY] = self.emission_rate_per_step
+        self._push_inject_ctrl()
+
+    def _push_inject_ctrl(self) -> None:
+        wp.copy(self.inject_ctrl, wp.array(
+            np.array([float(self.state_meta["injection_carry"]), 0.0, self.emission_rate_per_step]), dtype=wp.float64, device=self.device))
+
+    def charge_maps(self) -> tuple[np.ndarray, np.ndarray]:
+        """v2.0: node charge maps from the last deposit (positions at the start of the last step)."""
+
+        self.flush()
+        shape = self.masks.grid.node_shape
+        self.sync_count += 2
+        return self.q_e.numpy().reshape(shape).copy(), self.q_i.numpy().reshape(shape).copy()
+
     def load_state(self, state: SimulationState) -> None:
         self.step_graphs.clear()
+        self.emission_rate_per_step = float(state.cumulative.get(CATHODE_RATE_KEY, self.config.initial_emission_rate_per_step))
         self.species = {"e": self._upload(state.electrons), "i": self._upload(state.ions)}
         self._set_slots(state.electrons.count, state.ions.count)
         # copy into the existing node arrays so captured graphs stay bound to them
@@ -1669,7 +1792,7 @@ class WarpBackend:
         )
         wp.copy(self.seed_table, wp.array(seeds, dtype=wp.int32, device=self.device))
         self.step_counter.zero_()
-        wp.copy(self.inject_ctrl, wp.array(np.array([float(self.state_meta["injection_carry"]), 0.0]), dtype=wp.float64, device=self.device))
+        self._push_inject_ctrl()
 
     def export_state(self) -> SimulationState:
         self.flush()
@@ -1725,7 +1848,7 @@ class WarpBackend:
             births = birth_bound(n_bound, self.probability)
             electrons.bound = min(electrons.bound + births, electrons.capacity)
             ions.bound = min(ions.bound + births, ions.capacity)
-        if self.injection_rate_per_step > 0.0:
+        if self.emission_enabled:
             electrons.bound = min(electrons.bound + self.max_inject_per_step, electrons.capacity)
         meta["step"] = step_index + 1
         meta["time_s"] = meta["step"] * config.dt_s
@@ -1822,6 +1945,7 @@ class WarpBackend:
                                   self.d_w, self.d_vr, self.d_vt, self.d_vz, self.d_v2], device=dev)
         self._mark("field+diag")
 
+        geometry = grid.geometry
         for slot, (species, particles, dim) in enumerate(((self.electron, electrons, e_dim), (self.ion, ions, i_dim))):
             is_electron = slot == 0
             if dim == 0 or (not is_electron and not ion_step):
@@ -1830,7 +1954,7 @@ class WarpBackend:
             wp.launch(
                 push_kernel, dim=padded_dim(dim, PARTICLE_BLOCK), block_dim=PARTICLE_BLOCK,
                 inputs=[particles.r, particles.z, particles.vr, particles.vt, particles.vz, particles.alive_flags,
-                        self.e_r, self.e_z, self.b_r, self.b_z, grid.dr_m, grid.dz_m, grid.geometry.z_min_m, grid.geometry.z_max_m,
+                        self.e_r, self.e_z, self.b_r, self.b_z, grid.dr_m, grid.dz_m, geometry.z_min_m, geometry.domain_z_max_m,
                         self.nr, self.nz, self.plasma_cell, self.top_cell, self.plasma_node, self.slots, slot,
                         species.charge_c, species.mass_kg, species.macro_weight, species_dt, FIXED_POINT_SCALE,
                         wp.int64(1 if species.charge_c > 0 else -1), self.acc_wall,
@@ -1838,7 +1962,11 @@ class WarpBackend:
                         STATS_E_ENERGY if is_electron else STATS_I_ENERGY, 1 if accumulate else 0,
                         self.d_wall_e if is_electron else self.d_wall_i,
                         self.d_wall_e_energy if is_electron else self.d_wall_i_energy,
-                        self.d_exit_e if is_electron else self.d_exit_i],
+                        self.d_exit_e if is_electron else self.d_exit_i,
+                        1 if self.has_plume else 0, geometry.z_max_m, geometry.max_radius_m, geometry.exit_radius_m,
+                        STATS_E_PZ if is_electron else STATS_I_PZ, STATS_BODY_FACE_E if is_electron else STATS_BODY_FACE_I,
+                        0 if is_electron else 1, self.d_side_e if is_electron else self.d_side_i, self.d_theta_i, self.d_iedf_i,
+                        IEDF_BINS / self.iedf_max_ev, THETA_BINS / 90.0],
                 device=dev,
             )
         wp.launch(wall_int_to_charge_kernel, dim=self.node_count,
@@ -1851,7 +1979,8 @@ class WarpBackend:
                 bohm_kernel, dim=padded_dim(e_dim, PARTICLE_BLOCK), block_dim=PARTICLE_BLOCK,
                 inputs=[electrons.r, electrons.z, electrons.vr, electrons.vt, electrons.vz, electrons.alive_flags, self.slots,
                         self.seed_table, self.step_counter, self.b_r, self.b_z, grid.dr_m, grid.dz_m, grid.geometry.z_min_m, self.nr, self.nz,
-                        config.anomalous.alpha * dt * ELEMENTARY_CHARGE_C / ELECTRON_MASS_KG, self.stats, STATS_ANOMALOUS],
+                        config.anomalous.alpha * dt * ELEMENTARY_CHARGE_C / ELECTRON_MASS_KG, self.stats, STATS_ANOMALOUS,
+                        ELECTRON_MASS_KG * config.macro_weight],
                 device=dev,
             )
 
@@ -1864,7 +1993,9 @@ class WarpBackend:
                         self.table, self.table_points, mcc.table.energy_step_ev, mcc.table.energy_max_ev,
                         mcc.table.thresholds_ev[1], mcc.table.thresholds_ev[2], 8.7, ion_thermal,
                         self.ionize, self.sec[0], self.sec[1], self.sec[2], self.ionv[0], self.ionv[1], self.ionv[2],
-                        self.stats, STATS_MCC, e_dim],
+                        self.stats, STATS_MCC, e_dim,
+                        electrons.r, electrons.z, self.neutral_shape, 1 if self.has_plume else 0, geometry.z_max_m,
+                        grid.dr_m, grid.dz_m, geometry.z_min_m, self.nr, self.nz, ELECTRON_MASS_KG * config.macro_weight],
                 device=dev,
             )
             self._mark("mcc")
@@ -1882,6 +2013,12 @@ class WarpBackend:
                       inputs=[self.ionv[0], self.ionv[1], self.ionv[2], self.born_flag, self.slots, 0, REDUCTION_THREADS,
                               self.ion.mass_kg * config.macro_weight, self.partial_particles], device=dev)
             wp.launch(deferred_add_kernel, dim=1, inputs=[self.partial_particles, REDUCTION_THREADS, self.stats, STATS_KE_BORN], device=dev)
+            # v2.0 momentum ledger: axial momentum of the born ions and secondary electrons
+            for velocity, mass in ((self.ionv[2], self.ion.mass_kg), (self.sec[2], self.electron.mass_kg)):
+                wp.launch(momentum_sum_kernel, dim=REDUCTION_THREADS,
+                          inputs=[velocity, self.born_flag, self.slots, 0, REDUCTION_THREADS, mass * config.macro_weight, self.partial_particles],
+                          device=dev)
+                wp.launch(deferred_add_kernel, dim=1, inputs=[self.partial_particles, REDUCTION_THREADS, self.stats, STATS_PZ_BORN], device=dev)
             # newly born ions join the frozen ion charge immediately (exact integer add)
             wp.launch(deposit_fixed_kernel, dim=e_dim,
                       inputs=[self.born_r, self.born_z, self.born_flag, self.slots, 0, grid.dr_m, grid.dz_m, grid.geometry.z_min_m,
@@ -1892,15 +2029,24 @@ class WarpBackend:
             wp.launch(spawn_commit_kernel, dim=1, inputs=[self.ionize, self.offsets, self.slots, electrons.capacity, ions.capacity], device=dev)
         self._mark("spawn")
 
-        if self.injection_rate_per_step > 0.0:
-            # v1.4: injection count and carry live on the device (fixed launch shape)
+        if self.emission_enabled:
+            # v1.4: injection count and carry live on the device (fixed launch shape); v2.0: so does the rate
             r_max = grid.r_m[self.masks.top_plasma_cell[self.nz - 1] + 1]
-            thermal = sqrt(EV_J * config.injection.electron_temperature_ev / ELECTRON_MASS_KG)  # type: ignore[union-attr]
-            wp.launch(inject_control_kernel, dim=1, inputs=[self.inject_ctrl, self.injection_rate_per_step, self.stats, STATS_INJECTED], device=dev)
+            thermal = sqrt(EV_J * config.emission_temperature_ev / ELECTRON_MASS_KG)
+            cathode = config.cathode
+            if cathode is None:
+                mode, r_in2, r_span2, z_start, z_span = 0, 0.0, 0.0, 0.0, 0.0
+            else:
+                mode = 1
+                r_in2 = cathode.r_inner_m**2
+                r_span2 = cathode.r_outer_m**2 - cathode.r_inner_m**2
+                z_start, z_span = cathode.z_start_m, cathode.z_end_m - cathode.z_start_m
+            wp.launch(inject_control_kernel, dim=1, inputs=[self.inject_ctrl, self.stats, STATS_INJECTED], device=dev)
             wp.launch(inject_kernel, dim=self.max_inject_per_step,
                       inputs=[self.seed_table, self.step_counter, self.inject_ctrl, self.slots, electrons.capacity, float(r_max),
-                              grid.geometry.z_max_m, grid.dz_m, thermal, electrons.r, electrons.z, electrons.vr, electrons.vt, electrons.vz,
-                              electrons.alive_flags, self.stats, STATS_KE_INJECTED, ELECTRON_MASS_KG * config.macro_weight, STATS_OVERFLOW],
+                              geometry.domain_z_max_m, grid.dz_m, thermal, electrons.r, electrons.z, electrons.vr, electrons.vt, electrons.vz,
+                              electrons.alive_flags, self.stats, STATS_KE_INJECTED, ELECTRON_MASS_KG * config.macro_weight, STATS_OVERFLOW,
+                              mode, r_in2, r_span2, z_start, z_span, STATS_PZ_INJECTED],
                       device=dev)
             wp.launch(add_injected_slots_kernel, dim=1, inputs=[self.slots, self.inject_ctrl], device=dev)
             wp.launch(carry_kernel, dim=1, inputs=[self.inject_ctrl, self.stats, STATS_CARRY], device=dev)
@@ -1928,16 +2074,34 @@ class WarpBackend:
                 f"device slot counts {int(slots[0])}/{int(slots[1])} exceed the host bounds {electrons.bound}/{ions.bound}"
             )
         cumulative = self.state_meta["cumulative"]
-        if self.injection_rate_per_step > 0.0:
+        if self.emission_enabled:
             # v1.4: the injection count and carry are device-side (fixed-shape step)
             self.injected_since_sync = int(stats[STATS_INJECTED])
             self.state_meta["injection_carry"] = float(stats[STATS_CARRY])
         if config.anomalous is not None:
             cumulative["anomalous"] = cumulative.get("anomalous", 0.0) + float(stats[STATS_ANOMALOUS])
-        for base, label in ((STATS_E_COUNTS, "electrons"), (STATS_I_COUNTS, "ions")):
+        add = lambda key, value: cumulative.__setitem__(key, cumulative.get(key, 0.0) + float(value))  # noqa: E731
+        for base, pz_base, label in ((STATS_E_COUNTS, STATS_E_PZ, "electrons"), (STATS_I_COUNTS, STATS_I_PZ, "ions")):
             cumulative[f"anode_{label}"] += float(stats[base])
             cumulative[f"exit_{label}"] += float(stats[base + 1])
             cumulative[f"wall_{label}"] += float(stats[base + 2])
+            # v2.0 momentum ledger (same extra keys as the CPU reference)
+            add(f"pz_anode_{label}", stats[pz_base])
+            add(f"pz_exit_{label}", stats[pz_base + 1])
+            add(f"pz_wall_{label}", stats[pz_base + 2])
+        add("pz_impulse", stats[STATS_PZ_IMPULSE])
+        add("pz_impulse_electric", stats[STATS_PZ_ELECTRIC])
+        if self.mcc is not None or config.anomalous is not None:
+            add("pz_collisions", stats[STATS_PZ_COLLISIONS])
+        if self.mcc is not None:
+            add("pz_born", stats[STATS_PZ_BORN])
+        if self.emission_enabled:
+            add("pz_injected", stats[STATS_PZ_INJECTED])
+        if self.has_plume:
+            add("body_face_electrons", stats[STATS_BODY_FACE_E])
+            add("body_face_ions", stats[STATS_BODY_FACE_I])
+            if self.mcc is not None:
+                add("ionizations_plume", stats[STATS_ION_PLUME])
         for offset, key in ((0, "ke_absorbed_anode_j"), (1, "ke_absorbed_exit_j"), (2, "ke_absorbed_wall_j")):
             cumulative[key] += float(stats[STATS_E_ENERGY + offset] + stats[STATS_I_ENERGY + offset])
         cumulative["field_work_j"] += float(stats[STATS_WORK])
@@ -1999,14 +2163,26 @@ class WarpBackend:
             wp.launch(final_sum_kernel, dim=1, inputs=[self.partial_particles, REDUCTION_THREADS, self.sample_out, slot], device=dev)
         wp.launch(sum_kernel, dim=REDUCTION_THREADS, inputs=[self.surface, self.node_count, REDUCTION_THREADS, self.partial_particles], device=dev)
         wp.launch(final_sum_kernel, dim=1, inputs=[self.partial_particles, REDUCTION_THREADS, self.sample_out, 2], device=dev)
+        # v2.0: represented axial momentum per species (momentum ledger)
+        for slot, species, particles in ((0, self.electron, electrons), (1, self.ion, ions)):
+            if particles.alive:
+                wp.launch(momentum_sum_kernel, dim=REDUCTION_THREADS,
+                          inputs=[particles.vz, particles.alive_flags, self.slots, slot, REDUCTION_THREADS,
+                                  species.mass_kg * config.macro_weight, self.partial_particles], device=dev)
+            else:
+                self.partial_particles.zero_()
+            wp.launch(final_sum_kernel, dim=1, inputs=[self.partial_particles, REDUCTION_THREADS, self.sample_out, 3 + slot], device=dev)
         out = self.sample_out.numpy()
-        phi = self.phi.numpy().reshape(self.masks.grid.node_shape).copy()
-        self.sync_count += 2
+        shape = self.masks.grid.node_shape
+        phi = self.phi.numpy().reshape(shape).copy()
+        surface = self.surface.numpy().reshape(shape).copy()
+        self.sync_count += 3
         return {
             "step": self.state_meta["step"], "time_s": self.state_meta["time_s"],
             "electrons": electrons.alive, "ions": ions.alive,
             "kinetic_electron_j": float(out[0]), "kinetic_ion_j": float(out[1]),
-            "surface_charge_c": float(out[2]), "phi_v": phi,
+            "momentum_z_electrons": float(out[3]), "momentum_z_ions": float(out[4]),
+            "surface_charge_c": float(out[2]), "phi_v": phi, "surface_charge_map_c": surface,
             "cumulative": dict(self.state_meta["cumulative"]),
         }
 
@@ -2032,10 +2208,26 @@ class WarpBackend:
                                min_particles=gate.min_macro_particles_at_peak if gate is not None else 16)
 
     def diagnostic_arrays(self) -> dict[str, np.ndarray]:
+        return self._host_accumulator().to_arrays(self.config.macro_weight, self.config.dt_s)
+
+    def diagnostic_sums(self) -> dict[str, np.ndarray]:
+        """v2.0 frame recorder: the raw device window sums on the host."""
+
+        return self._host_accumulator().raw_sums()
+
+    def surface_charge_map(self) -> np.ndarray:
+        self.flush()
+        return self.surface.numpy().reshape(self.masks.grid.node_shape).copy()
+
+    def _host_accumulator(self) -> DiagnosticAccumulator:
         wp.synchronize_device(self.device)
         shape = self.masks.grid.node_shape
-        acc = DiagnosticAccumulator(self.masks)
+        acc = DiagnosticAccumulator(self.masks, self.iedf_max_ev)
         acc.steps = self.diag_steps
+        acc.side_electrons = self.d_side_e.numpy()
+        acc.side_ions = self.d_side_i.numpy()
+        acc.theta_ions = self.d_theta_i.numpy()
+        acc.iedf_ions = self.d_iedf_i.numpy()
         acc.n_e = self.d_n_e.numpy().reshape(shape)
         acc.n_i = self.d_n_i.numpy().reshape(shape)
         acc.phi = self.d_phi.numpy().reshape(shape)
@@ -2051,11 +2243,12 @@ class WarpBackend:
         acc.wall_ion_energy_j = self.d_wall_i_energy.numpy()
         acc.exit_electrons = self.d_exit_e.numpy()
         acc.exit_ions = self.d_exit_i.numpy()
-        return acc.to_arrays(self.config.macro_weight, self.config.dt_s)
+        return acc
 
     def reset_diagnostics(self) -> None:
         for array in (self.d_n_e, self.d_n_i, self.d_phi, self.d_w, self.d_vr, self.d_vt, self.d_vz, self.d_v2, self.d_ion,
-                      self.d_wall_e, self.d_wall_i, self.d_wall_e_energy, self.d_wall_i_energy, self.d_exit_e, self.d_exit_i):
+                      self.d_wall_e, self.d_wall_i, self.d_wall_e_energy, self.d_wall_i_energy, self.d_exit_e, self.d_exit_i,
+                      self.d_side_e, self.d_side_i, self.d_theta_i, self.d_iedf_i):
             array.zero_()
         self.diag_steps = 0
 

@@ -3,6 +3,26 @@
 Scope: the standalone dashboards under `modern/visualization/`. Experiment-local
 dashboards keep their own logs next to their generators.
 
+## 2026-09-03 21:30 AEST - L1a geometry sweep v3 dashboard (HEMP-like regime)
+
+- New `generate_l1a_geometry_sweep_v3_dashboard.py` + `l1a-geometry-sweep-v3.template.html`
+  -> `l1a-geometry-sweep-v3.html` (641,187 bytes) from the accepted bundle of
+  `experiments/l1a_geometry_sweep_v3` (990 artifacts byte-verified; preregistration
+  `1923ef76`, result `2cfe8223`). Panels: claim boundary (linear-vacuum screening, L1b/P2
+  queued), headline cards, rho vs x_w scatter (log) with the I_1 curve, the rho = 1.5 line,
+  x* and the sweep-v2 x_w band, rho_wall scatter with I_1/I_0, rho / I_1 agreement band,
+  preregistered H1/H2 outcome table, six cusp maps (wall |B| and axis |B_z| profiles +
+  separatrices; five HEMP-like representatives incl. both five-stage four-cusp designs and
+  one sweep-v2-box design), by-stage table, v2-region cards, HEMP-like sub-region, design
+  space with manufacturability assumptions, held-out and verbatim sweep-v2 gates, all 224
+  designs, binding gates, provenance. Deterministic, offline (SVG only), `#jserrors` sink.
+- Test `tests/visualization/test_l1a_geometry_sweep_v3_dashboard.py` (6 tests) re-reads
+  the bundle, checks the payload against the dataset rows, the curve against the Bessel
+  series, the hypothesis outcome against the preregistered thresholds and the checked-in
+  HTML byte-for-byte.
+- Headless Edge (`--headless=new`) renders at 1440 px and 390 px with no JS errors;
+  screenshots `%TEMP%\sweepv3\l1a-sweep-v3-{desktop,top,cuspmaps,narrow390}.png`.
+
 ## 2026-09-03 19:55 AEST - cusp topology search v3 dashboard (v3.1 accepted bundle, v3 lineage)
 
 - New `generate_cusp_topology_search_v3_dashboard.py` -> `cusp-topology-search-v3.html`

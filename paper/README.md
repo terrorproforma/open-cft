@@ -70,8 +70,36 @@ robust front on catalogue designs 49, 50 and 94 (the three lowest screening
 P(wall)), a pooled-probability closure whose front shares no design with it
 (Jaccard 0.0), and the six disclosures of the v1 post-hoc audit closed by
 protocol rules and binding gates. It makes no thruster-performance or design
-claim; its design ranking is a property of the declared closure. The checked
-evidence is enumerated in `evidence/claims.json`. Concurrent or later work is not
+claim; its design ranking is a property of the declared closure. A fifth
+`numerical-screening` gate, `GATE-CUSP-TOPOLOGY-V3-1`, admits the cusp topology
+search `modern/experiments/cusp_topology_search_v3_1` (results
+`cec47f12f5909c5886424bf5d46ac20ce06f1ac5`, preregistration `1600cfd3…`,
+dashboard `9abbd537…`) at a fifth recorded outcome,
+`accepted-topology-screening`: the HEMP/DCFT literature definition of a wall
+cusp (axis null, separatrix traced to the dielectric, wall cusp at the
+intersection, cells between consecutive cusps) evaluated on 281 prescribed field
+maps (the 96 re-solved L1a sweep designs, the 128 sealed four-cell candidates,
+the 56 characterization cases and the P2-qualified divergent-exit-stack field),
+281/281 stable under refinement (largest shift 33 µm), both held-out references
+reproduced (56/56 characterization axis roots, 96/96 sweep axis nulls); wall-cusp
+histogram 0:6 / 1:140 / 2:36 / 3:56 / 4:25 / 5:6 / 6:6 / 7:6; N−1 wall cusps for
+83 of 96 sweep designs with the cusps at the inter-magnet gaps (four wall cusps
+in 19, four cells in 47); exactly one wall cusp in every four-cell candidate
+(weak even stages leave one axis null, so the frozen four-cell null follows from
+the construction of both its definition and its source policy); three P2 cusps
+at 6.028/12.000/17.972 mm within 31 µm of the kinetic workstream's axis-null
+planes (a reported, ungated consistency reference). Its predecessor
+`cusp_topology_search_v3` (preregistration `69159934…`, recorded
+`assessment_rejection` at `8cbcdbe6…`, read-only audit `9fa6359a…`) is bound as
+lineage and never cited for a number: its held-out reference kept only sealed
+axis clusters with centroid radius exactly zero, a recording-layer defect. The
+cusps and cells are geometric properties of field maps under a stated
+definition, the mirror ratios are field ratios and never probabilities, no
+plasma, confinement or performance claim follows, and the frozen-definition
+nulls of Section 8 remain true; the Discussion (CLM-028, CLM-044) now says the
+frozen wall-null definition was non-standard and that the cells exist under the
+literature definition while their plasma physics stays undemonstrated. The
+checked evidence is enumerated in `evidence/claims.json`. Concurrent or later work is not
 publishable merely because files exist in a working tree: a planned section
 opens only when its gate in `evidence/result-gates.json` names an accepted,
 committed manifest.
@@ -153,11 +181,25 @@ it does not modify the environment.
   file roles, and required metrics.
 - `evidence/result-gates.json` — explicit L1/L2/L3 admission criteria
   (`physics-level` gates), the accepted `numerical-campaign` gates
-  `GATE-WALL-LOSS-V4`, `GATE-MDO-L0-V1` and `GATE-MDO-L0-V2`, the four
+  `GATE-WALL-LOSS-V4`, `GATE-MDO-L0-V1` and `GATE-MDO-L0-V2`, the five
   `numerical-screening` gates `GATE-L1A-SWEEP-V2`, `GATE-FOUR-CELL-V2`,
-  `GATE-TOPOLOGY-CHAR-V1` and `GATE-WALL-LOSS-GEOMETRY-SCREENING-V1`, each
-  carrying its `recorded_outcome`, and the `analytic-consistency` gate
-  `GATE-FOUR-CELL-CLOSURE-V1`.
+  `GATE-TOPOLOGY-CHAR-V1`, `GATE-WALL-LOSS-GEOMETRY-SCREENING-V1` and
+  `GATE-CUSP-TOPOLOGY-V3-1`, each carrying its `recorded_outcome`, and the
+  `analytic-consistency` gate `GATE-FOUR-CELL-CLOSURE-V1`.
+- `evidence/manifests/cusp-topology-v3-1.json` — typed screening manifest
+  (`paper-separatrix-topology-screening-manifest` 1.0) binding the sealed
+  bundle's top-level artifacts, the 14 representatives' design records and
+  field grids and the frozen preregistration files at the record commit, the
+  results dashboard at its revision, the predecessor's rejected bundle, frozen
+  protocol and read-only post-hoc audit as lineage at their own revisions, the
+  sealed characterization and four-cell datasets and the sweep manifest as
+  references at their admitted revisions, the literature review as the
+  definition source, plus the metrics the checker compares with the raw
+  artifact values behind the `\Ctv...` macros.
+- `evidence/cusp-topology-v3-1.json`, `generated/cusp-topology-v3-1.tex`,
+  `sections/cusp-topology-v3-1.tex` — hash-bound evidence file, generated
+  macros with four `\ArtifactClaim` tables, and the admitted macro-only
+  subsection bound once by `\input` from Section 13 of `manuscript.tex`.
 - `evidence/manifests/wall-loss-geometry-screening-v1.json` — typed screening
   manifest (`paper-orbit-screening-manifest` 1.0) binding the sealed bundle's
   top-level artifacts, the representatives' per-case summaries, handoffs,
@@ -516,4 +558,78 @@ that does not spell the manifest revision.
 ```powershell
 python paper/scripts/generate_wall_loss_geometry_screening_v1_evidence.py
 python -m unittest discover -s paper/tests -p "test_wall_loss_geometry*" -v
+```
+
+## Admitted topology screening: cusp topology search v3.1 (literature definition)
+
+`paper/scripts/generate_cusp_topology_v3_1_evidence.py` reads the sealed
+results bundle of `modern/experiments/cusp_topology_search_v3_1` (1,211 files
+verified byte for byte against `results/manifest.json`, every artifact paired
+with a manifest-bound sidecar; no end-of-line tolerance exists or is granted),
+requires the frozen `protocol.json`, `authorities.json`, `shakedown.json` and
+`design-authorities.json` to equal the sealed copies and to carry the same
+blob at the preregistration and record commits, re-derives the headline and
+every per-set estimand (histograms, legacy-target fractions, mirror-ratio and
+angle distributions, gap distances, held-out counts, P2 consistency) from the
+281 per-design rows and refuses on any difference, cross-checks every design
+record, gzipped field grid, catalogue entry and CSV row against its row,
+recomputes the boundary-ambiguity flags, gap and stage-centre distances and
+cell lengths, verifies that every wall-reaching separatrix trace agrees with
+its flux root, and cross-checks the committed results dashboard
+(`modern/visualization/cusp-topology-search-v3.html`, its generator and
+template at `9abbd537`) against the same bundle. It also byte-verifies the
+predecessor's recorded `assessment_rejection` bundle
+(`cusp_topology_search_v3` at `8cbcdbe6`), reproduces its read-only post-hoc
+audit from the sealed characterization-v1 dataset (26 of 206 sealed axis
+clusters dropped by the centroid filter, 22 in the channel, exactly the 14
+recorded failing cases, 56/56 under the intended filter) and requires the
+audit's documented numbers to agree; binds the sealed v1 and v2 datasets and
+the sweep manifest as references that must hash to the sealed-source
+identities the bundle recorded; binds the literature review that fixed the
+definition; and writes `paper/evidence/cusp-topology-v3-1.json` (every
+`\Ctv...` macro with its artifact path, JSON pointer, formatter and SHA-256, or
+its derivation and inputs), `paper/generated/cusp-topology-v3-1.tex` (macros
+plus four tables wrapped in `\ArtifactClaim`: cusp-count histogram per set,
+the sweep by stage count, the P2 row against the two recorded references, the
+lineage of the recorded rejection) and the provenance sidecar. Derived macros
+include the N−1 / N−2 / N+1 design counts of the sweep, the v1 in-channel roots
+split into axis clusters and off-axis bilinear roots, and the v2 strength-ratio
+range that explains the four-cell null by construction.
+
+The subsection `paper/sections/cusp-topology-v3-1.tex` renders numbers only
+through macros (version tokens and the field level included); its results,
+sweep-structure, four-cell/characterization, P2, lineage and scope statements
+are exact `\EvidenceClaim` bodies (CLM-062, CLM-064, CLM-065, CLM-066,
+CLM-067, CLM-068), the abstract sentence is CLM-061 and the two Discussion
+interpretations amended by this admission are CLM-028 (the frozen wall-null
+definition was non-standard; the same fields carry N−1 wall cusps under the
+literature definition; the definition question is settled at screening tier,
+the material question stays open) and CLM-044 (cells exist under the
+literature definition; their plasma physics remains undemonstrated). The gate
+reuses the `numerical-screening` kind at a fifth outcome value,
+`accepted-topology-screening`; `opens_level` is null; the shared flag
+`stable_multicell_wall_cusp_topology_demonstrated` of the earlier screening
+gates is not reused because it was defined against the frozen definition,
+which this study does not evaluate.
+
+`check_paper.py` regenerates the three generated files at every run and fails
+closed on any byte difference, any artifact hash mismatch, any manifest metric
+that differs (in value or type) from the raw artifact value behind its macro,
+any policy metric off its fixed value, a dashboard checkout that differs from
+the blob bound at the dashboard revision, a results tree of either campaign
+changed since its evidence revision, a frozen file changed since
+preregistration, a lineage, reference or definition-source file that differs
+from its bound blob or from the evidence binding, a lineage block that does
+not chain preregistration -> rejection -> audit -> corrected preregistration or
+that is declared citable, a recorded outcome that disagrees anywhere, a literal
+digit or undefined macro in the section, a classification, P2-classification,
+recorded-outcome, campaign-status, field-level or lineage-state macro that does
+not render its string, a missing registered non-claim, an interpretation claim
+inside the results section, a Discussion amendment (CLM-028, CLM-044) not bound
+to the manifest or lacking its literature-definition wording, or a
+`\CuspTopologyEvidenceRevision` macro that does not spell the manifest revision.
+
+```powershell
+python paper/scripts/generate_cusp_topology_v3_1_evidence.py
+python -m unittest discover -s paper/tests -p "test_cusp_topology*" -v
 ```

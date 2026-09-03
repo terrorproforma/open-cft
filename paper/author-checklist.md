@@ -109,6 +109,29 @@
   design-dependent optimisation that consumes the dataset is admitted in
   Section 12 and its geometry link is a closure-dependent ranking, not a map
   from the screening fields to the operating-point model.
+- [ ] Describe the cusp topology search v3.1 only as
+  `SCREENING_L1A_FIELD_SEPARATRIX_CUSP_TOPOLOGY` (three L1a sets) and
+  `P2_QUALIFIED_FIELD_SEPARATRIX_CUSP_TOPOLOGY` (one P2 row) admitted at
+  `accepted-topology-screening`: cusps and cells are geometric properties of
+  prescribed field maps under the literature definition; mirror ratios are
+  field ratios and never probabilities; no plasma, confinement, wall-loss or
+  performance quantity; iron sensitivity of the P2 row untested; the catalogue
+  is a consumer contract under its labels with no admitted consumer.
+- [ ] Keep every number of the topology section a `\Ctv...` macro (including
+  the version tokens `v3.1`, `v3`, `v2`, `v1` and the field level `L1a`); never
+  type a digit into `paper/sections/cusp-topology-v3-1.tex`.
+- [ ] Cite the predecessor `cusp_topology_search_v3` only as lineage (recorded
+  `assessment_rejection`, recording-layer defect of the held-out reference
+  extraction); never quote a number from its bundle.
+- [ ] Keep the Discussion's multi-cell paragraph labelled as interpretation:
+  the frozen wall-null definition was non-standard, the same fields carry the
+  N-1 wall cusps under the literature definition, the definition question is
+  settled at screening tier, the material question stays open, and whether a
+  cell confines a plasma is not decided anywhere in the paper (CLM-028,
+  CLM-044).
+- [ ] Say that the geometry screening's launch cells are channel fractions and
+  not the catalogue cells; a screening launched from the catalogue is future
+  work with no result.
 
 ## Methods and uncertainty
 
@@ -146,6 +169,11 @@
   (it re-verifies the 2,835-file bundle and recomputes every Wilson interval;
   about twenty seconds) and confirm `git status` shows no change to the three
   generated screening-dataset files.
+- [ ] Run `python paper/scripts/generate_cusp_topology_v3_1_evidence.py` (it
+  verifies the 1,211-file bundle and the 1,211-file predecessor bundle, re-derives
+  every estimand from the rows and reproduces the predecessor's audit; about
+  five seconds) and confirm `git status` shows no change to the three generated
+  topology files.
 - [ ] Run `python paper/scripts/check_paper.py`.
 - [ ] Run `python -m unittest discover -s paper/tests -v`.
 - [ ] Run `python paper/scripts/verify_reproducible_build.py` and require two

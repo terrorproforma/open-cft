@@ -1,0 +1,319 @@
+% Results subsection: cusp topology search v3.1 (separatrix wall cusps and cells under the
+% literature definition across the screened design sets; accepted topology screening).
+%
+% Every quantity in this file is a \Ctv... macro defined in
+% paper/generated/cusp-topology-v3-1.tex, which
+% paper/scripts/generate_cusp_topology_v3_1_evidence.py writes from the sealed results
+% bundle of modern/experiments/cusp_topology_search_v3_1 (and, for the lineage
+% paragraph, from the recorded rejection bundle of cusp_topology_search_v3 and its
+% read-only post-hoc audit); paper/evidence/cusp-topology-v3-1.json records the artifact
+% path, JSON pointer and SHA-256 behind each macro, or the derivation of a derived macro.
+% No numeric literal is typed here.
+%
+% Status: admitted. manuscript.tex binds this file once through
+% \input{sections/cusp-topology-v3-1.tex}. Admission is governed by the
+% numerical-screening gate GATE-CUSP-TOPOLOGY-V3-1 in paper/evidence/result-gates.json
+% (recorded outcome accepted-topology-screening), the typed manifest
+% paper/evidence/manifests/cusp-topology-v3-1.json and the claim records bound to
+% manifest CUSP-TOPOLOGY-V3-1-20260903-281-V1. Every \EvidenceClaim body below must equal
+% its registered authorized_tex exactly; paper/scripts/check_paper.py verifies that, the
+% macro-only rule, the classification, recorded-outcome and campaign-status strings and
+% the presence of the registered non-claims. The standalone driver
+% paper/sections/cusp-topology-v3-1-standalone.tex compiles this file on its own.
+\subsection{Wall cusps and cells under the literature definition across the screened design sets}
+\label{sec:cusp-topology-v3-1}
+
+\paragraph{Definition and method.}
+The campaign evaluates the HEMP/DCFT literature definition of a wall cusp on
+prescribed vacuum field maps. A point cusp is an
+axis null: a point on the symmetry axis where $B_z$ changes sign on the
+axis-regular bicubic interpolant of the flux variable divided by the squared
+radius, $g$, refined by bisection to a bracket of \CtvAxisBracketTolerance{}~m
+(at most \CtvAxisMaxBisections{} bisections over \CtvAxisSamplesPerInterval{}
+samples per grid interval). On the axis the analytic Jacobian of the field is
+diagonal with eigenvalues of opposite sign, so every simple axis null is X-type;
+the classification is checked against the frozen Jacobian and winding-index
+classification of the characterization study, imported unchanged. The
+separatrix of a null is the zero contour of $g$: it is traced from the null
+along its radial eigen-direction (seed at \CtvSeedRadiusCellFraction{} of a
+radial mesh cell) with an event-aware fourth-order field-line integrator
+(arc-length step \CtvTraceStepCellFraction{} of the mesh cell, at most
+\CtvWallEventMaxHalvings{} wall-event halvings, wall snap within
+\CtvWallToleranceM{}~m) until it reaches the wall or leaves the map, and its
+wall intersection $z_c$ must coincide with the root of
+$\psi(r_w,z)-\psi_{\mathrm{axis}}$ within \CtvTraceFluxRootToleranceUm{}~$\mu$m
+(binding; largest observed difference \CtvFluxRootMaxDiff{}~m over
+\CtvWallTraceCount{} wall-reaching traces; the bilinear field-line step of the
+wall-loss campaign's coupling records repeats every trace as a comparison and
+differs by at most \CtvVFourBilinearMaxUm{}~$\mu$m). A wall cusp is an
+intersection inside the straight dielectric; cells are the wall intervals
+between consecutive cusps plus the anode-side and exit-side partial cells. The
+descriptors of a cell are its length in stage pitches, its wall mirror ratio
+(the weaker bounding cusp's wall field over the smallest wall field inside the
+cell, \CtvWallSamplesPerCell{} samples) and its axis mirror ratio (that cusp
+field over the largest axial field on the axis of the cell); both are field
+ratios by construction. The definition follows \CtvLiteratureSourceCount{}
+sources (\CtvLiteratureKeys) fixed in the reduced-model and topology literature
+review bound at commit \texttt{\CtvLiteratureCommit}. Every
+design is characterised on its accepted map and on a
+\CtvRefinementFactor$\times$ refined map and is stable when the axis-null count
+and the number of wall-reaching separatrices agree and no null or intersection
+moves by more than \CtvStabilityToleranceMm{}~mm; a cusp within
+\CtvBoundaryAmbiguityToleranceMm{}~mm of a straight-section end is flagged
+boundary-ambiguous and reported.
+
+\paragraph{Design sets and execution.}
+The \CtvDesignCount{} designs come in \CtvSetCount{} sets: the
+\CtvSweepCount{} accepted designs of the geometry sweep of
+Section~\ref{sec:l1a-sweep-v2} (\CtvSweepStages{} magnet stages), re-solved on
+the CPU with the identity-proven pipeline of the wall-loss geometry screening
+(sealed manifest \texttt{\CtvSweepManifestSha}, preregistration
+\texttt{\CtvSweepPreregCommit}); the \CtvFourCellCount{} sealed candidates of
+the four-cell search of Section~\ref{sec:four-cell-v2} (dataset
+\texttt{\CtvFourCellDatasetSha}), whose source policy gives the even stages
+\CtvFourCellStrengthRatioMin{} to \CtvFourCellStrengthRatioMax{} of the odd
+stages' strength; the \CtvCharVCount{} cases of the characterization of
+Section~\ref{sec:topology-char-v1} (\CtvCharVStages{} stages; dataset
+\texttt{\CtvCharVDatasetSha}), whose sealed axis roots are a held-out
+reference; and the P2-qualified divergent-exit-stack field of the wall-loss
+campaign of Section~\ref{sec:wall-loss-v4} (checkpoints
+\texttt{\CtvPTwoPrimaryCheckpointSha} and \texttt{\CtvPTwoRefinedCheckpointSha}),
+a finite-element field with iron poles and a return yoke whose straight
+dielectric spans \CtvPTwoStraightStartMm{} to \CtvPTwoStraightEndMm{}~mm of a
+\CtvPTwoChamberLengthMm{}~mm chamber with \CtvPTwoStages{} stages at a pitch of
+\CtvPTwoPitchMm{}~mm; for that row the refined map is the level-two
+finite-element checkpoint sampled on a twice-refined grid, not a re-solve. The
+three linear-vacuum sets are \CtvFieldModelLevel{} screening fields and carry
+the label \texttt{\CtvClassification}; the P2 row carries
+\texttt{\CtvPTwoClassification}. The held-out references are binding: the
+sealed axis nulls of the sweep and the sealed in-channel axis roots of the
+characterization must each be in bijection with the campaign's channel nulls
+within \CtvHeldOutToleranceUm{}~$\mu$m. The tracing grid keeps at least
+\CtvSweepRadialCellsMin{} radial cells across a bore (\CtvPTwoRadialCells{} for
+the P2 row).
+
+The protocol of experiment \texttt{\CtvExperimentId} was frozen at
+preregistration commit \texttt{\CtvPreregCommit} after a disclosed
+non-evidentiary shakedown of the complete production path on
+\CtvShakedownDesigns{} real designs of every set (passed: \CtvShakedownPassed;
+evidentiary: \CtvShakedownEvidentiary), among them the case on which the
+predecessor's held-out extraction had failed
+(\texttt{\CtvShakedownDefectDesign}), and executed exactly \CtvAttemptCount{}
+time under an immutable Git-common lock (immutable: \CtvLockImmutable) on
+\CtvWorkerPool{} of \CtvCpuCount{} CPU cores (\texttt{\CtvDevice}; design stage
+\CtvStageWallMin{}~min, assessment \CtvAssessmentWallMin{}~min). The
+\CtvBindingGateCount{} binding integrity gates require every declared design
+resolved, every identity proven, every axis null converged, every separatrix
+trace terminating cleanly, every wall trace consistent with its flux root,
+refinement stability, the held-out correspondences, bit-identical determinism
+replays and the hash bindings to the frozen authorities; the cusp-count
+distribution, the legacy-target fractions, the mirror-ratio ranges and the P2
+consistency differences are reported and not gated. The results are committed
+at \texttt{\CtvResultsCommit} (manifest hash prefix
+\texttt{\CtvManifestSha}; \CtvVerifiedFiles{} files verified byte for byte,
+\CtvToleratedEolFiles{} accepted through any end-of-line tolerance; protocol
+\texttt{\CtvProtocolSha}, experiment code \texttt{\CtvExperimentCodeSha},
+dependency sources \texttt{\CtvDependencySourceSha} over
+\CtvDependencySourceFiles{} files, field pipeline \texttt{\CtvFieldPipelineSha}
+over \CtvFieldPipelineFiles{} files), together with the results dashboard
+(commit \texttt{\CtvDashboardCommit}) whose embedded extraction the evidence
+generator requires to agree with the sealed artifacts.
+
+\paragraph{Results.}
+\EvidenceClaim{CLM-062}{The single execution terminated in state
+\texttt{\CtvTerminalState} with campaign status \texttt{\CtvCampaignStatus}:
+\CtvDesignCount{} of \CtvDeclaredDesigns{} declared designs were rebuilt with
+their identities proven, solved on both maps and characterised
+(\CtvFailedDesigns{} failures), \CtvBindingGatesTrue{} of \CtvBindingGateCount{}
+binding gates held, the \CtvReplayDesigns{} determinism replays were
+bit-identical in \CtvReplaysBitIdentical{} cases, and \CtvStableDesigns{} of
+\CtvDesignCount{} designs were stable under refinement with a largest
+wall-intersection shift of \CtvMaxWallShiftUm{}~$\mu$m and a largest axis-null
+shift of \CtvMaxAxisShiftUm{}~$\mu$m against a tolerance of
+\CtvStabilityToleranceUm{}~$\mu$m. The held-out references were reproduced:
+\CtvHeldOutCharPassed{} of \CtvHeldOutCharDesigns{} characterization cases
+(\CtvHeldOutCharNulls{} channel axis nulls, largest difference
+\CtvHeldOutCharMaxUm{}~$\mu$m) and \CtvHeldOutSweepPassed{} of
+\CtvHeldOutSweepDesigns{} sweep designs (\CtvHeldOutSweepNulls{} axis nulls,
+largest difference \CtvHeldOutSweepMaxUm{}~$\mu$m). Under the literature
+definition the \CtvDesignCount{} designs carry \CtvCuspCountAll{} wall cusps,
+distributed by count as \CtvHistogramText{} (designs with zero, one, two and up
+to seven cusps): \CtvWithCuspAll{} designs have at least one wall cusp,
+\CtvWithTwoCuspsAll{} have at least two and therefore at least one interior
+cell, \CtvFourWallCuspsAll{} have exactly four wall cusps (fraction
+\CtvFourWallCuspFractionAll) and \CtvFourCellsAll{} have exactly four cells
+(fraction \CtvFourCellFractionAll); the \CtvInteriorCellsAll{} interior cells
+have wall mirror ratios from \CtvInteriorWallMirrorMinAll{} to
+\CtvInteriorWallMirrorMaxAll{} and axis mirror ratios from
+\CtvInteriorAxisMirrorMinAll{} to \CtvInteriorAxisMirrorMaxAll, and the
+separatrices meet the wall at a median \CtvAngleMedianAll$^\circ$ to the wall
+normal (largest \CtvAngleMaxAll$^\circ$); \CtvAmbiguousAll{} cusps are
+boundary-ambiguous.}
+Table~\ref{tab:cusp-topology-v3-1-histogram} gives the cusp-count histogram per
+design set.
+\CtvHistogramTable
+
+\paragraph{Geometry sweep: cusps at the inter-magnet gaps.}
+\EvidenceClaim{CLM-064}{In the \CtvSweepCount{} sweep designs the wall-cusp
+count is \CtvSweepHistTwo{}, \CtvSweepHistThree{} and \CtvSweepHistFour{}
+designs with two, three and four cusps, so the four-wall-cusp fraction is
+\CtvSweepFourWallCuspFraction{} (\CtvSweepFourWallCusps{} designs) and the
+four-cell fraction \CtvSweepFourCellFraction{} (\CtvSweepFourCells{} designs);
+\CtvSweepNMinusOne{} of \CtvSweepCount{} designs carry exactly one cusp fewer
+than they have magnet stages, \CtvSweepNMinusTwo{} carry two fewer because an
+end null and its separatrix lie outside the straight section
+(\CtvSweepNMinusTwoEndNullOutside{} of them with the matching channel-null
+count), and \CtvSweepNPlusOne{} design (\texttt{\CtvSweepNPlusOneDesign}) carries
+one more through \CtvSweepNPlusOneAmbiguous{} boundary-ambiguous cusps generated
+by nulls outside the channel, so the cusp count equals the channel axis-null
+count in \CtvSweepCuspsEqualChannelNulls{} of \CtvSweepCount{} designs. The
+\CtvSweepCuspCount{} cusps sit at the inter-magnet gaps: their distance to the
+nearest gap centre has a median of \CtvSweepGapMedianMm{}~mm and a maximum of
+\CtvSweepGapMaxMm{}~mm, against at least \CtvSweepCentreMinMm{}~mm from any
+stage centre, and each cusp lies within \CtvSweepAxisToWallMaxMm{}~mm of the
+axial position of its generating null. The \CtvSweepInteriorCells{} interior
+cells are \CtvSweepInteriorLengthPitchMin{} to
+\CtvSweepInteriorLengthPitchMax{} stage pitches long (median
+\CtvSweepInteriorLengthPitchMedian), their wall mirror ratios run from
+\CtvSweepInteriorWallMirrorMin{} to \CtvSweepInteriorWallMirrorMax{} and their
+axis mirror ratios from \CtvSweepInteriorAxisMirrorMin{} to
+\CtvSweepInteriorAxisMirrorMax{} (median \CtvSweepInteriorAxisMirrorMedian);
+the separatrix angle to the wall normal has a median of
+\CtvSweepAngleMedianDeg$^\circ$ and a maximum of \CtvSweepAngleMaxDeg$^\circ$,
+and the wall field at the cusps runs from \CtvSweepWallBMinT{} to
+\CtvSweepWallBMaxT{}~T. These are geometric properties of the linear-vacuum
+screening fields; the mirror ratios are field ratios and not probabilities.}
+Table~\ref{tab:cusp-topology-v3-1-sweep-stages} resolves the sweep by stage
+count.
+\CtvSweepStageTable
+
+\paragraph{Four-cell candidates and characterization cases.}
+\EvidenceClaim{CLM-065}{Every one of the \CtvFourCellCount{} four-cell
+candidates carries exactly one wall cusp (\CtvFourCellOneCusp{} of
+\CtvFourCellCount) generated by a single axis null (\CtvFourCellOneAxisNull{}
+designs with one null in the search window; \CtvFourCellChannelNullOne{} inside
+the channel and \CtvFourCellChannelNullZero{} just outside it), placed at
+\CtvFourCellZcOverLengthMin{} to \CtvFourCellZcOverLengthMax{} of the chamber
+length with separatrix angles of \CtvFourCellAngleMinDeg$^\circ$ to
+\CtvFourCellAngleMaxDeg$^\circ$, so \CtvFourCellFourWallCusps{} candidates meet
+the four-wall-cusp target and \CtvFourCellFourCells{} the four-cell target. The
+null of Section~\ref{sec:four-cell-v2} therefore follows from the construction
+of both its definition and its source policy: its frozen definition required a
+wall-side X-type vector null, an object the literature definition does not
+place at the wall (the wall cusp is a separatrix intersection, not a null), and
+its source policy gives the even stages \CtvFourCellStrengthRatioMin{} to
+\CtvFourCellStrengthRatioMax{} of the odd stages' strength, which leaves one
+sign change of the axial field and hence one cusp per candidate. In the
+\CtvCharVCount{} characterization cases the wall-cusp count ranges from zero
+(\CtvCharVHistZero{} cases) to seven (\CtvCharVHistSeven{} cases), equals
+the channel axis-null count in \CtvCharVCuspsEqualChannelNulls{} of
+\CtvCharVCount{} cases and equals the stage count minus one in
+\CtvCharVNMinusOne{}, with the cusps at the gaps (median distance
+\CtvCharVGapMedianMm{}~mm) and interior axis mirror ratios of
+\CtvCharVInteriorAxisMirrorMin{} to \CtvCharVInteriorAxisMirrorMax. The sealed
+characterization search of Section~\ref{sec:topology-char-v1} had found
+\CtvVOneChannelRoots{} in-channel vector roots on its primary maps:
+\CtvVOneChannelAxisRoots{} are axis clusters, all reproduced here as the
+held-out reference, and \CtvVOneChannelOffAxisRoots{} are off-axis bilinear
+roots in \CtvVOneOffAxisCases{} cases at \CtvVOneOffAxisRadiusFractionMin{} to
+\CtvVOneOffAxisRadiusFractionMax{} of the wall radius, every one excluded by its
+frozen eligibility rule as \texttt{\CtvVOneOffAxisExclusion}
+(\CtvVOneOffAxisEligible{} eligible) and none at the wall. The frozen-definition
+outcomes of Section~\ref{sec:topology-screening} (\CtvCharVReferenceEligibleCusps{}
+stable eligible cusps and \CtvCharVReferenceEligibleCells{} stable eligible
+cells; \CtvFourCellReferenceStable{} stable candidates) therefore remain true
+under their definitions, and this campaign changes the definition, not those
+records.}
+
+\paragraph{The P2 row.}
+\EvidenceClaim{CLM-066}{The P2-qualified divergent-exit-stack field carries
+\CtvPTwoCusps{} wall cusps at \CtvPTwoCuspOneMm, \CtvPTwoCuspTwoMm{} and
+\CtvPTwoCuspThreeMm{}~mm, generated by \CtvPTwoAxisNulls{} channel axis nulls,
+and \CtvPTwoCells{} cells whose interior cells are
+\CtvPTwoInteriorLengthPitchMin{} pitches long with wall mirror ratios of
+\CtvPTwoInteriorWallMirrorMax{} and axis mirror ratios of
+\CtvPTwoInteriorAxisMirrorMin{} to \CtvPTwoInteriorAxisMirrorMax; the wall field
+at the cusps is \CtvPTwoWallBMinT{} to \CtvPTwoWallBMaxT{}~T and the separatrices
+meet the wall within \CtvPTwoCuspOneAngleDeg$^\circ$ of the normal. The third
+cusp lies \CtvPTwoThirdCuspInsideEndUm{}~$\mu$m inside the end of the straight
+dielectric and is flagged boundary-ambiguous (\CtvPTwoCuspThreeAmbiguous); the
+exit partial cell it bounds is \CtvPTwoExitPartialLengthUm{}~$\mu$m long. Across
+the level-one and level-two finite-element maps the intersections moved by at
+most \CtvPTwoMaxShiftM{}~m. As a reported, ungated consistency check carried by
+the frozen protocol (\CtvPTwoConsistencyRole), the axis nulls lie within
+\CtvPTwoNullToPicMaxUm{}~$\mu$m of the axis-null planes recorded by the kinetic
+workstream's steady-state dashboard on the same sampled field
+(\CtvPTwoPicPlanesMm{}~mm; a development record of a workstream whose results
+are not admitted here), and the cusps lie \CtvPTwoCuspOneToDashboardMm,
+\CtvPTwoCuspTwoToDashboardMm{} and \CtvPTwoCuspThreeToDashboardMm{}~mm from the
+wall $|B_r|$ maxima of the plasma-topology dashboard
+(\CtvPTwoDashboardMaximaMm{}~mm; a display diagnostic, not accepted cusp
+evidence), with the cusp count equal to both reference counts
+(\CtvPTwoCountEqualsReference). The row is one field with iron poles and a
+return yoke; its iron sensitivity was not tested, and nothing about a plasma
+follows from the agreement.}
+Table~\ref{tab:cusp-topology-v3-1-p2} lists the three cusps against both
+references.
+\CtvPTwoTable
+
+\paragraph{Lineage: the recorded rejection of the predecessor.}
+\EvidenceClaim{CLM-067}{The campaign is the corrected re-preregistration of
+\texttt{\CtvLineageExperimentId} (preregistration
+\texttt{\CtvLineagePreregCommit}, result \texttt{\CtvLineageResultsCommit}),
+whose single execution ended in the recorded terminal state
+\texttt{\CtvLineageTerminalState} with campaign status
+\texttt{\CtvLineageCampaignStatus}: \CtvLineageGatesTrue{} of
+\CtvBindingGateCount{} binding gates held for its \CtvLineageDesigns{} designs
+(\CtvLineageStable{} stable), and the gate \texttt{\CtvLineageFailingGate} failed
+for \CtvLineageFailingDesigns{} of \CtvHeldOutCharDesigns{} characterization
+cases because its held-out reference kept a sealed axis root only when the
+cluster centroid radius was exactly zero, whereas the characterization merges
+an axis detection with a neighbouring bilinear root and reports the centroid.
+Reproduced here from the sealed characterization dataset and the predecessor's
+own records, \CtvLineageDroppedClusters{} of \CtvLineageSealedAxisClusters{}
+sealed axis clusters were dropped by that filter (largest centroid radius
+\CtvLineageMaxDroppedCentroidR{}~m), \CtvLineageDroppedInChannel{} of them
+inside the channel and in exactly the \CtvLineageFailingDesigns{} failing cases
+(explained: \CtvLineageFailuresExplained), and under the intended filter the
+correspondence holds for \CtvLineageCorrectedPassed{} of
+\CtvHeldOutCharDesigns{} cases with a largest difference of
+\CtvLineageCorrectedMaxUm{}~$\mu$m, equal to the numbers its read-only post-hoc
+audit (commit \texttt{\CtvLineageAuditCommit}) documents
+(\CtvLineageAuditDropped{} of \CtvLineageAuditClusters{} dropped;
+\CtvLineageAuditCorrectedPassed{} in correspondence at
+\CtvLineageAuditCorrectedMaxUm{}~$\mu$m). The corrected campaign changed the
+reference extraction and nothing else, added the failing design to its
+shakedown, and records the same wall-cusp histogram (equal:
+\CtvLineageHistogramEqual). The rejection is a defect of the recording layer,
+not of the topology; the predecessor's bundle is disclosed as lineage and is
+never cited for a number.}
+Table~\ref{tab:cusp-topology-v3-1-lineage} sets the two campaigns side by side.
+\CtvLineageTable
+
+\paragraph{Scope.}
+The boxed statement is the only interpretation offered here; it repeats the
+claim boundary sealed with the campaign.
+\par\medskip\noindent
+\fbox{\begin{minipage}{0.94\linewidth}
+\textbf{Model-bounded scope.}
+\EvidenceClaim{CLM-068}{The study is a magnetic-topology screening of prescribed
+field maps, classified \texttt{\CtvClassification} for its three
+\CtvFieldModelLevel{} linear-vacuum sets (not P2-qualified, no permanent-magnet
+or nonlinear-iron material model) and \texttt{\CtvPTwoClassification} for its
+single P2 row, and admitted at the recorded outcome \texttt{\CtvRecordedOutcome}.
+Wall cusps and cells are geometric properties of the field maps under the
+literature definition; the mirror ratios are field ratios and never
+probabilities (\CtvMirrorDescriptorsNotProbabilities), no plasma, confinement,
+wall-loss or performance quantity is computed or published (forbidden:
+\CtvForbidPlasmaPerformance; mirror-probability publication forbidden:
+\CtvForbidMirrorProbability), whether a cell confines a plasma is not decided
+here (demonstrated: \CtvConfinementCellsDemonstrated), the iron sensitivity of
+the P2 row was not tested (\CtvIronSensitivityTested), and no hardware or
+experimental validation is claimed (\CtvHardwareValidation). The
+frozen-definition nulls of the earlier admissions remain true under their
+definitions (\CtvFrozenDefinitionNullsRemainTrue). The cusp-cell catalogue is a
+consumer contract under its labels, usable as \CtvUsableAs, and every consumer
+must carry the label; the study opens no physics level
+(\CtvPhysicsLevelOpened).}
+\end{minipage}}
+\par\medskip

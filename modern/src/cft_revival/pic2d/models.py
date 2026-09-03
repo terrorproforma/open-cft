@@ -81,7 +81,18 @@ class ChannelGeometry:
 
     ``wall_radius_m(z)`` is ``bore_radius_m`` for ``z <= cone_start_z_m`` and
     grows linearly to ``exit_radius_m`` at ``z_max_m``.  The anode face is the
-    plane ``z_min_m``; the exit (cathode reference) plane is ``z_max_m``.
+    plane ``z_min_m``; the channel exit plane is ``z_max_m``.
+
+    v2.0 (plume block): when ``plume_radius_m``/``plume_length_m`` are set the
+    domain is the L-shaped union of the channel and the plume box
+    ``r <= plume_radius_m, z_max_m <= z <= z_max_m + plume_length_m``.  The
+    wall radius jumps to ``plume_radius_m`` at the exit plane, so the channel
+    walls and the thruster's front face (``z = z_max_m, r > exit_radius_m``)
+    become internal boundaries of one bounding box; the far-field boundary is
+    ``r = plume_radius_m`` (``z >= z_max_m``) and ``z = domain_z_max_m``.  The
+    front face is a dielectric (surface charge) for
+    ``r <= body_dielectric_radius_m`` and a grounded conductor beyond (the
+    steel pole/magnet/shell stack of the P2 design starts at 4.4 mm).
     """
 
     bore_radius_m: float
@@ -89,6 +100,9 @@ class ChannelGeometry:
     z_max_m: float
     cone_start_z_m: float
     exit_radius_m: float
+    plume_radius_m: float | None = None
+    plume_length_m: float | None = None
+    body_dielectric_radius_m: float | None = None
 
     def __post_init__(self) -> None:
         bore = _positive("bore_radius_m", self.bore_radius_m)
@@ -109,30 +123,71 @@ class ChannelGeometry:
             ("cone_start_z_m", cone), ("exit_radius_m", exit_radius),
         ):
             object.__setattr__(self, name, value)
+        if (self.plume_radius_m is None) != (self.plume_length_m is None):
+            raise PIC2DValidationError("plume_radius_m and plume_length_m must be given together")
+        if self.plume_radius_m is not None:
+            plume_radius = _positive("plume_radius_m", self.plume_radius_m)
+            plume_length = _positive("plume_length_m", self.plume_length_m)
+            if plume_radius <= exit_radius:
+                raise PIC2DValidationError("plume_radius_m must exceed exit_radius_m (the front face needs a finite width)")
+            object.__setattr__(self, "plume_radius_m", plume_radius)
+            object.__setattr__(self, "plume_length_m", plume_length)
+            body = exit_radius if self.body_dielectric_radius_m is None else _positive("body_dielectric_radius_m", self.body_dielectric_radius_m)
+            if not exit_radius <= body <= plume_radius:
+                raise PIC2DValidationError("body_dielectric_radius_m must lie within [exit_radius_m, plume_radius_m]")
+            object.__setattr__(self, "body_dielectric_radius_m", body)
+        elif self.body_dielectric_radius_m is not None:
+            raise PIC2DValidationError("body_dielectric_radius_m requires a plume region")
+
+    @property
+    def has_plume(self) -> bool:
+        return self.plume_radius_m is not None
 
     @property
     def max_radius_m(self) -> float:
-        return self.exit_radius_m
+        return self.exit_radius_m if self.plume_radius_m is None else self.plume_radius_m
+
+    @property
+    def domain_z_max_m(self) -> float:
+        """End of the simulated domain (the channel exit plane without a plume)."""
+
+        return self.z_max_m if self.plume_length_m is None else self.z_max_m + self.plume_length_m
 
     @property
     def length_m(self) -> float:
+        """Axial extent of the simulated domain (channel + plume)."""
+
+        return self.domain_z_max_m - self.z_min_m
+
+    @property
+    def channel_length_m(self) -> float:
         return self.z_max_m - self.z_min_m
 
     def wall_radius_m(self, z_m: np.ndarray | float) -> np.ndarray:
         z = np.asarray(z_m, dtype=np.float64)
         if self.cone_start_z_m >= self.z_max_m:
-            return np.full_like(z, self.bore_radius_m)
-        slope = (self.exit_radius_m - self.bore_radius_m) / (self.z_max_m - self.cone_start_z_m)
-        return self.bore_radius_m + slope * np.clip(z - self.cone_start_z_m, 0.0, None)
+            radius = np.full_like(z, self.bore_radius_m)
+        else:
+            slope = (self.exit_radius_m - self.bore_radius_m) / (self.z_max_m - self.cone_start_z_m)
+            radius = self.bore_radius_m + slope * np.clip(z - self.cone_start_z_m, 0.0, None)
+        if self.plume_radius_m is not None:
+            radius = np.where(z >= self.z_max_m, self.plume_radius_m, radius)
+        return radius
 
     def to_dict(self) -> dict[str, float]:
-        return {
+        record: dict[str, float] = {
             "bore_radius_m": self.bore_radius_m,
             "z_min_m": self.z_min_m,
             "z_max_m": self.z_max_m,
             "cone_start_z_m": self.cone_start_z_m,
             "exit_radius_m": self.exit_radius_m,
         }
+        if self.plume_radius_m is not None:
+            # (keys present only with a plume, so channel-only config identities are unchanged)
+            record["plume_radius_m"] = self.plume_radius_m
+            record["plume_length_m"] = float(self.plume_length_m)
+            record["body_dielectric_radius_m"] = float(self.body_dielectric_radius_m)
+        return record
 
 
 @dataclass(frozen=True, slots=True)
@@ -157,6 +212,17 @@ class Grid2D:
             raise PIC2DValidationError(
                 "bore_radius_m must be an integer number (>=1) of radial cells"
             )
+        if self.geometry.has_plume:
+            # v2.0: the exit plane, the exit lip and the dielectric/conductor split of the
+            # front face must lie on grid lines so the L-shaped domain is represented exactly.
+            for name, value, spacing in (
+                ("z_max_m (channel exit plane)", self.geometry.channel_length_m, self.dz_m),
+                ("exit_radius_m", self.geometry.exit_radius_m, self.dr_m),
+                ("body_dielectric_radius_m", float(self.geometry.body_dielectric_radius_m), self.dr_m),
+            ):
+                index = value / spacing
+                if abs(index - round(index)) > 1.0e-9 or round(index) < 1:
+                    raise PIC2DValidationError(f"{name} must be an integer number of cells for a plume domain")
 
     @property
     def dr_m(self) -> float:

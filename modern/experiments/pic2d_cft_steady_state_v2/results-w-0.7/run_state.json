@@ -1,0 +1,1 @@
+{"checkpoint_step":4880000,"checkpoint_time_s":7.32e-06,"finished":true,"sessions":[{"pid":9856,"resumed_from_step":0,"started_utc":"2026-09-03T07:05:12.825261+00:00"}],"stop_reason":"plateau_reached_after_min_transit_times","wall_seconds_total":11893.993725299995}

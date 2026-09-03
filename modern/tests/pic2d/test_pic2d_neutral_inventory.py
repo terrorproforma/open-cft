@@ -234,6 +234,47 @@ def test_fail_closed_feed_above_ceiling_scale_and_exhaustion():
         inventory.advance(NeutralState.initial(1.0e17), 1e3 * inventory.config.feed_atoms_per_s, 1e-9)
 
 
+def test_v20_recycling_transient_above_q_over_c_needs_ceiling_headroom():
+    """Plume run launch 1 (2026-09-03): with recycling on and the ceiling AT Q/c, the seeded ions returning as atoms
+    before the ionisation catches up (R > S) push n_g above Q/c and the run stops fail-closed. A ceiling with declared
+    headroom and the inventory started at Q/c (initial_density_per_m3) carries the transient; identities of
+    ceiling-started configs are unchanged."""
+
+    n_g0 = 5.5e19
+    feed = feed_for_density(n_g0, EXIT_AREA, 300.0)
+    tau = 3.0e-8
+    # ceiling at Q/c (v1.4 default): the recycled source with S = 0 makes n* = (Q + R)/c > Q/c -> fail-closed
+    tight = NeutralInventory(NeutralInventoryConfig(feed, tau, wall_recycling=True, wall_temperature_k=400.0),
+                             ceiling_density_per_m3=n_g0, exit_area_m2=EXIT_AREA, temperature_k=300.0, volume_m3=VOLUME)
+    assert tight.initial_density == n_g0 and tight.ceiling_headroom == pytest.approx(1.0)
+    state = NeutralState.initial(tight.initial_density)
+    with pytest.raises(PIC2DStabilityError, match="exceeds the null-collision ceiling"):
+        for _ in range(20):
+            state = tight.advance(state, 0.0, 1.0e-9, recycled_ion_rate_per_s=2.0e16).state
+    # ceiling 2 x Q/c, inventory started at Q/c: the relaxation tracks the rate-based fixed point (Q + R)/c_mix = 1.23 Q/c
+    # (the launch-1 artefact), which now stays inside the ceiling; the MCC scale starts at 1/2 (real collision rate unchanged)
+    roomy_config = NeutralInventoryConfig(feed, tau, wall_recycling=True, wall_temperature_k=400.0, initial_density_per_m3=n_g0)
+    roomy = NeutralInventory(roomy_config, ceiling_density_per_m3=2.0 * n_g0, exit_area_m2=EXIT_AREA, temperature_k=300.0, volume_m3=VOLUME)
+    assert roomy.ceiling_headroom == pytest.approx(2.0) and roomy.initial_density == n_g0
+    state = NeutralState.initial(roomy.initial_density)
+    assert roomy.scale(state) == pytest.approx(0.5)
+    for _ in range(600):   # 20 relaxation times
+        state = roomy.advance(state, 0.0, 1.0e-9, recycled_ion_rate_per_s=2.0e16).state
+    assert 1.15 * n_g0 < state.density_per_m3 < 1.3 * n_g0
+    assert state.density_per_m3 == pytest.approx(roomy.fixed_point(0.0, 2.0e16), rel=1e-6)
+    # with R <= S (steady state: every recycled ion was ionised) the fixed point is below Q/c
+    assert roomy.fixed_point(3.0e16, 2.0e16) < n_g0
+    assert roomy.to_dict()["initial_density_per_m3"] == n_g0 and roomy.to_dict()["ceiling_headroom_over_zero_ionization"] == pytest.approx(2.0)
+    # identity: the key appears only when set; an initial density above the ceiling is refused
+    assert "initial_density_per_m3" not in NeutralInventoryConfig(feed, tau, wall_recycling=True).to_dict()
+    assert roomy_config.to_dict()["initial_density_per_m3"] == n_g0
+    with pytest.raises(PIC2DValidationError, match="exceeds the null-collision ceiling"):
+        NeutralInventory(NeutralInventoryConfig(feed, tau, initial_density_per_m3=2.2 * n_g0), ceiling_density_per_m3=2.0 * n_g0,
+                         exit_area_m2=EXIT_AREA, temperature_k=300.0, volume_m3=VOLUME)
+    with pytest.raises(PIC2DValidationError):
+        NeutralInventoryConfig(feed, tau, initial_density_per_m3=0.0)
+
+
 def test_mcc_rates_scale_with_neutral_density():
     xs = XenonCrossSections.from_file()
     mcc = NullCollisionMCC(xs, MCCConfig(1e21), xenon_ion_species(1e6))
@@ -290,6 +331,15 @@ def test_simulation_updates_inventory_and_records_it():
     assert provenance["neutral_inventory"]["transient_is_artificial"] is True
     assert provenance["config"]["neutral_inventory"]["feed_atoms_per_s"] == feed
     assert "neutral_inventory" not in _config(grid, inventory=None).to_dict()   # v1.0-1.2 identities unchanged
+    # v2.0: a declared start density below the ceiling sets the MCC scale from step 0 and the ledger closes from it
+    below = _config(grid, inventory=NeutralInventoryConfig(feed, 1e-9, initial_density_per_m3=5e20))
+    sim2 = Simulation(below, field, cross_sections=xs)
+    assert sim2.neutral_state.density_per_m3 == 5e20 and sim2.backend.mcc.neutral_scale == pytest.approx(0.5)
+    sim2.run(40)
+    ledger2 = sim2.series[-1].neutral["ledger"]
+    closure2 = ledger2["fed"] - ledger2["ionized"] - ledger2["effused"] - ledger2["artificial"]
+    assert closure2 == pytest.approx(volume * (sim2.neutral_state.density_per_m3 - 5e20), abs=1e-9 * volume * 1e21)
+    assert artifacts.config_identity(below) != artifacts.config_identity(config)
 
 
 def test_checkpoint_carries_neutral_state_and_resume_is_bitwise(tmp_path: Path):

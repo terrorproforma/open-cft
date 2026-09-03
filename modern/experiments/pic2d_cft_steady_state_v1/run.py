@@ -48,7 +48,8 @@ from typing import Any, Callable, Mapping
 import numpy as np
 
 from cft_revival.pic2d import artifacts
-from cft_revival.pic2d.fields import MagneticFieldMap, build_p2_psi_field, sample_field_map
+from cft_revival.pic2d.fields import MagneticFieldMap, build_p2_psi_field, p2_plume_field_map, sample_field_map
+from cft_revival.pic2d.frames import FrameRecorder, FrameRecorderConfig, estimate_frame_bytes, frames_manifest, list_frames
 from cft_revival.pic2d.mcc import MCCConfig, XenonCrossSections
 from cft_revival.pic2d.models import (
     BoundaryPotentials,
@@ -62,9 +63,11 @@ from cft_revival.pic2d.models import (
 from cft_revival.pic2d.neutrals import NEUTRAL_LEDGER_KEYS, NeutralInventoryConfig
 from cft_revival.pic2d.sensitivity import AnomalousCollisionConfig
 from cft_revival.pic2d.simulation import (
+    CathodeConfig,
     InjectionConfig,
     PeakDebyeGateConfig,
     PIC2DConfig,
+    PlumeBoundaryGateConfig,
     SeedPlasmaConfig,
     SeriesRecord,
     Simulation,
@@ -100,6 +103,21 @@ NEUTRAL_SCALARS_V14 = ("recycled_rate_per_s", "wall_ion_absorption_rate_per_s", 
 PEAK_NODE_SCALARS = (
     "n_e_peak_per_m3", "t_e_peak_ev", "debye_length_m", "cells_per_debye", "macro_particles_at_peak", "t_e_dense_ev",
     "r_m", "z_m",
+)
+# v2.0 momentum / thrust ledger and plume-boundary sample (absent from v1.x records -> arrays omitted)
+MOMENTUM_SCALARS = (
+    "momentum_z_kg_m_s", "interval_ledger_residual_kg_m_s", "beam_momentum_rate_ions_n", "beam_momentum_rate_electrons_n",
+    "injected_momentum_rate_n", "absorbed_momentum_rate_n", "field_impulse_rate_n", "electric_impulse_rate_n",
+    "magnetic_impulse_rate_n", "collision_momentum_rate_n", "born_momentum_rate_n", "dp_rate_n", "thrust_flux_n",
+    "cold_gas_thrust_n", "thrust_total_n", "force_on_thruster_n", "thrust_balance_n", "closure_fraction",
+    "electrostatic_force_thruster_n", "electrostatic_force_far_field_n",
+)
+MOMENTUM_OPTIONAL_SCALARS = ("cathode_target_rate_per_step", "cathode_rate_per_step", "cathode_emission_next_a")
+PLUME_SCALARS = (
+    "far_field_phi_max_abs_deviation_v", "far_field_net_charge_density_max_per_m3", "peak_electron_density_per_m3",
+    "charge_fraction_of_peak", "far_field_induced_charge_c", "body_conductor_induced_charge_c", "exit_plane_axis_potential_v",
+    "axis_phi_max_v", "axis_phi_max_z_m", "acceleration_z90_m", "acceleration_z10_m", "acceleration_width_m",
+    "cathode_rate_per_step",
 )
 
 
@@ -157,10 +175,12 @@ def build_config(protocol: dict[str, Any], *, backend: str = "warp-cuda") -> PIC
     case = protocol["case"]
     operating = protocol["operating_point"]
     numerics = protocol["numerics"]
+    # v2.0: optional plume box (L-shaped plasma domain) declared by three extra geometry keys
+    plume_keys = {key: float(geometry[key]) for key in ("plume_radius_m", "plume_length_m", "body_dielectric_radius_m") if geometry.get(key) is not None}
     grid = Grid2D(
         ChannelGeometry(
             geometry["bore_radius_m"], geometry["z_min_m"], geometry["z_max_m"],
-            geometry["cone_start_z_m"], geometry["exit_radius_m"],
+            geometry["cone_start_z_m"], geometry["exit_radius_m"], **plume_keys,
         ),
         int(case["radial_cells"]), int(case["axial_cells"]),
     )
@@ -181,6 +201,8 @@ def build_config(protocol: dict[str, Any], *, backend: str = "warp-cuda") -> PIC
             wall_recycling=bool(block.get("wall_recycling", False)),
             recombination_coefficient=float(block.get("recombination_coefficient", 1.0)),
             wall_temperature_k=None if block.get("wall_temperature_k") is None else float(block["wall_temperature_k"]),
+            # v2.0: declared start density below the null-collision ceiling (headroom for the recycling transient)
+            initial_density_per_m3=None if block.get("initial_density_per_m3") is None else float(block["initial_density_per_m3"]),
         )
         if int(numerics["series_interval_steps"]) != sync:
             raise PIC2DValidationError("the neutral inventory is updated at the series interval, which must equal device_sync_steps")
@@ -190,15 +212,28 @@ def build_config(protocol: dict[str, Any], *, backend: str = "warp-cuda") -> PIC
     anomalous = None
     if numerics.get("anomalous_collisions") is not None:
         anomalous = AnomalousCollisionConfig(**{k: v for k, v in numerics["anomalous_collisions"].items() if not k.endswith("_note")})
+    # v2.0: a cathode emission region in the plume replaces the exit-plane injection (kept as the legacy option)
+    cathode = None
+    injection = None
+    if operating.get("cathode") is not None:
+        cathode = CathodeConfig(**{k: v for k, v in operating["cathode"].items() if not k.endswith("_note") and not k.endswith("_justification")})
+    if operating.get("electron_injection_current_a") is not None:
+        injection = InjectionConfig(operating["electron_injection_current_a"], operating["electron_injection_temperature_ev"])
+    plume_gate = None
+    if numerics.get("plume_boundary_gate") is not None:
+        plume_gate = PlumeBoundaryGateConfig(**{k: v for k, v in numerics["plume_boundary_gate"].items() if not k.endswith("_note")})
     return PIC2DConfig(
         grid=grid,
         potentials=BoundaryPotentials(operating["anode_potential_v"], operating["exit_plane_potential_v"]),
         dt_s=float(numerics["dt_s"]),
         macro_weight=float(case["macro_weight"]),
         seed=int(case.get("seed", 20260903)),
-        injection=InjectionConfig(operating["electron_injection_current_a"], operating["electron_injection_temperature_ev"]),
+        injection=injection,
+        cathode=cathode,
+        plume_boundary_gate=plume_gate,
         seed_plasma=SeedPlasmaConfig(
-            operating["seed_plasma_density_per_m3"], operating["seed_electron_temperature_ev"], operating["seed_ion_temperature_ev"]
+            operating["seed_plasma_density_per_m3"], operating["seed_electron_temperature_ev"], operating["seed_ion_temperature_ev"],
+            region=operating.get("seed_region", "all"),   # v2.0: "channel" leaves the plume empty at t = 0
         ),
         mcc=mcc,
         poisson=PoissonConfig2D(method="device-direct" if backend == "warp-cuda" else "direct", relative_tolerance=1.0e-10),
@@ -220,6 +255,15 @@ def step_graph_flag(protocol: dict[str, Any]) -> bool:
     """v1.4: CUDA-graph replay of the step (``numerics.step_graph``, default on; no effect on the CPU backends)."""
 
     return bool(protocol["numerics"].get("step_graph", True))
+
+
+def frame_recorder_config(protocol: dict[str, Any]) -> FrameRecorderConfig | None:
+    """v2.0: ``numerics.frame_recorder`` = {cadence_steps, precision} (absent/null = OFF, the v1.x behaviour)."""
+
+    block = protocol["numerics"].get("frame_recorder")
+    if block is None:
+        return None
+    return FrameRecorderConfig(int(block["cadence_steps"]), str(block.get("precision", "float32")))
 
 
 # -- plateau criterion ------------------------------------------------------
@@ -351,6 +395,14 @@ def records_to_arrays(records: list[dict[str, Any]]) -> dict[str, np.ndarray]:
     if with_peak:
         for key in PEAK_NODE_SCALARS:
             arrays[f"peak_node_{key}"] = []
+    with_momentum = bool(records) and records[0].get("momentum") is not None
+    with_plume = bool(records) and records[0].get("plume") is not None
+    if with_momentum:
+        for key in MOMENTUM_SCALARS + MOMENTUM_OPTIONAL_SCALARS:
+            arrays[f"momentum_{key}"] = []
+    if with_plume:
+        for key in PLUME_SCALARS:
+            arrays[f"plume_{key}"] = []
     for record in records:
         for key in SERIES_SCALARS:
             arrays[key].append(float(record[key]))
@@ -370,6 +422,18 @@ def records_to_arrays(records: list[dict[str, Any]]) -> dict[str, np.ndarray]:
             peak = record["peak_node"]
             for key in PEAK_NODE_SCALARS:
                 arrays[f"peak_node_{key}"].append(float("nan") if peak[key] is None else float(peak[key]))
+        if with_momentum:
+            momentum = record["momentum"]
+            for key in MOMENTUM_SCALARS:
+                arrays[f"momentum_{key}"].append(float(momentum[key]))
+            for key in MOMENTUM_OPTIONAL_SCALARS:   # continuity-rule cathode only
+                value = momentum.get(key)
+                arrays[f"momentum_{key}"].append(float("nan") if value is None else float(value))
+        if with_plume:
+            plume = record["plume"]
+            for key in PLUME_SCALARS:
+                value = plume.get(key)
+                arrays[f"plume_{key}"].append(float("nan") if value is None else float(value))
     return {key: np.asarray(values, dtype=np.float64) for key, values in arrays.items()}
 
 
@@ -419,6 +483,20 @@ def status_from_record(
             line["peak_node"]["gate_max_cells_per_debye"] = peak["gate_max_cells_per_debye"]
     if triad is not None:
         line["grid_heating_triad"] = {key: triad[key] for key in triad if key not in ("thresholds", "window_fraction")}
+    momentum = record.get("momentum")
+    if momentum is not None:  # v2.0 thrust ledger (interval values; the window averages are in the summary)
+        line["thrust"] = {key: momentum[key] for key in ("thrust_flux_n", "cold_gas_thrust_n", "thrust_total_n", "thrust_balance_n",
+                                                       "closure_fraction", "electrostatic_force_thruster_n", "interval_ledger_residual_kg_m_s")}
+        if "cathode_emission_next_a" in momentum:
+            line["thrust"]["cathode_emission_next_a"] = momentum["cathode_emission_next_a"]
+        if "cathode_emission_a" in record["currents_a"]:
+            line["cathode_emission_a"] = record["currents_a"]["cathode_emission_a"]
+    plume = record.get("plume")
+    if plume is not None:  # v2.0 plume-boundary sample
+        line["plume"] = {key: plume[key] for key in ("charge_fraction_of_peak", "far_field_phi_max_abs_deviation_v",
+                                                   "exit_plane_axis_potential_v", "acceleration_z90_m", "acceleration_z10_m")}
+        if "gate_enforced" in plume:
+            line["plume"]["gate_enforced"] = plume["gate_enforced"]
     return line
 
 
@@ -482,8 +560,12 @@ def find_checkpoint(results: Path) -> Path | None:
 
 def load_inputs(config: PIC2DConfig, field_map: MagneticFieldMap | None, cross_sections: XenonCrossSections | None):
     if field_map is None:
-        psi_field, evidence = build_p2_psi_field(REPOSITORY_ROOT, role="primary")
-        field_map = sample_field_map(psi_field, config.grid, evidence)
+        if config.grid.geometry.has_plume:
+            # v2.0: direct P2 node evaluation over the L-shaped box (spec/pic2d/p2-field-plume-extension-v1.json)
+            field_map = p2_plume_field_map(REPOSITORY_ROOT, config.grid, role="primary")
+        else:
+            psi_field, evidence = build_p2_psi_field(REPOSITORY_ROOT, role="primary")
+            field_map = sample_field_map(psi_field, config.grid, evidence)
     if cross_sections is None and config.mcc is not None:
         cross_sections = XenonCrossSections.from_file()
     return field_map, cross_sections
@@ -527,6 +609,7 @@ def neutral_summary(arrays: dict[str, np.ndarray], sim: Simulation, initial_dens
         "initial_density_per_m3": initial_density,
         "final_density_per_m3": n_final,
         "final_fixed_point_per_m3": float(arrays["neutral_fixed_point_per_m3"][-1]),
+        "max_density_over_zero_ionization": float(np.max(arrays["neutral_density_per_m3"])) / inventory.zero_ionization_density,
         "trailing_20pct_mean_density_per_m3": float(np.mean(tail)),
         "trailing_20pct_mean_ionization_rate_per_s": float(np.mean(s_tail)),
         "trailing_20pct_mean_recycled_rate_per_s": recycled_mean,
@@ -545,6 +628,99 @@ def neutral_summary(arrays: dict[str, np.ndarray], sim: Simulation, initial_dens
                             "atoms consumed",
         "note": ("the transient toward the fixed point is artificial (relaxation_time_s); only the fixed point is physical"
                  if relaxation_on else "no artificial relaxation: n_g evolves on the physical effusion time scale V/c"),
+    }
+
+
+XENON_MASS_KG = 2.1801714e-25
+G0_M_PER_S2 = 9.80665
+
+
+def plume_summary(
+    arrays: dict[str, np.ndarray], maps: dict[str, np.ndarray], window_range: tuple[int, int], config: PIC2DConfig,
+    window_currents: Mapping[str, float | None],
+) -> dict[str, Any] | None:
+    """v2.0 plume block: window-averaged thrust with the closure check, divergence, IEDF, performance numbers.
+
+    Development numbers (claim boundary): the thrust is the axial momentum flux through the far-field
+    boundary (+ the cold-gas effusion of the inventory) averaged over the reporting window; the
+    momentum-balance thrust ``-F_on_thruster`` from the particle ledger and the Maxwell-stress force on
+    the solid boundaries are the independent checks; specific impulse and anode efficiency follow from
+    the declared feed and the window discharge current.
+    """
+
+    if "momentum_thrust_flux_n" not in arrays or not config.grid.geometry.has_plume:
+        return None
+    steps = arrays["step"]
+    in_window = (steps > window_range[0]) & (steps <= window_range[1])
+    if not in_window.any():
+        in_window = steps >= steps[max(steps.size - max(steps.size // 5, 1), 0)]
+    mean = lambda key: float(np.nanmean(arrays[key][in_window]))  # noqa: E731
+    thrust_flux = mean("momentum_thrust_flux_n")
+    cold_gas = mean("momentum_cold_gas_thrust_n")
+    thrust_total = thrust_flux + cold_gas
+    balance = mean("momentum_thrust_balance_n")
+    scale = max(abs(thrust_flux), abs(balance))
+    closure = (thrust_flux - balance) / scale if scale > 0.0 else None   # window means; normalised by the larger of the two
+    # divergence: half-angle containing 95 % of the window's far-field ion crossings (about the aperture centre)
+    counts = np.asarray(maps.get("plume_ion_counts_per_theta", np.zeros(0)), dtype=np.float64)
+    edges = np.asarray(maps.get("plume_theta_edges_deg", np.zeros(0)), dtype=np.float64)
+    half_angle = None
+    if counts.size and counts.sum() > 0:
+        cumulative = np.cumsum(counts) / counts.sum()
+        half_angle = float(edges[1:][int(np.searchsorted(cumulative, 0.95))])
+    iedf = np.asarray(maps.get("iedf_ion_counts", np.zeros(0)), dtype=np.float64)
+    e_edges = np.asarray(maps.get("iedf_edges_ev", np.zeros(0)), dtype=np.float64)
+    mean_energy = peak_energy = None
+    if iedf.size and iedf.sum() > 0:
+        centres = 0.5 * (e_edges[:-1] + e_edges[1:])
+        mean_energy = float(np.sum(centres * iedf) / iedf.sum())
+        peak_energy = float(centres[int(np.argmax(iedf))])
+    feed_kg_per_s = None if config.neutral_inventory is None else config.neutral_inventory.feed_atoms_per_s * XENON_MASS_KG
+    discharge = window_currents.get("discharge_a")
+    power_w = None if discharge is None else float(config.potentials.anode_v) * float(discharge)
+    isp = None if feed_kg_per_s in (None, 0.0) else thrust_total / (feed_kg_per_s * G0_M_PER_S2)
+    efficiency = None
+    if feed_kg_per_s not in (None, 0.0) and power_w not in (None, 0.0):
+        efficiency = thrust_total**2 / (2.0 * feed_kg_per_s * power_w)
+    return {
+        "window_step_range": list(window_range),
+        "window_samples": int(in_window.sum()),
+        "thrust_flux_n": thrust_flux,
+        "thrust_flux_ions_n": mean("momentum_beam_momentum_rate_ions_n"),
+        "thrust_flux_electrons_n": mean("momentum_beam_momentum_rate_electrons_n"),
+        "cathode_injected_momentum_rate_n": mean("momentum_injected_momentum_rate_n"),
+        "cold_gas_thrust_n": cold_gas,
+        "thrust_total_n": thrust_total,
+        "thrust_balance_n": balance,
+        "closure_fraction": closure,
+        "electrostatic_force_thruster_n": mean("momentum_electrostatic_force_thruster_n"),
+        "electrostatic_force_far_field_n": mean("momentum_electrostatic_force_far_field_n"),
+        "absorbed_momentum_rate_n": mean("momentum_absorbed_momentum_rate_n"),
+        "field_impulse_rate_n": mean("momentum_field_impulse_rate_n"),
+        "stored_momentum_rate_n": mean("momentum_dp_rate_n"),
+        "collision_momentum_rate_n": mean("momentum_collision_momentum_rate_n"),
+        "ledger_residual_max_kg_m_s": float(np.nanmax(np.abs(arrays["momentum_interval_ledger_residual_kg_m_s"]))),
+        "divergence_half_angle_95_deg": half_angle,
+        "far_field_ion_crossings_in_window": float(counts.sum()) if counts.size else None,
+        "iedf_mean_energy_ev": mean_energy,
+        "iedf_peak_energy_ev": peak_energy,
+        "iedf_peak_minus_anode_v": None if peak_energy is None else peak_energy - float(config.potentials.anode_v),
+        "exit_plane_axis_potential_v": mean("plume_exit_plane_axis_potential_v") if "plume_exit_plane_axis_potential_v" in arrays else None,
+        "acceleration_z90_m": mean("plume_acceleration_z90_m") if "plume_acceleration_z90_m" in arrays else None,
+        "acceleration_z10_m": mean("plume_acceleration_z10_m") if "plume_acceleration_z10_m" in arrays else None,
+        "acceleration_width_m": mean("plume_acceleration_width_m") if "plume_acceleration_width_m" in arrays else None,
+        "charge_fraction_of_peak_max": float(np.nanmax(arrays["plume_charge_fraction_of_peak"])) if "plume_charge_fraction_of_peak" in arrays else None,
+        "mass_flow_kg_per_s": feed_kg_per_s,
+        "discharge_power_w": power_w,
+        "specific_impulse_s": isp,
+        "anode_efficiency": efficiency,
+        "claim_boundary": (
+            "development numbers: window-averaged momentum flux through a 12 mm plume box with a Dirichlet far field; "
+            "closure = (T_flux - (-F_on_thruster)) / max(|T_flux|, |F|) of the window means from the particle ledger (the stored-"
+            "momentum rate, collisions and the far-field electrostatic force are the reported non-closing terms), the Maxwell-stress force on the solid "
+            "boundaries is the independent field-side check; Isp and anode efficiency from the declared feed and the window "
+            "discharge current; not a performance prediction"
+        ),
     }
 
 
@@ -652,7 +828,8 @@ def write_final_artifacts(
         "final_series": records[-1] if records else None,
         "window_currents_a": window_currents,
         "ledger": ledger_summary(arrays),
-        "neutral_inventory": neutral_summary(arrays, sim, float(config.mcc.neutral_density_per_m3)) if config.mcc is not None else None,
+        "neutral_inventory": neutral_summary(arrays, sim, float(sim.neutrals.initial_density) if sim.neutrals is not None else float(config.mcc.neutral_density_per_m3)) if config.mcc is not None else None,
+        "plume": plume_summary(arrays, maps, window_range, config, window_currents) if arrays else None,
         "window_maps_summary": {
             "n_e_peak_per_m3": stat("n_e_per_m3", np.nanmax),
             "n_e_mean_per_m3": stat("n_e_per_m3", np.nanmean),
@@ -680,6 +857,9 @@ def write_final_artifacts(
             "checkpoint_npz": checkpoint_npz.name,
             "status_jsonl": status_path.name,
             "series_jsonl": (results / "series.jsonl").name,
+            # v2.0 frame recorder: hash-bound manifest of frames/frame-NNNNNN.npz (None when recording was off)
+            "frames": (frames_manifest(results) | {"config": getattr(frame_recorder_config(protocol), "to_dict", lambda: None)()})
+            if list_frames(results) else None,
         },
         "provenance": sim.to_provenance() | {"runtime": artifacts.runtime_identity(), "config_sha256": artifacts.config_identity(config)},
         "simplifications": protocol["simplifications"],
@@ -733,7 +913,18 @@ def run_steady_state(
     if sim.neutrals is not None:
         log(f"[steady-state] neutral inventory: {json.dumps(sim.neutrals.to_dict())}")
     log(f"[steady-state] v1.4 options: {json.dumps(sim.to_provenance().get('v1_4_options'))}")
+    if config.grid.geometry.has_plume:
+        log(f"[steady-state] v2.0 options: {json.dumps(sim.to_provenance().get('v2_0_options'))}")
     plasma_volume = float(sim.masks.to_dict()["plasma_volume_m3"])
+    # v2.0 frame recorder (default OFF): interval-averaged maps every cadence_steps, aligned with checkpoints/windows
+    frame_config = frame_recorder_config(protocol)
+    recorder: FrameRecorder | None = None
+    if frame_config is not None:
+        frame_config.validate_alignment(sync_steps=int(numerics["device_sync_steps"]), checkpoint_every_steps=checkpoint_every,
+                                        window_steps=window_steps)
+        recorder = FrameRecorder(results, frame_config, sim)
+        log(f"[steady-state] frame recorder: every {frame_config.cadence_steps} steps ({frame_config.cadence_steps*config.dt_s*1e9:.1f} ns), "
+            f"{frame_config.precision}, ~{estimate_frame_bytes(config.grid.node_shape, frame_config.precision)/1e6:.1f} MB/frame uncompressed")
 
     series_path = results / "series.jsonl"
     status_path = results / "status.jsonl"
@@ -753,6 +944,9 @@ def run_steady_state(
         session["resumed_from_step"] = int(state.step)
         _append_jsonl(status_path, {"event": "resume", "step": int(state.step), "time_s": float(state.time_s), "utc": session["started_utc"]})
         log(f"[steady-state] resumed from step {state.step} (t = {state.time_s*1e9:.1f} ns), {len(records)} series records kept")
+        if recorder is not None:
+            removed = recorder.reconcile(int(state.step))
+            log(f"[steady-state] frames: {recorder.index} kept, {removed} past the checkpoint removed")
     run_state["sessions"].append(session)
     wall_before = float(run_state["wall_seconds_total"])
 
@@ -787,6 +981,10 @@ def run_steady_state(
                 extra += f" util={record.neutral['gross_utilisation']:.2f}/{record.neutral['net_utilisation']:.2f}"
             if record.peak_node is not None:
                 extra += f" peak={record.peak_node['n_e_peak_per_m3']:.2e} cells/lD={record.peak_node['cells_per_debye']:.2f}"
+            if record.momentum is not None:  # v2.0
+                extra += (f" T={record.momentum['thrust_total_n']*1e6:.1f} uN closure={record.momentum['closure_fraction']*100:.0f}%")
+            if record.plume is not None:
+                extra += f" phi_exit={record.plume['exit_plane_axis_potential_v']:.1f} V q_far={record.plume['charge_fraction_of_peak']:.3f}"
             log(f"[steady-state] step {record.step} t={record.time_s*1e6:.3f} us e={record.electrons} i={record.ions} "
                 f"I_d={record.currents_a['discharge_a']*1e3:.2f} mA I_beam={record.currents_a['exit_ion_beam_a']*1e3:.2f} mA "
                 f"S={record.currents_a['ionization_rate_per_s']:.3g}/s{extra} w_pe*dt={record.peak_omega_pe_dt:.3f} "
@@ -798,6 +996,8 @@ def run_steady_state(
     completed_range: tuple[int, int] | None = None
     while True:
         chunk = min(checkpoint_every, window_start + window_steps - step)
+        if recorder is not None:   # stop at every frame boundary (the cadence divides checkpoint and window)
+            chunk = min(chunk, recorder.steps_to_next_boundary(step))
         if max_steps is not None:
             chunk = min(chunk, max_steps - step)
         if chunk <= 0:
@@ -811,14 +1011,22 @@ def run_steady_state(
             log(f"[steady-state] fail-closed stop at step {sim.backend.step_index}: {gate_error}")
             break
         step = sim.backend.step_index
+        if recorder is not None and recorder.due(step):
+            recorder.capture(records[-1] if records else None)
         if step - window_start >= window_steps:
             completed_window = sim.diagnostic_arrays()
             completed_range = (window_start, step)
             sim.backend.reset_diagnostics()
             window_start = step
-        # a chunk is at most checkpoint_every steps: checkpoint after every chunk
+            if recorder is not None:
+                recorder.on_window_reset()
+        if recorder is not None and step % checkpoint_every != 0 and (max_steps is None or step < max_steps):
+            continue   # frame boundary inside a checkpoint interval: no checkpoint / plateau evaluation yet
+        # checkpoint after every checkpoint_every steps (every chunk without a recorder)
         save_checkpoint_atomic(results, sim, config, field_map.sha256, xs_sha)
         run_state.update({"wall_seconds_total": wall_total(), "checkpoint_step": step, "checkpoint_time_s": sim.state.time_s})
+        if recorder is not None:
+            run_state["frames_written"] = recorder.index
         artifacts.write_canonical_json(state_path, run_state)
         arrays = records_to_arrays(records)
         last_plateau = evaluate_plateau(arrays["time_s"], arrays["current_discharge_a"], arrays["electrons"], rule, transit_time,
@@ -911,6 +1119,10 @@ def finalize(
     setup_seconds = time.perf_counter() - t0
     records = [r for r in _read_jsonl(results / "series.jsonl") if r["step"] <= state.step]
     _write_jsonl(results / "series.jsonl", records)
+    frame_config = frame_recorder_config(protocol)
+    if frame_config is not None and list_frames(results):
+        removed = FrameRecorder(results, frame_config, sim).reconcile(int(state.step))
+        log(f"[steady-state] frames past the checkpoint removed: {removed}")
     state_path = results / "run_state.json"
     run_state: dict[str, Any] = {"wall_seconds_total": 0.0, "sessions": [], "checkpoint_step": int(state.step), "finished": False}
     if state_path.is_file():
@@ -952,6 +1164,7 @@ def status(results: Path = RESULTS, protocol: dict[str, Any] | None = None) -> d
         "projection": remaining,
         "pid": int(pid_file.read_text().strip()) if pid_file.is_file() else None,
         "finished": (results / "summary.json").is_file(),
+        "frames_written": len(list_frames(results)),
     }
 
 

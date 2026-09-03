@@ -300,7 +300,16 @@ class NullCollisionMCC:
     def collision_probability(self, dt_s: float) -> float:
         return -_expm1(-self.nu_max * dt_s)
 
-    def apply(self, electrons: ParticleArrays, dt_s: float, rng: np.random.Generator) -> MCCResult:
+    def apply(
+        self, electrons: ParticleArrays, dt_s: float, rng: np.random.Generator, *, density_shape: np.ndarray | None = None,
+    ) -> MCCResult:
+        """One null-collision step.
+
+        ``density_shape`` (v2.0, optional, per particle in [0, 1]) multiplies the neutral
+        density at each electron's position (the two-zone channel/plume field); the null
+        ceiling stays at the configured density, so the shape must not exceed 1.
+        """
+
         count = electrons.count
         probability = self.collision_probability(dt_s)
         if count == 0 or probability == 0.0:
@@ -315,7 +324,13 @@ class NullCollisionMCC:
         energy = electron_energy_ev(vx, vy, vz)
         speed = np.sqrt(vx * vx + vy * vy + vz * vz)
         sigma = self.table.lookup(energy)  # (3, N)
-        nu = self.neutral_density_per_m3 * sigma * speed[None, :]
+        density = self.neutral_density_per_m3
+        if density_shape is not None:
+            shape = np.asarray(density_shape, dtype=np.float64)
+            if shape.shape != (count,) or not np.isfinite(shape).all() or np.any(shape < 0.0) or np.any(shape > 1.0 + 1e-12):
+                raise PIC2DValidationError("neutral density shape must be per particle in [0, 1]")
+            density = density * shape
+        nu = density * sigma * speed[None, :]
         cumulative = np.cumsum(nu, axis=0)
         selector = u[1] * self.nu_max
         elastic = candidate & (selector < cumulative[0])

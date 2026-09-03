@@ -23,7 +23,7 @@
     "gate_kinds": {
       "physics-level": "GATE-L1, GATE-L2 and GATE-L3 open a paper physics level; they stay closed until their typed manifest is accepted.",
       "numerical-campaign": "Admits one accepted, preregistered numerical campaign about a declared component model (the collisionless test-particle wall-loss campaign on one qualified field; the robust multi-objective optimisation campaign on the L0 model under the declared closure CL-1; the catalogue optimisation of the L0 model over the 96 screened sweep designs under the declared closure CL-1 with per-cell test-particle wall-hit posteriors). It opens no physics level (opens_level is null), must be accepted (never closed), and its manifest is cross-checked against the sealed results bundle, the hash-bound evidence file, the bound section and the claim matrix by a campaign-specific checker in check_paper.py.",
-      "numerical-screening": "Admits one preregistered, single-execution screening study on L1a linear-vacuum equivalent-current fields (no permanent-magnet or nonlinear-iron material model; not P2-qualified) at exactly its recorded outcome, declared as recorded_outcome: accepted-screening (a field-only design-space screening), preregistered-null, recorded-characterization, or accepted-screening-dataset (a collisionless test-particle wall-loss dataset integrated in those fields over a design space, accepted as surrogate and optimisation input only when carried with its label). The gate status accepted means the study is admitted as recorded, never that a positive finding is accepted; a null is admitted as a null under the frozen definitions and is not an existence disproof; a screening dataset is admitted as screening input and is never accepted physical-orbit, plasma or performance evidence. It opens no physics level (opens_level is null), its typed manifest is cross-checked against the sealed bundle, the hash-bound evidence file, the audited end-of-line tolerances where a bundle needs one, the bound section and the claim matrix by the screening checkers in check_paper.py, and it never opens GATE-L1.",
+      "numerical-screening": "Admits one preregistered, single-execution screening study on L1a linear-vacuum equivalent-current fields (no permanent-magnet or nonlinear-iron material model; not P2-qualified) at exactly its recorded outcome, declared as recorded_outcome: accepted-screening (a field-only design-space screening), preregistered-null, recorded-characterization, accepted-screening-dataset (a collisionless test-particle wall-loss dataset integrated in those fields over a design space, accepted as surrogate and optimisation input only when carried with its label), or accepted-topology-screening (the HEMP/DCFT literature separatrix cusp definition evaluated on those fields plus one P2-qualified row, accepted as a geometric screening of prescribed field maps whose cusps, cells and mirror ratios are descriptors under their label and never plasma confinement or probabilities). The gate status accepted means the study is admitted as recorded, never that a positive finding is accepted; a null is admitted as a null under the frozen definitions and is not an existence disproof; a screening dataset is admitted as screening input and is never accepted physical-orbit, plasma or performance evidence; a topology screening is admitted as a property of prescribed field maps under a stated definition and changes no earlier frozen-definition record. It opens no physics level (opens_level is null), its typed manifest is cross-checked against the sealed bundle, the hash-bound evidence file, the audited end-of-line tolerances where a bundle needs one, the bound section and the claim matrix by the screening checkers in check_paper.py, and it never opens GATE-L1.",
       "analytic-consistency": "Admits one analytic consistency result about a declared equation set: a derivation whose closed form is verified numerically to a stated tolerance and pinned by committed tests (the reduced global power row of the corrected four-cell discharge ledger and its consequence that no admissible root exists for any positive interior cusp probability). The gate status accepted means the derivation and its numerical verification are admitted as recorded; it is not a statement about the physical thruster, it does not accept any proposed correction of the equation set (the proposal stays PROPOSED_NOT_ACCEPTED), and it opens no physics level (opens_level is null; never GATE-L1, GATE-L2 or GATE-L3). Its typed manifest binds the analysis document, the ledger entry, the executed diagnostics and solver sources, the pinning tests, the frozen MDO protocol disclosure and the legacy lineage blob at the analysis revision; the paper generator recomputes the numerical verification from the checkout package at every check, refuses if the executed package differs from the bound blobs or if any recomputed number departs from the analysis document beyond the declared tolerance, and the analysis checker in check_paper.py cross-checks the manifest against the evidence file, the bound section, the displayed closed form and the claim matrix."
     }
   },
@@ -729,6 +729,443 @@
         "interpolation between catalogue designs or any surrogate statement",
         "hardware or experimental validation",
         "population of the campaign policy's F3-verified benchmark field",
+        "opening of GATE-L1, GATE-L2 or GATE-L3"
+      ]
+    },
+    {
+      "id": "GATE-CUSP-TOPOLOGY-V3-1",
+      "kind": "numerical-screening",
+      "title": "Preregistered cusp topology search v3.1: accepted separatrix cusp-topology screening of the L1a design sets and one P2-qualified row under the literature definition",
+      "status": "accepted",
+      "recorded_outcome": "accepted-topology-screening",
+      "recorded_outcome_justification": "The four existing numerical-screening outcomes name a field-only design-space screening (accepted-screening), a preregistered null (preregistered-null), a developmental characterization (recorded-characterization) and a test-particle screening dataset (accepted-screening-dataset). This study's sealed campaign status is accepted_topology_screening: the HEMP/DCFT literature definition of a wall cusp (axis null, separatrix, dielectric-wall intersection) evaluated on 281 prescribed field maps (three L1a linear-vacuum sets and one P2-qualified row) with every binding integrity gate true and every design stable under refinement. A fifth outcome value names exactly that, so that accepted keeps meaning admitted as recorded: the cusps and cells are geometric properties of prescribed field maps under a stated definition, never demonstrated plasma confinement, and the earlier frozen-definition nulls remain true under their own definitions.",
+      "opens_level": null,
+      "manifest_path": "paper/evidence/manifests/cusp-topology-v3-1.json",
+      "required_manifest_document_type": "paper-separatrix-topology-screening-manifest",
+      "required_manifest_schema_version": "1.0",
+      "dependencies": [],
+      "evidence_revision": "cec47f12f5909c5886424bf5d46ac20ce06f1ac5",
+      "preregistration_revision": "1600cfd3b102980eeba4b070930667d232a1105c",
+      "dashboard_revision": "9abbd5371b816208d687f1adbf54f31884c8b27f",
+      "lineage_preregistration_commit": "691599340355818ff64d3834d45110768a751589",
+      "lineage_results_commit": "8cbcdbe6ede6c55156f300f82d9c85133f06c0dd",
+      "lineage_posthoc_audit_commit": "9fa6359a2ba87d14635d80147af4857482afc977",
+      "lineage_posthoc_audit_path": "modern/experiments/cusp_topology_search_v3/POSTHOC_AUDIT.md",
+      "definition_sources_revision": "66879e00834b09e2c7f942358b3ae4a51658cb6b",
+      "evidence_file": "paper/evidence/cusp-topology-v3-1.json",
+      "generated_macros": "paper/generated/cusp-topology-v3-1.tex",
+      "section_path": "paper/sections/cusp-topology-v3-1.tex",
+      "section_heading": "Wall cusps and cells under the literature definition across the screened design sets",
+      "accepted_manuscript_binding": "\\input{sections/cusp-topology-v3-1.tex}",
+      "manuscript_revision_macro": "CuspTopologyEvidenceRevision",
+      "checks": [
+        "typed manifest under paper/evidence/manifests with every source file bound by Git blob and SHA-256 at the results revision (the record commit, where the results tree first exists), committed at HEAD; the dashboard generator, template and HTML bound at the dashboard revision and equal to the checkout by LF-normalised SHA-256; the predecessor's rejected bundle files, frozen protocol and read-only post-hoc audit bound as lineage at their own revisions; the sealed characterization and four-cell datasets and the sweep manifest bound as references at their admitted revisions and required to hash to the sealed-source identities the bundle recorded; the literature review bound as the definition source at its commit",
+        "evidence file, generated macros and sidecar regenerate byte-identically from the sealed bundle, which re-verifies every one of the bundle's files with no end-of-line tolerance, re-derives the headline and every per-set estimand from the per-design rows, cross-checks every design record, field grid, catalogue entry and CSV row against its row, byte-verifies the predecessor's rejected bundle, reproduces the predecessor's post-hoc audit from the sealed characterization dataset and requires the dashboard's embedded extraction to equal the sealed artifacts",
+        "every mapped manifest metric equals the raw artifact value behind its macro with type equality; policy metrics carry their fixed values; both results trees are unchanged since their evidence revisions",
+        "preregistration strictly precedes the results revision and the frozen protocol, authorities, shakedown and design-authorities blobs are unchanged and equal the sealed copies (for both campaigns); the lineage revisions chain preregistration -> rejection -> audit -> corrected preregistration; the recorded outcome accepted-topology-screening agrees between gate, manifest, evidence file and generator",
+        "the section is input exactly once, uses only generated macros, types no literal digit, uses the classification, P2-classification, recorded-outcome, campaign-status, field-level and lineage-terminal-state macros whose renderings equal their strings, and contains every registered non-claim",
+        "every EvidenceClaim in the section is a registered screening prose claim bound to the manifest and allowed under the section heading; the amended Discussion interpretations CLM-028 and CLM-044 are bound to the manifest and carry the literature-definition wording; the artifact claim authorizes the four generated tables, each wrapped in the registered ArtifactClaim"
+      ],
+      "metric_constraints": {
+        "attempt_count": {
+          "equals": 1
+        },
+        "binding_gate_count": {
+          "equals": 9
+        },
+        "binding_gates_true": {
+          "equals": 9
+        },
+        "campaign_status": {
+          "equals": "accepted_topology_screening"
+        },
+        "catalogue_is_consumer_contract_under_label": {
+          "equals": true
+        },
+        "characterization_case_count": {
+          "equals": 56
+        },
+        "characterization_channel_axis_roots": {
+          "equals": 180
+        },
+        "characterization_channel_off_axis_roots": {
+          "equals": 20
+        },
+        "characterization_channel_roots": {
+          "equals": 200
+        },
+        "characterization_interior_axis_mirror_maximum": {
+          "equals": 173.9530720183155
+        },
+        "characterization_interior_axis_mirror_minimum": {
+          "equals": 5.081841169352259
+        },
+        "characterization_n_minus_one_designs": {
+          "equals": 42
+        },
+        "characterization_off_axis_eligible": {
+          "equals": 0
+        },
+        "characterization_off_axis_radius_fraction_maximum": {
+          "equals": 0.5370086865882355
+        },
+        "characterization_reference_eligible_cells": {
+          "equals": 0
+        },
+        "characterization_reference_eligible_cusps": {
+          "equals": 0
+        },
+        "classification": {
+          "equals": "SCREENING_L1A_FIELD_SEPARATRIX_CUSP_TOPOLOGY"
+        },
+        "confinement_cells_demonstrated": {
+          "equals": false
+        },
+        "declared_count": {
+          "equals": 281
+        },
+        "design_set_count": {
+          "equals": 4
+        },
+        "designs_with_at_least_one_cusp": {
+          "equals": 275
+        },
+        "designs_with_at_least_two_cusps": {
+          "equals": 135
+        },
+        "designs_with_five_cusps": {
+          "equals": 6
+        },
+        "designs_with_four_cusps": {
+          "equals": 25
+        },
+        "designs_with_one_cusp": {
+          "equals": 140
+        },
+        "designs_with_seven_cusps": {
+          "equals": 6
+        },
+        "designs_with_six_cusps": {
+          "equals": 6
+        },
+        "designs_with_three_cusps": {
+          "equals": 56
+        },
+        "designs_with_two_cusps": {
+          "equals": 36
+        },
+        "designs_with_zero_cusps": {
+          "equals": 6
+        },
+        "evaluated_count": {
+          "equals": 281
+        },
+        "failed_cases_count": {
+          "equals": 0
+        },
+        "flux_root_maximum_difference_m": {
+          "equals": 8.098493306518684e-09
+        },
+        "four_cell_candidate_count": {
+          "equals": 128
+        },
+        "four_cell_designs": {
+          "equals": 56
+        },
+        "four_cell_one_axis_null_designs": {
+          "equals": 128
+        },
+        "four_cell_one_cusp_designs": {
+          "equals": 128
+        },
+        "four_cell_reference_stable_count": {
+          "equals": 0
+        },
+        "four_cell_strength_ratio_maximum": {
+          "equals": 0.4168
+        },
+        "four_cell_strength_ratio_minimum": {
+          "equals": 0.1646
+        },
+        "four_wall_cusp_designs": {
+          "equals": 25
+        },
+        "frozen_definition_nulls_remain_true": {
+          "equals": true
+        },
+        "hardware_or_experimental_validation": {
+          "equals": false
+        },
+        "held_out_characterization_designs": {
+          "equals": 56
+        },
+        "held_out_characterization_max_difference_m": {
+          "equals": 1.7564011821423475e-05
+        },
+        "held_out_characterization_nulls": {
+          "equals": 180
+        },
+        "held_out_characterization_passed": {
+          "equals": 56
+        },
+        "held_out_sweep_designs": {
+          "equals": 96
+        },
+        "held_out_sweep_max_difference_m": {
+          "equals": 2.7294298442819692e-05
+        },
+        "held_out_sweep_nulls": {
+          "equals": 479
+        },
+        "held_out_sweep_passed": {
+          "equals": 96
+        },
+        "held_out_tolerance_m": {
+          "equals": 0.00025
+        },
+        "iron_sensitivity_tested": {
+          "equals": false
+        },
+        "l1a_sets_permanent_magnet_material_model": {
+          "equals": false
+        },
+        "lineage_campaign_status": {
+          "equals": "gates_failed"
+        },
+        "lineage_cited_for_numbers": {
+          "equals": false
+        },
+        "lineage_corrected_passed": {
+          "equals": 56
+        },
+        "lineage_dropped_clusters": {
+          "equals": 26
+        },
+        "lineage_dropped_in_channel": {
+          "equals": 22
+        },
+        "lineage_failing_designs": {
+          "equals": 14
+        },
+        "lineage_failing_gate": {
+          "equals": "held_out_correspondence"
+        },
+        "lineage_failures_explained": {
+          "equals": true
+        },
+        "lineage_gates_true": {
+          "equals": 8
+        },
+        "lineage_histogram_equal": {
+          "equals": true
+        },
+        "lineage_sealed_axis_clusters": {
+          "equals": 206
+        },
+        "lineage_stable_design_count": {
+          "equals": 281
+        },
+        "lineage_terminal_state": {
+          "equals": "assessment_rejection"
+        },
+        "lineage_verified_file_count": {
+          "equals": 1211
+        },
+        "literature_source_count": {
+          "equals": 7
+        },
+        "maximum_axis_null_shift_m": {
+          "equals": 5.275861351940192e-05
+        },
+        "maximum_wall_intersection_shift_m": {
+          "equals": 3.332735706386013e-05
+        },
+        "mirror_probability_publication_forbidden": {
+          "equals": true
+        },
+        "mirror_ratios_are_field_descriptors_not_probabilities": {
+          "equals": true
+        },
+        "multicell_wall_cusp_topology_under_frozen_definition_demonstrated": {
+          "equals": false
+        },
+        "p2_axis_null_to_pic_plane_maximum_m": {
+          "equals": 3.146145911887225e-05
+        },
+        "p2_boundary_ambiguous_cusps": {
+          "equals": 1
+        },
+        "p2_cell_count": {
+          "equals": 4
+        },
+        "p2_cusp_count_equals_reference_count": {
+          "equals": true
+        },
+        "p2_cusp_positions_m": {
+          "equals": [
+            0.006028062818933392,
+            0.012000005466825737,
+            0.01797206288202682
+          ]
+        },
+        "p2_cusp_to_dashboard_maximum_m": {
+          "equals": 0.00017793711797317938
+        },
+        "p2_row_classification": {
+          "equals": "P2_QUALIFIED_FIELD_SEPARATRIX_CUSP_TOPOLOGY"
+        },
+        "p2_row_count": {
+          "equals": 1
+        },
+        "p2_row_iron_present": {
+          "equals": true
+        },
+        "p2_third_cusp_inside_end_m": {
+          "equals": 2.793711797317855e-05
+        },
+        "p2_wall_cusp_count": {
+          "equals": 3
+        },
+        "physics_level_opened": {
+          "equals": false
+        },
+        "plasma_or_performance_claim_forbidden": {
+          "equals": true
+        },
+        "preregistered_one_shot": {
+          "equals": true
+        },
+        "recorded_outcome": {
+          "equals": "accepted-topology-screening"
+        },
+        "replay_designs": {
+          "equals": 4
+        },
+        "replays_bit_identical": {
+          "equals": 4
+        },
+        "representative_count": {
+          "equals": 14
+        },
+        "screening_model": {
+          "equals": "separatrix cusp topology of prescribed vacuum field maps under the HEMP/DCFT literature definition (axis null, separatrix traced to the dielectric wall, wall cusp at the intersection, cells between consecutive cusps): linear-vacuum L1a equivalent-current screening fields for the sweep-v2, four-cell-v2 and characterization-v1 sets (not P2-qualified; no permanent-magnet or nonlinear-iron material model) and the P2-qualified adaptive finite-element divergent-exit-stack field (iron poles and return yoke present) for the single P2 row"
+        },
+        "shakedown_evidentiary": {
+          "equals": false
+        },
+        "shakedown_passed": {
+          "equals": true
+        },
+        "stability_tolerance_m": {
+          "equals": 0.00025
+        },
+        "stable_design_count": {
+          "equals": 281
+        },
+        "sweep_angle_median_deg": {
+          "equals": 0.6959646466338333
+        },
+        "sweep_cusps_equal_channel_nulls": {
+          "equals": 95
+        },
+        "sweep_design_count": {
+          "equals": 96
+        },
+        "sweep_four_cell_designs": {
+          "equals": 47
+        },
+        "sweep_four_cell_fraction": {
+          "equals": 0.4895833333333333
+        },
+        "sweep_four_cusp_designs": {
+          "equals": 19
+        },
+        "sweep_four_wall_cusp_designs": {
+          "equals": 19
+        },
+        "sweep_four_wall_cusp_fraction": {
+          "equals": 0.19791666666666666
+        },
+        "sweep_gap_distance_maximum_m": {
+          "equals": 0.0002633862742862387
+        },
+        "sweep_gap_distance_median_m": {
+          "equals": 0.00014194313015091983
+        },
+        "sweep_interior_axis_mirror_maximum": {
+          "equals": 1.1545620760443707
+        },
+        "sweep_interior_axis_mirror_minimum": {
+          "equals": 0.19662215205470748
+        },
+        "sweep_interior_cell_count": {
+          "equals": 181
+        },
+        "sweep_interior_length_pitch_maximum": {
+          "equals": 1.1181273552480455
+        },
+        "sweep_interior_length_pitch_minimum": {
+          "equals": 0.9045044868873977
+        },
+        "sweep_interior_wall_mirror_maximum": {
+          "equals": 1.0169150479177655
+        },
+        "sweep_interior_wall_mirror_minimum": {
+          "equals": 0.9999999999999996
+        },
+        "sweep_n_minus_one_designs": {
+          "equals": 83
+        },
+        "sweep_n_minus_two_designs": {
+          "equals": 12
+        },
+        "sweep_n_plus_one_designs": {
+          "equals": 1
+        },
+        "sweep_three_cusp_designs": {
+          "equals": 47
+        },
+        "sweep_two_cusp_designs": {
+          "equals": 30
+        },
+        "terminal_state": {
+          "equals": "accepted_result"
+        },
+        "tolerated_eol_file_count": {
+          "equals": 0
+        },
+        "verified_file_count": {
+          "equals": 1211
+        },
+        "wall_cusp_count_histogram": {
+          "equals": {
+            "0": 6,
+            "1": 140,
+            "2": 36,
+            "3": 56,
+            "4": 25,
+            "5": 6,
+            "6": 6,
+            "7": 6
+          }
+        },
+        "wall_cusp_total": {
+          "equals": 588
+        },
+        "wall_trace_count": {
+          "equals": 804
+        }
+      },
+      "prohibited_inferences": [
+        "plasma confinement, cusp-loss probabilities, wall-loss rates, thrust, efficiency or any thruster performance",
+        "reading a wall or axis mirror ratio as a probability or a loss fraction",
+        "that a separatrix-bounded cell confines electrons or that the legacy multi-cell plasma picture is demonstrated",
+        "permanent-magnet or nonlinear-iron material behaviour of the L1a sets, iron sensitivity of the P2 row, or P2 qualification of the L1a fields",
+        "any kinetic-simulation or particle-in-cell result (the axis-null planes are a reported consistency reference from a workstream whose results are not admitted)",
+        "any number of the predecessor campaign (disclosed as lineage only)",
+        "a change to the frozen-definition records of the earlier admissions (their nulls remain true under their definitions)",
+        "hardware or experimental validation",
+        "field-resolved reduction, L0 mapping or geometry-response prediction (GATE-L1 stays closed)",
         "opening of GATE-L1, GATE-L2 or GATE-L3"
       ]
     }

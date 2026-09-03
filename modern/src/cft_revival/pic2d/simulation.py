@@ -26,7 +26,7 @@ import numpy as np
 from . import kernels
 from .fields import MagneticFieldMap
 from .mcc import MCCConfig, NullCollisionMCC, XenonCrossSections, maxwellian_velocity
-from .mesh import MeshMasks, build_mesh_masks
+from .mesh import MeshMasks, build_mesh_masks, cell_index
 from .neutrals import NeutralInventory, NeutralInventoryConfig, NeutralState
 from .models import (
     ELECTRON_MASS_KG,
@@ -47,7 +47,7 @@ from .models import (
     stability_report,
     xenon_ion_species,
 )
-from .poisson import Poisson2D, electric_field_nodes, field_energy_j, induced_electrode_charge_c
+from .poisson import Poisson2D, apply_operator, electric_field_nodes, field_energy_j, induced_electrode_charge_c
 from .sensitivity import AnomalousCollisionConfig, SEEConfig, apply_bohm_scattering
 
 BackendName = Literal["cpu", "warp-cpu", "warp-cuda"]
@@ -69,10 +69,80 @@ class InjectionConfig:
 
 
 @dataclass(frozen=True, slots=True)
+class CathodeConfig:
+    """v2.0 cathode / neutraliser: an electron emission region inside the plume.
+
+    Electrons are born uniformly in the volume of the annulus
+    ``r_inner_m <= r <= r_outer_m, z_start_m <= z <= z_end_m`` with an isotropic
+    Maxwellian at ``electron_temperature_ev`` (HEMP-T neutralisers sit off-axis
+    outside the exit; Kornfeld, Koch and Harmann 2007).  ``current_rule``:
+
+    * ``fixed``: ``current_a`` at every step (the v1.x rule moved into the plume);
+    * ``continuity``: the emitted current follows the discharge (anode) current of
+      the previous series interval, so that in steady state the plume boundary
+      carries no net current to the chamber (the neutraliser is in series with the
+      anode supply; Szabo 2001; Charoy et al. 2019; literature review blocker 4d
+      variant (c)).  The rate is relaxed with an exponential moving average over
+      ``continuity_relaxation_intervals`` series intervals and clamped to
+      ``[current_a (floor, also the ignition current), max_current_a]``.
+    """
+
+    r_inner_m: float
+    r_outer_m: float
+    z_start_m: float
+    z_end_m: float
+    electron_temperature_ev: float
+    current_a: float
+    current_rule: Literal["fixed", "continuity"] = "fixed"
+    max_current_a: float | None = None
+    continuity_relaxation_intervals: float = 4.0
+
+    def __post_init__(self) -> None:
+        for name in ("r_inner_m", "r_outer_m", "z_start_m", "z_end_m", "electron_temperature_ev", "current_a", "continuity_relaxation_intervals"):
+            value = getattr(self, name)
+            if isinstance(value, bool) or not isinstance(value, (int, float)) or not isfinite(value):
+                raise PIC2DValidationError(f"cathode {name} must be a finite number")
+        if not 0.0 <= self.r_inner_m < self.r_outer_m:
+            raise PIC2DValidationError("cathode annulus needs 0 <= r_inner_m < r_outer_m")
+        if not self.z_start_m < self.z_end_m:
+            raise PIC2DValidationError("cathode annulus needs z_start_m < z_end_m")
+        if self.electron_temperature_ev <= 0.0:
+            raise PIC2DValidationError("cathode electron temperature must be positive")
+        if self.current_a < 0.0:
+            raise PIC2DValidationError("cathode current must be non-negative")
+        if self.current_rule not in ("fixed", "continuity"):
+            raise PIC2DValidationError("cathode current_rule must be 'fixed' or 'continuity'")
+        if self.current_rule == "continuity":
+            if self.max_current_a is None or not isfinite(self.max_current_a) or self.max_current_a < self.current_a:
+                raise PIC2DValidationError("continuity emission needs max_current_a >= current_a (floor)")
+            if self.continuity_relaxation_intervals < 1.0:
+                raise PIC2DValidationError("continuity_relaxation_intervals must be >= 1")
+        elif self.max_current_a is not None:
+            raise PIC2DValidationError("max_current_a applies to the continuity rule only")
+
+    @property
+    def peak_current_a(self) -> float:
+        return self.current_a if self.max_current_a is None else float(self.max_current_a)
+
+    def to_dict(self) -> dict[str, Any]:
+        record: dict[str, Any] = {
+            "r_inner_m": self.r_inner_m, "r_outer_m": self.r_outer_m, "z_start_m": self.z_start_m, "z_end_m": self.z_end_m,
+            "electron_temperature_ev": self.electron_temperature_ev, "current_a": self.current_a, "current_rule": self.current_rule,
+        }
+        if self.current_rule == "continuity":
+            record["max_current_a"] = float(self.max_current_a)
+            record["continuity_relaxation_intervals"] = self.continuity_relaxation_intervals
+        return record
+
+
+@dataclass(frozen=True, slots=True)
 class SeedPlasmaConfig:
     density_per_m3: float
     electron_temperature_ev: float
     ion_temperature_ev: float = 0.0
+    # v2.0: "channel" seeds the channel volume only (z < L_channel); the plume starts empty and fills from
+    # the beam and the cathode.  "all" (default, the v1.x identity) seeds the whole plasma region.
+    region: Literal["all", "channel"] = "all"
 
     def __post_init__(self) -> None:
         if not isfinite(self.density_per_m3) or self.density_per_m3 < 0.0:
@@ -81,13 +151,18 @@ class SeedPlasmaConfig:
             raise PIC2DValidationError("seed electron temperature must be positive")
         if not isfinite(self.ion_temperature_ev) or self.ion_temperature_ev < 0.0:
             raise PIC2DValidationError("seed ion temperature must be non-negative")
+        if self.region not in ("all", "channel"):
+            raise PIC2DValidationError("seed region must be 'all' or 'channel'")
 
-    def to_dict(self) -> dict[str, float]:
-        return {
+    def to_dict(self) -> dict[str, Any]:
+        record: dict[str, Any] = {
             "density_per_m3": self.density_per_m3,
             "electron_temperature_ev": self.electron_temperature_ev,
             "ion_temperature_ev": self.ion_temperature_ev,
         }
+        if self.region != "all":   # v1.x config identity unchanged for the default
+            record["region"] = self.region
+        return record
 
 
 @dataclass(frozen=True, slots=True)
@@ -125,10 +200,26 @@ class PIC2DConfig:
     # v1.4 sensitivity hooks (default OFF): Bohm-type anomalous scattering and the SEE scaffold.
     anomalous: "AnomalousCollisionConfig | None" = None
     see: "SEEConfig | None" = None
+    # v2.0: cathode emission region in the plume (replaces the exit-plane ``injection``, which stays
+    # as the legacy A/B option); requires a plume geometry.
+    cathode: "CathodeConfig | None" = None
+    # v2.0: fail-closed charge pile-up gate on the far-field boundary (plume geometries)
+    plume_boundary_gate: "PlumeBoundaryGateConfig | None" = None
 
     def __post_init__(self) -> None:
         if not isfinite(self.dt_s) or self.dt_s <= 0.0:
             raise PIC2DValidationError("dt_s must be positive")
+        if self.plume_boundary_gate is not None and not self.grid.geometry.has_plume:
+            raise PIC2DValidationError("the plume boundary gate requires a plume geometry")
+        if self.cathode is not None:
+            if self.injection is not None:
+                raise PIC2DValidationError("use either the v2.0 cathode emission region or the legacy exit-plane injection, not both")
+            geometry = self.grid.geometry
+            if not geometry.has_plume:
+                raise PIC2DValidationError("the cathode emission region requires a plume geometry")
+            if not (geometry.z_max_m <= self.cathode.z_start_m and self.cathode.z_end_m <= geometry.domain_z_max_m
+                    and self.cathode.r_outer_m <= geometry.max_radius_m):
+                raise PIC2DValidationError("the cathode annulus must lie inside the plume box")
         if self.see is not None and self.see.enabled:
             raise PIC2DValidationError(
                 "SEE emission is a v1.4 scaffold (yield model + wall diagnostics only); enabled=True is not implemented - fail closed"
@@ -179,8 +270,29 @@ class PIC2DConfig:
         } | ({} if self.neutral_inventory is None else {"neutral_inventory": self.neutral_inventory.to_dict()}) \
           | ({} if self.peak_debye_gate is None else {"peak_debye_gate": self.peak_debye_gate.to_dict()}) \
           | ({} if self.anomalous is None else {"anomalous": self.anomalous.to_dict()}) \
-          | ({} if self.see is None else {"see": self.see.to_dict()})
+          | ({} if self.see is None else {"see": self.see.to_dict()}) \
+          | ({} if self.cathode is None else {"cathode": self.cathode.to_dict()}) \
+          | ({} if self.plume_boundary_gate is None else {"plume_boundary_gate": self.plume_boundary_gate.to_dict()})
         # (each key is present only when its option is on, so v1.0-v1.3 config identities are unchanged)
+
+    @property
+    def emission_peak_current_a(self) -> float:
+        """Largest electron emission current any step can draw (sizes device buffers)."""
+
+        if self.cathode is not None:
+            return self.cathode.peak_current_a
+        return self.injection.electron_current_a if self.injection is not None else 0.0
+
+    @property
+    def emission_temperature_ev(self) -> float:
+        if self.cathode is not None:
+            return self.cathode.electron_temperature_ev
+        return self.injection.electron_temperature_ev if self.injection is not None else 0.0
+
+    @property
+    def initial_emission_rate_per_step(self) -> float:
+        current = self.cathode.current_a if self.cathode is not None else (self.injection.electron_current_a if self.injection is not None else 0.0)
+        return current * self.dt_s / (ELEMENTARY_CHARGE_C * self.macro_weight)
 
     @property
     def sync_steps(self) -> int:
@@ -221,7 +333,40 @@ CUMULATIVE_KEYS = (
 
 
 def empty_cumulative() -> dict[str, float]:
-    return {key: 0.0 for key in CUMULATIVE_KEYS}
+    """Fixed ledger (v1.x keys) plus the v2.0 momentum/plume tallies (stored as *extra* keys in checkpoints)."""
+
+    return {key: 0.0 for key in CUMULATIVE_KEYS} | {key: 0.0 for key in MOMENTUM_KEYS}
+
+
+# v2.0 momentum ledger and plume tallies.  They live in the *extra* part of the cumulative
+# ledger (absent from v1.x checkpoints, read back with ``.get(key, 0.0)``), all in SI with the
+# macro weight applied: ``pz_*`` are axial momenta in kg m/s, counts are macro-particles.
+#   pz_impulse           sum over pushes of m W (v_z^+ - v_z^-)           (total force by E and B on the plasma)
+#   pz_impulse_electric  sum over pushes of q E_z W dt                     (electric part; the rest is q v x B)
+#   pz_collisions        m_e W dv_z in MCC and Bohm scattering            (momentum handed to the neutral gas)
+#   pz_born              momentum of ionisation products                  (secondary electrons + ions)
+#   pz_injected          momentum of emitted electrons
+#   pz_exit_*            momentum carried through the far-field boundary  (the beam)
+#   pz_wall_* / pz_anode_*  momentum deposited on the dielectric (incl. front face) / anode
+#   body_face_*          wall hits on the thruster front face (r >= r_exit at the exit plane; not recycled)
+#   ionizations_plume    ionisation events downstream of the exit plane (consume effused atoms, not inventory)
+MOMENTUM_KEYS = (
+    "pz_impulse", "pz_impulse_electric", "pz_collisions", "pz_born", "pz_injected",
+    "pz_exit_electrons", "pz_exit_ions", "pz_wall_electrons", "pz_wall_ions", "pz_anode_electrons", "pz_anode_ions",
+    "body_face_electrons", "body_face_ions", "ionizations_plume",
+)
+# v2.0: the continuity-rule emission rate is dynamical state (checkpointed as an extra ledger scalar)
+CATHODE_RATE_KEY = "cathode_rate_per_step"
+# v2.0 plume histograms: ion current per solid angle in 1 degree bins from the exit-aperture centre and
+# the ion energy distribution at the far-field boundary (256 bins over [0, iedf_max_ev])
+THETA_BINS = 90
+IEDF_BINS = 256
+
+
+def momentum_z_kg_m_s(species: Species2D, particles: ParticleArrays) -> float:
+    """Represented axial momentum ``sum W m v_z`` (classical; the ledger tallies the same quantity)."""
+
+    return float(np.sum(particles.vz_m_per_s)) * species.mass_kg * species.macro_weight
 
 
 @dataclass(slots=True)
@@ -328,7 +473,7 @@ def peak_node_debye(
 class DiagnosticAccumulator:
     """Time-window sums of node maps and boundary fluxes (CPU numpy)."""
 
-    def __init__(self, masks: MeshMasks) -> None:
+    def __init__(self, masks: MeshMasks, iedf_max_ev: float = 450.0) -> None:
         self.masks = masks
         shape = masks.grid.node_shape
         nz = masks.grid.axial_cells
@@ -349,9 +494,57 @@ class DiagnosticAccumulator:
         self.wall_ion_energy_j = np.zeros(nz)
         self.exit_ions = np.zeros(nr)
         self.exit_electrons = np.zeros(nr)
+        # v2.0 plume block: far-field side boundary (r = R_plume) flux per axial cell, ion current per
+        # solid angle from the aperture centre, ion energy distribution at the far-field boundary
+        self.side_ions = np.zeros(nz)
+        self.side_electrons = np.zeros(nz)
+        self.theta_ions = np.zeros(THETA_BINS)
+        self.iedf_ions = np.zeros(IEDF_BINS)
+        self.iedf_max_ev = float(iedf_max_ev)
 
     def reset(self) -> None:
-        self.__init__(self.masks)
+        self.__init__(self.masks, self.iedf_max_ev)
+
+    # v2.0 frame recorder: the raw window sums, so that an interval [a, b] inside the window is
+    # recovered exactly as the difference of two cumulative snapshots (sums are additive)
+    SUM_KEYS = (
+        "n_e", "n_i", "phi", "e_weight", "e_vr", "e_vt", "e_vz", "e_v2", "ionization", "wall_electrons", "wall_ions",
+        "wall_electron_energy_j", "wall_ion_energy_j", "exit_ions", "exit_electrons", "side_ions", "side_electrons",
+        "theta_ions", "iedf_ions",
+    )
+
+    def raw_sums(self) -> dict[str, np.ndarray]:
+        out = {key: np.asarray(getattr(self, key)).copy() for key in self.SUM_KEYS}
+        out["steps"] = np.array([self.steps], dtype=np.int64)
+        return out
+
+    @classmethod
+    def from_sums(cls, masks: MeshMasks, sums: Mapping[str, np.ndarray], iedf_max_ev: float = 450.0) -> "DiagnosticAccumulator":
+        acc = cls(masks, iedf_max_ev)
+        for key in cls.SUM_KEYS:
+            setattr(acc, key, np.asarray(sums[key], dtype=np.float64).copy())
+        acc.steps = int(np.asarray(sums["steps"]).reshape(-1)[0])
+        return acc
+
+    def record_exit(self, is_electron: bool, r_m: np.ndarray, z_m: np.ndarray, energy_ev: np.ndarray) -> None:
+        """Bin far-field crossings (positions after the push) into the exit histograms."""
+
+        grid = self.masks.grid
+        geometry = grid.geometry
+        if r_m.size == 0:
+            return
+        through_plane = z_m >= geometry.domain_z_max_m
+        i = np.clip((r_m[through_plane] / grid.dr_m).astype(np.int64), 0, grid.radial_cells - 1)
+        np.add.at(self.exit_electrons if is_electron else self.exit_ions, i, 1.0)
+        side = ~through_plane
+        if np.any(side):
+            j = np.clip(((z_m[side] - geometry.z_min_m) / grid.dz_m).astype(np.int64), 0, grid.axial_cells - 1)
+            np.add.at(self.side_electrons if is_electron else self.side_ions, j, 1.0)
+        if not is_electron:
+            theta = np.degrees(np.arctan2(r_m, np.maximum(z_m - geometry.z_max_m, 0.0)))
+            np.add.at(self.theta_ions, np.clip((theta * THETA_BINS / 90.0).astype(np.int64), 0, THETA_BINS - 1), 1.0)
+            e_bin = np.clip((energy_ev * IEDF_BINS / self.iedf_max_ev).astype(np.int64), 0, IEDF_BINS - 1)
+            np.add.at(self.iedf_ions, e_bin, 1.0)
 
     def to_arrays(self, electron_weight: float, dt_s: float) -> dict[str, np.ndarray]:
         steps = max(self.steps, 1)
@@ -371,8 +564,24 @@ class DiagnosticAccumulator:
         wall_area = 2.0 * pi * wall_radius * dz
         exit_area = pi * (r[1:] ** 2 - r[:-1] ** 2)
         volume = np.where(masks.plasma_node, masks.shape_volume_m3, np.inf)
+        # v2.0: the side boundary r = R_plume (area 2 pi R dz per axial cell), the ion current per solid
+        # angle about the aperture centre (bin solid angle 2 pi (cos a - cos b)) and the IEDF
+        r_outer = grid.geometry.max_radius_m
+        side_area = 2.0 * pi * r_outer * dz
+        theta_edges = np.radians(np.linspace(0.0, 90.0, THETA_BINS + 1))
+        solid_angle = 2.0 * pi * (np.cos(theta_edges[:-1]) - np.cos(theta_edges[1:]))
+        iedf_edges = np.linspace(0.0, self.iedf_max_ev, IEDF_BINS + 1)
         return {
             "n_e_per_m3": self.n_e / steps,
+            "side_ion_current_density_a_per_m2": self.side_ions * electron_weight * ELEMENTARY_CHARGE_C / (side_area * window_s),
+            "side_electron_current_density_a_per_m2": self.side_electrons * electron_weight * ELEMENTARY_CHARGE_C / (side_area * window_s),
+            "plume_ion_current_per_sr_a": self.theta_ions * electron_weight * ELEMENTARY_CHARGE_C / (solid_angle * window_s),
+            "plume_theta_edges_deg": np.degrees(theta_edges),
+            "plume_ion_counts_per_theta": self.theta_ions.copy(),
+            "iedf_ion_counts": self.iedf_ions.copy(),
+            "iedf_edges_ev": iedf_edges,
+            "sample_count_e": self.e_weight.copy(),
+            "window_s": np.array([window_s]),
             "n_i_per_m3": self.n_i / steps,
             "phi_v": self.phi / steps,
             "t_e_ev": t_e_ev,
@@ -446,13 +655,19 @@ class CPUBackend:
                 raise PIC2DValidationError("MCC requires cross sections")
             self.mcc = NullCollisionMCC(cross_sections, config.mcc, self.ion)
         self.state: SimulationState | None = None
-        self.diagnostics = DiagnosticAccumulator(masks)
+        self.diagnostics = DiagnosticAccumulator(masks, iedf_max_ev=iedf_max_ev(config))
         self.quantum_c = ELEMENTARY_CHARGE_C * config.macro_weight
         self.last_tally: StepTally | None = None
+        self._last_charge_maps: tuple[np.ndarray, np.ndarray] | None = None
+        # v2.0: two-zone neutral density shape (1 in the channel, free-molecular cone in the plume)
+        self.neutral_shape_cell = neutral_shape_cells(masks)
+        self.emission_rate_per_step = config.initial_emission_rate_per_step
 
     # -- state exchange -------------------------------------------------
     def load_state(self, state: SimulationState) -> None:
         self.state = state.copy()
+        self._last_charge_maps = None
+        self.emission_rate_per_step = float(state.cumulative.get(CATHODE_RATE_KEY, self.config.initial_emission_rate_per_step))
 
     def export_state(self) -> SimulationState:
         assert self.state is not None
@@ -465,10 +680,24 @@ class CPUBackend:
             raise PIC2DValidationError("neutral scale requires MCC")
         self.mcc.set_neutral_scale(scale)
 
+    def set_emission_rate(self, rate_per_step: float) -> None:
+        """v2.0: cathode emission rate (macro-electrons per step) for the coming steps (continuity rule)."""
+
+        assert self.state is not None
+        if not isfinite(rate_per_step) or rate_per_step < 0.0:
+            raise PIC2DValidationError("emission rate must be finite and non-negative")
+        self.emission_rate_per_step = float(rate_per_step)
+        self.state.cumulative[CATHODE_RATE_KEY] = self.emission_rate_per_step
+
     @property
     def step_index(self) -> int:
         assert self.state is not None
         return self.state.step
+
+    @property
+    def time_s(self) -> float:
+        assert self.state is not None
+        return self.state.time_s
 
     def flush(self) -> StepTally | None:
         return self.last_tally
@@ -481,9 +710,26 @@ class CPUBackend:
             "electrons": state.electrons.count, "ions": state.ions.count,
             "kinetic_electron_j": kernels.kinetic_energy_j(self.electron, state.electrons),
             "kinetic_ion_j": kernels.kinetic_energy_j(self.ion, state.ions),
+            "momentum_z_electrons": momentum_z_kg_m_s(self.electron, state.electrons),
+            "momentum_z_ions": momentum_z_kg_m_s(self.ion, state.ions),
             "surface_charge_c": float(state.surface_charge_c.sum()), "phi_v": state.phi_v.copy(),
+            "surface_charge_map_c": state.surface_charge_c.copy(),
             "cumulative": dict(state.cumulative),
         }
+
+    def charge_maps(self) -> tuple[np.ndarray, np.ndarray]:
+        """v2.0: node charge maps (electrons, ions) of the last field solve (plume-boundary sample).
+
+        The same sampling moment as the Warp backend (the deposit that produced ``state.phi_v``);
+        before the first step (or after ``load_state``) the maps are deposited at the current positions.
+        """
+
+        assert self.state is not None
+        if self._last_charge_maps is None:
+            fixed = self.config.fixed_point_deposition
+            return (kernels.deposit_node_charge(self.masks, self.electron, self.state.electrons, fixed_point=fixed),
+                    kernels.deposit_node_charge(self.masks, self.ion, self.state.ions, fixed_point=fixed))
+        return self._last_charge_maps
 
     def peak_node_sample(self) -> dict[str, Any]:
         """v1.4: instantaneous electron density and temperature moments on the nodes (for the peak-node Debye gate)."""
@@ -515,6 +761,7 @@ class CPUBackend:
 
         q_e = kernels.deposit_node_charge(masks, self.electron, electrons, fixed_point=fixed)
         q_i = kernels.deposit_node_charge(masks, self.ion, ions, fixed_point=fixed)
+        self._last_charge_maps = (q_e, q_i)
         volume_charge = q_e + q_i
         source = volume_charge * masks.charge_to_source + state.surface_charge_c
         result = self.poisson.solve(source, config.potentials, initial_phi_v=state.phi_v)
@@ -526,6 +773,8 @@ class CPUBackend:
 
         max_speed = 0.0
         field_work = 0.0
+        cumulative = state.cumulative
+        add = lambda key, value: cumulative.__setitem__(key, cumulative.get(key, 0.0) + float(value))  # noqa: E731
         for species, particles, is_electron in ((self.electron, electrons, True), (self.ion, ions, False)):
             if particles.count == 0 or (not is_electron and not ion_step):
                 continue
@@ -544,6 +793,10 @@ class CPUBackend:
             )
             moved = ParticleArrays(r_new, z_new, vr_new, vt_new, vz)
             field_work += kernels.kinetic_energy_j(species, moved) - k_before
+            # v2.0 momentum ledger: the total impulse (E and B) and its electric part q E_z dt
+            mass_weight = species.mass_kg * species.macro_weight
+            add("pz_impulse", mass_weight * float(np.sum(vz - particles.vz_m_per_s)))
+            add("pz_impulse_electric", species.charge_c * species.macro_weight * species_dt * float(np.sum(ez)))
             if is_electron:
                 max_speed = float(np.sqrt(np.max(moved.speed_squared())))
             codes = kernels.classify_boundary(masks, moved.r_m, moved.z_m)
@@ -565,18 +818,28 @@ class CPUBackend:
             vr_s, vt_s, vz_s, hits = apply_bohm_scattering(
                 config.anomalous.alpha, electrons.vr_m_per_s, electrons.vt_m_per_s, electrons.vz_m_per_s, np.hypot(br, bz), dt, rng_an,
             )
+            add("pz_collisions", self.electron.mass_kg * config.macro_weight * float(np.sum(vz_s - electrons.vz_m_per_s)))
             electrons = ParticleArrays(electrons.r_m, electrons.z_m, vr_s, vt_s, vz_s)
             state.cumulative["anomalous"] = state.cumulative.get("anomalous", 0.0) + hits
 
         if self.mcc is not None and electrons.count:
             rng = np.random.default_rng([config.seed, state.step, 1])
-            mcc_result = self.mcc.apply(electrons, dt, rng)
+            shape = None
+            if masks.has_plume:
+                ci, cj, _, _ = cell_index(grid, electrons.r_m, electrons.z_m)
+                shape = self.neutral_shape_cell[ci, cj]
+            mcc_result = self.mcc.apply(electrons, dt, rng, density_shape=shape)
+            add("pz_collisions", self.electron.mass_kg * config.macro_weight
+                * float(np.sum(mcc_result.electrons.vz_m_per_s - electrons.vz_m_per_s)))
             electrons = mcc_result.electrons
             tally = mcc_result.tally
             if mcc_result.new_electrons.count:
                 electrons = electrons.append(mcc_result.new_electrons)
                 ions = ions.append(mcc_result.new_ions)
                 state.cumulative["ke_born_ions_j"] += kernels.kinetic_energy_j(self.ion, mcc_result.new_ions)
+                add("pz_born", momentum_z_kg_m_s(self.ion, mcc_result.new_ions) + momentum_z_kg_m_s(self.electron, mcc_result.new_electrons))
+                if masks.has_plume:
+                    add("ionizations_plume", int(np.count_nonzero(mcc_result.new_ions.z_m >= grid.geometry.z_max_m)))
                 if accumulate:
                     self.diagnostics.ionization += kernels.deposit_node_moment(
                         masks, mcc_result.new_ions, np.ones(mcc_result.new_ions.count)
@@ -586,12 +849,13 @@ class CPUBackend:
             state.cumulative["elastic"] += tally.elastic
             state.cumulative["inelastic_loss_j"] += tally.inelastic_energy_loss_j
 
-        if config.injection is not None and config.injection.electron_current_a > 0.0:
+        if self.emission_rate_per_step > 0.0:
             injected, state.injection_carry = self._inject(state.step, state.injection_carry)
             if injected.count:
                 electrons = electrons.append(injected)
                 state.cumulative["injected_electrons"] += injected.count
                 state.cumulative["ke_injected_j"] += kernels.kinetic_energy_j(self.electron, injected)
+                add("pz_injected", momentum_z_kg_m_s(self.electron, injected))
 
         state.electrons = electrons
         state.ions = ions
@@ -629,6 +893,7 @@ class CPUBackend:
         c2 = 299792458.0**2
         speed2 = moved.speed_squared()
         ke = (speed2 / c2 / (1.0 + np.sqrt(1.0 - speed2 / c2))) * species.mass_kg * c2 * species.macro_weight
+        mass_weight = species.mass_kg * species.macro_weight
         for code, name, energy_key in (
             (kernels.BOUNDARY_ANODE, "anode", "ke_absorbed_anode_j"),
             (kernels.BOUNDARY_EXIT, "exit", "ke_absorbed_exit_j"),
@@ -640,12 +905,19 @@ class CPUBackend:
                 continue
             state.cumulative[f"{name}_{label}"] += count
             state.cumulative[energy_key] += float(ke[mask].sum())
+            momentum_key = f"pz_{name}_{label}"
+            state.cumulative[momentum_key] = state.cumulative.get(momentum_key, 0.0) + mass_weight * float(moved.vz_m_per_s[mask].sum())
             if code == kernels.BOUNDARY_WALL:
                 charge = np.full(count, species.charge_c * species.macro_weight)
                 state.surface_charge_c += kernels.wall_surface_deposit(
                     self.masks, moved.r_m[mask], moved.z_m[mask], charge,
                     fixed_point=self.config.fixed_point_deposition, quantum_c=self.quantum_c,
                 )
+                if self.masks.has_plume:
+                    # v2.0: hits on the thruster front face (outside the exit lip) are not channel-wall hits
+                    face_key = f"body_face_{label}"
+                    state.cumulative[face_key] = state.cumulative.get(face_key, 0.0) + int(
+                        np.count_nonzero(moved.r_m[mask] >= grid.geometry.exit_radius_m))
                 if accumulate:
                     j = np.clip(((moved.z_m[mask] - grid.geometry.z_min_m) / grid.dz_m).astype(np.int64), 0, grid.axial_cells - 1)
                     target = self.diagnostics.wall_electrons if is_electron else self.diagnostics.wall_ions
@@ -653,25 +925,32 @@ class CPUBackend:
                     np.add.at(target, j, 1.0)
                     np.add.at(energy_target, j, ke[mask])
             elif code == kernels.BOUNDARY_EXIT and accumulate:
-                i = np.clip((moved.r_m[mask] / grid.dr_m).astype(np.int64), 0, grid.radial_cells - 1)
-                target = self.diagnostics.exit_electrons if is_electron else self.diagnostics.exit_ions
-                np.add.at(target, i, 1.0)
+                self.diagnostics.record_exit(is_electron, moved.r_m[mask], moved.z_m[mask], ke[mask] / (species.macro_weight * EV_J))
 
     def _inject(self, step: int, carry: float) -> tuple[ParticleArrays, float]:
         config = self.config
-        assert config.injection is not None
-        grid = self.masks.grid
-        expected = config.injection.electron_current_a * config.dt_s / (ELEMENTARY_CHARGE_C * config.macro_weight) + carry
+        expected = self.emission_rate_per_step + carry
         count = int(np.floor(expected))
         carry = expected - count
         if count == 0:
             return ParticleArrays.empty(), carry
         rng = np.random.default_rng([config.seed, step, 2])
         u = rng.random((7, count))
+        if config.cathode is not None:
+            return cathode_sample(config, u), carry
         return injection_sample(config, self.masks, u), carry
 
     def diagnostic_arrays(self) -> dict[str, np.ndarray]:
         return self.diagnostics.to_arrays(self.config.macro_weight, self.config.dt_s)
+
+    def diagnostic_sums(self) -> dict[str, np.ndarray]:
+        """v2.0 frame recorder: the cumulative window sums (additive; see DiagnosticAccumulator.raw_sums)."""
+
+        return self.diagnostics.raw_sums()
+
+    def surface_charge_map(self) -> np.ndarray:
+        assert self.state is not None
+        return self.state.surface_charge_c.copy()
 
     def reset_diagnostics(self) -> None:
         self.diagnostics.reset()
@@ -699,6 +978,67 @@ def injection_sample(config: PIC2DConfig, masks: MeshMasks, u: np.ndarray) -> Pa
     return ParticleArrays(r, z, vr, vt, vz)
 
 
+def cathode_sample(config: PIC2DConfig, u: np.ndarray) -> ParticleArrays:
+    """Map uniforms ``u`` (shape (7, N)) to cathode-annulus electrons (v2.0).
+
+    Position uniform in volume over the annulus (``r = sqrt(r_in^2 + u (r_out^2 - r_in^2))``,
+    ``z`` uniform), velocity an isotropic Maxwellian at the cathode temperature (four
+    uniforms, Box-Muller as ``maxwellian_velocity``).  Shared by both backends.
+    """
+
+    cathode = config.cathode
+    assert cathode is not None
+    r = np.sqrt(cathode.r_inner_m**2 + u[0] * (cathode.r_outer_m**2 - cathode.r_inner_m**2))
+    z = cathode.z_start_m + u[1] * (cathode.z_end_m - cathode.z_start_m)
+    temperature_k = cathode.electron_temperature_ev * EV_J / 1.380649e-23
+    vr, vt, vz = maxwellian_velocity(ELECTRON_MASS_KG, temperature_k, u[2:6])
+    return ParticleArrays(r, z, vr, vt, vz)
+
+
+def iedf_max_ev(config: PIC2DConfig) -> float:
+    """Upper edge of the far-field ion energy histogram: 1.5 x the anode potential (at least 10 eV)."""
+
+    return max(1.5 * abs(config.potentials.anode_v - config.potentials.exit_v), 10.0)
+
+
+def plume_neutral_shape(geometry: Grid2D | Any, r_m: np.ndarray, z_m: np.ndarray) -> np.ndarray:
+    """v2.0 two-zone neutral density shape ``n_g(r, z) / n_g,channel``.
+
+    Channel (``z < z_exit``): 1 (the v1.3/v1.4 uniform inventory).  Plume: free-molecular
+    (Knudsen) effusion from the exit aperture treated as a cosine-law point source of the
+    channel's effusion flux ``Phi = n_g v_bar A / 4``: the flux density at distance ``rho`` and
+    angle ``theta`` from the aperture axis is ``Phi cos(theta) / (pi rho^2)``, the mean speed
+    of the effusing atoms is ``3 pi v_bar / 8``, so ``n / n_g = 2 A cos(theta) / (3 pi^2 rho^2)``,
+    capped at 1/2 (the outgoing half-Maxwellian at the aperture).  Ion-neutral collisions
+    stay off (no hash-bound Xe+-Xe table in the repository); this field only sets the
+    electron-neutral MCC rate in the plume.
+    """
+
+    geom = geometry.geometry if isinstance(geometry, Grid2D) else geometry
+    r = np.asarray(r_m, dtype=np.float64)
+    z = np.asarray(z_m, dtype=np.float64)
+    shape = np.ones(np.broadcast(r, z).shape, dtype=np.float64)
+    if not geom.has_plume:
+        return shape
+    dz_exit = z - geom.z_max_m
+    plume = dz_exit >= 0.0
+    rho2 = r**2 + dz_exit**2
+    with np.errstate(invalid="ignore", divide="ignore"):
+        cos_theta = np.where(rho2 > 0.0, dz_exit / np.sqrt(rho2), 1.0)
+        cone = 2.0 * pi * geom.exit_radius_m**2 * cos_theta / (3.0 * pi**2 * np.where(rho2 > 0.0, rho2, np.inf))
+    return np.where(plume, np.minimum(0.5, np.maximum(cone, 0.0)), shape)
+
+
+def neutral_shape_cells(masks: MeshMasks) -> np.ndarray:
+    """Cell-centred neutral density shape (``(nr, nz)``; zero on non-plasma cells)."""
+
+    grid = masks.grid
+    r_mid = 0.5 * (grid.r_m[:-1] + grid.r_m[1:])
+    z_mid = 0.5 * (grid.z_m[:-1] + grid.z_m[1:])
+    shape = plume_neutral_shape(grid, r_mid[:, None], z_mid[None, :])
+    return np.where(masks.plasma_cell, shape, 0.0)
+
+
 def seed_plasma_state(config: PIC2DConfig, masks: MeshMasks) -> SimulationState:
     """Uniform quasi-neutral seed plasma (or empty) as the initial state."""
 
@@ -706,16 +1046,20 @@ def seed_plasma_state(config: PIC2DConfig, masks: MeshMasks) -> SimulationState:
     electrons = ParticleArrays.empty()
     ions = ParticleArrays.empty()
     if config.seed_plasma is not None and config.seed_plasma.density_per_m3 > 0.0:
-        count = int(round(config.seed_plasma.density_per_m3 * masks.plasma_volume_m3 / config.macro_weight))
+        geometry = grid.geometry
+        channel_only = config.seed_plasma.region == "channel" and geometry.has_plume
+        volume = float(masks.channel_volume_m3) if channel_only else masks.plasma_volume_m3
+        count = int(round(config.seed_plasma.density_per_m3 * volume / config.macro_weight))
         rng = np.random.default_rng([config.seed, 0, 3])
         r_list: list[np.ndarray] = []
         z_list: list[np.ndarray] = []
         accepted = 0
-        r_box = grid.geometry.max_radius_m
+        r_box = geometry.exit_radius_m if channel_only else geometry.max_radius_m
+        z_span = geometry.channel_length_m if channel_only else geometry.length_m
         while accepted < count:
             batch = max(1024, 2 * (count - accepted))
             r = r_box * np.sqrt(rng.random(batch))
-            z = grid.geometry.z_min_m + grid.geometry.length_m * rng.random(batch)
+            z = geometry.z_min_m + z_span * rng.random(batch)
             codes = kernels.classify_boundary(masks, r, z)
             keep = codes == kernels.BOUNDARY_INSIDE
             r_list.append(r[keep])
@@ -758,6 +1102,9 @@ class SeriesRecord:
     neutral: dict[str, Any] | None = None
     # v1.4: peak-node Debye sample (always recorded; gated when the config has a peak_debye_gate)
     peak_node: dict[str, Any] | None = None
+    # v2.0: momentum ledger, thrust estimates and plume-boundary sample (plume geometries only)
+    momentum: dict[str, Any] | None = None
+    plume: dict[str, Any] | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -769,7 +1116,109 @@ class SeriesRecord:
             "currents_a": dict(self.currents_a), "ledger": dict(self.ledger),
             "neutral": None if self.neutral is None else dict(self.neutral),
             "peak_node": None if self.peak_node is None else dict(self.peak_node),
-        }
+        } | ({} if self.momentum is None else {"momentum": dict(self.momentum)}) \
+          | ({} if self.plume is None else {"plume": dict(self.plume)})
+
+
+@dataclass(frozen=True, slots=True)
+class PlumeBoundaryGateConfig:
+    """v2.0 plume-boundary sanity gate (fail-closed).
+
+    The far-field nodes are Dirichlet at the reference potential, so the check is on
+    *charge pile-up*: a net charge density at the far-field nodes larger than
+    ``max_charge_fraction`` of the peak electron density in the domain means a sheath is
+    forming on the box boundary, i.e. the plume box is too small for the beam to leave
+    quasi-neutrally (Brandt et al. 2016 found a 20 x 5 mm box "still too small"; the
+    outer-boundary condition changed their plume current ratios).  Enforced after
+    ``enforce_after_s`` so the seed plasma's first transit does not trip it.
+    """
+
+    max_charge_fraction: float = 0.25
+    enforce_after_s: float = 0.0
+
+    def __post_init__(self) -> None:
+        if not isfinite(self.max_charge_fraction) or self.max_charge_fraction <= 0.0:
+            raise PIC2DValidationError("max_charge_fraction must be positive")
+        if not isfinite(self.enforce_after_s) or self.enforce_after_s < 0.0:
+            raise PIC2DValidationError("enforce_after_s must be non-negative")
+
+    def to_dict(self) -> dict[str, float]:
+        return {"max_charge_fraction": self.max_charge_fraction, "enforce_after_s": self.enforce_after_s}
+
+
+def boundary_forces_n(masks: MeshMasks, phi: np.ndarray) -> dict[str, float]:
+    """Electrostatic axial force on the solid boundaries from the discrete field (v2.0): Maxwell stress.
+
+    The force on a body is the Maxwell stress integrated over the plasma-side faces of the
+    plasma cell mask that touch it, ``F = sum_faces (eps0 [(E.n) E - E^2 n / 2]) . z  dA`` with
+    ``n`` the normal from the body into the plasma and ``E`` the mean of the two nodal fields on
+    the face.  This contains the surface-charge term ``sigma E`` (``E_n = sigma / eps0`` on a
+    dielectric with zero field inside, the induced charge on a conductor) AND the pressure of
+    the tangential field ``-eps0 E_t^2 / 2`` on the Neumann (insulator) faces, which a
+    surface-charge-times-field formula misses: the cone stair-steps and the dielectric ring of
+    the front face carry an axial component of it.  Returns the force on the thruster (anode +
+    dielectric + front-face conductor) and on the far-field boundary (the chamber); Newton's
+    third law ``F_plasma + F_thruster + F_far = 0`` holds to the discretisation error of the
+    one-sided boundary fields (verified first order in ``tests/pic2d/test_pic2d_v20_plume.py``).
+    """
+
+    grid = masks.grid
+    geometry = grid.geometry
+    nr, nz = grid.cell_shape
+    r = grid.r_m
+    dz = grid.dz_m
+    e_r, e_z = electric_field_nodes(masks, phi)
+    plasma_cell = masks.plasma_cell
+    # stress components at nodes: T_zz = eps0 (E_z^2 - E_r^2) / 2, T_zr = eps0 E_z E_r
+    t_zz = 0.5 * EPSILON_0_F_PER_M * (e_z**2 - e_r**2)
+    t_zr = EPSILON_0_F_PER_M * e_z * e_r
+    ring_area = pi * (r[1:] ** 2 - r[:-1] ** 2)                     # z-facet areas per radial cell
+    parts = {"anode_n": 0.0, "dielectric_n": 0.0, "body_conductor_n": 0.0, "far_field_n": 0.0}
+    j_exit = int(round(geometry.channel_length_m / dz)) if geometry.has_plume else nz
+    i_exit = int(round(geometry.exit_radius_m / grid.dr_m))
+    i_body = int(round(float(geometry.body_dielectric_radius_m) / grid.dr_m)) if geometry.has_plume else nr
+    # -- z-facets: plane z_j' between cell columns j'-1 and j' (or the domain ends)
+    padded = np.zeros((nr, nz + 2), dtype=bool)
+    padded[:, 1:-1] = plasma_cell
+    for jp in range(nz + 1):
+        below, above = padded[:, jp], padded[:, jp + 1]          # cells on the -z / +z side of the plane
+        face = below ^ above
+        if not face.any():
+            continue
+        cells = np.flatnonzero(face)
+        # normal from the body into the plasma: +z when the plasma is above (body below), -z otherwise
+        sign = np.where(above[cells], 1.0, -1.0)
+        stress = 0.5 * (t_zz[cells, jp] + t_zz[cells + 1, jp])    # face value: mean of its two nodes
+        force = sign * stress * ring_area[cells]
+        for cell, value in zip(cells, force):
+            if jp == 0:
+                parts["anode_n"] += value
+            elif jp == nz:
+                parts["far_field_n"] += value
+            elif geometry.has_plume and jp == j_exit and cell >= i_exit:
+                parts["body_conductor_n" if cell >= i_body else "dielectric_n"] += value
+            else:
+                parts["dielectric_n"] += value
+    # -- r-facets: cylinder r_i' between cell rows i'-1 and i' (or the outer box edge)
+    padded = np.zeros((nr + 2, nz), dtype=bool)
+    padded[1:-1, :] = plasma_cell
+    for ip in range(1, nr + 1):
+        inner, outer = padded[ip, :], padded[ip + 1, :]
+        face = inner ^ outer
+        if not face.any():
+            continue
+        cells = np.flatnonzero(face)
+        # normal from the body into the plasma: -r when the plasma is inside (body outside), +r otherwise
+        sign = np.where(inner[cells], -1.0, 1.0)
+        stress = 0.5 * (t_zr[ip, cells] + t_zr[ip, cells + 1])
+        force = sign * stress * (2.0 * pi * r[ip] * dz)
+        for cell, value in zip(cells, force):
+            if ip == nr and (geometry.has_plume and cell >= j_exit):
+                parts["far_field_n"] += value
+            else:
+                parts["dielectric_n"] += value
+    parts["thruster_n"] = parts["anode_n"] + parts["dielectric_n"] + parts["body_conductor_n"]
+    return parts
 
 
 class Simulation:
@@ -826,15 +1275,21 @@ class Simulation:
         if config.neutral_inventory is not None:
             assert config.mcc is not None
             geometry = config.grid.geometry
+            # v2.0: the inventory is the *channel* zone; the plume density is the analytic effusion cone
             self.neutrals = NeutralInventory(
                 config.neutral_inventory,
                 ceiling_density_per_m3=config.mcc.neutral_density_per_m3,
                 exit_area_m2=pi * geometry.exit_radius_m**2,
                 temperature_k=config.mcc.neutral_temperature_k,
-                volume_m3=float(self.masks.to_dict()["plasma_volume_m3"]),
+                volume_m3=float(self.masks.channel_volume_m3 if self.masks.has_plume else self.masks.plasma_volume_m3),
             )
-            self.neutral_state = NeutralState.initial(config.mcc.neutral_density_per_m3)
-            self.backend.set_neutral_scale(1.0)
+            # v2.0: the inventory may start below the null-collision ceiling (declared headroom for the
+            # recycling transient above Q/c); the MCC scale is n_g / ceiling from the first step
+            self.neutral_state = NeutralState.initial(self.neutrals.initial_density)
+            self.backend.set_neutral_scale(self.neutrals.scale(self.neutral_state))
+        self._last_momentum: float | None = None
+        if config.cathode is not None and config.cathode.current_rule == "continuity":
+            self.backend.set_emission_rate(config.initial_emission_rate_per_step)
 
     @property
     def state(self) -> SimulationState:
@@ -857,6 +1312,7 @@ class Simulation:
         }
         self._last_energy = None
         self._last_electrode = None
+        self._last_momentum = None
         self._series_base_step = int(state.step)
         if self.neutrals is not None:
             if state.neutral is None:
@@ -940,6 +1396,12 @@ class Simulation:
             currents["anomalous_collision_rate_per_s"] = (
                 (cumulative["anomalous"] - self._last_cumulative.get("anomalous", 0.0)) * config.macro_weight / interval
             )
+        extra = lambda key: cumulative.get(key, 0.0) - self._last_cumulative.get(key, 0.0)  # noqa: E731  (v2.0 extra ledger keys)
+        if masks.has_plume:
+            currents["body_face_electron_a"] = extra("body_face_electrons") * current_unit
+            currents["body_face_ion_a"] = extra("body_face_ions") * current_unit
+            currents["plume_ionization_rate_per_s"] = extra("ionizations_plume") * config.macro_weight / interval
+            currents["cathode_emission_a"] = currents["injected_electron_a"]
         total = k_e + k_i + u_e
         sources = (
             delta["ke_injected_j"] - delta["ke_absorbed_anode_j"] - delta["ke_absorbed_exit_j"]
@@ -964,8 +1426,11 @@ class Simulation:
             # on exhaustion or on exceeding the null-collision ceiling).
             # v1.4: ions absorbed at the dielectric wall and the anode are recycled as
             # thermal neutrals (when the inventory has wall_recycling); exit ions are the beam.
-            absorbed_ion_rate = (delta["wall_ions"] + delta["anode_ions"]) * config.macro_weight / interval
-            advance = self.neutrals.advance(self.neutral_state, currents["ionization_rate_per_s"], interval, absorbed_ion_rate)
+            # v2.0: only channel ionisation drains the channel inventory (plume births consume effused
+            # atoms) and front-face ions are not recycled into the channel.
+            absorbed_ion_rate = (delta["wall_ions"] + delta["anode_ions"] - extra("body_face_ions")) * config.macro_weight / interval
+            channel_ionization_rate = currents["ionization_rate_per_s"] - currents.get("plume_ionization_rate_per_s", 0.0)
+            advance = self.neutrals.advance(self.neutral_state, channel_ionization_rate, interval, absorbed_ion_rate)
             self.neutral_state = advance.state
             self.backend.set_neutral_scale(self.neutrals.scale(self.neutral_state))
             feed = self.neutrals.config.feed_atoms_per_s
@@ -992,24 +1457,191 @@ class Simulation:
             peak_node["gate_max_cells_per_debye"] = gate.max_cells_per_debye
             enforced = peak_node["macro_particles_at_peak"] >= gate.min_macro_particles_at_peak
             peak_node["gate_enforced"] = bool(enforced)
+        momentum: dict[str, Any] | None = None
+        plume: dict[str, Any] | None = None
+        if masks.has_plume:
+            momentum = self._momentum_record(sample, extra, interval, neutral)
+            plume = self._plume_record(sample, phi, float(sample["time_s"]))
+            if config.cathode is not None and config.cathode.current_rule == "continuity":
+                self._continuity_update(delta, interval_steps, momentum)
         self.series.append(
             SeriesRecord(
                 step, float(sample["time_s"]), int(sample["electrons"]), int(sample["ions"]),
                 float(plasma_phi.mean()), float(plasma_phi.min()), float(plasma_phi.max()),
                 k_e, k_i, u_e, float(sample["surface_charge_c"]), tally.max_omega_pe_dt,
-                tally.poisson_iterations, currents, ledger, neutral, peak_node,
+                tally.poisson_iterations, currents, ledger, neutral, peak_node, momentum, plume,
             )
         )
         self._last_cumulative = dict(cumulative)
         self._last_energy = total
+        if plume is not None and plume.get("gate_enforced") and plume["charge_fraction_of_peak"] > plume["gate_max_charge_fraction"]:
+            raise PIC2DStabilityError(
+                f"plume-boundary gate: net charge density at the far-field nodes is {plume['charge_fraction_of_peak']:.3g} of the "
+                f"peak electron density (limit {plume['gate_max_charge_fraction']}): a sheath is forming on the box boundary"
+            )
         if gate is not None and peak_node["gate_enforced"] and peak_node["cells_per_debye"] > gate.max_cells_per_debye:
             raise PIC2DStabilityError(
                 f"peak-node Debye gate: {peak_node['cells_per_debye']:.3g} cells per lambda_D at node {peak_node['node']} "
                 f"(n_e {peak_node['n_e_peak_per_m3']:.3g} m^-3, T_e {peak_node['t_e_peak_ev']:.3g} eV) exceeds {gate.max_cells_per_debye}"
             )
 
+    # -- v2.0 plume block ---------------------------------------------------------
+    def _momentum_record(self, sample: Mapping[str, Any], extra: Any, interval: float, neutral: Mapping[str, Any] | None) -> dict[str, Any]:
+        """Interval momentum ledger, momentum-flux thrust and momentum-balance thrust with the closure check.
+
+        Signs: +z is the beam direction.  ``thrust_flux_n`` is the axial momentum leaving through the
+        far-field boundary minus the momentum brought in by the cathode (plus the cold-gas effusion
+        thrust when an inventory exists).  ``force_on_thruster_n`` is the axial force on the thruster
+        from the plasma: momentum deposited on its surfaces minus the reaction to the field impulse on
+        the plasma (E and B, the magnets are part of the thruster); in steady state
+        ``thrust_flux ~ -force_on_thruster`` up to the momentum handed to the neutral gas in
+        collisions, the momentum of ionisation products, the far-field (chamber) electrostatic force
+        and the change of the stored plasma momentum, all of which are reported.  The ledger residual
+        ``dP - (impulse + collisions + born + injected - exit - wall - anode)`` is round-off.
+        """
+
+        rate = lambda key: extra(key) / interval  # noqa: E731
+        p_now = float(sample["momentum_z_electrons"]) + float(sample["momentum_z_ions"])
+        d_p = 0.0 if self._last_momentum is None else p_now - self._last_momentum
+        first = self._last_momentum is None
+        self._last_momentum = p_now
+        exit_rate = rate("pz_exit_electrons") + rate("pz_exit_ions")
+        absorbed_rate = rate("pz_wall_electrons") + rate("pz_wall_ions") + rate("pz_anode_electrons") + rate("pz_anode_ions")
+        impulse_rate = rate("pz_impulse")
+        electric_rate = rate("pz_impulse_electric")
+        collisions_rate = rate("pz_collisions")
+        born_rate = rate("pz_born")
+        injected_rate = rate("pz_injected")
+        residual = 0.0 if first else d_p - (extra("pz_impulse") + extra("pz_collisions") + extra("pz_born") + extra("pz_injected")
+                                            - extra("pz_exit_electrons") - extra("pz_exit_ions") - extra("pz_wall_electrons")
+                                            - extra("pz_wall_ions") - extra("pz_anode_electrons") - extra("pz_anode_ions"))
+        cold_gas = 0.0
+        if neutral is not None and self.neutrals is not None:
+            # effusing half-Maxwellian through the aperture: momentum flux n k T / 2 per area = Phi m (pi/4) v_bar
+            v_bar = sqrt(8.0 * 1.380649e-23 * self.neutrals.temperature_k / (pi * self.neutrals.mass_kg))
+            cold_gas = float(neutral["effusion_rate_per_s"]) * self.neutrals.mass_kg * (pi / 4.0) * v_bar
+        thrust_flux = exit_rate - injected_rate
+        force_on_thruster = absorbed_rate - impulse_rate
+        thrust_balance = -force_on_thruster
+        forces = boundary_forces_n(self.masks, sample["phi_v"])
+        closure = (thrust_flux - thrust_balance) / thrust_flux if thrust_flux != 0.0 else 0.0
+        return {
+            "momentum_z_kg_m_s": p_now,
+            "interval_dp_kg_m_s": d_p,
+            "interval_ledger_residual_kg_m_s": residual,
+            "beam_momentum_rate_ions_n": rate("pz_exit_ions"),
+            "beam_momentum_rate_electrons_n": rate("pz_exit_electrons"),
+            "injected_momentum_rate_n": injected_rate,
+            "absorbed_momentum_rate_n": absorbed_rate,
+            "field_impulse_rate_n": impulse_rate,
+            "electric_impulse_rate_n": electric_rate,
+            "magnetic_impulse_rate_n": impulse_rate - electric_rate,
+            "collision_momentum_rate_n": collisions_rate,
+            "born_momentum_rate_n": born_rate,
+            "dp_rate_n": d_p / interval,
+            "thrust_flux_n": thrust_flux,
+            "cold_gas_thrust_n": cold_gas,
+            "thrust_total_n": thrust_flux + cold_gas,
+            "force_on_thruster_n": force_on_thruster,
+            "thrust_balance_n": thrust_balance,
+            "closure_fraction": closure,
+            "electrostatic_force_thruster_n": forces["thruster_n"],
+            "electrostatic_force_far_field_n": forces["far_field_n"],
+            "electrostatic_force_parts_n": {k: forces[k] for k in ("dielectric_n", "anode_n", "body_conductor_n")},
+        }
+
+    def _plume_record(self, sample: Mapping[str, Any], phi: np.ndarray, time_s: float) -> dict[str, Any]:
+        """Far-field boundary sample: potential consistency, charge pile-up fraction, axis potential profile markers."""
+
+        masks = self.masks
+        config = self.config
+        grid = masks.grid
+        q_e, q_i = self.backend.charge_maps()
+        with np.errstate(invalid="ignore", divide="ignore"):
+            volume = np.where(masks.plasma_node, masks.shape_volume_m3, np.inf)
+            n_e = np.abs(q_e) / (ELEMENTARY_CHARGE_C * volume)
+            net = (q_i + q_e) / (ELEMENTARY_CHARGE_C * volume)
+        peak = float(n_e[masks.plasma_node].max()) if masks.plasma_node.any() else 0.0
+        far = masks.far_field_node
+        far_net = float(np.max(np.abs(net[far]))) if far.any() else 0.0
+        phi_dev = float(np.max(np.abs(phi[far] - config.potentials.exit_v))) if far.any() else 0.0
+        induced = apply_operator(masks, phi)
+        # axis potential: exit-plane value and the acceleration region (90 % -> 10 % of the drop from
+        # the axis maximum to the far plane)
+        axis = phi[0, :]
+        z = grid.z_m
+        j_exit = int(round(grid.geometry.channel_length_m / grid.dz_m))
+        k_max = int(np.argmax(axis))
+        phi_max = float(axis[k_max])
+        phi_far = float(axis[-1])
+        drop = phi_max - phi_far
+        z90 = z10 = float("nan")
+        if drop > 0.0:
+            tail = axis[k_max:]
+            below90 = np.flatnonzero(tail <= phi_far + 0.9 * drop)
+            below10 = np.flatnonzero(tail <= phi_far + 0.1 * drop)
+            if below90.size:
+                z90 = float(z[k_max + below90[0]])
+            if below10.size:
+                z10 = float(z[k_max + below10[0]])
+        gate = config.plume_boundary_gate
+        record = {
+            "far_field_phi_max_abs_deviation_v": phi_dev,
+            "far_field_net_charge_density_max_per_m3": far_net,
+            "peak_electron_density_per_m3": peak,
+            "charge_fraction_of_peak": far_net / peak if peak > 0.0 else 0.0,
+            "far_field_induced_charge_c": float(induced[far].sum()) if far.any() else 0.0,
+            "body_conductor_induced_charge_c": float(induced[masks.body_conductor_node].sum()),
+            "exit_plane_axis_potential_v": float(axis[j_exit]),
+            "axis_phi_max_v": phi_max,
+            "axis_phi_max_z_m": float(z[k_max]),
+            "acceleration_z90_m": z90,
+            "acceleration_z10_m": z10,
+            "acceleration_width_m": (z10 - z90) if isfinite(z10) and isfinite(z90) else float("nan"),
+            "cathode_rate_per_step": float(sample["cumulative"].get(CATHODE_RATE_KEY, config.initial_emission_rate_per_step)),
+        }
+        if gate is not None:
+            record["gate_max_charge_fraction"] = gate.max_charge_fraction
+            record["gate_enforced"] = bool(time_s >= gate.enforce_after_s)
+        return record
+
+    def _continuity_update(self, delta: Mapping[str, float], interval_steps: int, momentum: dict[str, Any]) -> None:
+        """Cathode current-continuity rule: emit the discharge current, relaxed and clamped.
+
+        Charge conservation of the whole plasma in steady state gives ``I_cathode = I_d + (I_e - I_i)_far``:
+        the neutraliser in series with the anode supply emits the anode current, and the plume boundary
+        then carries no net current to the chamber.  The target is the interval's net anode electron
+        current (electrons absorbed minus ions absorbed) in macro-particles per step.
+        """
+
+        config = self.config
+        cathode = config.cathode
+        assert cathode is not None
+        unit = config.dt_s / (ELEMENTARY_CHARGE_C * config.macro_weight)
+        floor = cathode.current_a * unit
+        ceiling = float(cathode.max_current_a) * unit
+        current = float(self.backend.emission_rate_per_step)
+        target = (delta["anode_electrons"] - delta["anode_ions"]) / max(interval_steps, 1)
+        relaxed = current + (target - current) / cathode.continuity_relaxation_intervals
+        new_rate = min(max(relaxed, floor), ceiling)
+        self.backend.set_emission_rate(new_rate)
+        momentum["cathode_target_rate_per_step"] = target
+        momentum["cathode_rate_per_step"] = new_rate
+        momentum["cathode_emission_next_a"] = new_rate / unit
+        momentum["cathode_clamped"] = bool(new_rate != relaxed)
+
     def diagnostic_arrays(self) -> dict[str, np.ndarray]:
         return self.backend.diagnostic_arrays()
+
+    def diagnostic_sums(self) -> dict[str, np.ndarray]:
+        """v2.0: cumulative window sums for the frame recorder (both backends)."""
+
+        return self.backend.diagnostic_sums()
+
+    def surface_charge_map(self) -> np.ndarray:
+        """Instantaneous dielectric surface charge per node (C), without pulling the particles."""
+
+        return self.backend.surface_charge_map()
 
     def to_provenance(self) -> dict[str, Any]:
         record: dict[str, Any] = {
@@ -1037,21 +1669,48 @@ class Simulation:
             "see": None if self.config.see is None else self.config.see.to_dict(),
             "step_graph": bool(getattr(self.backend, "step_graph_active", False)),
         }
+        geometry = self.config.grid.geometry
+        if geometry.has_plume:
+            record["v2_0_options"] = {
+                "domain": "channel + plume box (L-shaped plasma region; channel walls, exit lip and front face internal)",
+                "plume_radius_m": geometry.plume_radius_m, "plume_length_m": geometry.plume_length_m,
+                "front_face": f"dielectric to r = {geometry.body_dielectric_radius_m} m, grounded conductor beyond (reference potential)",
+                "far_field": f"Dirichlet {self.config.potentials.exit_v} V on r = R_plume (z >= z_exit) and z = z_max",
+                "cathode": None if self.config.cathode is None else self.config.cathode.to_dict(),
+                "legacy_exit_plane_injection": self.config.injection is not None,
+                "neutrals": "two-zone: channel inventory (v1.4) + free-molecular cosine-source cone in the plume (electron-neutral MCC only; ion-neutral collisions off)",
+                "plume_boundary_gate": None if self.config.plume_boundary_gate is None else self.config.plume_boundary_gate.to_dict(),
+                "momentum_ledger_keys": list(MOMENTUM_KEYS),
+                "histograms": {"theta_bins": THETA_BINS, "iedf_bins": IEDF_BINS, "iedf_max_ev": iedf_max_ev(self.config)},
+            }
         return record
 
 
 __all__ = [
+    "CATHODE_RATE_KEY",
     "CPUBackend",
     "CUMULATIVE_KEYS",
+    "CathodeConfig",
     "DiagnosticAccumulator",
+    "IEDF_BINS",
     "InjectionConfig",
+    "MOMENTUM_KEYS",
     "PIC2DConfig",
+    "PeakDebyeGateConfig",
+    "PlumeBoundaryGateConfig",
     "SeedPlasmaConfig",
     "SeriesRecord",
     "Simulation",
     "SimulationState",
     "StepTally",
+    "THETA_BINS",
+    "boundary_forces_n",
+    "cathode_sample",
     "empty_cumulative",
+    "iedf_max_ev",
     "instantaneous_maps",
+    "momentum_z_kg_m_s",
+    "neutral_shape_cells",
+    "plume_neutral_shape",
     "seed_plasma_state",
 ]

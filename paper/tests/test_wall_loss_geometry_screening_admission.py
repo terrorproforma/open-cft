@@ -63,7 +63,8 @@ class GeometryScreeningAdmissionTests(unittest.TestCase):
         self.assertIsNone(self.gate["opens_level"])
         self.assertEqual(self.gate["recorded_outcome"], geo.RECORDED_OUTCOME)
         self.assertIn(geo.RECORDED_OUTCOME, check_paper.SCREENING_OUTCOMES)
-        self.assertEqual(len(check_paper.SCREENING_OUTCOMES), 4)
+        # A fifth outcome (accepted-topology-screening) was added by the cusp topology admission.
+        self.assertEqual(len(check_paper.SCREENING_OUTCOMES), 5)
         self.assertIn("accepted_screening_dataset", self.gate["recorded_outcome_justification"])
         self.assertEqual(self.gate["required_manifest_document_type"], "paper-orbit-screening-manifest")
         self.assertEqual(self.gate["evidence_revision"], geo.RESULTS_COMMIT_SHA)

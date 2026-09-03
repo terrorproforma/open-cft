@@ -63,6 +63,87 @@ def _matrix(values: np.ndarray, digits: int = 5) -> list[list[Any]]:
     return [_round(row, digits) for row in np.asarray(values, dtype=np.float64)]
 
 
+# -- sampling masks for the window-averaged maps (shared by every PIC-2D dashboard) -------------------
+#
+# The log-scale maps of sparsely sampled fields look "speckled": a node visited by a handful of
+# macro-particles in the averaging window carries an O(1) relative error, and log colouring
+# stretches exactly those cells.  The dashboards therefore embed, per node, the number of samples
+# that formed the window mean and let the viewer grey out cells below a declared threshold
+# (default MIN_SAMPLES_DEFAULT), average 2x2 / 3x3 blocks (sample counts add), and switch the
+# colour scale to linear.  The electron sample count is the accumulated bilinear deposit weight
+# of the window, which the runs record directly from model v2.0 on (``sample_count_e``); for the
+# earlier artifacts it is reconstructed exactly from the window mean density, the node shape
+# volume and the macro weight (``n_e V_node steps / W`` is the same sum).  Ionisation events are
+# the window ionisation rate times the node volume and window duration over the macro weight.
+
+MIN_SAMPLES_DEFAULT = 20
+SAMPLING_METHOD = (
+    "electron samples = accumulated bilinear deposit weight over the window = n_e,mean V_node N_steps / W; "
+    "ionisation events = rate V_node T_window / W; a cell with N samples carries a relative error of order N^-1/2 "
+    "(22 % at the default threshold of 20)"
+)
+
+
+def sampling_block(maps: Mapping[str, np.ndarray], masks: Any, macro_weight: float, dt_s: float, stride: int = 1) -> dict[str, Any]:
+    """Per-node sample counts of the window maps (see the module note above)."""
+
+    window_steps = int(np.asarray(maps["window_steps"]).ravel()[0])
+    window_s = float(np.asarray(maps["window_s"]).ravel()[0]) if "window_s" in maps else window_steps * float(dt_s)
+    plasma = masks.plasma_node
+    volume = np.asarray(masks.shape_volume_m3, dtype=np.float64)
+    if "sample_count_e" in maps:
+        electron_samples = np.asarray(maps["sample_count_e"], dtype=np.float64)
+        source = "recorded"
+    else:
+        electron_samples = np.asarray(maps["n_e_per_m3"], dtype=np.float64) * volume * window_steps / float(macro_weight)
+        source = "reconstructed"
+    events = np.asarray(maps["ionization_rate_per_m3_s"], dtype=np.float64) * volume * window_s / float(macro_weight)
+    electron_samples = np.where(plasma, electron_samples, np.nan)[:, ::stride]
+    events = np.where(plasma, events, np.nan)[:, ::stride]
+    return {
+        "window_steps": window_steps,
+        "window_s": float(f"{window_s:.6g}"),
+        "min_samples_default": MIN_SAMPLES_DEFAULT,
+        "electron_samples_source": source,
+        "method": SAMPLING_METHOD,
+        "electron_samples": _matrix(electron_samples, 4),
+        "ionization_events": _matrix(events, 4),
+    }
+
+
+# JavaScript shared by the map panels of every PIC-2D dashboard: binned/masked view of a node map,
+# colour range from the unmasked cells, heat-map paint, colour bar, caption and the controls.
+# Relies on the page's `$`, `fmt`, `sci`, `color`, `themeColor`, `scaleMode`, `mapKey`, `selected`,
+# `cursor`, `showTip`, `schedule` and `DATA` (identical names in all templates).
+MAP_VIEW_JS = r"""let binSize=1,minSamples=DATA.cases[0]&&DATA.cases[0].sampling?DATA.cases[0].sampling.min_samples_default:20;const viewCache=new Map();
+const LOW_RGB=[128,128,128],OUT_RGB=[245,245,245];
+function extent(rows,skipLow){let lo=Infinity,hi=-Infinity,pos=Infinity;rows.forEach((row,i)=>row.forEach((v,j)=>{if(v==null||!isFinite(v)||(skipLow&&skipLow[i][j]))return;if(v<lo)lo=v;if(v>hi)hi=v;if(v>0&&v<pos)pos=v}));return {lo,hi,pos,empty:lo===Infinity}}
+function countsFor(c,key){const s=c.sampling;if(!s)return null;return key==="ionization_rate_per_m3_s"?s.ionization_events:s.electron_samples}
+function blockCentres(nodes,k){const out=[];for(let i=0;i<nodes.length;i+=k){const j=Math.min(i+k-1,nodes.length-1);out.push(0.5*(nodes[i]+nodes[j]))}return out}
+function viewMatrix(c,key){const cacheKey=`${selected}|${key}|${binSize}|${minSamples}`;if(viewCache.has(cacheKey))return viewCache.get(cacheKey);const m=c.maps[key],counts=countsFor(c,key),k=binSize,nr=c.grid_r_m.length,nz=c.grid_z_m.length,NR=Math.ceil(nr/k),NZ=Math.ceil(nz/k),vals=[],low=[],cnt=[];let masked=0,shown=0;
+for(let I=0;I<NR;I++){const rv=[],rl=[],rc=[];for(let J=0;J<NZ;J++){let sum=0,n=0,cs=0;for(let i=I*k;i<Math.min((I+1)*k,nr);i++)for(let j=J*k;j<Math.min((J+1)*k,nz);j++){const v=m[i][j];if(v==null||!isFinite(v))continue;sum+=v;n++;if(counts){const q=counts[i][j];if(q!=null&&isFinite(q))cs+=q}}
+const isLow=n>0&&counts!=null&&minSamples>0&&cs<minSamples;rv.push(n?sum/n:null);rl.push(isLow);rc.push(counts&&n?cs:null);if(n){shown++;if(isLow)masked++}}vals.push(rv);low.push(rl);cnt.push(rc)}
+const view={m:vals,low,counts:cnt,r:k===1?c.grid_r_m:blockCentres(c.grid_r_m,k),z:k===1?c.grid_z_m:blockCentres(c.grid_z_m,k),k,masked,shown,hasCounts:counts!=null};if(viewCache.size>24)viewCache.clear();viewCache.set(cacheKey,view);return view}
+function viewRange(view,key){let e=extent(view.m,view.low);if(e.empty)e=extent(view.m,null);const signed=key==="phi_v"&&e.lo<0,log=scaleMode==="log"&&!signed;let lo,hi;if(log){hi=Math.log10(Math.max(e.hi,1e-300));lo=Math.log10(Math.max(e.pos===Infinity?e.hi:e.pos,e.hi*1e-4,1e-300))}else if(signed){const ma=Math.max(Math.abs(e.lo),Math.abs(e.hi));lo=-ma;hi=ma}else{lo=e.lo;hi=e.hi}return {lo,hi,signed,log}}
+function paintView(ctx,b,view,range){const off=document.createElement("canvas");off.width=view.z.length;off.height=view.r.length;const oc=off.getContext("2d"),img=oc.createImageData(off.width,off.height);for(let i=0;i<off.height;i++)for(let j=0;j<off.width;j++){const ri=off.height-1-i,v=view.m[ri][j],k=(i*off.width+j)*4;let rgb;if(v==null||!isFinite(v))rgb=OUT_RGB;else if(view.low[ri][j]||(range.log&&v<=0))rgb=LOW_RGB;else{const t=range.log?(Math.log10(v)-range.lo)/(range.hi-range.lo||1):(v-range.lo)/(range.hi-range.lo||1);rgb=color(t,range.signed).match(/\d+/g).map(Number)}img.data[k]=rgb[0];img.data[k+1]=rgb[1];img.data[k+2]=rgb[2];img.data[k+3]=255}oc.putImageData(img,0,0);ctx.imageSmoothingEnabled=false;ctx.drawImage(off,b.l,b.t,b.r-b.l,b.b-b.t)}
+function drawColorbar(ctx,s,b,range){const x=s.w-52;ctx.font="11px system-ui";for(let k=0;k<80;k++){ctx.fillStyle=color(1-k/79,range.signed);ctx.fillRect(x,b.t+k*(b.b-b.t)/80,15,(b.b-b.t)/80+1)}ctx.fillStyle=themeColor("--text");ctx.fillText(range.log?sci(Math.pow(10,range.hi),2):sci(range.hi,3),x-14,b.t-5);ctx.fillText(range.log?sci(Math.pow(10,range.lo),2):sci(range.lo,3),x-14,b.b+14);ctx.fillStyle=`rgb(${LOW_RGB.join(",")})`;ctx.fillRect(x,b.b+22,15,10);ctx.fillStyle=themeColor("--muted");ctx.fillText(minSamples>0?`< ${minSamples} samples`:"zero (log)",x-14,b.b+42)}
+function duration(sec){return sec==null?"–":sec>=1e-6?`${fmt(sec*1e6,4)} µs`:`${fmt(sec*1e9,4)} ns`}
+function mapCaption(c,view,key){const el=$("mapCaption");if(!el)return;const s=c.sampling,what=key==="ionization_rate_per_m3_s"?"ionisation events":"electron samples";const win=s?`Averaging window ${duration(s.window_s)} (${s.window_steps} steps)`:"Averaging window: see the case details";const bins=view.k>1?`; ${view.k}×${view.k} block means (sample counts summed per block)`:"";const mask=!view.hasCounts?"; no sample counts embedded":minSamples>0?`; grey: ${view.masked} of ${view.shown} ${view.k>1?"blocks":"nodes"} with fewer than ${minSamples} ${what} in the window (${s.electron_samples_source} counts: ${s.method})`:"; sample mask off (every sampled cell coloured)";el.textContent=`${win}${bins}${mask}; ${scaleMode} colour scale over the unmasked cells${scaleMode==="log"?" (zero-valued cells grey)":""}.`}
+function wireMapControls(){const bin=$("bin"),ms=$("minSamples");if(ms){ms.value=String(minSamples);ms.onchange=e=>{minSamples=Number(e.target.value);schedule(false)}}if(bin)bin.onchange=e=>{binSize=Number(e.target.value);cursor=null;showTip();schedule(false)}}
+function viewIndex(values,v){let k=0;for(let i=1;i<values.length;i++)if(Math.abs(values[i]-v)<Math.abs(values[k]-v))k=i;return k}
+function viewCursor(c,view,b,x,y){const zs=c.grid_z_m,rs=c.grid_r_m,z=zs[0]+(x-b.l)/(b.r-b.l)*(zs.at(-1)-zs[0]),r=rs[0]+(b.b-y)/(b.b-b.t)*(rs.at(-1)-rs[0]),zi=viewIndex(view.z,z),ri=viewIndex(view.r,r);return {zi,ri,z:view.z[zi],r:view.r[ri]}}
+function cellText(c,view,key){if(!cursor)return "";const v=view.m[cursor.ri][cursor.zi],n=view.counts[cursor.ri][cursor.zi],low=view.low[cursor.ri][cursor.zi];const ne=viewMatrix(c,"n_e_per_m3"),ph=viewMatrix(c,"phi_v"),te=viewMatrix(c,"t_e_ev");return `z ${fmt(cursor.z*1e3,4)} mm · r ${fmt(cursor.r*1e3,4)} mm · ${v==null?"outside plasma":sci(v,4)+(low?" (below sample threshold)":"")}${n!=null?` · ${fmt(n,3)} samples`:""} · n_e ${sci(ne.m[cursor.ri][cursor.zi],3)} · φ ${fmt(ph.m[cursor.ri][cursor.zi],4)} V · T_e ${fmt(te.m[cursor.ri][cursor.zi],3)} eV`}
+"""
+
+MAP_CONTROLS_HTML = (
+    '<div class="control"><label for="bin">Binning</label><select id="bin"><option value="1">1×1 (nodes)</option>'
+    '<option value="2">2×2</option><option value="3">3×3</option></select></div>'
+    '<div class="control"><label for="minSamples">Grey cells with fewer samples than</label><select id="minSamples">'
+    '<option value="0">off</option><option value="5">5</option><option value="20">20 (default)</option><option value="100">100</option>'
+    '<option value="1000">1000</option></select></div>'
+)
+
+
 def _file_sha256(path: Path) -> str:
     return sha256(path.read_bytes()).hexdigest()
 
@@ -177,6 +258,8 @@ def build_payload(results: Path = RESULTS, protocol_path: Path = PROTOCOL, histo
         for key in MAP_KEYS:
             values = np.where(plasma, maps[key], np.nan)[:, ::stride]
             embedded_maps[key] = _matrix(values)
+        sampling = sampling_block(maps, masks, float(summary["provenance"]["config"]["macro_weight"]),
+                                  float(summary["provenance"]["config"]["dt_s"]), stride)
         wall_z = (z[:-1] + 0.5 * float(grid["dz_m"]))
         cases.append(
             {
@@ -223,6 +306,7 @@ def build_payload(results: Path = RESULTS, protocol_path: Path = PROTOCOL, histo
                 "grid_r_m": _round(r),
                 "grid_z_m": _round(z[::stride]),
                 "maps": embedded_maps,
+                "sampling": sampling,
                 "wall_z_m": _round(wall_z),
                 "wall": {key: _round(maps[key]) for key in WALL_KEYS},
                 "exit_r_m": _round(0.5 * (r[:-1] + r[1:])),
@@ -300,6 +384,26 @@ def validate_payload(payload: Mapping[str, Any]) -> None:
             matrix = case["maps"][key]
             if len(matrix) != nr or any(len(row) != nz for row in matrix):
                 raise ValueError(f"{case['id']}: map {key} shape does not match the grid")
+        validate_sampling(case)
+
+
+def validate_sampling(case: Mapping[str, Any]) -> None:
+    """The sampling block must cover the embedded maps with non-negative counts and declare its threshold."""
+
+    sampling = case.get("sampling")
+    if not isinstance(sampling, Mapping):
+        raise ValueError(f"{case['id']}: sampling block is missing")
+    nr, nz = len(case["grid_r_m"]), len(case["grid_z_m"])
+    for key in ("electron_samples", "ionization_events"):
+        matrix = sampling[key]
+        if len(matrix) != nr or any(len(row) != nz for row in matrix):
+            raise ValueError(f"{case['id']}: sampling {key} shape does not match the grid")
+        if any(v is not None and v < 0.0 for row in matrix for v in row):
+            raise ValueError(f"{case['id']}: sampling {key} must be non-negative")
+    if int(sampling["window_steps"]) < 1 or not sampling["window_s"] > 0.0:
+        raise ValueError(f"{case['id']}: sampling window must be positive")
+    if sampling["min_samples_default"] != MIN_SAMPLES_DEFAULT or sampling["electron_samples_source"] not in ("recorded", "reconstructed"):
+        raise ValueError(f"{case['id']}: sampling block must declare the default threshold and the count source")
 
 
 HTML_TEMPLATE = r"""<!doctype html>
@@ -330,12 +434,13 @@ header,main,footer{width:min(1500px,calc(100% - 2rem));margin:auto}header{paddin
 <div class="control"><label for="case">Case</label><select id="case"></select></div>
 <div class="control"><label for="map">Map (time-averaged over the final window)</label><select id="map"><option value="n_e_per_m3">Electron density n_e (m⁻³)</option><option value="n_i_per_m3">Ion density n_i (m⁻³)</option><option value="phi_v">Potential φ (V)</option><option value="t_e_ev">Electron temperature T_e (eV)</option><option value="ionization_rate_per_m3_s">Ionisation rate (m⁻³ s⁻¹)</option></select></div>
 <div class="control"><label for="scale">Colour scale</label><select id="scale"><option value="linear">linear</option><option value="log">log10</option></select></div>
+__MAP_CONTROLS__
 <button id="theme" type="button" aria-pressed="false">Light theme</button>
 </div><p class="small">Keyboard: 1–4 select cases; arrow keys move the map cursor; Home resets the cursor.</p></header>
 <main>
 <section class="metrics" id="metrics" aria-label="Case metrics"></section>
 <section class="grid">
-<div class="panel"><h2 id="mapTitle">Time-averaged map</h2><div class="canvas-wrap"><canvas id="field" tabindex="0" role="img" aria-label="Interactive (r,z) heatmap of the selected time-averaged quantity"></canvas><div id="tip" class="tip" role="status" aria-live="polite"></div></div><p class="small">Canvas raster of the node grid (radial-major). White: dielectric/outside the plasma cell mask. Straight bore wall at r = 2 mm is exact; the cone is a one-cell stair-step. Anode at z = 0 (fixed potential), exit plane at z = 24 mm (0 V reference).</p></div>
+<div class="panel"><h2 id="mapTitle">Time-averaged map</h2><div class="canvas-wrap"><canvas id="field" tabindex="0" role="img" aria-label="Interactive (r,z) heatmap of the selected time-averaged quantity"></canvas><div id="tip" class="tip" role="status" aria-live="polite"></div></div><p class="small" id="mapCaption"></p><p class="small">Canvas raster of the node grid (radial-major). White: dielectric/outside the plasma cell mask; grey: sampled by fewer macro-particles than the threshold (the "speckle" of a log map is the counting noise of those cells, not structure). Straight bore wall at r = 2 mm is exact; the cone is a one-cell stair-step. Anode at z = 0 (fixed potential), exit plane at z = 24 mm (0 V reference).</p></div>
 <aside class="panel"><h2 id="detailTitle">Case details</h2><div id="details"></div></aside>
 </section>
 <section class="plots">
@@ -363,7 +468,8 @@ $("claim").innerHTML=`<strong>Claim boundary:</strong> ${DATA.claim_statement}<u
 const themeColor=name=>getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 function setup(canvas){const r=canvas.getBoundingClientRect(),dpr=Math.max(1,window.devicePixelRatio||1),w=Math.max(1,Math.round(r.width*dpr)),h=Math.max(1,Math.round(r.height*dpr));if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h}const c=canvas.getContext("2d");c.setTransform(dpr,0,0,dpr,0,0);return {c,w:r.width,h:r.height}}
 function color(t,signed){t=Math.max(0,Math.min(1,t));if(signed){if(t<.5){const q=t*2;return `rgb(${Math.round(35+220*q)},${Math.round(92+163*q)},255)`}const q=(t-.5)*2;return `rgb(255,${Math.round(255-210*q)},${Math.round(255-215*q)})`}return `rgb(${Math.round(12+240*t)},${Math.round(28+190*Math.sqrt(t))},${Math.round(90+100*(1-t))})`}
-function renderMetrics(){const root=$("metrics");root.textContent="";DATA.cases.forEach((c,i)=>{const w=c.window_maps_summary,card=document.createElement("article");card.className="metric-card"+(i===selected?" active":"");card.tabIndex=0;card.setAttribute("role","button");card.setAttribute("aria-pressed",i===selected);const pl=c.plateau||{},lg=c.ledger||{},wc=c.window_currents_a||{};card.innerHTML=`<h3>${c.label}</h3><div class="kv"><span>grid</span><span>${c.config.grid.radial_cells}×${c.config.grid.axial_cells}</span><span>macro weight</span><span>${sci(c.config.macro_weight,2)}</span><span>steps</span><span>${c.steps_completed}/${c.target_steps}</span><span>simulated</span><span>${fmt(c.simulated_time_s*1e9,3)} ns${c.ion_transit_times!=null?` (${fmt(c.ion_transit_times,2)} τ_i)`:""}</span><span>stop</span><span>${c.stop_reason.replaceAll("_"," ")}</span><span>plateau (&lt;5 % drift)</span><span>${pl.reached==null?"–":pl.reached?"yes":"no"}${pl.discharge_current_drift!=null?` · I_d ${fmt(pl.discharge_current_drift*100,2)} %, N_e ${fmt(pl.electron_count_drift*100,2)} %`:""}</span><span>peak / mean n_e</span><span>${sci(w.n_e_peak_per_m3)} / ${sci(w.n_e_mean_per_m3)} m⁻³</span><span>φ range</span><span>${fmt(w.phi_min_v,3)}…${fmt(w.phi_max_v,3)} V</span><span>⟨T_e⟩_n</span><span>${fmt(w.t_e_density_weighted_mean_ev,3)} eV</span><span>I_d (window)</span><span>${fmt((wc.discharge_a!=null?wc.discharge_a:c.final_series.currents_a.discharge_a)*1e3,3)} mA</span><span>I_beam,i (window)</span><span>${fmt(w.exit_ion_current_a*1e3,3)} mA</span><span>ledger residual / electrode work</span><span>${lg.cumulative_residual_over_electrode_work==null?"–":fmt(lg.cumulative_residual_over_electrode_work*100,3)+" %"}</span></div>`;card.onclick=()=>select(i);card.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();select(i)}};root.append(card)})}
+__MAP_VIEW_JS__
+function renderMetrics(){const root=$("metrics");root.textContent="";DATA.cases.forEach((c,i)=>{const w=c.window_maps_summary,card=document.createElement("article");card.className="metric-card"+(i===selected?" active":"");card.tabIndex=0;card.setAttribute("role","button");card.setAttribute("aria-pressed",i===selected);const pl=c.plateau||{},lg=c.ledger||{},wc=c.window_currents_a||{};card.innerHTML=`<h3>${c.label}</h3><div class="kv"><span>grid</span><span>${c.config.grid.radial_cells}×${c.config.grid.axial_cells}</span><span>macro weight</span><span>${sci(c.config.macro_weight,2)}</span><span>steps</span><span>${c.steps_completed}/${c.target_steps}</span><span>simulated</span><span>${fmt(c.simulated_time_s*1e9,3)} ns${c.ion_transit_times!=null?` (${fmt(c.ion_transit_times,2)} τ_i)`:""}</span><span>stop</span><span>${c.stop_reason.replaceAll("_"," ")}</span><span>plateau (&lt;5 % drift)</span><span>${pl.reached==null?"–":pl.reached?"yes":"no"}${pl.discharge_current_drift!=null?` · I_d ${fmt(pl.discharge_current_drift*100,2)} %, N_e ${fmt(pl.electron_count_drift*100,2)} %`:""}</span><span>peak / mean n_e</span><span>${sci(w.n_e_peak_per_m3)} / ${sci(w.n_e_mean_per_m3)} m⁻³</span><span>φ range</span><span>${fmt(w.phi_min_v,3)}…${fmt(w.phi_max_v,3)} V</span><span>⟨T_e⟩_n</span><span>${fmt(w.t_e_density_weighted_mean_ev,3)} eV</span><span>I_d (window)</span><span>${fmt((wc.discharge_a!=null?wc.discharge_a:c.final_series.currents_a.discharge_a)*1e3,3)} mA</span><span>I_beam,i (window)</span><span>${fmt(w.exit_ion_current_a*1e3,3)} mA</span><span>ledger residual / electrode work</span><span>${lg.cumulative_residual_over_electrode_work==null?"–":fmt(lg.cumulative_residual_over_electrode_work*100,3)+" %"}</span><span>averaging window</span><span>${duration(c.sampling.window_s)} (${c.sampling.window_steps} steps)</span></div>`;card.onclick=()=>select(i);card.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();select(i)}};root.append(card)})}
 function renderDetails(){const c=DATA.cases[selected],g=c.stability_gate,op=DATA.protocol.operating_point;let html=`<div class="kv"><span>backend</span><span>${c.backend}</span><span>Δr × Δz</span><span>${fmt(c.config.grid.dr_m*1e6,3)} × ${fmt(c.config.grid.dz_m*1e6,3)} µm</span><span>Δt</span><span>${sci(c.config.dt_s,3)} s</span><span>wall time</span><span>${fmt(c.wall_seconds_run,4)} s</span><span>throughput</span><span>${fmt(c.steps_per_second,3)} steps/s${c.ms_per_step!=null?` (${fmt(c.ms_per_step,3)} ms/step)`:""}</span><span>peak e⁻ / Xe⁺ macro</span><span>${c.peak_counts?c.peak_counts.electrons+" / "+c.peak_counts.ions:"–"}</span><span>ion subcycle k</span><span>${DATA.protocol.numerics.ion_subcycle!=null?DATA.protocol.numerics.ion_subcycle:1}</span><span>max observed ω_pe Δt</span><span>${c.budget_check?fmt(c.budget_check.max_observed_omega_pe_dt,3):"–"}</span><span>peak n_e / n_max budget</span><span>${c.budget_check&&c.budget_check.n_e_peak_over_n_max!=null?fmt(c.budget_check.n_e_peak_over_n_max,3):"–"}</span><span>GPU util. samples</span><span>${c.gpu_utilisation_percent_samples.length?fmt(c.gpu_utilisation_percent_samples.reduce((a,b)=>a+b,0)/c.gpu_utilisation_percent_samples.length,3)+" %":"–"}</span><span>final e⁻ / Xe⁺ macro</span><span>${c.final_counts.electrons} / ${c.final_counts.ions}</span><span>window steps</span><span>${c.averaging_window_steps}${c.averaging_window_step_range?` (${c.averaging_window_step_range[0]}–${c.averaging_window_step_range[1]})`:""}</span><span>anode / exit</span><span>${c.config.potentials.anode_v} / ${c.config.potentials.exit_v} V</span><span>n_g (Xe)</span><span>${sci(op.neutral_density_per_m3,2)} m⁻³</span><span>e⁻ injection</span><span>${op.electron_injection_current_a} A @ ${op.electron_injection_temperature_ev} eV</span><span>seed plasma</span><span>${sci(op.seed_plasma_density_per_m3,2)} m⁻³ @ ${op.seed_electron_temperature_ev} eV</span></div>`;
 html+=`<h2 style="margin-top:1rem">Stability gate (configured reference)</h2><div class="kv"><span>ω_pe Δt</span><span>${fmt(g.omega_pe_dt,3)}</span><span>Ω_ce Δt</span><span>${fmt(g.omega_ce_dt,3)}</span><span>cell / λ_D</span><span>${fmt(g.cell_debye_ratio,3)}</span><span>Courant</span><span>${fmt(g.particle_courant,3)}</span><span>P_coll</span><span>${sci(g.max_collision_probability,2)}</span><span>max |B| on nodes</span><span>${fmt(g.max_b_t*1e3,4)} mT</span></div>`;
 if(c.stability_gate_message)html+=`<p class="small"><strong>Fail-closed stop:</strong> ${c.stability_gate_message}</p>`;
@@ -375,16 +481,13 @@ const H=DATA.history;if(H){const hrows=H.cases.map(h=>`<tr><td>${h.id}</td><td>$
 $("identity").innerHTML=`<p><span class="badge">status</span> ${DATA.status.replaceAll("_"," ")}</p><p><span class="badge">model</span> ${DATA.model_version||"–"}</p><p><span class="badge">manifest SHA-256</span> <code>${DATA.manifest.file_sha256}</code></p><p><span class="badge">protocol SHA-256</span> <code>${DATA.manifest.protocol_sha256}</code></p><p><span class="badge">case summary SHA-256</span> <code>${c.summary_sha256}</code></p><p><span class="badge">maps npz SHA-256</span> <code>${c.maps_npz_sha256}</code></p><p><span class="badge">series npz SHA-256</span> <code>${c.series_npz_sha256}</code></p><p><span class="badge">P2 field map SHA-256</span> <code>${c.field.field_map_sha256}</code> (design ${c.field.provenance.design_id}, checkpoint <code>${c.field.provenance.checkpoint_file_sha256}</code>)</p><p><span class="badge">cross sections</span> ${c.cross_sections?c.cross_sections.provenance_status+" · payload <code>"+c.cross_sections.payload_sha256+"</code>":"–"}</p>`}
 function bounds(w,h){return {l:58,t:18,r:w-78,b:h-46}}
 function mapPoint(z,r,c,b){const zs=c.grid_z_m,rs=c.grid_r_m;return [b.l+(z-zs[0])/(zs.at(-1)-zs[0])*(b.r-b.l),b.b-(r-rs[0])/(rs.at(-1)-rs[0])*(b.b-b.t)]}
-function drawField(){const c=DATA.cases[selected],s=setup($("field")),ctx=s.c,b=bounds(s.w,s.h),m=c.maps[mapKey],flat=m.flat().filter(v=>v!=null&&isFinite(v)),signed=mapKey==="phi_v"&&Math.min(...flat)<0;let lo,hi;const log=scaleMode==="log"&&!signed;if(log){const pos=flat.filter(v=>v>0);lo=Math.log10(Math.max(Math.min(...pos),Math.max(...pos)*1e-4));hi=Math.log10(Math.max(...pos))}else if(signed){const ma=Math.max(...flat.map(Math.abs));lo=-ma;hi=ma}else{lo=Math.min(...flat);hi=Math.max(...flat)}
-ctx.clearRect(0,0,s.w,s.h);ctx.fillStyle=themeColor("--panel");ctx.fillRect(0,0,s.w,s.h);const off=document.createElement("canvas");off.width=c.grid_z_m.length;off.height=c.grid_r_m.length;const oc=off.getContext("2d"),img=oc.createImageData(off.width,off.height);
-for(let i=0;i<off.height;i++)for(let j=0;j<off.width;j++){const v=m[off.height-1-i][j],k=(i*off.width+j)*4;if(v==null||!isFinite(v)||(log&&v<=0)){img.data[k]=img.data[k+1]=img.data[k+2]=245;img.data[k+3]=255;continue}const t=log?(Math.log10(v)-lo)/(hi-lo||1):(v-lo)/(hi-lo||1),rgb=color(t,signed).match(/\d+/g).map(Number);img.data[k]=rgb[0];img.data[k+1]=rgb[1];img.data[k+2]=rgb[2];img.data[k+3]=255}
-oc.putImageData(img,0,0);ctx.imageSmoothingEnabled=false;ctx.drawImage(off,b.l,b.t,b.r-b.l,b.b-b.t);
-axes(ctx,b,s.w,s.h,"z (m)","r (m)",c.grid_z_m[0],c.grid_z_m.at(-1),c.grid_r_m[0],c.grid_r_m.at(-1));const x=s.w-52;ctx.font="11px system-ui";for(let k=0;k<80;k++){ctx.fillStyle=color(1-k/79,signed);ctx.fillRect(x,b.t+k*(b.b-b.t)/80,15,(b.b-b.t)/80+1)}ctx.fillStyle=themeColor("--text");ctx.fillText(log?"1e"+fmt(hi,3):sci(hi,3),x-14,b.t-5);ctx.fillText(log?"1e"+fmt(lo,3):sci(lo,3),x-14,b.b+14);
+function drawField(){const c=DATA.cases[selected],s=setup($("field")),ctx=s.c,b=bounds(s.w,s.h),view=viewMatrix(c,mapKey),range=viewRange(view,mapKey);
+ctx.clearRect(0,0,s.w,s.h);ctx.fillStyle=themeColor("--panel");ctx.fillRect(0,0,s.w,s.h);paintView(ctx,b,view,range);
+axes(ctx,b,s.w,s.h,"z (m)","r (m)",c.grid_z_m[0],c.grid_z_m.at(-1),c.grid_r_m[0],c.grid_r_m.at(-1));drawColorbar(ctx,s,b,range);mapCaption(c,view,mapKey);
 if(cursor){const p=mapPoint(cursor.z,cursor.r,c,b);ctx.strokeStyle="#fff";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(p[0]-8,p[1]);ctx.lineTo(p[0]+8,p[1]);ctx.moveTo(p[0],p[1]-8);ctx.lineTo(p[0],p[1]+8);ctx.stroke()}}
 function axes(c,b,w,h,xlabel,ylabel,xmin,xmax,ymin,ymax){c.strokeStyle=themeColor("--line");c.fillStyle=themeColor("--muted");c.lineWidth=1;c.font="12px system-ui";c.strokeRect(b.l,b.t,b.r-b.l,b.b-b.t);c.textAlign="center";for(let i=0;i<=4;i++){const x=b.l+(b.r-b.l)*i/4;c.fillText(fmt(xmin+(xmax-xmin)*i/4,3),x,b.b+18)}c.fillText(xlabel,(b.l+b.r)/2,h-6);c.save();c.translate(13,(b.t+b.b)/2);c.rotate(-Math.PI/2);c.fillText(ylabel,0,0);c.restore();c.textAlign="right";for(let i=0;i<=4;i++)c.fillText(fmt(ymax-(ymax-ymin)*i/4,3),b.l-6,b.t+(b.b-b.t)*i/4+4);c.textAlign="left"}
-function nearest(values,v){let k=0;for(let i=1;i<values.length;i++)if(Math.abs(values[i]-v)<Math.abs(values[k]-v))k=i;return k}
-function updateCursor(clientX,clientY){const canvas=$("field"),rect=canvas.getBoundingClientRect(),b=bounds(rect.width,rect.height),c=DATA.cases[selected],x=Math.max(b.l,Math.min(b.r,clientX-rect.left)),y=Math.max(b.t,Math.min(b.b,clientY-rect.top)),zs=c.grid_z_m,rs=c.grid_r_m,zi=nearest(zs,zs[0]+(x-b.l)/(b.r-b.l)*(zs.at(-1)-zs[0])),ri=nearest(rs,rs[0]+(b.b-y)/(b.b-b.t)*(rs.at(-1)-rs[0]));cursor={zi,ri,z:zs[zi],r:rs[ri]};showTip(clientX-rect.left,clientY-rect.top);schedule(false)}
-function showTip(x,y){const c=DATA.cases[selected],t=$("tip");if(!cursor){t.style.display="none";return}const v=c.maps[mapKey][cursor.ri][cursor.zi];t.textContent=`z ${fmt(cursor.z*1e3,4)} mm · r ${fmt(cursor.r*1e3,4)} mm · ${v==null?"outside plasma":sci(v,4)} · n_e ${sci(c.maps.n_e_per_m3[cursor.ri][cursor.zi],3)} · φ ${fmt(c.maps.phi_v[cursor.ri][cursor.zi],4)} V · T_e ${fmt(c.maps.t_e_ev[cursor.ri][cursor.zi],3)} eV`;t.style.display="block";t.style.left=Math.min(x+12,t.parentElement.clientWidth-t.offsetWidth-5)+"px";t.style.top=Math.max(4,y-36)+"px"}
+function updateCursor(clientX,clientY){const canvas=$("field"),rect=canvas.getBoundingClientRect(),b=bounds(rect.width,rect.height),c=DATA.cases[selected],x=Math.max(b.l,Math.min(b.r,clientX-rect.left)),y=Math.max(b.t,Math.min(b.b,clientY-rect.top));cursor=viewCursor(c,viewMatrix(c,mapKey),b,x,y);showTip(clientX-rect.left,clientY-rect.top);schedule(false)}
+function showTip(x,y){const c=DATA.cases[selected],t=$("tip");if(!cursor){t.style.display="none";return}t.textContent=cellText(c,viewMatrix(c,mapKey),mapKey);t.style.display="block";t.style.left=Math.min(x+12,t.parentElement.clientWidth-t.offsetWidth-5)+"px";t.style.top=Math.max(4,y-36)+"px"}
 function drawPlot(id,series,xLabel,yLabel,log=false){const s=setup($(id)),c=s.c,b={l:64,t:16,r:s.w-16,b:s.h-40},pts=series.filter(q=>q.x.length);if(!pts.length){c.clearRect(0,0,s.w,s.h);return}const all=pts.flatMap(q=>q.y.filter(v=>v!=null&&isFinite(v)&&(!log||v>0))),xmin=Math.min(...pts.flatMap(q=>q.x)),xmax=Math.max(...pts.flatMap(q=>q.x));let ymin=Math.min(...all),ymax=Math.max(...all);if(log){ymin=Math.log10(Math.max(ymin,1e-300));ymax=Math.log10(Math.max(ymax,1e-299))}else{const pad=(ymax-ymin||1)*.08;ymin-=pad;ymax+=pad}c.clearRect(0,0,s.w,s.h);c.fillStyle=themeColor("--panel");c.fillRect(0,0,s.w,s.h);axes(c,b,s.w,s.h,xLabel,yLabel,xmin,xmax,ymin,ymax);pts.forEach((q,k)=>{c.strokeStyle=q.color;c.lineWidth=q.width||1.6;c.beginPath();let started=false;q.x.forEach((x,i)=>{const v=q.y[i];if(v==null||!isFinite(v)||(log&&v<=0)){started=false;return}const yy=log?Math.log10(v):v,px=b.l+(x-xmin)/(xmax-xmin||1)*(b.r-b.l),py=b.b-(yy-ymin)/(ymax-ymin||1)*(b.b-b.t);started?c.lineTo(px,py):c.moveTo(px,py);started=true});c.stroke();c.fillStyle=q.color;c.fillText(q.name,b.l+8,b.t+14+k*15)})}
 function drawSeries(){const c=DATA.cases[selected],S=c.series,t=S.time_s.map(v=>v*1e9),cur=k=>S["current_"+k]||[];drawPlot("counts",[{x:t,y:S.electrons,name:"electrons",color:"#5ad6c0"},{x:t,y:S.ions,name:"Xe⁺",color:"#ff6b6b"}],"t (ns)","macro-particles");
 drawPlot("currents",[{x:t,y:cur("discharge_a").map(v=>v*1e3),name:"discharge (anode)",color:"#5ad6c0"},{x:t,y:cur("exit_ion_beam_a").map(v=>v*1e3),name:"exit ion beam",color:"#ff6b6b"},{x:t,y:cur("wall_electron_a").map(v=>v*1e3),name:"wall e⁻",color:"#58a8ff"},{x:t,y:cur("wall_ion_a").map(v=>v*1e3),name:"wall Xe⁺",color:"#ffcf67"},{x:t,y:cur("exit_electron_a").map(v=>v*1e3),name:"exit e⁻",color:"#c58bff"}],"t (ns)","current (mA)");
@@ -396,19 +499,25 @@ drawPlot("wpe",[{x:t,y:S.peak_omega_pe_dt,name:"peak ω_pe Δt (gate 0.2)",color
 function drawAll(){renderMetrics();renderDetails();drawField();drawSeries()}
 function schedule(full=true){cancelAnimationFrame(raf);raf=requestAnimationFrame(full?drawAll:drawField)}
 function select(i){selected=i;caseSelect.value=i;cursor=null;showTip();schedule()}
-caseSelect.onchange=()=>select(Number(caseSelect.value));$("map").onchange=e=>{mapKey=e.target.value;schedule()};$("scale").onchange=e=>{scaleMode=e.target.value;schedule(false)};
+caseSelect.onchange=()=>select(Number(caseSelect.value));$("map").onchange=e=>{mapKey=e.target.value;schedule()};$("scale").onchange=e=>{scaleMode=e.target.value;schedule(false)};wireMapControls();
 $("theme").onclick=()=>{const light=document.documentElement.dataset.theme!=="light";document.documentElement.dataset.theme=light?"light":"dark";$("theme").textContent=light?"Dark theme":"Light theme";$("theme").setAttribute("aria-pressed",light);schedule()};
 $("field").addEventListener("pointermove",e=>updateCursor(e.clientX,e.clientY));$("field").addEventListener("pointerleave",()=>{cursor=null;showTip();schedule(false)});
-$("field").addEventListener("keydown",e=>{const c=DATA.cases[selected],zs=c.grid_z_m,rs=c.grid_r_m;if(e.key==="Home"){cursor={zi:Math.floor(zs.length/2),ri:0,z:zs[Math.floor(zs.length/2)],r:rs[0]}}else{if(!cursor)cursor={zi:Math.floor(zs.length/2),ri:0,z:zs[Math.floor(zs.length/2)],r:rs[0]};if(e.key==="ArrowLeft")cursor.zi=Math.max(0,cursor.zi-1);else if(e.key==="ArrowRight")cursor.zi=Math.min(zs.length-1,cursor.zi+1);else if(e.key==="ArrowDown")cursor.ri=Math.max(0,cursor.ri-1);else if(e.key==="ArrowUp")cursor.ri=Math.min(rs.length-1,cursor.ri+1);else return;cursor.z=zs[cursor.zi];cursor.r=rs[cursor.ri]}e.preventDefault();showTip(70,30);schedule(false)});
+$("field").addEventListener("keydown",e=>{const c=DATA.cases[selected],view=viewMatrix(c,mapKey),zs=view.z,rs=view.r;if(e.key==="Home"){cursor={zi:Math.floor(zs.length/2),ri:0,z:zs[Math.floor(zs.length/2)],r:rs[0]}}else{if(!cursor)cursor={zi:Math.floor(zs.length/2),ri:0,z:zs[Math.floor(zs.length/2)],r:rs[0]};if(e.key==="ArrowLeft")cursor.zi=Math.max(0,cursor.zi-1);else if(e.key==="ArrowRight")cursor.zi=Math.min(zs.length-1,cursor.zi+1);else if(e.key==="ArrowDown")cursor.ri=Math.max(0,cursor.ri-1);else if(e.key==="ArrowUp")cursor.ri=Math.min(rs.length-1,cursor.ri+1);else return;cursor.z=zs[cursor.zi];cursor.r=rs[cursor.ri]}e.preventDefault();showTip(70,30);schedule(false)});
 window.addEventListener("keydown",e=>{if(["INPUT","SELECT","BUTTON"].includes(e.target.tagName))return;const k=Number(e.key);if(k>=1&&k<=DATA.cases.length)select(k-1)});new ResizeObserver(schedule).observe(document.querySelector("main"));window.addEventListener("pageshow",schedule);drawAll();
 </script></body></html>
 """
 
 
+def fill_template(template: str, payload: Mapping[str, Any]) -> str:
+    """Embed the payload and the shared map-view pieces into a dashboard template."""
+
+    encoded = json.dumps(payload, ensure_ascii=True, allow_nan=False, sort_keys=True, separators=(",", ":")).replace("</", "<\\/")
+    return template.replace("__MAP_CONTROLS__", MAP_CONTROLS_HTML).replace("__MAP_VIEW_JS__", MAP_VIEW_JS).replace("__DATA__", encoded)
+
+
 def render_html(payload: Mapping[str, Any]) -> str:
     validate_payload(payload)
-    encoded = json.dumps(payload, ensure_ascii=True, allow_nan=False, sort_keys=True, separators=(",", ":")).replace("</", "<\\/")
-    return HTML_TEMPLATE.replace("__DATA__", encoded)
+    return fill_template(HTML_TEMPLATE, payload)
 
 
 def generate(output_path: Path = DEFAULT_OUTPUT, results: Path = RESULTS, protocol_path: Path = PROTOCOL) -> Path:
