@@ -22,7 +22,19 @@ result = solve_global_discharge_multistart_cpu(
 ```
 
 `result.best.state` and `result.best.evaluation` are `None` unless the residual,
-finiteness, box-bound, and nonlinear-inequality gates all pass.
+finiteness, box-bound, and nonlinear-inequality gates all pass. With any
+positive interior cusp probability (`p1..p3`) no state can pass: the global
+power row has no admissible root (see
+`global-plasma-closure-analysis.md`), so the example above returns the
+residual floor, never a state. Strict closure is available for
+`p1 = p2 = p3 = 0` with any `p4`.
+
+`potential_parametrized_state(inputs, potentials)` returns the state that
+satisfies rows R00-R26 for four given potentials and
+`global_row_closed_form(state, inputs)` evaluates the closed form of R27 on
+that manifold; both are diagnostics and never publish a solution.
+`project_nondecreasing(values)` is the isotonic projection used for the
+potential ordering inside the solver.
 `result.attempts` retains every deterministic start and `result.residual_floor`
 reports the best observed normalized infinity norm even when no root closes.
 Each attempt's diagnostics records a deterministic reason, iteration and

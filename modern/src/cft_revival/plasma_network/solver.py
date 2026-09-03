@@ -6,7 +6,11 @@ from math import fsum, isfinite, sqrt
 from sys import float_info
 from typing import Callable, Protocol, Sequence, runtime_checkable
 
-from cft_revival.plasma import LeastSquaresResult, solve_bounded_least_squares
+from cft_revival.plasma import (
+    LeastSquaresResult,
+    project_nondecreasing,
+    solve_bounded_least_squares,
+)
 
 from .ledger import generate_equation_ledger
 from .models import (
@@ -340,7 +344,10 @@ def _projection(inputs: NetworkInputs, bounds: DynamicBounds) -> ProjectionFunct
 
     def project(vector: tuple[float, ...]) -> tuple[float, ...]:
         values = list(vector)
-        ordered_phi = sorted(values[0:n])
+        # Isotonic (pool-adjacent-violators) projection; ``sorted`` permutes
+        # variable identities and stalled the accepted four-cell solver at
+        # 1000 V (see global-plasma-closure-analysis.md, 2026-09-03).
+        ordered_phi = list(project_nondecreasing(values[0:n]))
         ordered_phi[-1] = max(ordered_phi[-1], inputs.anode_voltage_v)
         values[0:n] = ordered_phi
         values[5 * n] = max(values[5 * n], -values[5 * n + 1])

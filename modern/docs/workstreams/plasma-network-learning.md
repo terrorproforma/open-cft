@@ -1,5 +1,17 @@
 # Plasma Network Learning Ledger
 
+## 2026-09-03
+
+- [self] The N=4 network inherits the accepted ledger's global-row
+  inconsistency for interior cusp loss (see
+  `global-plasma-closure-analysis.md`): `solve_network_multistart` fails
+  closed with R27 dominant for DM9.2 probabilities and publishes (under
+  `REPRESENT_NULLSPACE`) for anode-only loss on the `phi_N = Ua` face. Pinned
+  in `tests/plasma_network/test_plasma_network_closure_p_nonzero.py`.
+- [self] `_projection` now uses the shared isotonic `project_nondecreasing`;
+  `deterministic_initial_states` is unchanged because scaled seeds are already
+  ordered.
+
 ## 2026-09-02
 
 - [user] A geometry-supported one- or two-cusp interior topology must not be
