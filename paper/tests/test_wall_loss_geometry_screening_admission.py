@@ -304,7 +304,10 @@ class GeometryScreeningAdmissionTests(unittest.TestCase):
             self.assertEqual(set(record["manifest_ids"]), {MANIFEST_ID, V4_MANIFEST_ID})
         discussion = next(c for c in self.matrix["claims"] if c["id"] == "CLM-052")
         self.assertIn("\\WlfPooledReflected", discussion["authorized_tex"])
-        self.assertIn("future work", discussion["authorized_tex"])
+        # The consuming optimisation is admitted (Section 12); the "future work" boundary is gone.
+        self.assertNotIn("future work", discussion["authorized_tex"])
+        self.assertIn("sec:mdo-l0-v2", discussion["authorized_tex"])
+        self.assertIn("closure-dependent ranking", discussion["authorized_tex"])
         self.assertIn("Muffatti2017", discussion["bibliography"])
 
     def test_scope_claims_register_the_boundary(self) -> None:

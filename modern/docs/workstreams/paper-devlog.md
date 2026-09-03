@@ -794,3 +794,152 @@
   at `\scriptsize` (caught by the standalone compile); the case and interval
   `p{}` columns were narrowed (2.9 -> 2.7 cm, 2.6 -> 2.45 cm) and
   `\tabcolsep` reduced to 2 pt.
+
+## 2026-09-03 - MDO L0 campaign v2 (screened design catalogue) admitted to the claim matrix and manuscript
+
+### Scope
+
+- Worktree `C:\Users\Angus\Desktop\projects\uni-project-paper-mdo2`, branch
+  `paper/mdo-l0-v2-claim` from `origin/feat/sota-foundation` (`0ea33a7e`), LF
+  verified (`git ls-files --eol`: only the three pre-existing `-text` files
+  show `w/crlf`). Paper-owned paths and `modern/docs/workstreams/paper-*`
+  only; `results/**`, the frozen preregistration files and `FYP/` untouched;
+  no GPU work (a PIC run occupies the device).
+- Evidence: `modern/experiments/mdo_l0_campaign_v2`, preregistered
+  `99914dc2` (one file, `authorities.json`), recorded `a003f766` (148 files,
+  all under `results/`; manifest SHA-256 `ca3b58ce...`), dashboard
+  `0ea33a7e`. Terminal `accepted_result`, 12/12 binding INTEGRITY gates
+  (acceptance is not efficacy, declared in `gates.semantics`).
+
+### Evidence level and gate
+
+- Gate `GATE-MDO-L0-V2`, kind `numerical-campaign`, `opens_level: null`,
+  `kind_justification` on the gate (one accepted campaign on a declared
+  component model: L0 over the 96-design screened catalogue under CL-1 with
+  per-cell test-particle wall-hit posteriors). The kind description in
+  `result-gates.json` now names the catalogue campaign as well.
+- New manifest type `paper-mdo-catalogue-campaign-manifest` 1.0 (37 required
+  roles, 134 required metrics = 121 mapped + 13 policy). Manifest
+  `paper/evidence/manifests/mdo-l0-v2.json`: 53 source files bound by Git blob
+  and SHA-256 at `a003f766` (bundle artifacts incl. catalogue, catalogue
+  binding, import scope, both separability records, nine run artifacts, two
+  transitions; frozen protocol/authorities/shakedown whose blobs equal those
+  at `99914dc2`; the screening dataset and manifest whose blobs equal those at
+  the screening record commit `ab7c2897`; the v1 results manifest and eight v1
+  artifacts read for the comparison table; the v1 `POSTHOC_AUDIT.md` whose
+  blob equals the one at `e9f9af16`), dashboard generator/HTML at `0ea33a7e`,
+  `prior_campaign`, `catalogue_binding` and `posthoc_audit` blocks, 58 gate
+  metric constraints (classification, both closure ids, catalogue 96, 1440
+  evaluations, 12/12, import-scope gate with 28 = 28 files, duplicates 0,
+  front designs `[49, 50, 94]`, lowest-rank flag, CL-2 shared 0 / Jaccard 0.0,
+  six disclosures closed, 0 files outside `results/`, policies).
+
+### Added
+
+- `paper/scripts/generate_mdo_l0_v2_evidence.py`: verifies the v2 bundle (147
+  files) and the v1 bundle (137 files) byte for byte with their sidecars, pins
+  both manifest SHA-256 values, requires frozen == sealed, recomputes every
+  catalogue probability, Jeffreys posterior mean, Wilson-95 bound and nominal
+  CL-1/CL-2 survival exactly from the counts, re-verifies the screening dataset
+  bytes/blob/manifest entry at `ab7c2897` and HEAD, counts the results-commit
+  and preregistration-commit paths with `git diff-tree`, parses the v1 audit's
+  disclosure list with a fixed pattern and requires it to equal the protocol's
+  `v1_audit_disclosures_closed`, requires the v2 protocol to share v1's
+  reference point, scales, unit rows, CVaR, operating domain and constraint,
+  cross-checks the dashboard payload of both campaigns, and writes 611
+  `\Mdb...` macros (168 derived; macros read from the v1 bundle carry
+  `bundle: v1` and are named `MdbPrior...`), four `\ArtifactClaim` tables
+  (HV per optimiser x seed with the catalogue designs on each Pareto set; the
+  five dense-front designs with rank, members, pooled and per-cell P(wall),
+  survival, geometry, own HV; CL-1 widths + CL-2; v1 vs v2), evidence file
+  and sidecar (~3 s per run).
+- Claims CLM-053 (abstract), CLM-054 (execution; per-optimiser split of the 91
+  infeasible evaluations; HV per seed; 3/3 and 3/3 as counts; attained
+  fractions 0.49/1.13/1.13; seed 101 stall on design 50 with design 49 absent
+  from its initial design and never evaluated; `non_claims`), CLM-055
+  (tables; bound to the v1 manifest too), CLM-056 (robust front 96 points on
+  49/50/94 = the three lowest pooled P(wall), nominal 86 on 49/50/74/94, 75
+  shared, Jaccard 0.70; geometry of the three; 77/96 negligible own dense HV,
+  73 of them the saturated-cell designs; separability; bound to the screening
+  manifest too), CLM-057 (CL-2 front 50 points on 25 designs, 0 shared,
+  Jaccard 0.0, HV 20.8x; widths 15/91/94, Jaccard 0.03/0.82/0.79, 1 of 3
+  identical on the common set; survival 0.180 vs 0.704 and dense HV ratio
+  2.0 explain the smaller hypervolumes), CLM-058 (six audit disclosures closed
+  with the recorded counts and gate outcomes), CLM-059 (boxed scope: wins
+  under this closure only; no surrogate; not a physics level), CLM-060
+  (Discussion interpretation: first geometry-dependent optimisation at
+  screening tier under a declared identification; ranking closure-dependent;
+  saturated cells make most of the sweep space unreachable, kinetic question
+  undecided and not admitted). CLM-035 (fourth reading) and CLM-052 amended:
+  the geometry link is no longer "open" / "future work" but points at
+  Section 12; the geometry-screening admission test updated accordingly.
+- `manuscript.tex`: `\MdbEvidenceRevision`, preamble `\input`, seventh date
+  line, abstract sentence, contribution list, evidence-boundary paragraph,
+  protocol-section pointer, Section 12 "Preregistered catalogue optimisation
+  of the L0 model over the screened sweep designs" (closure formula with
+  design-indexed probabilities; `\input{sections/mdo-l0-v2.tex}`, subsection
+  12.1), L1-gate note, Discussion (MDO paragraph's "planned bridge" sentence
+  rewritten; new paragraph with CLM-060), Limitations, data availability,
+  Conclusion.
+- Section `paper/sections/mdo-l0-v2.tex` (Method; Results; Catalogue designs
+  on the robust front; Closure dependence and uncertainty width; Closure of
+  the prior campaign's audit disclosures; Interpretation box) with the short
+  closure names `CL-1`/`CL-2` as macros so the section types no digit; the
+  standalone driver; `check_paper.py` (`MDB_METRIC_MACROS`,
+  `MDB_POLICY_METRICS`, schema type, `_check_mdo_family` shared by both
+  optimisation gates with `_check_mdo_catalogue_campaign` adding the
+  prior-campaign, dataset and audit bindings, renderer, required Section 12,
+  trackables); tests `test_mdo_l0_v2_admission.py` (18) and
+  `test_mdo_l0_v2_evidence.py` (8); README, author checklist, supplementary
+  outline (S4g) and notation updated.
+
+### Numbers verified against the bundle
+
+- 1440 evaluations, 91 infeasible: 88 in the qLogNEHVI runs (38/24/26) and 3
+  in the NSGA-III runs (0/2/1), 0 in LHS. The brief's "all BO boundary probes"
+  is therefore not literally true; the section states the split.
+- qLogNEHVI 9.269e-4 / 2.159e-3 / 2.151e-3 (0.49 / 1.13 / 1.13 of the dense
+  1.907e-3); NSGA-III 5.864e-4 / 6.435e-4 / 4.652e-4; LHS 1.184e-4 /
+  1.983e-4 / 2.692e-4; 3/3 and 3/3 (counts). Seed 101: 119 of 160
+  evaluations on design 50, 32 distinct designs, design 49 never evaluated and
+  absent from its 32-point initial design (present in seeds 202/303's).
+- Robust front 96 on 49/50/94 (60/19/17 members) = pooled P(wall) ranks
+  1/3/2 (0.375 [0.334, 0.418]; 0.430 [0.387, 0.473]; 0.379 [0.338, 0.422]);
+  L 29.4/20.4/28.8 mm, r_w 1.80/1.91/2.14 mm, all five-stage divergent-exit.
+  Dense robust front 48 on 46/49/50/73/94 (design 94 has the largest own HV
+  1.829e-3, then 49 at 1.796e-3). 77/96 own HV < 1e-9 (73 saturated + 4
+  unsaturated); 73 designs with a 128/128 cell, none with 0/128.
+- CL-2: 50 points on 25 designs (13 with a saturated cell; pooled P(wall)
+  0.375-0.809), HV 4.500e-2, 0 shared, Jaccard 0.0, 30 members differ on the
+  781 common-feasible designs. Widths: w=1/4 front 15 (Jaccard 0.03,
+  identical on the common set), w=4 front 91 (0.82, differs by 1), point 94
+  (0.79, differs by 3).
+- Timing: BO 1394-1784 s per seed (candidate stage 946-1215 s, refinement
+  350-462 s, fits 91-105 s; 384/384 refinements accepted), dense 54.2 s,
+  lifecycle 82.8 min. Audit: F9 (148 files, 0 outside results/; prereg 1
+  file), F10 (28 = 28, 0/0), F22 (means recompute exactly), F26 (semantics
+  string), F27 (0 duplicates), F28 (15 label checks).
+
+### Validation
+
+- Before the commit `check_paper.py` reported exactly the fail-closed
+  "accepted manifest is not committed at HEAD"; after commit `28a593bd` it
+  passed (about 60 s). `unittest discover -s paper/tests`: 165 tests (139 +
+  26 new), 165 OK after the commit (pre-commit the only failure was that same
+  fail-closed check inside `test_paper_checks`).
+- `verify_reproducible_build.py`: two clean builds byte-identical,
+  `paper/build/manuscript.pdf` 578,527 bytes, SHA-256
+  `867962101b0eff10f8023c44b96f36fa8dea5c1633678a1d197bf8e321348431`, 41
+  pages, no LaTeX errors, undefined references or overfull boxes.
+- Pages rendered with MiKTeX `pdftoppm -r 80` to `%TEMP%\paper-mdo2-pages\`
+  (`p-01.png` ... `p-41.png`) and inspected: abstract sentence p. 2; Section
+  12 opens p. 27, subsection 12.1 Method p. 28-29, Results p. 30, Table 19
+  p. 31, Table 20 and Table 21 p. 32, Table 22 and the audit-closure claim
+  p. 33, boxed interpretation and the L1 note p. 34; Discussion paragraph with
+  CLM-060 p. 37; Limitations p. 38.
+- One correction during integration: the hypervolume table overflowed by
+  15 pt at `\scriptsize` (caught by the standalone compile); the Pareto-design
+  `p{}` column was narrowed (2.1 -> 1.7 cm) and `\tabcolsep` reduced to
+  2.5 pt. A protocol text macro ("energy, 4 objectives, 32 points, seed 1")
+  tripped the unregistered-quantitative heuristic and was replaced by two
+  numeric macros.

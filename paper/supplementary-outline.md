@@ -163,6 +163,49 @@
   observations and not a design rule; and that the dataset is surrogate and
   optimisation input only under its label.
 
+## S4g. Preregistered catalogue optimisation of the L0 model over the screened sweep designs (campaign v2)
+
+- Typed campaign manifest `paper/evidence/manifests/mdo-l0-v2.json` and the
+  hash-bound evidence file `paper/evidence/mdo-l0-v2.json` (every macro marked
+  with the bundle it was read from).
+- Preregistration commit `99914dc2` (frozen authorities only), results commit
+  `a003f766` (148 files, all under `results/`), dashboard commit `0ea33a7e`;
+  the sealed bundle (manifest, lock, transitions, protocol, authorities, code
+  contract with its 28-file import-bound hash scope, import-scope record,
+  shakedown, sealed catalogue with counts and geometry, catalogue binding,
+  frozen unit rows and per-design sample, nine run records, hypervolume curves,
+  Pareto sets, pooled and per-strategy fronts, dense reference with per-design
+  summaries and separability, sensitivity) and the committed results dashboard
+  whose embedded extraction of both campaigns the generator requires to agree
+  with the bundles.
+- Catalogue provenance: the 96 accepted sweep-v2 designs of the wall-loss
+  geometry screening (`ab7c2897`), bound by bytes, Git blob, manifest entry and
+  ancestry; per-cell and pooled counts at the accepted-2N timestep; Jeffreys
+  posteriors, Wilson intervals and nominal survivals recomputed exactly.
+- Frozen protocol verbatim: the categorical catalogue index and the prior
+  campaign's operating-point domain, closures CL-1 (campaign; identification
+  disclosure) and CL-2 (sensitivity), objectives, reference point, CVaR robust
+  formulation and per-design separability expectation, the mixed qLogNEHVI
+  (discrete candidate stage over every design, per-member refinement), mixed
+  NSGA-III with duplicate elimination and the two-stage LHS, budget 160 per run
+  with a 32-point shared initial design, seeds 101/202/303, the 96 x 1024 dense
+  reference, the twelve binding integrity gates and their declared semantics
+  (acceptance is not efficacy), the reported outcomes, and the closure of the v1
+  audit disclosures F9, F10, F22, F26, F27 and F28.
+- Tables regenerated at every check: hypervolume per optimiser and seed with the
+  catalogue designs on each Pareto set; the dense-reference robust-front designs
+  with screening probabilities, sealed geometry and own hypervolume; the
+  CL-1/CL-2 and uncertainty-width re-evaluations; the v1-versus-v2 comparison
+  in the shared reference frame.
+- Explicit statements that the campaign is optimiser evidence under a declared
+  identification of a screening wall-hit probability with a per-cusp survival
+  factor, not thruster performance, not a design recommendation ("wins under
+  this closure only"), not an optimiser-superiority claim beyond the recorded
+  budget, seeds and model; that no surrogate is used; that the first Bayesian
+  seed never evaluated the design the other seeds' fronts share; that the
+  design ranking is closure-dependent; and that 77 of 96 designs have
+  negligible own hypervolume because a launch cell saturated.
+
 ## S5. Controlled performance benchmark
 
 This supplement remains closed until a benchmark manifest records kernel

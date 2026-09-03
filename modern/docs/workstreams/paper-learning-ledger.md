@@ -350,3 +350,47 @@
 - [tool] PowerShell mangles quotes and regex backslashes in `python -c`; put
   even ten-line probes into `%TEMP%` scripts (`explore.py`, `verify_numbers.py`,
   `build_manifest.py`, `claims_snippets.py`) and run them by path.
+
+## 2026-09-03 - Admitting the MDO L0 campaign v2 (screened design catalogue)
+
+- [self] Verify the brief's aggregate wording against the per-run records
+  before writing it: "91 infeasible, all BO boundary probes" is 88 in the
+  Bayesian runs and 3 in NSGA-III (0/2/1). The claim states the per-optimiser
+  split as three macros instead of the aggregate sentence.
+- [self] "Seed 101 never found design 49" needs the initial design checked:
+  the 32-point shared initial design of seed 101 did not contain design 49
+  while seeds 202 and 303's did, so the stall is an exploration effect of the
+  categorical index, not an acquisition failure alone; record both facts as
+  derived macros (`MdbBoAMissedInInitial`, `MdbBoBMissedInInitial`, ...).
+- [self] When a second campaign shares a checker's shape, factor the shared
+  checks into one function with a small spec (`_MdoFamily`: module, prefix,
+  revision macro, metric maps, required macros) and keep the old entry point
+  as a wrapper with the same signature and error strings; the v1 admission
+  tests then pass unchanged and the v2 checker adds only its extra bindings.
+- [self] A comparison table that reads another campaign's bundle must verify
+  that bundle exactly as its own admission did (byte-for-byte against its
+  manifest, pinned SHA-256 and results commit), bind those files in the
+  manifest with their own roles, mark every such macro with its bundle and
+  name it `...Prior...`, and prove the shared reference frame (reference
+  point, scales, unit rows, CVaR, domain, constraint) as a fail-closed boolean
+  macro before calling hypervolumes comparable.
+- [self] The macro-only rule also bans "CL-1", "L0", "v1", "2N" and "F9" in
+  the section: derive short names from the protocol's own keys
+  (`MdbClosureShort` = the `protocol.closures` key whose id matches) and use
+  tokens (`Nine`, `Ten`, `TwentyTwo`) for alphabetic macro names.
+- [self] Guard against `sys.path` shadowing when writing probe scripts to
+  `%TEMP%`: a scratch file named `inspect.py` shadowed the stdlib module and
+  broke `dataclasses` on import of `check_paper`; name probes distinctively.
+- [self] A text macro copied verbatim from a protocol ("energy, 4 objectives,
+  32 points, seed 1") is scanned by the unregistered-quantitative heuristic in
+  the generated file; bind numbers, not sentences.
+- [self] Stale boundary sentences appeared in three places this time: CLM-035
+  ("link ... is open"), CLM-052 ("future work") and the manuscript's MDO
+  Discussion paragraph and Limitations ("no surrogate or optimisation
+  consuming the dataset is admitted"); grep claims.json and manuscript.tex for
+  "open", "future work" and "not admitted" before every admission and update
+  the earlier admission's test that asserted the old wording.
+- [tool] `git diff-tree --no-commit-id --name-only -r <commit>` is the
+  cheapest proof of a results-only commit (v1 audit F9); bind the count and
+  the outside-`results/` list as derived macros so the paper's statement is
+  recomputed at every check.

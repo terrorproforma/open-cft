@@ -58,8 +58,28 @@
 - [ ] Keep every number of the optimisation section a `\Mdo...` macro; never
   type a digit into `paper/sections/mdo-l0-v1.tex`.
 - [ ] Keep the four Discussion readings of the optimisation campaign labelled
-  as interpretation and phrase the geometry-to-performance bridge as future
-  work, never as evidence.
+  as interpretation; the fourth now points at the catalogue campaign of
+  Section 12 as the recorded successor, never at a demonstrated
+  geometry-to-performance map.
+- [ ] Describe the catalogue campaign only as
+  `l0_model_optimisation_over_screened_design_catalogue_with_test_particle_wall_loss_closure_not_thruster_performance`:
+  optimiser evidence on the L0 model over the 96 screened sweep designs under
+  the declared closure CL-1 whose per-cusp factors are the screening's
+  per-cell test-particle wall-hit posteriors (an identification declared, not
+  derived; the v1 scenario analysis showed the quantities differ); no
+  surrogate; no thruster-performance, plasma or physical-device claim; no
+  design recommendation ("a design that wins here wins under this closure
+  only"); no optimiser-superiority claim beyond the recorded budget, seeds and
+  model; three seeds give counts, never significance; benchmark field still
+  null.
+- [ ] Keep every number of the catalogue section a `\Mdb...` macro (including
+  the short closure names `CL-1` and `CL-2`); never type a digit into
+  `paper/sections/mdo-l0-v2.tex`, and never borrow a `\Mdo...` macro there.
+- [ ] Keep the three Discussion readings of the catalogue campaign labelled as
+  interpretation: first geometry-dependent optimisation at screening tier under
+  a declared identification; ranking closure-dependent (CL-2 shares no design);
+  saturated launch cells make most of the sweep space unreachable under CL-1,
+  with the kinetic question stated as undecided and not admitted.
 - [ ] Describe the four-cell closure analysis only as
   `analytic_consistency_of_the_corrected_four_cell_power_balance_not_thruster_physics`:
   a statement about the corrected equation set (no admissible root for any
@@ -85,9 +105,10 @@
 - [ ] Keep every number of the screening section a `\Wlg...` macro; never type
   a digit into `paper/sections/wall-loss-geometry-screening-v1.tex`.
 - [ ] Keep the mirror-picture statement of the wall-loss campaign scoped to its
-  field (the screening records reflections in every design) and the
-  design-dependent optimisation that would consume the dataset labelled as
-  future work.
+  field (the screening records reflections in every design); the
+  design-dependent optimisation that consumes the dataset is admitted in
+  Section 12 and its geometry link is a closure-dependent ranking, not a map
+  from the screening fields to the operating-point model.
 
 ## Methods and uncertainty
 
@@ -112,6 +133,10 @@
   confirm `git status` shows no change to the nine generated screening files.
 - [ ] Run `python paper/scripts/generate_mdo_l0_v1_evidence.py` and confirm
   `git status` shows no change to the three generated optimisation files.
+- [ ] Run `python paper/scripts/generate_mdo_l0_v2_evidence.py` (it verifies
+  both optimisation bundles, the screening dataset and the v1 audit; a few
+  seconds) and confirm `git status` shows no change to the three generated
+  catalogue-campaign files.
 - [ ] Run `python paper/scripts/generate_four_cell_closure_evidence.py` (it
   recomputes the verification from `cft_revival.plasma`; about half a minute)
   and confirm `git status` shows no change to the three generated closure

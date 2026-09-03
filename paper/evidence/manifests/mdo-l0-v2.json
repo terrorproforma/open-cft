@@ -1,0 +1,618 @@
+{
+  "catalogue_binding": {
+    "dataset_bytes": 2659656,
+    "dataset_git_blob": "858de21adf1b3ea40237d5e7f0531a2013eb58e2",
+    "dataset_path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/geometry-wall-loss-dataset.json",
+    "dataset_sha256": "9104e3bf0694f7c1c88d1c7bc377b43b24cbc42a94bd75eed2cfa6dc21f5114a",
+    "rule": "the catalogue is the 96 accepted screening designs; the generator requires the dataset and screening manifest on disk to hash to the bytes the frozen protocol declares, their Git blobs to equal the blobs at the screening record commit and at HEAD, and the screening manifest entry to carry the same byte hash",
+    "screening_classification": "SCREENING_L1A_FIELD_TEST_PARTICLE_WALL_LOSS",
+    "screening_gate_id": "GATE-WALL-LOSS-GEOMETRY-SCREENING-V1",
+    "screening_manifest_git_blob": "ff3b3cd8a4cb59047b6856031faaadb941f11877",
+    "screening_manifest_id": "WALL-LOSS-GEOMETRY-SCREENING-V1-20260903-96-V1",
+    "screening_manifest_path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/manifest.json",
+    "screening_manifest_sha256": "39bd52133fefd3adae45e9593e7312b8e9027322ca3142d59912bbc13e2e027a",
+    "screening_results_commit": "ab7c28977963822b2ad6eac451d2bafef5185e6c"
+  },
+  "classification": "l0_model_optimisation_over_screened_design_catalogue_with_test_particle_wall_loss_closure_not_thruster_performance",
+  "closure": "CL-1-multiplicative-cusp-survival-per-cell-test-particle-wall-loss",
+  "dashboard": {
+    "files": [
+      {
+        "git_blob": "81f7c1dba78532db32b41f52121138c82a5b6376",
+        "git_blob_sha256": "c6e2d4c782f583d46346ce763729f835333a810d7febd6e6b3de5593191c1fd9",
+        "path": "modern/visualization/generate_mdo_l0_campaign_v2_dashboard.py",
+        "role": "dashboard-generator"
+      },
+      {
+        "git_blob": "d95f71800913e884da4dca17014a4c3bedd52f2e",
+        "git_blob_sha256": "979a55ef76975acdea6af9eef36a4463c4eeacfe3de189c0c3ea00935f49787f",
+        "path": "modern/visualization/mdo-l0-campaign-v2.html",
+        "role": "dashboard-html"
+      }
+    ],
+    "revision": "0ea33a7e25275e70271bc9deb18a9361b80b94e5",
+    "rule": "the committed dashboard pins both bundles' manifest SHA-256 values and revisions and embeds its own extraction of the campaign result and of the prior campaign; the generator requires that extraction to equal the sealed artifacts of both bundles before writing any macro; the files are bound here at the dashboard revision and compared with the checkout by LF-normalised SHA-256",
+    "subject": "add MDO L0 campaign v2 dashboard (v1 vs v2, catalogue front, CL-1 vs CL-2) and record docs"
+  },
+  "document_type": "paper-mdo-catalogue-campaign-manifest",
+  "evidence_level": {
+    "justification": "The campaign is one accepted, preregistered, single-execution numerical campaign about a declared component model: the accepted L0 conservation model (cft_revival.physics, L0-conservation-reduced-performance) evaluated over a discrete catalogue of the 96 screened sweep designs under the declared multiplicative cusp-survival closure CL-1, whose per-cusp factors are the per-cell collisionless test-particle wall-hit posteriors of the screening dataset (classification SCREENING_L1A_FIELD_TEST_PARTICLE_WALL_LOSS). That is exactly the object the numerical-campaign gate kind was defined for (one accepted campaign on a declared component model), so the kind is reused with its own typed manifest, evidence file, macro-only section, claim records and campaign checker. Its estimands are properties of the optimisers on the mixed categorical-continuous design space (hypervolume per budget, Pareto-set size, seed variance, paired comparisons, which catalogue designs the optimisers select) and of the declared evaluation chain (robust-versus-nominal fronts, the campaign closure versus the pooled-probability sensitivity closure, sensitivity to the binomial uncertainty width). It is optimiser evidence, not performance evidence: it makes no thruster-performance, plasma or physical-device claim, its geometry dependence is the declared identification of a screening wall-hit probability with a per-cusp survival factor and not a validated geometry-to-performance map, it is not the L1 field-resolved reduction (no field solve, no L0 mapping), not L2 and not L3, and it therefore opens none of GATE-L1, GATE-L2 or GATE-L3.",
+    "name": "numerical-campaign",
+    "opens_gate": null,
+    "relation_to_levels": {
+      "F0-F3": "an F0-only (corrected analytical) campaign; spec/optimization/campaign-v1.json#benchmark.results stays null",
+      "L0": "consumes the accepted L0 model through its Python reference backend; every objective is a ledgered L0 output under the declared closure CL-1 with per-design screening posteriors",
+      "L1": "no field solve inside the campaign; geometry enters only as the categorical index of a screened design whose sealed geometry and counts come from the accepted screening dataset on linear-vacuum fields; no geometry-to-L0 map beyond the declared closure",
+      "L2": "not coupled to any plasma model; the corrected four-cell solver has no admissible root for interior cusp probabilities and is not used",
+      "L3": "not particle-in-cell and not experimental"
+    },
+    "validation_status": "none: no measurement, facility, or hardware comparison exists",
+    "verification_tier": "solution verification of the declared evaluation chain (bit-exact replay of every evaluation, L0 domain integrity, exact hypervolume, monotone curves up to a declared roundoff tolerance, Pareto replay, frozen sample and catalogue hashes, code contract, import-scope equality, duplicate elimination, label consistency) and a predeclared per-design separability check on the campaign and dense records; every binding gate is a recording-integrity gate and acceptance is not an efficacy verdict"
+  },
+  "evidence_revision": "a003f766c330d4e5648844ba49cdf1c3a3ce3bc1",
+  "evidence_revision_subject": "record MDO L0 campaign v2 result",
+  "experiment_id": "mdo-l0-campaign-v2",
+  "experiment_path": "modern/experiments/mdo_l0_campaign_v2",
+  "gate_id": "GATE-MDO-L0-V2",
+  "gate_kind": "numerical-campaign",
+  "level": "numerical-campaign",
+  "manifest_id": "MDO-L0-V2-20260903-1440-V1",
+  "metrics": {
+    "acceptance_is_integrity_not_efficacy": true,
+    "attempt_count": 1,
+    "binding_gate_count": 12,
+    "binding_gates_passed": 12,
+    "bo_beats_nsga3_passed": true,
+    "bo_beats_nsga3_seeds": 3,
+    "bo_beats_nsga3_wins": 3,
+    "bo_beats_random_passed": true,
+    "bo_beats_random_required_wins": 2,
+    "bo_beats_random_seeds": 3,
+    "bo_beats_random_wins": 3,
+    "bo_device": "cpu",
+    "botorch_version": "0.18.1",
+    "bound_files_never_imported": 0,
+    "campaign_policy_benchmark_results_populated": false,
+    "campaign_survival_maximum": 0.18021335207913503,
+    "catalogue_binding_gate_passed": true,
+    "catalogue_designs_evaluated": 96,
+    "catalogue_saturated_cell_designs": 73,
+    "catalogue_size": 96,
+    "catalogue_zero_cell_designs": 0,
+    "cell_count": 4,
+    "cell_trials": 128,
+    "cl2_front_catalogue_design_count": 25,
+    "cl2_front_size": 50,
+    "cl2_hypervolume": 0.045000626471441006,
+    "cl2_jaccard_with_campaign_front": 0.0,
+    "cl2_shared_with_campaign_front": 0,
+    "classification": "l0_model_optimisation_over_screened_design_catalogue_with_test_particle_wall_loss_closure_not_thruster_performance",
+    "closure_declared_not_derived": true,
+    "closure_id": "CL-1-multiplicative-cusp-survival-per-cell-test-particle-wall-loss",
+    "closure_identification_declared_not_derived": true,
+    "code_contract_matches": true,
+    "dense_negligible_hypervolume_designs": 77,
+    "dense_negligible_hypervolume_designs_with_saturated_cell": 73,
+    "dense_negligible_hypervolume_threshold": 1e-09,
+    "dense_reference_count": 98304,
+    "dense_reference_designs": 96,
+    "dense_reference_points_per_design": 1024,
+    "dense_reference_replay_passed": true,
+    "dense_reference_robust_front_catalogue_indices": [
+      46,
+      49,
+      50,
+      73,
+      94
+    ],
+    "dense_reference_robust_front_size": 48,
+    "dense_reference_robust_hypervolume": 0.0019073098288364388,
+    "design_recommendation_forbidden": true,
+    "evaluations_per_run": 160,
+    "failed_cases_count": 0,
+    "geometry_enters_only_through_catalogue": true,
+    "hardware_or_experimental_validation": false,
+    "hash_scope_file_count": 28,
+    "hypervolume_monotone_largest_relative_decrease": 0.0,
+    "import_scope_gate_passed": true,
+    "imported_file_count": 28,
+    "imported_files_outside_scope": 0,
+    "infeasible_evaluations": 91,
+    "infeasible_evaluations_lhs": 0,
+    "infeasible_evaluations_nsga3": 3,
+    "infeasible_evaluations_qlognehvi": 88,
+    "initial_design": 32,
+    "jaccard_robust_nominal": 0.7009345794392523,
+    "label_checks": 15,
+    "labels_gate_passed": true,
+    "lhs_hypervolume_mean": 0.00019530195824163184,
+    "lhs_hypervolume_sample_std": 7.543027701766018e-05,
+    "model_fidelity": "L0-conservation-reduced-performance",
+    "nominal_front_catalogue_indices": [
+      49,
+      50,
+      74,
+      94
+    ],
+    "nominal_front_members_robust_feasible": 76,
+    "nominal_front_size": 86,
+    "nsga3_duplicate_evaluations": 0,
+    "nsga3_duplicates_gate_passed": true,
+    "nsga3_hypervolume_mean": 0.0005650390216507811,
+    "nsga3_hypervolume_sample_std": 9.103100295217453e-05,
+    "objective_count": 4,
+    "operating_point_variable_count": 3,
+    "optimiser_superiority_beyond_recorded_budget_forbidden": true,
+    "per_design_separability_passed": true,
+    "physics_level_opened": false,
+    "plasma_claim_forbidden": true,
+    "pooled_trials": 512,
+    "preregistered_one_shot": true,
+    "preregistration_commit_file_count": 1,
+    "prior_campaign_dense_reference_robust_hypervolume": 0.003797983245976796,
+    "prior_campaign_qlognehvi_hypervolume_mean": 0.003866883266055783,
+    "prior_campaign_survival_maximum": 0.704190217251035,
+    "prior_campaign_verified_file_count": 137,
+    "pymoo_version": "0.6.2",
+    "qlognehvi_attained_fraction_maximum": 1.13185682355291,
+    "qlognehvi_attained_fraction_minimum": 0.48597017500883055,
+    "qlognehvi_first_seed_missed_design": 49,
+    "qlognehvi_first_seed_missed_design_evaluations": 0,
+    "qlognehvi_first_seed_stall_design": 50,
+    "qlognehvi_first_seed_stall_evaluations": 119,
+    "qlognehvi_hypervolume_maximum": 0.0021588016443980563,
+    "qlognehvi_hypervolume_mean": 0.0017455631369901253,
+    "qlognehvi_hypervolume_minimum": 0.0009268956913157068,
+    "qlognehvi_hypervolume_sample_std": 0.0007089975580337717,
+    "rejected_surrogates": 2,
+    "replay_mismatches": 0,
+    "replayed_evaluations": 1440,
+    "result_commit_file_count": 148,
+    "result_commit_files_outside_results": 0,
+    "robust_front_catalogue_design_count": 3,
+    "robust_front_catalogue_indices": [
+      49,
+      50,
+      94
+    ],
+    "robust_front_designs_are_lowest_pooled_wall_hit": true,
+    "robust_front_size": 96,
+    "run_count": 9,
+    "same_reference_frame_as_prior_campaign": true,
+    "sample_count": 64,
+    "screening_classification": "SCREENING_L1A_FIELD_TEST_PARTICLE_WALL_LOSS",
+    "seed_count": 3,
+    "sensitivity_closure_id": "CL-2-pooled-test-particle-wall-loss-survival",
+    "shakedown_evidentiary": false,
+    "shakedown_passed": true,
+    "shared_designs": 75,
+    "shared_initial_design_identical": true,
+    "strategy_count": 3,
+    "surrogate_used": false,
+    "tail_count": 16,
+    "terminal_state": "accepted_result",
+    "thruster_performance_claim_forbidden": true,
+    "tolerated_eol_file_count": 0,
+    "total_evaluations": 1440,
+    "uncertain_input_count": 7,
+    "unique_designs": 1240,
+    "v1_audit_disclosure_ids": [
+      "F9",
+      "F10",
+      "F22",
+      "F26",
+      "F27",
+      "F28"
+    ],
+    "v1_audit_disclosures_closed": 6,
+    "verified_file_count": 147,
+    "width_alternative_count": 3,
+    "width_four_front_size": 91,
+    "width_four_jaccard": 0.8155339805825242,
+    "width_identical_on_common_set_count": 1,
+    "width_point_front_size": 94,
+    "width_point_jaccard": 0.7924528301886793,
+    "width_quarter_front_size": 15,
+    "width_quarter_jaccard": 0.027777777777777776
+  },
+  "model_fidelity": "L0-conservation-reduced-performance",
+  "paper_evidence_file": {
+    "document_type": "paper-mdo-l0-v2-evidence",
+    "generator": "paper/scripts/generate_mdo_l0_v2_evidence.py",
+    "generator_command": "python paper/scripts/generate_mdo_l0_v2_evidence.py",
+    "macro_count": 612,
+    "macro_prefix": "Mdb",
+    "path": "paper/evidence/mdo-l0-v2.json",
+    "rule": "check_paper.py regenerates the evidence file, the generated TeX and the sidecar from the sealed bundles and requires byte identity with the committed files; every macro therefore traces to a verified artifact hash of this campaign's or the prior campaign's bundle, or to a stated derivation, at every check.",
+    "schema_version": "1.0"
+  },
+  "permitted_claim_scope": [
+    "terminal state, binding-gate, replay, budget and infeasible-count facts of the single execution, including the per-optimiser split of the infeasible evaluations",
+    "final robust hypervolume per optimiser and seed, seed variance, Pareto-set sizes, the catalogue designs on each Pareto set and the distinct designs visited at the recorded budget",
+    "paired optimiser comparisons exactly as predeclared and recorded (reported, not binding; counts over three seeds, never significance)",
+    "fraction of the dense-reference robust hypervolume attained, and the first seed's stall on one catalogue design with the design it never evaluated",
+    "robust-versus-nominal front sizes, hypervolumes, shared designs and the catalogue designs on each pooled front",
+    "the identity of the robust-front designs with the lowest pooled wall-hit designs of the catalogue, their sealed geometry and screening probabilities, and the count of designs whose own dense hypervolume is negligible because a launch cell saturated",
+    "the sensitivity closure's front and its overlap with the campaign front; the uncertainty-width re-evaluations",
+    "the comparison with the prior campaign in the shared reference frame, read from its sealed bundle",
+    "the frozen protocol's disclosures: the closure identification, no surrogate, the rejected surrogates, the corrected solver not used, the closed audit disclosures with their binding gates",
+    "the campaign classification string and its sealed claim boundary"
+  ],
+  "posthoc_audit": {
+    "disclosures_closed": [
+      "F9",
+      "F10",
+      "F22",
+      "F26",
+      "F27",
+      "F28"
+    ],
+    "git_blob": "a5c7a98743c32563715008baab80e1b8464fa540",
+    "git_blob_sha256": "cdf45fba432bead3e93370cbc28992b37065e04e60f9eb4ff5a93dfa50922abb",
+    "path": "modern/experiments/mdo_l0_campaign_v1/POSTHOC_AUDIT.md",
+    "revision": "e9f9af165a932a9f13438b297950efa951aff5c3",
+    "rule": "the disclosure list is parsed from the audit's verdict paragraph with a fixed pattern and must equal the keys of the frozen protocol's v1_audit_disclosures_closed; the audit blob must equal the one committed at the audit revision",
+    "verdict": "ACCEPTED WITH DISCLOSURES"
+  },
+  "preregistration_revision": "99914dc2fdbe88d18ab11ca86acad634129b4e08",
+  "preregistration_revision_subject": "preregister MDO L0 campaign v2",
+  "prior_campaign": {
+    "experiment_id": "mdo-l0-campaign-v1",
+    "gate_id": "GATE-MDO-L0-V1",
+    "manifest_git_blob": "87fec3c864008629a27f0832dff75aef381361d1",
+    "manifest_id": "MDO-L0-V1-20260903-864-V1",
+    "manifest_path": "modern/experiments/mdo_l0_campaign_v1/results/manifest.json",
+    "manifest_sha256": "2a326f3cf2e286a0ba8f9c91871d78b935a11e3e2c56bd9164acdc6166485381",
+    "results_commit": "c553124b7393890d8ee9c6fc022e536c8a1fd35e",
+    "rule": "the prior campaign's bundle is verified byte for byte against its own manifest and pinned to its admitted manifest SHA-256 and results commit before any comparison macro is read from it",
+    "verified_file_count": 137
+  },
+  "prohibited_inferences": [
+    "thruster, plasma or physical-device performance",
+    "that any catalogue design is a better thruster than another (it is better under CL-1 on the L0 model only)",
+    "any design recommendation, calibration or validation",
+    "optimiser superiority beyond the recorded budget, seeds and model",
+    "a derived or validated geometry-to-performance map (the closure identification is declared, not derived)",
+    "any reading of the screening wall-hit probability as a plasma cusp-loss probability",
+    "interpolation between catalogue designs or any surrogate statement",
+    "hardware or experimental validation",
+    "opening of GATE-L1, GATE-L2 or GATE-L3",
+    "population of the campaign policy's F3-verified benchmark field"
+  ],
+  "results_bundle": {
+    "artifact_count": 153,
+    "frozen_files_equal_sealed_copies": "protocol.json, authorities.json and shakedown.json of the experiment directory are the pretty-printed frozen files; the bundle seals canonical-JSON copies with the same payload, which the generator requires to be equal",
+    "manifest_git_blob": "81e07b2dbdf349f5d65737b9f43257cc5ca097bd",
+    "manifest_path": "modern/experiments/mdo_l0_campaign_v2/results/manifest.json",
+    "manifest_sha256": "ca3b58ce21eedb8ef094a3d73894b508fe8c438183fa02620d05f759541f7b1f",
+    "result_commit_policy": "the results commit adds files under the experiment's results/ directory only (v1 audit F9); the generator counts its paths with git diff-tree and requires none outside results/",
+    "results_tree": "3a29e72f8f14faa823d42bcf5848a0cb97a6376d",
+    "tolerance_rule": "none: every manifest file entry must hash to its recorded byte_sha256 with its recorded size",
+    "tolerated_eol_files": [],
+    "verified_file_count": 147
+  },
+  "schema_version": "1.0",
+  "section_heading": "Catalogue optimisation over the screened sweep designs under the declared test-particle wall-loss closure",
+  "sensitivity_closure": "CL-2-pooled-test-particle-wall-loss-survival",
+  "source_files": [
+    {
+      "git_blob": "81e07b2dbdf349f5d65737b9f43257cc5ca097bd",
+      "git_blob_sha256": "ca3b58ce21eedb8ef094a3d73894b508fe8c438183fa02620d05f759541f7b1f",
+      "path": "modern/experiments/mdo_l0_campaign_v2/results/manifest.json",
+      "role": "results-manifest"
+    },
+    {
+      "git_blob": "c8c67939bdc179ae94228f0b6352e215429b987c",
+      "git_blob_sha256": "dbd8081bbf23d1def5e9946e7f6a0172d5668f27c2423b567724325bd0926518",
+      "path": "modern/experiments/mdo_l0_campaign_v2/results/terminal.json",
+      "role": "terminal-record"
+    },
+    {
+      "git_blob": "b63ddb9ac87ec256cde35b335e970737189a5ae7",
+      "git_blob_sha256": "adee65666118595b7f57db232ab1abc93b52be786485eb5c93fe1f06b38b26bc",
+      "path": "modern/experiments/mdo_l0_campaign_v2/results/execution-lock.json",
+      "role": "execution-lock"
+    },
+    {
+      "git_blob": "d7e8a84f9d358ffde94e21677fab7a35a12a8049",
+      "git_blob_sha256": "5fa27d26d5123f1980cd4ae4d62428018bbcc81f0be2698070308334787d2342",
+      "path": "modern/experiments/mdo_l0_campaign_v2/results/artifacts/campaign-result.json",
+      "role": "campaign-result"
+    },
+    {
+      "git_blob": "f5fd0c7ede4d2b335973e6c07d63c740bb2b0e21",
+      "git_blob_sha256": "a23d881a58e2f04d8ed94ee15477adde9ba4c5b07b6086e83345642f2e800cf2",
+      "path": "modern/experiments/mdo_l0_campaign_v2/results/artifacts/gates.json",
+      "role": "binding-gates"
+    },
+    {
+      "git_blob": "4dc98e26eb2413ab2ff4d402d4e388673ee439dc",
+      "git_blob_sha256": "7d055f6568c14799faf251ffdaa6d71766a69bf2afd814558069f9bf59f14f8e",
+      "path": "modern/experiments/mdo_l0_campaign_v2/results/artifacts/metrics.json",
+      "role": "metrics"
+    },
+    {
+      "git_blob": "5833e28009cf75b17f8b634c844961f7c8be7a4c",
+      "git_blob_sha256": "4d359ac0e4981f5f85e299064d18be47e38072f993ea941dad06331d3ac167a3",
+      "path": "modern/experiments/mdo_l0_campaign_v2/results/artifacts/dense-reference-summary.json",
+      "role": "dense-reference-summary"
+    },
+    {
+      "git_blob": "b3ba52df08b3c86858317deed95de96f23d704ee",
+      "git_blob_sha256": "ee2d3d28bf5919c77868ba93947c4a659216fa8edfa293fabf33beed9025ce73",
+      "path": "modern/experiments/mdo_l0_campaign_v2/results/artifacts/dense-reference.json",
+      "role": "dense-reference"
+    },
+    {
+      "git_blob": "7d37c3aba8b489f92c9d81ca33d2c22197dc2de7",
+      "git_blob_sha256": "0ac55caabec07c8a161c58597abfda039751b58c69225528514873de290f1466",
+      "path": "modern/experiments/mdo_l0_campaign_v2/results/artifacts/dense-reference-separability.json",
+      "role": "dense-reference-separability"
+    },
+    {
+      "git_blob": "ae75b1f5857902221e1cad5452622f980c807c49",
+      "git_blob_sha256": "0887f676c6c1ce62a73a2e46c866310e7b157b9162ae6d4803a26f48f066a390",
+      "path": "modern/experiments/mdo_l0_campaign_v2/results/artifacts/separability.json",
+      "role": "separability"
+    },
+    {
+      "git_blob": "e399d2110dd3a2162e4f056068d072a2534ca917",
+      "git_blob_sha256": "80679ac02a6185b1d63a12942a8b252d37bbb0979d0036464e53b8ed6e1f1490",
+      "path": "modern/experiments/mdo_l0_campaign_v2/results/artifacts/sensitivity.json",
+      "role": "sensitivity"
+    },
+    {
+      "git_blob": "dd54bbc34bb12bf6f67ed10438edbd7cd5e089e8",
+      "git_blob_sha256": "d73ee24537386a6f845e19649a9eef7647cb22b4f8e041fd5d3de8a392c17cdf",
+      "path": "modern/experiments/mdo_l0_campaign_v2/results/artifacts/pooled-fronts.json",
+      "role": "pooled-fronts"
+    },
+    {
+      "git_blob": "7f0a48af82c5f321f4e51d8db6757097d6d0bee8",
+      "git_blob_sha256": "7c60f14a3a8778de3124c44368a6f674f7d9ba1c67fb50265b7b160362c82ae6",
+      "path": "modern/experiments/mdo_l0_campaign_v2/results/artifacts/per-strategy-fronts.json",
+      "role": "per-strategy-fronts"
+    },
+    {
+      "git_blob": "8771b5b255740fcd4161a29157df60514b045d26",
+      "git_blob_sha256": "3cff0746aa705aa9c4ee5c0593552b0adc2fd0aad008fdefbd0567501cfe0ccf",
+      "path": "modern/experiments/mdo_l0_campaign_v2/results/artifacts/pareto-sets.json",
+      "role": "pareto-sets"
+    },
+    {
+      "git_blob": "bb14bbdb8b533bdd41e3032d3e64b224074219de",
+      "git_blob_sha256": "c9c10b30893ab2587dac4bb12dd51d87e6ae1816aae6d0a610f3dfa613df97da",
+      "path": "modern/experiments/mdo_l0_campaign_v2/results/artifacts/hypervolume-curves.json",
+      "role": "hypervolume-curves"
+    },
+    {
+      "git_blob": "5042897545e1acdb29c0127552b4cf1678a50276",
+      "git_blob_sha256": "26487a45a5a6ab80d4db8d0eb5b71418f748b7efbfefb5ba4bff24f978bb5029",
+      "path": "modern/experiments/mdo_l0_campaign_v2/results/artifacts/protocol.json",
+      "role": "protocol"
+    },
+    {
+      "git_blob": "080d14162b76688f562490117ee2303c5f8a891d",
+      "git_blob_sha256": "f6e00942614e9470d21e4db1e5d1fb462513bb0d15b3d5278d74af539836a032",
+      "path": "modern/experiments/mdo_l0_campaign_v2/results/artifacts/authorities.json",
+      "role": "authorities"
+    },
+    {
+      "git_blob": "acb2c7dd3930f9826d17bc2ed76571e3acc36af3",
+      "git_blob_sha256": "e500dbb67e7e9b480402a2bbf7e03ab63d249186ca3f499a61f4841129b52908",
+      "path": "modern/experiments/mdo_l0_campaign_v2/results/artifacts/code-contract.json",
+      "role": "code-contract"
+    },
+    {
+      "git_blob": "3637e89ad64432268ded8ed46f48809472431a18",
+      "git_blob_sha256": "13e6ef5c6670b2fb8826c93213ac70147e214caf551c481856dce08596c4b3b2",
+      "path": "modern/experiments/mdo_l0_campaign_v2/results/artifacts/campaign-plan.json",
+      "role": "campaign-plan"
+    },
+    {
+      "git_blob": "8b224a40318a60079433f564de84c39e1022eb52",
+      "git_blob_sha256": "b7caa4b3879c052f8693171e030dd90d9f6e7ad95605210980b5bce9c2c9bb61",
+      "path": "modern/experiments/mdo_l0_campaign_v2/results/artifacts/uncertain-sample.json",
+      "role": "uncertain-sample"
+    },
+    {
+      "git_blob": "9d2462b93d3f66250c63ff1019f0260d81087a0e",
+      "git_blob_sha256": "830b807112743b72353d0fc11beff55bd408d9c8f954b5945facef338721ae0e",
+      "path": "modern/experiments/mdo_l0_campaign_v2/results/artifacts/catalogue.json",
+      "role": "catalogue"
+    },
+    {
+      "git_blob": "7c8a3566aa0061bd50fd1ca80c3b47d256fc5ecd",
+      "git_blob_sha256": "c5b9b245dccd9afbbe889d5f200fb8b1b2b80013f0eb93d34842a1dd3e86b8a8",
+      "path": "modern/experiments/mdo_l0_campaign_v2/results/artifacts/catalogue-binding.json",
+      "role": "catalogue-binding"
+    },
+    {
+      "git_blob": "2f59d83317a608e03c0f0e39a9f761af51dabeec",
+      "git_blob_sha256": "98ff8a1a679632393569375f38663d86d0e22b8d7f0aba93e43a03c50a40eb11",
+      "path": "modern/experiments/mdo_l0_campaign_v2/results/artifacts/import-scope.json",
+      "role": "import-scope"
+    },
+    {
+      "git_blob": "3001235fd09117548fe146f5ce5e2e41da60e2dd",
+      "git_blob_sha256": "462c40038ffea99c8fbe2906f23227f7898a48c84e2cb81f19943d79aacc960e",
+      "path": "modern/experiments/mdo_l0_campaign_v2/results/artifacts/shakedown.json",
+      "role": "shakedown"
+    },
+    {
+      "git_blob": "a0eeb2405bebc112f537b8ba870300f39a41d55b",
+      "git_blob_sha256": "0f1a39d167f8f89163d334532225cf5899585036835dca21d4ae140a7afb2e2c",
+      "path": "modern/experiments/mdo_l0_campaign_v2/results/artifacts/device-probes.json",
+      "role": "device-probes"
+    },
+    {
+      "git_blob": "f8e78485d2fd4715af9cffc87b24aacd3200374f",
+      "git_blob_sha256": "ea45ae0cc08c8e236be865d21446117990afcbe0766ead282adee07b6b7f9a1e",
+      "path": "modern/experiments/mdo_l0_campaign_v2/results/artifacts/runtime.json",
+      "role": "runtime"
+    },
+    {
+      "git_blob": "bbae8857b8622f8464b8cb2fb014d9befb7fdb9a",
+      "git_blob_sha256": "2f7baa28fb2868936e3d5cd3ce0999ce4083b146e4e92ed71448be007909115d",
+      "path": "modern/experiments/mdo_l0_campaign_v2/results/artifacts/protocol-consistency.json",
+      "role": "protocol-consistency"
+    },
+    {
+      "git_blob": "5a21f3c64ed81e78a0bb703aa20f7dd97ee5b5ee",
+      "git_blob_sha256": "1edf1f191e07743bc3b4366c3343d7d32d8fd7a09e4a10fe47d3b10f92120cde",
+      "path": "modern/experiments/mdo_l0_campaign_v2/results/artifacts/runs/qlognehvi-101.json",
+      "role": "run-artifact"
+    },
+    {
+      "git_blob": "e61cd6ee94292fea589da79484ac9ccd48ccce7e",
+      "git_blob_sha256": "253b919f558d556999eadc3d198321d72a04ee215a30d264f7eb1aa2d1c97f22",
+      "path": "modern/experiments/mdo_l0_campaign_v2/results/artifacts/runs/nsga3-101.json",
+      "role": "run-artifact"
+    },
+    {
+      "git_blob": "14e56399b7a454a813318ef511cecb38a9e81371",
+      "git_blob_sha256": "3b7206e0e535e9901a61afa70cd72bdbc35e4573dc9671110786b0289a7b12c1",
+      "path": "modern/experiments/mdo_l0_campaign_v2/results/artifacts/runs/lhs-101.json",
+      "role": "run-artifact"
+    },
+    {
+      "git_blob": "c733a78cd24930ce73ea1be869e5e33724160a83",
+      "git_blob_sha256": "61b927af9aa70ed408ab5ac33a0b4fb8a9ada11f6d80faa0509a9dc48418b96a",
+      "path": "modern/experiments/mdo_l0_campaign_v2/results/artifacts/runs/qlognehvi-202.json",
+      "role": "run-artifact"
+    },
+    {
+      "git_blob": "b556810a770f7fa13f834f2738a7c90e462af1c4",
+      "git_blob_sha256": "dd56479d0d7a55f6ef96ce93ab131498597c54fc12f94996c164be650819c292",
+      "path": "modern/experiments/mdo_l0_campaign_v2/results/artifacts/runs/nsga3-202.json",
+      "role": "run-artifact"
+    },
+    {
+      "git_blob": "23ad228cfcaf6bca97d75b48129685d382cb3cdc",
+      "git_blob_sha256": "957d5bb70b150b7a859ba4efeb07155c4dbc9005cdb46a3ceb0bf773fef16f53",
+      "path": "modern/experiments/mdo_l0_campaign_v2/results/artifacts/runs/lhs-202.json",
+      "role": "run-artifact"
+    },
+    {
+      "git_blob": "988e1aede1525b5728289488c381a771a49c0b73",
+      "git_blob_sha256": "7aec8f32b1297dc440b2785d60bd564ce24e6ff7117eacbcb8911b7fd8c5bf7a",
+      "path": "modern/experiments/mdo_l0_campaign_v2/results/artifacts/runs/qlognehvi-303.json",
+      "role": "run-artifact"
+    },
+    {
+      "git_blob": "dd17c0fdcba31c0d5a46df1c7047dab152f95c57",
+      "git_blob_sha256": "08a5bec72e4142779c9fbe1b826679eb2fd0083b31dba5a5c64da7d140c43cc6",
+      "path": "modern/experiments/mdo_l0_campaign_v2/results/artifacts/runs/nsga3-303.json",
+      "role": "run-artifact"
+    },
+    {
+      "git_blob": "37500e458c0271747c96008f7b0c76b5be415359",
+      "git_blob_sha256": "d623ad0c102a22d5de552fc918914f6215855600dde106c1bcd3b8f8871996d5",
+      "path": "modern/experiments/mdo_l0_campaign_v2/results/artifacts/runs/lhs-303.json",
+      "role": "run-artifact"
+    },
+    {
+      "git_blob": "598eab39dfb51c57246e1004551dd9f9200d69d5",
+      "git_blob_sha256": "c4a3fb80dec4a1209c13e26bcfc655ad944f541b8474da6158732155679059a6",
+      "path": "modern/experiments/mdo_l0_campaign_v2/results/transitions/0001-lock-acquired.json",
+      "role": "transition"
+    },
+    {
+      "git_blob": "df0e607ad95b56f1c9b48d5015c8fd6f4b9a527f",
+      "git_blob_sha256": "b2168e4836147b9b2651fc6045eeffbb105896d668ddd837820befff6b216771",
+      "path": "modern/experiments/mdo_l0_campaign_v2/results/transitions/0009-terminal.json",
+      "role": "transition"
+    },
+    {
+      "git_blob": "bc7756e9449ae9fd4b0f654bcc04442d623082cd",
+      "git_blob_sha256": "d592b14c281e9b4ffe6841caa4661995919e9eee28e0a9bfec1184ed9c4577f3",
+      "path": "modern/experiments/mdo_l0_campaign_v2/protocol.json",
+      "role": "preregistered-protocol"
+    },
+    {
+      "git_blob": "080d14162b76688f562490117ee2303c5f8a891d",
+      "git_blob_sha256": "f6e00942614e9470d21e4db1e5d1fb462513bb0d15b3d5278d74af539836a032",
+      "path": "modern/experiments/mdo_l0_campaign_v2/authorities.json",
+      "role": "preregistered-authorities"
+    },
+    {
+      "git_blob": "3001235fd09117548fe146f5ce5e2e41da60e2dd",
+      "git_blob_sha256": "462c40038ffea99c8fbe2906f23227f7898a48c84e2cb81f19943d79aacc960e",
+      "path": "modern/experiments/mdo_l0_campaign_v2/shakedown.json",
+      "role": "preregistered-shakedown"
+    },
+    {
+      "git_blob": "858de21adf1b3ea40237d5e7f0531a2013eb58e2",
+      "git_blob_sha256": "9104e3bf0694f7c1c88d1c7bc377b43b24cbc42a94bd75eed2cfa6dc21f5114a",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/geometry-wall-loss-dataset.json",
+      "role": "screening-dataset"
+    },
+    {
+      "git_blob": "ff3b3cd8a4cb59047b6856031faaadb941f11877",
+      "git_blob_sha256": "39bd52133fefd3adae45e9593e7312b8e9027322ca3142d59912bbc13e2e027a",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/manifest.json",
+      "role": "screening-results-manifest"
+    },
+    {
+      "git_blob": "87fec3c864008629a27f0832dff75aef381361d1",
+      "git_blob_sha256": "2a326f3cf2e286a0ba8f9c91871d78b935a11e3e2c56bd9164acdc6166485381",
+      "path": "modern/experiments/mdo_l0_campaign_v1/results/manifest.json",
+      "role": "prior-results-manifest"
+    },
+    {
+      "git_blob": "2774ebe1ec02fa9b2ea7cf2cbd9d1255186676c1",
+      "git_blob_sha256": "394894a7f9e675a8280f14330530db52172a454e9d804f1b6f4db115190f9c8f",
+      "path": "modern/experiments/mdo_l0_campaign_v1/results/artifacts/campaign-result.json",
+      "role": "prior-campaign-artifact"
+    },
+    {
+      "git_blob": "5ac7d4d3871f8a918fccca56a347d2bce596e0ba",
+      "git_blob_sha256": "0c260f3ebee5078aa13e194fda0aba5079ec0d13f45974bdf2690a1b1a494d16",
+      "path": "modern/experiments/mdo_l0_campaign_v1/results/artifacts/campaign-plan.json",
+      "role": "prior-campaign-artifact"
+    },
+    {
+      "git_blob": "9a2498313cb97c4bfe2250fa67b74cecd013c906",
+      "git_blob_sha256": "7550e55ce7b6a9a195d43eb65767f741dc46c63e486ba2275e51493629432509",
+      "path": "modern/experiments/mdo_l0_campaign_v1/results/artifacts/metrics.json",
+      "role": "prior-campaign-artifact"
+    },
+    {
+      "git_blob": "d6ec44b449c0c119b826404c120cae7941efaf10",
+      "git_blob_sha256": "5bfe70aee8dd6aa9ed0b05354679dcf5c88381507eeaecdf8e94da5332aafe5f",
+      "path": "modern/experiments/mdo_l0_campaign_v1/results/artifacts/gates.json",
+      "role": "prior-campaign-artifact"
+    },
+    {
+      "git_blob": "1e1a3db1cc23e9e41a22842cf2b0d5f8dadd8fc2",
+      "git_blob_sha256": "9bb9fa7449844624f62e18f1f3927be55e21d53ca19ecb20ffa703102688ce25",
+      "path": "modern/experiments/mdo_l0_campaign_v1/results/artifacts/dense-reference-summary.json",
+      "role": "prior-campaign-artifact"
+    },
+    {
+      "git_blob": "1a68409453f642d51094480b90b41986a66e413f",
+      "git_blob_sha256": "4a14f2213829dfc3592abb9061272785c6654ef57adb57937aa21cecba1a9848",
+      "path": "modern/experiments/mdo_l0_campaign_v1/results/artifacts/pooled-fronts.json",
+      "role": "prior-campaign-artifact"
+    },
+    {
+      "git_blob": "8d838eb73fcd806f4c6ed0d43566f01f7255a49a",
+      "git_blob_sha256": "09755b85393d3b3248941ce52f8c21edb832ce30c6f31e5c6919079c41d496ba",
+      "path": "modern/experiments/mdo_l0_campaign_v1/results/artifacts/protocol.json",
+      "role": "prior-campaign-artifact"
+    },
+    {
+      "git_blob": "342ab106c9d9aac6fb1d185467226ce06633c235",
+      "git_blob_sha256": "100dd492a7d234f56ea3a2b4c745b28cae08a4c9800ab3e69b2e7b8120e65eb0",
+      "path": "modern/experiments/mdo_l0_campaign_v1/results/artifacts/sensitivity.json",
+      "role": "prior-campaign-artifact"
+    },
+    {
+      "git_blob": "a5c7a98743c32563715008baab80e1b8464fa540",
+      "git_blob_sha256": "cdf45fba432bead3e93370cbc28992b37065e04e60f9eb4ff5a93dfa50922abb",
+      "path": "modern/experiments/mdo_l0_campaign_v1/POSTHOC_AUDIT.md",
+      "role": "prior-posthoc-audit"
+    }
+  ],
+  "status": "accepted"
+}

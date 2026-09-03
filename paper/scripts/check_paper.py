@@ -13,6 +13,7 @@ from typing import Any
 
 import generate_four_cell_closure_evidence as four_cell_closure
 import generate_mdo_l0_v1_evidence as mdo_l0_v1
+import generate_mdo_l0_v2_evidence as mdo_l0_v2
 import generate_tables
 import generate_topology_screening_evidence as topology_screening
 import generate_wall_loss_geometry_screening_v1_evidence as geometry_screening
@@ -31,6 +32,7 @@ REQUIRED_SECTIONS = (
     "Preregistered robust multi-objective optimisation of the L0 model",
     "Consistency of the four-cell power balance",
     "Preregistered wall-loss screening across the accepted sweep geometries",
+    "Preregistered catalogue optimisation of the L0 model over the screened sweep designs",
     "Planned L1 result: field-resolved reduction",
     "Planned L2 result: coupled hybrid model",
     "Planned L3 result: PIC and experimental comparison",
@@ -391,6 +393,151 @@ MDO_POLICY_METRICS = {
     "campaign_policy_benchmark_results_populated": False,
 }
 
+# MDO L0 campaign v2 manifest metric -> evidence macro whose raw artifact value it must
+# equal (type-equal).  The campaign is optimiser evidence on the L0 model over the
+# discrete catalogue of 96 screened sweep designs under the declared closure CL-1
+# (per-cell test-particle wall-hit posteriors) and is admitted through a third
+# numerical-campaign gate with its own manifest type.
+MDB_METRIC_MACROS = {
+    "classification": "MdbClassification",
+    "terminal_state": "MdbTerminalState",
+    "closure_id": "MdbClosureId",
+    "sensitivity_closure_id": "MdbSensitivityClosureId",
+    "screening_classification": "MdbScreeningClassification",
+    "model_fidelity": "MdbFidelity",
+    "attempt_count": "MdbAttemptCount",
+    "run_count": "MdbRuns",
+    "total_evaluations": "MdbTotalEvaluations",
+    "infeasible_evaluations": "MdbInfeasibleEvaluations",
+    "infeasible_evaluations_qlognehvi": "MdbInfeasibleBoTotal",
+    "infeasible_evaluations_nsga3": "MdbInfeasibleNsgaTotal",
+    "infeasible_evaluations_lhs": "MdbInfeasibleLhsTotal",
+    "failed_cases_count": "MdbFailedRuns",
+    "evaluations_per_run": "MdbEvaluationsPerRun",
+    "initial_design": "MdbInitialDesign",
+    "shared_initial_design_identical": "MdbSharedInitialIdentical",
+    "seed_count": "MdbSeedCount",
+    "strategy_count": "MdbStrategyCount",
+    "binding_gate_count": "MdbGateCount",
+    "binding_gates_passed": "MdbGatesPassed",
+    "replayed_evaluations": "MdbReplayed",
+    "replay_mismatches": "MdbReplayMismatches",
+    "hypervolume_monotone_largest_relative_decrease": "MdbHvMonotoneLargestDecrease",
+    "code_contract_matches": "MdbCodeContractMatches",
+    "import_scope_gate_passed": "MdbImportScopePassed",
+    "imported_file_count": "MdbImportedFiles",
+    "hash_scope_file_count": "MdbSourceFileCount",
+    "imported_files_outside_scope": "MdbImportedNotInScope",
+    "bound_files_never_imported": "MdbInScopeNotImported",
+    "nsga3_duplicates_gate_passed": "MdbNsgaDuplicatesPassed",
+    "nsga3_duplicate_evaluations": "MdbNsgaDuplicates",
+    "labels_gate_passed": "MdbLabelsPassed",
+    "label_checks": "MdbLabelChecks",
+    "catalogue_binding_gate_passed": "MdbCatalogueBindingPassed",
+    "catalogue_size": "MdbCatalogueSize",
+    "catalogue_designs_evaluated": "MdbDistinctCatalogueDesigns",
+    "catalogue_saturated_cell_designs": "MdbSaturatedDesigns",
+    "catalogue_zero_cell_designs": "MdbZeroCellDesigns",
+    "operating_point_variable_count": "MdbOperatingVariableCount",
+    "uncertain_input_count": "MdbUncertainInputCount",
+    "cell_count": "MdbCellCount",
+    "cell_trials": "MdbCellTrials",
+    "pooled_trials": "MdbPooledTrials",
+    "objective_count": "MdbObjectiveCount",
+    "sample_count": "MdbSampleCount",
+    "tail_count": "MdbTailCount",
+    "same_reference_frame_as_prior_campaign": "MdbSameReferenceFrame",
+    "dense_reference_count": "MdbDenseCount",
+    "dense_reference_designs": "MdbDenseDesigns",
+    "dense_reference_points_per_design": "MdbDensePointsPerDesign",
+    "dense_reference_robust_hypervolume": "MdbDenseRobustHv",
+    "dense_reference_robust_front_size": "MdbDenseRobustFront",
+    "dense_reference_robust_front_catalogue_indices": "MdbDenseRobustFrontDesigns",
+    "dense_reference_replay_passed": "MdbDenseReplayPassed",
+    "dense_negligible_hypervolume_threshold": "MdbDenseNegligibleThreshold",
+    "dense_negligible_hypervolume_designs": "MdbDenseNegligibleDesigns",
+    "dense_negligible_hypervolume_designs_with_saturated_cell": "MdbDenseNegligibleSaturated",
+    "per_design_separability_passed": "MdbSeparabilityPassed",
+    "qlognehvi_hypervolume_mean": "MdbHvBoMean",
+    "qlognehvi_hypervolume_sample_std": "MdbHvBoStd",
+    "qlognehvi_hypervolume_minimum": "MdbHvBoMin",
+    "qlognehvi_hypervolume_maximum": "MdbHvBoMax",
+    "nsga3_hypervolume_mean": "MdbHvNsgaMean",
+    "nsga3_hypervolume_sample_std": "MdbHvNsgaStd",
+    "lhs_hypervolume_mean": "MdbHvLhsMean",
+    "lhs_hypervolume_sample_std": "MdbHvLhsStd",
+    "qlognehvi_attained_fraction_minimum": "MdbAttainedBoMin",
+    "qlognehvi_attained_fraction_maximum": "MdbAttainedBoMax",
+    "qlognehvi_first_seed_stall_design": "MdbBoAStallDesign",
+    "qlognehvi_first_seed_stall_evaluations": "MdbBoAStallEvaluations",
+    "qlognehvi_first_seed_missed_design": "MdbBoAMissedDesign",
+    "qlognehvi_first_seed_missed_design_evaluations": "MdbBoAMissedEvaluations",
+    "bo_beats_random_wins": "MdbBoBeatsRandomWins",
+    "bo_beats_random_seeds": "MdbBoBeatsRandomSeeds",
+    "bo_beats_random_required_wins": "MdbBoBeatsRandomRequired",
+    "bo_beats_random_passed": "MdbBoBeatsRandomPassed",
+    "bo_beats_nsga3_wins": "MdbBoBeatsNsgaWins",
+    "bo_beats_nsga3_seeds": "MdbBoBeatsNsgaSeeds",
+    "bo_beats_nsga3_passed": "MdbBoBeatsNsgaPassed",
+    "unique_designs": "MdbUniqueDesigns",
+    "robust_front_size": "MdbRobustFront",
+    "nominal_front_size": "MdbNominalFront",
+    "shared_designs": "MdbSharedDesigns",
+    "jaccard_robust_nominal": "MdbJaccard",
+    "nominal_front_members_robust_feasible": "MdbNominalRobustFeasible",
+    "robust_front_catalogue_indices": "MdbRobustFrontDesigns",
+    "nominal_front_catalogue_indices": "MdbNominalFrontDesigns",
+    "robust_front_catalogue_design_count": "MdbRobustFrontDesignCount",
+    "robust_front_designs_are_lowest_pooled_wall_hit": "MdbRobustFrontLowestRanks",
+    "cl2_front_size": "MdbClTwoFront",
+    "cl2_front_catalogue_design_count": "MdbClTwoFrontDesignCount",
+    "cl2_shared_with_campaign_front": "MdbClTwoShared",
+    "cl2_jaccard_with_campaign_front": "MdbClTwoJaccard",
+    "cl2_hypervolume": "MdbClTwoHv",
+    "width_quarter_front_size": "MdbWidthQuarterFront",
+    "width_quarter_jaccard": "MdbWidthQuarterJaccard",
+    "width_four_front_size": "MdbWidthFourFront",
+    "width_four_jaccard": "MdbWidthFourJaccard",
+    "width_point_front_size": "MdbWidthPointFront",
+    "width_point_jaccard": "MdbWidthPointJaccard",
+    "width_alternative_count": "MdbWidthAlternativeCount",
+    "width_identical_on_common_set_count": "MdbWidthIdenticalCount",
+    "campaign_survival_maximum": "MdbCampaignSurvivalMax",
+    "prior_campaign_survival_maximum": "MdbPriorSurvivalMax",
+    "prior_campaign_dense_reference_robust_hypervolume": "MdbPriorDenseRobustHv",
+    "prior_campaign_qlognehvi_hypervolume_mean": "MdbPriorHvBoMean",
+    "v1_audit_disclosures_closed": "MdbAuditDisclosuresClosed",
+    "v1_audit_disclosure_ids": "MdbAuditDisclosureIds",
+    "result_commit_file_count": "MdbResultCommitFiles",
+    "result_commit_files_outside_results": "MdbResultCommitOutsideResults",
+    "preregistration_commit_file_count": "MdbPreregCommitFiles",
+    "rejected_surrogates": "MdbRejectedSurrogates",
+    "shakedown_passed": "MdbShakedownPassed",
+    "shakedown_evidentiary": "MdbShakedownEvidentiary",
+    "bo_device": "MdbBoDevice",
+    "botorch_version": "MdbBotorchVersion",
+    "pymoo_version": "MdbPymooVersion",
+    "tolerated_eol_file_count": "MdbToleratedEolFiles",
+    "verified_file_count": "MdbVerifiedFiles",
+    "prior_campaign_verified_file_count": "MdbPriorVerifiedFiles",
+}
+# Policy metrics the MDO v2 manifest must carry with exactly these values.
+MDB_POLICY_METRICS = {
+    "preregistered_one_shot": True,
+    "hardware_or_experimental_validation": False,
+    "thruster_performance_claim_forbidden": True,
+    "plasma_claim_forbidden": True,
+    "optimiser_superiority_beyond_recorded_budget_forbidden": True,
+    "design_recommendation_forbidden": True,
+    "surrogate_used": False,
+    "geometry_enters_only_through_catalogue": True,
+    "closure_declared_not_derived": True,
+    "closure_identification_declared_not_derived": True,
+    "acceptance_is_integrity_not_efficacy": True,
+    "physics_level_opened": False,
+    "campaign_policy_benchmark_results_populated": False,
+}
+
 # Four-cell closure manifest metric -> evidence macro whose raw value it must equal
 # (type-equal).  Documented values are read from the analysis document / ledger /
 # frozen protocol blobs at the analysis revision; recomputed values are produced by
@@ -647,6 +794,52 @@ EXPECTED_MANIFEST_TYPES = {
             ]
         ),
         "required_metrics": sorted([*MDO_METRIC_MACROS, *MDO_POLICY_METRICS]),
+    },
+    "paper-mdo-catalogue-campaign-manifest": {
+        "supported_versions": ["1.0"],
+        "level": "numerical-campaign",
+        "required_file_roles": sorted(
+            [
+                "authorities",
+                "binding-gates",
+                "campaign-plan",
+                "campaign-result",
+                "catalogue",
+                "catalogue-binding",
+                "code-contract",
+                "dense-reference",
+                "dense-reference-separability",
+                "dense-reference-summary",
+                "device-probes",
+                "execution-lock",
+                "hypervolume-curves",
+                "import-scope",
+                "metrics",
+                "pareto-sets",
+                "per-strategy-fronts",
+                "pooled-fronts",
+                "preregistered-authorities",
+                "preregistered-protocol",
+                "preregistered-shakedown",
+                "prior-campaign-artifact",
+                "prior-posthoc-audit",
+                "prior-results-manifest",
+                "protocol",
+                "protocol-consistency",
+                "results-manifest",
+                "run-artifact",
+                "runtime",
+                "screening-dataset",
+                "screening-results-manifest",
+                "sensitivity",
+                "separability",
+                "shakedown",
+                "terminal-record",
+                "transition",
+                "uncertain-sample",
+            ]
+        ),
+        "required_metrics": sorted([*MDB_METRIC_MACROS, *MDB_POLICY_METRICS]),
     },
     "paper-analytic-consistency-manifest": {
         "supported_versions": ["1.0"],
@@ -1922,7 +2115,40 @@ def _check_topology_screening(
         errors.append(f"{label}: section heading must appear exactly once in the flattened manuscript")
 
 
-def _check_mdo_campaign(
+@dataclass(frozen=True)
+class _MdoFamily:
+    """One admitted MDO campaign (v1 operating point, v2 catalogue): generator module and its bindings."""
+
+    module: Any
+    prefix: str
+    revision_macro: str
+    metric_macros: dict[str, str]
+    policy_metrics: dict[str, bool]
+    required_macros: tuple[str, ...]
+    label_noun: str
+
+
+MDO_V1_FAMILY = _MdoFamily(
+    module=mdo_l0_v1,
+    prefix="Mdo",
+    revision_macro="MdoEvidenceRevision",
+    metric_macros=MDO_METRIC_MACROS,
+    policy_metrics=MDO_POLICY_METRICS,
+    required_macros=("MdoClassification", "MdoClosureId"),
+    label_noun="campaign",
+)
+MDO_V2_FAMILY = _MdoFamily(
+    module=mdo_l0_v2,
+    prefix="Mdb",
+    revision_macro="MdbEvidenceRevision",
+    metric_macros=MDB_METRIC_MACROS,
+    policy_metrics=MDB_POLICY_METRICS,
+    required_macros=("MdbClassification", "MdbClosureId", "MdbSensitivityClosureId", "MdbScreeningClassification"),
+    label_noun="catalogue campaign",
+)
+
+
+def _check_mdo_family(
     repo: Path,
     gate: dict[str, Any],
     payload: dict[str, Any],
@@ -1930,39 +2156,42 @@ def _check_mdo_campaign(
     flattened: str,
     matrix: dict[str, Any],
     errors: list[str],
-) -> None:
-    """Verify the admitted MDO L0 campaign v1 end to end.
+    family: _MdoFamily,
+) -> dict[str, Any] | None:
+    """Verify one admitted MDO campaign end to end (shared by the v1 and v2 checkers).
 
-    Mirrors ``_check_wall_loss_campaign`` for the second ``numerical-campaign``
-    gate: byte-identical regeneration of evidence/TeX/sidecar from the sealed
-    bundle, artifact hashes on disk with no end-of-line tolerance, the results
-    dashboard bound at its own revision and equal to the checkout, metric == raw
-    macro value with type equality, policy metrics, results tree unchanged,
-    preregistration -> results -> dashboard -> HEAD chains, frozen files
-    unchanged, the macro-only section with no literal digit, the classification
-    macro, the registered non-claims, bindings exactly once, the revision macro,
-    the three ArtifactClaim tables and the claim-matrix cross-references.
+    Mirrors ``_check_wall_loss_campaign`` for the ``numerical-campaign`` gates of
+    the optimisation campaigns: byte-identical regeneration of evidence/TeX/sidecar
+    from the sealed bundle, artifact hashes on disk with no end-of-line tolerance,
+    the results dashboard bound at its own revision and equal to the checkout,
+    metric == raw macro value with type equality, policy metrics, results tree
+    unchanged, preregistration -> results -> dashboard -> HEAD chains, frozen files
+    unchanged, the macro-only section with no literal digit, the classification and
+    closure macros, the registered non-claims, bindings exactly once, the revision
+    macro, the ArtifactClaim tables and the claim-matrix cross-references.  Returns
+    the regenerated evidence document for campaign-specific follow-up checks.
     """
 
+    mod = family.module
     gate_id = str(gate.get("id"))
-    label = f"{gate_id} campaign"
-    if payload.get("experiment_id") != mdo_l0_v1.EXPERIMENT_ID:
+    label = f"{gate_id} {family.label_noun}"
+    if payload.get("experiment_id") != mod.EXPERIMENT_ID:
         errors.append(f"{label}: manifest experiment_id is not the registered campaign")
-        return
+        return None
     try:
-        evidence_bytes, tex_bytes, sidecar_bytes = mdo_l0_v1.render(repo)
+        evidence_bytes, tex_bytes, sidecar_bytes = mod.render(repo)
     except (OSError, ValueError, KeyError, TypeError, json.JSONDecodeError) as exc:
         errors.append(f"{label}: evidence regeneration from the sealed bundle failed: {exc}")
-        return
+        return None
     evidence = json.loads(evidence_bytes)
     evidence_meta = payload.get("paper_evidence_file")
-    if not isinstance(evidence_meta, dict) or evidence_meta.get("path") != mdo_l0_v1.EVIDENCE_PATH.as_posix():
+    if not isinstance(evidence_meta, dict) or evidence_meta.get("path") != mod.EVIDENCE_PATH.as_posix():
         errors.append(f"{label}: manifest paper_evidence_file.path differs from the registered evidence file")
-        return
+        return None
     for path, expected, name in (
-        (repo / mdo_l0_v1.EVIDENCE_PATH, evidence_bytes, "evidence file"),
-        (repo / mdo_l0_v1.OUTPUT_PATH, tex_bytes, "generated TeX"),
-        (repo / mdo_l0_v1.SIDECAR_PATH, sidecar_bytes, "provenance sidecar"),
+        (repo / mod.EVIDENCE_PATH, evidence_bytes, "evidence file"),
+        (repo / mod.OUTPUT_PATH, tex_bytes, "generated TeX"),
+        (repo / mod.SIDECAR_PATH, sidecar_bytes, "provenance sidecar"),
     ):
         if not path.is_file() or path.read_bytes() != expected:
             errors.append(f"{label}: committed {name} differs from regeneration")
@@ -1970,11 +2199,11 @@ def _check_mdo_campaign(
         errors.append(f"{label}: evidence document_type differs from the manifest")
     if evidence_meta.get("macro_count") != len(evidence.get("macros", [])):
         errors.append(f"{label}: evidence macro count differs from the manifest")
-    if evidence_meta.get("macro_prefix") != "Mdo":
+    if evidence_meta.get("macro_prefix") != family.prefix:
         errors.append(f"{label}: evidence macro prefix differs from the manifest")
 
     # Artifact hashes on disk (independent of the generator); no tolerance of any kind.
-    results_root = repo / mdo_l0_v1.RESULTS
+    results_root = repo / mod.RESULTS
     for relative, meta in evidence.get("artifacts", {}).items():
         artifact = results_root / relative
         if not artifact.is_file():
@@ -1997,7 +2226,7 @@ def _check_mdo_campaign(
     # Revisions.
     head = _run_git(repo, "rev-parse", "HEAD")
     revision = str(payload.get("evidence_revision"))
-    if revision != mdo_l0_v1.RESULTS_COMMIT_SHA or evidence.get("evidence_revision") != revision:
+    if revision != mod.RESULTS_COMMIT_SHA or evidence.get("evidence_revision") != revision:
         errors.append(f"{label}: evidence revision differs between manifest, evidence file and generator")
     try:
         committed_blob = _run_git(repo, "rev-parse", f"{revision}:{evidence['bundle']['manifest_path']}")
@@ -2010,8 +2239,8 @@ def _check_mdo_campaign(
     ):
         errors.append(f"{label}: results manifest Git blob differs from the evidence bindings")
     try:
-        results_tree = _run_git(repo, "rev-parse", f"{revision}:{mdo_l0_v1.RESULTS.as_posix()}")
-        head_tree = _run_git(repo, "rev-parse", f"HEAD:{mdo_l0_v1.RESULTS.as_posix()}")
+        results_tree = _run_git(repo, "rev-parse", f"{revision}:{mod.RESULTS.as_posix()}")
+        head_tree = _run_git(repo, "rev-parse", f"HEAD:{mod.RESULTS.as_posix()}")
     except RuntimeError as exc:
         errors.append(f"{label}: results tree cannot be resolved: {exc}")
     else:
@@ -2020,7 +2249,7 @@ def _check_mdo_campaign(
         if head_tree != results_tree:
             errors.append(f"{label}: results tree changed after the evidence revision")
     prereg = payload.get("preregistration_revision")
-    if not _resolves_to_commit(repo, prereg) or prereg != mdo_l0_v1.PREREGISTRATION_COMMIT_SHA:
+    if not _resolves_to_commit(repo, prereg) or prereg != mod.PREREGISTRATION_COMMIT_SHA:
         errors.append(f"{label}: preregistration_revision is not the registered resolvable commit")
     else:
         prereg = str(prereg)
@@ -2047,7 +2276,7 @@ def _check_mdo_campaign(
         errors.append(f"{label}: dashboard must bind a resolvable revision")
     else:
         dashboard_revision = str(dashboard["revision"])
-        if dashboard_revision != mdo_l0_v1.DASHBOARD_COMMIT_SHA or gate.get("dashboard_revision") != dashboard_revision:
+        if dashboard_revision != mod.DASHBOARD_COMMIT_SHA or gate.get("dashboard_revision") != dashboard_revision:
             errors.append(f"{label}: dashboard revision differs between gate, manifest and generator")
         if evidence["binding"].get("dashboard_commit") != dashboard_revision:
             errors.append(f"{label}: evidence dashboard commit differs from the manifest")
@@ -2058,8 +2287,8 @@ def _check_mdo_campaign(
             repo, dashboard_revision, files, {"dashboard-generator", "dashboard-html"}, errors, f"{label} dashboard"
         )
         expected_lf = {
-            "dashboard-generator": (mdo_l0_v1.DASHBOARD_GENERATOR.as_posix(), evidence["dashboard"].get("generator_sha256_lf")),
-            "dashboard-html": (mdo_l0_v1.DASHBOARD_HTML.as_posix(), evidence["dashboard"].get("html_sha256_lf")),
+            "dashboard-generator": (mod.DASHBOARD_GENERATOR.as_posix(), evidence["dashboard"].get("generator_sha256_lf")),
+            "dashboard-html": (mod.DASHBOARD_HTML.as_posix(), evidence["dashboard"].get("html_sha256_lf")),
         }
         for entry in files if isinstance(files, list) else []:
             if not isinstance(entry, dict):
@@ -2079,30 +2308,31 @@ def _check_mdo_campaign(
     metrics = payload.get("metrics")
     if not isinstance(metrics, dict):
         errors.append(f"{label}: metrics must be an object")
-        return
-    for metric, macro in MDO_METRIC_MACROS.items():
+        return None
+    for metric, macro in family.metric_macros.items():
         if macro not in raw:
             errors.append(f"{label}: evidence lacks macro {macro}")
         elif metric not in metrics:
             errors.append(f"{label}: manifest lacks metric {metric!r}")
         elif metrics[metric] != raw[macro] or type(metrics[metric]) is not type(raw[macro]):
             errors.append(f"{label}: metric {metric!r} differs from artifact value")
-    for metric, expected in MDO_POLICY_METRICS.items():
+    for metric, expected in family.policy_metrics.items():
         if metrics.get(metric) is not expected:
             errors.append(f"{label}: policy metric {metric!r} must be {expected!r}")
-    if raw.get("MdoAttemptCount") != 1 or raw.get("MdoFailedRuns") != 0 or raw.get("MdoGatesPassed") != raw.get("MdoGateCount"):
+    p = family.prefix
+    if raw.get(f"{p}AttemptCount") != 1 or raw.get(f"{p}FailedRuns") != 0 or raw.get(f"{p}GatesPassed") != raw.get(f"{p}GateCount"):
         errors.append(f"{label}: campaign must be a single accepted attempt with every binding gate passed")
     classification = payload.get("classification")
     expected = gate.get("metric_constraints", {}).get("classification", {}).get("equals")
-    if not (classification == mdo_l0_v1.CLASSIFICATION == expected == evidence.get("classification") == metrics.get("classification")):
+    if not (classification == mod.CLASSIFICATION == expected == evidence.get("classification") == metrics.get("classification")):
         errors.append(f"{label}: classification differs between gate, manifest, evidence and generator")
-    if tex_unescape(values.get("MdoClassification", "")) != classification:
-        errors.append(f"{label}: \\MdoClassification macro does not render the classification string")
+    if tex_unescape(values.get(f"{p}Classification", "")) != classification:
+        errors.append(f"{label}: \\{p}Classification macro does not render the classification string")
     closure = payload.get("closure")
-    if not (closure == mdo_l0_v1.CLOSURE_ID == evidence.get("closure") == metrics.get("closure_id")):
+    if not (closure == mod.CLOSURE_ID == evidence.get("closure") == metrics.get("closure_id")):
         errors.append(f"{label}: closure identifier differs between manifest, evidence and generator")
-    if tex_unescape(values.get("MdoClosureId", "")) != closure:
-        errors.append(f"{label}: \\MdoClosureId macro does not render the closure identifier")
+    if tex_unescape(values.get(f"{p}ClosureId", "")) != closure:
+        errors.append(f"{label}: \\{p}ClosureId macro does not render the closure identifier")
     if gate.get("opens_level") is not None or payload.get("evidence_level", {}).get("opens_gate") is not None:
         errors.append(f"{label}: an optimisation campaign cannot open a physics level")
     if payload.get("gate_kind") != CAMPAIGN_GATE_KIND or evidence.get("manuscript_integration", {}).get("gate_kind") != CAMPAIGN_GATE_KIND:
@@ -2110,14 +2340,14 @@ def _check_mdo_campaign(
 
     # Manuscript bindings.
     binding = gate.get("accepted_manuscript_binding")
-    if binding != mdo_l0_v1.SECTION_BINDING or manuscript.count(binding) != 1:
+    if binding != mod.SECTION_BINDING or manuscript.count(binding) != 1:
         errors.append(f"{label}: section binding must be the registered \\input and occur exactly once in manuscript.tex")
-    generated_binding = mdo_l0_v1.GENERATED_BINDING
+    generated_binding = mod.GENERATED_BINDING
     document_start = manuscript.find("\\begin{document}")
     if manuscript.count(generated_binding) != 1 or manuscript.find(generated_binding) > document_start:
         errors.append(f"{label}: generated macro file must be input exactly once in the preamble")
     macro_name = gate.get("manuscript_revision_macro")
-    if macro_name != "MdoEvidenceRevision":
+    if macro_name != family.revision_macro:
         errors.append(f"{label}: gate manuscript_revision_macro differs from the registration")
     else:
         definitions = [
@@ -2134,24 +2364,23 @@ def _check_mdo_campaign(
 
     # Section content.
     try:
-        section = (repo / mdo_l0_v1.SECTION_PATH).read_text(encoding="utf-8")
+        section = (repo / mod.SECTION_PATH).read_text(encoding="utf-8")
     except OSError as exc:
         errors.append(f"{label}: section unreadable: {exc}")
-        return
+        return None
     heading = gate.get("section_heading")
-    if heading != mdo_l0_v1.SECTION_HEADING or payload.get("section_heading") != heading or f"\\subsection{{{heading}}}" not in section:
+    if heading != mod.SECTION_HEADING or payload.get("section_heading") != heading or f"\\subsection{{{heading}}}" not in section:
         errors.append(f"{label}: section heading differs between gate, manifest, generator and section")
-    prefix = "Mdo"
-    defined = set(re.findall(rf"\\newcommand\{{\\({prefix}[A-Za-z]+)\}}", tex_bytes.decode("utf-8")))
-    used = set(re.findall(rf"\\({prefix}[A-Za-z]+)", section))
+    defined = set(re.findall(rf"\\newcommand\{{\\({p}[A-Za-z]+)\}}", tex_bytes.decode("utf-8")))
+    used = set(re.findall(rf"\\({p}[A-Za-z]+)", section))
     if not used:
         errors.append(f"{label}: section uses no evidence macro")
     for name in sorted(used - defined):
         errors.append(f"{label}: section uses undefined macro \\{name}")
-    for required in (*mdo_l0_v1.TABLE_MACROS, "MdoClassification", "MdoClosureId"):
+    for required in (*mod.TABLE_MACROS, *family.required_macros):
         if required not in used:
             errors.append(f"{label}: section must use \\{required}")
-    digits = section_literal_digits(section, prefix)
+    digits = section_literal_digits(section, p)
     if digits:
         errors.append(f"{label}: section types {len(digits)} literal digit(s); every number must be a macro")
     if "\\input{" in re.sub(r"(?m)(?<!\\)%.*$", "", section):
@@ -2159,8 +2388,8 @@ def _check_mdo_campaign(
     for finding in find_unregistered_claims(section):
         errors.append(f"{label}: {finding}")
     artifact_macros = extract_macros(tex_bytes.decode("utf-8"), "ArtifactClaim", 3)
-    if len(artifact_macros) != len(mdo_l0_v1.TABLE_MACROS) or any(
-        macro.arguments[:2] != (mdo_l0_v1.ARTIFACT_CLAIM_ID, mdo_l0_v1.ARTIFACT_ID) for macro in artifact_macros
+    if len(artifact_macros) != len(mod.TABLE_MACROS) or any(
+        macro.arguments[:2] != (mod.ARTIFACT_CLAIM_ID, mod.ARTIFACT_ID) for macro in artifact_macros
     ):
         errors.append(f"{label}: generated tables are not each wrapped in the registered ArtifactClaim")
 
@@ -2169,10 +2398,10 @@ def _check_mdo_campaign(
     if integration.get("status") != "admitted":
         errors.append(f"{label}: evidence file does not record admission")
     if integration.get("gate_id") != gate_id or not (
-        integration.get("manifest_id") == payload.get("manifest_id") == mdo_l0_v1.MANIFEST_ID
+        integration.get("manifest_id") == payload.get("manifest_id") == mod.MANIFEST_ID
     ):
         errors.append(f"{label}: evidence file names a different gate or manifest")
-    if integration.get("manifest_path") != gate.get("manifest_path") or integration.get("manifest_path") != mdo_l0_v1.MANIFEST_PATH.as_posix():
+    if integration.get("manifest_path") != gate.get("manifest_path") or integration.get("manifest_path") != mod.MANIFEST_PATH.as_posix():
         errors.append(f"{label}: evidence file names a different manifest path")
     if integration.get("section_binding") != binding or integration.get("section_heading") != heading:
         errors.append(f"{label}: evidence file names a different section binding or heading")
@@ -2209,12 +2438,163 @@ def _check_mdo_campaign(
         errors.append(f"{label}: no campaign claim registers non_claims")
     artifact_claim = integration.get("artifact_claim_id")
     record = records.get(artifact_claim, {})
-    if artifact_claim != mdo_l0_v1.ARTIFACT_CLAIM_ID or integration.get("artifact_id") not in record.get("authorized_artifact_ids", []):
+    if artifact_claim != mod.ARTIFACT_CLAIM_ID or integration.get("artifact_id") not in record.get("authorized_artifact_ids", []):
         errors.append(f"{label}: artifact claim {artifact_claim} does not authorize the generated tables")
     if manifest_id not in record.get("manifest_ids", []):
         errors.append(f"{label}: artifact claim {artifact_claim} is not bound to manifest {manifest_id}")
     if flattened.count(f"\\subsection{{{heading}}}") != 1:
         errors.append(f"{label}: section heading must appear exactly once in the flattened manuscript")
+    return evidence
+
+
+def _check_mdo_campaign(
+    repo: Path,
+    gate: dict[str, Any],
+    payload: dict[str, Any],
+    manuscript: str,
+    flattened: str,
+    matrix: dict[str, Any],
+    errors: list[str],
+) -> None:
+    """Verify the admitted MDO L0 campaign v1 (operating point only) end to end."""
+
+    _check_mdo_family(repo, gate, payload, manuscript, flattened, matrix, errors, MDO_V1_FAMILY)
+
+
+def _check_mdo_catalogue_campaign(
+    repo: Path,
+    gate: dict[str, Any],
+    payload: dict[str, Any],
+    manuscript: str,
+    flattened: str,
+    matrix: dict[str, Any],
+    errors: list[str],
+) -> None:
+    """Verify the admitted MDO L0 campaign v2 (screened catalogue x operating point).
+
+    Runs the shared campaign checks and then the bindings that only this
+    campaign carries: the prior campaign's bundle (read for the comparison table,
+    verified byte for byte and pinned to its admitted manifest and results
+    commit), the screening dataset behind the catalogue (bytes and Git blob at the
+    screening record commit), the prior campaign's post-hoc audit (blob at the
+    audit revision; its disclosure list equals the protocol's closed list) and the
+    sensitivity closure.
+    """
+
+    mod = mdo_l0_v2
+    label = f"{gate.get('id')} catalogue campaign"
+    evidence = _check_mdo_family(repo, gate, payload, manuscript, flattened, matrix, errors, MDO_V2_FAMILY)
+    if evidence is None:
+        return
+    values = {item["name"]: item["value"] for item in evidence.get("macros", [])}
+    metrics = payload.get("metrics", {})
+    sensitivity_closure = payload.get("sensitivity_closure")
+    if not (sensitivity_closure == mod.SENSITIVITY_CLOSURE_ID == evidence.get("sensitivity_closure") == metrics.get("sensitivity_closure_id")):
+        errors.append(f"{label}: sensitivity closure identifier differs between manifest, evidence and generator")
+    if tex_unescape(values.get("MdbSensitivityClosureId", "")) != sensitivity_closure:
+        errors.append(f"{label}: \\MdbSensitivityClosureId macro does not render the sensitivity closure identifier")
+    if tex_unescape(values.get("MdbScreeningClassification", "")) != mod.SCREENING_CLASSIFICATION:
+        errors.append(f"{label}: \\MdbScreeningClassification macro does not render the screening classification")
+    sources = {
+        str(source.get("role")): source
+        for source in payload.get("source_files", [])
+        if isinstance(source, dict) and isinstance(source.get("role"), str)
+    }
+
+    # The prior campaign's bundle: verified by the generator; pinned here to the admitted identity.
+    prior = payload.get("prior_campaign")
+    v1_bundle = evidence.get("v1_bundle", {})
+    if not isinstance(prior, dict):
+        errors.append(f"{label}: manifest lacks the prior_campaign binding")
+    else:
+        if prior.get("results_commit") != mod.V1_RESULTS_COMMIT_SHA or v1_bundle.get("results_commit") != mod.V1_RESULTS_COMMIT_SHA:
+            errors.append(f"{label}: prior campaign results commit differs from the admitted v1 revision")
+        if not (prior.get("manifest_sha256") == mod.V1_MANIFEST_SHA256 == v1_bundle.get("manifest_sha256")):
+            errors.append(f"{label}: prior campaign manifest SHA-256 differs from the admitted v1 identity")
+        if prior.get("experiment_id") != mdo_l0_v1.EXPERIMENT_ID or v1_bundle.get("experiment_id") != mdo_l0_v1.EXPERIMENT_ID:
+            errors.append(f"{label}: prior campaign experiment id differs from the admitted v1 campaign")
+        v1_manifest_rel = (mdo_l0_v1.RESULTS / "manifest.json").as_posix()
+        try:
+            v1_blob = _run_git(repo, "rev-parse", f"{mod.V1_RESULTS_COMMIT_SHA}:{v1_manifest_rel}")
+            v1_tree = _run_git(repo, "rev-parse", f"{mod.V1_RESULTS_COMMIT_SHA}:{mdo_l0_v1.RESULTS.as_posix()}")
+            v1_head_tree = _run_git(repo, "rev-parse", f"HEAD:{mdo_l0_v1.RESULTS.as_posix()}")
+        except RuntimeError as exc:
+            errors.append(f"{label}: prior campaign results cannot be resolved: {exc}")
+        else:
+            if prior.get("manifest_git_blob") != v1_blob or v1_bundle.get("manifest_git_blob") != v1_blob:
+                errors.append(f"{label}: prior campaign manifest Git blob differs from the v1 results commit")
+            if v1_tree != v1_head_tree:
+                errors.append(f"{label}: prior campaign results tree changed after its results revision")
+        prior_source = sources.get("prior-results-manifest")
+        if not isinstance(prior_source, dict) or prior_source.get("path") != v1_manifest_rel or prior_source.get("git_blob") != prior.get("manifest_git_blob"):
+            errors.append(f"{label}: prior-results-manifest source file differs from the prior_campaign binding")
+    v1_root = repo / mdo_l0_v1.RESULTS
+    for relative, meta in evidence.get("v1_artifacts", {}).items():
+        artifact = v1_root / relative
+        if not artifact.is_file():
+            errors.append(f"{label}: prior campaign artifact missing on disk: {relative}")
+            continue
+        raw = artifact.read_bytes()
+        if sha256_bytes(raw) != meta.get("sha256") or len(raw) != meta.get("bytes"):
+            errors.append(f"{label}: prior campaign artifact hash mismatch: {relative}")
+    v1_manifest_path = v1_root / "manifest.json"
+    if not v1_manifest_path.is_file() or sha256_bytes(v1_manifest_path.read_bytes()) != mod.V1_MANIFEST_SHA256:
+        errors.append(f"{label}: prior campaign results manifest on disk differs from the admitted identity")
+
+    # The screening dataset behind the catalogue.
+    catalogue = payload.get("catalogue_binding")
+    facts = evidence.get("catalogue_binding", {})
+    if not isinstance(catalogue, dict):
+        errors.append(f"{label}: manifest lacks the catalogue_binding")
+    else:
+        for key in ("dataset_path", "dataset_sha256", "dataset_git_blob", "screening_results_commit", "screening_classification", "screening_manifest_path", "screening_manifest_git_blob"):
+            if catalogue.get(key) != facts.get(key):
+                errors.append(f"{label}: catalogue_binding.{key} differs from the evidence file")
+        if catalogue.get("screening_results_commit") != mod.SCREENING_RESULTS_COMMIT_SHA or catalogue.get("screening_classification") != mod.SCREENING_CLASSIFICATION:
+            errors.append(f"{label}: catalogue binding names a different screening record or classification")
+        try:
+            at_record = _run_git(repo, "rev-parse", f"{mod.SCREENING_RESULTS_COMMIT_SHA}:{mod.SCREENING_DATASET_PATH.as_posix()}")
+            at_head = _run_git(repo, "rev-parse", f"HEAD:{mod.SCREENING_DATASET_PATH.as_posix()}")
+        except RuntimeError as exc:
+            errors.append(f"{label}: screening dataset cannot be resolved: {exc}")
+        else:
+            if not (at_record == at_head == catalogue.get("dataset_git_blob")):
+                errors.append(f"{label}: screening dataset blob differs between the record commit, HEAD and the manifest")
+        dataset_source = sources.get("screening-dataset")
+        if not isinstance(dataset_source, dict) or dataset_source.get("path") != mod.SCREENING_DATASET_PATH.as_posix() or dataset_source.get("git_blob") != catalogue.get("dataset_git_blob") or dataset_source.get("git_blob_sha256") != catalogue.get("dataset_sha256"):
+            errors.append(f"{label}: screening-dataset source file differs from the catalogue binding")
+        dataset_file = repo / mod.SCREENING_DATASET_PATH
+        if not dataset_file.is_file() or sha256_bytes(dataset_file.read_bytes()) != catalogue.get("dataset_sha256"):
+            errors.append(f"{label}: screening dataset on disk differs from the bound bytes")
+
+    # The prior campaign's post-hoc audit and the disclosures the protocol closes.
+    audit = payload.get("posthoc_audit")
+    audit_facts = evidence.get("audit", {})
+    if not isinstance(audit, dict):
+        errors.append(f"{label}: manifest lacks the posthoc_audit binding")
+    else:
+        if audit.get("path") != mod.V1_AUDIT_PATH.as_posix() or audit.get("revision") != mod.V1_AUDIT_COMMIT_SHA:
+            errors.append(f"{label}: posthoc_audit binding names a different audit path or revision")
+        if audit.get("disclosures_closed") != list(mod.AUDIT_DISCLOSURES) or audit_facts.get("disclosures") != list(mod.AUDIT_DISCLOSURES):
+            errors.append(f"{label}: closed audit disclosures differ between manifest, evidence and generator")
+        if metrics.get("v1_audit_disclosures_closed") != len(mod.AUDIT_DISCLOSURES):
+            errors.append(f"{label}: v1_audit_disclosures_closed metric differs from the disclosure list")
+        try:
+            audit_blob = _run_git(repo, "rev-parse", f"{mod.V1_AUDIT_COMMIT_SHA}:{mod.V1_AUDIT_PATH.as_posix()}")
+            audit_head = _run_git(repo, "rev-parse", f"HEAD:{mod.V1_AUDIT_PATH.as_posix()}")
+        except RuntimeError as exc:
+            errors.append(f"{label}: post-hoc audit cannot be resolved: {exc}")
+        else:
+            if not (audit_blob == audit_head == audit.get("git_blob") == audit_facts.get("git_blob")):
+                errors.append(f"{label}: post-hoc audit blob differs between the audit revision, HEAD and the manifest")
+            if not _is_ancestor(repo, mod.V1_AUDIT_COMMIT_SHA, mod.PREREGISTRATION_COMMIT_SHA):
+                errors.append(f"{label}: the post-hoc audit does not precede the preregistration")
+        audit_source = sources.get("prior-posthoc-audit")
+        if not isinstance(audit_source, dict) or audit_source.get("path") != mod.V1_AUDIT_PATH.as_posix() or audit_source.get("git_blob") != audit.get("git_blob"):
+            errors.append(f"{label}: prior-posthoc-audit source file differs from the posthoc_audit binding")
+    binding = evidence.get("binding", {})
+    if binding.get("result_commit_files_outside_results") != [] or metrics.get("result_commit_files_outside_results") != 0:
+        errors.append(f"{label}: the results commit touches files outside the results directory")
 
 
 def _check_four_cell_closure(
@@ -2844,6 +3224,7 @@ CAMPAIGN_CHECKERS = {
     "paper-l1a-screening-manifest": _check_topology_screening,
     "paper-orbit-screening-manifest": _check_geometry_screening,
     "paper-mdo-campaign-manifest": _check_mdo_campaign,
+    "paper-mdo-catalogue-campaign-manifest": _check_mdo_catalogue_campaign,
     "paper-analytic-consistency-manifest": _check_four_cell_closure,
 }
 
@@ -3129,6 +3510,15 @@ def _render_mdo_tables(repo: Path, item: dict[str, Any]) -> tuple[bytes, bytes]:
     return output, sidecar
 
 
+def _render_mdo_v2_tables(repo: Path, item: dict[str, Any]) -> tuple[bytes, bytes]:
+    if item.get("id") != mdo_l0_v2.ARTIFACT_ID or item.get("required_gate") != mdo_l0_v2.GATE_ID:
+        raise ValueError(f"{item.get('id')}: contract item or gate differs from the generator registration")
+    if item.get("evidence_file") != mdo_l0_v2.EVIDENCE_PATH.as_posix():
+        raise ValueError(f"{item.get('id')}: contract evidence file differs from the generator registration")
+    _evidence, output, sidecar = mdo_l0_v2.render(repo)
+    return output, sidecar
+
+
 def _render_four_cell_closure_tables(repo: Path, item: dict[str, Any]) -> tuple[bytes, bytes]:
     if item.get("id") != four_cell_closure.ARTIFACT_ID or item.get("required_gate") != four_cell_closure.GATE_ID:
         raise ValueError(f"{item.get('id')}: contract item or gate differs from the generator registration")
@@ -3153,6 +3543,7 @@ ARTIFACT_RENDERERS = {
     "generate_wall_loss_v4_evidence": _render_wall_loss_tables,
     "generate_topology_screening_evidence": _render_topology_screening_tables,
     "generate_mdo_l0_v1_evidence": _render_mdo_tables,
+    "generate_mdo_l0_v2_evidence": _render_mdo_v2_tables,
     "generate_four_cell_closure_evidence": _render_four_cell_closure_tables,
     "generate_wall_loss_geometry_screening_v1_evidence": _render_geometry_screening_tables,
 }
@@ -3288,6 +3679,11 @@ def _check_submission_and_build_config(repo: Path, manuscript: str, errors: list
         mdo_l0_v1.OUTPUT_PATH.as_posix(),
         mdo_l0_v1.SIDECAR_PATH.as_posix(),
         mdo_l0_v1.SECTION_PATH.as_posix(),
+        mdo_l0_v2.EVIDENCE_PATH.as_posix(),
+        mdo_l0_v2.MANIFEST_PATH.as_posix(),
+        mdo_l0_v2.OUTPUT_PATH.as_posix(),
+        mdo_l0_v2.SIDECAR_PATH.as_posix(),
+        mdo_l0_v2.SECTION_PATH.as_posix(),
         four_cell_closure.EVIDENCE_PATH.as_posix(),
         four_cell_closure.MANIFEST_PATH.as_posix(),
         four_cell_closure.OUTPUT_PATH.as_posix(),

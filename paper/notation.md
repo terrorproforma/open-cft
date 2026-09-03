@@ -41,12 +41,40 @@
   `collisionless_prescribed_field_test_particle_wall_loss_not_pic`, and
   `GATE-MDO-L0-V1`, classified
   `l0_model_robust_multiobjective_optimisation_under_declared_input_uncertainty_not_thruster_performance`
-  (optimiser evidence on the L0 model under the declared closure CL-1).
+  (optimiser evidence on the L0 model under the declared closure CL-1), and
+  `GATE-MDO-L0-V2`, classified
+  `l0_model_optimisation_over_screened_design_catalogue_with_test_particle_wall_loss_closure_not_thruster_performance`
+  (optimiser evidence on the L0 model over the catalogue of 96 screened sweep
+  designs under CL-1 with per-design screening posteriors).
 - **Closure CL-1** — the declared multiplicative cusp-survival closure of the
-  optimisation campaign: \(S(\mathbf p)=\prod_{k=1}^{4}(1-p_k)\) scales the
+  optimisation campaigns: \(S(\mathbf p)=\prod_{k=1}^{4}(1-p_k)\) scales the
   produced ionised fraction and leaves the anode current unchanged. It is a
   declared assumption, neither derived nor validated; every number of the
-  campaign is conditional on it and on the declared priors.
+  campaigns is conditional on it and on the declared priors (v1: common uniform
+  priors; v2: each design's Jeffreys Beta posteriors of its per-cell screening
+  counts).
+- **Closure identification (catalogue campaign)** — CL-1 in the catalogue
+  campaign identifies the collisionless test-particle wall-hit probability of a
+  launch cell on a linear-vacuum screening field with the per-cusp survival
+  factor \(1-p_k\). The v1 scenario analysis showed this quantity is not the
+  Kornfeld per-cusp probability of a sustained discharge, so the identification
+  is declared, not derived; a design that wins under it wins under this closure
+  only.
+- **Closure CL-2** — the declared sensitivity closure of the catalogue
+  campaign: \(S=1-p_{\mathrm{pooled}}\) with the pooled wall-hit probability
+  over all 512 launches of a design. Evaluated on the recorded designs only;
+  its front shares no design with the CL-1 front (Jaccard 0.0), which is why
+  the paper calls the design ranking closure-dependent.
+- **Catalogue** — the 96 accepted sweep-v2 designs of the wall-loss geometry
+  screening, each carried with its sealed geometry and accepted-2N per-cell
+  counts, entering the catalogue campaign as a categorical index; no geometry
+  value is optimised and nothing is interpolated between designs (both
+  surrogates fitted to the dataset were rejected).
+- **Saturated cell** — a launch cell whose 128 launches all hit the wall in the
+  screening; 73 of the 96 catalogue designs have one, and under CL-1 the
+  multiplicative cascade then leaves a nominal survival of the order of the
+  Jeffreys pseudo-count, which is why 77 of 96 designs have negligible own
+  dense-reference hypervolume.
 - **Robust objective (CVaR)** — for each L0 objective the mean of the worst
   16 of 64 frozen Halton sample values of the uncertain inputs; the robust
   constraint is the worst sampled beam-current margin, which enforces the
@@ -167,3 +195,7 @@
 - The collisionless wall-hit probability of the wall-loss campaign is not the
   per-cusp loss probability of the Kornfeld cusp cascade; inserting the former
   as the latter gives no beam under CL-1.
+- The robust front of the catalogue campaign (designs 49, 50, 94 under CL-1) is
+  a closure-dependent optimiser estimand at screening tier; it is not a design
+  recommendation, not a demonstrated geometry-to-performance map, and the CL-2
+  front shares no design with it.

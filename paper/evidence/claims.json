@@ -131,6 +131,20 @@
       "preregistration_revision": "c86bfca37fdf285f4f2a53a01c2f32f14516d868",
       "dashboard_revision": "ab7c28977963822b2ad6eac451d2bafef5185e6c",
       "evidence_file": "paper/evidence/wall-loss-geometry-screening-v1.json"
+    },
+    "MDO-L0-V2-20260903-1440-V1": {
+      "path": "paper/evidence/manifests/mdo-l0-v2.json",
+      "document_type": "paper-mdo-catalogue-campaign-manifest",
+      "schema_version": "1.0",
+      "gate_id": "GATE-MDO-L0-V2",
+      "gate_kind": "numerical-campaign",
+      "evidence_revision": "a003f766c330d4e5648844ba49cdf1c3a3ce3bc1",
+      "preregistration_revision": "99914dc2fdbe88d18ab11ca86acad634129b4e08",
+      "dashboard_revision": "0ea33a7e25275e70271bc9deb18a9361b80b94e5",
+      "prior_campaign_manifest_id": "MDO-L0-V1-20260903-864-V1",
+      "screening_manifest_id": "WALL-LOSS-GEOMETRY-SCREENING-V1-20260903-96-V1",
+      "posthoc_audit": "modern/experiments/mdo_l0_campaign_v1/POSTHOC_AUDIT.md",
+      "evidence_file": "paper/evidence/mdo-l0-v2.json"
     }
   },
   "claims": [
@@ -821,7 +835,7 @@
       "id": "CLM-035",
       "status": "verified",
       "claim_class": "interpretation",
-      "authorized_tex": "Four readings follow from the admitted optimisation campaign and are bounded to its model and closure. First, constrained qLogNEHVI reached the \\MdoDenseCount-design dense-reference robust hypervolume with \\MdoEvaluationsPerRun{} evaluations per run (\\MdoAttainedBoMin{} to \\MdoAttainedBoMax{} of the reference), a statement about the optimiser on this model at this budget and these seeds, not about any thruster. Second, the robust front is materially more conservative than the nominal one: the nominal front reaches an efficiency of \\MdoNominalEffMaxTwo{} and a specific impulse of \\MdoNominalIspMax{}~s against \\MdoRobustEffMax{} and \\MdoRobustIspMax{}~s on the robust front, and the two share \\MdoSharedDesigns{} designs, so a design chosen at the prior midpoints is not the design chosen under the worst sampled cusp losses. Third, the collisionless wall-hit probability of the wall-loss campaign and the per-cusp loss probability of the cusp cascade are different quantities: inserting the former as the latter gives a survival of \\MdoScenarioJeffreysSurvival{} and no beam, whereas the legacy chain conflated them through the mirror formula. Fourth, the link from geometry to performance is open: no geometry-to-model map survives the audit, the \\MdoExcludedVariableCount{} legacy radii were therefore excluded, and the corrected four-cell solver closed only at zero cusp probability in the recorded probe.",
+      "authorized_tex": "Four readings follow from the admitted optimisation campaign and are bounded to its model and closure. First, constrained qLogNEHVI reached the \\MdoDenseCount-design dense-reference robust hypervolume with \\MdoEvaluationsPerRun{} evaluations per run (\\MdoAttainedBoMin{} to \\MdoAttainedBoMax{} of the reference), a statement about the optimiser on this model at this budget and these seeds, not about any thruster. Second, the robust front is materially more conservative than the nominal one: the nominal front reaches an efficiency of \\MdoNominalEffMaxTwo{} and a specific impulse of \\MdoNominalIspMax{}~s against \\MdoRobustEffMax{} and \\MdoRobustIspMax{}~s on the robust front, and the two share \\MdoSharedDesigns{} designs, so a design chosen at the prior midpoints is not the design chosen under the worst sampled cusp losses. Third, the collisionless wall-hit probability of the wall-loss campaign and the per-cusp loss probability of the cusp cascade are different quantities: inserting the former as the latter gives a survival of \\MdoScenarioJeffreysSurvival{} and no beam, whereas the legacy chain conflated them through the mirror formula. Fourth, at that campaign the link from geometry to performance was open: no geometry-to-model map survived the audit, the \\MdoExcludedVariableCount{} legacy radii were therefore excluded, and the corrected four-cell solver closed only at zero cusp probability in the recorded probe; the catalogue campaign of Section~\\ref{sec:mdo-l0-v2} is the recorded successor that supplies a design-dependent loss input under a declared closure.",
       "allowed_locations": [
         "Discussion"
       ],
@@ -1327,7 +1341,7 @@
       "id": "CLM-052",
       "status": "verified",
       "claim_class": "interpretation",
-      "authorized_tex": "The mirror-picture statement of Section~\\ref{sec:wall-loss-v4} is scoped to the field it was made in: the collisionless campaign on the qualified divergent-exit field recorded \\WlfPooledReflected{} reflections, whereas the screening of Section~\\ref{sec:wall-loss-geometry-screening} recorded reflections in every one of its \\WlgDesignsWithReflections{} linear-vacuum sweep designs (\\WlgReflectionShareAll{} of \\WlgOrbitCount{} orbits) and saturated only \\WlgCellsSaturatedOne{} of \\WlgDesignCells{} design-cells, so the absence of reflections and the all-or-nothing per-cell pattern are properties of that design and field within the collisionless model, not of the model or of the design space; whether a reflection means confinement in any of these fields is not decided by collisionless test particles. Read as interpretation, the screening supplies, at screening tier and under its label, the geometry-to-wall-loss map that the optimisation campaign of Section~\\ref{sec:mdo-l0} lacked; a design-dependent optimisation that consumes it is future work, none of its outputs is admitted here, and the geometry-to-performance link stays open until a map from these fields to the operating-point model is admitted.",
+      "authorized_tex": "The mirror-picture statement of Section~\\ref{sec:wall-loss-v4} is scoped to the field it was made in: the collisionless campaign on the qualified divergent-exit field recorded \\WlfPooledReflected{} reflections, whereas the screening of Section~\\ref{sec:wall-loss-geometry-screening} recorded reflections in every one of its \\WlgDesignsWithReflections{} linear-vacuum sweep designs (\\WlgReflectionShareAll{} of \\WlgOrbitCount{} orbits) and saturated only \\WlgCellsSaturatedOne{} of \\WlgDesignCells{} design-cells, so the absence of reflections and the all-or-nothing per-cell pattern are properties of that design and field within the collisionless model, not of the model or of the design space; whether a reflection means confinement in any of these fields is not decided by collisionless test particles. Read as interpretation, the screening supplies, at screening tier and under its label, the geometry-to-wall-loss map that the optimisation campaign of Section~\\ref{sec:mdo-l0} lacked; the design-dependent optimisation that consumes it is admitted in Section~\\ref{sec:mdo-l0-v2} under a declared closure, and the geometry-to-performance link is realised there only as a closure-dependent ranking at screening tier, not as a map from these fields to the operating-point model.",
       "allowed_locations": [
         "Discussion"
       ],
@@ -1351,7 +1365,248 @@
         "that reflection means confinement or any physical electron population statement",
         "mirror behaviour in collisional or self-consistent regimes",
         "existence or stability of a multi-cell wall-cusp topology",
-        "any outcome of a future design-dependent optimisation",
+        "any outcome of the catalogue optimisation beyond its own registered claims",
+        "opening of GATE-L1, GATE-L2 or GATE-L3"
+      ]
+    },
+    {
+      "id": "CLM-053",
+      "status": "verified",
+      "claim_class": "campaign-summary",
+      "authorized_tex": "A preregistered one-shot optimisation campaign of the L0 model over the \\MdbCatalogueSize{} screened sweep designs, with each design's per-cell test-particle wall-hit counts entering through a declared closure, is admitted as optimiser evidence: constrained qLogNEHVI exceeded the random baseline in \\MdbBoBeatsRandomWins{} of \\MdbBoBeatsRandomSeeds{} seeds and NSGA-III in \\MdbBoBeatsNsgaWins{} of \\MdbBoBeatsNsgaSeeds, the pooled robust front lies on the \\MdbRobustFrontDesignCount{} lowest wall-loss designs of the catalogue, a pooled-probability closure shares \\MdbClTwoShared{} designs with that front, and no thruster-performance or design claim follows.",
+      "allowed_locations": [
+        "Abstract"
+      ],
+      "manifest_ids": [
+        "MDO-L0-V2-20260903-1440-V1"
+      ],
+      "classification": "l0_model_optimisation_over_screened_design_catalogue_with_test_particle_wall_loss_closure_not_thruster_performance",
+      "closure": "CL-1-multiplicative-cusp-survival-per-cell-test-particle-wall-loss",
+      "permitted_scope": [
+        "existence and preregistered one-shot status of the admitted catalogue campaign",
+        "macro-bound catalogue size, paired-comparison counts, robust-front design count and the closure-overlap count",
+        "the identity of the robust-front designs with the lowest wall-loss designs of the catalogue as detailed by CLM-056",
+        "the no-thruster-performance and no-design-claim boundary"
+      ],
+      "prohibited_inferences": [
+        "thruster, plasma or physical-device performance",
+        "optimiser superiority beyond the recorded budget, seeds and model",
+        "a design recommendation, calibration or validation",
+        "a derived or validated geometry-to-performance map"
+      ]
+    },
+    {
+      "id": "CLM-054",
+      "status": "verified",
+      "claim_class": "quantitative-campaign-result",
+      "authorized_tex": "The single execution terminated in state \\texttt{\\MdbTerminalState} with \\MdbGatesPassed{} of \\MdbGateCount{} binding integrity gates passed, \\MdbRuns{} runs of \\MdbEvaluationsPerRun{} evaluations each (\\MdbTotalEvaluations{} design evaluations, \\MdbInfeasibleEvaluations{} of them constraint-violating: \\MdbInfeasibleBoTotal{} in the Bayesian runs, \\MdbInfeasibleNsgaTotal{} in the NSGA-III runs and \\MdbInfeasibleLhsTotal{} in the baseline; \\MdbFailedRuns{} failed runs) and every evaluation replayed bit-exactly (\\MdbReplayed{} replayed, \\MdbReplayMismatches{} mismatches). Within the model classified as \\texttt{\\MdbClassification}, the final robust hypervolume of constrained qLogNEHVI was \\MdbHvBoA, \\MdbHvBoB{} and \\MdbHvBoC{} for seeds \\MdbSeeds{} (mean \\MdbHvBoMean, sample standard deviation \\MdbHvBoStd), against \\MdbHvNsgaA, \\MdbHvNsgaB{} and \\MdbHvNsgaC{} for NSGA-III (mean \\MdbHvNsgaMean, standard deviation \\MdbHvNsgaStd) and \\MdbHvLhsA, \\MdbHvLhsB{} and \\MdbHvLhsC{} for the Latin-hypercube baseline (mean \\MdbHvLhsMean, standard deviation \\MdbHvLhsStd). Paired by seed, qLogNEHVI exceeded the baseline in \\MdbBoBeatsRandomWins{} of \\MdbBoBeatsRandomSeeds{} seeds and NSGA-III in \\MdbBoBeatsNsgaWins{} of \\MdbBoBeatsNsgaSeeds{} seeds against a predeclared requirement of \\MdbBoBeatsRandomRequired; these are counts over \\MdbSeedCount{} seeds, not significance statements. Against the \\MdbDenseCount-evaluation dense reference (robust hypervolume \\MdbDenseRobustHv{} on \\MdbDenseRobustFront{} points drawn from catalogue designs \\MdbDenseRobustFrontDesigns), qLogNEHVI attained \\MdbAttainedBoA, \\MdbAttainedBoB{} and \\MdbAttainedBoC{} of the reference from a \\MdbDenseToBudgetRatio-fold smaller evaluation count, NSGA-III \\MdbAttainedNsgaMin{} to \\MdbAttainedNsgaMax{} and the baseline \\MdbAttainedLhsMin{} to \\MdbAttainedLhsMax. The spread of the Bayesian seeds is an exploration effect of the categorical design index: seed \\MdbBoAFirstSeed, whose shared initial design did not contain catalogue design \\MdbBoAMissedDesign{} (in that seed's initial design: \\MdbBoAMissedInInitial; in the initial designs of the other two seeds: \\MdbBoBMissedInInitial{} and \\MdbBoCMissedInInitial), never evaluated that design (\\MdbBoAMissedEvaluations{} evaluations), spent \\MdbBoAStallEvaluations{} of its \\MdbEvaluationsPerRun{} evaluations on design \\MdbBoAStallDesign{} over \\MdbDistinctBoA{} distinct designs visited, and finished with a Pareto set of \\MdbParetoBoA{} points that lies entirely on that design, whereas seeds \\MdbBoOtherSeeds{} finished on catalogue designs \\MdbParetoDesignsBoB{} and \\MdbParetoDesignsBoC.",
+      "allowed_locations": [
+        "Catalogue optimisation over the screened sweep designs under the declared test-particle wall-loss closure"
+      ],
+      "manifest_ids": [
+        "MDO-L0-V2-20260903-1440-V1"
+      ],
+      "gate_id": "GATE-MDO-L0-V2",
+      "classification": "l0_model_optimisation_over_screened_design_catalogue_with_test_particle_wall_loss_closure_not_thruster_performance",
+      "closure": "CL-1-multiplicative-cusp-survival-per-cell-test-particle-wall-loss",
+      "evidence_level": "numerical-campaign",
+      "evidence_level_justification": "The campaign is one accepted, preregistered, single-execution numerical campaign about a declared component model: the accepted L0 conservation model evaluated over the discrete catalogue of the 96 screened sweep designs under the declared multiplicative cusp-survival closure CL-1, whose per-cusp factors are the per-cell collisionless test-particle wall-hit posteriors of the admitted screening dataset. That is the object the numerical-campaign gate kind was defined for (one accepted campaign on a declared component model), so the kind is reused through GATE-MDO-L0-V2 with the same mechanism as the two earlier campaigns: a typed committed manifest, artifacts bound by Git blob and SHA-256 at a resolvable revision, exact registered claim text, generated artifacts with provenance sidecars, and a campaign-specific checker. Its estimands are properties of the optimisers on the mixed categorical-continuous design space (hypervolume per budget, paired comparisons, seed variance, Pareto sizes, which catalogue designs the optimisers select) and of the declared evaluation chain (robust-versus-nominal fronts, the campaign closure versus the pooled-probability sensitivity closure, the uncertainty-width re-evaluations); it is optimiser evidence, not performance evidence. Geometry enters only as the categorical index of a screened design whose sealed geometry and counts come from the screening dataset on linear-vacuum fields, and the geometry dependence is the declared identification of a screening wall-hit probability with a per-cusp survival factor, not a validated geometry-to-performance map. It is not the L1 field-resolved reduction (no field solve, no L0 mapping), not L2 (no plasma coupling; the corrected four-cell solver has no admissible root for interior cusp probabilities and is not used) and not L3, so it opens none of GATE-L1, GATE-L2 or GATE-L3, and it does not populate the F3-verified benchmark field of the committed campaign policy.",
+      "bindings": {
+        "evidence_file": "paper/evidence/mdo-l0-v2.json",
+        "evidence_macros": "every \\Mdb... macro in the authorized text is defined in paper/generated/mdo-l0-v2.tex and bound in the evidence file to an artifact path, JSON pointer, formatter and SHA-256 of this campaign's bundle or, where marked, of the prior campaign's bundle, or to a stated derivation over such inputs",
+        "results_commit": "a003f766c330d4e5648844ba49cdf1c3a3ce3bc1",
+        "preregistration_commit": "99914dc2fdbe88d18ab11ca86acad634129b4e08",
+        "dashboard_commit": "0ea33a7e25275e70271bc9deb18a9361b80b94e5",
+        "prior_campaign_results_commit": "c553124b7393890d8ee9c6fc022e536c8a1fd35e",
+        "screening_results_commit": "ab7c28977963822b2ad6eac451d2bafef5185e6c",
+        "posthoc_audit_commit": "e9f9af165a932a9f13438b297950efa951aff5c3"
+      },
+      "non_claims": [
+        "makes no thruster-performance, plasma or physical-device claim",
+        "none of its fronts is a design recommendation, calibration or validation",
+        "a design that wins here wins under this closure only",
+        "no statement that any optimiser is better beyond the recorded budget",
+        "nothing is interpolated between them",
+        "opens none of the field-resolved, coupled or experimental gates"
+      ],
+      "permitted_scope": [
+        "terminal state, binding-gate, replay, run, budget and infeasible counts of the single execution, including the per-optimiser split of the infeasible evaluations",
+        "final robust hypervolume per optimiser and seed with mean and sample standard deviation",
+        "paired optimiser comparisons exactly as predeclared and recorded (reported, not binding; counts, not significance)",
+        "fraction of the dense-reference robust hypervolume attained at the recorded budget",
+        "the first Bayesian seed's stall on one catalogue design, the design it never evaluated and its absence from that seed's shared initial design, as recorded"
+      ],
+      "prohibited_inferences": [
+        "thruster, plasma or physical-device performance",
+        "optimiser superiority beyond the recorded budget, seeds and model",
+        "any design recommendation, calibration or validation",
+        "a derived or validated cusp-survival closure or geometry-to-performance map",
+        "hardware or experimental validation",
+        "generalization to other models, closures, posteriors, budgets or seeds"
+      ]
+    },
+    {
+      "id": "CLM-055",
+      "status": "verified",
+      "claim_class": "quantitative-generated-table",
+      "authorized_artifact_ids": [
+        "TAB-MDO-L0-V2"
+      ],
+      "allowed_locations": [
+        "Catalogue optimisation over the screened sweep designs under the declared test-particle wall-loss closure"
+      ],
+      "manifest_ids": [
+        "MDO-L0-V2-20260903-1440-V1",
+        "MDO-L0-V1-20260903-864-V1"
+      ],
+      "permitted_scope": [
+        "final hypervolume, attained fraction, Pareto-set size and designs, distinct designs, infeasible count and wall time per run and per optimiser as sealed in metrics.json",
+        "the catalogue designs on the dense-reference robust front with their sealed geometry, screening probabilities, Wilson intervals, nominal survival, pooled-front membership and own dense hypervolume as sealed in catalogue.json, pooled-fronts.json and dense-reference.json",
+        "the sensitivity-closure and uncertainty-width re-evaluations of the pooled designs as sealed in sensitivity.json",
+        "the prior campaign's counts, hypervolumes and survival range as sealed in its own bundle, set beside this campaign's in the shared reference frame"
+      ],
+      "prohibited_inferences": [
+        "thruster or plasma performance",
+        "design recommendation",
+        "optimiser superiority beyond the recorded budget, seeds and model",
+        "a plasma cusp-loss probability from any screening wall-hit probability in the tables"
+      ]
+    },
+    {
+      "id": "CLM-056",
+      "status": "verified",
+      "claim_class": "quantitative-campaign-result",
+      "authorized_tex": "Pooled over the \\MdbUniqueDesigns{} unique designs evaluated by all runs (\\MdbDistinctCatalogueDesigns{} of the \\MdbCatalogueSize{} catalogue designs were evaluated at least once), the robust front holds \\MdbRobustFront{} points on \\MdbRobustFrontDesignCount{} catalogue designs, \\MdbRobustFrontDesigns{} (\\MdbDesignFortyNineMembers, \\MdbDesignFiftyMembers{} and \\MdbDesignNinetyFourMembers{} members), and the nominal front, a re-evaluation of the same designs at the posterior means under the nominal constraint, holds \\MdbNominalFront{} points on catalogue designs \\MdbNominalFrontDesigns; the two fronts share \\MdbSharedDesigns{} points (Jaccard index \\MdbJaccard). The three robust-front designs are exactly the three lowest pooled wall-hit probabilities of the screening catalogue (ascending ranks \\MdbDesignFortyNineRank, \\MdbDesignNinetyFourRank{} and \\MdbDesignFiftyRank{} of \\MdbCatalogueSize; lowest ranks: \\MdbRobustFrontLowestRanks): design \\MdbDesignFortyNineIndex{} with pooled wall-hit probability \\MdbDesignFortyNinePooledP{} [\\MdbDesignFortyNinePooledLo, \\MdbDesignFortyNinePooledHi], chamber length \\MdbDesignFortyNineLengthMm{}~mm, wall radius \\MdbDesignFortyNineRadiusMm{}~mm and stage pitch \\MdbDesignFortyNinePitchMm{}~mm; design \\MdbDesignNinetyFourIndex{} with \\MdbDesignNinetyFourPooledP{} [\\MdbDesignNinetyFourPooledLo, \\MdbDesignNinetyFourPooledHi], \\MdbDesignNinetyFourLengthMm{}~mm and \\MdbDesignNinetyFourRadiusMm{}~mm; and design \\MdbDesignFiftyIndex{} with \\MdbDesignFiftyPooledP{} [\\MdbDesignFiftyPooledLo, \\MdbDesignFiftyPooledHi], \\MdbDesignFiftyLengthMm{}~mm and \\MdbDesignFiftyRadiusMm{}~mm; all three have \\MdbRobustFrontStages{} magnet stages and a divergent exit (every robust-front design five-stage: \\MdbRobustFrontDesignsAllFiveStage; divergent: \\MdbRobustFrontDesignsAllDivergent). Under the campaign closure most of the catalogue cannot reach a front at all: \\MdbDenseNegligibleDesigns{} of the \\MdbCatalogueSize{} designs have an own dense-reference robust hypervolume below \\MdbDenseNegligibleThreshold, and \\MdbDenseNegligibleSaturated{} of them are the \\MdbSaturatedDesigns{} designs with a launch cell that lost all \\MdbCellTrials{} of its launches in the screening, whose nominal survival under the multiplicative cascade is therefore of the order of the Jeffreys pseudo-count (catalogue nominal survival from \\MdbNominalSurvivalMin{} to \\MdbNominalSurvivalMax, median \\MdbNominalSurvivalMedian); the remaining \\MdbDenseNegligibleUnsaturated{} have no saturated cell. The predeclared per-design separability held (largest within-design relative spread of the robust-to-nominal objective ratio \\MdbSeparabilitySpreadMax{} against a tolerance of \\MdbSeparabilityTolerance; passed: \\MdbSeparabilityPassed{} over \\MdbSeparabilityDesigns{} designs): within a design its posterior rescales thrust, specific impulse and efficiency uniformly, so the catalogue enters the fronts through a per-design survival multiplier and through the feasible set.",
+      "allowed_locations": [
+        "Catalogue optimisation over the screened sweep designs under the declared test-particle wall-loss closure"
+      ],
+      "manifest_ids": [
+        "MDO-L0-V2-20260903-1440-V1",
+        "WALL-LOSS-GEOMETRY-SCREENING-V1-20260903-96-V1"
+      ],
+      "classification": "l0_model_optimisation_over_screened_design_catalogue_with_test_particle_wall_loss_closure_not_thruster_performance",
+      "closure": "CL-1-multiplicative-cusp-survival-per-cell-test-particle-wall-loss",
+      "permitted_scope": [
+        "pooled robust and nominal front sizes, catalogue designs, membership counts, shared points and Jaccard index",
+        "the identity of the robust-front designs with the three lowest pooled wall-hit probabilities of the screening catalogue, with their sealed geometry, probabilities and intervals",
+        "the count of catalogue designs with negligible own dense hypervolume and its decomposition into saturated-cell and unsaturated designs, with the catalogue's nominal survival range",
+        "the recorded per-design separability check and the predeclared expectation it tested"
+      ],
+      "prohibited_inferences": [
+        "thruster, plasma or physical-device performance",
+        "a design recommendation or design rule from the robust-front designs or their geometry",
+        "validity of the closure or of the identification of the screening wall-hit probability with a per-cusp survival factor",
+        "that a saturated launch cell loses every electron of a sustained discharge"
+      ]
+    },
+    {
+      "id": "CLM-057",
+      "status": "verified",
+      "claim_class": "quantitative-sensitivity-result",
+      "authorized_tex": "Re-evaluating the same \\MdbUniqueDesigns{} designs under the sensitivity closure \\texttt{\\MdbSensitivityClosureId} (\\MdbSensitivityClosureStatus), which uses the pooled wall-hit probability over all \\MdbPooledTrials{} launches in place of the per-cell cascade, gives a robust front of \\MdbClTwoFront{} points on \\MdbClTwoFrontDesignCount{} catalogue designs (pooled wall-hit probabilities from \\MdbClTwoFrontPooledPMin{} to \\MdbClTwoFrontPooledPMax; \\MdbClTwoFrontSaturated{} of them with a saturated cell) with hypervolume \\MdbClTwoHv, \\MdbClTwoHvRatio{} times the campaign hypervolume, that shares \\MdbClTwoShared{} points with the campaign front (Jaccard index \\MdbClTwoJaccard); restricted to the \\MdbClTwoCommonFeasible{} designs feasible under both closures the two fronts differ by \\MdbClTwoCommonSymmetricDifference{} members. Rescaling the width of every per-cell posterior while keeping its mean moves the front as well: at a quarter of the campaign width the front shrinks to \\MdbWidthQuarterFront{} points (Jaccard index with the campaign front \\MdbWidthQuarterJaccard) while agreeing with the campaign set on the \\MdbWidthQuarterCommonFeasible{} designs feasible in both (identical: \\MdbWidthQuarterIdentical); at four times the width the front holds \\MdbWidthFourFront{} points (Jaccard \\MdbWidthFourJaccard; symmetric difference \\MdbWidthFourSymmetricDifference{} on the common set), and the point estimate gives \\MdbWidthPointFront{} points on catalogue designs \\MdbWidthPointFrontDesigns{} (Jaccard \\MdbWidthPointJaccard; symmetric difference \\MdbWidthPointSymmetricDifference), so the design-set invariance the prior campaign observed under one common prior does not carry over to design-dependent posteriors (\\MdbWidthIdenticalCount{} of \\MdbWidthAlternativeCount{} alternative widths identical on the common feasible set up to a roundoff tolerance of \\MdbTieTolerance). The largest sampled survival under the campaign posterior is \\MdbCampaignSurvivalMax{} against \\MdbPriorSurvivalMax{} under the prior campaign's uniform prior (the largest nominal per-design survival in the catalogue is \\MdbNominalSurvivalMax{} against a mean sampled survival of \\MdbPriorSurvivalMean{} under that prior), which is why every hypervolume here is smaller than its counterpart of the prior campaign in the same reference frame (same frame: \\MdbSameReferenceFrame; ratio of the dense-reference hypervolumes \\MdbPriorToThisDenseHvRatio).",
+      "allowed_locations": [
+        "Catalogue optimisation over the screened sweep designs under the declared test-particle wall-loss closure"
+      ],
+      "manifest_ids": [
+        "MDO-L0-V2-20260903-1440-V1",
+        "MDO-L0-V1-20260903-864-V1"
+      ],
+      "classification": "l0_model_optimisation_over_screened_design_catalogue_with_test_particle_wall_loss_closure_not_thruster_performance",
+      "closure": "CL-1-multiplicative-cusp-survival-per-cell-test-particle-wall-loss",
+      "permitted_scope": [
+        "the sensitivity-closure front (size, catalogue designs, probabilities, hypervolume, overlap and common-set difference with the campaign front)",
+        "the uncertainty-width re-evaluations (front sizes, Jaccard indices, common-set agreement) and the observation that design-set invariance does not carry over to design-dependent posteriors",
+        "the sampled and nominal survival ranges of this campaign against the prior campaign's, as sealed, and the resulting hypervolume ratio in the shared reference frame"
+      ],
+      "prohibited_inferences": [
+        "that either closure is the physical cusp-loss law",
+        "thruster, plasma or physical-device performance",
+        "a design recommendation from either front",
+        "validity of the posteriors or of the identification they rest on"
+      ]
+    },
+    {
+      "id": "CLM-058",
+      "status": "verified",
+      "claim_class": "campaign-audit-closure",
+      "authorized_tex": "The campaign was designed to close the \\MdbAuditDisclosuresClosed{} disclosures (\\MdbAuditDisclosureIds) of the prior campaign's post-hoc audit (verdict as recorded in the protocol: \\MdbAuditVerdict; audit commit \\texttt{\\MdbPriorAuditCommit}), each by a protocol rule or a binding gate: the results commit \\texttt{\\MdbResultsCommit} adds \\MdbResultCommitFiles{} files, \\MdbResultCommitOutsideResults{} of them outside the results directory, and the preregistration commit adds \\MdbPreregCommitFiles{} file (\\MdbAuditNineId); the code contract binds an explicit scope of \\MdbSourceFileCount{} files equal to the \\MdbImportedFiles{} repository files the campaign imported, with \\MdbImportedNotInScope{} imported files outside the scope and \\MdbInScopeNotImported{} bound files never imported (\\MdbAuditTenId; gate passed: \\MdbImportScopePassed); no rounded probability is frozen, every posterior mean being recomputed here from the counts by the Jeffreys rule with pseudo-count \\MdbJeffreysPrior{} (\\MdbAuditTwentyTwoId); the gate semantics are declared in the protocol and sealed with the result, every binding gate being a recording-integrity gate so that acceptance means recorded consistently and not that any optimiser is effective (\\MdbAuditTwentySixId); NSGA-III eliminated duplicates and evaluated \\MdbNsgaDuplicates{} duplicate designs over the \\MdbSeedCount{} seeds (\\MdbAuditTwentySevenId; gate passed: \\MdbNsgaDuplicatesPassed); and the \\MdbLabelChecks{} descriptive labels of the run artifacts are re-derived from the recorded arguments and fitted objects by a binding gate (\\MdbAuditTwentyEightId; passed: \\MdbLabelsPassed).",
+      "allowed_locations": [
+        "Catalogue optimisation over the screened sweep designs under the declared test-particle wall-loss closure"
+      ],
+      "manifest_ids": [
+        "MDO-L0-V2-20260903-1440-V1",
+        "MDO-L0-V1-20260903-864-V1"
+      ],
+      "classification": "l0_model_optimisation_over_screened_design_catalogue_with_test_particle_wall_loss_closure_not_thruster_performance",
+      "closure": "CL-1-multiplicative-cusp-survival-per-cell-test-particle-wall-loss",
+      "permitted_scope": [
+        "the six disclosures of the prior campaign's post-hoc audit as listed in that audit and in the frozen protocol",
+        "the protocol rule or binding gate that closes each disclosure, with the recorded counts (results-commit paths, hash-scope files, duplicates, label checks) and gate outcomes"
+      ],
+      "prohibited_inferences": [
+        "that the prior campaign's evidence was defective (its audit found no defect in the evidence)",
+        "efficacy of any optimiser from the passing of integrity gates",
+        "any statement about the physical thruster"
+      ]
+    },
+    {
+      "id": "CLM-059",
+      "status": "verified",
+      "claim_class": "campaign-scope-limitation",
+      "authorized_tex": "This campaign is optimiser evidence about the operating-point model over a discrete catalogue of \\MdbCatalogueSize{} screened designs under the declared closure \\texttt{\\MdbClosureId} (\\MdbClosureStatus), classified \\texttt{\\MdbClassification}: it makes no thruster-performance, plasma or physical-device claim, none of its fronts is a design recommendation, calibration or validation, and every number is conditional on the declared identification of a collisionless test-particle wall-hit probability on a linear-vacuum screening field (classification \\texttt{\\MdbScreeningClassification}) with a per-cusp survival factor, an identification that the prior campaign's scenario analysis showed is not the per-cusp loss probability of a sustained discharge; a design that wins here wins under this closure only. No surrogate stands between the screening counts and the model (\\MdbRejectedSurrogates{} surrogates over the same dataset were rejected on their predeclared gates: \\texttt{\\MdbSurrogateOneOutcome}, \\texttt{\\MdbSurrogateTwoOutcome}), so geometry enters only through the \\MdbCatalogueSize{} sealed designs and nothing is interpolated between them. It supports no statement that any optimiser is better beyond the recorded budget of \\MdbEvaluationsPerRun{} evaluations, the \\MdbSeedCount{} seeds and this model. It is not a physics level: it solves no field, maps no geometry to the model beyond the declared closure, opens none of the field-resolved, coupled or experimental gates, and leaves the benchmark field of the committed campaign policy null.",
+      "allowed_locations": [
+        "Catalogue optimisation over the screened sweep designs under the declared test-particle wall-loss closure"
+      ],
+      "manifest_ids": [
+        "MDO-L0-V2-20260903-1440-V1"
+      ],
+      "classification": "l0_model_optimisation_over_screened_design_catalogue_with_test_particle_wall_loss_closure_not_thruster_performance",
+      "closure": "CL-1-multiplicative-cusp-survival-per-cell-test-particle-wall-loss",
+      "permitted_scope": [
+        "model-bounded restatement of the campaign's classification, closure identification, claim boundary and the screening label of its catalogue",
+        "the no-surrogate statement with the two rejected surrogates' recorded outcomes",
+        "the not-a-physics-level and null-benchmark-field boundary"
+      ],
+      "prohibited_inferences": [
+        "thruster, plasma or physical-device performance",
+        "optimiser superiority beyond the recorded budget, seeds and model",
+        "a design recommendation or a validated geometry-to-performance map",
+        "opening of GATE-L1, GATE-L2 or GATE-L3"
+      ]
+    },
+    {
+      "id": "CLM-060",
+      "status": "verified",
+      "claim_class": "interpretation",
+      "authorized_tex": "Three readings follow from the admitted catalogue campaign and are bounded to its model and closure. First, a geometry-dependent optimisation now exists at screening tier: the design space is the catalogue of \\MdbCatalogueSize{} screened sweep designs with their sealed geometry and per-cell wall-hit counts, no surrogate interpolates between them, and under the campaign closure the pooled robust front lies on catalogue designs \\MdbRobustFrontDesigns, the \\MdbRobustFrontDesignCount{} lowest pooled wall-hit probabilities of the screening; that is the first recorded link from geometry to the operating-point model, and it is a link under a declared identification of a collisionless wall-hit probability with a per-cusp survival factor, not a demonstrated one. Second, the ranking is closure-dependent, which is the honest state of the geometry-to-performance link: the pooled-probability closure produces a front of \\MdbClTwoFront{} points on \\MdbClTwoFrontDesignCount{} designs that shares \\MdbClTwoShared{} points with the campaign front (Jaccard index \\MdbClTwoJaccard), so which design wins is a property of the closure rather than of the catalogue, and a rescaled posterior width moves the front as well (Jaccard index as low as \\MdbWidthJaccardMin). Third, under the campaign closure most of the sweep design space has no reachable front: \\MdbDenseNegligibleDesigns{} of the \\MdbCatalogueSize{} designs have a negligible own dense-reference hypervolume because \\MdbDenseNegligibleSaturated{} of them lost every launch from one cell in the screening and the multiplicative cascade then leaves a survival of the order of the Jeffreys pseudo-count; whether a cell that loses every collisionless test particle also loses every electron of a sustained discharge is what the closure assumes and what only a kinetic or self-consistent calculation, none of which is admitted here, could decide. The hypervolumes are smaller than the prior campaign's in the same frame (dense-reference ratio \\MdbPriorToThisDenseHvRatio) because the measured counts imply far lower survival than the prior campaign's wide uniform prior (largest sampled survival \\MdbCampaignSurvivalMax{} against \\MdbPriorSurvivalMax), not because any optimiser did worse.",
+      "allowed_locations": [
+        "Discussion"
+      ],
+      "manifest_ids": [
+        "MDO-L0-V2-20260903-1440-V1",
+        "MDO-L0-V1-20260903-864-V1",
+        "WALL-LOSS-GEOMETRY-SCREENING-V1-20260903-96-V1"
+      ],
+      "evidence": [
+        "SRC-AUDIT",
+        "SRC-PROVENANCE"
+      ],
+      "bibliography": [
+        "Muffatti2017",
+        "Daulton2021"
+      ],
+      "permitted_scope": [
+        "model-bounded interpretation of the recorded catalogue fronts as the first geometry-dependent optimisation at screening tier under a declared identification",
+        "the labelled interpretation that the design ranking is closure-dependent, resting on the recorded closure and width re-evaluations",
+        "the labelled interpretation that saturated launch cells make most of the sweep design space unreachable under the campaign closure, with the kinetic question stated as undecided and its results not admitted",
+        "the explanation of the smaller hypervolumes by the lower measured survival in the shared reference frame"
+      ],
+      "prohibited_inferences": [
+        "thruster, plasma or physical-device performance",
+        "a design recommendation or a demonstrated geometry-to-performance map",
+        "that a saturated collisionless launch cell loses every electron of a sustained discharge",
+        "any result of the kinetic-simulation workstream",
+        "optimiser superiority beyond the recorded budget, seeds and model",
         "opening of GATE-L1, GATE-L2 or GATE-L3"
       ]
     },
@@ -1429,6 +1684,14 @@
       "gate_status": "accepted",
       "recorded_outcome": "accepted-screening-dataset",
       "manifest_id": "WALL-LOSS-GEOMETRY-SCREENING-V1-20260903-96-V1"
+    },
+    {
+      "id": "GATE-MDO-L0-V2",
+      "status": "evidence-gate",
+      "gate_registry_id": "GATE-MDO-L0-V2",
+      "kind": "numerical-campaign",
+      "gate_status": "accepted",
+      "manifest_id": "MDO-L0-V2-20260903-1440-V1"
     }
   ]
 }

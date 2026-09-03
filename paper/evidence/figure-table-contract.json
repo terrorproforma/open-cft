@@ -171,6 +171,32 @@
       "required_gate": "GATE-WALL-LOSS-GEOMETRY-SCREENING-V1"
     },
     {
+      "id": "TAB-MDO-L0-V2",
+      "kind": "table",
+      "status": "verified",
+      "manuscript_label": "tab:mdo-l0-v2-hypervolume",
+      "manuscript_labels": [
+        "tab:mdo-l0-v2-hypervolume",
+        "tab:mdo-l0-v2-catalogue",
+        "tab:mdo-l0-v2-closure",
+        "tab:mdo-l0-v2-comparison"
+      ],
+      "manuscript_binding": "\\input{generated/mdo-l0-v2.tex}",
+      "claim_ids": [
+        "CLM-055"
+      ],
+      "manifest_id": "MDO-L0-V2-20260903-1440-V1",
+      "generator_path": "paper/scripts/generate_mdo_l0_v2_evidence.py",
+      "generator_module": "generate_mdo_l0_v2_evidence",
+      "generator_command": "python paper/scripts/generate_mdo_l0_v2_evidence.py",
+      "output_path": "paper/generated/mdo-l0-v2.tex",
+      "sidecar_path": "paper/generated/mdo-l0-v2.provenance.json",
+      "artifact_claim_count": 4,
+      "artifact_claim_note": "The generated file defines the evidence macros and four table macros (\\MdbHvTable, \\MdbCatalogueTable, \\MdbClosureTable, \\MdbComparisonTable); each table body is wrapped in its own ArtifactClaim bound to CLM-055, so exactly four ArtifactClaim macros are required. The tables report optimiser estimands over the screened design catalogue under the declared closure, the catalogue designs on the fronts with their screening probabilities and sealed geometry, the closure and uncertainty-width re-evaluations, and the comparison with the prior campaign read from its own sealed bundle; nothing in them is thruster performance or a design recommendation.",
+      "evidence_file": "paper/evidence/mdo-l0-v2.json",
+      "required_gate": "GATE-MDO-L0-V2"
+    },
+    {
       "id": "FIG-ARCHITECTURE",
       "kind": "figure",
       "status": "planned-nonresult",

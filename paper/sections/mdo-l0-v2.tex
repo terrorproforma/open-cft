@@ -1,0 +1,320 @@
+% Results subsection: MDO L0 campaign v2 (optimisation of the L0 conservation model over
+% the discrete catalogue of screened sweep designs under the declared closure CL-1).
+%
+% Every quantity in this file is a \Mdb... macro defined in
+% paper/generated/mdo-l0-v2.tex, which paper/scripts/generate_mdo_l0_v2_evidence.py
+% writes from the sealed results bundle of modern/experiments/mdo_l0_campaign_v2 (and,
+% for the comparison rows, from the sealed bundle of mdo_l0_campaign_v1, verified the
+% same way); paper/evidence/mdo-l0-v2.json records the artifact path, JSON pointer and
+% SHA-256 behind each macro, or the derivation of a derived macro. No numeric literal is
+% typed here.
+%
+% Status: admitted. manuscript.tex binds this file once through
+% \input{sections/mdo-l0-v2.tex}. Admission is governed by gate GATE-MDO-L0-V2 in
+% paper/evidence/result-gates.json, the typed manifest
+% paper/evidence/manifests/mdo-l0-v2.json and the campaign claim records in
+% paper/evidence/claims.json bound to manifest MDO-L0-V2-20260903-1440-V1. Every
+% \EvidenceClaim body below must equal its registered authorized_tex exactly;
+% paper/scripts/check_paper.py verifies that, the macro-only rule, the classification
+% and closure strings and the presence of the registered non-claims. The standalone
+% driver paper/sections/mdo-l0-v2-standalone.tex compiles this file on its own.
+\subsection{Catalogue optimisation over the screened sweep designs under the declared test-particle wall-loss closure}
+\label{sec:mdo-l0-v2}
+
+\paragraph{Method.}
+The design space is the product of a categorical catalogue index and the operating
+point of the prior campaign. The catalogue is the set of \MdbCatalogueSize{} accepted
+sweep designs screened in Section~\ref{sec:wall-loss-geometry-screening}
+(classification \texttt{\MdbScreeningClassification}), each carried with its sealed
+geometry and its wall-hit counts at the \texttt{\MdbReportedCase} timestep
+(\MdbCellTrials{} launches in each of \MdbCellCount{} launch cells, \MdbPooledTrials{}
+pooled); the screening dataset is bound by bytes, by Git blob at the screening record
+commit \texttt{\MdbScreeningResultsCommit} (blob prefix
+\texttt{\MdbScreeningDatasetBlob}), by its manifest entry and by ancestry, and the
+\MdbCatalogueBindingChecks{} binding checks are a binding gate (passed:
+\MdbCatalogueBindingPassed; sealed catalogue identity prefix
+\texttt{\MdbCatalogueSha}). The optimisers choose a member of the catalogue, never a
+geometry value, and no surrogate stands between the counts and the model: the
+\MdbRejectedSurrogates{} surrogates fitted to the same dataset were rejected on their
+predeclared gates (\texttt{\MdbSurrogateOneOutcome} at \texttt{\MdbSurrogateOneCommit},
+\texttt{\MdbSurrogateTwoOutcome} at \texttt{\MdbSurrogateTwoCommit}). The
+\MdbOperatingVariableCount{} operating-point variables keep the prior campaign's
+domain: the discharge voltage from \MdbUaLower{} to \MdbUaUpper{} V, the anode current
+from \MdbIaLower{} to \MdbIaUpper{} A and the propellant mass flow from \MdbMdotLower{}
+to \MdbMdotUpper{} kg/s. Each design carries \MdbUncertainInputCount{} uncertain inputs:
+its \MdbCellCount{} per-cell wall-hit probabilities as Jeffreys Beta posteriors of its
+own counts (pseudo-count \MdbJeffreysPrior; no rounded probability is frozen anywhere,
+every posterior mean being recomputed from the counts by the evidence generator), the
+produced ionised fraction on $[\MdbEtaLower, \MdbEtaUpper]$, the doubly charged ion
+share on $[\MdbZetaLower, \MdbZetaUpper]$ and the divergence factor on
+$[\MdbGammaLower, \MdbGammaUpper]$, propagated through the prior campaign's identical
+\MdbSampleCount{} Halton unit rows (bases \MdbSampleBases; unit-row hash prefix
+\texttt{\MdbUnitRowsSha}, per-design sample hash prefix
+\texttt{\MdbCatalogueSampleSha}; frozen: \MdbSampleFrozen) pushed through each
+design's posterior quantile functions. The probabilities enter solely through the
+declared campaign closure \texttt{\MdbClosureId} (\MdbClosureShort;
+\MdbClosureStatus), the multiplicative survival of the prior campaign with the
+screening probability of each launch cell in place of a prior: it identifies a
+collisionless test-particle wall-hit probability on a linear-vacuum screening field
+with a per-cusp survival factor, an identification the prior campaign's scenario
+analysis showed is not the per-cusp loss probability of a sustained discharge
+(Section~\ref{sec:mdo-l0}), so every number here is conditional on it. A declared
+sensitivity closure \texttt{\MdbSensitivityClosureId} (\MdbSensitivityClosureShort;
+\MdbSensitivityClosureStatus) replaces the cascade by the pooled probability over all
+\MdbPooledTrials{} launches and is evaluated on the recorded designs only. The
+corrected four-cell discharge solver is not used because it has no admissible root for
+interior cusp probabilities (Section~\ref{sec:four-cell-closure}; analysis commit
+\texttt{\MdbFourCellClosureCommit}). The \MdbObjectiveCount{} objectives, their
+comparison scales (\MdbScaleThrust{}~N, \MdbScaleIsp{}~s, unity, \MdbScalePower{}~W),
+the reference point (anode power \MdbRefAnodePowerW{}~W; thrust, specific impulse and
+efficiency at zero), the \MdbRiskMeasure{} of the worst \MdbTailCount{} of
+\MdbSampleCount{} sample values (tail fraction \MdbTailFraction), the worst-sampled-case
+constraint (\texttt{\MdbConstraintName} $\ge \MdbConstraintThreshold$~A) and the fixed
+cathode power (\MdbCathodePowerW{}~W) and PPU efficiency (\MdbPpuEfficiency) are the
+prior campaign's (same frame: \MdbSameReferenceFrame), so hypervolumes are comparable
+between the two campaigns.
+
+\MdbStrategyCount{} optimisers receive the same \MdbInitialDesign-point initial design
+per seed (\MdbInitialDesign{} distinct catalogue designs; identical across optimisers:
+\MdbSharedInitialIdentical) and the same budget of \MdbEvaluationsPerRun{} design
+evaluations: constrained qLogNEHVI from \MdbBoLibrary{} \MdbBotorchVersion{} over a
+list of mixed Gaussian processes with a categorical kernel on the catalogue index and
+a Mat\'ern kernel with automatic relevance determination on the operating point
+(\MdbBoBatch{} candidates per iteration for \MdbBoIterations{} iterations,
+\MdbBoMcSamples{} Monte Carlo samples, device \texttt{\MdbBoDevice} in
+\texttt{\MdbBoDtype} with \MdbBoThreads{} threads), whose acquisition is maximised in
+two stages, an exhaustive discrete stage over every catalogue design with
+\MdbBoCandidatesPerDesign{} Latin-hypercube operating points each
+(\MdbBoCandidateCount{} candidates) followed by a gradient refinement of each chosen
+member's operating point at its fixed catalogue index (at most \MdbBoRefineMaxiter{}
+L-BFGS-B iterations; \MdbBoRefinementsAccepted{} of \MdbBoRefinements{} refinements
+accepted); NSGA-III from \MdbNsgaLibrary{} \MdbPymooVersion{} with mixed variables,
+duplicate elimination in the population and in mating (population \MdbNsgaPopulation,
+\MdbNsgaGenerations{} generations; \MdbNsgaReferenceDirectionCount{} energy reference
+directions from seed \MdbNsgaReferenceDirectionSeed);
+and a two-stage Latin-hypercube baseline over the catalogue and the operating point
+(\MdbInitialDesign{} shared points then \MdbSecondStage{} further points), each with
+seeds \MdbSeeds. Hypervolume is computed exactly in the dimensionless all-maximise
+frame. A dense reference of every catalogue design crossed with one
+\MdbDensePointsPerDesign-point operating-point grid (\MdbDenseCount{} evaluations, seed
+\MdbDenseSeed, \MdbDenseWorkers{} worker processes, \MdbDenseEvaluationSeconds{}~s;
+\MdbDenseFeasible{} feasible, \MdbDenseInfeasible{} infeasible) supplies the robust and
+nominal reference fronts (\MdbDenseRobustFront{} and \MdbDenseNominalFront{} points on
+catalogue designs \MdbDenseRobustFrontDesigns{} and \MdbDenseNominalFrontDesigns) and,
+per design, the design's own robust hypervolume; it is not an optimiser run and not
+part of the comparison. The pooled designs are also re-evaluated under the sensitivity
+closure and under per-cell posteriors whose widths are rescaled by
+\MdbWidthAlternativeCount{} alternative factors while their means are kept.
+
+The protocol was frozen at preregistration commit \texttt{\MdbPreregCommit} after a
+disclosed non-evidentiary shakedown of the complete production path
+(\MdbShakedownBudget{} evaluations per run, seeds \MdbShakedownSeeds,
+\MdbShakedownDensePoints{} dense points per design; disjoint from the evidentiary
+design: \MdbShakedownDisjoint; passed: \MdbShakedownPassed; evidentiary:
+\MdbShakedownEvidentiary; import scope equal to the hash scope:
+\MdbShakedownImportScopeMatches), and executed exactly \MdbAttemptCount{} time under an
+immutable Git-common lock (immutable: \MdbLockImmutable). The results are committed at
+\texttt{\MdbResultsCommit} (manifest hash prefix \texttt{\MdbManifestSha};
+\MdbVerifiedFiles{} files verified byte for byte, \MdbToleratedEolFiles{} accepted
+through any end-of-line tolerance) and the results dashboard, whose embedded extraction
+of both campaigns the evidence generator requires to agree with the sealed artifacts,
+at \texttt{\MdbDashboardCommit}. Acceptance is decided by \MdbGateCount{} binding
+gates, every one of them a recording-integrity gate: bit-exact replay of every
+evaluation, model-domain integrity, monotone hypervolume curves up to a roundoff
+tolerance of \MdbHvMonotoneTolerance{} (largest recorded decrease
+\MdbHvMonotoneLargestDecrease), exact budgets, shared initial designs, the frozen
+sample hashes, Pareto replay, the code contract (hashed source prefix
+\texttt{\MdbSourceSha}, protocol hash prefix \texttt{\MdbProtocolSha}; matches:
+\MdbCodeContractMatches), the catalogue binding, the equality of the hash scope with
+the files actually imported, duplicate elimination in NSGA-III and the consistency of
+every descriptive label. The protocol declares that acceptance therefore means
+recorded consistently and not that any optimiser is effective; the optimiser
+comparisons, the robust-versus-nominal, closure and width differences and the
+catalogue designs on the fronts are reported outcomes that never change the terminal
+state, and every efficacy statement carries its seed count. The campaign ran on
+\MdbCpuCount{} CPU cores; a CUDA device (\MdbCudaDevice) was probed and not used, and
+all timings are diagnostic only.
+
+\paragraph{Results.}
+\EvidenceClaim{CLM-054}{The single execution terminated in state
+\texttt{\MdbTerminalState} with \MdbGatesPassed{} of \MdbGateCount{} binding integrity
+gates passed, \MdbRuns{} runs of \MdbEvaluationsPerRun{} evaluations each
+(\MdbTotalEvaluations{} design evaluations, \MdbInfeasibleEvaluations{} of them
+constraint-violating: \MdbInfeasibleBoTotal{} in the Bayesian runs,
+\MdbInfeasibleNsgaTotal{} in the NSGA-III runs and \MdbInfeasibleLhsTotal{} in the
+baseline; \MdbFailedRuns{} failed runs) and every evaluation replayed bit-exactly
+(\MdbReplayed{} replayed, \MdbReplayMismatches{} mismatches). Within the model
+classified as \texttt{\MdbClassification}, the final robust hypervolume of constrained
+qLogNEHVI was \MdbHvBoA, \MdbHvBoB{} and \MdbHvBoC{} for seeds \MdbSeeds{} (mean
+\MdbHvBoMean, sample standard deviation \MdbHvBoStd), against \MdbHvNsgaA,
+\MdbHvNsgaB{} and \MdbHvNsgaC{} for NSGA-III (mean \MdbHvNsgaMean, standard deviation
+\MdbHvNsgaStd) and \MdbHvLhsA, \MdbHvLhsB{} and \MdbHvLhsC{} for the Latin-hypercube
+baseline (mean \MdbHvLhsMean, standard deviation \MdbHvLhsStd). Paired by seed,
+qLogNEHVI exceeded the baseline in \MdbBoBeatsRandomWins{} of \MdbBoBeatsRandomSeeds{}
+seeds and NSGA-III in \MdbBoBeatsNsgaWins{} of \MdbBoBeatsNsgaSeeds{} seeds against a
+predeclared requirement of \MdbBoBeatsRandomRequired; these are counts over
+\MdbSeedCount{} seeds, not significance statements. Against the
+\MdbDenseCount-evaluation dense reference (robust hypervolume \MdbDenseRobustHv{} on
+\MdbDenseRobustFront{} points drawn from catalogue designs \MdbDenseRobustFrontDesigns),
+qLogNEHVI attained \MdbAttainedBoA, \MdbAttainedBoB{} and \MdbAttainedBoC{} of the
+reference from a \MdbDenseToBudgetRatio-fold smaller evaluation count, NSGA-III
+\MdbAttainedNsgaMin{} to \MdbAttainedNsgaMax{} and the baseline \MdbAttainedLhsMin{} to
+\MdbAttainedLhsMax. The spread of the Bayesian seeds is an exploration effect of the
+categorical design index: seed \MdbBoAFirstSeed, whose shared initial design did not
+contain catalogue design \MdbBoAMissedDesign{} (in that seed's initial design:
+\MdbBoAMissedInInitial; in the initial designs of the other two seeds:
+\MdbBoBMissedInInitial{} and \MdbBoCMissedInInitial), never evaluated that design
+(\MdbBoAMissedEvaluations{} evaluations), spent \MdbBoAStallEvaluations{} of its
+\MdbEvaluationsPerRun{} evaluations on design \MdbBoAStallDesign{} over
+\MdbDistinctBoA{} distinct designs visited, and finished with a Pareto set of
+\MdbParetoBoA{} points that lies entirely on that design, whereas seeds
+\MdbBoOtherSeeds{} finished on catalogue designs \MdbParetoDesignsBoB{} and
+\MdbParetoDesignsBoC.}
+Table~\ref{tab:mdo-l0-v2-hypervolume} lists the per-run estimands. The discrete
+candidate stage dominated the wall time of the Bayesian runs
+(\MdbBoCandidateSecondsMin{} to \MdbBoCandidateSecondsMax{}~s per seed, against
+\MdbBoRefineSecondsMin{} to \MdbBoRefineSecondsMax{}~s of refinement and
+\MdbBoFitSecondsMin{} to \MdbBoFitSecondsMax{}~s of model fitting; \MdbWallBoMin{} to
+\MdbWallBoMax{}~s per run); the whole lifecycle took \MdbLifecycleWallMin{}~min from
+lock acquisition to the terminal record.
+\MdbHvTable
+
+\paragraph{Catalogue designs on the robust front.}
+\EvidenceClaim{CLM-056}{Pooled over the \MdbUniqueDesigns{} unique designs evaluated by
+all runs (\MdbDistinctCatalogueDesigns{} of the \MdbCatalogueSize{} catalogue designs
+were evaluated at least once), the robust front holds \MdbRobustFront{} points on
+\MdbRobustFrontDesignCount{} catalogue designs, \MdbRobustFrontDesigns{}
+(\MdbDesignFortyNineMembers, \MdbDesignFiftyMembers{} and \MdbDesignNinetyFourMembers{}
+members), and the nominal front, a re-evaluation of the same designs at the posterior
+means under the nominal constraint, holds \MdbNominalFront{} points on catalogue designs
+\MdbNominalFrontDesigns; the two fronts share \MdbSharedDesigns{} points (Jaccard index
+\MdbJaccard). The three robust-front designs are exactly the three lowest pooled
+wall-hit probabilities of the screening catalogue (ascending ranks
+\MdbDesignFortyNineRank, \MdbDesignNinetyFourRank{} and \MdbDesignFiftyRank{} of
+\MdbCatalogueSize; lowest ranks: \MdbRobustFrontLowestRanks): design
+\MdbDesignFortyNineIndex{} with pooled wall-hit probability \MdbDesignFortyNinePooledP{}
+[\MdbDesignFortyNinePooledLo, \MdbDesignFortyNinePooledHi], chamber length
+\MdbDesignFortyNineLengthMm{}~mm, wall radius \MdbDesignFortyNineRadiusMm{}~mm and
+stage pitch \MdbDesignFortyNinePitchMm{}~mm; design \MdbDesignNinetyFourIndex{} with
+\MdbDesignNinetyFourPooledP{} [\MdbDesignNinetyFourPooledLo,
+\MdbDesignNinetyFourPooledHi], \MdbDesignNinetyFourLengthMm{}~mm and
+\MdbDesignNinetyFourRadiusMm{}~mm; and design \MdbDesignFiftyIndex{} with
+\MdbDesignFiftyPooledP{} [\MdbDesignFiftyPooledLo, \MdbDesignFiftyPooledHi],
+\MdbDesignFiftyLengthMm{}~mm and \MdbDesignFiftyRadiusMm{}~mm; all three have
+\MdbRobustFrontStages{} magnet stages and a divergent exit (every robust-front design
+five-stage: \MdbRobustFrontDesignsAllFiveStage; divergent:
+\MdbRobustFrontDesignsAllDivergent). Under the campaign closure most of the catalogue
+cannot reach a front at all: \MdbDenseNegligibleDesigns{} of the \MdbCatalogueSize{}
+designs have an own dense-reference robust hypervolume below
+\MdbDenseNegligibleThreshold, and \MdbDenseNegligibleSaturated{} of them are the
+\MdbSaturatedDesigns{} designs with a launch cell that lost all \MdbCellTrials{} of its
+launches in the screening, whose nominal survival under the multiplicative cascade is
+therefore of the order of the Jeffreys pseudo-count (catalogue nominal survival from
+\MdbNominalSurvivalMin{} to \MdbNominalSurvivalMax, median \MdbNominalSurvivalMedian);
+the remaining \MdbDenseNegligibleUnsaturated{} have no saturated cell. The predeclared
+per-design separability held (largest within-design relative spread of the
+robust-to-nominal objective ratio \MdbSeparabilitySpreadMax{} against a tolerance of
+\MdbSeparabilityTolerance; passed: \MdbSeparabilityPassed{} over
+\MdbSeparabilityDesigns{} designs): within a design its posterior rescales thrust,
+specific impulse and efficiency uniformly, so the catalogue enters the fronts through
+a per-design survival multiplier and through the feasible set.}
+Table~\ref{tab:mdo-l0-v2-catalogue} lists the \MdbDenseRobustFrontDesignCount{} designs
+that reach the dense-reference robust front with their screening probabilities and
+sealed geometry; per optimiser, the pooled robust fronts lie on catalogue designs
+\MdbPooledBoRobustDesigns{} (qLogNEHVI, \MdbPooledBoRobustFront{} points),
+\MdbPooledNsgaRobustDesigns{} (NSGA-III, \MdbPooledNsgaRobustFront{} points) and
+\MdbPooledLhsRobustDesigns{} (baseline, \MdbPooledLhsRobustFront{} points).
+\MdbCatalogueTable
+
+\paragraph{Closure dependence and uncertainty width.}
+\EvidenceClaim{CLM-057}{Re-evaluating the same \MdbUniqueDesigns{} designs under the
+sensitivity closure \texttt{\MdbSensitivityClosureId} (\MdbSensitivityClosureStatus),
+which uses the pooled wall-hit probability over all \MdbPooledTrials{} launches in place
+of the per-cell cascade, gives a robust front of \MdbClTwoFront{} points on
+\MdbClTwoFrontDesignCount{} catalogue designs (pooled wall-hit probabilities from
+\MdbClTwoFrontPooledPMin{} to \MdbClTwoFrontPooledPMax; \MdbClTwoFrontSaturated{} of
+them with a saturated cell) with hypervolume \MdbClTwoHv, \MdbClTwoHvRatio{} times the
+campaign hypervolume, that shares \MdbClTwoShared{} points with the campaign front
+(Jaccard index \MdbClTwoJaccard); restricted to the \MdbClTwoCommonFeasible{} designs
+feasible under both closures the two fronts differ by
+\MdbClTwoCommonSymmetricDifference{} members. Rescaling the width of every per-cell
+posterior while keeping its mean moves the front as well: at a quarter of the campaign
+width the front shrinks to \MdbWidthQuarterFront{} points (Jaccard index with the
+campaign front \MdbWidthQuarterJaccard) while agreeing with the campaign set on the
+\MdbWidthQuarterCommonFeasible{} designs feasible in both (identical:
+\MdbWidthQuarterIdentical); at four times the width the front holds
+\MdbWidthFourFront{} points (Jaccard \MdbWidthFourJaccard; symmetric difference
+\MdbWidthFourSymmetricDifference{} on the common set), and the point estimate gives
+\MdbWidthPointFront{} points on catalogue designs \MdbWidthPointFrontDesigns{} (Jaccard
+\MdbWidthPointJaccard; symmetric difference \MdbWidthPointSymmetricDifference), so the
+design-set invariance the prior campaign observed under one common prior does not
+carry over to design-dependent posteriors (\MdbWidthIdenticalCount{} of
+\MdbWidthAlternativeCount{} alternative widths identical on the common feasible set up
+to a roundoff tolerance of \MdbTieTolerance). The largest sampled survival under the
+campaign posterior is \MdbCampaignSurvivalMax{} against \MdbPriorSurvivalMax{} under the
+prior campaign's uniform prior (the largest nominal per-design survival in the
+catalogue is \MdbNominalSurvivalMax{} against a mean sampled survival of
+\MdbPriorSurvivalMean{} under that prior), which is why every hypervolume here is
+smaller than its counterpart of the prior campaign in the same reference frame (same
+frame: \MdbSameReferenceFrame; ratio of the dense-reference hypervolumes
+\MdbPriorToThisDenseHvRatio).}
+Table~\ref{tab:mdo-l0-v2-closure} lists the closure and width re-evaluations and
+Table~\ref{tab:mdo-l0-v2-comparison} sets the two campaigns side by side; the prior
+campaign's numbers are read from its own sealed bundle (\MdbPriorVerifiedFiles{} files
+verified byte for byte, manifest hash prefix \texttt{\MdbPriorManifestSha}, results
+commit \texttt{\MdbPriorResultsCommit}).
+\MdbClosureTable
+\MdbComparisonTable
+
+\paragraph{Closure of the prior campaign's audit disclosures.}
+\EvidenceClaim{CLM-058}{The campaign was designed to close the
+\MdbAuditDisclosuresClosed{} disclosures (\MdbAuditDisclosureIds) of the prior
+campaign's post-hoc audit (verdict as recorded in the protocol: \MdbAuditVerdict; audit
+commit \texttt{\MdbPriorAuditCommit}), each by a protocol rule or a binding gate: the
+results commit \texttt{\MdbResultsCommit} adds \MdbResultCommitFiles{} files,
+\MdbResultCommitOutsideResults{} of them outside the results directory, and the
+preregistration commit adds \MdbPreregCommitFiles{} file (\MdbAuditNineId); the code
+contract binds an explicit scope of \MdbSourceFileCount{} files equal to the
+\MdbImportedFiles{} repository files the campaign imported, with
+\MdbImportedNotInScope{} imported files outside the scope and \MdbInScopeNotImported{}
+bound files never imported (\MdbAuditTenId; gate passed: \MdbImportScopePassed); no
+rounded probability is frozen, every posterior mean being recomputed here from the
+counts by the Jeffreys rule with pseudo-count \MdbJeffreysPrior{}
+(\MdbAuditTwentyTwoId); the gate semantics are declared in the protocol and sealed
+with the result, every binding gate being a recording-integrity gate so that
+acceptance means recorded consistently and not that any optimiser is effective
+(\MdbAuditTwentySixId); NSGA-III eliminated duplicates and evaluated
+\MdbNsgaDuplicates{} duplicate designs over the \MdbSeedCount{} seeds
+(\MdbAuditTwentySevenId; gate passed: \MdbNsgaDuplicatesPassed); and the
+\MdbLabelChecks{} descriptive labels of the run artifacts are re-derived from the
+recorded arguments and fitted objects by a binding gate (\MdbAuditTwentyEightId;
+passed: \MdbLabelsPassed).}
+
+\paragraph{Interpretation.}
+The boxed statement is the only interpretation offered here; it is bounded to the
+model and closure and repeats the claim boundary sealed with the campaign.
+\par\medskip\noindent
+\fbox{\begin{minipage}{0.94\linewidth}
+\textbf{Model-bounded interpretation.}
+\EvidenceClaim{CLM-059}{This campaign is optimiser evidence about the operating-point
+model over a discrete catalogue of \MdbCatalogueSize{} screened designs under the
+declared closure \texttt{\MdbClosureId} (\MdbClosureStatus), classified
+\texttt{\MdbClassification}: it makes no thruster-performance, plasma or
+physical-device claim, none of its fronts is a design recommendation, calibration or
+validation, and every number is conditional on the declared identification of a
+collisionless test-particle wall-hit probability on a linear-vacuum screening field
+(classification \texttt{\MdbScreeningClassification}) with a per-cusp survival factor,
+an identification that the prior campaign's scenario analysis showed is not the
+per-cusp loss probability of a sustained discharge; a design that wins here wins under
+this closure only. No surrogate stands between the screening counts and the model
+(\MdbRejectedSurrogates{} surrogates over the same dataset were rejected on their
+predeclared gates: \texttt{\MdbSurrogateOneOutcome}, \texttt{\MdbSurrogateTwoOutcome}),
+so geometry enters only through the \MdbCatalogueSize{} sealed designs and nothing is
+interpolated between them. It supports no statement that any optimiser is better
+beyond the recorded budget of \MdbEvaluationsPerRun{} evaluations, the \MdbSeedCount{}
+seeds and this model. It is not a physics level: it solves no field, maps no geometry
+to the model beyond the declared closure, opens none of the field-resolved, coupled or
+experimental gates, and leaves the benchmark field of the committed campaign policy
+null.}
+\end{minipage}}
+\par\medskip

@@ -56,8 +56,22 @@ designs (P(wall) 0.375–0.869, median 0.702; reflections in every design;
 96/96 converged under timestep halving; every handoff consumed by the first
 consumer of the coupling export format). The fields are not P2-qualified, so
 the dataset is surrogate and optimisation input under its label and never
-accepted physical-orbit, plasma or performance evidence. The checked evidence is
-enumerated in `evidence/claims.json`. Concurrent or later work is not
+accepted physical-orbit, plasma or performance evidence. A third
+`numerical-campaign` gate, `GATE-MDO-L0-V2`, admits the catalogue optimisation
+campaign `modern/experiments/mdo_l0_campaign_v2` (results
+`a003f766c330d4e5648844ba49cdf1c3a3ce3bc1`, preregistration `99914dc2…`,
+dashboard `0ea33a7e…`) as optimiser evidence: the L0 model over the 96 screened
+sweep designs (categorical catalogue index × operating point) under the
+declared closure CL-1 with each design's per-cell test-particle wall-hit
+posteriors as per-cusp survival factors, no surrogate (both fitted to the
+dataset were rejected), 1440 evaluations, 12/12 binding integrity gates,
+qLogNEHVI beating LHS 3/3 and NSGA-III 3/3 (counts, not significance), a pooled
+robust front on catalogue designs 49, 50 and 94 (the three lowest screening
+P(wall)), a pooled-probability closure whose front shares no design with it
+(Jaccard 0.0), and the six disclosures of the v1 post-hoc audit closed by
+protocol rules and binding gates. It makes no thruster-performance or design
+claim; its design ranking is a property of the declared closure. The checked
+evidence is enumerated in `evidence/claims.json`. Concurrent or later work is not
 publishable merely because files exist in a working tree: a planned section
 opens only when its gate in `evidence/result-gates.json` names an accepted,
 committed manifest.
@@ -92,8 +106,16 @@ claimed or recomputed. The geometry screening is classified
 positions, its geometry associations (rank correlations with chamber length,
 wall radius, stage pitch and stage count) are observations of one launch
 design and not a design rule, its refined-field diagnostic exists for four
-representatives only, and no surrogate or optimisation consuming it is
-admitted.
+representatives only, and no surrogate consuming it is admitted; the one
+optimisation consuming it is the catalogue campaign, classified
+`l0_model_optimisation_over_screened_design_catalogue_with_test_particle_wall_loss_closure_not_thruster_performance`:
+its closure identifies a collisionless test-particle wall-hit probability on a
+linear-vacuum screening field with a per-cusp survival factor by declaration
+(the v1 scenario analysis showed these are different quantities), a design that
+wins there wins under that closure only, its fronts move under the
+pooled-probability closure and under rescaled posterior widths, 77 of the 96
+designs have negligible own dense hypervolume because a launch cell saturated,
+and it opens none of L1--L3.
 
 ## Reproduce checks and build
 
@@ -131,7 +153,7 @@ it does not modify the environment.
   file roles, and required metrics.
 - `evidence/result-gates.json` — explicit L1/L2/L3 admission criteria
   (`physics-level` gates), the accepted `numerical-campaign` gates
-  `GATE-WALL-LOSS-V4` and `GATE-MDO-L0-V1`, the four
+  `GATE-WALL-LOSS-V4`, `GATE-MDO-L0-V1` and `GATE-MDO-L0-V2`, the four
   `numerical-screening` gates `GATE-L1A-SWEEP-V2`, `GATE-FOUR-CELL-V2`,
   `GATE-TOPOLOGY-CHAR-V1` and `GATE-WALL-LOSS-GEOMETRY-SCREENING-V1`, each
   carrying its `recorded_outcome`, and the `analytic-consistency` gate
@@ -171,6 +193,19 @@ it does not modify the environment.
   `sections/mdo-l0-v1.tex` — hash-bound evidence file, generated macros with
   three `\ArtifactClaim` tables, and the admitted macro-only subsection bound
   once by `\input` from Section 9 of `manuscript.tex`.
+- `evidence/manifests/mdo-l0-v2.json` — typed campaign manifest
+  (`paper-mdo-catalogue-campaign-manifest` 1.0) binding every consumed bundle
+  file of the catalogue campaign, the frozen preregistration files, the
+  screening dataset and manifest behind the catalogue, the prior campaign's
+  bundle files read for the comparison table, the prior campaign's post-hoc
+  audit and the results dashboard, by Git blob and SHA-256, plus the metrics
+  the checker compares with the raw artifact values behind the `\Mdb...`
+  macros.
+- `evidence/mdo-l0-v2.json`, `generated/mdo-l0-v2.tex`,
+  `sections/mdo-l0-v2.tex` — hash-bound evidence file (macros marked with the
+  bundle they were read from), generated macros with four `\ArtifactClaim`
+  tables, and the admitted macro-only subsection bound once by `\input` from
+  Section 12 of `manuscript.tex`.
 - `evidence/manifests/{l1a-sweep-v2,four-cell-v2,topology-characterization-v1}.json`
   — typed screening manifests (`paper-l1a-screening-manifest` 1.0) binding
   every bundle file by Git blob and SHA-256 at the results revision, the frozen
@@ -325,7 +360,64 @@ not render its string, a missing registered non-claim, or a
 
 ```powershell
 python paper/scripts/generate_mdo_l0_v1_evidence.py
-python -m unittest discover -s paper/tests -p "test_mdo*" -v
+python -m unittest discover -s paper/tests -p "test_mdo_l0_v1*" -v
+```
+
+## Admitted numerical campaign: MDO L0 campaign v2 (screened design catalogue)
+
+`paper/scripts/generate_mdo_l0_v2_evidence.py` reads the sealed results bundle
+of `modern/experiments/mdo_l0_campaign_v2` (147 files verified byte for byte
+against `results/manifest.json`, pinned to the admitted manifest SHA-256; no
+end-of-line tolerance exists or is granted) and, for the comparison table, the
+sealed bundle of `mdo_l0_campaign_v1` verified the same way and pinned to its
+admitted identity. It requires the frozen `protocol.json`, `authorities.json`
+and `shakedown.json` to equal the sealed copies; re-verifies the sealed
+96-design catalogue against the screening dataset it was drawn from (bytes and
+Git blob at the screening record commit `ab7c2897`, manifest entry) and
+recomputes every probability, Jeffreys posterior mean, Wilson interval and
+nominal survival exactly from the counts; checks with `git diff-tree` that the
+results commit adds files under `results/` only and that the preregistration
+commit is experiment-path isolated; parses the disclosure list of the v1
+post-hoc audit (`POSTHOC_AUDIT.md` at `e9f9af16`, blob equal at HEAD) and
+requires it to equal the protocol's `v1_audit_disclosures_closed`; verifies that
+the v2 protocol shares v1's reference point, scales, unit rows, robust
+formulation and operating domain (the comparison is in one frame); cross-checks
+the committed dashboard's extraction of both campaigns; and writes
+`paper/evidence/mdo-l0-v2.json` (every `\Mdb...` macro with its artifact path,
+JSON pointer, formatter, SHA-256 and bundle, or its derivation and inputs),
+`paper/generated/mdo-l0-v2.tex` (macros plus four tables wrapped in
+`\ArtifactClaim`: hypervolume per optimiser and seed with the catalogue designs
+on each Pareto set; the catalogue designs on the dense-reference robust front
+with screening probabilities, sealed geometry and own hypervolume; the closure
+and uncertainty-width re-evaluations; the v1-versus-v2 comparison) and the
+provenance sidecar. The subsection `paper/sections/mdo-l0-v2.tex` renders
+numbers only through macros (short closure names `CL-1`/`CL-2` are macros too);
+its results, catalogue-front, closure/width, audit-closure and scope statements
+are exact `\EvidenceClaim` bodies (CLM-054, CLM-056, CLM-057, CLM-058,
+CLM-059), the abstract sentence is CLM-053 and the labelled Discussion
+interpretation (first geometry-dependent optimisation at screening tier;
+ranking closure-dependent; saturated cells make most of the sweep space
+unreachable under CL-1) is CLM-060. CLM-035 and CLM-052 were amended so that
+the earlier "geometry link is open / consuming optimisation is future work"
+sentences point at Section 12.
+
+`check_paper.py` shares one checker (`_check_mdo_family`) between the two
+optimisation gates and adds, for this one, the prior-campaign, screening-dataset
+and post-hoc-audit bindings; it fails closed on any byte difference, artifact
+hash mismatch in either bundle, metric that differs (in value or type) from the
+raw artifact value behind its macro, policy metric off its fixed value, changed
+results tree of either campaign, results commit touching a path outside
+`results/`, dataset blob that differs between the screening record commit and
+HEAD, audit blob or disclosure list that differs, dashboard checkout that
+differs from the blob bound at the dashboard revision, literal digit or
+undefined macro in the section, classification/closure/sensitivity-closure or
+screening-classification macro that does not render its string, missing
+registered non-claim, or a `\MdbEvidenceRevision` macro that does not spell the
+manifest revision.
+
+```powershell
+python paper/scripts/generate_mdo_l0_v2_evidence.py
+python -m unittest discover -s paper/tests -p "test_mdo_l0_v2*" -v
 ```
 
 ## Admitted analytic consistency result: four-cell power-balance closure
