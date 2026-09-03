@@ -75,6 +75,19 @@
   `lsqnonlin` exit status) and the three-finding synthesis labelled as
   interpretation in the Discussion; never claim a numerical value of the
   unavailable legacy run.
+- [ ] Describe the wall-loss geometry screening only as
+  `SCREENING_L1A_FIELD_TEST_PARTICLE_WALL_LOSS` admitted at
+  `accepted-screening-dataset`: collisionless test particles in re-solved
+  L1a screening fields that are not P2-qualified; never accepted
+  physical-orbit evidence, never a plasma or performance quantity; launch cells
+  are protocol positions; geometry associations are observations, not a design
+  rule; surrogate and optimisation input only under its label.
+- [ ] Keep every number of the screening section a `\Wlg...` macro; never type
+  a digit into `paper/sections/wall-loss-geometry-screening-v1.tex`.
+- [ ] Keep the mirror-picture statement of the wall-loss campaign scoped to its
+  field (the screening records reflections in every design) and the
+  design-dependent optimisation that would consume the dataset labelled as
+  future work.
 
 ## Methods and uncertainty
 
@@ -104,6 +117,10 @@
   and confirm `git status` shows no change to the three generated closure
   files; any change to the plasma package requires re-admission at the new
   revision.
+- [ ] Run `python paper/scripts/generate_wall_loss_geometry_screening_v1_evidence.py`
+  (it re-verifies the 2,835-file bundle and recomputes every Wilson interval;
+  about twenty seconds) and confirm `git status` shows no change to the three
+  generated screening-dataset files.
 - [ ] Run `python paper/scripts/check_paper.py`.
 - [ ] Run `python -m unittest discover -s paper/tests -v`.
 - [ ] Run `python paper/scripts/verify_reproducible_build.py` and require two

@@ -119,6 +119,18 @@
       "verified_tree_revision": "ba6875f604746e8fbeaf2aee2bdf06b8f06bdc04",
       "mdo_preregistration_revision": "4898d0fd3decddc5f308072e724d1936660c00e9",
       "evidence_file": "paper/evidence/four-cell-closure.json"
+    },
+    "WALL-LOSS-GEOMETRY-SCREENING-V1-20260903-96-V1": {
+      "path": "paper/evidence/manifests/wall-loss-geometry-screening-v1.json",
+      "document_type": "paper-orbit-screening-manifest",
+      "schema_version": "1.0",
+      "gate_id": "GATE-WALL-LOSS-GEOMETRY-SCREENING-V1",
+      "gate_kind": "numerical-screening",
+      "recorded_outcome": "accepted-screening-dataset",
+      "evidence_revision": "ab7c28977963822b2ad6eac451d2bafef5185e6c",
+      "preregistration_revision": "c86bfca37fdf285f4f2a53a01c2f32f14516d868",
+      "dashboard_revision": "ab7c28977963822b2ad6eac451d2bafef5185e6c",
+      "evidence_file": "paper/evidence/wall-loss-geometry-screening-v1.json"
     }
   },
   "claims": [
@@ -336,7 +348,7 @@
       "id": "CLM-016",
       "status": "verified",
       "claim_class": "campaign-scope-limitation",
-      "authorized_tex": "Within a collisionless, prescribed-field, test-particle model (\\texttt{\\WlfClassification}), electrons launched in the two interior cells of the straight channel reach the dielectric on their first pass regardless of energy, pitch or direction, electrons launched beyond the dielectric end leave the domain, and only launches nearest the injector plane show any direction dependence. No orbit reflected (\\WlfPooledReflected{} of \\WlfPooledTrials), so a mirror or loss-cone description does not apply to this field and design (mirror-formula publication forbidden: \\WlfForbidMirror). The pooled fraction \\WlfPooledWallP{} is an equal-weight design average of a bimodal per-cell result and is not a physical loss rate. The result is not a particle-in-cell or self-consistent plasma calculation (forbidden: \\WlfForbidPic), not thruster performance (forbidden: \\WlfForbidPerformance), and carries no hardware or experimental validation (claimed: \\WlfHardwareValidation). The coupling export (\\texttt{\\WlfCouplingQuantity} $= \\WlfCouplingP \\pm \\WlfCouplingU$) has status \\texttt{\\WlfCouplingStatus}; no consumer model has ingested it.",
+      "authorized_tex": "Within a collisionless, prescribed-field, test-particle model (\\texttt{\\WlfClassification}), electrons launched in the two interior cells of the straight channel reach the dielectric on their first pass regardless of energy, pitch or direction, electrons launched beyond the dielectric end leave the domain, and only launches nearest the injector plane show any direction dependence. No orbit reflected (\\WlfPooledReflected{} of \\WlfPooledTrials), so a mirror or loss-cone description does not apply to this field and design (mirror-formula publication forbidden: \\WlfForbidMirror). The pooled fraction \\WlfPooledWallP{} is an equal-weight design average of a bimodal per-cell result and is not a physical loss rate. The result is not a particle-in-cell or self-consistent plasma calculation (forbidden: \\WlfForbidPic), not thruster performance (forbidden: \\WlfForbidPerformance), and carries no hardware or experimental validation (claimed: \\WlfHardwareValidation). The coupling export (\\texttt{\\WlfCouplingQuantity} $= \\WlfCouplingP \\pm \\WlfCouplingU$) has status \\texttt{\\WlfCouplingStatus}; at this campaign's admission no consumer had ingested it, and the first consumer of the export format, the geometry screening of Section~\\ref{sec:wall-loss-geometry-screening}, ingests it only as a labelled reference row and feeds it to no plasma or performance model.",
       "allowed_locations": ["Collisionless full-orbit electron wall loss in the divergent-exit field"],
       "manifest_ids": ["WALL-LOSS-V4-20260902-4608-V1"],
       "classification": "collisionless_prescribed_field_test_particle_wall_loss_not_pic",
@@ -344,7 +356,7 @@
         "model-bounded restatement of the per-cell outcome",
         "absence of reflections and the sealed publication boundary flags",
         "design-average status of the pooled fraction",
-        "unconsumed coupling export"
+        "coupling export consumed only as a labelled reference row by the geometry screening's verifying consumer"
       ],
       "prohibited_inferences": [
         "particle-in-cell or self-consistent plasma behaviour",
@@ -1112,6 +1124,238 @@
       ]
     },
     {
+      "id": "CLM-045",
+      "status": "verified",
+      "claim_class": "screening-summary",
+      "authorized_tex": "A preregistered one-shot wall-loss screening of \\WlgOrbitCount{} collisionless test-particle electron orbits across the \\WlgDesignCount{} accepted geometry-sweep designs, each in its re-solved linear-vacuum screening field, is admitted as a screening dataset at its label: the per-design wall-hit probability spans \\WlgWallPMin{} to \\WlgWallPMax{} (median \\WlgWallPMedian), every design converged under timestep halving and every design recorded reflections, and the dataset is surrogate and optimisation input only, not physical-orbit, plasma or performance evidence.",
+      "allowed_locations": [
+        "Abstract"
+      ],
+      "manifest_ids": [
+        "WALL-LOSS-GEOMETRY-SCREENING-V1-20260903-96-V1"
+      ],
+      "classification": "SCREENING_L1A_FIELD_TEST_PARTICLE_WALL_LOSS",
+      "recorded_outcome": "accepted-screening-dataset",
+      "permitted_scope": [
+        "existence, preregistered one-shot status and recorded outcome of the admitted screening dataset",
+        "macro-bound orbit and design counts and the wall-hit probability range and median",
+        "convergence of every design under timestep halving and the presence of reflections in every design as detailed by CLM-046 and CLM-048",
+        "the screening-input-only boundary"
+      ],
+      "prohibited_inferences": [
+        "accepted physical-orbit evidence of the kind admitted for the P2-qualified wall-loss campaign",
+        "a physical electron loss rate, plasma state, confinement or thruster performance",
+        "a design rule from the wall-hit probability range",
+        "hardware or experimental validation"
+      ]
+    },
+    {
+      "id": "CLM-046",
+      "status": "verified",
+      "claim_class": "quantitative-screening-result",
+      "authorized_tex": "The single execution terminated in state \\texttt{\\WlgTerminalState} with campaign status \\texttt{\\WlgCampaignStatus}: \\WlgDesignCount{} of \\WlgDeclaredDesigns{} declared designs (\\WlgPrimaryCount{} non-dominated and \\WlgExtensionCount{} extension designs; \\WlgExcludedDesigns{} excluded) were screened in \\WlgCaseCount{} cases of \\WlgLaunchesPerCase{} launches, \\WlgOrbitCount{} orbits in all, with \\WlgValidatorsPassed{} validator calls and \\WlgValidatorsFailed{} failures, \\WlgSealedCases{} of \\WlgCaseCount{} cases sealed and re-integrated by the exact authority replay (\\WlgReplayCount{} replays), \\WlgTimeouts{} timeouts, \\WlgNumericalFailures{} numerical failures and a largest relative kinetic-energy drift of \\WlgEnergyErrorMax{} against a gate of \\WlgEnergyGate. Within the model classified as \\texttt{\\WlgClassification}, the per-design wall-hit probability at the reported timestep lies between \\WlgWallPMin{} and \\WlgWallPMax{} (median \\WlgWallPMedian, mean \\WlgWallPMean) with \\texttt{\\WlgIntervalMethod} intervals; halving the maximum gyro-rotation per step from \\WlgRotationN{} to \\WlgRotationTwoN{}~rad changed the wall-hit probability of every design by at most \\WlgMaxSuccessiveChange{} (mean \\WlgMeanSuccessiveChange; \\WlgZeroChangeDesigns{} designs unchanged) against the screening gate of \\WlgMaxChangeGate{} with overlapping intervals, so \\WlgConvergedDesigns{} of \\WlgDesignCount{} designs converged, and the refined-field re-solve moved the \\WlgRepresentativeCount{} representatives by at most \\WlgRefinedSensitivityMax. The three least wall-loss designs are \\texttt{\\WlgLeastOneId} (\\WlgLeastOneP{} [\\WlgLeastOneLo, \\WlgLeastOneHi]), \\texttt{\\WlgLeastTwoId} (\\WlgLeastTwoP) and \\texttt{\\WlgLeastThreeId} (\\WlgLeastThreeP), and the three most are \\texttt{\\WlgMostOneId} (\\WlgMostOneP{} [\\WlgMostOneLo, \\WlgMostOneHi]), \\texttt{\\WlgMostTwoId} (\\WlgMostTwoP) and \\texttt{\\WlgMostThreeId} (\\WlgMostThreeP).",
+      "allowed_locations": [
+        "Collisionless test-particle wall loss across the accepted sweep designs"
+      ],
+      "manifest_ids": [
+        "WALL-LOSS-GEOMETRY-SCREENING-V1-20260903-96-V1"
+      ],
+      "gate_id": "GATE-WALL-LOSS-GEOMETRY-SCREENING-V1",
+      "classification": "SCREENING_L1A_FIELD_TEST_PARTICLE_WALL_LOSS",
+      "recorded_outcome": "accepted-screening-dataset",
+      "evidence_level": "numerical-screening",
+      "evidence_level_justification": "The study is a preregistered, single-execution numerical screening of a design space: collisionless prescribed-field test-particle electron orbits integrated in the re-solved linear-vacuum L1a equivalent-current fields of every one of the 96 accepted geometry-sweep-v2 designs, with identity proven against the sealed sweep record before any orbit. Its recorded outcome is an accepted screening dataset (campaign status accepted_screening_dataset), so the numerical-screening gate admits it at a fourth outcome value, accepted-screening-dataset, through the same mechanism as the other screening studies (typed committed manifest, artifacts bound by Git blob and SHA-256 at a resolvable revision, exact registered claim text, generated artifacts with sidecars, a study-specific checker). It is not the numerical-campaign evidence of GATE-WALL-LOSS-V4: that campaign integrated one P2-qualified finite-element field, whereas these fields are L1a screening fields and not P2-qualified, so nothing here is accepted physical-orbit evidence. It is not the L1 field-resolved reduction of GATE-L1 (no manufactured solution, no refinement study beyond the four representatives' diagnostic, no L0 mapping, no performance model), not L2 (no plasma coupling; the coupling handoffs are consumed by a verifying consumer, not a plasma network) and not L3, and it opens no physics level. The dataset is surrogate and optimisation input only when carried with its label.",
+      "bindings": {
+        "evidence_file": "paper/evidence/wall-loss-geometry-screening-v1.json",
+        "evidence_macros": "every \\Wlg... macro in the authorized text is defined in paper/generated/wall-loss-geometry-screening-v1.tex and bound in the evidence file to an artifact path, JSON pointer, formatter and SHA-256, or to a stated derivation over such inputs",
+        "results_commit": "ab7c28977963822b2ad6eac451d2bafef5185e6c",
+        "preregistration_commit": "c86bfca37fdf285f4f2a53a01c2f32f14516d868",
+        "dashboard_commit": "ab7c28977963822b2ad6eac451d2bafef5185e6c"
+      },
+      "non_claims": [
+        "no number here is accepted physical-orbit evidence",
+        "not a plasma or performance quantity",
+        "publishes no mirror-formula loss estimate",
+        "carries no hardware or experimental validation",
+        "the launch cells are protocol positions, not demonstrated confinement cells",
+        "the ordering of designs is an observation, not a design rule",
+        "opens no physics level"
+      ],
+      "permitted_scope": [
+        "terminal state, campaign status, design, case, launch, validator, seal, replay, timeout, failure and energy-drift counts of the single execution",
+        "per-design wall-hit probability range, median and mean at the reported timestep with Wilson intervals",
+        "convergence under timestep halving against the preregistered screening gate and the refined-field sensitivity of the representatives",
+        "the three least and three most wall-loss designs with their probabilities and intervals as sealed"
+      ],
+      "prohibited_inferences": [
+        "accepted physical-orbit evidence of the kind admitted for the P2-qualified wall-loss campaign",
+        "a physical electron loss rate, plasma state, confinement or thruster performance",
+        "particle-in-cell or self-consistent plasma behaviour",
+        "a design rule or optimum from the least and most wall-loss designs",
+        "hardware or experimental validation",
+        "generalization to other fields, collisional regimes, energies or launch designs"
+      ]
+    },
+    {
+      "id": "CLM-047",
+      "status": "verified",
+      "claim_class": "quantitative-generated-table",
+      "authorized_artifact_ids": [
+        "TAB-WALL-LOSS-GEOMETRY-SCREENING-V1"
+      ],
+      "allowed_locations": [
+        "Collisionless test-particle wall loss across the accepted sweep designs"
+      ],
+      "manifest_ids": [
+        "WALL-LOSS-GEOMETRY-SCREENING-V1-20260903-96-V1"
+      ],
+      "permitted_scope": [
+        "dataset summary and convergence counts as sealed in campaign-result.json, gates.json and the dataset",
+        "the least and most wall-loss designs with their sealed geometry, probabilities and intervals",
+        "per-cell wall-hit distribution, saturation counts and pooled per-cell counts at the reported timestep",
+        "termination classes and escape sub-classes summed over the reported timestep and over every case"
+      ],
+      "prohibited_inferences": [
+        "physical loss rates or plasma quantities",
+        "a design rule from the extreme designs",
+        "cell structure of a plasma"
+      ]
+    },
+    {
+      "id": "CLM-048",
+      "status": "verified",
+      "claim_class": "quantitative-screening-result",
+      "authorized_tex": "Every one of the \\WlgDesignCount{} designs recorded reflections (\\WlgDesignsWithReflections{} of \\WlgDesignCount): between \\WlgReflectionsMin{} and \\WlgReflectionsMax{} of the \\WlgLaunchesPerCase{} launches per design at the reported timestep (\\WlgReflectionsTwoN{} of \\WlgTrialsTwoN, \\WlgReflectionShareTwoN) and \\WlgReflectionsTotal{} of \\WlgOrbitCount{} orbits over every case (\\WlgReflectionShareAll), where the prior campaign's single P2-qualified design had recorded none; the per-design reflection probability runs from \\WlgReflectedPMin{} to \\WlgReflectedPMax{} (median \\WlgReflectedPMedian). Domain escape ranges from \\WlgEscapePMin{} to \\WlgEscapePMax{} per design (median \\WlgEscapePMedian; \\WlgZeroEscapeDesigns{} designs without an escape): of the \\WlgEscapesTwoN{} escapes at the reported timestep, \\WlgEscapeAnode{} left through the anode plane, \\WlgEscapeExit{} through the exit plane and \\WlgEscapeDivergent{} radially into a divergent exit section (\\WlgEscapeUnclassified{} unclassified; \\WlgDivergentDesigns{} of the designs have a divergent exit and \\WlgStraightDesigns{} are straight over their full length). The per-cell mean wall-hit probabilities over the designs are \\WlgCellOneMean, \\WlgCellTwoMean, \\WlgCellThreeMean{} and \\WlgCellFourMean{} from the anode-side to the exit-side cell; \\WlgCellsSaturatedOne{} of the \\WlgDesignCells{} design-cells lost every launch to the wall and \\WlgCellsSaturatedZero{} lost none, so no design reproduces the all-or-nothing per-cell pattern of the prior campaign's design.",
+      "allowed_locations": [
+        "Collisionless test-particle wall loss across the accepted sweep designs"
+      ],
+      "manifest_ids": [
+        "WALL-LOSS-GEOMETRY-SCREENING-V1-20260903-96-V1",
+        "WALL-LOSS-V4-20260902-4608-V1"
+      ],
+      "classification": "SCREENING_L1A_FIELD_TEST_PARTICLE_WALL_LOSS",
+      "recorded_outcome": "accepted-screening-dataset",
+      "permitted_scope": [
+        "reflection counts and shares per design, at the reported timestep and over every case, and the fact that every design recorded reflections",
+        "escape probabilities and the post-hoc escape sub-classes as sealed",
+        "per-cell mean wall-hit probabilities and design-cell saturation counts at the reported timestep",
+        "the contrast with the zero reflections and all-or-nothing per-cell pattern of the P2-qualified campaign, stated as recorded"
+      ],
+      "prohibited_inferences": [
+        "that reflection means confinement, or any physical electron population statement",
+        "mirror or loss-cone wall-loss formulas for these fields",
+        "existence or stability of confinement cells in the explored design space",
+        "a design rule from the per-cell pattern"
+      ]
+    },
+    {
+      "id": "CLM-049",
+      "status": "verified",
+      "claim_class": "quantitative-screening-result",
+      "authorized_tex": "Across the \\WlgDesignCount{} designs, whose chamber lengths span \\WlgLengthMinMm{} to \\WlgLengthMaxMm{}~mm and wall radii \\WlgRadiusMinMm{} to \\WlgRadiusMaxMm{}~mm with \\WlgStageCounts{} magnet stages, the three least wall-loss designs have chamber lengths of \\WlgLeastLengthMinMm{} to \\WlgLeastLengthMaxMm{}~mm (ascending length ranks \\WlgLeastLengthRankMin{} to \\WlgLeastLengthRankMax{} of \\WlgDesignCount) and wall radii of \\WlgLeastRadiusMinMm{} to \\WlgLeastRadiusMaxMm{}~mm, against \\WlgMostLengthMinMm{} to \\WlgMostLengthMaxMm{}~mm (ranks \\WlgMostLengthRankMin{} to \\WlgMostLengthRankMax) and \\WlgMostRadiusMinMm{} to \\WlgMostRadiusMaxMm{}~mm for the three most; over all designs, however, the Spearman rank correlation of the wall-hit probability is \\WlgRhoLength{} with the chamber length and \\WlgRhoRadius{} with the wall radius, against \\WlgRhoPitch{} with the stage pitch, \\WlgRhoStages{} with the stage count, \\WlgRhoMirror{} with the sweep's minimum mirror ratio, \\WlgRhoMu{} with the median magnetic-moment variation and \\WlgRhoReflected{} with the reflection probability. These are observations of this screening on linear-vacuum fields at one launch design; none is a design rule, and no geometry-to-loss map is claimed beyond the dataset itself.",
+      "allowed_locations": [
+        "Collisionless test-particle wall loss across the accepted sweep designs"
+      ],
+      "manifest_ids": [
+        "WALL-LOSS-GEOMETRY-SCREENING-V1-20260903-96-V1"
+      ],
+      "classification": "SCREENING_L1A_FIELD_TEST_PARTICLE_WALL_LOSS",
+      "recorded_outcome": "accepted-screening-dataset",
+      "permitted_scope": [
+        "geometry ranges of the screened design set and of the three least and three most wall-loss designs as sealed",
+        "Spearman rank correlations of the wall-hit probability with sealed geometry and field descriptors, stated as observations of this screening",
+        "the explicit statement that none of these is a design rule"
+      ],
+      "prohibited_inferences": [
+        "a design rule, optimum or causal geometry-to-loss relation",
+        "a geometry-to-loss map beyond the dataset itself",
+        "generalization to other fields, launch designs or design spaces",
+        "any performance or plasma consequence of the associations"
+      ]
+    },
+    {
+      "id": "CLM-050",
+      "status": "verified",
+      "claim_class": "quantitative-screening-result",
+      "authorized_tex": "The experiment's consumer (\\texttt{\\WlgConsumerId}) is the first consumer of the orbit\\_mc coupling export format (\\texttt{\\WlgHandoffSchema}): it re-derives the binomial fraction, the Wilson interval and the standard uncertainty of every handoff, enforces the closed schema and hash patterns, and binds each handoff to its sealed orbit artifact (\\WlgConsumerChecks{} checks: \\WlgConsumerCheckList); it consumed \\WlgConsumedVerified{} of \\WlgConsumedDesigns{} screening handoffs as verified handoffs and the prior campaign's export (design \\texttt{\\WlgVFourDesignId}, \\texttt{\\WlgVFourFieldQualification}, wall-loss probability \\WlgVFourP{} [\\WlgVFourLo, \\WlgVFourHi] over \\WlgVFourTrials{} launches, result commit \\texttt{\\WlgVFourResultCommit}) as a labelled reference row that is absent from the screening set (in screening set: \\WlgVFourInScreeningSet; consumed: \\WlgVFourConsumed). Every handoff still carries the integration status \\texttt{\\WlgHandoffIntegrationStatus} written by the exporter; the consumer verifies and records the export, it does not feed a plasma or performance model.",
+      "allowed_locations": [
+        "Collisionless test-particle wall loss across the accepted sweep designs"
+      ],
+      "manifest_ids": [
+        "WALL-LOSS-GEOMETRY-SCREENING-V1-20260903-96-V1",
+        "WALL-LOSS-V4-20260902-4608-V1"
+      ],
+      "classification": "SCREENING_L1A_FIELD_TEST_PARTICLE_WALL_LOSS",
+      "recorded_outcome": "accepted-screening-dataset",
+      "permitted_scope": [
+        "the consumer's checks and the count of screening handoffs consumed as verified handoffs",
+        "the consumption of the prior campaign's export as a labelled reference row absent from the screening set, with its sealed probability, interval and trial count",
+        "the integration status string carried by every handoff, quoted as recorded"
+      ],
+      "prohibited_inferences": [
+        "that any plasma or performance model has ingested the export",
+        "a coupled plasma result or an opened L2 gate",
+        "any physical meaning of the reference row beyond the wall-loss campaign's own claims"
+      ]
+    },
+    {
+      "id": "CLM-051",
+      "status": "verified",
+      "claim_class": "screening-scope-limitation",
+      "authorized_tex": "The dataset is screening only, classified \\texttt{\\WlgClassification} and admitted at the recorded outcome \\texttt{\\WlgRecordedOutcome}: its fields are the re-solved linear-vacuum \\WlgFieldModelLevel{} screening fields of the accepted sweep (status \\texttt{\\WlgFieldStatus}), not P2-qualified (\\WlgNotPTwoQualified), so no number here is accepted physical-orbit evidence (\\WlgNotAcceptedPhysicalOrbit); the orbits are collisionless prescribed-field test particles without electric field, collisions, sheath or self-consistent plasma; the result is not a particle-in-cell or self-consistent plasma calculation (forbidden: \\WlgForbidPic), not a plasma or performance quantity (forbidden: \\WlgForbidPerformance), publishes no mirror-formula loss estimate (forbidden: \\WlgForbidMirror) and carries no hardware or experimental validation (claimed: \\WlgHardwareValidation); the launch cells are protocol positions, not demonstrated confinement cells, and the ordering of designs is an observation, not a design rule. The dataset is usable as \\WlgUsableAs, each use carrying the label, and it opens no physics level.",
+      "allowed_locations": [
+        "Collisionless test-particle wall loss across the accepted sweep designs"
+      ],
+      "manifest_ids": [
+        "WALL-LOSS-GEOMETRY-SCREENING-V1-20260903-96-V1"
+      ],
+      "classification": "SCREENING_L1A_FIELD_TEST_PARTICLE_WALL_LOSS",
+      "recorded_outcome": "accepted-screening-dataset",
+      "permitted_scope": [
+        "model-bounded restatement of the dataset's classification, recorded outcome, field status and sealed claim boundary",
+        "the permitted uses of the dataset exactly as sealed, each carrying the label"
+      ],
+      "prohibited_inferences": [
+        "accepted physical-orbit evidence",
+        "plasma, confinement or performance quantities",
+        "mirror-formula loss estimates",
+        "hardware or experimental validation",
+        "opening of GATE-L1, GATE-L2 or GATE-L3"
+      ]
+    },
+    {
+      "id": "CLM-052",
+      "status": "verified",
+      "claim_class": "interpretation",
+      "authorized_tex": "The mirror-picture statement of Section~\\ref{sec:wall-loss-v4} is scoped to the field it was made in: the collisionless campaign on the qualified divergent-exit field recorded \\WlfPooledReflected{} reflections, whereas the screening of Section~\\ref{sec:wall-loss-geometry-screening} recorded reflections in every one of its \\WlgDesignsWithReflections{} linear-vacuum sweep designs (\\WlgReflectionShareAll{} of \\WlgOrbitCount{} orbits) and saturated only \\WlgCellsSaturatedOne{} of \\WlgDesignCells{} design-cells, so the absence of reflections and the all-or-nothing per-cell pattern are properties of that design and field within the collisionless model, not of the model or of the design space; whether a reflection means confinement in any of these fields is not decided by collisionless test particles. Read as interpretation, the screening supplies, at screening tier and under its label, the geometry-to-wall-loss map that the optimisation campaign of Section~\\ref{sec:mdo-l0} lacked; a design-dependent optimisation that consumes it is future work, none of its outputs is admitted here, and the geometry-to-performance link stays open until a map from these fields to the operating-point model is admitted.",
+      "allowed_locations": [
+        "Discussion"
+      ],
+      "manifest_ids": [
+        "WALL-LOSS-GEOMETRY-SCREENING-V1-20260903-96-V1",
+        "WALL-LOSS-V4-20260902-4608-V1"
+      ],
+      "evidence": [
+        "SRC-AUDIT",
+        "SRC-PROVENANCE"
+      ],
+      "bibliography": [
+        "Muffatti2017"
+      ],
+      "permitted_scope": [
+        "model-bounded scoping of the wall-loss campaign's zero-reflection statement to its own field and design, against the recorded reflections of the screening",
+        "the labelled interpretation that the screening is the geometry-to-wall-loss bridge at screening tier, with the design-dependent optimisation stated as future work",
+        "the open status of the geometry-to-performance link"
+      ],
+      "prohibited_inferences": [
+        "that reflection means confinement or any physical electron population statement",
+        "mirror behaviour in collisional or self-consistent regimes",
+        "existence or stability of a multi-cell wall-cusp topology",
+        "any outcome of a future design-dependent optimisation",
+        "opening of GATE-L1, GATE-L2 or GATE-L3"
+      ]
+    },
+    {
       "id": "GATE-L1",
       "status": "evidence-gate",
       "gate_registry_id": "GATE-L1"
@@ -1176,6 +1420,15 @@
       "kind": "analytic-consistency",
       "gate_status": "accepted",
       "manifest_id": "FOUR-CELL-CLOSURE-20260903-R27-V1"
+    },
+    {
+      "id": "GATE-WALL-LOSS-GEOMETRY-SCREENING-V1",
+      "status": "evidence-gate",
+      "gate_registry_id": "GATE-WALL-LOSS-GEOMETRY-SCREENING-V1",
+      "kind": "numerical-screening",
+      "gate_status": "accepted",
+      "recorded_outcome": "accepted-screening-dataset",
+      "manifest_id": "WALL-LOSS-GEOMETRY-SCREENING-V1-20260903-96-V1"
     }
   ]
 }

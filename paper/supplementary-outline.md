@@ -128,6 +128,41 @@
   thruster; that the correction is not accepted; that the legacy-study
   consequence is interpretation; and that no value of the legacy run is claimed.
 
+## S4f. Wall-loss geometry screening (accepted screening dataset)
+
+- Typed screening manifest
+  `paper/evidence/manifests/wall-loss-geometry-screening-v1.json` and the
+  evidence file `paper/evidence/wall-loss-geometry-screening-v1.json`.
+- Preregistration commit `c86bfca3` (frozen protocol, authorities, shakedown,
+  design authorities), record commit `ab7c2897` (sealed bundle of 2,835 files;
+  results dashboard regenerated in the same commit).
+- Field provenance: the accepted sweep-v2 fields re-solved on the CPU with the
+  accepted L1a solver, identity proven per design (geometry/source/config/case
+  hashes, QoI replay within the sweep's tolerances, node-wise agreement of the
+  four stored representative maps), interpolation and cross-resolution
+  diagnostics with the cross-resolution recorded for the four representatives
+  only.
+- Launch design verbatim: four cells at 1/8, 3/8, 5/8, 7/8 of the straight
+  span, two radii, energies {5, 25} eV, pitches {20, 70} degrees, both
+  directions, eight gyrophases (offset 11 pi/96), 512 launches per case,
+  timestep policies N and 2N, refined-N for the representatives.
+- Per-design records: wall-hit, reflection, escape and timeout probabilities
+  with Wilson intervals, convergence flag, per-cell and per-stratum counts,
+  escape sub-classes, magnetic-moment diagnostic, tolerance-close share.
+- Tables regenerated at every check: dataset summary and convergence, least
+  and most wall-loss designs with sealed geometry, per-cell distribution and
+  saturation, termination classes; derived Spearman rank correlations with
+  chamber length, wall radius, stage pitch, stage count, minimum mirror ratio,
+  magnetic-moment variation and reflection probability.
+- Coupling-consumer record: every handoff consumed as a verified handoff; the
+  wall-loss campaign's export consumed as a labelled reference row absent from
+  the screening set.
+- Explicit statements that the fields are not P2-qualified and the dataset is
+  never accepted physical-orbit, plasma or performance evidence; that launch
+  cells are protocol positions; that the geometry associations are
+  observations and not a design rule; and that the dataset is surrogate and
+  optimisation input only under its label.
+
 ## S5. Controlled performance benchmark
 
 This supplement remains closed until a benchmark manifest records kernel

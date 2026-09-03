@@ -308,3 +308,45 @@
 - [tool] Importing the package under test from the checkout must be verified
   (`module.__file__` under `modern/src`); an installed `cft_revival` elsewhere
   on `sys.path` would silently recompute with the wrong code.
+
+## 2026-09-03 - Admitting the wall-loss geometry screening
+
+- [self] Verify the brief's qualitative trend before writing it as a claim:
+  "longer channels / larger wall radius lose least" holds for the three
+  least-loss designs but not for the population (Spearman rho -0.05 with
+  length, -0.12 with radius over 96 designs; the strongest geometric
+  associations are stage pitch +0.36 and stage count -0.31). Report the
+  extremes and the rank correlations as macro-bound observations and say
+  explicitly that none is a design rule.
+- [self] Read the implementation, not only the protocol: the protocol says the
+  refined re-solve and cross-resolution diagnostic apply to every design, but
+  `designs.py` computes them only for `include_refined` representatives and
+  the check passes vacuously otherwise (92 nulls in the dataset). Derive the
+  count from the data (`WlgCrossResolutionDesigns` = 4) and state the scope in
+  the section, Limitations and manifest.
+- [self] A new outcome value is cheaper and more honest than a new gate kind
+  when the object is still a design-space screening on L1a fields: extend
+  `SCREENING_OUTCOMES`, the kind description and the notation, keep the kind's
+  bundle/preregistration rules, and give the study its own manifest type and
+  checker because its bundle shape (experiment_runtime sidecars, dashboard) is
+  the MDO shape, not the sweep shape.
+- [self] Re-implement the interval estimator operation for operation and
+  require exact equality: the orbit_mc Wilson formula reproduces every sealed
+  bound bit for bit (784 case estimates, 1,536 cell estimates); a tolerance
+  would only have hidden a defect.
+- [self] A statement that was true at an earlier admission ("no consumer model
+  has ingested it", CLM-016) turns false when a later admission closes the gap;
+  amend the registered claim and its section verbatim together, give the new
+  `\ref` target to the earlier standalone driver, and assert the old wording's
+  absence in a test.
+- [self] Keep the section free of another study's macros (`\Wlf...`): bind the
+  cross-study contrast through this bundle's own frozen protocol disclosure
+  (`\WlgVFourHeadline`) inside the section and use the other study's macro only
+  in the Discussion claim that is bound to both manifests.
+- [tool] Compile the manuscript into `%TEMP%` with the same flags as `build.py`
+  before the commit gate forces a round trip: `build.py` refuses to compile
+  while the manifest is uncommitted, and the only overfull box (6.5 pt in a
+  12-column `\scriptsize` table) was found this way.
+- [tool] PowerShell mangles quotes and regex backslashes in `python -c`; put
+  even ten-line probes into `%TEMP%` scripts (`explore.py`, `verify_numbers.py`,
+  `build_manifest.py`, `claims_snippets.py`) and run them by path.

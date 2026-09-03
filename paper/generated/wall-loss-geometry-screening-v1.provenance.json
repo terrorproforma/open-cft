@@ -1,0 +1,3104 @@
+{
+  "artifact_id": "TAB-WALL-LOSS-GEOMETRY-SCREENING-V1",
+  "bundle_manifest": {
+    "git_blob": "ff3b3cd8a4cb59047b6856031faaadb941f11877",
+    "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/manifest.json",
+    "sha256": "39bd52133fefd3adae45e9593e7312b8e9027322ca3142d59912bbc13e2e027a"
+  },
+  "claim_ids": [
+    "CLM-047"
+  ],
+  "claim_status": "authorized by CLM-047 (quantitative-generated-table) in paper/evidence/claims.json; admitted through GATE-WALL-LOSS-GEOMETRY-SCREENING-V1 (numerical-screening, recorded outcome accepted-screening-dataset)",
+  "dashboard": {
+    "generator_path": "modern/visualization/generate_wall_loss_geometry_screening_dashboard.py",
+    "generator_sha256_lf": "bc7e9fdc56b7d7fada1f8b9c0a7b16a3b877feffa56c25c8434a7f9f2ac972fc",
+    "html_path": "modern/visualization/wall-loss-geometry-screening-v1.html",
+    "html_schema": "cft-revival.wall-loss-geometry-screening-v1-dashboard/1.0.0",
+    "html_sha256_lf": "9f48e2ba6b91f0fed3dd7efecaee9829ca5a5f7ae9319dc6d8a90e51984ae16a",
+    "payload_manifest_sha256": "39bd52133fefd3adae45e9593e7312b8e9027322ca3142d59912bbc13e2e027a",
+    "rule": "the committed dashboard verifies the bundle against its manifest, embeds its own extraction of the dataset and pins the manifest SHA-256 and the preregistration commit; the generator requires that extraction (identity, headline, every per-design estimate and convergence flag, gate and consumer counts) to equal the sealed artifacts before writing any macro",
+    "template_path": "modern/visualization/wall-loss-geometry-screening-v1.template.html",
+    "template_sha256_lf": "404fae6c2a4d69a07c88b2394cb4f6eaab2fd0c20da5390e8b374a7c6be03018"
+  },
+  "document_type": "paper-generated-artifact-provenance",
+  "evidence_revision": "ab7c28977963822b2ad6eac451d2bafef5185e6c",
+  "generator": {
+    "command": "python paper/scripts/generate_wall_loss_geometry_screening_v1_evidence.py",
+    "path": "paper/scripts/generate_wall_loss_geometry_screening_v1_evidence.py",
+    "sha256": "d6a826f4162cd700d3904b289799fbf95a33cebc00b16ebe82e9ae2ae15fc270"
+  },
+  "inputs": [
+    {
+      "bytes": 3012,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/authorities.json",
+      "sha256": "8dd3be5e1d38938b3cb77bcecd1868c9bee5083484a3ffa367686ca4f52e28d2"
+    },
+    {
+      "bytes": 3001,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/campaign-plan.json",
+      "sha256": "df96e15d5f70874168c6e3e03ffc2bac00aeeff8226966a613e36f2a70d62031"
+    },
+    {
+      "bytes": 63436,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/campaign-result.json",
+      "sha256": "e556efaa99fb6eb2759ae622fd16c6e2105ad5fc2224a6aa4523c21ef26b6672"
+    },
+    {
+      "bytes": 132720,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/coupling-consumer-record.json",
+      "sha256": "0a716a184c27d79aee1b24f8c27a593f38664dbbd69cb0b3210030cabff6a5ec"
+    },
+    {
+      "bytes": 636523,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/design-authorities.json",
+      "sha256": "43dcd6de36a4d7afdba9abe9c35cd581919dc0398ac116a454abbad49dbcf2f5"
+    },
+    {
+      "bytes": 388,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/design-exclusions.json",
+      "sha256": "a315138f0b4d68c290bfe8de7606fe747ee43e6f85591413998c3da71f78d2d6"
+    },
+    {
+      "bytes": 32377,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/endpoints/l1a-gs-v2-000-48d2ccedd5--accepted-2N.json.gz",
+      "sha256": "66723eccb7d77c193924a4b5eb367150b47567ac18a0dc66bab016102977e5d7"
+    },
+    {
+      "bytes": 32197,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/endpoints/l1a-gs-v2-000-48d2ccedd5--accepted-N.json.gz",
+      "sha256": "b59b6929c016ba370d91c9f719077bc159a7507e92b6dfd928b8c5a5d90c6bcd"
+    },
+    {
+      "bytes": 32219,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/endpoints/l1a-gs-v2-000-48d2ccedd5--refined-N.json.gz",
+      "sha256": "2647612c012090e6970b15b0d97de6953bab6ce9df396695df47a4226f65b012"
+    },
+    {
+      "bytes": 32608,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/endpoints/l1a-gs-v2-032-570ad83ba6--accepted-2N.json.gz",
+      "sha256": "4b1283ae072e00ee0e7696c40e450395d67c670d5e1063e534be2f6ad3125e4f"
+    },
+    {
+      "bytes": 32368,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/endpoints/l1a-gs-v2-032-570ad83ba6--accepted-N.json.gz",
+      "sha256": "b23119e35f484dc86c3b022ab3d0fd29c041c125951eecba618e12b2f1236c43"
+    },
+    {
+      "bytes": 32289,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/endpoints/l1a-gs-v2-032-570ad83ba6--refined-N.json.gz",
+      "sha256": "4e6144f03949f40d997278e7463363a46dbb073c7956592c15e375754435927f"
+    },
+    {
+      "bytes": 33046,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/endpoints/l1a-gs-v2-065-9e98f08f3b--accepted-2N.json.gz",
+      "sha256": "808c0a459792970584be7409f4bd247c045bcbf0dffaefe82f915b0c28c525a6"
+    },
+    {
+      "bytes": 32887,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/endpoints/l1a-gs-v2-065-9e98f08f3b--accepted-N.json.gz",
+      "sha256": "e7f2c155bee411e1b4cc980a6afe8830241e8d7be6f36caeb603798bee191f9a"
+    },
+    {
+      "bytes": 32794,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/endpoints/l1a-gs-v2-065-9e98f08f3b--refined-N.json.gz",
+      "sha256": "802f6d22618f0e145ea8a467fbaaf0b360e2733992a08eb8f03c11514e9adb35"
+    },
+    {
+      "bytes": 32468,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/endpoints/l1a-gs-v2-068-375d1b1b13--accepted-2N.json.gz",
+      "sha256": "6aae479ee547ee3ddd407d3efa0cbf36804dc2e8647a9a1b15cfa8aeba12cc11"
+    },
+    {
+      "bytes": 32372,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/endpoints/l1a-gs-v2-068-375d1b1b13--accepted-N.json.gz",
+      "sha256": "548517b575fa1433e9b1c1911dcabfb234d077b7175baf1f2085b61d53569b7e"
+    },
+    {
+      "bytes": 32235,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/endpoints/l1a-gs-v2-068-375d1b1b13--refined-N.json.gz",
+      "sha256": "a8125e7334b4ec193f81d0542d04562150fb5f30e19dc1e073c66f9b66ca5961"
+    },
+    {
+      "bytes": 6540,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-000-48d2ccedd5.json",
+      "sha256": "d868b6060c6bd68bce7b6fdf97c8c02593860c889739001a3a40cc97184464ca"
+    },
+    {
+      "bytes": 5344,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-001-0830ddda40.json",
+      "sha256": "bda17068a952d038c87db564300110787f10486df5b85ac5645d7d286142a9bd"
+    },
+    {
+      "bytes": 5218,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-002-48c4d2e317.json",
+      "sha256": "ab54c36b22f7275a325caed1792a1fe6ec9a68e3c62602077363934001c5ae01"
+    },
+    {
+      "bytes": 4969,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-003-b98d8da7bf.json",
+      "sha256": "68eed17c391a2cba5cadd01be1881b0838db02ff5dc4ff084e892090afb86734"
+    },
+    {
+      "bytes": 5388,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-004-72b1c5ba70.json",
+      "sha256": "bbb6106e333635baa64ec0c54d96f3a792a8ac68fd38f1de07b8a69fd83746bf"
+    },
+    {
+      "bytes": 5075,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-005-942c2d458e.json",
+      "sha256": "f433897973243175b64452074097295e4d01cfe4f0540f640eafd1ae3c3f307f"
+    },
+    {
+      "bytes": 5336,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-006-110b30a28a.json",
+      "sha256": "13844f09816bd95eba2c439244f36b21488b480b2756d2d9c82cf04c82ffdacb"
+    },
+    {
+      "bytes": 5174,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-007-9ea145255a.json",
+      "sha256": "2431bec197beca5894d34428a61e0ab4b561a0a6170a996292a26768b0cec7b1"
+    },
+    {
+      "bytes": 5174,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-008-b45d1d67d2.json",
+      "sha256": "d9767f3fbbbe19d0e1a4fa26357d3505d3a620fb13dbfdd6d3d80d0751659f37"
+    },
+    {
+      "bytes": 5211,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-009-4d592518ca.json",
+      "sha256": "c4e6d19350429a52ad1c42190b2f9fe6463ac61e270d1c050e2bd530ce8cceaf"
+    },
+    {
+      "bytes": 5210,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-010-7aa8cd8bce.json",
+      "sha256": "64d71f9123ea92930b3186f38c1c621a017dd9fb7ea630dac88ac67bd0906f6a"
+    },
+    {
+      "bytes": 5234,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-011-eabda2c05f.json",
+      "sha256": "485df8292143cfa29eea8843bc442e6944c4709558cf0abb500c102021676b93"
+    },
+    {
+      "bytes": 5255,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-012-861e265ea9.json",
+      "sha256": "5c812f2768d0c5f998ac694288c2488cf153d3c9b44475d1ac8d7bcc8bfb6ef0"
+    },
+    {
+      "bytes": 5206,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-013-1a5f2faf5b.json",
+      "sha256": "208c4ff79d90319d1a11fe9a4ac2b07be01f3bb464ddd1f61d94f58292e93f31"
+    },
+    {
+      "bytes": 5243,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-014-454d5ec089.json",
+      "sha256": "b951b6cdd1c1b104c644a94bc7cb5bf0500aeb5d9f98c16e9d3a7e413ef450b1"
+    },
+    {
+      "bytes": 5222,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-015-691452be4d.json",
+      "sha256": "044f9c9ae26e6cd6217946547a32c76bc022307d5b44cc45aec3662667ef34e4"
+    },
+    {
+      "bytes": 5206,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-016-9e4e222280.json",
+      "sha256": "127c63792c4cfea3bfc25b73299487b6c391974a182a2af295d63d1ce15b4d3a"
+    },
+    {
+      "bytes": 5210,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-017-55712611a0.json",
+      "sha256": "9674db55ee9a50072d51963e675bd5adf523f180f0eaa1e49cd6ba5f52731de9"
+    },
+    {
+      "bytes": 5189,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-018-99a8ddb38f.json",
+      "sha256": "1c1c7e338bd7345dd01d85a231fbf308773059490c153aacc2c535bf9348761a"
+    },
+    {
+      "bytes": 5220,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-019-9166fdf853.json",
+      "sha256": "caace646cd1aa8b7289c7d9150fdbee2dca1640c2748391729d27dcc0a54660b"
+    },
+    {
+      "bytes": 5210,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-020-b517ae2748.json",
+      "sha256": "f298912fdbcabd9025e1dfa03d93472966077e7f7bfa9448a4018974ac05f729"
+    },
+    {
+      "bytes": 5130,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-021-5e0b38a851.json",
+      "sha256": "d96f129b4e57495f0a5e7008e5be01fb3a317a68465e92c0be631a5ec73b80bf"
+    },
+    {
+      "bytes": 5212,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-022-4a12458d8a.json",
+      "sha256": "abb143f833c1e90f9b0acadbfcab7c12716379edec00b2c05a0ab5e45e0d4e2d"
+    },
+    {
+      "bytes": 5202,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-023-09c1438b40.json",
+      "sha256": "e106b7fc6fa265bc311495b112a04b9f6e6ac048ddd69d855ac26ef5e5b6fb46"
+    },
+    {
+      "bytes": 5231,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-024-8ebc8e6892.json",
+      "sha256": "adfe4c44d1b2513c586b44d49d5e25e1a0cba5135bfc0e61b814c5c8eb6f3009"
+    },
+    {
+      "bytes": 5210,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-025-7bfbfbb365.json",
+      "sha256": "0cc4fb766121b4fc713e3232d076d9b416c9f0a86892d19a211a5ec042c286b0"
+    },
+    {
+      "bytes": 5211,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-026-c5d09bfafa.json",
+      "sha256": "112bd2609453514eb7e74ff35f0301461c85fee392ea7d56b272f30537ac2434"
+    },
+    {
+      "bytes": 5533,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-027-56d238c396.json",
+      "sha256": "c2bbc06fc1389faf7a325d3636bf0106184c90b5df785d258e6da4a4193e7bf5"
+    },
+    {
+      "bytes": 5388,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-028-8c0a501d9c.json",
+      "sha256": "4eb46018ccea6b9fa5e6c57d19bcfee85d7d580e4d626999b821307015e93355"
+    },
+    {
+      "bytes": 5539,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-029-3940e2552f.json",
+      "sha256": "e32cc03d17314ee10fd64b2dc4b190fe5a7017134c8c227977fe742bfbaa05f8"
+    },
+    {
+      "bytes": 5673,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-030-5f0cd58497.json",
+      "sha256": "77e51419c1bd868be7b38fe6cd97370faf98790e3df9c19c685f3795bb088a81"
+    },
+    {
+      "bytes": 5561,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-031-3e7a3b3509.json",
+      "sha256": "371c46bc8071b53a0c7a1bb0197789d4b309b473ec2ab20af5e2d5f793bc31fb"
+    },
+    {
+      "bytes": 6980,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-032-570ad83ba6.json",
+      "sha256": "be9a8ab33f0f7d7789bc8722499777f613bf2f878936c004794141d0a953ae5e"
+    },
+    {
+      "bytes": 5645,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-033-1f293d6cb7.json",
+      "sha256": "33370a8c257657ab8f08fac22d4a7b9ff6568dd2b24c1c79462bcbe47c7e533c"
+    },
+    {
+      "bytes": 5684,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-034-13a1a432e0.json",
+      "sha256": "20e1dbe0c55511dbffa3f3adb868dad1eaf99c0e150e7a89316f85ee250a75f6"
+    },
+    {
+      "bytes": 5546,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-035-6ca4a7f3c2.json",
+      "sha256": "267ba3d12f45a0b312c0366cbfdadea6cdb9463526fa5cac113524ff4b8aff25"
+    },
+    {
+      "bytes": 5398,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-036-b84b580964.json",
+      "sha256": "efafabeb0ca84c4cfa1303a9595eb28018db7893647e4dbc690ebc4e6c4e1324"
+    },
+    {
+      "bytes": 5548,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-037-4de0233d45.json",
+      "sha256": "a2a11ffc290ffe18bce5f16e662055b33bbe17d22721102c6832167f42180e2e"
+    },
+    {
+      "bytes": 5402,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-038-474b968ed6.json",
+      "sha256": "fbb6f343b5e83556a3971f9d0276b6f0653060e9b684beec093cb223bdb169de"
+    },
+    {
+      "bytes": 5543,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-039-df1626ab7e.json",
+      "sha256": "f64a9999fbb7164939170b26a4b169b18343f9127966bf271ec3a50f943c9957"
+    },
+    {
+      "bytes": 5372,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-040-827cdb9c2a.json",
+      "sha256": "c06c248bd13383384657abaf1f5326c9af17783b021839a21bae19962a8a0180"
+    },
+    {
+      "bytes": 5692,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-041-b62c5d7163.json",
+      "sha256": "ea5751837fe8e520cc14f0903a96342ec50534d2f74fc56701fda24564742c31"
+    },
+    {
+      "bytes": 5604,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-042-ae9a80d120.json",
+      "sha256": "80fc3bab620269adb3e78ad5a77d066443bbdc5869eba21b717f79cc6f210559"
+    },
+    {
+      "bytes": 5400,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-043-b585cd28ea.json",
+      "sha256": "dc2c1f60b99eb528c2625fc368ab5ea62ca03d89682fa5424bb7cc758df6a4fb"
+    },
+    {
+      "bytes": 5411,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-044-2f03fc2fb5.json",
+      "sha256": "e22c5cde12e513ced0295d31ffdb5f5081a1a4b91bfce44934c0e40b4b79fef5"
+    },
+    {
+      "bytes": 5558,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-045-d52f4d6a1a.json",
+      "sha256": "d94960bd32d21953fd68d147570fd3210be2a5faf339a77c24af90106299b232"
+    },
+    {
+      "bytes": 5677,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-046-1d0bed7f4c.json",
+      "sha256": "cade845de41a4733ee82069b4478f90b6348bd8b615880616c896048deb55ff0"
+    },
+    {
+      "bytes": 5529,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-047-e3196a8aa5.json",
+      "sha256": "39b3239bb61609bb0b84b54f61784e1eeff62c711da27afe4b377db78b15f2fe"
+    },
+    {
+      "bytes": 5394,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-048-9e4abaf530.json",
+      "sha256": "79d32819442bc3f6cfabfeaea560cdc47ef811c292b710221d530b9a61fb711c"
+    },
+    {
+      "bytes": 5675,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-049-cf0a7d1028.json",
+      "sha256": "74054fadbcaa67b6a8eba6e29f51a72abf36515009aa8977b381b7e2f1a388b4"
+    },
+    {
+      "bytes": 5707,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-050-012aa2a74e.json",
+      "sha256": "c756fdf2eda08a99098f0716eb6b4b06c8891df866dde0e8b3f509501b91c0fb"
+    },
+    {
+      "bytes": 5545,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-051-d243e11351.json",
+      "sha256": "0ea1f9c423cd865b994aee499d2759b06165c0be74cbe5499b0f64a99fe53d14"
+    },
+    {
+      "bytes": 5400,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-052-e117399e75.json",
+      "sha256": "d234434713dc26cde4e874d785555a44514745a81623002b1284db494f29ad6a"
+    },
+    {
+      "bytes": 5548,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-053-e22999f79a.json",
+      "sha256": "807186238f66b27613c4d859bb5db32c874a4ccedcf8643ca0e7f2182b93a146"
+    },
+    {
+      "bytes": 5385,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-054-58f94d4676.json",
+      "sha256": "f54f3050ee7620d0518bd94b9a802289203d459498fc8872e6d3c6543711ea8d"
+    },
+    {
+      "bytes": 5534,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-055-a7ac306811.json",
+      "sha256": "4600e230781e6864383673932d39088e6497bcac183ebd2d224c2b0673d37994"
+    },
+    {
+      "bytes": 5395,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-056-87997ee6f2.json",
+      "sha256": "d45f7359ed8c1ff2994645bc5abb511a4d737dfb5be5e88cec0cb204c025ac77"
+    },
+    {
+      "bytes": 5699,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-057-68965a0576.json",
+      "sha256": "8ed879ecb4408558bf89fccb13b481825d0ce45e8c57719d5d061d8ba676262e"
+    },
+    {
+      "bytes": 5682,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-058-132b3d1a44.json",
+      "sha256": "3d4aabd61817bf655963ac9e28ff412c7842db079d51ff419b6657548df53971"
+    },
+    {
+      "bytes": 5557,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-059-06306f4e8d.json",
+      "sha256": "24ebbbbf4cf7777482195ca2c7ecb155c3aa4a07f8a8d8c3165562828b984c02"
+    },
+    {
+      "bytes": 5401,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-060-c3bf7e5c98.json",
+      "sha256": "6e37176b10b0b0158bfbd04f0ddd58d926c4774c5c6b03c44ce933c5380f39bb"
+    },
+    {
+      "bytes": 5523,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-061-d8ebe65ef1.json",
+      "sha256": "2b93d21bd6173b583dbb5237e9df6c96ae4ddbf6eb46ce770582aa2491667a64"
+    },
+    {
+      "bytes": 5692,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-062-70a6b2f959.json",
+      "sha256": "d2461e3a59fe1f4deb50aafe1fa26939d1b7881919360a1df81fef5f6381165e"
+    },
+    {
+      "bytes": 5549,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-063-eaf6bef4a4.json",
+      "sha256": "2cc2b53c74f9c795346f3805b35a919644476497d68631ba534fbb3ebe39673e"
+    },
+    {
+      "bytes": 5383,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-064-9f6ecd1a94.json",
+      "sha256": "d75acfaa18563f85b748a322659ac9e6f136620f3d143a583db2f69ccf60cdb1"
+    },
+    {
+      "bytes": 7180,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-065-9e98f08f3b.json",
+      "sha256": "e4a59c2ba10c07ba441624bb9f595848796b388965a666bc13ef556a12ee4433"
+    },
+    {
+      "bytes": 5691,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-066-d58df2fb43.json",
+      "sha256": "4724540f48c725e03f58ca4d811ffba507f69524926ae068547e6046ae664fad"
+    },
+    {
+      "bytes": 5541,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-067-dd5a30270f.json",
+      "sha256": "e8e5fc3f2cbb37d8efb2184fba01aae5c49164444d73475e74dfec8659ea0eb7"
+    },
+    {
+      "bytes": 6962,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-068-375d1b1b13.json",
+      "sha256": "121d07310cbdaafadba997e9f621130321045cc3a28ba0fc9c868293e7b9d6ce"
+    },
+    {
+      "bytes": 5693,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-069-9ae4602904.json",
+      "sha256": "81504759cd931b40ceb80142d022500f6a8b5b77f01be7a2a142cb3aa4ff0236"
+    },
+    {
+      "bytes": 5390,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-070-5b284f066b.json",
+      "sha256": "b16ee628f040b964c2a90980a119de5680a22d2c69cf3d10506cb2b443c7628d"
+    },
+    {
+      "bytes": 5534,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-071-f0c9ebbd40.json",
+      "sha256": "9dc15a76143d545b9d36cfc8e131826b4baaa5f4ce86aa2337d15341ba0966a4"
+    },
+    {
+      "bytes": 5400,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-072-79cfa36e3a.json",
+      "sha256": "fd9676dd1cdc318591b8d2c558f533c2c46123cadcd7ea1d84471534805ba46d"
+    },
+    {
+      "bytes": 5700,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-073-274491a725.json",
+      "sha256": "3d8db7b302ea8aa420b8a03082c324d6fad0250a85970f9afaa4f94d7ac05f93"
+    },
+    {
+      "bytes": 5645,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-074-e2365d7a87.json",
+      "sha256": "051f7745d048f7ac4c2fa9c53175c7257a242738a433748adb77a86aae9e5e79"
+    },
+    {
+      "bytes": 5395,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-075-a6696084a4.json",
+      "sha256": "8dc97e2f0bc9199d536bac51f388b3ff2d863e4e73662117a4b124ee6bf779e3"
+    },
+    {
+      "bytes": 5386,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-076-900f037a8c.json",
+      "sha256": "38c111ff466125c5d3d8e27c01d58cf7af34034acc0bdd676efc91548db6fd64"
+    },
+    {
+      "bytes": 5535,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-077-44d74d05d4.json",
+      "sha256": "16967fd28461c8acd09222a99a320ac26ecb41c7156c8f00131aa128b6f41f79"
+    },
+    {
+      "bytes": 5635,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-078-28bf64f2bb.json",
+      "sha256": "77e4669e2143dc96f2f2ccf92502fc5c656cf0ec9dccfd871bdbe35e01a9bbf3"
+    },
+    {
+      "bytes": 5544,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-079-62792322e0.json",
+      "sha256": "dda7fed71588a3c42301ecd73c8e4552e2a29c01eafc3f703b30052b27b95eab"
+    },
+    {
+      "bytes": 5406,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-080-b666fbf97d.json",
+      "sha256": "41a76fe8737552c334e740b57633d394b5abf10aa2fe21dcd891f47d9bc9beed"
+    },
+    {
+      "bytes": 5677,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-081-601159d2a0.json",
+      "sha256": "de745c300b2440d925c80e4edba37302166330584c6e8e6cd630f710e940bd7b"
+    },
+    {
+      "bytes": 5687,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-082-ec510a5bdb.json",
+      "sha256": "0eb0ea3dac0d24d7ace4a7c829d0a5896cac9d0df2defa0408df0f1837fce731"
+    },
+    {
+      "bytes": 5541,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-083-4c9976a050.json",
+      "sha256": "e072dec523474cc238923ee68f43fc0642bc84802784c5192f5721859cc0c5b3"
+    },
+    {
+      "bytes": 5391,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-084-7fbadd6e3c.json",
+      "sha256": "0c9587abdbd4a2b64f65fba4f67a441e389a5e579dc1dda8d685309310ef822c"
+    },
+    {
+      "bytes": 5550,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-085-3164dd7be8.json",
+      "sha256": "1447d657a14d54df2fdcf125a1e33212f821f4646516a547d22d34816bd835cf"
+    },
+    {
+      "bytes": 5405,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-086-fbb26d4705.json",
+      "sha256": "bc68cf247cae06c49a629dfa1cf34641751a3f22ba30d80e556200b4c45bb21f"
+    },
+    {
+      "bytes": 5557,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-087-8428d611f2.json",
+      "sha256": "dfdec924262499d2235802d61669519b260f858b33cbf3f4a48341b163aba836"
+    },
+    {
+      "bytes": 5308,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-088-54d047707b.json",
+      "sha256": "693fd30f92366e28982d0173ec59bbcc045808dbff08a72de9608c942951b8ca"
+    },
+    {
+      "bytes": 5677,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-089-8275bc9272.json",
+      "sha256": "6e6c1406c489d778d033a9900ba1b553e955a03c3b63c0c07ca1214758a0a2d9"
+    },
+    {
+      "bytes": 5680,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-090-7ab4ba4fd8.json",
+      "sha256": "dc4b1a01350fb29c8d5ffd13f1c022a4e2a83d3f80d092b8597221827776e57d"
+    },
+    {
+      "bytes": 5535,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-091-1aab0b78cb.json",
+      "sha256": "c97fde3e743da199b92ddb103fd4ea608988ffa46afc25ed52daabbd41f05295"
+    },
+    {
+      "bytes": 5404,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-092-d532fb20ca.json",
+      "sha256": "48ffa3d2ebd3896f705ce69041ccabe640ebc2aadb941b02c7fedb309e6242c6"
+    },
+    {
+      "bytes": 5546,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-093-27025a655c.json",
+      "sha256": "f6c83be3d2bd5f13e031179295744536bac07655e1eadb1b158aff4f09a4bc07"
+    },
+    {
+      "bytes": 5690,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-094-ba60c4fe8b.json",
+      "sha256": "8cbd28d990d09cf368c7dd91952dd138a11fe39854a0c3a99ed2df360369ea22"
+    },
+    {
+      "bytes": 5547,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-095-27f6ceb96c.json",
+      "sha256": "96385b3d3076323a4d0f8606137f8f2442a9938b72521f78dd26f821fca731c0"
+    },
+    {
+      "bytes": 1993,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-pipeline-binding.json",
+      "sha256": "1309419628ad93aea97eaa1e54e5a6802c5c4ca3b62dbbb666ed85ef013f54cf"
+    },
+    {
+      "bytes": 58952,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/gates.json",
+      "sha256": "9cfce38991b15587e2883de6a6c2c1f6175c25051c3ba5e452fa3bfc07846d81"
+    },
+    {
+      "bytes": 2659656,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/geometry-wall-loss-dataset.json",
+      "sha256": "9104e3bf0694f7c1c88d1c7bc377b43b24cbc42a94bd75eed2cfa6dc21f5114a"
+    },
+    {
+      "bytes": 885,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-000-48d2ccedd5--accepted-2N.json",
+      "sha256": "acb8b7c1af66da6cac0e45e606493ffdd700575e5a1ea68ab7a210d1f2313ff6"
+    },
+    {
+      "bytes": 878,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-001-0830ddda40--accepted-2N.json",
+      "sha256": "bc7cb792d6cf61276f0ebf5f574ec1be2d405008b6c06fd19d330d735af6854e"
+    },
+    {
+      "bytes": 887,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-002-48c4d2e317--accepted-2N.json",
+      "sha256": "2eba07e9844638e6c8a3661402deaaedba9bfb7faac5ebc2050b8740aabe8ee7"
+    },
+    {
+      "bytes": 885,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-003-b98d8da7bf--accepted-2N.json",
+      "sha256": "5bcdbc1cb5ce2140938e9f91562f131e625ac6e67c899ea5277352cfe1a442e5"
+    },
+    {
+      "bytes": 887,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-004-72b1c5ba70--accepted-2N.json",
+      "sha256": "8b0ecf8f59b222c19fb7d211474bd0fc8765d61c0f9cc9da02b812d642afd39c"
+    },
+    {
+      "bytes": 885,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-005-942c2d458e--accepted-2N.json",
+      "sha256": "a1ff3f0ce74f76d6c8bd406050c82cde9e02ad1642be2385f61bdef1d2a7abb5"
+    },
+    {
+      "bytes": 886,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-006-110b30a28a--accepted-2N.json",
+      "sha256": "6c2cbb213c2820d67627ad28fd391331a59e1d0bce13abe3115fc1b9e9666af1"
+    },
+    {
+      "bytes": 885,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-007-9ea145255a--accepted-2N.json",
+      "sha256": "5954cbfcb1bfa105d30c7281e349e69b43f8dc819aadd414b4c373a0f3430bfd"
+    },
+    {
+      "bytes": 886,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-008-b45d1d67d2--accepted-2N.json",
+      "sha256": "e70c06cb07a5ab496b3f2ed3e52ff0f25047a43d85189bbe28f59492aecf896f"
+    },
+    {
+      "bytes": 885,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-009-4d592518ca--accepted-2N.json",
+      "sha256": "37cafa580166353318475c2f48ddee56adbc9654ef2f0dac2b267cc7bc2b0453"
+    },
+    {
+      "bytes": 882,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-010-7aa8cd8bce--accepted-2N.json",
+      "sha256": "081a6b56092b885cb470383cf96a4033b8aa10d947582748e900a3d8c10d5b11"
+    },
+    {
+      "bytes": 887,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-011-eabda2c05f--accepted-2N.json",
+      "sha256": "095d373d780832b2336b9fc33213ced3984ea7a6aea706c62163c492b282d9ec"
+    },
+    {
+      "bytes": 885,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-012-861e265ea9--accepted-2N.json",
+      "sha256": "d6fa14e114027c33d6ec5cc00a668c62ee58da9727a9d05920719e2d8278c2ad"
+    },
+    {
+      "bytes": 885,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-013-1a5f2faf5b--accepted-2N.json",
+      "sha256": "0649247a39364497320133c4fe27efb9f4f558c7a7d299c2a625f7891920ba2c"
+    },
+    {
+      "bytes": 887,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-014-454d5ec089--accepted-2N.json",
+      "sha256": "c325f3a627972c39b5f6a473da8f97ca6b5365c8329481e5e4e8d23e820cbda4"
+    },
+    {
+      "bytes": 887,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-015-691452be4d--accepted-2N.json",
+      "sha256": "a364ffd87a2cf159acedc4887986b37849b86cd28ca0f57c2a1fa98b309bdfd6"
+    },
+    {
+      "bytes": 887,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-016-9e4e222280--accepted-2N.json",
+      "sha256": "805a279e99647e8619607ca2160119ec9fde9f4b72cee92a59a2065b017dc13a"
+    },
+    {
+      "bytes": 882,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-017-55712611a0--accepted-2N.json",
+      "sha256": "0ca9172c818db5aedc7842eae8004849ee29ef7de0082b129538d95af4a99096"
+    },
+    {
+      "bytes": 885,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-018-99a8ddb38f--accepted-2N.json",
+      "sha256": "44512ef780aec471176ef07b834dfc6bf333165975a16492c239e878a5d8840c"
+    },
+    {
+      "bytes": 887,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-019-9166fdf853--accepted-2N.json",
+      "sha256": "d044f9742bff064cb99772316ccb3150517f25c40c6a7ec8d39456f35e446902"
+    },
+    {
+      "bytes": 887,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-020-b517ae2748--accepted-2N.json",
+      "sha256": "313e41810e181caf66dec2479d34d3e02edd94fbe4fce8fd321d5408d16959b7"
+    },
+    {
+      "bytes": 885,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-021-5e0b38a851--accepted-2N.json",
+      "sha256": "a657068bed9f29a2a58086435e712065683134fef1ee430efaa18287f570bb48"
+    },
+    {
+      "bytes": 885,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-022-4a12458d8a--accepted-2N.json",
+      "sha256": "8735097a53bf8cd10b383cfd1f64464cbb4ecc5bc944f8886edde634c0ec28ab"
+    },
+    {
+      "bytes": 885,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-023-09c1438b40--accepted-2N.json",
+      "sha256": "629a465669bf4babec7ef2027a57353968a75da7aef98748553fb8bd2adc6279"
+    },
+    {
+      "bytes": 885,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-024-8ebc8e6892--accepted-2N.json",
+      "sha256": "1a6297ac4d32a56baf4bac8d595ab4818ec19772a5aa6b8308b956affaf1817f"
+    },
+    {
+      "bytes": 887,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-025-7bfbfbb365--accepted-2N.json",
+      "sha256": "a2d54f4fb673d8091e31863febd951e67c9934545f70fb805a2cc0851eaa22ad"
+    },
+    {
+      "bytes": 887,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-026-c5d09bfafa--accepted-2N.json",
+      "sha256": "afaea3bd9f8e59a79cc5fec25516006cab507595af3b100a6295ab2cc091c64d"
+    },
+    {
+      "bytes": 881,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-027-56d238c396--accepted-2N.json",
+      "sha256": "5406334679a276fa3d086aecd5045af57c72db26d2b23fa5d6223223bf4fffc6"
+    },
+    {
+      "bytes": 878,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-028-8c0a501d9c--accepted-2N.json",
+      "sha256": "8c903242cd150a5173859d6ec1dbe1f08af157f927ee8642c1968e2092a2dd6a"
+    },
+    {
+      "bytes": 887,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-029-3940e2552f--accepted-2N.json",
+      "sha256": "a04b65ccb6bef5bd7c7399bd0fe989396705e80c24373077c7202a9af0d480b5"
+    },
+    {
+      "bytes": 882,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-030-5f0cd58497--accepted-2N.json",
+      "sha256": "9bfb9a2d8ac9d49213e7fdf958e5237df1b485b94d00be7d26f55489eebe8113"
+    },
+    {
+      "bytes": 887,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-031-3e7a3b3509--accepted-2N.json",
+      "sha256": "6f122133af29131196cd75603395f8adf5941a797ddc05aacea7612f588c9864"
+    },
+    {
+      "bytes": 886,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-032-570ad83ba6--accepted-2N.json",
+      "sha256": "35ca5c779e33711e2b3d99b8565c8621841b3ce55fa8b55139e774fa9799a4de"
+    },
+    {
+      "bytes": 887,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-033-1f293d6cb7--accepted-2N.json",
+      "sha256": "42a419880e5983d42385883b9a2a80769096b4bde4a7124ef4f5e30e4c3bd914"
+    },
+    {
+      "bytes": 885,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-034-13a1a432e0--accepted-2N.json",
+      "sha256": "a5c96fc91158ef86949fadec436919d81ac9b4847a0693dc4dc3c26e1f3718e8"
+    },
+    {
+      "bytes": 887,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-035-6ca4a7f3c2--accepted-2N.json",
+      "sha256": "b1aa6988768761391bc9d49d5738785cf646d4bafd67444582803a3849058954"
+    },
+    {
+      "bytes": 885,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-036-b84b580964--accepted-2N.json",
+      "sha256": "0bb5cb063ebceb3e90b1d0e19e975229095af0d98b548751751dc3fede04e3ef"
+    },
+    {
+      "bytes": 885,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-037-4de0233d45--accepted-2N.json",
+      "sha256": "3b45685e0ab6b1a3662c8d47fc0a86213fc9197eb09267d8b453076a00d201d8"
+    },
+    {
+      "bytes": 887,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-038-474b968ed6--accepted-2N.json",
+      "sha256": "339d75b1712fb2d4502809fc05b30a667c3261f7ab2a3f7ec6290d8520912211"
+    },
+    {
+      "bytes": 885,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-039-df1626ab7e--accepted-2N.json",
+      "sha256": "c446b11123c792d9322cd94813e3f7adf18daef8e43ed8512d5fc8249fd8a1cb"
+    },
+    {
+      "bytes": 885,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-040-827cdb9c2a--accepted-2N.json",
+      "sha256": "971e5399ab4c04ae5de5bab7c7e837de2bfe92cb034fff2df88e118de04e7474"
+    },
+    {
+      "bytes": 886,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-041-b62c5d7163--accepted-2N.json",
+      "sha256": "3ed1a0ca225bea2cd072b32d95774f2d63c2fb49fe11567009cc4f1a26c0c397"
+    },
+    {
+      "bytes": 886,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-042-ae9a80d120--accepted-2N.json",
+      "sha256": "4243cb54eb5566e8ab7fd14e019a793905325e270b6f0015ba70e6a8f046329b"
+    },
+    {
+      "bytes": 887,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-043-b585cd28ea--accepted-2N.json",
+      "sha256": "c4e0d3a5b990afaabab882546f24c4661da9c3dec5be0869db06fe5c885cef5f"
+    },
+    {
+      "bytes": 886,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-044-2f03fc2fb5--accepted-2N.json",
+      "sha256": "4ced22c9eeea11a87fcbb5bd0cccc3af3f637f35fa2744aefae2597fcd7ce85f"
+    },
+    {
+      "bytes": 878,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-045-d52f4d6a1a--accepted-2N.json",
+      "sha256": "72b8a1b180a8fc02ae450c3fe844cf6e25c8ef04c02d88d1ec0ba1782124cc5a"
+    },
+    {
+      "bytes": 886,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-046-1d0bed7f4c--accepted-2N.json",
+      "sha256": "cac01f92690338cc58a1b3d1f64c3c18110bbdcde17a287ccd01f2c851cdd824"
+    },
+    {
+      "bytes": 881,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-047-e3196a8aa5--accepted-2N.json",
+      "sha256": "f70e6885ff34c23c9efe37f761e41cd32a83154215dde23daa2d41f8822094e0"
+    },
+    {
+      "bytes": 887,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-048-9e4abaf530--accepted-2N.json",
+      "sha256": "186197ba72f05a522631e7b01dcc63a6d08892f7ffec408e24d260402111e27a"
+    },
+    {
+      "bytes": 879,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-049-cf0a7d1028--accepted-2N.json",
+      "sha256": "015557884cb548986c93f3f6b9108b19bee9b2a7a445b0366b6623f9f2060a23"
+    },
+    {
+      "bytes": 887,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-050-012aa2a74e--accepted-2N.json",
+      "sha256": "999ff7e82debd1594adee0389286eac46fce55b568b4dd8f2d87c70789b892bf"
+    },
+    {
+      "bytes": 885,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-051-d243e11351--accepted-2N.json",
+      "sha256": "282b0b0132bcab1936c53706fdf509278fd9e5ff2173e91006c60e0e782a89ed"
+    },
+    {
+      "bytes": 886,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-052-e117399e75--accepted-2N.json",
+      "sha256": "84c91921d516d95cace29fd0a55af021d0ae1f7f3bc1d699df880937076bc666"
+    },
+    {
+      "bytes": 885,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-053-e22999f79a--accepted-2N.json",
+      "sha256": "fad3ca3df3d52d4cc0d66e81e6b6326e1699e4e8c40f54ec2ceb391f1049d7c8"
+    },
+    {
+      "bytes": 885,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-054-58f94d4676--accepted-2N.json",
+      "sha256": "e19bc8b90406ccb91f9c3dffdb838a62e4c797b08c1b1a2406a08d290774090a"
+    },
+    {
+      "bytes": 884,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-055-a7ac306811--accepted-2N.json",
+      "sha256": "767c1aa5baabca5890cceafd3c110cf519c69ab8c604479d1c9a12ae459b17a6"
+    },
+    {
+      "bytes": 886,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-056-87997ee6f2--accepted-2N.json",
+      "sha256": "ca90b90dccf834fa7c6dfbfd99bc44465b6880d7f4ed6fb370ac7d51703b6a70"
+    },
+    {
+      "bytes": 884,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-057-68965a0576--accepted-2N.json",
+      "sha256": "42313288f1d6c992c149600c5a8101217f784227276496734785938841818494"
+    },
+    {
+      "bytes": 885,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-058-132b3d1a44--accepted-2N.json",
+      "sha256": "028de3bf38db64288c539b7db24592d1c66ef8aad9518e210faf5f19f81e6ce6"
+    },
+    {
+      "bytes": 886,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-059-06306f4e8d--accepted-2N.json",
+      "sha256": "e5b67d11edce03229bda02e704021673bb4137f6155b807743b9e72a5379eb12"
+    },
+    {
+      "bytes": 887,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-060-c3bf7e5c98--accepted-2N.json",
+      "sha256": "c4a54b0397f3a9e98a1bac69f9ffcaaa5b2f9b939a8f2303c0d752ca7578bce5"
+    },
+    {
+      "bytes": 886,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-061-d8ebe65ef1--accepted-2N.json",
+      "sha256": "1424175c7c97a594a475a22581c333cbc21f1d5fba570762770ee56317e13655"
+    },
+    {
+      "bytes": 887,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-062-70a6b2f959--accepted-2N.json",
+      "sha256": "342aa086c5bae7a2c8868d8685d562cd644b895c4b9a5c6ed4d8f500e610fc8a"
+    },
+    {
+      "bytes": 885,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-063-eaf6bef4a4--accepted-2N.json",
+      "sha256": "54419101d5a537c270a6d3012472f0e1c2211cbed4f5c5643dd8d46dd6d43e99"
+    },
+    {
+      "bytes": 885,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-064-9f6ecd1a94--accepted-2N.json",
+      "sha256": "d1ddab0029de4123b14b3774cef5f6b879f8be3aea0a146c803ecd97c20d1e8f"
+    },
+    {
+      "bytes": 887,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-065-9e98f08f3b--accepted-2N.json",
+      "sha256": "bbac44ca867ad11da0304a3b7bfab034ebe8a13b410d0b9c90518c3ba715145f"
+    },
+    {
+      "bytes": 886,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-066-d58df2fb43--accepted-2N.json",
+      "sha256": "e292c5025f37b3fd15fad7958529d8501a4e9598931b4df50a928606f820e7fd"
+    },
+    {
+      "bytes": 884,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-067-dd5a30270f--accepted-2N.json",
+      "sha256": "6d2dddf77a251b0026835dc1e1003eba3a970f942937ea818dc78055d339ea59"
+    },
+    {
+      "bytes": 886,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-068-375d1b1b13--accepted-2N.json",
+      "sha256": "ed87dbd0d74f85a0025851242198ad976a99c17e6a569fad76bfef4008e0e854"
+    },
+    {
+      "bytes": 886,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-069-9ae4602904--accepted-2N.json",
+      "sha256": "dcee924b8171d4bbfebebf5f60d7951e7e2e528494331fea0595e7fea2fe8418"
+    },
+    {
+      "bytes": 887,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-070-5b284f066b--accepted-2N.json",
+      "sha256": "35d26f9f95a4fe5ec6cb846e20270f0fe5cabf26a1bbe14a275d88bcf1065f45"
+    },
+    {
+      "bytes": 887,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-071-f0c9ebbd40--accepted-2N.json",
+      "sha256": "9946893cb201f6ca743e99371e6bd0caaeac605ce7ce152077523ef22723dc54"
+    },
+    {
+      "bytes": 884,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-072-79cfa36e3a--accepted-2N.json",
+      "sha256": "9c34b5dd5b865cd321cb4eaa2d11c2055d0c6c7bbb5f3a71fb61427f1ca82400"
+    },
+    {
+      "bytes": 888,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-073-274491a725--accepted-2N.json",
+      "sha256": "7f3f30282c6c38b5a87110a7cfeea3b8b3959ee388e9f1dfdb697f183e7ca687"
+    },
+    {
+      "bytes": 887,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-074-e2365d7a87--accepted-2N.json",
+      "sha256": "2e2f375c9f4821e30e05513e759c02be1f4816f0cb952844c8eba504ff424db1"
+    },
+    {
+      "bytes": 885,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-075-a6696084a4--accepted-2N.json",
+      "sha256": "8ad67ef00a53b5fe03d980f5039be03f79845b073f90fe64555f02fdae3a543c"
+    },
+    {
+      "bytes": 878,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-076-900f037a8c--accepted-2N.json",
+      "sha256": "9e520096cec5b4344c7704ef4884e58887a58516f17e14e832724579fb7f8d1b"
+    },
+    {
+      "bytes": 885,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-077-44d74d05d4--accepted-2N.json",
+      "sha256": "b2d1189183db37db78e9a4362bde0514c3332a0b1ddd5bfdc01ce63b96aa6f36"
+    },
+    {
+      "bytes": 886,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-078-28bf64f2bb--accepted-2N.json",
+      "sha256": "5a6adb7c3960b1ac4d715282dc4340d5f7a8cf361f57324584c49e48f0b7dc15"
+    },
+    {
+      "bytes": 887,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-079-62792322e0--accepted-2N.json",
+      "sha256": "30ea54458113eeb88e286d1b047180132c867e9cd9aec263f5f57341dd8dadb1"
+    },
+    {
+      "bytes": 887,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-080-b666fbf97d--accepted-2N.json",
+      "sha256": "ff4e5930ea1de2a526f2b81a9bba8353d0cc929ece54122c122ac5eb41c0803b"
+    },
+    {
+      "bytes": 885,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-081-601159d2a0--accepted-2N.json",
+      "sha256": "cd54142f85ec810c962628e3eb54b9780ce23e2f5f3b1099e969847d0ad308a8"
+    },
+    {
+      "bytes": 887,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-082-ec510a5bdb--accepted-2N.json",
+      "sha256": "25ef345c34322f189892b20f502b3e48eef877e75faae48f33abdc9909d47c3e"
+    },
+    {
+      "bytes": 884,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-083-4c9976a050--accepted-2N.json",
+      "sha256": "5827ecfffbcc65654da887d50b12bb95a217ee816ae91a25c1db57c5d3d526c2"
+    },
+    {
+      "bytes": 886,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-084-7fbadd6e3c--accepted-2N.json",
+      "sha256": "533f021cde06cb90bb9191778ca581535c151aa835584c079849619dbc3f8572"
+    },
+    {
+      "bytes": 884,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-085-3164dd7be8--accepted-2N.json",
+      "sha256": "799aae7af1a2ac40609fd5d4282f56ad71bcfea6f65b7fedb9d3232bf28e0434"
+    },
+    {
+      "bytes": 882,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-086-fbb26d4705--accepted-2N.json",
+      "sha256": "d4a26e9b61a1b403f0bf24b53f570bbf2af4be55db809082e51ba9c6ddeadefc"
+    },
+    {
+      "bytes": 886,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-087-8428d611f2--accepted-2N.json",
+      "sha256": "8c95aa62e5832dfdd1db7db61ade4a8339c1cecefaa626a57dee380faafbc05c"
+    },
+    {
+      "bytes": 884,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-088-54d047707b--accepted-2N.json",
+      "sha256": "f87169fd100c4deef93dcb2267835b7e7903e2ab10f4667ac9a4915f3240dfc1"
+    },
+    {
+      "bytes": 883,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-089-8275bc9272--accepted-2N.json",
+      "sha256": "7543573ef4dd121179e1d3af0d94bbe45c5310369d4b473d3519f7360cc2925f"
+    },
+    {
+      "bytes": 887,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-090-7ab4ba4fd8--accepted-2N.json",
+      "sha256": "f26f1b10fcfaefd7566cb8a5e965a8d183573009880cd7605736d55ea6606c7f"
+    },
+    {
+      "bytes": 887,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-091-1aab0b78cb--accepted-2N.json",
+      "sha256": "d5e373ada1db3d3464803961c2e9bdfd759d3eef54c871deb8cc740c21822e39"
+    },
+    {
+      "bytes": 886,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-092-d532fb20ca--accepted-2N.json",
+      "sha256": "40140f97c213e8206e9c75441bcb9ff14e56d047b5ef1f5b99e90c054d80750d"
+    },
+    {
+      "bytes": 878,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-093-27025a655c--accepted-2N.json",
+      "sha256": "24e8f056cea94cb1ca75999120289afb2014ad05393cfe414f9a278be66f6726"
+    },
+    {
+      "bytes": 887,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-094-ba60c4fe8b--accepted-2N.json",
+      "sha256": "9c3d2ce76ace8f186acbde70e1a0cd041fd322b185c3ef773ab933024371f83d"
+    },
+    {
+      "bytes": 878,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-095-27f6ceb96c--accepted-2N.json",
+      "sha256": "b2b04f278ced0cd0075a6c8c9ffc2ec659b767289d5692ff620d8abf2d7f71ef"
+    },
+    {
+      "bytes": 1657,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/manufactured-gates.json",
+      "sha256": "aeda69491eecf4b5109311f7163b0c46b6c789d83e80e3d3a8da77d20ccf5cc8"
+    },
+    {
+      "bytes": 1344,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbit-mc-contract.json",
+      "sha256": "f6e4c929589180c70c79202e9fbd9a1de97a2b758dd8318efc94db69ff32c060"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-000-48d2ccedd5--accepted-2N.json.sha256",
+      "sha256": "608cbf0572f6ee3df200255eb4d2706c60d4ccc44c1852bc2fedabe7a0bc091f"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-000-48d2ccedd5--accepted-N.json.sha256",
+      "sha256": "a5554e49f8bb18202320f12b4704950f537ea8b7c6a4051013d9a3b44fcb0ce5"
+    },
+    {
+      "bytes": 113,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-000-48d2ccedd5--refined-N.json.sha256",
+      "sha256": "b73804aeccb10581244c9f14e38c16396bb8ac073481718b8ece57abfead10db"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-001-0830ddda40--accepted-2N.json.sha256",
+      "sha256": "f60553770ae4d3422a94fbf9dfd526d0ad121fb5749a04b93042fd0de882bc96"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-001-0830ddda40--accepted-N.json.sha256",
+      "sha256": "e3164a685cf2dd077287416fc9139a1bd5a0d720149025ec6bf2043cc43fce53"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-002-48c4d2e317--accepted-2N.json.sha256",
+      "sha256": "ecf4fa5d720bc2c4e18ef02e0cab60232046dbcb1319e7c04f884ce85a3b30ea"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-002-48c4d2e317--accepted-N.json.sha256",
+      "sha256": "38dc25e27ac228cc069f90bfe2671b3cf248d3598e843ece6fe111addea9ee68"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-003-b98d8da7bf--accepted-2N.json.sha256",
+      "sha256": "bfc6565fae5f63647331c6fb863d55d81d686986682b571a08e3cd6b9915834f"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-003-b98d8da7bf--accepted-N.json.sha256",
+      "sha256": "8e2ab7bab8f7e8520d369639b15ddce4ce434dc6511d5fb1b0629a967986ad25"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-004-72b1c5ba70--accepted-2N.json.sha256",
+      "sha256": "e428eb30237b84047018240996b4d5b9af368e26f06d80353dda7f43116c049d"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-004-72b1c5ba70--accepted-N.json.sha256",
+      "sha256": "80853d1d47b9ed38c11fff7911cb83827577be7601b9cc7de2d34861090b9515"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-005-942c2d458e--accepted-2N.json.sha256",
+      "sha256": "d41b88add105f111c1b2176378e8db10aaa724c2b96dd49166a3d111efa80095"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-005-942c2d458e--accepted-N.json.sha256",
+      "sha256": "5e8f013f621e7afd2477150efff1317bb372aef8c73577d66d8c275d23d7bd72"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-006-110b30a28a--accepted-2N.json.sha256",
+      "sha256": "52b3228d27bd8c991dc5a6635821489bc07c87a596890f5381d83e05e9e51b06"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-006-110b30a28a--accepted-N.json.sha256",
+      "sha256": "15403c10d3a2926cf69781ebbcdef3c646673a10eb50a7c475983c6070b12542"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-007-9ea145255a--accepted-2N.json.sha256",
+      "sha256": "cb921382e84880103b900b78330818b1ab3caae8137b323fefb7e731749bdf9f"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-007-9ea145255a--accepted-N.json.sha256",
+      "sha256": "5850815f506b9c803c7b9c409797a6ab55eb4fce7acd36fb35534a30a20a130b"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-008-b45d1d67d2--accepted-2N.json.sha256",
+      "sha256": "a69240d13e5fc4e8ef5add2a40833da5293c71ea7f8e9efb0c6138a45f74905a"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-008-b45d1d67d2--accepted-N.json.sha256",
+      "sha256": "db4cf845f6791eb4218390c507fcfc9083fc2721b060adea1438406f7544d15e"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-009-4d592518ca--accepted-2N.json.sha256",
+      "sha256": "6abeef708125d94bc6442262e9a1c1923ce19a853ef53b35a28b72086d2dcb83"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-009-4d592518ca--accepted-N.json.sha256",
+      "sha256": "dacc75f4dcc5bcfcca38856ae8d576af9841af9a312b4ff7a90c1ea96e2b96f2"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-010-7aa8cd8bce--accepted-2N.json.sha256",
+      "sha256": "17c166942d1f76b1288baec2373503645948b01614e72106bf3c6b58f01df2ab"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-010-7aa8cd8bce--accepted-N.json.sha256",
+      "sha256": "65399103411552dc05c000f6324ff1015a6707ee73d648f880dcc1231da43c96"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-011-eabda2c05f--accepted-2N.json.sha256",
+      "sha256": "25ecdda07eaf296c80c2fc0d9ea83775445487c8931c64b910483ed79000502a"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-011-eabda2c05f--accepted-N.json.sha256",
+      "sha256": "bf97211e53ac2e2595c7cf2e262441247e2cfa4cbace5f874ec75f29fadc5892"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-012-861e265ea9--accepted-2N.json.sha256",
+      "sha256": "08e05a7e8f6d635a1a71edc8d0b545330b4983e3481826b45d14c8712417cc98"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-012-861e265ea9--accepted-N.json.sha256",
+      "sha256": "f3e2a7f3fbbb1ca955399f4fed3f338b0890308e0ae50b67f69a3bf978613fae"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-013-1a5f2faf5b--accepted-2N.json.sha256",
+      "sha256": "4e0cf7c357c091236b12fdde0ca56026e1f842bb053df8f909257fb3f9f804d0"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-013-1a5f2faf5b--accepted-N.json.sha256",
+      "sha256": "844d2ee346ef05ed71079cc1ec5e93a176adf122be631778533fe25189c99e65"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-014-454d5ec089--accepted-2N.json.sha256",
+      "sha256": "dee3bd2641764084517d8b9713a9b19105856d72acc661d03e38465ed1697f9f"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-014-454d5ec089--accepted-N.json.sha256",
+      "sha256": "d63714ba1c8fbf478d888b55fc4385a3bee2b15d4877aea2dfb4ac3c571d8168"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-015-691452be4d--accepted-2N.json.sha256",
+      "sha256": "cfecc60576b735ef27851ab01b273d2e25535be64398f035eac762cadb6b836e"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-015-691452be4d--accepted-N.json.sha256",
+      "sha256": "6d765121d1e39aa53206182f8a7765e02bb832ff4ccd7d41aa412f7d909b0dec"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-016-9e4e222280--accepted-2N.json.sha256",
+      "sha256": "ad4d61bf086ef7627efb53feb99fec736d0dbf6184a5c31f12580747599714df"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-016-9e4e222280--accepted-N.json.sha256",
+      "sha256": "8aa751ed8b816b6116d71c5014779a75ecbff472bac281df780d152b75db591f"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-017-55712611a0--accepted-2N.json.sha256",
+      "sha256": "7706911d423026e65d772a442b08bbbda22c4ece8ab956227ec3feca709e50bd"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-017-55712611a0--accepted-N.json.sha256",
+      "sha256": "79159882bad8340b1724cfe4f39ce946bc9a3dabab5085461028a27807a7b840"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-018-99a8ddb38f--accepted-2N.json.sha256",
+      "sha256": "822bab16a6fae983005fcf97b790062432c6e851964b741af57c031ae66fb900"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-018-99a8ddb38f--accepted-N.json.sha256",
+      "sha256": "10a988ecee773d652ba2272305b55900903718d33dfdd14ac6765bc54d9063d8"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-019-9166fdf853--accepted-2N.json.sha256",
+      "sha256": "8b264f8dcd39a7814f1870a8cd935711f900afa0c6c841f3a969792a3e0d7016"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-019-9166fdf853--accepted-N.json.sha256",
+      "sha256": "d96c9923e06f302cc99fbe31e261052be4136f220382c107f57a9fcce33a5d54"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-020-b517ae2748--accepted-2N.json.sha256",
+      "sha256": "1bded08c0ce767e674bf01b066d7db895c29a1d377853c5d966cadfcb1945a07"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-020-b517ae2748--accepted-N.json.sha256",
+      "sha256": "93540707d341e3589b6acea404d925825813b34cbb31337fac111b106f5d2f32"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-021-5e0b38a851--accepted-2N.json.sha256",
+      "sha256": "1ccaddfde78ef64a3ca6ab560ab74ff255688b318a22153a265a9521f11d04a7"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-021-5e0b38a851--accepted-N.json.sha256",
+      "sha256": "9bb6c1bdb269e8617e634fe43f88e17134c8986952d02376f59fd394938f426d"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-022-4a12458d8a--accepted-2N.json.sha256",
+      "sha256": "67b3dd0ec5cd4ac4622d951a7657d567720c92d2a896a465607fba9d5bf4c4b6"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-022-4a12458d8a--accepted-N.json.sha256",
+      "sha256": "b018ad3e05dfd4a31e7bbab59578694abc79b83e1e9c9aabfbd82084a5a4afab"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-023-09c1438b40--accepted-2N.json.sha256",
+      "sha256": "84202f911f688d5f14ddf55ad8b305827e4b9919936e075cb34213bf2b0c2352"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-023-09c1438b40--accepted-N.json.sha256",
+      "sha256": "87470930f16aa5f66e9776d6a5cb489cd234ac8d616396aa0b48a34d337a8cfa"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-024-8ebc8e6892--accepted-2N.json.sha256",
+      "sha256": "fe6c0d24f77bc4b8b0c645500708040b3818661bf47f365ba5de61686280ed5f"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-024-8ebc8e6892--accepted-N.json.sha256",
+      "sha256": "eb6ed2a8deaf243711116820f34cd870cc6782aaef7be32bf3852170d9bb59ca"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-025-7bfbfbb365--accepted-2N.json.sha256",
+      "sha256": "2d0560ccfb6e72ee5239fc6d89d310d13c4507d5ba74df681ae39535319d033a"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-025-7bfbfbb365--accepted-N.json.sha256",
+      "sha256": "87203cf8610c3060fdb151062e36e69457c86cec50a34c893c096f66f708be68"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-026-c5d09bfafa--accepted-2N.json.sha256",
+      "sha256": "5dbbb48abaf78646dfee32ac71aa2062f53c55fdb3cbd0bf14afc6c61a28746b"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-026-c5d09bfafa--accepted-N.json.sha256",
+      "sha256": "7eca658c5f9ecb898bce0c82425f8e4c259803862256bba216c0ef03325f8af1"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-027-56d238c396--accepted-2N.json.sha256",
+      "sha256": "197777ec9887b13be03e22302e1d50d3d292a9b1836de7678605f17bb6959608"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-027-56d238c396--accepted-N.json.sha256",
+      "sha256": "1a73be9bfd2e14658dccc0afadfd3e991632c137cdbffb87e3675b9c4b722fb8"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-028-8c0a501d9c--accepted-2N.json.sha256",
+      "sha256": "8e3bd2255122f918346bd281ec4a2805b32ac8d23318b560a7e0be311f90f9bd"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-028-8c0a501d9c--accepted-N.json.sha256",
+      "sha256": "99db10af23ef9d87f8ee386360ddf647fdedf21c12cf743ff03dea7ad9cb6259"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-029-3940e2552f--accepted-2N.json.sha256",
+      "sha256": "724e7b72b33a75e3016f702cae521693c93e001ef1b4adb7091f32e4eaee838c"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-029-3940e2552f--accepted-N.json.sha256",
+      "sha256": "56dc00f60b7ef385ae1e13bbf3e535af5ccb4d7e416a309c47aac62db3fab767"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-030-5f0cd58497--accepted-2N.json.sha256",
+      "sha256": "0a4fdfdaf36656560675c9226e1c0c40ed849ef8168b974973215bb21ab01d3a"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-030-5f0cd58497--accepted-N.json.sha256",
+      "sha256": "a129ac94eabf5edd27e7a4108be1a8722145fff93119a2d63e95b0cb43e64912"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-031-3e7a3b3509--accepted-2N.json.sha256",
+      "sha256": "405c4a723ecd2b270e48c3e48311d560b8d0098926e614cbb0ea8f88fe5e8b9a"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-031-3e7a3b3509--accepted-N.json.sha256",
+      "sha256": "c279eb6a5ee4d37522f8099f03c66953a70a35ed35227b41881be9404ce5ddf9"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-032-570ad83ba6--accepted-2N.json.sha256",
+      "sha256": "3183b4b02107e31ffffb115321ffd337522d84edd53a780469a6119c859f1b47"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-032-570ad83ba6--accepted-N.json.sha256",
+      "sha256": "445452fa86a9fdad626b51f511d1997cfecab4d569b83ea0aff1c895ac2747d4"
+    },
+    {
+      "bytes": 113,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-032-570ad83ba6--refined-N.json.sha256",
+      "sha256": "77443344b613fe7edca7a0ce9a3f85880ee83eb62f6152c938ac5d29469773f7"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-033-1f293d6cb7--accepted-2N.json.sha256",
+      "sha256": "993b9b7605d128ad81417148f4d531d40e1f5db231720a95fef52c0ddb0c0193"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-033-1f293d6cb7--accepted-N.json.sha256",
+      "sha256": "d54676f667491dc06ecb8b54d64838958e30d3cc3aa821cdcb5586f90a4a76ab"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-034-13a1a432e0--accepted-2N.json.sha256",
+      "sha256": "144b70367e09967510b80824d4c9001d23519b88fc5f120ca6dba1df7450fdb7"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-034-13a1a432e0--accepted-N.json.sha256",
+      "sha256": "b270c49702a44a3605c4ca657b1385697bc5d523cfb4552c0e0f2a95ab9ef227"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-035-6ca4a7f3c2--accepted-2N.json.sha256",
+      "sha256": "4fbab450ef2ccc5e2e787db24599da71887a8a4f90f27fef387d96fdd9db9d5a"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-035-6ca4a7f3c2--accepted-N.json.sha256",
+      "sha256": "82c6da520f130b94c777a8a05817361fc86d45d0308c83a95f440f87982b7284"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-036-b84b580964--accepted-2N.json.sha256",
+      "sha256": "9f209396892e6867124000c2c0cb429357fd2eaa4e1b770422e49f51aef82384"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-036-b84b580964--accepted-N.json.sha256",
+      "sha256": "3706cac2a8a84edc7082f54a55a3f315e776c35df1e7b7157172add8516157e3"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-037-4de0233d45--accepted-2N.json.sha256",
+      "sha256": "a59527752e120aaa007e3c7f976a69aff4013c7bbc3a35abb0f4064ca4e436dc"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-037-4de0233d45--accepted-N.json.sha256",
+      "sha256": "a6f480de2e36de4494bf895e806f3b6173568d69da74694ddb0c119d853495af"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-038-474b968ed6--accepted-2N.json.sha256",
+      "sha256": "8dc13c1005b0ff318eba12be82ce5df192c2c0310ddf213e06bd6788e0b13fee"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-038-474b968ed6--accepted-N.json.sha256",
+      "sha256": "8b713b190cd50f46ed941e21fd1db30593609308166ef02fc75c150e716dc3cd"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-039-df1626ab7e--accepted-2N.json.sha256",
+      "sha256": "4ca1866514605fe95f2a22d85419e0c9133af85c726fccd8dbbff8d8016867c1"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-039-df1626ab7e--accepted-N.json.sha256",
+      "sha256": "b95a2bf6c58abda3f8bed985e8a07534cd0591713f9c7bc864fedb7785106ff8"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-040-827cdb9c2a--accepted-2N.json.sha256",
+      "sha256": "ce5cd2e7833a494d9a326d200cea1747adffe5cd2334448cdeec2bdedd4190cd"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-040-827cdb9c2a--accepted-N.json.sha256",
+      "sha256": "2f6d95442df15cfcaebadce5de5c758b3b0c3734616066198a6bb4a9ed39b6d4"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-041-b62c5d7163--accepted-2N.json.sha256",
+      "sha256": "91ee4a20a5fea6c5c53907d528970165bbc3d36a25d77c97ea99bf174f9d8d7d"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-041-b62c5d7163--accepted-N.json.sha256",
+      "sha256": "1329c60bbaff8f1ba58278e300b85d25e4dc88f0218506c9484eaeb69258fc90"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-042-ae9a80d120--accepted-2N.json.sha256",
+      "sha256": "c283e8336cdc0edb8436a23314b0792b45ad3112dc7c2eff6627fbfbdd88b724"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-042-ae9a80d120--accepted-N.json.sha256",
+      "sha256": "ff10224dcaea802cf519326e3e27beec17be08d38acf51f0ac1b38ab189fba48"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-043-b585cd28ea--accepted-2N.json.sha256",
+      "sha256": "3d40d67362f67b207bd146af0d18b458a5387b55a9c240173e05633209932421"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-043-b585cd28ea--accepted-N.json.sha256",
+      "sha256": "7c479bf2f3b9185664646da7b3efd7837562549fc672d01e2411c7f0bb213d90"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-044-2f03fc2fb5--accepted-2N.json.sha256",
+      "sha256": "077301d430493a3d457acc07837ae3101f2731e4b1e4f14d120346fe12aee723"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-044-2f03fc2fb5--accepted-N.json.sha256",
+      "sha256": "bc8a0d5a76a79168586339b195066d9e614cf6ca8acd47024cd76cfe3ff96dfb"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-045-d52f4d6a1a--accepted-2N.json.sha256",
+      "sha256": "f3ed2be8b71afae01e372e4edae3da279029d8a5758815c9c7b84b534c91f409"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-045-d52f4d6a1a--accepted-N.json.sha256",
+      "sha256": "18b98dd1d85f25f90223d8e24544b48a2314d1d93e0f7a494286b169c4c7d828"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-046-1d0bed7f4c--accepted-2N.json.sha256",
+      "sha256": "fb0061d71bdcfac40fc5428b166fa94bc23fd28c4769a29bba72653f0870af47"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-046-1d0bed7f4c--accepted-N.json.sha256",
+      "sha256": "42da954d0ecce7350de27c76c48e8fd0c2269f174004a4561b1df4636048e66f"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-047-e3196a8aa5--accepted-2N.json.sha256",
+      "sha256": "3393de242b725850a3f8480d4f4676e857bceeb852bb125076dce98b0333fc9f"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-047-e3196a8aa5--accepted-N.json.sha256",
+      "sha256": "2d0048bc72d40d37713f6793deb35cac386e0429bd262ca82806f7d5921fba06"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-048-9e4abaf530--accepted-2N.json.sha256",
+      "sha256": "b0d3630d10579bb4579838121108b3cb10ed8a012695b0a78daf2df54191b2ad"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-048-9e4abaf530--accepted-N.json.sha256",
+      "sha256": "da3c8094e17d7972e9ed36c6bb4ecef2f0ad9a8dca3486d782d6478b4214f9d7"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-049-cf0a7d1028--accepted-2N.json.sha256",
+      "sha256": "3ec282272eb0031b1b99a5bab6d6ff2d18b5f858f9a575daca0569fbe1e288ca"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-049-cf0a7d1028--accepted-N.json.sha256",
+      "sha256": "eebc0f617e93afe11eeed9d35c74cbfc0a15001acc378290c0eaa70aadcb9019"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-050-012aa2a74e--accepted-2N.json.sha256",
+      "sha256": "94724c9e93e07909caad8830d26c723bb472398c7998f6c9ad692535130e79f6"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-050-012aa2a74e--accepted-N.json.sha256",
+      "sha256": "b916cf05ec7c3c6c29b66ffc597cb765ba30b0c15c2d3c29a08564c99e99f21e"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-051-d243e11351--accepted-2N.json.sha256",
+      "sha256": "77b8c658ab44906a3b09a8e286eb32d7b7b378157f865f938ed97f9fb445b52d"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-051-d243e11351--accepted-N.json.sha256",
+      "sha256": "c787ebe55065da81d22f89a5a0dbc87ebcb7a0165a8b27ae8772976f6c2e7dd5"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-052-e117399e75--accepted-2N.json.sha256",
+      "sha256": "4b6195ea4632ac93dc58998d2dcdccd7363933f9ad31f447af90f3f455435405"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-052-e117399e75--accepted-N.json.sha256",
+      "sha256": "42b345485e898e978d30dcee129c84e72388c747bcc00c1ca2df86d66b748f15"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-053-e22999f79a--accepted-2N.json.sha256",
+      "sha256": "c10b5612dbac4d655ec34f1218e7978e8cceee7dbac215da638f484604f7a377"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-053-e22999f79a--accepted-N.json.sha256",
+      "sha256": "4579b6105a7cb71b03fce8bfdb956b62d965c45ec398e98ae64fde41092d0af0"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-054-58f94d4676--accepted-2N.json.sha256",
+      "sha256": "692cd420276310ee970cf804daed7cbfd4a3c10974dea43ed29519fbbd9af7f7"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-054-58f94d4676--accepted-N.json.sha256",
+      "sha256": "f47711b60995181fd57bcd16fa645fa1432caef796986a00b312039ba8f6a679"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-055-a7ac306811--accepted-2N.json.sha256",
+      "sha256": "60d36024a2efe6860f821db60be8dbe74eacc95bfaeff47d6b1fc031376d7f36"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-055-a7ac306811--accepted-N.json.sha256",
+      "sha256": "cabd7bc392448e7229893b17cfa381fb82b71d34890fc41c6958e18202ad21cb"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-056-87997ee6f2--accepted-2N.json.sha256",
+      "sha256": "cb906e2c39b6b37f6382efb43611d69c955443936d0e7acb44efe1eeb2d74070"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-056-87997ee6f2--accepted-N.json.sha256",
+      "sha256": "640b29c68329e08ce08d624e670b28a5ec41d441e067d5c9883912b6bc4d9d9c"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-057-68965a0576--accepted-2N.json.sha256",
+      "sha256": "4780b07ad679af5bc5fe62e53609e1907037e2c2ac1434e8f319dc2fa076f203"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-057-68965a0576--accepted-N.json.sha256",
+      "sha256": "515bb78b7e726092f70c8d5d382fe70ddf5492cf7c3e5b7170ed36490a5ff666"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-058-132b3d1a44--accepted-2N.json.sha256",
+      "sha256": "b1cd8e7f284afebb14d568d144340f588340504d24bb5e3f047a51fa42aa78a9"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-058-132b3d1a44--accepted-N.json.sha256",
+      "sha256": "d094bd6c116e6bbffa81c27d3e7ff20f09dd25e6475dec114116a9a05e937e55"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-059-06306f4e8d--accepted-2N.json.sha256",
+      "sha256": "6cd3ee40ec8b690828844f29664bef65f2bdcc8bd0996dd144d47ba490fc121e"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-059-06306f4e8d--accepted-N.json.sha256",
+      "sha256": "ebe4a23156fa57fa62c7a6dad844ea076f8c30599c12d20284464347a60c34f5"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-060-c3bf7e5c98--accepted-2N.json.sha256",
+      "sha256": "69c5baae91a1abb3d28591cfeb80aa49b395a0424bb18169a93d0418e05743a5"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-060-c3bf7e5c98--accepted-N.json.sha256",
+      "sha256": "2ccab48a5e80cf17c93fb013a9d29a214d0d38d7ff6350360f278988c1a011cb"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-061-d8ebe65ef1--accepted-2N.json.sha256",
+      "sha256": "5546ccbd45c15570be4a6b6c71c90330a82ab96067be4b4e30ec96ac38cbf7f6"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-061-d8ebe65ef1--accepted-N.json.sha256",
+      "sha256": "0bc875ffe2dbd0c5c7e521740c409a92b63826f079b3d9f0a0c2ec93164e5b24"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-062-70a6b2f959--accepted-2N.json.sha256",
+      "sha256": "9e3b9c0d665cacedb539b30e84bccb2701a39213d867c747000c37cf790e1525"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-062-70a6b2f959--accepted-N.json.sha256",
+      "sha256": "12fdbff8f59f42e723433679229ac81b10d9d3c041f66d36a9d2e7e0cd1505db"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-063-eaf6bef4a4--accepted-2N.json.sha256",
+      "sha256": "0ffe2b8a75e20f5ebbb470cee3e5514b7a9431632cba3eb952f9f2bf306ccf3d"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-063-eaf6bef4a4--accepted-N.json.sha256",
+      "sha256": "28f7a54ca5828d9da3809fa556b0d142b0cf27deae18f26fb2f9199c4594f4c4"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-064-9f6ecd1a94--accepted-2N.json.sha256",
+      "sha256": "3e22ae6d9448811299492ff75e71986fedc83a56afb83ac0ec8e18d36f32e815"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-064-9f6ecd1a94--accepted-N.json.sha256",
+      "sha256": "9b8da73e05ff9e9e77bbaa83b4a060ea0bfadc66b5da451bf4fe2064e47f3c87"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-065-9e98f08f3b--accepted-2N.json.sha256",
+      "sha256": "aa43c41675abde1a803292175b6844e60f9a9e21d55792284e5ea67388f02222"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-065-9e98f08f3b--accepted-N.json.sha256",
+      "sha256": "ccc648418e0205ba0c4ad8c702ed9795f3c71f5e551c1c7f60ca6b36a9e0622e"
+    },
+    {
+      "bytes": 113,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-065-9e98f08f3b--refined-N.json.sha256",
+      "sha256": "2917028f31493cd4b13e485f86c1a5fb3c8c47900604f4416c9bad18a2cd8a65"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-066-d58df2fb43--accepted-2N.json.sha256",
+      "sha256": "0bcc7c99f6647c0d9ba662c37a13022667a892df1908ba13bf996d85d83d5aaf"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-066-d58df2fb43--accepted-N.json.sha256",
+      "sha256": "235b08f6d924cd6958d7033d8502c3c34258a0fead4a81bdcb2c16f1b368ad21"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-067-dd5a30270f--accepted-2N.json.sha256",
+      "sha256": "eb1f3092c18045749a3c34fd5e9b684d6acb3c5dffd2d6b7126139ce92b528f8"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-067-dd5a30270f--accepted-N.json.sha256",
+      "sha256": "e4a793f0b392319797cd614f8882e1a26d9fa32d6d38e0b02994331b2b308d7a"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-068-375d1b1b13--accepted-2N.json.sha256",
+      "sha256": "f96f560ac7d8d0918ffdb2fad16d0cc3a84961ef633699c1a6b702369a4ff0c1"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-068-375d1b1b13--accepted-N.json.sha256",
+      "sha256": "337d32962491f5fef4099ed02c336c1952266332f83f20ca8bd44e9ef914b089"
+    },
+    {
+      "bytes": 113,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-068-375d1b1b13--refined-N.json.sha256",
+      "sha256": "6157abbdfdf7ea2fdc041bf7f0e2430f9cdb323022e6add97cd435a512b26583"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-069-9ae4602904--accepted-2N.json.sha256",
+      "sha256": "8593ac6490ce5d4415fc9efc902fe3ad6596cf2db5c96664db074c4133c30722"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-069-9ae4602904--accepted-N.json.sha256",
+      "sha256": "790e7c05fe849c28df34ffba00bb432620d71cd5cd438f7f7375ad7957ff1d99"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-070-5b284f066b--accepted-2N.json.sha256",
+      "sha256": "d86b16731e5486b940ab4cd0b12fbd55e70d9debc288b94d2f35deabbffae844"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-070-5b284f066b--accepted-N.json.sha256",
+      "sha256": "513dcfd429aaccd33f9365dcf6b4830cf1f8c3d5c4ce1df2354fac3eae29346e"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-071-f0c9ebbd40--accepted-2N.json.sha256",
+      "sha256": "1ccf282650ddc866baa68c57f9620e1d645a61e61d67cde7713b798b842f3ac6"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-071-f0c9ebbd40--accepted-N.json.sha256",
+      "sha256": "f4a95eb03e73b28a007612ceb9623e914ba4ce71f9d297abb582f2df7a282a02"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-072-79cfa36e3a--accepted-2N.json.sha256",
+      "sha256": "0ac140378efb6c3f7e780cf633f1a2e120e13a6c5c040f898cb217e7c6f4f5a0"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-072-79cfa36e3a--accepted-N.json.sha256",
+      "sha256": "1120fcaa3da53655f5da23d08c5b58697851be688d1017dcc15ddd3fc53c21c4"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-073-274491a725--accepted-2N.json.sha256",
+      "sha256": "8f6326e5d49e35c2a0a22ace1aafd1c898f537c10b777e484b58e51055cf9200"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-073-274491a725--accepted-N.json.sha256",
+      "sha256": "d6f7562b94dc3bb4e500cea1200bb5cca6aa38008bc94b3faaf76faec3568e3a"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-074-e2365d7a87--accepted-2N.json.sha256",
+      "sha256": "c9ac7c53b6e4376a98392e30dea122933ac5a3b9178bfef2ddcff3000489a2be"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-074-e2365d7a87--accepted-N.json.sha256",
+      "sha256": "fb577631de1d4cc336c892245a038d34881924e3aa6dc94ecfd80995b4ecdc11"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-075-a6696084a4--accepted-2N.json.sha256",
+      "sha256": "66ff8f630aa273d9b048b9c42f53cb9f5185d25d184d9591a9462f71c9882569"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-075-a6696084a4--accepted-N.json.sha256",
+      "sha256": "e184e05fb879676bd08bf752ea36d877891bc53dd89cf7069aa08da5e5f3246d"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-076-900f037a8c--accepted-2N.json.sha256",
+      "sha256": "79c6b693e45cf018a23d66661e3e0a9faf86340ce5c08f226526b6c6e21d01bf"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-076-900f037a8c--accepted-N.json.sha256",
+      "sha256": "dcfa680b789abe3b9bb2892b698af52985054e495f23dfbc0eafd9906b05a273"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-077-44d74d05d4--accepted-2N.json.sha256",
+      "sha256": "62a181be59c258c70b8a94eef0ca6ebd9d7aae2601063dd63ceec449af1d97a4"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-077-44d74d05d4--accepted-N.json.sha256",
+      "sha256": "fc48946dcf25b7ab821812db1b725e651f3c9ec0b1e898df4282eb8861c46b16"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-078-28bf64f2bb--accepted-2N.json.sha256",
+      "sha256": "2c5b7ab4bcf0109ef51cfb0f2426fa29dad86cdf8cd85487c989ef6c1bdf2f25"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-078-28bf64f2bb--accepted-N.json.sha256",
+      "sha256": "d227c051128c99ae1e13b62096ceec2921d89df056d1fa177cf2211b14f063ca"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-079-62792322e0--accepted-2N.json.sha256",
+      "sha256": "b431421f31d640b9278b91b10763f3acd54b756e94168e0a7f998236588f95fc"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-079-62792322e0--accepted-N.json.sha256",
+      "sha256": "26c95d9a03a5636687f558694db794bfbc4bb8f2c2c952ecb0560a381e3b949a"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-080-b666fbf97d--accepted-2N.json.sha256",
+      "sha256": "803b4d5cf8ac6e3079238e30c3629241038974ba7b2bc60f2f4bde5c3a57baef"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-080-b666fbf97d--accepted-N.json.sha256",
+      "sha256": "e34249142fa00b986dd8572d9c67af34081d0058fc87de43a78b6878d63f6bc8"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-081-601159d2a0--accepted-2N.json.sha256",
+      "sha256": "f0fa3aaca46c9e867bc1a0ec0fd2ab09ef043ed3091de3febf8a725d3eab27ea"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-081-601159d2a0--accepted-N.json.sha256",
+      "sha256": "7482b392d3f6cc7d3238e31c9925c7f4b048404d5925aaddf95480889253bba5"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-082-ec510a5bdb--accepted-2N.json.sha256",
+      "sha256": "6ac35146a526c7e1fc599923a959af5de5740c844514d32bc56aefd1ee56a039"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-082-ec510a5bdb--accepted-N.json.sha256",
+      "sha256": "4617f386024079ef90bf3015452e098bee484eae571338567b41679c8527298c"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-083-4c9976a050--accepted-2N.json.sha256",
+      "sha256": "f23717c2689eb68dee6c2fcbd7b4244b0f1504eda9198aaf9c2baa17e4d07606"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-083-4c9976a050--accepted-N.json.sha256",
+      "sha256": "07d40e8494b8c13d0c899ebc417c0d53a64b7dc2a90602ef7ba6911fdcc61ad9"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-084-7fbadd6e3c--accepted-2N.json.sha256",
+      "sha256": "5857d1ca475a89918f928717058d2325b957fa98e288a9f19aa242b4603df0f2"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-084-7fbadd6e3c--accepted-N.json.sha256",
+      "sha256": "ea2ec54a30120c3dfa22ce7a5ddb60714fe6d3e8329e861b9071170d4bc94c48"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-085-3164dd7be8--accepted-2N.json.sha256",
+      "sha256": "5a71af1253566409acafa467090baf50f3e5d854dfc41a27bb1d0dd1228a78f8"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-085-3164dd7be8--accepted-N.json.sha256",
+      "sha256": "dc0f12265c1dd8ce9f3fed8bb14f8a1f6bdd7bf7bb7d3ce00e02177f2ac0d8f1"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-086-fbb26d4705--accepted-2N.json.sha256",
+      "sha256": "4253f2e30173985b9916ac863069eb129d102d874772f32b7d5db917194d909e"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-086-fbb26d4705--accepted-N.json.sha256",
+      "sha256": "e8642273096fa6e78bc9725a347b0bd867e1cc7a1c46ce85ba8547644690fb98"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-087-8428d611f2--accepted-2N.json.sha256",
+      "sha256": "08f6dd72d8270da115e36cd7e42ea2e656de2114a3c20b1e7e70fb52332a642f"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-087-8428d611f2--accepted-N.json.sha256",
+      "sha256": "f320f78130575fe525838d1f41aaf4fc8aa3c42166279bd3affb427d0030a9e1"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-088-54d047707b--accepted-2N.json.sha256",
+      "sha256": "d8f17a4b1ac20dbaba7c07781932a2eb3452dccaceaa30bdcdfba351ee28c320"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-088-54d047707b--accepted-N.json.sha256",
+      "sha256": "ba039264b08bf95c1f398f3915709bc0772188ce85d18e8225e7bc9ea4904ea1"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-089-8275bc9272--accepted-2N.json.sha256",
+      "sha256": "869e7e30e783a7c0008f3dcd66851f6318e65b1a88f3867a9c6defe0cdd31081"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-089-8275bc9272--accepted-N.json.sha256",
+      "sha256": "310741eebaf669bf076eab046189311847b1742bee573624e7c0d4e237fa7796"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-090-7ab4ba4fd8--accepted-2N.json.sha256",
+      "sha256": "0fcf5b2e204c2c686704a9e54066e9b060ca251ca43e6f25608db8f95aabf854"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-090-7ab4ba4fd8--accepted-N.json.sha256",
+      "sha256": "e95981ea3dabe58f2eefc6372d0ceb771ee7184b9a924988596cb891835cdd49"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-091-1aab0b78cb--accepted-2N.json.sha256",
+      "sha256": "88addb3ace254dd42685e1cc3e674a5a8b002c4859454586bf9724001604f97c"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-091-1aab0b78cb--accepted-N.json.sha256",
+      "sha256": "25615bc66d60eecbaafcca33b1d22c1540aed32f8a7af92156cd73492c28799d"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-092-d532fb20ca--accepted-2N.json.sha256",
+      "sha256": "279afc46139ad4747e029160dc5e23d68c71071618f33f1fa85c63041b1cccee"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-092-d532fb20ca--accepted-N.json.sha256",
+      "sha256": "34234709cd68dc75935269874eafa7b01b5388cdd91d938f402d067d2bd59ecb"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-093-27025a655c--accepted-2N.json.sha256",
+      "sha256": "d3612a2a61445b50eaaf10f141874472c744bbed2a185ded99cda1eaadfec439"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-093-27025a655c--accepted-N.json.sha256",
+      "sha256": "f1c4ac7b0400cfc4448f6765bbe59e82cd528c3ed6d85805a6bba4f8fd2f612b"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-094-ba60c4fe8b--accepted-2N.json.sha256",
+      "sha256": "b7c13b8715203d433f74c47646a3ddd35e87ddc0a94ae44d3ba98b09a0f4ae76"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-094-ba60c4fe8b--accepted-N.json.sha256",
+      "sha256": "4cc8d96f02fa027120cf5d1e059b6883e4dfde4f3f632b018e7a145061fbdec7"
+    },
+    {
+      "bytes": 115,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-095-27f6ceb96c--accepted-2N.json.sha256",
+      "sha256": "2cd6c101b0822448432e3ee705f305c0b1a0c589970234772645b1fc489d6f7d"
+    },
+    {
+      "bytes": 114,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-095-27f6ceb96c--accepted-N.json.sha256",
+      "sha256": "11a2db142babecf300462ab0f283e6b1f6b5247883e2ece7bf4fd84f754c7cab"
+    },
+    {
+      "bytes": 23575,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/protocol.json",
+      "sha256": "dfebcfea6c9d2240384707a85bfa92613395f185e3d105789f07d4d2d4b004ff"
+    },
+    {
+      "bytes": 323,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/runtime.json",
+      "sha256": "51d48aae97ee0b69a9e96a13f9bcfc2bfc28ba28aac00d0ebf1ee183b6300dbc"
+    },
+    {
+      "bytes": 47894,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/shakedown.json",
+      "sha256": "d988874d2491d222d4db33732f6668339e59c0eb4c4a30e1c7e21ed6a16d9430"
+    },
+    {
+      "bytes": 32460,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-000-48d2ccedd5--accepted-2N.json",
+      "sha256": "a4115824e7eb701379ba3ddc3935607b2ec8162681ad2fcfea13f4d6596c69a8"
+    },
+    {
+      "bytes": 32444,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-000-48d2ccedd5--accepted-N.json",
+      "sha256": "20bf710818952b71c431dcbb87ce248e87e22592462a2c2d99b13e8f009aa3dd"
+    },
+    {
+      "bytes": 32433,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-000-48d2ccedd5--refined-N.json",
+      "sha256": "aa85519f660b2d2d4d2c3a63513411e3ebc3ef47a9dba71733b2b6d43eafcd9e"
+    },
+    {
+      "bytes": 32278,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-001-0830ddda40--accepted-2N.json",
+      "sha256": "efdf25570fb6c6d312d348f0f3b10354455f3a1ef4aa9cbb27f5c15b962379c0"
+    },
+    {
+      "bytes": 32261,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-001-0830ddda40--accepted-N.json",
+      "sha256": "79c89252dcc6d808492fcc630e3957feef0d6b39738c687a6c40d1ad765ec930"
+    },
+    {
+      "bytes": 32456,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-002-48c4d2e317--accepted-2N.json",
+      "sha256": "6413f4dc8f281cf25a6089220653d6efc6b160b6a4b43c19a05318e308eeca2f"
+    },
+    {
+      "bytes": 32439,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-002-48c4d2e317--accepted-N.json",
+      "sha256": "67725bd16a6c822cc11ee0203955a2cc0e62ec43814ea23f53d30a8c0fa3fec5"
+    },
+    {
+      "bytes": 32321,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-003-b98d8da7bf--accepted-2N.json",
+      "sha256": "e6eacd9e6a254821ee126f27b3db244eef9e7c2c31fa8d61340c0430a3118dd2"
+    },
+    {
+      "bytes": 32302,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-003-b98d8da7bf--accepted-N.json",
+      "sha256": "1c3d10efbaf7a7f0d8194700ad38674524b444db9f75dd391f44c824345bc074"
+    },
+    {
+      "bytes": 32407,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-004-72b1c5ba70--accepted-2N.json",
+      "sha256": "9003c950bf502bd53ed7eff8f768ea64b23c69bbd651f1c50bb9c1f4cd7fa8c4"
+    },
+    {
+      "bytes": 32395,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-004-72b1c5ba70--accepted-N.json",
+      "sha256": "501121b2f81c8393897920b2f90d49378a27d2642714c59d39fa7a0e64b94f97"
+    },
+    {
+      "bytes": 32415,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-005-942c2d458e--accepted-2N.json",
+      "sha256": "d7b3c960d53d87e71d1a01f8a2ab0053b95b87add68585c641c31801c43e4088"
+    },
+    {
+      "bytes": 32404,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-005-942c2d458e--accepted-N.json",
+      "sha256": "ef49016b47e4f289fafabcb6c789c4a4f1172cc39529007e9fdfaea52d824cfd"
+    },
+    {
+      "bytes": 32409,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-006-110b30a28a--accepted-2N.json",
+      "sha256": "f7b3de41be6c96d09673479c9d238a223f9e88cb796db4163e6f5f36d8bd56a4"
+    },
+    {
+      "bytes": 32396,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-006-110b30a28a--accepted-N.json",
+      "sha256": "c95ddb0e03b88ec81d8083dd8ebddd0ba4d96167dedcec07716d3c9999510dd2"
+    },
+    {
+      "bytes": 32612,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-007-9ea145255a--accepted-2N.json",
+      "sha256": "4a4922ce87a3257e79fc52f4551da220794cae0b18a422766f280decc9a9eb7f"
+    },
+    {
+      "bytes": 32599,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-007-9ea145255a--accepted-N.json",
+      "sha256": "fb026a5abe7a129486a226d87df79d55f687de1e31912f24a7c6313a750aebfb"
+    },
+    {
+      "bytes": 32333,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-008-b45d1d67d2--accepted-2N.json",
+      "sha256": "556bda891fc6a8a941804a05b5e6f69271d13f5364a158d2d1cb1c5d2eb4dd3a"
+    },
+    {
+      "bytes": 32319,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-008-b45d1d67d2--accepted-N.json",
+      "sha256": "f3402b5b18791c1acea7bc1d8d165e5e73d4a86936e2783087901017ddcf9395"
+    },
+    {
+      "bytes": 32523,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-009-4d592518ca--accepted-2N.json",
+      "sha256": "f4361b41e9b29b688c9559347ed611050bd08b07259592952ceada53d642861b"
+    },
+    {
+      "bytes": 32510,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-009-4d592518ca--accepted-N.json",
+      "sha256": "1848cb0d067b1bd2dca4584ab20c96ba74eeeefecee3602752127a04233d46cb"
+    },
+    {
+      "bytes": 32492,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-010-7aa8cd8bce--accepted-2N.json",
+      "sha256": "1d24399a403326620f9fadac7a9aeb98553ba2792fe3bf6005989187c2f0a479"
+    },
+    {
+      "bytes": 32481,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-010-7aa8cd8bce--accepted-N.json",
+      "sha256": "4ae5b913393e52234ae1ca5ab08ddb003d4f3c9eff182c6b35bbc8f7c3da24e0"
+    },
+    {
+      "bytes": 32475,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-011-eabda2c05f--accepted-2N.json",
+      "sha256": "1b924517ad424999fc6e345eeaa9200c5a1a038c0d1472d276ad962cb14aa27b"
+    },
+    {
+      "bytes": 32460,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-011-eabda2c05f--accepted-N.json",
+      "sha256": "3fe5bc2a742673d2ce8bf7172c6d179cf31172f43a52a82b634dd4d2ae5153e0"
+    },
+    {
+      "bytes": 32497,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-012-861e265ea9--accepted-2N.json",
+      "sha256": "d435d3928749036a6b5d9cca8f249bb11ed9e05c0d0337b0bfd66a13136947de"
+    },
+    {
+      "bytes": 32478,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-012-861e265ea9--accepted-N.json",
+      "sha256": "b02a50dea3b982b30a541e923599cd5aa9d2415e02d85d04313c6bb360ff5839"
+    },
+    {
+      "bytes": 32501,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-013-1a5f2faf5b--accepted-2N.json",
+      "sha256": "0907b98048b1d0d08ce22df732487ddd189f6829125ba2813957ea8a643781e9"
+    },
+    {
+      "bytes": 32488,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-013-1a5f2faf5b--accepted-N.json",
+      "sha256": "2170fc456cb64f4956611cfdda31905c6431bca6aa5b7202338f554289447c43"
+    },
+    {
+      "bytes": 32446,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-014-454d5ec089--accepted-2N.json",
+      "sha256": "b170622265aded7235b300e8759a9b9a03c02c84cd097023d24e47a66a1a286d"
+    },
+    {
+      "bytes": 32442,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-014-454d5ec089--accepted-N.json",
+      "sha256": "e0fbcc0211b914019a9626b5e9248ccedea7b30aa3d1e7fc70bf28da204b6fb8"
+    },
+    {
+      "bytes": 32502,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-015-691452be4d--accepted-2N.json",
+      "sha256": "6ba6e7c1466961b1e7e23b94f7475586e479cb21da383982fbd5bd791e081f23"
+    },
+    {
+      "bytes": 32484,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-015-691452be4d--accepted-N.json",
+      "sha256": "f636f508aa62034ca31bc91cc531d702c364d3681001ee2a0b4d9c63e80c097b"
+    },
+    {
+      "bytes": 32456,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-016-9e4e222280--accepted-2N.json",
+      "sha256": "fd22219b152a5f03c36e363f8d24878bbe153bdaf1a0542b5b2af9e68003be46"
+    },
+    {
+      "bytes": 32440,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-016-9e4e222280--accepted-N.json",
+      "sha256": "377a77f7b98b9f2d5486ff8da5af4e3a24f3e475e7a94ea91d768ef49adbd391"
+    },
+    {
+      "bytes": 32535,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-017-55712611a0--accepted-2N.json",
+      "sha256": "659dccabea2f3d39b6ec9f3a0c76c59721c84dbca4506d8517b90dba35bc4c6e"
+    },
+    {
+      "bytes": 32519,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-017-55712611a0--accepted-N.json",
+      "sha256": "8493d1889183a833a2169985a5bb8f663f9cfca86496c96957e6aa30971dcd54"
+    },
+    {
+      "bytes": 32462,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-018-99a8ddb38f--accepted-2N.json",
+      "sha256": "0cc67c4f4f5d4f1767948012417f23dd0c78b8ba23a4eafdb9fac9ca35406eae"
+    },
+    {
+      "bytes": 32448,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-018-99a8ddb38f--accepted-N.json",
+      "sha256": "59aa7d59f8fd0cd05fc48b9860be920ad148aeb60821597caae1e3d4f58cc6e7"
+    },
+    {
+      "bytes": 32525,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-019-9166fdf853--accepted-2N.json",
+      "sha256": "869cf20ec12ddc38e395090aaf9a4b17124e671a1b673ab5ebb360b8b04565c7"
+    },
+    {
+      "bytes": 32511,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-019-9166fdf853--accepted-N.json",
+      "sha256": "9c8d1b75d346583319d40865dea82adb56b9aa79c24a6383673961ae95d56fb7"
+    },
+    {
+      "bytes": 32454,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-020-b517ae2748--accepted-2N.json",
+      "sha256": "ac228341f651e364450270e7a61bb7189ccd81092d1ff6d91ce375e430fe2e15"
+    },
+    {
+      "bytes": 32442,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-020-b517ae2748--accepted-N.json",
+      "sha256": "4bb3d576133bfae78f4a538360dbe49062b56c78bc14c18913c0288a4bede73d"
+    },
+    {
+      "bytes": 32298,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-021-5e0b38a851--accepted-2N.json",
+      "sha256": "9ec48b568df892b511cf560025b96f82fbe462c993098d68090c0bba401ed59d"
+    },
+    {
+      "bytes": 32284,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-021-5e0b38a851--accepted-N.json",
+      "sha256": "74a8b2e086377ddd8e86b00f46bd9a4add797cc87ed3243dd4b91c7e8b705a2f"
+    },
+    {
+      "bytes": 32666,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-022-4a12458d8a--accepted-2N.json",
+      "sha256": "398a6bda59ec73b31e4a52b2e16de4127786014fa487a139094c389fcf059b7e"
+    },
+    {
+      "bytes": 32586,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-022-4a12458d8a--accepted-N.json",
+      "sha256": "21fa85238fae16a3a78480403e1ad983d1081195b404fcd7fef478fbc87ffecb"
+    },
+    {
+      "bytes": 32471,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-023-09c1438b40--accepted-2N.json",
+      "sha256": "fa6425faf0dd6f8d3e1e6006eca17543188a43e4348375e7fa334f480db1e9ce"
+    },
+    {
+      "bytes": 32455,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-023-09c1438b40--accepted-N.json",
+      "sha256": "177bc6f892ef8629506ebd3c329ff8e05b92a4140f4cde817c62da2fade6723a"
+    },
+    {
+      "bytes": 32495,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-024-8ebc8e6892--accepted-2N.json",
+      "sha256": "d4f0094185aef62e84b35f6c122792a5604279ab9fe341219ab6b75c3707116e"
+    },
+    {
+      "bytes": 32476,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-024-8ebc8e6892--accepted-N.json",
+      "sha256": "7cee7df97450ddd5813053c3e6d05fa9f14e02c2a5942bd2fa13eac37cbbdf74"
+    },
+    {
+      "bytes": 32452,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-025-7bfbfbb365--accepted-2N.json",
+      "sha256": "87b3a6f3d228c836e381177ed11e7404ea379eebe1c15c77224bdefb4875064e"
+    },
+    {
+      "bytes": 32440,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-025-7bfbfbb365--accepted-N.json",
+      "sha256": "599f6df8b5a2bcbaf461b855a56a22472feef21e3241d1e4e978357ebf99ef3f"
+    },
+    {
+      "bytes": 32454,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-026-c5d09bfafa--accepted-2N.json",
+      "sha256": "a7299a86917b34b57ccbce2200f9aac4c87dc2d0a3f7379af569728bb989d5b0"
+    },
+    {
+      "bytes": 32436,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-026-c5d09bfafa--accepted-N.json",
+      "sha256": "5037f60a1a4fc1774fcba36ab23196d2da1bd6bda159e821a967d08fd24d4b3f"
+    },
+    {
+      "bytes": 32335,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-027-56d238c396--accepted-2N.json",
+      "sha256": "ddd39113c5839ba2cf7713c431944dc553c65c4862e66ca30afa2155bf32f186"
+    },
+    {
+      "bytes": 32322,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-027-56d238c396--accepted-N.json",
+      "sha256": "40573f505d427ac486de87a0f893b9841f90bd90bac757c8e4ec3835eac8f314"
+    },
+    {
+      "bytes": 32293,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-028-8c0a501d9c--accepted-2N.json",
+      "sha256": "89a0355ba755cd33dc0dfdb5db5758c0256e1b9217a7fc93bc2fb900d46cb28c"
+    },
+    {
+      "bytes": 32281,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-028-8c0a501d9c--accepted-N.json",
+      "sha256": "6a64c49d0e0048c29ff0e695b7608933d379ae6fd1890316b9a033e6e999f412"
+    },
+    {
+      "bytes": 32541,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-029-3940e2552f--accepted-2N.json",
+      "sha256": "6f2f4ea0a57765876bfae1c36e23fd0e04a1c235156f6702b7755ef300391d68"
+    },
+    {
+      "bytes": 32524,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-029-3940e2552f--accepted-N.json",
+      "sha256": "f4f834bb6a9f7d7c819aadc6f9df2c27f4287dfd2f87600e4d17af95d6eebc3c"
+    },
+    {
+      "bytes": 32474,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-030-5f0cd58497--accepted-2N.json",
+      "sha256": "1315f5779cd16023affd16f42a8780dde5c7840383deef35b1b5ed6b173db6d8"
+    },
+    {
+      "bytes": 32459,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-030-5f0cd58497--accepted-N.json",
+      "sha256": "b6874f6bcb731ad002485f82bf3a0f5988a49da3946502f5646d9ecd04b4116a"
+    },
+    {
+      "bytes": 32552,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-031-3e7a3b3509--accepted-2N.json",
+      "sha256": "9fc2000da47ae5d8f51af869183c1bafbebc71009fcd9e031395050dcdc85b6c"
+    },
+    {
+      "bytes": 32540,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-031-3e7a3b3509--accepted-N.json",
+      "sha256": "4873191a52a021044249a314fe9db6e0ff561b27d0bf56f465bdced679e68d9c"
+    },
+    {
+      "bytes": 32549,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-032-570ad83ba6--accepted-2N.json",
+      "sha256": "f0d964318e48f26bafc9f756b54a9b31c7626b01e726d2b6267499da53675901"
+    },
+    {
+      "bytes": 32537,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-032-570ad83ba6--accepted-N.json",
+      "sha256": "235309b4eb503ee81afc854a5e4ccd7a87df9cdcd271f5b60d0c8c693664bc73"
+    },
+    {
+      "bytes": 32529,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-032-570ad83ba6--refined-N.json",
+      "sha256": "773e768bd4e07dc6f6d9067aea353c670a43f62cc2a346f612e7720a59971c30"
+    },
+    {
+      "bytes": 32370,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-033-1f293d6cb7--accepted-2N.json",
+      "sha256": "ca96f8709490a56ddcc4b9e517316a980284156ea1a033324a44d5ed037feebd"
+    },
+    {
+      "bytes": 32354,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-033-1f293d6cb7--accepted-N.json",
+      "sha256": "66f651a3298e9c7a4d29b3d69d6f50b9642c631e5fc47bac9bad9d2eafbfb877"
+    },
+    {
+      "bytes": 32332,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-034-13a1a432e0--accepted-2N.json",
+      "sha256": "8b5b34482b0fa373752ee17d1d9291abdd5ef1d98912717c1a85115f74a58118"
+    },
+    {
+      "bytes": 32320,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-034-13a1a432e0--accepted-N.json",
+      "sha256": "0884405e0812034623d248c75db0ffca0d8081399e2627151502949d8b7ae6b6"
+    },
+    {
+      "bytes": 32555,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-035-6ca4a7f3c2--accepted-2N.json",
+      "sha256": "dda6a3a3412b096960ab97c6a2e484d1661d164112f5a3931cfaf1a0f5516f96"
+    },
+    {
+      "bytes": 32542,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-035-6ca4a7f3c2--accepted-N.json",
+      "sha256": "a1c6b7d31b253d8f6a95f0d9505cdc21a7f28087919f3a0a30bab274ede5f591"
+    },
+    {
+      "bytes": 32549,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-036-b84b580964--accepted-2N.json",
+      "sha256": "b392f21f6746160e70dc48354546214f33504b8450d014f6c9e1398de15fe11b"
+    },
+    {
+      "bytes": 32530,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-036-b84b580964--accepted-N.json",
+      "sha256": "aa2a25e1e454055989e006386b7feed9aab1ece15b4eb0f4a3e260a587317d7b"
+    },
+    {
+      "bytes": 32438,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-037-4de0233d45--accepted-2N.json",
+      "sha256": "8725d15aa210d85ce3e5ce7931bf2f76232c41e7140ffe8f6fafd82be20ffa08"
+    },
+    {
+      "bytes": 32422,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-037-4de0233d45--accepted-N.json",
+      "sha256": "a2865aa31b93ca454b463f0a7f723549246d32fd3fd46b74d6cf728a74d7f656"
+    },
+    {
+      "bytes": 32645,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-038-474b968ed6--accepted-2N.json",
+      "sha256": "b443809b14e74ba18adb1b0e73b98a3aacb59013ff7b217987d366b53adfe459"
+    },
+    {
+      "bytes": 32625,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-038-474b968ed6--accepted-N.json",
+      "sha256": "431a986914436539d038788c6a346f568c897f8ad26583b691915d8bffda1622"
+    },
+    {
+      "bytes": 32745,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-039-df1626ab7e--accepted-2N.json",
+      "sha256": "ec758b944c4003189d1049bafa69d93bec8cc4325e54656aa944f46d81e527e2"
+    },
+    {
+      "bytes": 32702,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-039-df1626ab7e--accepted-N.json",
+      "sha256": "ce87fddc1f13d9c9e203914d21224a291737e5c7904851af796069ca4a5e43cf"
+    },
+    {
+      "bytes": 32435,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-040-827cdb9c2a--accepted-2N.json",
+      "sha256": "56da2efa36463c9f59465f7a593d86e97e19e29a729ae772c28671ac0926972d"
+    },
+    {
+      "bytes": 32422,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-040-827cdb9c2a--accepted-N.json",
+      "sha256": "6b9a24fa9e48574fa5efe6433fe016e160e0e6e8e92547fbda5d03abc1401f5b"
+    },
+    {
+      "bytes": 32433,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-041-b62c5d7163--accepted-2N.json",
+      "sha256": "1965f709751ac7108b45f01d7e43e76202e6311387304244f03cb5b6e3b1188e"
+    },
+    {
+      "bytes": 32419,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-041-b62c5d7163--accepted-N.json",
+      "sha256": "2bc5200e45ca2955d41c24e096952871130ca45540f0c48f8c8f462105610f49"
+    },
+    {
+      "bytes": 32504,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-042-ae9a80d120--accepted-2N.json",
+      "sha256": "b1913d1230acfdaa63a90d845ebdbdbd82c2bcb006b10e7ab218d0854ccda058"
+    },
+    {
+      "bytes": 32491,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-042-ae9a80d120--accepted-N.json",
+      "sha256": "efd52c55076e82e6555d5a33a740a4990d2e58cede2ec953982716bace924a26"
+    },
+    {
+      "bytes": 32481,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-043-b585cd28ea--accepted-2N.json",
+      "sha256": "1bff6a178eb018a44bf25f41b744e329cee830aeb2413e537fdea50475851f2a"
+    },
+    {
+      "bytes": 32466,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-043-b585cd28ea--accepted-N.json",
+      "sha256": "ce29f159dd445afa753ea9991a29bb91077a0f1eaf98e3294ce601e17a5d10fb"
+    },
+    {
+      "bytes": 32669,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-044-2f03fc2fb5--accepted-2N.json",
+      "sha256": "756818001f2fe340ac51dafe3d7827706f237cfbca35c07c49418f71974ecff0"
+    },
+    {
+      "bytes": 32659,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-044-2f03fc2fb5--accepted-N.json",
+      "sha256": "97af6bb84c7203d96940530476c5a1e9467a29b034e013258a04d18fc7de4bbf"
+    },
+    {
+      "bytes": 32398,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-045-d52f4d6a1a--accepted-2N.json",
+      "sha256": "f69aff52b11133132b7b5b9213274ff5116a6c7557fabc35821f05dbabb9bf38"
+    },
+    {
+      "bytes": 32388,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-045-d52f4d6a1a--accepted-N.json",
+      "sha256": "99001b29034f6f4677f4163502eb9905be6d5df7bb2302e9a252b75e8048543d"
+    },
+    {
+      "bytes": 32706,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-046-1d0bed7f4c--accepted-2N.json",
+      "sha256": "ad2e298d57e4e56a6a3897915c9d3cd0db8e350bc7d0e25b8280cd763d628f68"
+    },
+    {
+      "bytes": 32696,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-046-1d0bed7f4c--accepted-N.json",
+      "sha256": "9da2fb1d95fb325dbcd0e21e00c8cd029f63dae9e5ebf815b909e99a41a4c567"
+    },
+    {
+      "bytes": 32295,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-047-e3196a8aa5--accepted-2N.json",
+      "sha256": "d7b637d9f179d3a610ec4529ef797820c2f9a345657c7c0bc4d39734bfc5ffc0"
+    },
+    {
+      "bytes": 32282,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-047-e3196a8aa5--accepted-N.json",
+      "sha256": "353516178845d82d8998d693e125039e6fb305f47af7accb3de3879fd8fec71e"
+    },
+    {
+      "bytes": 32562,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-048-9e4abaf530--accepted-2N.json",
+      "sha256": "04909b8bbfd3b5705831948a5fd4c065a357ca4bd2c7786a2c851d2a0aa3cb38"
+    },
+    {
+      "bytes": 32548,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-048-9e4abaf530--accepted-N.json",
+      "sha256": "083dfbe92c06662b4317b786e6238ce01a44e7ebf2d50dc7d1935ffe04850e73"
+    },
+    {
+      "bytes": 32766,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-049-cf0a7d1028--accepted-2N.json",
+      "sha256": "ddc614e085a85bdf1a8fe2432105e28cfe569abb49ccecb8b959bbb9188908dc"
+    },
+    {
+      "bytes": 32760,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-049-cf0a7d1028--accepted-N.json",
+      "sha256": "eed91748d3bfd9e457692586dc627eec7cb82f1361f2118e2e903f3d6f8eddbe"
+    },
+    {
+      "bytes": 32945,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-050-012aa2a74e--accepted-2N.json",
+      "sha256": "47838355db8a58d34cdc700cae23d1bbc4960e5f0fe06837570e05d6fa0ad0ae"
+    },
+    {
+      "bytes": 32929,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-050-012aa2a74e--accepted-N.json",
+      "sha256": "500919dc2456fc6f0c2e26d0a16bb96774dca89346d65b302d13652f6dadae76"
+    },
+    {
+      "bytes": 32451,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-051-d243e11351--accepted-2N.json",
+      "sha256": "b87bca96e526ab3219f92ab0024f526c11f9d5b1d24e432488b89c0ee1f71d8b"
+    },
+    {
+      "bytes": 32436,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-051-d243e11351--accepted-N.json",
+      "sha256": "7efc710dd8c2bfefeb6dc7faca8794d76f1a5039fa209f3a639b1732dcd6b021"
+    },
+    {
+      "bytes": 32488,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-052-e117399e75--accepted-2N.json",
+      "sha256": "ac904e521e2e333941360a881d10e5a6662937da572a66f4aa983ddf06a46037"
+    },
+    {
+      "bytes": 32478,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-052-e117399e75--accepted-N.json",
+      "sha256": "ba60a6c7278465c35711eb96339a1f19477145835af13cb9494de61593390833"
+    },
+    {
+      "bytes": 32736,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-053-e22999f79a--accepted-2N.json",
+      "sha256": "6bc44426712c6e29a2aa393ad9109405f5631168f96fc2968511e55361f00048"
+    },
+    {
+      "bytes": 32721,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-053-e22999f79a--accepted-N.json",
+      "sha256": "c43599841c809d82e26a530447adb2b8e9c2a4402b952c9b6013ce5a9cc4af38"
+    },
+    {
+      "bytes": 32460,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-054-58f94d4676--accepted-2N.json",
+      "sha256": "f565e4f4da0bcf8d46b4bc6bcee03c347f8c322befef510f37cfae77ed11bc40"
+    },
+    {
+      "bytes": 32440,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-054-58f94d4676--accepted-N.json",
+      "sha256": "ca250712cbd6aba2683ef0c361ed7e6cdb5cceecf887837ebe9b572044723470"
+    },
+    {
+      "bytes": 32405,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-055-a7ac306811--accepted-2N.json",
+      "sha256": "23723f672a4a1e208ffa5221f9460b26df9d4d9bf8e1ef265d236873fa2eaa07"
+    },
+    {
+      "bytes": 32389,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-055-a7ac306811--accepted-N.json",
+      "sha256": "a63c7fe4e13220df4b84a27d310aa074ee4156382f3bb3b85c8bd6d0c3211da1"
+    },
+    {
+      "bytes": 32669,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-056-87997ee6f2--accepted-2N.json",
+      "sha256": "c4e7f68ad84695b4843cd80636ed216d5a06045888e1e72c28a47b2d8b7dc0ff"
+    },
+    {
+      "bytes": 32652,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-056-87997ee6f2--accepted-N.json",
+      "sha256": "9ebef9818152736ef7ffd7354904d88d8044987715c5cc46d490f84e4103375d"
+    },
+    {
+      "bytes": 32445,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-057-68965a0576--accepted-2N.json",
+      "sha256": "3a05b9028ab38a8352ac5eb94e3113e69c8956367e029fd1e30e4759e4453ae3"
+    },
+    {
+      "bytes": 32430,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-057-68965a0576--accepted-N.json",
+      "sha256": "ef7fcaffceea31d413bf60f7b9b7670404d8d723d01494c7560a39fb202aaca1"
+    },
+    {
+      "bytes": 32367,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-058-132b3d1a44--accepted-2N.json",
+      "sha256": "b3e5b6399d4157eb42b5c49597cfa7a1dcdc874111423f9483956699eceee771"
+    },
+    {
+      "bytes": 32350,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-058-132b3d1a44--accepted-N.json",
+      "sha256": "e5bf667e7e7b94f949ba0e051e1b0af92cc552d3f5e150f995bb964d088e805a"
+    },
+    {
+      "bytes": 32619,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-059-06306f4e8d--accepted-2N.json",
+      "sha256": "1263fa179da1091b8ba4015121cd67000df9f57fe07ba856d311829445f34fd4"
+    },
+    {
+      "bytes": 32601,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-059-06306f4e8d--accepted-N.json",
+      "sha256": "9866993f054212d62abf08d937b8c2f653219af565c8dc85e4e305726f980eb5"
+    },
+    {
+      "bytes": 32638,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-060-c3bf7e5c98--accepted-2N.json",
+      "sha256": "94349b5c778fc70d7d2e16214960f48722f97486d5665bff89d43af2976b15db"
+    },
+    {
+      "bytes": 32617,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-060-c3bf7e5c98--accepted-N.json",
+      "sha256": "b275d6081b6554630da149f5a9db0ed925840511d2be2bee3f9824e0610d926e"
+    },
+    {
+      "bytes": 32324,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-061-d8ebe65ef1--accepted-2N.json",
+      "sha256": "469bda40d9df9cf64fe313283b34c02d5be5872d30a2d4c9b48d5a647898e3e3"
+    },
+    {
+      "bytes": 32309,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-061-d8ebe65ef1--accepted-N.json",
+      "sha256": "348775806d95798f2807b0b8879ed669d88ab4bf6064ca64eda2ec6e4e9a45c8"
+    },
+    {
+      "bytes": 32437,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-062-70a6b2f959--accepted-2N.json",
+      "sha256": "1b78cb431f08607a33c302c05cf6e398062a66346ffeb6d3e244054f1394340d"
+    },
+    {
+      "bytes": 32424,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-062-70a6b2f959--accepted-N.json",
+      "sha256": "e7533c4bd07a7b03410630010304649d00fc2369efc041b8e0b2b6b5b306d0ba"
+    },
+    {
+      "bytes": 32439,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-063-eaf6bef4a4--accepted-2N.json",
+      "sha256": "c62d006681f9b740035765f015d1144b72eb028e403ff2a05cea3ea064f8dd29"
+    },
+    {
+      "bytes": 32497,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-063-eaf6bef4a4--accepted-N.json",
+      "sha256": "06b7c38952830e244b68b0bfdb74626e6bc52d20afad53ca3f819f40bb1f94ae"
+    },
+    {
+      "bytes": 32361,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-064-9f6ecd1a94--accepted-2N.json",
+      "sha256": "075b1fd06ffbc5cd239b8e7f5d85a9d5a5451a3b552a0c19e58ceb79c35a1e9c"
+    },
+    {
+      "bytes": 32346,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-064-9f6ecd1a94--accepted-N.json",
+      "sha256": "4c964b1e4d33705fc3d474495b8cc6892fda3dcaebb6ce427f2279d6b5024e5b"
+    },
+    {
+      "bytes": 32430,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-065-9e98f08f3b--accepted-2N.json",
+      "sha256": "f7b07b3fcebcdd553b35442b71189b11d14e164ec2919bc9db99ed233e2f5eba"
+    },
+    {
+      "bytes": 32418,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-065-9e98f08f3b--accepted-N.json",
+      "sha256": "e0f23f110db09f2d928797d5d88152eac9a9352f3b6e7b6a7bf3a5a9bc5539b5"
+    },
+    {
+      "bytes": 32353,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-065-9e98f08f3b--refined-N.json",
+      "sha256": "a8d4a686e527435d7d27fb8b840488120ee16d3abb05181a92ac9ca8ac407085"
+    },
+    {
+      "bytes": 32782,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-066-d58df2fb43--accepted-2N.json",
+      "sha256": "5108b1b7e7817cb3249c7b3c3d4c7ae4a134b4ae6e38363739deb94714ee2885"
+    },
+    {
+      "bytes": 32787,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-066-d58df2fb43--accepted-N.json",
+      "sha256": "600f8c89daeffd549d157dfaf3897dbf59f3d5b6e5645e454227bf8791baeb9d"
+    },
+    {
+      "bytes": 32546,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-067-dd5a30270f--accepted-2N.json",
+      "sha256": "4dd4f0e5e56d3655487fbc262aebb85e91adadfb1554b76856737e1f6b5d9472"
+    },
+    {
+      "bytes": 32532,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-067-dd5a30270f--accepted-N.json",
+      "sha256": "ba7ee941578cbc964ad8e144bf6fae354971805d7890e19aebe1974c90c3406d"
+    },
+    {
+      "bytes": 32628,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-068-375d1b1b13--accepted-2N.json",
+      "sha256": "969fb98efc523d12265dfbf8c69de0b7fde7c05b44e08c682c7043ae34dc0009"
+    },
+    {
+      "bytes": 32608,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-068-375d1b1b13--accepted-N.json",
+      "sha256": "aa9397196857b981a9bd9b9cccc0302a7cd8773f6fe8e5c39549fa375523f417"
+    },
+    {
+      "bytes": 32540,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-068-375d1b1b13--refined-N.json",
+      "sha256": "182930741ce5f364426668b63ab9f9ae4902c1e5cf448a1a11133c1905621d14"
+    },
+    {
+      "bytes": 32920,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-069-9ae4602904--accepted-2N.json",
+      "sha256": "3254c4a8e4135a87437d8e1a50dacef262a02f39bfcf1e91839d0116ce5e6b01"
+    },
+    {
+      "bytes": 32906,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-069-9ae4602904--accepted-N.json",
+      "sha256": "f5493a46a0d7a59e684a426a8ccb220d15564b79c4c165b567c2244d284f7fcf"
+    },
+    {
+      "bytes": 32488,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-070-5b284f066b--accepted-2N.json",
+      "sha256": "83e1b79f7e88fd7afc9db9459c160bea224410e1e25dc81f743bad44ccfb729b"
+    },
+    {
+      "bytes": 32475,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-070-5b284f066b--accepted-N.json",
+      "sha256": "db5cf09339c8643101026b1f5cca5172e280f6670c5a8cd0277e7bd6c4c42d84"
+    },
+    {
+      "bytes": 32547,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-071-f0c9ebbd40--accepted-2N.json",
+      "sha256": "b63a508d864a851ed04fbd8798c0346d3d1388cf0fcc1b6746457899e235284e"
+    },
+    {
+      "bytes": 32534,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-071-f0c9ebbd40--accepted-N.json",
+      "sha256": "5f08e54f5a84f1c2dd05d39ab2ad1a1052d7be55781fe7ee4a451d884d82bfa8"
+    },
+    {
+      "bytes": 32582,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-072-79cfa36e3a--accepted-2N.json",
+      "sha256": "3a4f0169decfd4bf5ee7976375d45f516d36ac0d20eda4af78e983fbcc183f13"
+    },
+    {
+      "bytes": 32573,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-072-79cfa36e3a--accepted-N.json",
+      "sha256": "a00506520a41a23e246ff20baf8bcf70f15c9b60541f0c269729d63e7e136c03"
+    },
+    {
+      "bytes": 32977,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-073-274491a725--accepted-2N.json",
+      "sha256": "c3e97b158ddeb3bd10ee23723785caba313d21090082b6f48528e047aec3d939"
+    },
+    {
+      "bytes": 32962,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-073-274491a725--accepted-N.json",
+      "sha256": "f0c742e243dd169b05747753278169a3b1bf48a6b6beb4e8ef6e69cf2126e802"
+    },
+    {
+      "bytes": 32820,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-074-e2365d7a87--accepted-2N.json",
+      "sha256": "0726acbd2c67980efe56430b535ec248e4fb74ee9909bad34c0509f2ac19ec08"
+    },
+    {
+      "bytes": 32810,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-074-e2365d7a87--accepted-N.json",
+      "sha256": "a5697cd27cffff8880d21af0bbbf0654adf5d2906ace4409355e9b757c5ac834"
+    },
+    {
+      "bytes": 32599,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-075-a6696084a4--accepted-2N.json",
+      "sha256": "835170a5c8f505d310ea3260e63e67cdf3b9da9b9e60ea7fc72aa3f3a2230a55"
+    },
+    {
+      "bytes": 32585,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-075-a6696084a4--accepted-N.json",
+      "sha256": "cb8fb1a073a6792a6db7c053462dfe884e569767d6d9fec4c6fbf192c6caf837"
+    },
+    {
+      "bytes": 32291,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-076-900f037a8c--accepted-2N.json",
+      "sha256": "2bfb52740ff6699f26dc4ae503722eac10fb3a3cffa1bb382f70baad91e0c9ff"
+    },
+    {
+      "bytes": 32273,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-076-900f037a8c--accepted-N.json",
+      "sha256": "c0942d9495d41660b963502008b648ca40513b21ccb406be70b695c0bde4908f"
+    },
+    {
+      "bytes": 32549,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-077-44d74d05d4--accepted-2N.json",
+      "sha256": "300a713af33b59fcf151d4c21ca518ef71ec6f159fdf6f8e841d6d4ac257272a"
+    },
+    {
+      "bytes": 32532,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-077-44d74d05d4--accepted-N.json",
+      "sha256": "aaffd7448f163b1de8f89253e9d35eca3c5b927650334fe2ecc488dd6401b96e"
+    },
+    {
+      "bytes": 32403,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-078-28bf64f2bb--accepted-2N.json",
+      "sha256": "5a0fd2a664e706c768e29f89d5e58637c828698727adc4e77c573175885e37a2"
+    },
+    {
+      "bytes": 32395,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-078-28bf64f2bb--accepted-N.json",
+      "sha256": "c0552b4c4bead6c878641650c7337ee191baae99f33bccf18672b56103c2cd49"
+    },
+    {
+      "bytes": 32379,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-079-62792322e0--accepted-2N.json",
+      "sha256": "a9569ffc2d4083082b93867525a3e52e65b491b056f4f9d74107790992285711"
+    },
+    {
+      "bytes": 32363,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-079-62792322e0--accepted-N.json",
+      "sha256": "018abfd2f1fe9982ebd755ba8f44e281697c415e5cec6e4520528e4e05787ea7"
+    },
+    {
+      "bytes": 32576,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-080-b666fbf97d--accepted-2N.json",
+      "sha256": "e9f8aac82e5b1fd6c113a2f7bb1bcc8b36eee1a45ea71323ee397e61a329eabf"
+    },
+    {
+      "bytes": 32558,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-080-b666fbf97d--accepted-N.json",
+      "sha256": "db282a1105a1e77a2b9dec395a49b7f2bd328774c18436d12dfcfcc2e8cc7c58"
+    },
+    {
+      "bytes": 32379,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-081-601159d2a0--accepted-2N.json",
+      "sha256": "375e973cb3844c58d5d63be20e68cbf8b3f81f75922502e9642d0ba0548ee0b8"
+    },
+    {
+      "bytes": 32362,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-081-601159d2a0--accepted-N.json",
+      "sha256": "c8527d2b69e41eff13ac7afd5f3c3ffebdfb1c9fa4edefd4d529771690f921f3"
+    },
+    {
+      "bytes": 32341,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-082-ec510a5bdb--accepted-2N.json",
+      "sha256": "74753e8492ea9f47ea52c0bd2153509b07efcd12e2938bd81612163e3c5574df"
+    },
+    {
+      "bytes": 32326,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-082-ec510a5bdb--accepted-N.json",
+      "sha256": "d85a660249e1763180370721e0e03a5730ec6e4ca45e05e19e3d757c32f7be00"
+    },
+    {
+      "bytes": 32556,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-083-4c9976a050--accepted-2N.json",
+      "sha256": "c71073e3902683c70ec0d250b5de1431eb9964f9b5de6913f30731ddde3f815f"
+    },
+    {
+      "bytes": 32540,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-083-4c9976a050--accepted-N.json",
+      "sha256": "2fb4c748493d9f77c8b2f2729f06467328cd34ed6854e580e26ea291d7cfb908"
+    },
+    {
+      "bytes": 32555,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-084-7fbadd6e3c--accepted-2N.json",
+      "sha256": "e086085f898bff9c8e0e1cf49546b857f4fdb92428454da611d34dea072c1964"
+    },
+    {
+      "bytes": 32541,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-084-7fbadd6e3c--accepted-N.json",
+      "sha256": "2854a170445265fad6c3380bed4a71f0dab1dc921245e3a93788e4fe1d53139f"
+    },
+    {
+      "bytes": 32452,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-085-3164dd7be8--accepted-2N.json",
+      "sha256": "8d40dec28960014432a89d5c04e0247662b59d408a4c6692700342646235962b"
+    },
+    {
+      "bytes": 32451,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-085-3164dd7be8--accepted-N.json",
+      "sha256": "dcb473eed7b9294f4ac9401ca59c277be3ea3e2240bd3c5a73e13ca6e99c8d83"
+    },
+    {
+      "bytes": 32654,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-086-fbb26d4705--accepted-2N.json",
+      "sha256": "85e49beee819b0e7b9b29f443887c9274b00e0308f761040a52258028ce8518b"
+    },
+    {
+      "bytes": 32649,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-086-fbb26d4705--accepted-N.json",
+      "sha256": "a594e5c3593b65335ad1d33383f307fafdd6cf92375fdb061fce86d0f5473387"
+    },
+    {
+      "bytes": 32453,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-087-8428d611f2--accepted-2N.json",
+      "sha256": "3ce3ff19b57222590413a96e401a7ff96c24b58450ee294358c3ffcb04320ecb"
+    },
+    {
+      "bytes": 32437,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-087-8428d611f2--accepted-N.json",
+      "sha256": "15896e6c4a6add7e98c3dea9bc96c6ab8eab62878696b871c8995a1fff456c9c"
+    },
+    {
+      "bytes": 32347,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-088-54d047707b--accepted-2N.json",
+      "sha256": "b8e15a9921f6a0debc0a0d5b6d250f238b29e9799928057eb05250c4168203e5"
+    },
+    {
+      "bytes": 32343,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-088-54d047707b--accepted-N.json",
+      "sha256": "c6f1a22fe6a09a3452b1eed726166b440a18ecb53ce293b22d0c43de25433c12"
+    },
+    {
+      "bytes": 32879,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-089-8275bc9272--accepted-2N.json",
+      "sha256": "f5018f1a775c7a394c4a58ddc50b908f8c1b59aa1e1b42b619aa7f8f138f3d29"
+    },
+    {
+      "bytes": 32874,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-089-8275bc9272--accepted-N.json",
+      "sha256": "bebf06edc7374075ee41a91ac78192cc22127a7d487651ab77e8bc8ef94f1a8a"
+    },
+    {
+      "bytes": 32663,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-090-7ab4ba4fd8--accepted-2N.json",
+      "sha256": "715dfae49f9779fb27023507e0454f3550d015cf0eb93be064d060190372df05"
+    },
+    {
+      "bytes": 32649,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-090-7ab4ba4fd8--accepted-N.json",
+      "sha256": "b4761487f84f9cc5dcc03b13a72b7f86e2b749b2427ddddb55c84c90e7f81da7"
+    },
+    {
+      "bytes": 32499,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-091-1aab0b78cb--accepted-2N.json",
+      "sha256": "2ef7d7c4c2ca972cc30d9ad41da09bc417de55b47340cfaee75362a139582314"
+    },
+    {
+      "bytes": 32488,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-091-1aab0b78cb--accepted-N.json",
+      "sha256": "a45d05b0c3e6e2026a0652aa183917e6664b9ee4697f56d69641866e21c77cbb"
+    },
+    {
+      "bytes": 32438,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-092-d532fb20ca--accepted-2N.json",
+      "sha256": "a6bb58abf3b6ac68d59ca0fae8959ee333c5733f6edf2eeabe9da9f8ac91c7f2"
+    },
+    {
+      "bytes": 32423,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-092-d532fb20ca--accepted-N.json",
+      "sha256": "fce0e22f55867259eea7354f21eee31dd53496a4d222b7558c7e375c9d312f06"
+    },
+    {
+      "bytes": 32480,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-093-27025a655c--accepted-2N.json",
+      "sha256": "0fc0c908130646947a219dcdfbf1d0807f1ba51f6be120a4253ec72562c40405"
+    },
+    {
+      "bytes": 32468,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-093-27025a655c--accepted-N.json",
+      "sha256": "57d6ffa84e4ea2a96673dfa5a15459dfde1742cc21949a9f8426f6ac3a0b8eac"
+    },
+    {
+      "bytes": 32793,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-094-ba60c4fe8b--accepted-2N.json",
+      "sha256": "40a3ed2658f1097900ef17bda6e07eea6e171d19a6ae2b8c03fcc01b6005f355"
+    },
+    {
+      "bytes": 32777,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-094-ba60c4fe8b--accepted-N.json",
+      "sha256": "410fb78cc8130abc680c0f41e641148b5ba6ff21319ed930bc26fe49e6aafd14"
+    },
+    {
+      "bytes": 32331,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-095-27f6ceb96c--accepted-2N.json",
+      "sha256": "d6d7c2cdb26ee076e9f9628f83bd22c557cf0fc7f9716a8e715090e611223323"
+    },
+    {
+      "bytes": 32319,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-095-27f6ceb96c--accepted-N.json",
+      "sha256": "37c0137a97fa3b3642debef9827092368ab1c3680f012423ff3c0371f057e050"
+    },
+    {
+      "bytes": 588,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/execution-lock.json",
+      "sha256": "a9cc6449a282d37c22a722e81dd411357c106a34fa223a3f703454f439d976aa"
+    },
+    {
+      "bytes": 63744,
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/terminal.json",
+      "sha256": "dc52f4b8ec15a766e7dcb6a021086dc38d5740b99d413d6e013a6797b9606211"
+    }
+  ],
+  "manifest": {
+    "gate_manifest_path": "paper/evidence/manifests/wall-loss-geometry-screening-v1.json",
+    "manifest_id": "WALL-LOSS-GEOMETRY-SCREENING-V1-20260903-96-V1",
+    "path": "paper/evidence/wall-loss-geometry-screening-v1.json",
+    "sha256": "5e2d675f1b57369e0d2268120d1f9491a2e71f0faa1e5d26e1cc088502fa006b"
+  },
+  "output": {
+    "path": "paper/generated/wall-loss-geometry-screening-v1.tex",
+    "sha256": "da37420092e8cf8513b20808c36d234bd52f04e2b962b4c02646f1ceaeadcbf6"
+  },
+  "schema_version": "1.0",
+  "source_date_epoch": 1788270043
+}

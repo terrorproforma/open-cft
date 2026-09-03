@@ -69,14 +69,36 @@
   production solver when no admissible root exists; for the four-cell ledger it
   is linear in the interior cusp probability with a Jacobian of constant rank
   22 of 25, a property of the equations rather than of the solver.
-- **Numerical screening** — a preregistered, single-execution L1a field-only
-  screening study (linear-vacuum equivalent-current fields; no
-  permanent-magnet or nonlinear-iron material model) admitted by a
+- **Numerical screening** — a preregistered, single-execution screening study
+  on L1a linear-vacuum equivalent-current fields (no permanent-magnet or
+  nonlinear-iron material model; not P2-qualified) admitted by a
   `numerical-screening` gate at exactly its `recorded_outcome`:
   `accepted-screening` (`GATE-L1A-SWEEP-V2`), `preregistered-null`
-  (`GATE-FOUR-CELL-V2`) or `recorded-characterization`
-  (`GATE-TOPOLOGY-CHAR-V1`). Gate status `accepted` means admitted as
-  recorded, never that a positive finding is accepted; it opens no L gate.
+  (`GATE-FOUR-CELL-V2`), `recorded-characterization`
+  (`GATE-TOPOLOGY-CHAR-V1`) or `accepted-screening-dataset`
+  (`GATE-WALL-LOSS-GEOMETRY-SCREENING-V1`). Gate status `accepted` means
+  admitted as recorded, never that a positive finding is accepted; it opens no
+  L gate.
+- **Screening dataset (wall-loss geometry screening)** — collisionless
+  prescribed-field test-particle electron orbits (orbit_mc 1.7, numpy CPU)
+  integrated in the re-solved L1a screening fields of all 96 accepted sweep-v2
+  designs, classified `SCREENING_L1A_FIELD_TEST_PARTICLE_WALL_LOSS`; per-design
+  wall-hit, reflection, escape and timeout probabilities with Wilson intervals
+  at two timesteps, a convergence flag, per-cell and per-stratum counts and a
+  coupling-consumer record. It is surrogate and optimisation input only when
+  carried with its label, never accepted physical-orbit evidence of the kind
+  `GATE-WALL-LOSS-V4` admits on the P2-qualified field.
+- **Launch cell (screening)** — one of four axial launch positions at fixed
+  fractions (1/8, 3/8, 5/8, 7/8) of a design's straight span between the
+  injector zone and the end of the straight dielectric; a protocol position
+  scaled to each design, not a demonstrated confinement cell.
+- **Reflection (test particle)** — an orbit that reverses its parallel velocity
+  before reaching any boundary within the path and time budget; a termination
+  class of the collisionless model, not a confinement statement.
+- **Geometry association (screening)** — a Spearman rank correlation between
+  the per-design wall-hit probability and a sealed geometry or field
+  descriptor over the 96 designs; an observation of one launch design on
+  linear-vacuum fields, never a design rule.
 - **Axis cusp (sweep QoI)** — a sign change of the on-axis \(B_z\) between
   adjacent magnet stages in a sampled field map; a sampled-axis descriptor,
   not a continuous critical-point proof.

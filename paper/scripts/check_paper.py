@@ -15,6 +15,7 @@ import generate_four_cell_closure_evidence as four_cell_closure
 import generate_mdo_l0_v1_evidence as mdo_l0_v1
 import generate_tables
 import generate_topology_screening_evidence as topology_screening
+import generate_wall_loss_geometry_screening_v1_evidence as geometry_screening
 import generate_wall_loss_v4_evidence as wall_loss_v4
 
 
@@ -29,6 +30,7 @@ REQUIRED_SECTIONS = (
     "Preregistered topology screening: sweep acceptance and four-cell null result",
     "Preregistered robust multi-objective optimisation of the L0 model",
     "Consistency of the four-cell power balance",
+    "Preregistered wall-loss screening across the accepted sweep geometries",
     "Planned L1 result: field-resolved reduction",
     "Planned L2 result: coupled hybrid model",
     "Planned L3 result: PIC and experimental comparison",
@@ -40,9 +42,10 @@ REQUIRED_SECTIONS = (
 # Gate kinds.  Physics-level gates (L1--L3) open a paper level and stay closed
 # until their manifest is accepted; numerical-campaign gates admit one accepted,
 # preregistered numerical campaign that opens no paper level; numerical-screening
-# gates admit one preregistered, single-execution L1a field-only screening study
-# at its recorded outcome (accepted screening, preregistered null or recorded
-# characterization) and open no paper level either; analytic-consistency gates
+# gates admit one preregistered, single-execution screening study on L1a
+# linear-vacuum fields at its recorded outcome (accepted screening, preregistered
+# null, recorded characterization, or an accepted test-particle screening dataset
+# over those fields) and open no paper level either; analytic-consistency gates
 # admit one analytic consistency result about a declared equation set (a
 # derivation whose closed form is verified numerically to a stated tolerance and
 # pinned by committed tests, recomputed by the checker at every run) and open no
@@ -51,7 +54,9 @@ PHYSICS_GATE_KIND = "physics-level"
 CAMPAIGN_GATE_KIND = "numerical-campaign"
 SCREENING_GATE_KIND = topology_screening.GATE_KIND
 ANALYTIC_GATE_KIND = four_cell_closure.GATE_KIND
-SCREENING_OUTCOMES = frozenset({"accepted-screening", "preregistered-null", "recorded-characterization"})
+SCREENING_OUTCOMES = frozenset(
+    {"accepted-screening", "preregistered-null", "recorded-characterization", geometry_screening.RECORDED_OUTCOME}
+)
 KNOWN_GATE_KINDS = frozenset({PHYSICS_GATE_KIND, CAMPAIGN_GATE_KIND, SCREENING_GATE_KIND, ANALYTIC_GATE_KIND})
 PHYSICS_GATE_IDS = frozenset({"GATE-L1", "GATE-L2", "GATE-L3"})
 
@@ -162,6 +167,97 @@ SCREENING_POLICY_METRICS = {
     "permanent_magnet_material_model": False,
     "plasma_or_performance_claim_forbidden": True,
     "stable_multicell_wall_cusp_topology_demonstrated": False,
+}
+
+# Orbit wall-loss geometry screening v1 manifest metric -> evidence macro whose raw
+# artifact value it must equal (type-equal).  The study is a numerical-screening gate
+# at the recorded outcome accepted-screening-dataset: a collisionless test-particle
+# dataset over the 96 accepted L1a sweep designs, admitted as screening input only.
+GEOMETRY_SCREENING_METRIC_MACROS = {
+    "classification": "WlgClassification",
+    "recorded_outcome": "WlgRecordedOutcome",
+    "screening_model": "WlgScreeningModel",
+    "campaign_status": "WlgCampaignStatus",
+    "terminal_state": "WlgTerminalState",
+    "attempt_count": "WlgAttemptCount",
+    "declared_count": "WlgDeclaredDesigns",
+    "evaluated_count": "WlgDesignCount",
+    "failed_cases_count": "WlgFailedCases",
+    "failed_design_count": "WlgFailedDesigns",
+    "excluded_design_count": "WlgExcludedDesigns",
+    "primary_design_count": "WlgPrimaryCount",
+    "extension_design_count": "WlgExtensionCount",
+    "representative_design_count": "WlgRepresentativeCount",
+    "case_count": "WlgCaseCount",
+    "orbit_count": "WlgOrbitCount",
+    "launches_per_case": "WlgLaunchesPerCase",
+    "strata_per_case": "WlgStrataPerCase",
+    "cell_count": "WlgCellCount",
+    "validator_calls_passed": "WlgValidatorsPassed",
+    "validator_failures": "WlgValidatorsFailed",
+    "sealed_case_count": "WlgSealedCases",
+    "exact_authority_replays": "WlgReplayCount",
+    "converged_design_count": "WlgConvergedDesigns",
+    "timeout_free_design_count": "WlgTimeoutFreeDesigns",
+    "timeouts": "WlgTimeouts",
+    "numerical_failures": "WlgNumericalFailures",
+    "maximum_relative_energy_error": "WlgEnergyErrorMax",
+    "maximum_successive_probability_change": "WlgMaxSuccessiveChange",
+    "successive_probability_change_gate": "WlgMaxChangeGate",
+    "maximum_refined_field_sensitivity": "WlgRefinedSensitivityMax",
+    "identity_proven_designs": "WlgIdentityProvenDesigns",
+    "cross_resolution_design_count": "WlgCrossResolutionDesigns",
+    "maximum_interpolation_relative_rms": "WlgInterpolationRmsMax",
+    "maximum_cross_resolution_relative_rms": "WlgCrossResolutionRmsMax",
+    "wall_hit_probability_minimum": "WlgWallPMin",
+    "wall_hit_probability_maximum": "WlgWallPMax",
+    "wall_hit_probability_median": "WlgWallPMedian",
+    "total_reflections": "WlgReflectionsTotal",
+    "reflections_reported_timestep": "WlgReflectionsTwoN",
+    "reflections_per_design_minimum": "WlgReflectionsMin",
+    "reflections_per_design_maximum": "WlgReflectionsMax",
+    "designs_with_reflections": "WlgDesignsWithReflections",
+    "escape_probability_minimum": "WlgEscapePMin",
+    "escape_probability_maximum": "WlgEscapePMax",
+    "escape_probability_median": "WlgEscapePMedian",
+    "escapes_anode_plane": "WlgEscapeAnode",
+    "escapes_exit_plane": "WlgEscapeExit",
+    "escapes_divergent_radial": "WlgEscapeDivergent",
+    "escapes_unclassified": "WlgEscapeUnclassified",
+    "design_cells_saturated_at_one": "WlgCellsSaturatedOne",
+    "design_cells_saturated_at_zero": "WlgCellsSaturatedZero",
+    "design_cell_count": "WlgDesignCells",
+    "consumed_handoffs": "WlgConsumedDesigns",
+    "consumed_verified_handoffs": "WlgConsumedVerified",
+    "reference_export_consumed": "WlgVFourConsumed",
+    "reference_design_in_screening_set": "WlgVFourInScreeningSet",
+    "orbit_mc_package_version": "WlgOrbitMcVersion",
+    "orbit_mc_contract_matches": "WlgOrbitMcContractMatches",
+    "shakedown_passed": "WlgShakedownPassed",
+    "shakedown_evidentiary": "WlgShakedownEvidentiary",
+    "extension_within_budget": "WlgTimingWithinBudget",
+    "not_accepted_physical_orbit_evidence": "WlgNotAcceptedPhysicalOrbit",
+    "not_p2_qualified": "WlgNotPTwoQualified",
+    "plasma_or_performance_claim_forbidden": "WlgForbidPerformance",
+    "pic_or_self_consistent_claim_forbidden": "WlgForbidPic",
+    "mirror_formula_publication_forbidden": "WlgForbidMirror",
+    "hardware_or_experimental_validation": "WlgHardwareValidation",
+    "tolerated_eol_file_count": "WlgToleratedEolFiles",
+    "verified_file_count": "WlgVerifiedFiles",
+}
+# Policy metrics the geometry-screening manifest must carry with exactly these values
+# (the five shared screening policy metrics plus the study's own boundary flags).
+GEOMETRY_SCREENING_POLICY_METRICS = {
+    "preregistered_one_shot": True,
+    "hardware_or_experimental_validation": False,
+    "permanent_magnet_material_model": False,
+    "plasma_or_performance_claim_forbidden": True,
+    "stable_multicell_wall_cusp_topology_demonstrated": False,
+    "physics_level_opened": False,
+    "accepted_physical_orbit_evidence": False,
+    "field_p2_qualified": False,
+    "design_rule_claimed": False,
+    "surrogate_or_mdo_input_requires_label": True,
 }
 
 # Campaign manifest metric -> evidence macro whose raw artifact value it must equal.
@@ -581,6 +677,45 @@ EXPECTED_MANIFEST_TYPES = {
                 "tolerated_eol_file_count",
             ]
         ),
+    },
+    "paper-orbit-screening-manifest": {
+        "supported_versions": ["1.0"],
+        "level": "numerical-screening",
+        "required_file_roles": sorted(
+            [
+                "authorities",
+                "binding-gates",
+                "campaign-plan",
+                "campaign-result",
+                "case-summary",
+                "coupling-consumer-record",
+                "dataset-csv",
+                "design-authorities",
+                "design-exclusions",
+                "endpoints",
+                "execution-lock",
+                "field",
+                "field-evidence",
+                "field-pipeline-binding",
+                "handoff",
+                "manufactured-gates",
+                "orbit-artifact",
+                "orbit-artifact-sidecar",
+                "orbit-mc-contract",
+                "preregistered-authorities",
+                "preregistered-design-authorities",
+                "preregistered-protocol",
+                "preregistered-shakedown",
+                "primary-dataset",
+                "protocol",
+                "results-manifest",
+                "runtime",
+                "shakedown",
+                "terminal-record",
+                "transition",
+            ]
+        ),
+        "required_metrics": sorted({*GEOMETRY_SCREENING_METRIC_MACROS, *GEOMETRY_SCREENING_POLICY_METRICS}),
     },
 }
 
@@ -2386,9 +2521,328 @@ def _check_four_cell_closure(
         errors.append(f"{label}: section heading must appear exactly once in the flattened manuscript")
 
 
+def _check_geometry_screening(
+    repo: Path,
+    gate: dict[str, Any],
+    payload: dict[str, Any],
+    manuscript: str,
+    flattened: str,
+    matrix: dict[str, Any],
+    errors: list[str],
+) -> None:
+    """Verify the admitted orbit wall-loss geometry screening v1 end to end.
+
+    The fourth ``numerical-screening`` gate admits a collisionless test-particle
+    dataset over the accepted L1a sweep designs at its recorded outcome
+    ``accepted-screening-dataset``.  Beyond the typed-manifest validation already
+    performed, this check mirrors ``_check_mdo_campaign`` and
+    ``_check_topology_screening``: byte-identical regeneration of evidence/TeX/
+    sidecar from the sealed bundle (which re-verifies every one of the bundle's
+    files, recomputes every reported Wilson interval and cross-checks the
+    committed dashboard), artifact hashes on disk with no end-of-line tolerance,
+    the dashboard bound at its revision and equal to the checkout, metric == raw
+    macro value with type equality, policy metrics, results tree unchanged,
+    preregistration -> results chain with the frozen files unchanged, the
+    recorded outcome and classification agreeing everywhere, the macro-only
+    section with no literal digit, the four ArtifactClaim tables, the registered
+    non-claims, bindings exactly once, the revision macro and the claim-matrix
+    cross-references.
+    """
+
+    gate_id = str(gate.get("id"))
+    label = f"{gate_id} screening"
+    if payload.get("experiment_id") != geometry_screening.EXPERIMENT_ID:
+        errors.append(f"{label}: manifest experiment_id is not the registered screening study")
+        return
+    try:
+        evidence_bytes, tex_bytes, sidecar_bytes = geometry_screening.render(repo)
+    except (OSError, ValueError, KeyError, TypeError, json.JSONDecodeError) as exc:
+        errors.append(f"{label}: evidence regeneration from the sealed bundle failed: {exc}")
+        return
+    evidence = json.loads(evidence_bytes)
+    evidence_meta = payload.get("paper_evidence_file")
+    if not isinstance(evidence_meta, dict) or evidence_meta.get("path") != geometry_screening.EVIDENCE_PATH.as_posix():
+        errors.append(f"{label}: manifest paper_evidence_file.path differs from the registered evidence file")
+        return
+    for path, expected, name in (
+        (repo / geometry_screening.EVIDENCE_PATH, evidence_bytes, "evidence file"),
+        (repo / geometry_screening.OUTPUT_PATH, tex_bytes, "generated TeX"),
+        (repo / geometry_screening.SIDECAR_PATH, sidecar_bytes, "provenance sidecar"),
+    ):
+        if not path.is_file() or path.read_bytes() != expected:
+            errors.append(f"{label}: committed {name} differs from regeneration")
+    if evidence_meta.get("document_type") != evidence.get("document_type"):
+        errors.append(f"{label}: evidence document_type differs from the manifest")
+    if evidence_meta.get("macro_count") != len(evidence.get("macros", [])):
+        errors.append(f"{label}: evidence macro count differs from the manifest")
+    if evidence_meta.get("macro_prefix") != geometry_screening.MACRO_PREFIX:
+        errors.append(f"{label}: evidence macro prefix differs from the manifest")
+
+    # Artifact hashes on disk (independent of the generator); no tolerance of any kind.
+    results_root = repo / geometry_screening.RESULTS
+    for relative, meta in evidence.get("artifacts", {}).items():
+        artifact = results_root / relative
+        if not artifact.is_file():
+            errors.append(f"{label}: evidence artifact missing on disk: {relative}")
+            continue
+        raw = artifact.read_bytes()
+        if sha256_bytes(raw) != meta.get("sha256") or len(raw) != meta.get("bytes"):
+            errors.append(f"{label}: evidence artifact hash mismatch: {relative}")
+    bundle = payload.get("results_bundle", {})
+    bundle_manifest = results_root / "manifest.json"
+    if not bundle_manifest.is_file():
+        errors.append(f"{label}: results manifest is missing on disk")
+    else:
+        digest = sha256_bytes(bundle_manifest.read_bytes())
+        if digest != evidence["bundle"]["manifest_sha256"] or digest != bundle.get("manifest_sha256"):
+            errors.append(f"{label}: results manifest SHA-256 differs from the evidence bindings")
+    if evidence["bundle"].get("tolerated_eol_files") != [] or bundle.get("tolerated_eol_files") != []:
+        errors.append(f"{label}: an end-of-line tolerance is declared for a bundle that needs none")
+    if bundle.get("verified_file_count") != evidence["bundle"].get("verified_file_count") or bundle.get("artifact_count") != evidence["bundle"].get("artifact_count"):
+        errors.append(f"{label}: bundle file counts differ between manifest and evidence file")
+
+    # Revisions.
+    head = _run_git(repo, "rev-parse", "HEAD")
+    revision = str(payload.get("evidence_revision"))
+    if revision != geometry_screening.RESULTS_COMMIT_SHA or evidence.get("evidence_revision") != revision or gate.get("evidence_revision") != revision:
+        errors.append(f"{label}: evidence revision differs between gate, manifest, evidence file and generator")
+    try:
+        committed_blob = _run_git(repo, "rev-parse", f"{revision}:{evidence['bundle']['manifest_path']}")
+    except RuntimeError as exc:
+        errors.append(f"{label}: results manifest is not committed at the evidence revision: {exc}")
+        committed_blob = None
+    if committed_blob is not None and (
+        committed_blob != evidence["binding"]["manifest_git_blob"]
+        or committed_blob != bundle.get("manifest_git_blob")
+    ):
+        errors.append(f"{label}: results manifest Git blob differs from the evidence bindings")
+    try:
+        results_tree = _run_git(repo, "rev-parse", f"{revision}:{geometry_screening.RESULTS.as_posix()}")
+        head_tree = _run_git(repo, "rev-parse", f"HEAD:{geometry_screening.RESULTS.as_posix()}")
+    except RuntimeError as exc:
+        errors.append(f"{label}: results tree cannot be resolved: {exc}")
+    else:
+        if results_tree != bundle.get("results_tree") or results_tree != evidence["binding"].get("results_tree"):
+            errors.append(f"{label}: results tree differs from the manifest binding")
+        if head_tree != results_tree:
+            errors.append(f"{label}: results tree changed after the evidence revision")
+    prereg = payload.get("preregistration_revision")
+    if not _resolves_to_commit(repo, prereg) or prereg != geometry_screening.PREREGISTRATION_COMMIT_SHA:
+        errors.append(f"{label}: preregistration_revision is not the registered resolvable commit")
+    else:
+        prereg = str(prereg)
+        if evidence["binding"].get("preregistration_commit") != prereg or gate.get("preregistration_revision") != prereg:
+            errors.append(f"{label}: preregistration commit differs between gate, manifest and evidence file")
+        if not _is_ancestor(repo, prereg, revision) or prereg == revision:
+            errors.append(f"{label}: preregistration must strictly precede the results revision")
+        frozen_roles = {"preregistered-protocol", "preregistered-authorities", "preregistered-shakedown", "preregistered-design-authorities"}
+        seen_roles: set[str] = set()
+        for source in payload.get("source_files", []):
+            if isinstance(source, dict) and str(source.get("role", "")).startswith("preregistered-"):
+                seen_roles.add(str(source["role"]))
+                try:
+                    frozen = _run_git(repo, "rev-parse", f"{prereg}:{source['path']}")
+                except RuntimeError as exc:
+                    errors.append(f"{label}: frozen file missing at preregistration: {exc}")
+                    continue
+                if frozen != source.get("git_blob"):
+                    errors.append(f"{label}: {source['path']} changed after preregistration")
+        if seen_roles != frozen_roles:
+            errors.append(f"{label}: frozen preregistration files are not all bound")
+    if payload.get("posthoc_audit") is not None:
+        errors.append(f"{label}: manifest binds a post-hoc audit the generator does not register")
+    dashboard = payload.get("dashboard")
+    if not isinstance(dashboard, dict) or not _resolves_to_commit(repo, dashboard.get("revision")):
+        errors.append(f"{label}: dashboard must bind a resolvable revision")
+    else:
+        dashboard_revision = str(dashboard["revision"])
+        if dashboard_revision != geometry_screening.DASHBOARD_COMMIT_SHA or gate.get("dashboard_revision") != dashboard_revision:
+            errors.append(f"{label}: dashboard revision differs between gate, manifest and generator")
+        if evidence["binding"].get("dashboard_commit") != dashboard_revision:
+            errors.append(f"{label}: evidence dashboard commit differs from the manifest")
+        if not _is_ancestor(repo, revision, dashboard_revision) or not _is_ancestor(repo, dashboard_revision, head):
+            errors.append(f"{label}: dashboard revision does not chain results -> dashboard -> HEAD")
+        files = dashboard.get("files")
+        _validate_source_files(
+            repo, dashboard_revision, files, {"dashboard-generator", "dashboard-template", "dashboard-html"}, errors, f"{label} dashboard"
+        )
+        expected_lf = {
+            "dashboard-generator": (geometry_screening.DASHBOARD_GENERATOR.as_posix(), evidence["dashboard"].get("generator_sha256_lf")),
+            "dashboard-template": (geometry_screening.DASHBOARD_TEMPLATE.as_posix(), evidence["dashboard"].get("template_sha256_lf")),
+            "dashboard-html": (geometry_screening.DASHBOARD_HTML.as_posix(), evidence["dashboard"].get("html_sha256_lf")),
+        }
+        for entry in files if isinstance(files, list) else []:
+            if not isinstance(entry, dict):
+                continue
+            role = str(entry.get("role"))
+            if role not in expected_lf:
+                continue
+            path, digest = expected_lf[role]
+            if entry.get("path") != path or entry.get("git_blob_sha256") != digest:
+                errors.append(f"{label}: {role} checkout differs from the blob bound at the dashboard revision")
+        if evidence["dashboard"].get("payload_manifest_sha256") != evidence["bundle"]["manifest_sha256"]:
+            errors.append(f"{label}: dashboard payload names a different results manifest")
+
+    # Metrics against the raw artifact values behind the macros (type-equal), then policy.
+    raw = {item["name"]: item["raw"] for item in evidence.get("macros", [])}
+    values = {item["name"]: item["value"] for item in evidence.get("macros", [])}
+    metrics = payload.get("metrics")
+    if not isinstance(metrics, dict):
+        errors.append(f"{label}: metrics must be an object")
+        return
+    for metric, macro in GEOMETRY_SCREENING_METRIC_MACROS.items():
+        if macro not in raw:
+            errors.append(f"{label}: evidence lacks macro {macro}")
+        elif metric not in metrics:
+            errors.append(f"{label}: manifest lacks metric {metric!r}")
+        elif metrics[metric] != raw[macro] or type(metrics[metric]) is not type(raw[macro]):
+            errors.append(f"{label}: metric {metric!r} differs from artifact value")
+    for metric, expected in GEOMETRY_SCREENING_POLICY_METRICS.items():
+        if metrics.get(metric) is not expected:
+            errors.append(f"{label}: policy metric {metric!r} must be {expected!r}")
+    if raw.get("WlgAttemptCount") != 1 or raw.get("WlgFailedCases") != 0 or raw.get("WlgConvergedDesigns") != raw.get("WlgDesignCount"):
+        errors.append(f"{label}: the dataset must be a single attempt with every case sealed and every design converged")
+    if raw.get("WlgDesignsWithReflections") != raw.get("WlgDesignCount") or raw.get("WlgReflectionsMin", 0) < 1:
+        errors.append(f"{label}: the recorded reflections-in-every-design finding does not hold in the evidence")
+    if raw.get("WlgCellsSaturatedZero") != 0 or raw.get("WlgToleratedEolFiles") != 0 or raw.get("WlgNumericalFailures") != 0 or raw.get("WlgTimeouts") != 0:
+        errors.append(f"{label}: saturation, tolerance, failure or timeout counts differ from the admitted record")
+    outcome = gate.get("recorded_outcome")
+    if outcome not in SCREENING_OUTCOMES:
+        errors.append(f"{label}: gate recorded_outcome is not a recognized screening outcome")
+    if not (outcome == payload.get("recorded_outcome") == metrics.get("recorded_outcome") == evidence.get("recorded_outcome") == geometry_screening.RECORDED_OUTCOME):
+        errors.append(f"{label}: recorded_outcome differs between gate, manifest, evidence file and generator")
+    if tex_unescape(values.get("WlgRecordedOutcome", "")) != outcome:
+        errors.append(f"{label}: \\WlgRecordedOutcome macro does not render the recorded outcome")
+    if not (geometry_screening.CAMPAIGN_STATUS == evidence.get("campaign_status") == metrics.get("campaign_status")):
+        errors.append(f"{label}: campaign status differs between generator, evidence file and manifest")
+    if not (geometry_screening.SCREENING_MODEL == payload.get("screening_model") == metrics.get("screening_model") == evidence.get("screening_model")):
+        errors.append(f"{label}: screening_model differs between manifest, evidence file and generator")
+    classification = payload.get("classification")
+    expected = gate.get("metric_constraints", {}).get("classification", {}).get("equals")
+    if not (classification == geometry_screening.CLASSIFICATION == expected == evidence.get("classification") == metrics.get("classification")):
+        errors.append(f"{label}: classification differs between gate, manifest, evidence and generator")
+    if tex_unescape(values.get("WlgClassification", "")) != classification:
+        errors.append(f"{label}: \\WlgClassification macro does not render the classification string")
+    if gate.get("opens_level") is not None or payload.get("evidence_level", {}).get("opens_gate") is not None:
+        errors.append(f"{label}: a screening study cannot open a physics level")
+    if payload.get("gate_kind") != SCREENING_GATE_KIND or evidence.get("manuscript_integration", {}).get("gate_kind") != SCREENING_GATE_KIND:
+        errors.append(f"{label}: gate kind differs between manifest and evidence file")
+
+    # Manuscript bindings.
+    binding = gate.get("accepted_manuscript_binding")
+    if binding != geometry_screening.SECTION_BINDING or manuscript.count(binding) != 1:
+        errors.append(f"{label}: section binding must be the registered \\input and occur exactly once in manuscript.tex")
+    generated_binding = geometry_screening.GENERATED_BINDING
+    document_start = manuscript.find("\\begin{document}")
+    if manuscript.count(generated_binding) != 1 or manuscript.find(generated_binding) > document_start:
+        errors.append(f"{label}: generated macro file must be input exactly once in the preamble")
+    macro_name = gate.get("manuscript_revision_macro")
+    if macro_name != geometry_screening.REVISION_MACRO:
+        errors.append(f"{label}: gate manuscript_revision_macro differs from the registration")
+    else:
+        definitions = [
+            macro
+            for macro in extract_macros(manuscript, "newcommand", 2)
+            if macro.arguments[0] == f"\\{macro_name}"
+        ]
+        rendered = ""
+        if len(definitions) == 1:
+            body = re.sub(r"(?m)(?<!\\)%.*$", "", definitions[0].arguments[1])
+            rendered = re.sub(r"\\texttt\{|\}|\s", "", tex_unescape(body))
+        if rendered != revision:
+            errors.append(f"{label}: \\{macro_name} does not spell the manifest revision")
+
+    # Section content.
+    try:
+        section = (repo / geometry_screening.SECTION_PATH).read_text(encoding="utf-8")
+    except OSError as exc:
+        errors.append(f"{label}: section unreadable: {exc}")
+        return
+    heading = gate.get("section_heading")
+    if heading != geometry_screening.SECTION_HEADING or payload.get("section_heading") != heading or f"\\subsection{{{heading}}}" not in section:
+        errors.append(f"{label}: section heading differs between gate, manifest, generator and section")
+    prefix = geometry_screening.MACRO_PREFIX
+    defined = set(re.findall(rf"\\newcommand\{{\\({prefix}[A-Za-z]+)\}}", tex_bytes.decode("utf-8")))
+    used = set(re.findall(rf"\\({prefix}[A-Za-z]+)", section))
+    if not used:
+        errors.append(f"{label}: section uses no evidence macro")
+    for name in sorted(used - defined):
+        errors.append(f"{label}: section uses undefined macro \\{name}")
+    for required in (*geometry_screening.TABLE_MACROS, "WlgClassification", "WlgRecordedOutcome", "WlgCampaignStatus", "WlgFieldStatus"):
+        if required not in used:
+            errors.append(f"{label}: section must use \\{required}")
+    digits = section_literal_digits(section, prefix)
+    if digits:
+        errors.append(f"{label}: section types {len(digits)} literal digit(s); every number must be a macro")
+    if "\\input{" in re.sub(r"(?m)(?<!\\)%.*$", "", section):
+        errors.append(f"{label}: section must not input further files")
+    for finding in find_unregistered_claims(section):
+        errors.append(f"{label}: {finding}")
+    artifact_macros = extract_macros(tex_bytes.decode("utf-8"), "ArtifactClaim", 3)
+    if len(artifact_macros) != len(geometry_screening.TABLE_MACROS) or any(
+        macro.arguments[:2] != (geometry_screening.ARTIFACT_CLAIM_ID, geometry_screening.ARTIFACT_ID) for macro in artifact_macros
+    ):
+        errors.append(f"{label}: generated tables are not each wrapped in the registered ArtifactClaim")
+
+    # Claim-matrix cross-references.
+    integration = evidence.get("manuscript_integration", {})
+    if integration.get("status") != "admitted":
+        errors.append(f"{label}: evidence file does not record admission")
+    if integration.get("gate_id") != gate_id or not (
+        integration.get("manifest_id") == payload.get("manifest_id") == geometry_screening.MANIFEST_ID
+    ):
+        errors.append(f"{label}: evidence file names a different gate or manifest")
+    if integration.get("manifest_path") != gate.get("manifest_path") or integration.get("manifest_path") != geometry_screening.MANIFEST_PATH.as_posix():
+        errors.append(f"{label}: evidence file names a different manifest path")
+    if integration.get("section_binding") != binding or integration.get("section_heading") != heading:
+        errors.append(f"{label}: evidence file names a different section binding or heading")
+    records = {
+        claim.get("id"): claim
+        for claim in matrix.get("claims", [])
+        if isinstance(claim, dict) and isinstance(claim.get("id"), str)
+    }
+    manifest_id = payload.get("manifest_id")
+    section_claims = set(re.findall(r"\\EvidenceClaim\{(CLM-\d+)\}", section))
+    prose_ids = integration.get("prose_claim_ids", [])
+    if not section_claims or not section_claims <= set(prose_ids):
+        errors.append(f"{label}: section claims are not all registered as screening prose claims")
+    normalized_section = _normalize_tex(section)
+    for claim_id in prose_ids:
+        record = records.get(claim_id)
+        if record is None or record.get("status") != "verified":
+            errors.append(f"{label}: prose claim {claim_id} is not a verified claim record")
+            continue
+        if manifest_id not in record.get("manifest_ids", []):
+            errors.append(f"{label}: claim {claim_id} is not bound to manifest {manifest_id}")
+        if not isinstance(record.get("authorized_tex"), str):
+            errors.append(f"{label}: claim {claim_id} must be a prose claim")
+        if "classification" in record and record["classification"] != classification:
+            errors.append(f"{label}: claim {claim_id} names a different classification")
+        if "recorded_outcome" in record and record["recorded_outcome"] != outcome:
+            errors.append(f"{label}: claim {claim_id} names a different recorded outcome")
+        for phrase in record.get("non_claims", []):
+            if _normalize_tex(str(phrase)) not in normalized_section:
+                errors.append(f"{label}: non-claim of {claim_id} is absent from the section: {phrase!r}")
+        if claim_id in section_claims and heading not in record.get("allowed_locations", []):
+            errors.append(f"{label}: claim {claim_id} does not allow the section heading")
+        if record.get("claim_class") == "interpretation" and claim_id in section_claims:
+            errors.append(f"{label}: interpretation claim {claim_id} must not appear inside the results section")
+    if not any(records.get(claim_id, {}).get("non_claims") for claim_id in prose_ids):
+        errors.append(f"{label}: no screening claim registers non_claims")
+    artifact_claim = integration.get("artifact_claim_id")
+    record = records.get(artifact_claim, {})
+    if artifact_claim != geometry_screening.ARTIFACT_CLAIM_ID or integration.get("artifact_id") not in record.get("authorized_artifact_ids", []):
+        errors.append(f"{label}: artifact claim {artifact_claim} does not authorize the generated tables")
+    if manifest_id not in record.get("manifest_ids", []):
+        errors.append(f"{label}: artifact claim {artifact_claim} is not bound to manifest {manifest_id}")
+    if flattened.count(f"\\subsection{{{heading}}}") != 1:
+        errors.append(f"{label}: section heading must appear exactly once in the flattened manuscript")
+
+
 CAMPAIGN_CHECKERS = {
     "paper-test-particle-campaign-manifest": _check_wall_loss_campaign,
     "paper-l1a-screening-manifest": _check_topology_screening,
+    "paper-orbit-screening-manifest": _check_geometry_screening,
     "paper-mdo-campaign-manifest": _check_mdo_campaign,
     "paper-analytic-consistency-manifest": _check_four_cell_closure,
 }
@@ -2684,6 +3138,15 @@ def _render_four_cell_closure_tables(repo: Path, item: dict[str, Any]) -> tuple[
     return output, sidecar
 
 
+def _render_geometry_screening_tables(repo: Path, item: dict[str, Any]) -> tuple[bytes, bytes]:
+    if item.get("id") != geometry_screening.ARTIFACT_ID or item.get("required_gate") != geometry_screening.GATE_ID:
+        raise ValueError(f"{item.get('id')}: contract item or gate differs from the generator registration")
+    if item.get("evidence_file") != geometry_screening.EVIDENCE_PATH.as_posix():
+        raise ValueError(f"{item.get('id')}: contract evidence file differs from the generator registration")
+    _evidence, output, sidecar = geometry_screening.render(repo)
+    return output, sidecar
+
+
 # Contract ``generator_module`` -> renderer(repo, item) returning (output bytes, canonical sidecar bytes).
 ARTIFACT_RENDERERS = {
     "generate_tables": _render_l0_table,
@@ -2691,6 +3154,7 @@ ARTIFACT_RENDERERS = {
     "generate_topology_screening_evidence": _render_topology_screening_tables,
     "generate_mdo_l0_v1_evidence": _render_mdo_tables,
     "generate_four_cell_closure_evidence": _render_four_cell_closure_tables,
+    "generate_wall_loss_geometry_screening_v1_evidence": _render_geometry_screening_tables,
 }
 
 
@@ -2829,6 +3293,11 @@ def _check_submission_and_build_config(repo: Path, manuscript: str, errors: list
         four_cell_closure.OUTPUT_PATH.as_posix(),
         four_cell_closure.SIDECAR_PATH.as_posix(),
         four_cell_closure.SECTION_PATH.as_posix(),
+        geometry_screening.EVIDENCE_PATH.as_posix(),
+        geometry_screening.MANIFEST_PATH.as_posix(),
+        geometry_screening.OUTPUT_PATH.as_posix(),
+        geometry_screening.SIDECAR_PATH.as_posix(),
+        geometry_screening.SECTION_PATH.as_posix(),
     ):
         ignored = subprocess.run(
             ["git", "check-ignore", "-q", trackable],

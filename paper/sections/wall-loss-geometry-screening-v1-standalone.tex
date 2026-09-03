@@ -1,7 +1,7 @@
-% Standalone dry-parse driver for the admitted wall-loss v4 subsection.
+% Standalone dry-parse driver for the admitted wall-loss geometry screening v1 subsection.
 % Compile from the paper/ directory, for example:
-%   pdflatex -interaction=nonstopmode -halt-on-error -output-directory=<scratch> sections/wall-loss-v4-standalone.tex
-% (twice, so the table references resolve). paper/tests/test_wall_loss_v4_evidence.py
+%   pdflatex -interaction=nonstopmode -halt-on-error -output-directory=<scratch> sections/wall-loss-geometry-screening-v1-standalone.tex
+% (twice, so the table references resolve). paper/tests/test_wall_loss_geometry_screening_evidence.py
 % runs exactly this when pdflatex is available. The claim macros mirror manuscript.tex
 % so that the section renders identically on its own.
 \documentclass[11pt]{article}
@@ -16,9 +16,10 @@
 \ifdefined\pdfsuppressptexinfo\pdfsuppressptexinfo=15\fi
 \newcommand{\EvidenceClaim}[2]{#2\textsuperscript{\textcolor{blue}{[#1]}}}
 \newcommand{\ArtifactClaim}[3]{#3\par\noindent\textsuperscript{\textcolor{blue}{[#1; #2]}}}
-\input{generated/wall-loss-v4.tex}
+\input{generated/wall-loss-geometry-screening-v1.tex}
 \begin{document}
-\input{sections/wall-loss-v4.tex}
-% The geometry screening section is not compiled here; give its label a target.
-\section{Wall-loss geometry screening (compiled in the manuscript)}\label{sec:wall-loss-geometry-screening}
+% The sweep and wall-loss subsections are not compiled here; give their labels a target.
+\section{Geometry sweep (compiled in the manuscript)}\label{sec:l1a-sweep-v2}
+\section{Wall-loss campaign (compiled in the manuscript)}\label{sec:wall-loss-v4}
+\input{sections/wall-loss-geometry-screening-v1.tex}
 \end{document}

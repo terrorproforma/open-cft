@@ -1,0 +1,589 @@
+{
+  "classification": "SCREENING_L1A_FIELD_TEST_PARTICLE_WALL_LOSS",
+  "dashboard": {
+    "files": [
+      {
+        "git_blob": "1800a8f271c0c61b9bf14bb7623a7de993104b89",
+        "git_blob_sha256": "bc7e9fdc56b7d7fada1f8b9c0a7b16a3b877feffa56c25c8434a7f9f2ac972fc",
+        "path": "modern/visualization/generate_wall_loss_geometry_screening_dashboard.py",
+        "role": "dashboard-generator"
+      },
+      {
+        "git_blob": "e3051daa62db56e2bbb6e1d15f70a446a92437d2",
+        "git_blob_sha256": "404fae6c2a4d69a07c88b2394cb4f6eaab2fd0c20da5390e8b374a7c6be03018",
+        "path": "modern/visualization/wall-loss-geometry-screening-v1.template.html",
+        "role": "dashboard-template"
+      },
+      {
+        "git_blob": "b51007cf329792794770a69d7e0499edb21ab5a4",
+        "git_blob_sha256": "9f48e2ba6b91f0fed3dd7efecaee9829ca5a5f7ae9319dc6d8a90e51984ae16a",
+        "path": "modern/visualization/wall-loss-geometry-screening-v1.html",
+        "role": "dashboard-html"
+      }
+    ],
+    "path": "modern/visualization/wall-loss-geometry-screening-v1.html",
+    "revision": "ab7c28977963822b2ad6eac451d2bafef5185e6c",
+    "rule": "the committed dashboard generator verifies the bundle against its manifest and embeds its own extraction; the evidence generator requires that extraction (identity, headline, every per-design estimate and convergence flag, gate and consumer counts) to equal the sealed artifacts, and binds generator, template and HTML by LF-normalised SHA-256 equal to the blobs at the dashboard revision",
+    "subject": "record orbit wall-loss geometry screening v1 result"
+  },
+  "document_type": "paper-orbit-screening-manifest",
+  "evidence_level": {
+    "justification": "The study is a preregistered, single-execution numerical screening of a design space: collisionless prescribed-field test-particle electron orbits (orbit_mc 1.7, numpy CPU) integrated in the accepted linear-vacuum L1a equivalent-current fields of every one of the 96 accepted geometry-sweep-v2 designs, re-solved on the CPU with identity proven against the sealed sweep record. Its recorded outcome is an accepted screening dataset (campaign status accepted_screening_dataset): per-design wall-hit, reflection, escape and timeout probabilities with Wilson intervals at two timesteps, a per-design convergence flag, per-cell and per-stratum counts, and a coupling-consumer record. The framework admits accepted numerical evidence through a typed committed manifest, hashed artifacts at a resolvable revision, exact registered claim text and generated artifacts with provenance sidecars; that pattern is applied here through the numerical-screening gate GATE-WALL-LOSS-GEOMETRY-SCREENING-V1 at the recorded outcome accepted-screening-dataset, a fourth outcome value added for this study. The fields are L1a screening fields and not P2-qualified, so nothing here is accepted physical-orbit evidence of the kind admitted by GATE-WALL-LOSS-V4; it is not the L1 field-resolved reduction of GATE-L1 (no manufactured solution, no refinement study beyond the four representatives' diagnostic, no L0 mapping, no performance model), not L2 and not L3, and it opens none of those gates. The dataset is surrogate and optimisation input only when carried with its label.",
+    "name": "numerical-screening",
+    "opens_gate": null,
+    "relation_to_levels": {
+      "L0": "independent of the algebraic L0 model; no mapping is claimed and no L0 quantity is computed",
+      "L1": "consumes linear-vacuum L1a screening fields re-solved from the accepted sweep; no field-resolved reduction, no L0 mapping, no geometry-response prediction; the field-resolution diagnostic exists for the four representatives only",
+      "L2": "not coupled to any plasma model; the coupling handoffs are consumed by a verifying consumer, not by a plasma network",
+      "L3": "not particle-in-cell and not experimental"
+    },
+    "validation_status": "none: no measurement, facility, or hardware comparison exists",
+    "verification_tier": "code verification (manufactured helix and varying-field orders, uniform-field energy, mirror smoke, wall endpoint, numpy versus Warp CPU parity, exact deterministic replay of every case, cross-process determinism sample) and solution verification at screening tier (N to 2N timestep halving per design, refined-field sensitivity for the four representatives, exact energy gate, Wilson intervals); no validation"
+  },
+  "evidence_revision": "ab7c28977963822b2ad6eac451d2bafef5185e6c",
+  "evidence_revision_note": "The results tree first exists at this record commit; the merge commit that carried the branch into feat/sota-foundation adds nothing under the experiment or the visualization, so the record commit is the evidence revision and the dashboard revision.",
+  "evidence_revision_subject": "record orbit wall-loss geometry screening v1 result",
+  "experiment_id": "orbit-wall-loss-geometry-screening-v1",
+  "experiment_path": "modern/experiments/orbit_wall_loss_geometry_screening_v1",
+  "gate_id": "GATE-WALL-LOSS-GEOMETRY-SCREENING-V1",
+  "gate_kind": "numerical-screening",
+  "level": "numerical-screening",
+  "manifest_id": "WALL-LOSS-GEOMETRY-SCREENING-V1-20260903-96-V1",
+  "metrics": {
+    "accepted_physical_orbit_evidence": false,
+    "attempt_count": 1,
+    "campaign_status": "accepted_screening_dataset",
+    "case_count": 196,
+    "cell_count": 4,
+    "classification": "SCREENING_L1A_FIELD_TEST_PARTICLE_WALL_LOSS",
+    "consumed_handoffs": 96,
+    "consumed_verified_handoffs": 96,
+    "converged_design_count": 96,
+    "cross_resolution_design_count": 4,
+    "declared_count": 96,
+    "design_cell_count": 384,
+    "design_cells_saturated_at_one": 94,
+    "design_cells_saturated_at_zero": 0,
+    "design_rule_claimed": false,
+    "designs_with_reflections": 96,
+    "escape_probability_maximum": 0.21484375,
+    "escape_probability_median": 0.0693359375,
+    "escape_probability_minimum": 0.0,
+    "escapes_anode_plane": 1635,
+    "escapes_divergent_radial": 862,
+    "escapes_exit_plane": 1127,
+    "escapes_unclassified": 0,
+    "evaluated_count": 96,
+    "exact_authority_replays": 196,
+    "excluded_design_count": 0,
+    "extension_design_count": 71,
+    "extension_within_budget": true,
+    "failed_cases_count": 0,
+    "failed_design_count": 0,
+    "field_p2_qualified": false,
+    "hardware_or_experimental_validation": false,
+    "identity_proven_designs": 96,
+    "launches_per_case": 512,
+    "maximum_cross_resolution_relative_rms": 0.006637682803854381,
+    "maximum_interpolation_relative_rms": 0.008713927067656722,
+    "maximum_refined_field_sensitivity": 0.0078125,
+    "maximum_relative_energy_error": 0.0,
+    "maximum_successive_probability_change": 0.005859375,
+    "mirror_formula_publication_forbidden": true,
+    "not_accepted_physical_orbit_evidence": true,
+    "not_p2_qualified": true,
+    "numerical_failures": 0,
+    "orbit_count": 100352,
+    "orbit_mc_contract_matches": true,
+    "orbit_mc_package_version": "1.7.0",
+    "permanent_magnet_material_model": false,
+    "physics_level_opened": false,
+    "pic_or_self_consistent_claim_forbidden": true,
+    "plasma_or_performance_claim_forbidden": true,
+    "preregistered_one_shot": true,
+    "primary_design_count": 25,
+    "recorded_outcome": "accepted-screening-dataset",
+    "reference_design_in_screening_set": false,
+    "reference_export_consumed": true,
+    "reflections_per_design_maximum": 282,
+    "reflections_per_design_minimum": 32,
+    "reflections_reported_timestep": 11268,
+    "representative_design_count": 4,
+    "screening_model": "collisionless prescribed-field relativistic-Boris test-particle electron orbits (orbit_mc) in linear-vacuum L1a equivalent-current axisymmetric screening fields (not P2-qualified; not a permanent-magnet or nonlinear-iron material model)",
+    "sealed_case_count": 196,
+    "shakedown_evidentiary": false,
+    "shakedown_passed": true,
+    "stable_multicell_wall_cusp_topology_demonstrated": false,
+    "strata_per_case": 32,
+    "successive_probability_change_gate": 0.02,
+    "surrogate_or_mdo_input_requires_label": true,
+    "terminal_state": "accepted_result",
+    "timeout_free_design_count": 96,
+    "timeouts": 0,
+    "tolerated_eol_file_count": 0,
+    "total_reflections": 22904,
+    "validator_calls_passed": 6664,
+    "validator_failures": 0,
+    "verified_file_count": 2835,
+    "wall_hit_probability_maximum": 0.869140625,
+    "wall_hit_probability_median": 0.7021484375,
+    "wall_hit_probability_minimum": 0.375
+  },
+  "model_fidelity": "collisionless-test-particle-electron-orbits-in-linear-vacuum-L1a-screening-fields",
+  "paper_evidence_file": {
+    "document_type": "paper-wall-loss-geometry-screening-v1-evidence",
+    "generator": "paper/scripts/generate_wall_loss_geometry_screening_v1_evidence.py",
+    "generator_command": "python paper/scripts/generate_wall_loss_geometry_screening_v1_evidence.py",
+    "macro_count": 271,
+    "macro_prefix": "Wlg",
+    "path": "paper/evidence/wall-loss-geometry-screening-v1.json",
+    "rule": "check_paper.py regenerates the evidence file, the generated TeX and the sidecar from the sealed bundle and requires byte identity with the committed files; every macro therefore traces to a verified artifact hash at every check, and every reported Wilson interval is recomputed on the way.",
+    "schema_version": "1.0"
+  },
+  "permitted_claim_scope": [
+    "terminal state, campaign status, design, case, launch, validator, seal, replay and convergence counts of the single execution",
+    "per-design wall-hit, reflection, escape and timeout probabilities with Wilson intervals at the reported timestep, their ranges and medians, and the least and most wall-loss designs with their sealed geometry",
+    "per-cell and per-stratum wall-hit structure as protocol positions scaled to each design's straight channel",
+    "reflection presence in every design and the reflection share of the orbits",
+    "rank associations between the wall-hit probability and sealed geometry or field descriptors, stated as observations of this screening",
+    "the coupling consumer record: every handoff consumed as a verified handoff and the prior campaign's export consumed as a labelled reference row",
+    "the classification string, the recorded outcome and the sealed claim boundary"
+  ],
+  "posthoc_audit": null,
+  "posthoc_audit_note": "no post-hoc audit exists for this bundle; the bundle needs no end-of-line tolerance (orbit_mc 1.7 writes LF sidecars) and every one of its 2835 files is verified byte for byte by the generator and by the checker",
+  "preregistration_revision": "c86bfca37fdf285f4f2a53a01c2f32f14516d868",
+  "preregistration_revision_subject": "preregister orbit wall-loss geometry screening v1",
+  "prohibited_inferences": [
+    "accepted physical-orbit evidence of the kind admitted for the P2-qualified wall-loss campaign",
+    "a physical electron loss rate, plasma state, confinement, thrust, efficiency or any thruster performance",
+    "particle-in-cell or self-consistent plasma behaviour",
+    "a design rule or optimum from the observed rank associations or from the least and most wall-loss designs",
+    "mirror or loss-cone wall-loss formulas for these fields",
+    "permanent-magnet or nonlinear-iron material behaviour, or P2 qualification of the screening fields",
+    "existence or stability of confinement cells in the explored design space",
+    "hardware or experimental validation",
+    "field-resolved reduction, L0 mapping or geometry-response prediction (GATE-L1 stays closed)",
+    "opening of GATE-L1, GATE-L2 or GATE-L3"
+  ],
+  "recorded_outcome": "accepted-screening-dataset",
+  "recorded_outcome_justification": "The existing numerical-screening outcomes name a field-only design-space screening (accepted-screening), a preregistered null (preregistered-null) and a developmental characterization (recorded-characterization). This study's sealed status is accepted_screening_dataset: a test-particle dataset over a design space, accepted as screening input at its label. The gate admits it at exactly that outcome; accepted means the dataset is admitted as recorded, never that a physical finding is accepted.",
+  "results_bundle": {
+    "artifact_count": 2846,
+    "manifest_git_blob": "ff3b3cd8a4cb59047b6856031faaadb941f11877",
+    "manifest_path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/manifest.json",
+    "manifest_sha256": "39bd52133fefd3adae45e9593e7312b8e9027322ca3142d59912bbc13e2e027a",
+    "results_tree": "8dc2afe9db408bd37c872f50a6b246e10399321f",
+    "tolerance_rule": "none: every manifest file entry must hash to its recorded byte_sha256 with its recorded size",
+    "tolerated_eol_files": [],
+    "verified_file_count": 2835,
+    "wilson_rule": "every reported, per-case and per-cell Wilson-95 interval is recomputed operation for operation and must equal the sealed value exactly"
+  },
+  "schema_version": "1.0",
+  "screening_model": "collisionless prescribed-field relativistic-Boris test-particle electron orbits (orbit_mc) in linear-vacuum L1a equivalent-current axisymmetric screening fields (not P2-qualified; not a permanent-magnet or nonlinear-iron material model)",
+  "section_heading": "Collisionless test-particle wall loss across the accepted sweep designs",
+  "source_files": [
+    {
+      "git_blob": "ff3b3cd8a4cb59047b6856031faaadb941f11877",
+      "git_blob_sha256": "39bd52133fefd3adae45e9593e7312b8e9027322ca3142d59912bbc13e2e027a",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/manifest.json",
+      "role": "results-manifest"
+    },
+    {
+      "git_blob": "3be71441948535162778f15b2da4d2e2207d088d",
+      "git_blob_sha256": "dc52f4b8ec15a766e7dcb6a021086dc38d5740b99d413d6e013a6797b9606211",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/terminal.json",
+      "role": "terminal-record"
+    },
+    {
+      "git_blob": "bb529832554ff54f4536efe26d989d87fc26801c",
+      "git_blob_sha256": "adfac11245fce3ba49caa8ec7d3643f6fcb65d5d856a2667aeebf62bdcb0f95b",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/terminal.json.sha256.json",
+      "role": "terminal-record-sidecar"
+    },
+    {
+      "git_blob": "19bf4b00908057f14729c0e208de30fb07e8126d",
+      "git_blob_sha256": "a9cc6449a282d37c22a722e81dd411357c106a34fa223a3f703454f439d976aa",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/execution-lock.json",
+      "role": "execution-lock"
+    },
+    {
+      "git_blob": "cefbc72924288abd61d7836dd16b231d81511d0b",
+      "git_blob_sha256": "76efcf5b5ab50f561eeda6995155e53b5c2470934dbc712e3add0882f0e20754",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/transitions/0009-terminal.json",
+      "role": "transition"
+    },
+    {
+      "git_blob": "71e1aeef9da3e8d33490267a3ab181ca9ff8dd0c",
+      "git_blob_sha256": "dfebcfea6c9d2240384707a85bfa92613395f185e3d105789f07d4d2d4b004ff",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/protocol.json",
+      "role": "protocol"
+    },
+    {
+      "git_blob": "332f3e04db00cc811d02b03314c5c6631b3862ea",
+      "git_blob_sha256": "8dd3be5e1d38938b3cb77bcecd1868c9bee5083484a3ffa367686ca4f52e28d2",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/authorities.json",
+      "role": "authorities"
+    },
+    {
+      "git_blob": "c1ae10b5059ebfc315cb41318a5415f0ac2bc33f",
+      "git_blob_sha256": "d988874d2491d222d4db33732f6668339e59c0eb4c4a30e1c7e21ed6a16d9430",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/shakedown.json",
+      "role": "shakedown"
+    },
+    {
+      "git_blob": "018bb3656aca393744c4079e2c014a3dc012d698",
+      "git_blob_sha256": "43dcd6de36a4d7afdba9abe9c35cd581919dc0398ac116a454abbad49dbcf2f5",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/design-authorities.json",
+      "role": "design-authorities"
+    },
+    {
+      "git_blob": "f8c8f1dfe29b886e276979f95f04d4944a274d77",
+      "git_blob_sha256": "df96e15d5f70874168c6e3e03ffc2bac00aeeff8226966a613e36f2a70d62031",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/campaign-plan.json",
+      "role": "campaign-plan"
+    },
+    {
+      "git_blob": "ed0e6421fd0f4f9b3952f7cad09432e9dfba3160",
+      "git_blob_sha256": "e556efaa99fb6eb2759ae622fd16c6e2105ad5fc2224a6aa4523c21ef26b6672",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/campaign-result.json",
+      "role": "campaign-result"
+    },
+    {
+      "git_blob": "4c9da284e0a285aec437d68971e44f2749affa8c",
+      "git_blob_sha256": "9cfce38991b15587e2883de6a6c2c1f6175c25051c3ba5e452fa3bfc07846d81",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/gates.json",
+      "role": "binding-gates"
+    },
+    {
+      "git_blob": "ce2b4b33b1768651d6cfae19c14aedac9cd28255",
+      "git_blob_sha256": "aeda69491eecf4b5109311f7163b0c46b6c789d83e80e3d3a8da77d20ccf5cc8",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/manufactured-gates.json",
+      "role": "manufactured-gates"
+    },
+    {
+      "git_blob": "0951a03d94fe4c165f74b69ed6dcdc1f35c963e9",
+      "git_blob_sha256": "f6e4c929589180c70c79202e9fbd9a1de97a2b758dd8318efc94db69ff32c060",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbit-mc-contract.json",
+      "role": "orbit-mc-contract"
+    },
+    {
+      "git_blob": "db5d894076dfe9e4d1723aef3456b33db2b912dc",
+      "git_blob_sha256": "1309419628ad93aea97eaa1e54e5a6802c5c4ca3b62dbbb666ed85ef013f54cf",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-pipeline-binding.json",
+      "role": "field-pipeline-binding"
+    },
+    {
+      "git_blob": "94275001a80eb2893f9590a138fba3c9f2d98dd4",
+      "git_blob_sha256": "51d48aae97ee0b69a9e96a13f9bcfc2bfc28ba28aac00d0ebf1ee183b6300dbc",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/runtime.json",
+      "role": "runtime"
+    },
+    {
+      "git_blob": "ad0b0a4302e247a85a361e073cb26526a018c968",
+      "git_blob_sha256": "a315138f0b4d68c290bfe8de7606fe747ee43e6f85591413998c3da71f78d2d6",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/design-exclusions.json",
+      "role": "design-exclusions"
+    },
+    {
+      "git_blob": "992291c4460259a64110c769583a4244e347aff3",
+      "git_blob_sha256": "0a716a184c27d79aee1b24f8c27a593f38664dbbd69cb0b3210030cabff6a5ec",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/coupling-consumer-record.json",
+      "role": "coupling-consumer-record"
+    },
+    {
+      "git_blob": "858de21adf1b3ea40237d5e7f0531a2013eb58e2",
+      "git_blob_sha256": "9104e3bf0694f7c1c88d1c7bc377b43b24cbc42a94bd75eed2cfa6dc21f5114a",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/geometry-wall-loss-dataset.json",
+      "role": "primary-dataset"
+    },
+    {
+      "git_blob": "8ca4b23b65f56a79ac70c9b328dbb7e34b1f68f7",
+      "git_blob_sha256": "d237492687407375821fdf4fc1091ab2b27a6cba0b2f9f779646ad51094c3c31",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/geometry-wall-loss-dataset.json.sha256.json",
+      "role": "primary-dataset-sidecar"
+    },
+    {
+      "git_blob": "ef5da40d75c4af28c09c67568d3213e942a0d449",
+      "git_blob_sha256": "9ae92ccb27009661fbebb912c289f946f19e1a88694ff56107b2d7a42209260e",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/geometry-wall-loss-dataset.csv",
+      "role": "dataset-csv"
+    },
+    {
+      "git_blob": "2f83cc3a6957f249064140b6b486cdfa8ab878c3",
+      "git_blob_sha256": "21476b72e58568b2b1f80cde6af8f9e940db6e60ac67fbe405e8572455f6ea89",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/protocol.json",
+      "role": "preregistered-protocol"
+    },
+    {
+      "git_blob": "332f3e04db00cc811d02b03314c5c6631b3862ea",
+      "git_blob_sha256": "8dd3be5e1d38938b3cb77bcecd1868c9bee5083484a3ffa367686ca4f52e28d2",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/authorities.json",
+      "role": "preregistered-authorities"
+    },
+    {
+      "git_blob": "c1ae10b5059ebfc315cb41318a5415f0ac2bc33f",
+      "git_blob_sha256": "d988874d2491d222d4db33732f6668339e59c0eb4c4a30e1c7e21ed6a16d9430",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/shakedown.json",
+      "role": "preregistered-shakedown"
+    },
+    {
+      "git_blob": "018bb3656aca393744c4079e2c014a3dc012d698",
+      "git_blob_sha256": "43dcd6de36a4d7afdba9abe9c35cd581919dc0398ac116a454abbad49dbcf2f5",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/design-authorities.json",
+      "role": "preregistered-design-authorities"
+    },
+    {
+      "git_blob": "a90bece10d432780557f7402ca685a38e90efb13",
+      "git_blob_sha256": "20bf710818952b71c431dcbb87ce248e87e22592462a2c2d99b13e8f009aa3dd",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-000-48d2ccedd5--accepted-N.json",
+      "role": "case-summary"
+    },
+    {
+      "git_blob": "fe86d786a21442daeebc1e4805e43b6b61979b20",
+      "git_blob_sha256": "a4115824e7eb701379ba3ddc3935607b2ec8162681ad2fcfea13f4d6596c69a8",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-000-48d2ccedd5--accepted-2N.json",
+      "role": "case-summary"
+    },
+    {
+      "git_blob": "2c5b87ab3874a86a0a392e532a2ae2265cf293b1",
+      "git_blob_sha256": "aa85519f660b2d2d4d2c3a63513411e3ebc3ef47a9dba71733b2b6d43eafcd9e",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-000-48d2ccedd5--refined-N.json",
+      "role": "case-summary"
+    },
+    {
+      "git_blob": "0058dc61a856ea1623c05b52707b4b9092e7ee33",
+      "git_blob_sha256": "acb8b7c1af66da6cac0e45e606493ffdd700575e5a1ea68ab7a210d1f2313ff6",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-000-48d2ccedd5--accepted-2N.json",
+      "role": "handoff"
+    },
+    {
+      "git_blob": "edff4fb81e1d98b42d7c4c6d471082689cfd5c5a",
+      "git_blob_sha256": "66723eccb7d77c193924a4b5eb367150b47567ac18a0dc66bab016102977e5d7",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/endpoints/l1a-gs-v2-000-48d2ccedd5--accepted-2N.json.gz",
+      "role": "endpoints"
+    },
+    {
+      "git_blob": "caf860f843a388e2c2efb56d0aafc88b464b4bb6",
+      "git_blob_sha256": "120b1a018fedd5b67292f0e162bb73316107e9eb706b55ec7f599a605284d753",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-000-48d2ccedd5--accepted-2N.json.gz",
+      "role": "orbit-artifact"
+    },
+    {
+      "git_blob": "eab48848570ca080657bca1fb224eff1c3101a1a",
+      "git_blob_sha256": "608cbf0572f6ee3df200255eb4d2706c60d4ccc44c1852bc2fedabe7a0bc091f",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-000-48d2ccedd5--accepted-2N.json.sha256",
+      "role": "orbit-artifact-sidecar"
+    },
+    {
+      "git_blob": "7bad9477d51a468e6a7c8e3e7905764409297333",
+      "git_blob_sha256": "a5b52b3a89c2422f70e1467fcd19c28427fd92808af6063e90f59f0af04a004f",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/fields/l1a-gs-v2-000-48d2ccedd5.json",
+      "role": "field"
+    },
+    {
+      "git_blob": "3fa0dfc234903df65ffdad01bc419300f977df20",
+      "git_blob_sha256": "d868b6060c6bd68bce7b6fdf97c8c02593860c889739001a3a40cc97184464ca",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-000-48d2ccedd5.json",
+      "role": "field-evidence"
+    },
+    {
+      "git_blob": "f4d65c44ad911d64f9a45ad834b1abffd3dc7b81",
+      "git_blob_sha256": "235309b4eb503ee81afc854a5e4ccd7a87df9cdcd271f5b60d0c8c693664bc73",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-032-570ad83ba6--accepted-N.json",
+      "role": "case-summary"
+    },
+    {
+      "git_blob": "372375fbd8b76c347784db08eca7baf323c4ec11",
+      "git_blob_sha256": "f0d964318e48f26bafc9f756b54a9b31c7626b01e726d2b6267499da53675901",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-032-570ad83ba6--accepted-2N.json",
+      "role": "case-summary"
+    },
+    {
+      "git_blob": "f93fcae2f0420f59ae4bf052f88ad8efe8d8ec62",
+      "git_blob_sha256": "773e768bd4e07dc6f6d9067aea353c670a43f62cc2a346f612e7720a59971c30",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-032-570ad83ba6--refined-N.json",
+      "role": "case-summary"
+    },
+    {
+      "git_blob": "20cf2c13431751caab208da0cda72a028ce26ec0",
+      "git_blob_sha256": "35ca5c779e33711e2b3d99b8565c8621841b3ce55fa8b55139e774fa9799a4de",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-032-570ad83ba6--accepted-2N.json",
+      "role": "handoff"
+    },
+    {
+      "git_blob": "c621671ee3bda73c0a8a72730db0b931cf7b33e8",
+      "git_blob_sha256": "4b1283ae072e00ee0e7696c40e450395d67c670d5e1063e534be2f6ad3125e4f",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/endpoints/l1a-gs-v2-032-570ad83ba6--accepted-2N.json.gz",
+      "role": "endpoints"
+    },
+    {
+      "git_blob": "ce1b94e46ab4184848242b7a264b831c65aa7a4c",
+      "git_blob_sha256": "fcd319b717994ec9c688ab281170c0ba74f1ec39bccd0789eaf490db70bf6487",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-032-570ad83ba6--accepted-2N.json.gz",
+      "role": "orbit-artifact"
+    },
+    {
+      "git_blob": "56462b45d9d521964b8412e0411bae06cabed4bb",
+      "git_blob_sha256": "3183b4b02107e31ffffb115321ffd337522d84edd53a780469a6119c859f1b47",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-032-570ad83ba6--accepted-2N.json.sha256",
+      "role": "orbit-artifact-sidecar"
+    },
+    {
+      "git_blob": "b918455c6e8f17cdf40fe251f311f709f0dfd32e",
+      "git_blob_sha256": "571d1a3655028e58a506d5cfce9702738eda60edaa6b64aabb5e0f7592c8ded1",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/fields/l1a-gs-v2-032-570ad83ba6.json",
+      "role": "field"
+    },
+    {
+      "git_blob": "8fb73c960d37cdcdbd8fc73baae5f82fbcf89a09",
+      "git_blob_sha256": "be9a8ab33f0f7d7789bc8722499777f613bf2f878936c004794141d0a953ae5e",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-032-570ad83ba6.json",
+      "role": "field-evidence"
+    },
+    {
+      "git_blob": "b3d37c43161fcc9ce4de5441556bad7fb83fa07a",
+      "git_blob_sha256": "e0f23f110db09f2d928797d5d88152eac9a9352f3b6e7b6a7bf3a5a9bc5539b5",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-065-9e98f08f3b--accepted-N.json",
+      "role": "case-summary"
+    },
+    {
+      "git_blob": "eb56ba4359278c6003b89bfdc0acfa9e73035630",
+      "git_blob_sha256": "f7b07b3fcebcdd553b35442b71189b11d14e164ec2919bc9db99ed233e2f5eba",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-065-9e98f08f3b--accepted-2N.json",
+      "role": "case-summary"
+    },
+    {
+      "git_blob": "2fe008f61d953e363662075b1c6926c3f17fbbe4",
+      "git_blob_sha256": "a8d4a686e527435d7d27fb8b840488120ee16d3abb05181a92ac9ca8ac407085",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-065-9e98f08f3b--refined-N.json",
+      "role": "case-summary"
+    },
+    {
+      "git_blob": "7efa16acd52b74254c3d1c90fd449d252a564834",
+      "git_blob_sha256": "bbac44ca867ad11da0304a3b7bfab034ebe8a13b410d0b9c90518c3ba715145f",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-065-9e98f08f3b--accepted-2N.json",
+      "role": "handoff"
+    },
+    {
+      "git_blob": "2e71a91a09f76ab65b9dea1715091f0400721d1b",
+      "git_blob_sha256": "808c0a459792970584be7409f4bd247c045bcbf0dffaefe82f915b0c28c525a6",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/endpoints/l1a-gs-v2-065-9e98f08f3b--accepted-2N.json.gz",
+      "role": "endpoints"
+    },
+    {
+      "git_blob": "69a7f98f3f0fb604e0129a281fb6aa31dd0eb3f7",
+      "git_blob_sha256": "10dfc632490bd273076d0d39b9f2a0a94b0a4f9eaaf0758dcd96417ee17d29f0",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-065-9e98f08f3b--accepted-2N.json.gz",
+      "role": "orbit-artifact"
+    },
+    {
+      "git_blob": "aacdb5af4b8b51eede3c9315f869f4c0018539b5",
+      "git_blob_sha256": "aa43c41675abde1a803292175b6844e60f9a9e21d55792284e5ea67388f02222",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-065-9e98f08f3b--accepted-2N.json.sha256",
+      "role": "orbit-artifact-sidecar"
+    },
+    {
+      "git_blob": "e6dbe425119c653c94e7ba00b3c53248097e98b1",
+      "git_blob_sha256": "61544bbd196c313a7e00b918e3b02079ebe89fcba2e92ce3308d65fbe75cedff",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/fields/l1a-gs-v2-065-9e98f08f3b.json",
+      "role": "field"
+    },
+    {
+      "git_blob": "4f1d8032e9e9b84692edbe94bf7c04db5ff93bb2",
+      "git_blob_sha256": "e4a59c2ba10c07ba441624bb9f595848796b388965a666bc13ef556a12ee4433",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-065-9e98f08f3b.json",
+      "role": "field-evidence"
+    },
+    {
+      "git_blob": "08e16c19b1f308560e8de7f412a5a35852cc76af",
+      "git_blob_sha256": "aa9397196857b981a9bd9b9cccc0302a7cd8773f6fe8e5c39549fa375523f417",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-068-375d1b1b13--accepted-N.json",
+      "role": "case-summary"
+    },
+    {
+      "git_blob": "fc5889c2e6351433e8746e2d9079a9cbd2ce6d17",
+      "git_blob_sha256": "969fb98efc523d12265dfbf8c69de0b7fde7c05b44e08c682c7043ae34dc0009",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-068-375d1b1b13--accepted-2N.json",
+      "role": "case-summary"
+    },
+    {
+      "git_blob": "20a1c7828096c2e3cf25a7c66fdbd223df047859",
+      "git_blob_sha256": "182930741ce5f364426668b63ab9f9ae4902c1e5cf448a1a11133c1905621d14",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-068-375d1b1b13--refined-N.json",
+      "role": "case-summary"
+    },
+    {
+      "git_blob": "356991f28557215f5f585d1e5eb9c185486da83b",
+      "git_blob_sha256": "ed87dbd0d74f85a0025851242198ad976a99c17e6a569fad76bfef4008e0e854",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/handoffs/l1a-gs-v2-068-375d1b1b13--accepted-2N.json",
+      "role": "handoff"
+    },
+    {
+      "git_blob": "3a58776fc9bf133a41e83237a2831edd7b297a6a",
+      "git_blob_sha256": "6aae479ee547ee3ddd407d3efa0cbf36804dc2e8647a9a1b15cfa8aeba12cc11",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/endpoints/l1a-gs-v2-068-375d1b1b13--accepted-2N.json.gz",
+      "role": "endpoints"
+    },
+    {
+      "git_blob": "efb06d858f7cf18211950cd42aee5136a6838edf",
+      "git_blob_sha256": "b9882181a964d293d47a062f714bc7fb35c9e29201be068627a6cce700c968de",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-068-375d1b1b13--accepted-2N.json.gz",
+      "role": "orbit-artifact"
+    },
+    {
+      "git_blob": "371f3ba92f55dba23bb7d999222c6994992e79f2",
+      "git_blob_sha256": "f96f560ac7d8d0918ffdb2fad16d0cc3a84961ef633699c1a6b702369a4ff0c1",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/orbits/l1a-gs-v2-068-375d1b1b13--accepted-2N.json.sha256",
+      "role": "orbit-artifact-sidecar"
+    },
+    {
+      "git_blob": "46aff40f5352ed263dd5c54db3f5f2cd62161b18",
+      "git_blob_sha256": "812fdb3db28278fca02f72608233973a421c705ddc796303128e90692f252c5c",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/fields/l1a-gs-v2-068-375d1b1b13.json",
+      "role": "field"
+    },
+    {
+      "git_blob": "4a8ad6414651d120c9016afb3008494c4949e50f",
+      "git_blob_sha256": "121d07310cbdaafadba997e9f621130321045cc3a28ba0fc9c868293e7b9d6ce",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/field-evidence/l1a-gs-v2-068-375d1b1b13.json",
+      "role": "field-evidence"
+    },
+    {
+      "git_blob": "9fc93b8c279a01415a3e5a6dfcff8b9cfd779f68",
+      "git_blob_sha256": "ddc614e085a85bdf1a8fe2432105e28cfe569abb49ccecb8b959bbb9188908dc",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-049-cf0a7d1028--accepted-2N.json",
+      "role": "case-summary"
+    },
+    {
+      "git_blob": "0eed7fd7f289c1db927d8758c70bf4312d978a03",
+      "git_blob_sha256": "40a3ed2658f1097900ef17bda6e07eea6e171d19a6ae2b8c03fcc01b6005f355",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-094-ba60c4fe8b--accepted-2N.json",
+      "role": "case-summary"
+    },
+    {
+      "git_blob": "c51d9a9a616f0a8bad5ff549036121326e6a8546",
+      "git_blob_sha256": "47838355db8a58d34cdc700cae23d1bbc4960e5f0fe06837570e05d6fa0ad0ae",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-050-012aa2a74e--accepted-2N.json",
+      "role": "case-summary"
+    },
+    {
+      "git_blob": "38f8e6b40eba29ab6db46351b0be2fde7070e399",
+      "git_blob_sha256": "2ef7d7c4c2ca972cc30d9ad41da09bc417de55b47340cfaee75362a139582314",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-091-1aab0b78cb--accepted-2N.json",
+      "role": "case-summary"
+    },
+    {
+      "git_blob": "52d5fd6bb6587558002e93bcdbc7239bff0938e4",
+      "git_blob_sha256": "9ec48b568df892b511cf560025b96f82fbe462c993098d68090c0bba401ed59d",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-021-5e0b38a851--accepted-2N.json",
+      "role": "case-summary"
+    },
+    {
+      "git_blob": "3a7e39736f8894d68dca50fad6f8e097807fc73f",
+      "git_blob_sha256": "1bff6a178eb018a44bf25f41b744e329cee830aeb2413e537fdea50475851f2a",
+      "path": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/summaries/l1a-gs-v2-043-b585cd28ea--accepted-2N.json",
+      "role": "case-summary"
+    }
+  ],
+  "status": "accepted"
+}

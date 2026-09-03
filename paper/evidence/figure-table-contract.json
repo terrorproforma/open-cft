@@ -145,6 +145,32 @@
       "required_gate": "GATE-FOUR-CELL-CLOSURE-V1"
     },
     {
+      "id": "TAB-WALL-LOSS-GEOMETRY-SCREENING-V1",
+      "kind": "table",
+      "status": "verified",
+      "manuscript_label": "tab:wall-loss-geometry-screening-v1-dataset",
+      "manuscript_labels": [
+        "tab:wall-loss-geometry-screening-v1-dataset",
+        "tab:wall-loss-geometry-screening-v1-extremes",
+        "tab:wall-loss-geometry-screening-v1-cells",
+        "tab:wall-loss-geometry-screening-v1-terminations"
+      ],
+      "manuscript_binding": "\\input{generated/wall-loss-geometry-screening-v1.tex}",
+      "claim_ids": [
+        "CLM-047"
+      ],
+      "manifest_id": "WALL-LOSS-GEOMETRY-SCREENING-V1-20260903-96-V1",
+      "generator_path": "paper/scripts/generate_wall_loss_geometry_screening_v1_evidence.py",
+      "generator_module": "generate_wall_loss_geometry_screening_v1_evidence",
+      "generator_command": "python paper/scripts/generate_wall_loss_geometry_screening_v1_evidence.py",
+      "output_path": "paper/generated/wall-loss-geometry-screening-v1.tex",
+      "sidecar_path": "paper/generated/wall-loss-geometry-screening-v1.provenance.json",
+      "artifact_claim_count": 4,
+      "artifact_claim_note": "The generated file defines the evidence macros and four table macros (\\WlgDatasetTable, \\WlgExtremeTable, \\WlgCellTable, \\WlgTerminationTable); each table body is wrapped in its own ArtifactClaim bound to CLM-047, so exactly four ArtifactClaim macros are required. The tables report a screening dataset on linear-vacuum fields: dataset summary and convergence, the least and most wall-loss designs with their sealed geometry, the per-cell distribution and the termination classes; nothing in them is physical-orbit, plasma or performance evidence.",
+      "evidence_file": "paper/evidence/wall-loss-geometry-screening-v1.json",
+      "required_gate": "GATE-WALL-LOSS-GEOMETRY-SCREENING-V1"
+    },
+    {
       "id": "FIG-ARCHITECTURE",
       "kind": "figure",
       "status": "planned-nonresult",

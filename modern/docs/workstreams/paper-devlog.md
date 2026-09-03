@@ -652,3 +652,145 @@
   audit and `Performance_est.m:91-128` say flags 1–3 are accepted by status
   alone and flag 4 is rejected (`HEMP_solver.m:64` discards the residual norm,
   `TolFun=1e-50`). The claim uses the audit's wording, macro-bound.
+
+## 2026-09-03 - Orbit wall-loss geometry screening v1 admitted to the claim matrix and manuscript
+
+### Scope
+
+- Worktree `C:\Users\Angus\Desktop\projects\uni-project-paper-geo`, branch
+  `paper/geometry-screening-claim` from `origin/feat/sota-foundation`
+  (`22e2156b`), LF verified (`git ls-files --eol`: no `w/crlf`). Paper-owned
+  paths and `modern/docs/workstreams/paper-*` only; `results/**`, the frozen
+  preregistration files and `FYP/` untouched; no GPU work.
+- Evidence: `modern/experiments/orbit_wall_loss_geometry_screening_v1`,
+  preregistered `c86bfca3`, recorded `ab7c2897` (`record orbit wall-loss
+  geometry screening v1 result`), merged into `feat/sota-foundation` by
+  `22e2156b`. The results tree first exists at `ab7c2897` and the merge adds
+  nothing under the experiment or the visualization, so `ab7c2897` is both the
+  evidence revision and the dashboard revision (the dashboard HTML was
+  regenerated from the sealed bundle in the same commit).
+
+### Evidence level and gate
+
+- Gate `GATE-WALL-LOSS-GEOMETRY-SCREENING-V1`, kind `numerical-screening`,
+  `opens_level: null`, at a fourth recorded outcome
+  `accepted-screening-dataset` (added to `SCREENING_OUTCOMES`, the kind
+  description in `result-gates.json`, notation and README). Justification: the
+  sealed campaign status is `accepted_screening_dataset`, a test-particle
+  dataset over a design space on L1a screening fields that are not
+  P2-qualified; the existing outcomes name a field-only screening, a null and a
+  characterization. `accepted` keeps meaning admitted as recorded and never
+  reads as the physical-orbit evidence `GATE-WALL-LOSS-V4` admits.
+- New manifest type `paper-orbit-screening-manifest` 1.0 (30 required roles,
+  78 required metrics = 68 mapped + 10 policy). Manifest
+  `paper/evidence/manifests/wall-loss-geometry-screening-v1.json`: 67 source
+  files bound by Git blob and SHA-256 at `ab7c2897` (top-level bundle
+  artifacts, the four representatives' three summaries, 2N handoff, endpoint
+  table, orbit artifact and sidecar, bore field and field evidence, the six
+  extreme designs' 2N summaries, the four frozen preregistration files whose
+  blobs equal those at `c86bfca3`), dashboard generator/template/HTML bound at
+  `ab7c2897` and equal to the checkout by LF-normalised SHA-256, 58 gate
+  metric constraints, `posthoc_audit: null` with a note (no audit exists; the
+  bundle needs no end-of-line tolerance, orbit_mc 1.7 writes LF sidecars).
+
+### Added
+
+- `paper/scripts/generate_wall_loss_geometry_screening_v1_evidence.py`:
+  verifies all 2,835 manifest files byte for byte with their sidecars,
+  requires the frozen files to equal the sealed copies and the same blob at
+  preregistration and record commits, cross-checks the dataset against every
+  per-case summary, handoff hash and orbit sidecar (and the representatives'
+  gzipped endpoint tables), recomputes every reported, per-case and per-cell
+  Wilson-95 interval operation for operation (exact equality), recomputes the
+  convergence flags and the least/most ordering, cross-checks the committed
+  dashboard payload (identity, headline, every per-design estimate and
+  convergence flag, gate and consumer counts), and writes 271 `\Wlg...`
+  macros (121 derived with derivation and inputs, incl. Spearman rank
+  correlations), four `\ArtifactClaim` tables (dataset summary and
+  convergence; least/most designs with sealed geometry; per-cell distribution
+  and saturation; termination classes with escape sub-classes), evidence file
+  and sidecar. ~20 s per run.
+- Claims CLM-045 (abstract), CLM-046 (execution, wall-hit range/median,
+  convergence, extremes; `non_claims`), CLM-047 (tables), CLM-048 (reflections
+  in every design, escapes and sub-classes, per-cell means, 94/384 saturated
+  at one and 0 at zero; bound to the v4 manifest too), CLM-049 (geometry
+  association, stated as observation: extremes' lengths/radii and ranks,
+  Spearman rho with length -0.05, radius -0.12, pitch +0.36, stage count
+  -0.31, minimum mirror ratio +0.35, mu variation -0.37, reflection -0.79),
+  CLM-050 (first consumer of the coupling-v4.2 export; 96/96 handoffs; v4
+  export as labelled reference row), CLM-051 (boxed scope), CLM-052
+  (Discussion interpretation: the mirror-picture statement is field-specific;
+  the screening is the geometry-to-wall-loss bridge at screening tier;
+  design-dependent optimisation is future work). CLM-016 amended so the v4
+  scope no longer says "no consumer model has ingested it" but records the
+  labelled reference-row consumption; `paper/sections/wall-loss-v4.tex` and
+  its standalone driver updated accordingly.
+- `manuscript.tex`: `\GeometryScreeningEvidenceRevision`, preamble `\input`,
+  sixth date line, abstract sentence, contribution list, evidence-boundary
+  paragraph, Section 11 "Preregistered wall-loss screening across the
+  accepted sweep geometries" with `\input{sections/wall-loss-geometry-screening-v1.tex}`
+  (subsection 11.1), sentence after the L1 gate box, Discussion paragraph
+  retitled and extended with CLM-052, the MDO paragraph's "planned bridge"
+  sentence rewritten (realised at screening tier; consumer optimisation future
+  work), Limitations, data availability, Conclusion.
+- Section `paper/sections/wall-loss-geometry-screening-v1.tex` (Method;
+  Results; Reflections, escapes and cell structure; Geometry and the wall-hit
+  probability; Coupling consumer; Scope with the boxed claim boundary) and the
+  standalone driver; `check_paper.py` (`GEOMETRY_SCREENING_METRIC_MACROS`,
+  `GEOMETRY_SCREENING_POLICY_METRICS`, schema type, `_check_geometry_screening`,
+  renderer, required Section 11, trackables, outcome set); tests
+  `test_wall_loss_geometry_screening_admission.py` (17) and
+  `test_wall_loss_geometry_screening_evidence.py` (11); README, author
+  checklist, supplementary outline (S4f) and notation updated.
+
+### Numbers verified against the bundle
+
+- 96 designs (25 non-dominated + 71 extension; 0 excluded), 196 cases,
+  100,352 orbits, 6,664 validators / 0 failures, 196/196 sealed and replayed,
+  96/96 converged (largest N to 2N change 0.0059, mean 3.5e-4, 83 designs
+  unchanged), refined-N sensitivity of the 4 representatives <= 0.0078; energy
+  drift 0; 0 timeouts; 0 numerical failures.
+- P(wall) 0.375-0.869 (median 0.702, mean 0.697); least 049/094/050, most
+  091/021/043 (ordering recomputed and unique). Reflections in all 96 designs:
+  32-282 of 512 at 2N (11,268 of 49,152, 22.9 %), 22,904 of 100,352 over
+  every case (22.8 %). Escape 0-0.215 (median 0.069; 8 designs without an
+  escape): 1,635 anode plane, 1,127 exit plane, 862 divergent radial, 0
+  unclassified at 2N. Per-cell means 0.65/0.82/0.77/0.55; 94 of 384
+  design-cells at 1.0, none at 0.0. mu-variation medians 0.11-0.47.
+- Field provenance: 96/96 identity proven; interpolation rms <= 0.87 %;
+  stored-map agreement of the 4 representatives 9.3e-21 Wb / 2.8e-15 T
+  against tolerances 1e-15 Wb / 1e-9 T; the refined re-solve and
+  cross-resolution diagnostic (<= 0.66 %) exist for the 4 representatives
+  ONLY (`include_refined` is true for representatives; the check passes
+  vacuously elsewhere). The paper states this; the experiment README's "for
+  every design" overstates it.
+- Consumer: 96/96 handoffs `consumed_verified_handoff`, 7 checks each; v4
+  export consumed as reference row (0.645 [0.602, 0.685], 512 trials,
+  `NUMERICAL_P2_QUALIFIED`, not in the screening set).
+- The brief's "longer channels / larger wall radius lose least" is NOT a
+  population trend: Spearman rho(P_wall, L) = -0.05 and rho(P_wall, r_w) =
+  -0.12 over the 96 designs; only the three least-loss designs sit at long
+  lengths (ranks 42-92). The claim reports the extremes and the correlations
+  as observations and states that none is a design rule.
+
+### Validation
+
+- Before the commit `check_paper.py` reported exactly the fail-closed
+  "accepted manifest is not committed at HEAD"; after the first commit
+  (`914af6a1`, later amended with these notes) it passed (about 60 s) and
+  passed again on the amended commit. `unittest discover -s paper/tests`: 139 tests (111
+  existing + 28 new), 139 OK after the commit (the only pre-commit failure was
+  that same fail-closed check inside `test_paper_checks`).
+- `verify_reproducible_build.py`: two clean builds byte-identical,
+  `paper/build/manuscript.pdf` 532,205 bytes, SHA-256
+  `67a531f9562f785f2eef7a5c6f053c3f2c4cb2918c4e80c240735939670fd720`, 33 pages,
+  no LaTeX errors, undefined references or overfull boxes.
+- Pages rendered with MiKTeX `pdftoppm -r 80` to `%TEMP%\paper-geo-pages\`
+  (`p-01.png` ... `p-33.png`) and inspected: abstract sentence p. 2; Section
+  11 opens p. 22, subsection 11.1 p. 23, Results and Table 15 p. 24-25,
+  Tables 16-17 p. 26, Table 18 and the boxed scope p. 27; L1 note p. 28;
+  Discussion paragraph with CLM-052 p. 28-29; Limitations p. 30-31.
+- One correction during integration: the extremes table overflowed by 6.5 pt
+  at `\scriptsize` (caught by the standalone compile); the case and interval
+  `p{}` columns were narrowed (2.9 -> 2.7 cm, 2.6 -> 2.45 cm) and
+  `\tabcolsep` reduced to 2 pt.

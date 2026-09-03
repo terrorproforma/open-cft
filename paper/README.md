@@ -45,7 +45,18 @@ terms are non-negative, so the equation set has no admissible root for any
 positive interior cusp probability; the checker recomputes the verification
 from the bound `cft_revival.plasma` package at every run, the proposed
 correction stays `PROPOSED_NOT_ACCEPTED`, and nothing follows about the
-physical thruster. The checked evidence is
+physical thruster. A fourth `numerical-screening` gate,
+`GATE-WALL-LOSS-GEOMETRY-SCREENING-V1`, admits the orbit wall-loss geometry
+screening `modern/experiments/orbit_wall_loss_geometry_screening_v1` (results
+`ab7c28977963822b2ad6eac451d2bafef5185e6c`, preregistration `c86bfca3…`,
+dashboard at the same record commit) at a fourth recorded outcome,
+`accepted-screening-dataset`: 100,352 collisionless test-particle electron
+orbits in the re-solved L1a screening fields of all 96 accepted sweep-v2
+designs (P(wall) 0.375–0.869, median 0.702; reflections in every design;
+96/96 converged under timestep halving; every handoff consumed by the first
+consumer of the coupling export format). The fields are not P2-qualified, so
+the dataset is surrogate and optimisation input under its label and never
+accepted physical-orbit, plasma or performance evidence. The checked evidence is
 enumerated in `evidence/claims.json`. Concurrent or later work is not
 publishable merely because files exist in a working tree: a planned section
 opens only when its gate in `evidence/result-gates.json` names an accepted,
@@ -76,7 +87,13 @@ analysis is classified
 it is a statement about an equation set, not about the thruster; the reading
 that the legacy performance values were residual-floor artefacts is a labelled
 interpretation in the Discussion, and no value of the unavailable legacy run is
-claimed or recomputed.
+claimed or recomputed. The geometry screening is classified
+`SCREENING_L1A_FIELD_TEST_PARTICLE_WALL_LOSS`: its launch cells are protocol
+positions, its geometry associations (rank correlations with chamber length,
+wall radius, stage pitch and stage count) are observations of one launch
+design and not a design rule, its refined-field diagnostic exists for four
+representatives only, and no surrogate or optimisation consuming it is
+admitted.
 
 ## Reproduce checks and build
 
@@ -114,10 +131,25 @@ it does not modify the environment.
   file roles, and required metrics.
 - `evidence/result-gates.json` — explicit L1/L2/L3 admission criteria
   (`physics-level` gates), the accepted `numerical-campaign` gates
-  `GATE-WALL-LOSS-V4` and `GATE-MDO-L0-V1`, the three
-  `numerical-screening` gates `GATE-L1A-SWEEP-V2`, `GATE-FOUR-CELL-V2` and
-  `GATE-TOPOLOGY-CHAR-V1`, each carrying its `recorded_outcome`, and the
-  `analytic-consistency` gate `GATE-FOUR-CELL-CLOSURE-V1`.
+  `GATE-WALL-LOSS-V4` and `GATE-MDO-L0-V1`, the four
+  `numerical-screening` gates `GATE-L1A-SWEEP-V2`, `GATE-FOUR-CELL-V2`,
+  `GATE-TOPOLOGY-CHAR-V1` and `GATE-WALL-LOSS-GEOMETRY-SCREENING-V1`, each
+  carrying its `recorded_outcome`, and the `analytic-consistency` gate
+  `GATE-FOUR-CELL-CLOSURE-V1`.
+- `evidence/manifests/wall-loss-geometry-screening-v1.json` — typed screening
+  manifest (`paper-orbit-screening-manifest` 1.0) binding the sealed bundle's
+  top-level artifacts, the representatives' per-case summaries, handoffs,
+  endpoint tables, orbit artifacts and sidecars, bore fields and field
+  evidence, the six extreme designs' summaries, the frozen preregistration
+  files and the results dashboard by Git blob and SHA-256 at the record
+  commit, plus the metrics the checker compares with the raw artifact values
+  behind the `\Wlg...` macros.
+- `evidence/wall-loss-geometry-screening-v1.json`,
+  `generated/wall-loss-geometry-screening-v1.tex`,
+  `sections/wall-loss-geometry-screening-v1.tex` — hash-bound evidence file,
+  generated macros with four `\ArtifactClaim` tables, and the admitted
+  macro-only subsection bound once by `\input` from Section 11 of
+  `manuscript.tex`.
 - `evidence/manifests/four-cell-closure.json` — typed analysis manifest
   (`paper-analytic-consistency-manifest` 1.0) binding the analysis document,
   the ledger, the five `cft_revival.plasma` files, three pinning test files,
@@ -333,4 +365,63 @@ and accepts no correction.
 ```powershell
 python paper/scripts/generate_four_cell_closure_evidence.py
 python -m unittest discover -s paper/tests -p "test_four_cell*" -v
+```
+
+## Admitted screening dataset: orbit wall-loss geometry screening v1
+
+`paper/scripts/generate_wall_loss_geometry_screening_v1_evidence.py` reads the
+sealed results bundle of
+`modern/experiments/orbit_wall_loss_geometry_screening_v1` (2,835 files
+verified byte for byte against `results/manifest.json`, every artifact paired
+with a manifest-bound sidecar; no end-of-line tolerance exists or is granted),
+requires the frozen `protocol.json`, `authorities.json`, `shakedown.json` and
+`design-authorities.json` to equal the sealed copies and to carry the same
+blob at the preregistration and record commits, cross-checks the dataset
+against all 196 per-case summaries, handoffs and orbit sidecars (and the
+representatives' gzipped endpoint tables), recomputes every reported,
+per-case and per-cell Wilson interval operation for operation, cross-checks
+the committed results dashboard
+(`modern/visualization/wall-loss-geometry-screening-v1.html`, its generator
+and template at `ab7c2897`) against the same bundle, and writes
+`paper/evidence/wall-loss-geometry-screening-v1.json` (every `\Wlg...` macro
+with its artifact path, JSON pointer, formatter and SHA-256, or its
+derivation and inputs), `paper/generated/wall-loss-geometry-screening-v1.tex`
+(macros plus four tables wrapped in `\ArtifactClaim`: dataset summary and
+convergence, least and most wall-loss designs with sealed geometry, per-cell
+distribution, termination classes) and the provenance sidecar. Derived macros
+include Spearman rank correlations of the wall-hit probability with sealed
+geometry and field descriptors; the section states them as observations and
+the claim records forbid reading them as a design rule.
+
+The subsection `paper/sections/wall-loss-geometry-screening-v1.tex` renders
+numbers only through macros; its results, reflection/escape/cell,
+geometry-association, consumer and scope statements are exact
+`\EvidenceClaim` bodies (CLM-046, CLM-048, CLM-049, CLM-050, CLM-051), the
+abstract sentence is CLM-045 and the labelled Discussion interpretation (the
+wall-loss campaign's mirror-picture statement is field-specific; the
+screening is the geometry-to-wall-loss bridge at screening tier) is CLM-052.
+The gate reuses the `numerical-screening` kind at a fourth outcome value,
+`accepted-screening-dataset`, because the study screens a design space on
+linear-vacuum fields that are not P2-qualified and its sealed status is a
+dataset accepted as screening input; `opens_level` is null. The first
+consumer of the coupling-v4.2 export format is recorded here, so the
+wall-loss campaign's scope claim (CLM-016) now says the export was ingested
+only as a labelled reference row.
+
+`check_paper.py` regenerates the three generated files at every run (which
+re-verifies the whole bundle and recomputes the Wilson intervals) and fails
+closed on any byte difference, any artifact hash mismatch, any manifest metric
+that differs (in value or type) from the raw artifact value behind its macro,
+any policy metric off its fixed value, a dashboard checkout that differs from
+the blob bound at the dashboard revision, a results tree changed since the
+evidence revision, a frozen file changed since preregistration, a recorded
+outcome that disagrees anywhere, a literal digit or undefined macro in the
+section, a classification, recorded-outcome or campaign-status macro that does
+not render its string, a missing registered non-claim, an interpretation claim
+inside the results section, or a `\GeometryScreeningEvidenceRevision` macro
+that does not spell the manifest revision.
+
+```powershell
+python paper/scripts/generate_wall_loss_geometry_screening_v1_evidence.py
+python -m unittest discover -s paper/tests -p "test_wall_loss_geometry*" -v
 ```

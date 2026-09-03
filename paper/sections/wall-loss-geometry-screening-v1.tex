@@ -1,0 +1,227 @@
+% Results subsection: orbit wall-loss geometry screening v1 (collisionless test-particle
+% wall-loss dataset over the 96 accepted L1a sweep designs; accepted screening dataset).
+%
+% Every quantity in this file is a \Wlg... macro defined in
+% paper/generated/wall-loss-geometry-screening-v1.tex, which
+% paper/scripts/generate_wall_loss_geometry_screening_v1_evidence.py writes from the
+% sealed results bundle of modern/experiments/orbit_wall_loss_geometry_screening_v1;
+% paper/evidence/wall-loss-geometry-screening-v1.json records the artifact path, JSON
+% pointer and SHA-256 behind each macro, or the derivation of a derived macro. No
+% numeric literal is typed here.
+%
+% Status: admitted. manuscript.tex binds this file once through
+% \input{sections/wall-loss-geometry-screening-v1.tex}. Admission is governed by the
+% numerical-screening gate GATE-WALL-LOSS-GEOMETRY-SCREENING-V1 in
+% paper/evidence/result-gates.json (recorded outcome accepted-screening-dataset), the
+% typed manifest paper/evidence/manifests/wall-loss-geometry-screening-v1.json and the
+% claim records bound to manifest WALL-LOSS-GEOMETRY-SCREENING-V1-20260903-96-V1.
+% Every \EvidenceClaim body below must equal its registered authorized_tex exactly;
+% paper/scripts/check_paper.py verifies that, the macro-only rule, the classification,
+% recorded-outcome, campaign-status and field-status strings and the presence of the
+% registered non-claims. The standalone driver
+% paper/sections/wall-loss-geometry-screening-v1-standalone.tex compiles this file on
+% its own.
+\subsection{Collisionless test-particle wall loss across the accepted sweep designs}
+\label{sec:wall-loss-geometry-screening-v1}
+
+\paragraph{Method.}
+The screening integrates collisionless prescribed-field test-particle electron
+orbits (orbit\_mc \WlgOrbitMcVersion, \texttt{\WlgBackend}; contract matches:
+\WlgOrbitMcContractMatches) in the fields of every accepted design of the geometry
+sweep of Section~\ref{sec:l1a-sweep-v2}: the \WlgPrimaryCount{} non-dominated designs
+as the primary batch and the remaining \WlgExtensionCount{} accepted designs as an
+extension batch whose inclusion the frozen protocol tied to the shakedown's timing
+projection (projected \WlgTimingProjectedMin{}~min against a budget of
+\WlgTimingBudgetMin{}~min; within budget: \WlgTimingWithinBudget). Only the sweep's
+\WlgRepresentativeCount{} representatives carry stored full-field maps, so every
+design is rebuilt with the sweep's own case builder and re-solved with the accepted
+linear-vacuum \WlgFieldModelLevel{} solver (\texttt{\WlgResolveSolver}) at the sweep
+resolution (\WlgGridRadial$\times$\WlgGridAxial{} intervals, relative residual
+\WlgSolverRelTol) before any orbit is integrated. Identity is proven per design:
+the rebuilt geometry, source, configuration and case hashes must equal the sealed
+sweep record (manifest prefix \texttt{\WlgSweepManifestSha}, raw results
+\texttt{\WlgSweepRawSha}), the re-solved quantities of interest must reproduce the
+recorded ones within the sweep's replay tolerances, and the representatives must
+reproduce their stored maps node-wise within \WlgStoredPsiTol{}~Wb and
+\WlgStoredBTol{}~T (largest observed differences \WlgStoredPsiMaxDiff{}~Wb and
+\WlgStoredBMaxDiff{}~T); \WlgIdentityProvenDesigns{} of \WlgDesignCount{} designs
+passed. The bore interpolant must reproduce the solver field within an rms of
+\WlgInterpolationGate{} (largest observed \WlgInterpolationRmsMax); a
+\WlgRefinement$\times$ refined re-solve is a field-resolution diagnostic
+(cross-resolution gate \WlgCrossResolutionGate, largest observed
+\WlgCrossResolutionRmsMax) that the bundle records for the
+\WlgCrossResolutionDesigns{} representatives only, which additionally run a
+refined-field orbit case. The fields keep the sweep's status
+\texttt{\WlgFieldStatus}: they are screening fields and not the P2 reference of
+Section~\ref{sec:wall-loss-v4}.
+
+Each design receives \WlgLaunchesPerCase{} launches in \WlgStrataPerCase{} equal-weight
+strata: \WlgCellCount{} axial cells at fractions \WlgCellFractions{} of the design's
+straight span between the injector zone and the end of the straight dielectric, two
+radii at \WlgRadiusFractions{} of the wall radius, kinetic energies of
+\WlgEnergies{}~eV, pitch angles of \WlgPitches$^\circ$, parallel directions
+\WlgDirections{} and \WlgGyrophaseCount{} gyrophases (offset rule
+\WlgGyrophaseOffsetRule), with the \texttt{\WlgEstimator} estimator and
+\texttt{\WlgIntervalMethod} intervals. As in the prior campaign, wall-hit authority
+is the straight cylindrical dielectric; an electron that reaches the wall radius
+beyond the end of the straight section, the anode plane or the exit plane is a
+domain escape whose sub-class is recorded post hoc. Each orbit may travel
+\WlgMaxPathLengths{} channel lengths within \WlgMaxTimeFactor{} times the transit
+time of a \WlgSlowestEnergy{}~eV electron over that path (event tolerance
+\WlgEventTolerance{}~m, step budget \WlgMaxSteps, Lorentz-factor guard
+\WlgMaxGamma). Every design runs two timestep policies (maximum gyro-rotation per
+step \WlgRotationN{} and \WlgRotationTwoN{}~rad); the finer case is reported and the
+pair defines the per-design convergence flag (\WlgReportedCase). Binding for the
+whole dataset are the field-adapter gates, the campaign preflight, zero numerical
+failures, the exact energy gate (\WlgEnergyGate), equality of final and event
+velocity, the wall-endpoint gate (\WlgWallEndpointGate{}~m), earliest-event
+ordering, the runtime rotation bound, exact deterministic replay of every case and
+a cross-process determinism sample (\WlgPerDesignChecks{} per-design checks and
+\WlgManufacturedChecks{} manufactured checks: numpy versus Warp CPU relative
+velocity difference \WlgCpuParityDiff; CUDA parity \texttt{\WlgCudaParityStatus});
+the per-design flag requires a change under timestep halving of at most
+\WlgMaxChangeGate{} with overlapping intervals and seals the orbit artifacts only
+when it holds. Timeouts
+are reported, not gated, and the magnetic-moment variation is
+\texttt{\WlgMuRole} (per-design medians from \WlgMuMedianMin{} to \WlgMuMedianMax,
+largest single value \WlgMuMaxMax).
+
+The protocol was frozen at preregistration commit \texttt{\WlgPreregCommit} after a
+disclosed non-evidentiary shakedown on \WlgShakedownDesigns{} real re-solved designs
+at \WlgShakedownLaunches{} launches each (\WlgShakedownValidators{} validator calls;
+disjoint from the evidentiary design: \WlgShakedownDisjoint; passed:
+\WlgShakedownPassed; evidentiary: \WlgShakedownEvidentiary), and executed exactly
+\WlgAttemptCount{} time under an immutable Git-common lock (immutable:
+\WlgLockImmutable) on \WlgWorkerPool{} of \WlgCpuCount{} CPU cores
+(\texttt{\WlgDevice}; case pool \WlgCasesWallMin{}~min, assessment
+\WlgAssessmentWallMin{}~min). The results are committed at
+\texttt{\WlgResultsCommit} (manifest hash prefix \texttt{\WlgManifestSha};
+\WlgVerifiedFiles{} files verified byte for byte, \WlgToleratedEolFiles{} accepted
+through any end-of-line tolerance; orbit\_mc source \texttt{\WlgOrbitMcSourceSha},
+field pipeline \texttt{\WlgFieldPipelineSha} over \WlgFieldPipelineFiles{} files,
+protocol \texttt{\WlgProtocolSha}, experiment code \texttt{\WlgExperimentCodeSha}),
+together with the results dashboard whose embedded extraction the evidence
+generator requires to agree with the sealed artifacts. The frozen protocol
+discloses the prior campaign as ``\WlgVFourHeadline''.
+
+\paragraph{Results.}
+\EvidenceClaim{CLM-046}{The single execution terminated in state
+\texttt{\WlgTerminalState} with campaign status \texttt{\WlgCampaignStatus}:
+\WlgDesignCount{} of \WlgDeclaredDesigns{} declared designs (\WlgPrimaryCount{}
+non-dominated and \WlgExtensionCount{} extension designs; \WlgExcludedDesigns{}
+excluded) were screened in \WlgCaseCount{} cases of \WlgLaunchesPerCase{} launches,
+\WlgOrbitCount{} orbits in all, with \WlgValidatorsPassed{} validator calls and
+\WlgValidatorsFailed{} failures, \WlgSealedCases{} of \WlgCaseCount{} cases sealed
+and re-integrated by the exact authority replay (\WlgReplayCount{} replays),
+\WlgTimeouts{} timeouts, \WlgNumericalFailures{} numerical failures and a largest
+relative kinetic-energy drift of \WlgEnergyErrorMax{} against a gate of
+\WlgEnergyGate. Within the model classified as \texttt{\WlgClassification}, the
+per-design wall-hit probability at the reported timestep lies between
+\WlgWallPMin{} and \WlgWallPMax{} (median \WlgWallPMedian, mean \WlgWallPMean) with
+\texttt{\WlgIntervalMethod} intervals; halving the maximum gyro-rotation per step
+from \WlgRotationN{} to \WlgRotationTwoN{}~rad changed the wall-hit probability of
+every design by at most \WlgMaxSuccessiveChange{} (mean \WlgMeanSuccessiveChange;
+\WlgZeroChangeDesigns{} designs unchanged) against the screening gate of
+\WlgMaxChangeGate{} with overlapping intervals, so \WlgConvergedDesigns{} of
+\WlgDesignCount{} designs converged, and the refined-field re-solve moved the
+\WlgRepresentativeCount{} representatives by at most \WlgRefinedSensitivityMax. The
+three least wall-loss designs are \texttt{\WlgLeastOneId} (\WlgLeastOneP{}
+[\WlgLeastOneLo, \WlgLeastOneHi]), \texttt{\WlgLeastTwoId} (\WlgLeastTwoP) and
+\texttt{\WlgLeastThreeId} (\WlgLeastThreeP), and the three most are
+\texttt{\WlgMostOneId} (\WlgMostOneP{} [\WlgMostOneLo, \WlgMostOneHi]),
+\texttt{\WlgMostTwoId} (\WlgMostTwoP) and \texttt{\WlgMostThreeId}
+(\WlgMostThreeP).}
+Table~\ref{tab:wall-loss-geometry-screening-v1-dataset} summarises the dataset and
+its convergence and Table~\ref{tab:wall-loss-geometry-screening-v1-extremes} lists
+the six extreme designs with their sealed geometry.
+\WlgDatasetTable
+\WlgExtremeTable
+
+\paragraph{Reflections, escapes and cell structure.}
+\EvidenceClaim{CLM-048}{Every one of the \WlgDesignCount{} designs recorded
+reflections (\WlgDesignsWithReflections{} of \WlgDesignCount): between
+\WlgReflectionsMin{} and \WlgReflectionsMax{} of the \WlgLaunchesPerCase{} launches
+per design at the reported timestep (\WlgReflectionsTwoN{} of \WlgTrialsTwoN,
+\WlgReflectionShareTwoN) and \WlgReflectionsTotal{} of \WlgOrbitCount{} orbits over
+every case (\WlgReflectionShareAll), where the prior campaign's single
+P2-qualified design had recorded none; the per-design reflection probability runs
+from \WlgReflectedPMin{} to \WlgReflectedPMax{} (median \WlgReflectedPMedian).
+Domain escape ranges from \WlgEscapePMin{} to \WlgEscapePMax{} per design (median
+\WlgEscapePMedian; \WlgZeroEscapeDesigns{} designs without an escape): of the
+\WlgEscapesTwoN{} escapes at the reported timestep, \WlgEscapeAnode{} left through
+the anode plane, \WlgEscapeExit{} through the exit plane and \WlgEscapeDivergent{}
+radially into a divergent exit section (\WlgEscapeUnclassified{} unclassified;
+\WlgDivergentDesigns{} of the designs have a divergent exit and
+\WlgStraightDesigns{} are straight over their full length). The per-cell mean
+wall-hit probabilities over the designs are \WlgCellOneMean, \WlgCellTwoMean,
+\WlgCellThreeMean{} and \WlgCellFourMean{} from the anode-side to the exit-side
+cell; \WlgCellsSaturatedOne{} of the \WlgDesignCells{} design-cells lost every
+launch to the wall and \WlgCellsSaturatedZero{} lost none, so no design reproduces
+the all-or-nothing per-cell pattern of the prior campaign's design.}
+Table~\ref{tab:wall-loss-geometry-screening-v1-cells} gives the per-cell
+distribution and Table~\ref{tab:wall-loss-geometry-screening-v1-terminations} the
+termination classes; the tolerance-close share of terminations, the typed
+fraction-zero path for contacts within the event tolerance, runs from
+\WlgToleranceCloseShareMin{} to \WlgToleranceCloseShareMax{} per design.
+\WlgCellTable
+\WlgTerminationTable
+
+\paragraph{Geometry and the wall-hit probability.}
+\EvidenceClaim{CLM-049}{Across the \WlgDesignCount{} designs, whose chamber lengths
+span \WlgLengthMinMm{} to \WlgLengthMaxMm{}~mm and wall radii \WlgRadiusMinMm{} to
+\WlgRadiusMaxMm{}~mm with \WlgStageCounts{} magnet stages, the three least wall-loss
+designs have chamber lengths of \WlgLeastLengthMinMm{} to \WlgLeastLengthMaxMm{}~mm
+(ascending length ranks \WlgLeastLengthRankMin{} to \WlgLeastLengthRankMax{} of
+\WlgDesignCount) and wall radii of \WlgLeastRadiusMinMm{} to
+\WlgLeastRadiusMaxMm{}~mm, against \WlgMostLengthMinMm{} to
+\WlgMostLengthMaxMm{}~mm (ranks \WlgMostLengthRankMin{} to \WlgMostLengthRankMax)
+and \WlgMostRadiusMinMm{} to \WlgMostRadiusMaxMm{}~mm for the three most; over all
+designs, however, the Spearman rank correlation of the wall-hit probability is
+\WlgRhoLength{} with the chamber length and \WlgRhoRadius{} with the wall radius,
+against \WlgRhoPitch{} with the stage pitch, \WlgRhoStages{} with the stage count,
+\WlgRhoMirror{} with the sweep's minimum mirror ratio, \WlgRhoMu{} with the median
+magnetic-moment variation and \WlgRhoReflected{} with the reflection probability.
+These are observations of this screening on linear-vacuum fields at one launch
+design; none is a design rule, and no geometry-to-loss map is claimed beyond the
+dataset itself.}
+
+\paragraph{Coupling consumer.}
+\EvidenceClaim{CLM-050}{The experiment's consumer (\texttt{\WlgConsumerId}) is the
+first consumer of the orbit\_mc coupling export format
+(\texttt{\WlgHandoffSchema}): it re-derives the binomial fraction, the Wilson
+interval and the standard uncertainty of every handoff, enforces the closed schema
+and hash patterns, and binds each handoff to its sealed orbit artifact
+(\WlgConsumerChecks{} checks: \WlgConsumerCheckList); it consumed
+\WlgConsumedVerified{} of \WlgConsumedDesigns{} screening handoffs as verified
+handoffs and the prior campaign's export (design \texttt{\WlgVFourDesignId},
+\texttt{\WlgVFourFieldQualification}, wall-loss probability \WlgVFourP{}
+[\WlgVFourLo, \WlgVFourHi] over \WlgVFourTrials{} launches, result commit
+\texttt{\WlgVFourResultCommit}) as a labelled reference row that is absent from
+the screening set (in screening set: \WlgVFourInScreeningSet; consumed:
+\WlgVFourConsumed). Every handoff still carries the integration status
+\texttt{\WlgHandoffIntegrationStatus} written by the exporter; the consumer
+verifies and records the export, it does not feed a plasma or performance model.}
+
+\paragraph{Scope.}
+The boxed statement is the only interpretation offered here; it repeats the claim
+boundary sealed with the dataset.
+\par\medskip\noindent
+\fbox{\begin{minipage}{0.94\linewidth}
+\textbf{Model-bounded scope.}
+\EvidenceClaim{CLM-051}{The dataset is screening only, classified
+\texttt{\WlgClassification} and admitted at the recorded outcome
+\texttt{\WlgRecordedOutcome}: its fields are the re-solved linear-vacuum
+\WlgFieldModelLevel{} screening fields of the accepted sweep (status
+\texttt{\WlgFieldStatus}), not P2-qualified (\WlgNotPTwoQualified), so no number
+here is accepted physical-orbit evidence (\WlgNotAcceptedPhysicalOrbit); the
+orbits are collisionless prescribed-field test particles without electric field,
+collisions, sheath or self-consistent plasma; the result is not a particle-in-cell
+or self-consistent plasma calculation (forbidden: \WlgForbidPic), not a plasma or
+performance quantity (forbidden: \WlgForbidPerformance), publishes no
+mirror-formula loss estimate (forbidden: \WlgForbidMirror) and carries no hardware
+or experimental validation (claimed: \WlgHardwareValidation); the launch cells are
+protocol positions, not demonstrated confinement cells, and the ordering of
+designs is an observation, not a design rule. The dataset is usable as
+\WlgUsableAs, each use carrying the label, and it opens no physics level.}
+\end{minipage}}
+\par\medskip
