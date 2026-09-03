@@ -210,6 +210,34 @@ python visualization\render_pic2d_video.py experiments\pic2d_cft_plume_v1\result
 #    map selector, body + cusp planes, synchronised I_d / I_beam / N_e / n_g / thrust)
 ```
 
-Colour scales are fixed across all frames (log with a floor of max/10⁴ for densities and the
-ionisation rate; full range for φ; 0–99.5 % for T_e), cells with < 20 electron samples in the
-interval are grey, the thruster body dark.
+Colour scales are fixed across all frames (log with a floor of max/10⁴ for the densities; full
+range for φ; 0–99.5 % for T_e), cells with < 20 electron samples in the interval are grey, the
+thruster body dark.
+
+**Ionisation-rate panel (renderer v0.2, after attempt 6).** A 30 ns frame of the ionisation map
+is shot noise by construction: the map is `events · W / (V_node · Δt)` with `events` the
+bilinear-deposited weight of the interval's macro-ionisations, and in attempt 6 ~73 % of the
+electron-resolved nodes held zero events per frame, 17 % one or two, while one event on an axis
+node (V ≈ 1e-13 m³) is ≈ 3e25 m⁻³ s⁻¹ and set the colour top. The data are right (the frame maps
+integrate to S = 7.0e16 s⁻¹, the series value); the per-frame picture was not. The renderer now
+shows a **causal rolling window** of K frames (windowed events = trailing sum, windowed rate =
+windowed events · W / (V_node · windowed time) = the time-weighted mean of the frame rates, which
+integrates to the window's mean S; partial window over the first K−1 frames), greys out nodes
+with **fewer than 20 windowed macro-ionisation events** (the dashboards' event mask of `6bd5e5b0`,
+"unresolved", never zero), and uses a **fixed log10 scale between the 0.5th and 99.5th percentile
+of the resolved windowed values over the whole run** instead of the run maximum. K defaults to the
+smallest window for which the median electron-resolved node with at least one event weight holds
+≥ 10 events (`choose_window`; `--iz-window K` overrides; `--iz-min-events`, `--iz-percentiles`).
+Window, mask, scale and the per-frame resolved share of S are written into the panel legend and
+the player caption. No spatial smoothing. Attempt 6: K = 11 frames = 330 ns, 5.6 % of the plasma
+nodes resolved on average carrying 67 % (77 % at the end) of the window's ionisation, scale
+1.6e23–2.9e24 m⁻³ s⁻¹ (1.3 decades). Re-render with a suffix so the earlier files stay:
+
+```powershell
+python visualization\render_pic2d_video.py experiments\pic2d_cft_plume_v1\results-attempt6-gate-shot-noise `
+    --cusps 0.006028 0.012 0.017972 --fps 10 --suffix=-v2
+# (the run's protocol.json has since changed hash, so the cusp planes are given explicitly: the
+#  P2 wall cusps of the accepted topology v3.1)
+```
+
+The other four panels are unchanged (byte-identical MP4s without the cusp overlay).
