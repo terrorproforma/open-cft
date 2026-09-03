@@ -216,7 +216,7 @@ def build_config(protocol: dict[str, Any], *, backend: str = "warp-cuda") -> PIC
     cathode = None
     injection = None
     if operating.get("cathode") is not None:
-        cathode = CathodeConfig(**{k: v for k, v in operating["cathode"].items() if not k.endswith("_note") and not k.endswith("_justification")})
+        cathode = CathodeConfig(**{k: v for k, v in operating["cathode"].items() if not k.endswith("_note") and not k.endswith("_justification") and k != "require_channel_connected_fraction"})
     if operating.get("electron_injection_current_a") is not None:
         injection = InjectionConfig(operating["electron_injection_current_a"], operating["electron_injection_temperature_ev"])
     plume_gate = None
@@ -322,6 +322,87 @@ def evaluate_plateau(
         "window_fraction": fraction,
         "tracked": sorted(drifts),
     }
+
+
+def evaluate_ignition(arrays: dict[str, np.ndarray], rule: dict[str, Any]) -> dict[str, Any] | None:
+    """v2.0 ignition gate (fail-closed, ``stop_reason = no_ignition``).
+
+    Reference: the means of the ionisation rate S and of the macro-electron count N_e over
+    ``reference_window_s`` = [t0, t1] (after the seed dump, before growth).  At each declared
+    check time t_c (once the series reaches it) the trailing ``check_window_s`` means must
+    satisfy S/S_ref >= min_s_ratio and N_e/N_ref >= min_electron_ratio.  Calibrated on the
+    v1.3 channel-only runs and the plume attempt 3: the ignited v1.3 attempt 2 (and seed-b)
+    had S ratios 1.07 / 1.41 and N_e ratios 1.29 / 1.76 at 0.75 / 1.5 us; the failed v1.3
+    attempt 1 had 0.59 / - and 1.03 / -; the plume attempt 3 (cathode not connected) had 0.23
+    at 0.75 us with N_e 0.83.  A "x3 in 0.75 us" rule would have rejected the ignited run (its
+    early S e-fold was ~2.8 us; the 1.1 us e-fold was N_e later) - hence the two-stage rule.
+    Returns None when the protocol declares no ``ignition_gate`` block.
+    """
+
+    block = rule.get("ignition_gate")
+    if block is None or arrays.get("step") is None or arrays["step"].size < 2:
+        return None
+    time_s = arrays["time_s"]
+    s_rate = arrays["current_ionization_rate_per_s"]
+    electrons = arrays["electrons"].astype(np.float64)
+    t0, t1 = (float(v) for v in block["reference_window_s"])
+    check_window = float(block.get("check_window_s", 0.15e-6))
+    ref_mask = (time_s >= t0) & (time_s < t1)
+    result: dict[str, Any] = {"reference_window_s": [t0, t1], "check_window_s": check_window, "checks": [], "failed": False, "reason": None}
+    if not ref_mask.any() or float(time_s[-1]) < t1:
+        result["pending"] = True
+        return result
+    s_ref = float(s_rate[ref_mask].mean())
+    n_ref = float(electrons[ref_mask].mean())
+    result.update({"s_reference_per_s": s_ref, "electrons_reference": n_ref, "pending": False})
+    for check in block["checks"]:
+        tc = float(check["time_s"])
+        entry: dict[str, Any] = {"time_s": tc, "min_s_ratio": float(check["min_s_ratio"]), "min_electron_ratio": float(check["min_electron_ratio"])}
+        if float(time_s[-1]) < tc:
+            entry["evaluated"] = False
+            result["checks"].append(entry)
+            continue
+        mask = (time_s >= tc - check_window) & (time_s <= tc)
+        s_ratio = float(s_rate[mask].mean()) / s_ref if s_ref > 0.0 else 0.0
+        n_ratio = float(electrons[mask].mean()) / n_ref if n_ref > 0.0 else 0.0
+        entry.update({"evaluated": True, "s_ratio": s_ratio, "electron_ratio": n_ratio,
+                      "passed": bool(s_ratio >= entry["min_s_ratio"] and n_ratio >= entry["min_electron_ratio"])})
+        result["checks"].append(entry)
+        if not entry["passed"] and not result["failed"]:
+            result["failed"] = True
+            result["reason"] = (f"no ignition: at {tc*1e6:.2f} us S/S_ref = {s_ratio:.2f} (min {entry['min_s_ratio']}), "
+                                f"N_e/N_ref = {n_ratio:.2f} (min {entry['min_electron_ratio']})")
+    return result
+
+
+def cathode_connectivity_check(protocol: dict[str, Any], field_map: MagneticFieldMap, masks: Any) -> dict[str, Any] | None:
+    """v2.0: fail-closed check that the cathode region sits on field lines entering the channel.
+
+    ``operating_point.cathode.require_channel_connected_fraction`` (absent = not gated): the
+    fraction of a uniform sample of the emission region whose field line (either direction)
+    crosses the exit plane into the bore, from the event-aware tracer on the run's own node
+    field.  Attempt 3's annulus (r 4.5-6 mm, z 26-28 mm) had fraction 0: its lines ran from the
+    front face to the far field and 95 % of the emitted current left through the far field.
+    """
+
+    cathode = protocol["operating_point"].get("cathode")
+    if cathode is None or cathode.get("require_channel_connected_fraction") is None:
+        return None
+    from cft_revival.pic2d.fieldlines import annulus_connectivity, channel_connected_flux_tube
+    required = float(cathode["require_channel_connected_fraction"])
+    result = annulus_connectivity(field_map, masks, float(cathode["r_inner_m"]), float(cathode["r_outer_m"]), float(cathode["z_start_m"]),
+                                  float(cathode["z_end_m"]), n_r=6, n_z=4)
+    tube = channel_connected_flux_tube(field_map, masks, n_lines=16)
+    summary = {
+        "required_fraction": required, "connected_fraction": result["connected_fraction"], "terminations": result["terminations"], "samples": result["n"],
+        "channel_flux_tube": {"terminations": tube["terminations"], "bands_by_probe_z_m": tube["bands_by_probe_z_m"]},
+        "method": "event-aware field-line tracing (RK2, 1/4 cell) on the bilinear node field; a sample is connected when either half-line "
+                  "crosses the exit plane inside the aperture",
+    }
+    if result["connected_fraction"] < required:
+        raise PIC2DValidationError(f"cathode region is not channel-connected: fraction {result['connected_fraction']:.2f} < {required} "
+                                   f"(terminations {result['terminations']})")
+    return summary
 
 
 def evaluate_triad(arrays: dict[str, np.ndarray], rule: dict[str, Any], transit_time_s: float) -> dict[str, Any] | None:
@@ -815,6 +896,9 @@ def write_final_artifacts(
         "peak_node_debye": peak_node_summary,
         "sessions": run_state["sessions"],
         "wall_seconds_total": run_state["wall_seconds_total"],
+        # v2.0: ignition gate evaluation and the cathode field-line connectivity check (None for v1.x protocols)
+        "ignition": run_state.get("ignition", evaluate_ignition(arrays, protocol["stopping_rule"]) if arrays else None),
+        "cathode_connectivity": run_state.get("cathode_connectivity"),
         "wall_seconds_setup_this_session": setup_seconds,
         "ms_per_step_this_session": (
             1e3 * wall_session / max(state.step - session["resumed_from_step"], 1) if state.step > session["resumed_from_step"] else None
@@ -916,6 +1000,11 @@ def run_steady_state(
     if config.grid.geometry.has_plume:
         log(f"[steady-state] v2.0 options: {json.dumps(sim.to_provenance().get('v2_0_options'))}")
     plasma_volume = float(sim.masks.to_dict()["plasma_volume_m3"])
+    # v2.0: the cathode region must sit on channel-connected field lines (fail-closed before any stepping)
+    connectivity = cathode_connectivity_check(protocol, field_map, sim.masks)
+    if connectivity is not None:
+        log(f"[steady-state] cathode connectivity: {connectivity['connected_fraction']:.2f} of {connectivity['samples']} samples enter the channel "
+            f"(required {connectivity['required_fraction']}); terminations {connectivity['terminations']}")
     # v2.0 frame recorder (default OFF): interval-averaged maps every cadence_steps, aligned with checkpoints/windows
     frame_config = frame_recorder_config(protocol)
     recorder: FrameRecorder | None = None
@@ -1027,8 +1116,19 @@ def run_steady_state(
         run_state.update({"wall_seconds_total": wall_total(), "checkpoint_step": step, "checkpoint_time_s": sim.state.time_s})
         if recorder is not None:
             run_state["frames_written"] = recorder.index
+        if connectivity is not None:
+            run_state["cathode_connectivity"] = connectivity
         artifacts.write_canonical_json(state_path, run_state)
         arrays = records_to_arrays(records)
+        # v2.0 ignition gate: stop early (fail-closed) when S / N_e do not grow from the reference window
+        last_ignition = evaluate_ignition(arrays, rule)
+        if last_ignition is not None:
+            run_state["ignition"] = last_ignition
+            if last_ignition["failed"]:
+                gate_error = last_ignition["reason"]
+                stop_reason = "no_ignition"
+                log(f"[steady-state] fail-closed stop at step {step}: {gate_error}")
+                break
         last_plateau = evaluate_plateau(arrays["time_s"], arrays["current_discharge_a"], arrays["electrons"], rule, transit_time,
                                         arrays.get("neutral_density_per_m3"))
         last_triad = evaluate_triad(arrays, rule, transit_time)

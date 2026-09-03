@@ -44,7 +44,8 @@ PRECISIONS = {"float32": np.float32, "float16": np.float16}
 MAP_KEYS = ("n_e_per_m3", "n_i_per_m3", "phi_v", "t_e_ev", "ionization_rate_per_m3_s", "sample_count_e")
 PROFILE_KEYS = (
     "wall_ion_flux_per_m2_s", "wall_electron_flux_per_m2_s", "exit_ion_current_density_a_per_m2",
-    "exit_electron_current_density_a_per_m2", "side_ion_current_density_a_per_m2", "plume_ion_current_per_sr_a", "iedf_ion_counts",
+    "exit_electron_current_density_a_per_m2", "side_ion_current_density_a_per_m2", "side_electron_current_density_a_per_m2",
+    "plume_ion_current_per_sr_a", "iedf_ion_counts",
 )
 SCALAR_KEYS = (
     "step", "time_s", "electrons", "ions", "discharge_a", "exit_ion_beam_a", "ionization_rate_per_s", "neutral_density_per_m3",
