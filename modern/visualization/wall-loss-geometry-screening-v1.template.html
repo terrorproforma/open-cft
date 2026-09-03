@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wall-loss vs geometry screening v1 — SCREENING_L1A_FIELD_TEST_PARTICLE_WALL_LOSS</title>
+<style>
+:root { --ink:#1b1f24; --muted:#5b6470; --line:#d6dbe1; --bg:#ffffff; --panel:#f6f8fa; --warn:#8a4b00; --warnbg:#fff4e0; --ok:#1d6f3f; --bad:#a12d2d; --acc:#2456a4; --acc2:#c2571b; --acc3:#6a4c93; }
+* { box-sizing: border-box; }
+body { margin:0; font: 14px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color:var(--ink); background:var(--bg); overflow-wrap: anywhere; }
+main { max-width: 1320px; margin: 0 auto; padding: 16px 20px 48px; }
+h1 { font-size: 22px; margin: 8px 0 4px; }
+h2 { font-size: 17px; margin: 28px 0 8px; border-bottom: 1px solid var(--line); padding-bottom: 4px; }
+h3 { font-size: 14px; margin: 14px 0 6px; color: var(--muted); font-weight: 600; }
+p { margin: 6px 0; }
+code, .mono { font-family: ui-monospace, Consolas, "SFMono-Regular", monospace; font-size: 12px; }
+.banner { border: 2px solid var(--warn); background: var(--warnbg); color: var(--warn); padding: 10px 14px; border-radius: 6px; margin: 10px 0 14px; }
+.banner strong { display:block; font-size: 15px; margin-bottom: 4px; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 10px 0; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; }
+.card .v { font-size: 22px; font-weight: 700; }
+.card .l { color: var(--muted); font-size: 12px; }
+.row { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 10px; flex: 1 1 420px; min-width: 0; overflow-x: auto; }
+svg { width: 100%; height: auto; display: block; }
+svg text { font: 11px system-ui, sans-serif; fill: var(--ink); }
+.axis line, .axis path { stroke: #98a2ad; stroke-width: 1; fill: none; }
+.grid line { stroke: #e3e7eb; stroke-width: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 12px; }
+th, td { border-bottom: 1px solid var(--line); padding: 3px 6px; text-align: right; white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; }
+th { background: var(--panel); position: sticky; top: 0; cursor: pointer; }
+.ok { color: var(--ok); font-weight: 600; } .bad { color: var(--bad); font-weight: 600; }
+.tablewrap { max-height: 520px; overflow: auto; border: 1px solid var(--line); border-radius: 6px; }
+select { font: inherit; padding: 2px 6px; }
+.legend span { display:inline-block; margin-right: 12px; }
+.sw { display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:4px; vertical-align:middle; }
+footer { margin-top: 30px; color: var(--muted); font-size: 12px; border-top: 1px solid var(--line); padding-top: 10px; }
+footer .mono { word-break: break-all; }
+.small { font-size: 12px; color: var(--muted); }
+ul { margin: 4px 0 4px 18px; padding: 0; }
+</style>
+</head>
+<body>
+<main>
+<h1>Wall-loss vs geometry screening v1</h1>
+<div class="banner" id="banner"></div>
+<p id="lead" class="small"></p>
+
+<h2>Headline</h2>
+<div class="cards" id="cards"></div>
+<p class="small" id="headline-notes"></p>
+
+<h2>Wall-loss probability vs design parameter</h2>
+<div class="row">
+  <div class="panel" style="flex:2 1 640px">
+    <div style="margin-bottom:6px">x axis: <select id="axis-select"></select>
+      <span class="legend" style="margin-left:14px"><span><i class="sw" style="background:#2456a4"></i>primary (non-dominated)</span><span><i class="sw" style="background:#c2571b"></i>extension</span><span>hollow = not converged (N→2N change &gt; 0.02)</span></span>
+    </div>
+    <div id="scatter"></div>
+    <p class="small">Points: reported accepted-2N wall-hit probability per design with 95 % Wilson bars (512 launches). Dashed line: the v4 P2-qualified divergent-exit design (accepted evidence, absent from this set) for orientation only.</p>
+  </div>
+  <div class="panel" style="flex:1 1 320px">
+    <h3>Least / most wall loss (2N)</h3>
+    <div id="extremes"></div>
+  </div>
+</div>
+
+<h2>Per-cell structure across designs</h2>
+<div class="row">
+  <div class="panel" style="flex:2 1 640px">
+    <div id="heatmap"></div>
+    <p class="small">Each column is one design (sorted by its pooled 2N wall-hit probability); rows are the four axial launch cells at 1/8, 3/8, 5/8, 7/8 of the channel-straight span. Colour = wall-hit probability of that cell (128 launches). v4 found a bimodal cell structure (cells 2–3 at 1.0, cell 4 at 0.0); the screening shows whether that structure is generic.</p>
+  </div>
+  <div class="panel" style="flex:1 1 320px">
+    <h3>Cell bimodality summary (2N)</h3>
+    <div id="bimodality"></div>
+  </div>
+</div>
+
+<h2>Reflections, escapes and timeouts</h2>
+<div class="row">
+  <div class="panel"><h3>Reflected orbits per design (2N)</h3><div id="reflections"></div><p class="small" id="reflection-note"></p></div>
+  <div class="panel"><h3>Domain-escape sub-classes (2N)</h3><div id="escapes"></div><p class="small">Escape is not wall loss: upstream = anode plane z = 0; exit = exit plane z = L; divergent = radial exit into a divergent section beyond the straight dielectric.</p></div>
+</div>
+
+<h2>Timestep convergence (N → 2N) and field-resolution sensitivity</h2>
+<div class="row">
+  <div class="panel"><div id="convergence"></div><p class="small">Every design is integrated at N (0.16 rad/step) and 2N (0.08 rad/step). The band is the ±0.02 screening tolerance. Designs outside the band are reported but not sealed (the orbit_mc convergence-evidence contract).</p></div>
+  <div class="panel"><h3>Representatives: refined field (2× grid) at N</h3><div id="refined"></div><h3>Axis B<sub>z</sub> and wall |B| of the representatives (accepted grid)</h3><div id="profiles"></div></div>
+</div>
+
+<h2>All designs</h2>
+<div class="tablewrap"><table id="table"></table></div>
+
+<h2>Gates, validators and execution</h2>
+<div class="row">
+  <div class="panel" id="gates"></div>
+  <div class="panel" id="consumer"></div>
+</div>
+
+<h2>Claim boundary</h2>
+<div class="panel" id="claims"></div>
+
+<footer id="footer"></footer>
+</main>
+<script id="payload" type="application/json">__PAYLOAD_JSON__</script>
+<script>
+(function () {
+  "use strict";
+  var P = JSON.parse(document.getElementById("payload").textContent);
+  var D = P.designs.slice();
+  var byId = function (id) { return document.getElementById(id); };
+  var esc = function (s) { return String(s).replace(/[&<>"']/g, function (c) { return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); };
+  var fmt = function (x, d) { return (x === null || x === undefined) ? "–" : Number(x).toFixed(d === undefined ? 3 : d); };
+  var sci = function (x) { return (x === null || x === undefined) ? "–" : Number(x).toExponential(3); };
+  var color = { primary: "#2456a4", extension: "#c2571b" };
+
+  byId("banner").innerHTML = "<strong>" + esc(P.classification) + (P.evidentiary ? "" : " — NON-EVIDENTIARY " + esc(P.plan_kind).toUpperCase() + " BUNDLE (development render; outcomes enter no estimand)") + "</strong>" + esc(P.classification_statement);
+  byId("lead").textContent = "Field source: " + P.field_source.experiment + " (" + P.field_source.field_status + "). Launch rule: " + P.launch_rule + " Wall-hit authority: " + P.orbit_geometry_rule.divergent_exit_policy;
+
+  var H = P.headline;
+  var cards = [
+    ["designs", P.design_count, P.batches.primary + " primary + " + P.batches.extension + " extension"],
+    ["P(wall) min", fmt(H.wall_hit_probability_min), "least: " + H.least_wall_loss_case_ids[0].split("-")[3]],
+    ["P(wall) median", fmt(H.wall_hit_probability_median), "accepted-2N, 512 launches each"],
+    ["P(wall) max", fmt(H.wall_hit_probability_max), "most: " + H.most_wall_loss_case_ids[0].split("-")[3]],
+    ["converged N→2N", H.converged_design_count + " / " + P.design_count, "|ΔP| ≤ 0.02 and Wilson overlap"],
+    ["sealed designs", H.sealed_design_count + " / " + P.design_count, "deterministic replay + verified reload"],
+    ["reflections (2N)", H.total_reflections_2N, H.designs_with_reflections_2N + " designs reflect; v4 had 0"],
+    ["timeout-free designs", H.timeout_free_design_count + " / " + P.design_count, "2 L path budget"],
+    ["orbits integrated", P.execution.orbit_count, P.execution.case_count + " cases, " + P.execution.worker_pool_size + " workers"]
+  ];
+  byId("cards").innerHTML = cards.map(function (c) { return '<div class="card"><div class="v">' + esc(c[1]) + '</div><div class="l">' + esc(c[0]) + '</div><div class="l">' + esc(c[2]) + '</div></div>'; }).join("");
+  byId("headline-notes").textContent = P.reflection_note + (P.excluded_designs.length ? " Excluded designs: " + P.excluded_designs.map(function (e) { return e.case_id; }).join(", ") + "." : " No design was excluded.") + " Structural gates for all designs: " + (H.structural_gates_all_passed ? "PASS" : "FAIL") + ".";
+
+  // ---- SVG helpers -------------------------------------------------------
+  function svgOpen(w, h) { return '<svg viewBox="0 0 ' + w + ' ' + h + '" xmlns="http://www.w3.org/2000/svg" role="img">'; }
+  function scale(dom, rng) { var d0 = dom[0], d1 = dom[1] === dom[0] ? dom[0] + 1 : dom[1]; return function (v) { return rng[0] + (v - d0) / (d1 - d0) * (rng[1] - rng[0]); }; }
+  function ticks(dom, n) { var span = dom[1] - dom[0]; if (span <= 0) { return [dom[0]]; } var step = Math.pow(10, Math.floor(Math.log10(span / n))); var err = span / n / step; step *= err >= 7.5 ? 10 : err >= 3.5 ? 5 : err >= 1.5 ? 2 : 1; var out = []; for (var t = Math.ceil(dom[0] / step) * step; t <= dom[1] + 1e-12; t += step) { out.push(+t.toFixed(12)); } return out; }
+  function axisLabel(x) { var a = Math.abs(x); if (a === 0) { return "0"; } if (a < 0.01 || a >= 1e5) { return x.toExponential(1); } return +x.toPrecision(4) + ""; }
+  function xyAxes(sx, sy, xd, yd, W, Hh, m, xl, yl) {
+    var s = '<g class="grid">';
+    ticks(yd, 5).forEach(function (t) { s += '<line x1="' + m.l + '" x2="' + (W - m.r) + '" y1="' + sy(t) + '" y2="' + sy(t) + '"/>'; });
+    s += '</g><g class="axis"><path d="M' + m.l + ',' + m.t + 'V' + (Hh - m.b) + 'H' + (W - m.r) + '"/>';
+    ticks(xd, 6).forEach(function (t) { s += '<line x1="' + sx(t) + '" x2="' + sx(t) + '" y1="' + (Hh - m.b) + '" y2="' + (Hh - m.b + 4) + '"/><text x="' + sx(t) + '" y="' + (Hh - m.b + 15) + '" text-anchor="middle">' + axisLabel(t) + '</text>'; });
+    ticks(yd, 5).forEach(function (t) { s += '<text x="' + (m.l - 5) + '" y="' + (sy(t) + 3) + '" text-anchor="end">' + axisLabel(t) + '</text>'; });
+    s += '</g><text x="' + ((m.l + W - m.r) / 2) + '" y="' + (Hh - 4) + '" text-anchor="middle">' + esc(xl) + '</text>';
+    s += '<text transform="translate(12,' + ((m.t + Hh - m.b) / 2) + ') rotate(-90)" text-anchor="middle">' + esc(yl) + '</text>';
+    return s;
+  }
+  function pad(dom) { var s = dom[1] - dom[0] || Math.abs(dom[0]) || 1; return [dom[0] - 0.06 * s, dom[1] + 0.06 * s]; }
+  function extent(vals) { return [Math.min.apply(null, vals), Math.max.apply(null, vals)]; }
+
+  // ---- Scatter -----------------------------------------------------------
+  var axisSelect = byId("axis-select");
+  P.parameter_axes.forEach(function (a) { var o = document.createElement("option"); o.value = a.key; o.textContent = a.label; axisSelect.appendChild(o); });
+  function xValue(d, axis) { var g = axis.group; return g === "design" ? d.design[axis.key] : g === "geometry" ? d.geometry[axis.key] : d.field[axis.key]; }
+  function drawScatter() {
+    var axis = P.parameter_axes.filter(function (a) { return a.key === axisSelect.value; })[0];
+    var W = 720, Hh = 360, m = { l: 52, r: 16, t: 12, b: 40 };
+    var xs = D.map(function (d) { return xValue(d, axis); });
+    var sx = scale(pad(extent(xs)), [m.l, W - m.r]), sy = scale([0, 1], [Hh - m.b, m.t]);
+    var s = svgOpen(W, Hh) + xyAxes(sx, sy, pad(extent(xs)), [0, 1], W, Hh, m, axis.label, "P(wall hit), accepted-2N");
+    var v4 = P.consumer.v4_reference.probability;
+    s += '<line x1="' + m.l + '" x2="' + (W - m.r) + '" y1="' + sy(v4) + '" y2="' + sy(v4) + '" stroke="#777" stroke-dasharray="4 3"/><text x="' + (W - m.r - 4) + '" y="' + (sy(v4) - 4) + '" text-anchor="end" fill="#666">v4 divergent-exit (P2) ' + fmt(v4) + '</text>';
+    D.forEach(function (d, i) {
+      var x = sx(xs[i]), p = d.p.wall_2N, c = color[d.batch];
+      s += '<line x1="' + x + '" x2="' + x + '" y1="' + sy(p.lo) + '" y2="' + sy(p.hi) + '" stroke="' + c + '" stroke-opacity="0.45"/>';
+      s += '<circle cx="' + x + '" cy="' + sy(p.p) + '" r="4.2" fill="' + (d.convergence.converged ? c : "white") + '" stroke="' + c + '" stroke-width="1.6"><title>' + esc(d.case_id) + '\nP(wall)=' + fmt(p.p) + ' [' + fmt(p.lo) + ', ' + fmt(p.hi) + ']\nx=' + esc(axisLabel(xs[i])) + '\nreflections(2N)=' + d.reflections["2N"] + '</title></circle>';
+    });
+    byId("scatter").innerHTML = s + "</svg>";
+  }
+  axisSelect.addEventListener("change", drawScatter);
+  drawScatter();
+
+  var sortedByP = D.slice().sort(function (a, b) { return a.p.wall_2N.p - b.p.wall_2N.p || a.case_id.localeCompare(b.case_id); });
+  function extremesTable(rows) {
+    return '<table><tr><th>design</th><th>P(wall)</th><th>95 %</th><th>refl</th><th>r_w mm</th><th>L mm</th><th>pitch mm</th></tr>' + rows.map(function (d) {
+      return '<tr><td class="mono">' + esc(d.case_id) + '</td><td>' + fmt(d.p.wall_2N.p) + '</td><td>[' + fmt(d.p.wall_2N.lo, 2) + ', ' + fmt(d.p.wall_2N.hi, 2) + ']</td><td>' + d.reflections["2N"] + '</td><td>' + fmt(1000 * d.geometry.wall_radius_m, 2) + '</td><td>' + fmt(1000 * d.geometry.chamber_length_m, 1) + '</td><td>' + fmt(1000 * d.geometry.stage_pitch_m, 2) + '</td></tr>';
+    }).join("") + '</table>';
+  }
+  byId("extremes").innerHTML = "<p class='small'>Least wall loss</p>" + extremesTable(sortedByP.slice(0, 5)) + "<p class='small'>Most wall loss</p>" + extremesTable(sortedByP.slice(-5).reverse());
+
+  // ---- Heatmap -----------------------------------------------------------
+  (function () {
+    var n = sortedByP.length, W = 720, Hh = 190, m = { l: 60, r: 16, t: 10, b: 44 };
+    var cw = (W - m.l - m.r) / n, rh = (Hh - m.t - m.b) / 4;
+    var s = svgOpen(W, Hh);
+    function heat(v) { var t = Math.max(0, Math.min(1, v)); var r = Math.round(255 * t), b = Math.round(220 * (1 - t)); return "rgb(" + r + "," + Math.round(70 + 60 * (1 - Math.abs(2 * t - 1))) + "," + b + ")"; }
+    sortedByP.forEach(function (d, i) {
+      d.per_cell_2N.forEach(function (v, k) {
+        s += '<rect x="' + (m.l + i * cw) + '" y="' + (m.t + k * rh) + '" width="' + Math.max(cw - 0.5, 0.5) + '" height="' + (rh - 1) + '" fill="' + heat(v) + '"><title>' + esc(d.case_id) + ' cell ' + (k + 1) + ': P(wall)=' + fmt(v) + '</title></rect>';
+      });
+    });
+    for (var k = 0; k < 4; k++) { s += '<text x="' + (m.l - 6) + '" y="' + (m.t + k * rh + rh / 2 + 4) + '" text-anchor="end">cell ' + (k + 1) + '</text>'; }
+    s += '<text x="' + ((m.l + W - m.r) / 2) + '" y="' + (Hh - 26) + '" text-anchor="middle">designs sorted by pooled P(wall), left = least</text>';
+    var lx = m.l; for (var j = 0; j <= 10; j++) { s += '<rect x="' + (lx + j * 18) + '" y="' + (Hh - 18) + '" width="18" height="10" fill="' + heat(j / 10) + '"/>'; }
+    s += '<text x="' + lx + '" y="' + (Hh - 0) + '">0</text><text x="' + (lx + 198) + '" y="' + (Hh - 0) + '">1 = every launch in the cell hits the wall</text>';
+    byId("heatmap").innerHTML = s + "</svg>";
+    var full = 0, empty = 0, mixed = 0, cellMean = [0, 0, 0, 0], monotone = 0;
+    D.forEach(function (d) { d.per_cell_2N.forEach(function (v, k) { cellMean[k] += v / D.length; if (v >= 0.99) { full++; } else if (v <= 0.01) { empty++; } else { mixed++; } }); });
+    var bim = D.filter(function (d) { return d.per_cell_2N.some(function (v) { return v >= 0.99; }) && d.per_cell_2N.some(function (v) { return v <= 0.01; }); }).length;
+    byId("bimodality").innerHTML = '<table><tr><th>cell</th><th>mean P(wall)</th><th>mean P(refl)</th></tr>' + cellMean.map(function (v, k) { return '<tr><td>cell ' + (k + 1) + '</td><td>' + fmt(v) + '</td><td>' + fmt(D.reduce(function (a, d) { return a + d.per_cell_reflected_2N[k] / D.length; }, 0)) + '</td></tr>'; }).join("") + '</table>' +
+      '<p class="small">Design-cells at P=1 (all 128 hit): ' + full + '; at P=0: ' + empty + '; mixed: ' + mixed + ' of ' + (4 * D.length) + '. Designs with both a saturated and an empty cell (v4-like bimodality): ' + bim + ' of ' + D.length + '.</p>';
+  })();
+
+  // ---- Reflections / escapes bars ----------------------------------------
+  function bars(rows, key, W, Hh, yl) {
+    var m = { l: 44, r: 10, t: 10, b: 20 }, n = rows.length, cw = (W - m.l - m.r) / n;
+    var maxv = Math.max(1, Math.max.apply(null, rows.map(key)));
+    var sy = scale([0, maxv], [Hh - m.b, m.t]);
+    var s = svgOpen(W, Hh) + '<g class="axis"><path d="M' + m.l + ',' + m.t + 'V' + (Hh - m.b) + 'H' + (W - m.r) + '"/></g>';
+    ticks([0, maxv], 4).forEach(function (t) { s += '<text x="' + (m.l - 4) + '" y="' + (sy(t) + 3) + '" text-anchor="end">' + axisLabel(t) + '</text>'; });
+    rows.forEach(function (d, i) { var v = key(d); s += '<rect x="' + (m.l + i * cw) + '" y="' + sy(v) + '" width="' + Math.max(cw - 0.6, 0.5) + '" height="' + (sy(0) - sy(v)) + '" fill="' + color[d.batch] + '"><title>' + esc(d.case_id) + ': ' + v + '</title></rect>'; });
+    s += '<text transform="translate(10,' + (Hh / 2) + ') rotate(-90)" text-anchor="middle">' + esc(yl) + '</text><text x="' + ((m.l + W - m.r) / 2) + '" y="' + (Hh - 5) + '" text-anchor="middle">designs sorted by pooled P(wall)</text>';
+    return s + "</svg>";
+  }
+  byId("reflections").innerHTML = bars(sortedByP, function (d) { return d.reflections["2N"]; }, 600, 220, "reflected orbits of 512");
+  var totalRefl = D.reduce(function (a, d) { return a + d.reflections["2N"]; }, 0);
+  var maxRefl = sortedByP.slice().sort(function (a, b) { return b.reflections["2N"] - a.reflections["2N"]; })[0];
+  byId("reflection-note").textContent = "Total reflections at 2N: " + totalRefl + " of " + (512 * D.length) + " orbits across " + D.filter(function (d) { return d.reflections["2N"] > 0; }).length + " designs; largest: " + maxRefl.case_id + " (" + maxRefl.reflections["2N"] + "). A reflection terminates the orbit at its first mirror point (parallel velocity reverses) before any wall or domain contact.";
+  (function () {
+    var W = 600, Hh = 220, m = { l: 44, r: 10, t: 10, b: 20 }, n = sortedByP.length, cw = (W - m.l - m.r) / n;
+    var keys = ["upstream_anode_plane", "exit_plane", "divergent_section_radial", "unclassified"], cols = ["#6a4c93", "#1d6f3f", "#c2571b", "#999"];
+    var maxv = Math.max(1, Math.max.apply(null, sortedByP.map(function (d) { return keys.reduce(function (a, k) { return a + d.escapes_2N[k]; }, 0); })));
+    var sy = scale([0, maxv], [Hh - m.b, m.t]);
+    var s = svgOpen(W, Hh) + '<g class="axis"><path d="M' + m.l + ',' + m.t + 'V' + (Hh - m.b) + 'H' + (W - m.r) + '"/></g>';
+    ticks([0, maxv], 4).forEach(function (t) { s += '<text x="' + (m.l - 4) + '" y="' + (sy(t) + 3) + '" text-anchor="end">' + axisLabel(t) + '</text>'; });
+    sortedByP.forEach(function (d, i) { var base = 0; keys.forEach(function (k, j) { var v = d.escapes_2N[k]; if (!v) { return; } s += '<rect x="' + (m.l + i * cw) + '" y="' + sy(base + v) + '" width="' + Math.max(cw - 0.6, 0.5) + '" height="' + (sy(base) - sy(base + v)) + '" fill="' + cols[j] + '"><title>' + esc(d.case_id) + ' ' + k + ': ' + v + '</title></rect>'; base += v; }); });
+    s += '<text transform="translate(10,' + (Hh / 2) + ') rotate(-90)" text-anchor="middle">escaped orbits of 512</text>';
+    var lx = m.l; keys.forEach(function (k, j) { s += '<rect x="' + lx + '" y="' + (Hh - 14) + '" width="10" height="10" fill="' + cols[j] + '"/><text x="' + (lx + 13) + '" y="' + (Hh - 5) + '">' + k + '</text>'; lx += 26 + 6.2 * k.length; });
+    byId("escapes").innerHTML = s + "</svg>";
+  })();
+
+  // ---- Convergence -------------------------------------------------------
+  (function () {
+    var W = 420, Hh = 400, m = { l: 48, r: 12, t: 12, b: 40 };
+    var sx = scale([0, 1], [m.l, W - m.r]), sy = scale([0, 1], [Hh - m.b, m.t]);
+    var s = svgOpen(W, Hh) + xyAxes(sx, sy, [0, 1], [0, 1], W, Hh, m, "P(wall), N (0.16 rad/step)", "P(wall), 2N (0.08 rad/step)");
+    s += '<polygon points="' + [[0, 0.02], [0.98, 1], [1, 1], [1, 0.98], [0.02, 0], [0, 0]].map(function (q) { return sx(q[0]) + "," + sy(q[1]); }).join(" ") + '" fill="#1d6f3f" fill-opacity="0.12"/>';
+    s += '<line x1="' + sx(0) + '" y1="' + sy(0) + '" x2="' + sx(1) + '" y2="' + sy(1) + '" stroke="#98a2ad"/>';
+    D.forEach(function (d) { var c = color[d.batch]; s += '<circle cx="' + sx(d.p.wall_N.p) + '" cy="' + sy(d.p.wall_2N.p) + '" r="4" fill="' + (d.convergence.converged ? c : "white") + '" stroke="' + c + '" stroke-width="1.6"><title>' + esc(d.case_id) + '\nN=' + fmt(d.p.wall_N.p) + ' 2N=' + fmt(d.p.wall_2N.p) + '\n|Δ|=' + fmt(d.convergence.change, 4) + (d.convergence.converged ? " converged" : " NOT converged") + '</title></circle>'; });
+    var nc = D.filter(function (d) { return !d.convergence.converged; });
+    byId("convergence").innerHTML = s + "</svg>" + '<p class="small">' + (D.length - nc.length) + ' of ' + D.length + ' designs converged; maximum |ΔP| = ' + fmt(Math.max.apply(null, D.map(function (d) { return d.convergence.change; })), 4) + (nc.length ? '. Not converged: ' + nc.map(function (d) { return d.case_id + " (" + fmt(d.convergence.change, 4) + ")"; }).join(", ") : "") + '.</p>';
+    var reps = D.filter(function (d) { return d.refined_N; });
+    byId("refined").innerHTML = '<table><tr><th>design</th><th>N, accepted grid</th><th>N, 2× grid</th><th>|Δ|</th><th>2N, accepted</th><th>interp rms</th><th>cross-res rms</th></tr>' + reps.map(function (d) { return '<tr><td class="mono">' + esc(d.case_id) + '</td><td>' + fmt(d.p.wall_N.p) + '</td><td>' + fmt(d.refined_N.p) + '</td><td>' + fmt(d.refined_N.change_vs_accepted_N, 4) + '</td><td>' + fmt(d.p.wall_2N.p) + '</td><td>' + fmt(d.field.interpolation_b_relative_rms, 4) + '</td><td>' + fmt(d.field.cross_resolution_b_relative_rms, 4) + '</td></tr>'; }).join("") + '</table>';
+  })();
+
+  // ---- Axis profiles -----------------------------------------------------
+  (function () {
+    var W = 420, Hh = 240, m = { l: 48, r: 12, t: 12, b: 36 };
+    var all = []; P.axis_profiles.forEach(function (p) { all = all.concat(p.axis_bz_t, p.wall_b_t); });
+    var zAll = []; P.axis_profiles.forEach(function (p) { zAll = zAll.concat(p.z_m); });
+    if (!all.length) { byId("profiles").textContent = "no profiles"; return; }
+    var xd = pad(extent(zAll)), yd = pad(extent(all));
+    var sx = scale(xd, [m.l, W - m.r]), sy = scale(yd, [Hh - m.b, m.t]);
+    var s = svgOpen(W, Hh) + xyAxes(sx, sy, xd, yd, W, Hh, m, "z (m)", "B (T)");
+    var cols = ["#2456a4", "#c2571b", "#6a4c93", "#1d6f3f"];
+    P.axis_profiles.forEach(function (p, i) {
+      s += '<polyline fill="none" stroke="' + cols[i % 4] + '" stroke-width="1.5" points="' + p.z_m.map(function (z, j) { return sx(z) + "," + sy(p.axis_bz_t[j]); }).join(" ") + '"><title>' + esc(p.case_id) + ' axis Bz</title></polyline>';
+      s += '<polyline fill="none" stroke="' + cols[i % 4] + '" stroke-width="1" stroke-dasharray="3 2" points="' + p.z_m.map(function (z, j) { return sx(z) + "," + sy(p.wall_b_t[j]); }).join(" ") + '"><title>' + esc(p.case_id) + ' wall |B|</title></polyline>';
+    });
+    byId("profiles").innerHTML = s + "</svg>" + '<p class="small legend">' + P.axis_profiles.map(function (p, i) { return '<span><i class="sw" style="background:' + cols[i % 4] + '"></i>' + esc(p.case_id.split("-")[3]) + '</span>'; }).join("") + ' solid = axis B<sub>z</sub>, dashed = |B| at the outermost bore node</p>';
+  })();
+
+  // ---- Table -------------------------------------------------------------
+  var cols = [
+    ["design", function (d) { return d.case_id; }, "s"], ["batch", function (d) { return d.batch; }, "s"],
+    ["r_w mm", function (d) { return 1e3 * d.geometry.wall_radius_m; }, 3], ["L mm", function (d) { return 1e3 * d.geometry.chamber_length_m; }, 2],
+    ["pitch mm", function (d) { return 1e3 * d.geometry.stage_pitch_m; }, 3], ["stages", function (d) { return d.geometry.stage_count; }, 0],
+    ["exit frac", function (d) { return d.design.exit_length_fraction; }, 3], ["src scale", function (d) { return d.design.source_strength_scale; }, 3],
+    ["bore |B|max T", function (d) { return d.field.bore_max_b_t; }, 3], ["mirror min", function (d) { return d.field.minimum_mirror_ratio; }, 2],
+    ["P wall 2N", function (d) { return d.p.wall_2N.p; }, 4], ["lo", function (d) { return d.p.wall_2N.lo; }, 3], ["hi", function (d) { return d.p.wall_2N.hi; }, 3],
+    ["P wall N", function (d) { return d.p.wall_N.p; }, 4], ["|Δ|", function (d) { return d.convergence.change; }, 4],
+    ["P escape", function (d) { return d.p.escape_2N.p; }, 4], ["P refl", function (d) { return d.p.reflected_2N.p; }, 4], ["timeouts", function (d) { return d.timeouts_2N; }, 0],
+    ["c1", function (d) { return d.per_cell_2N[0]; }, 3], ["c2", function (d) { return d.per_cell_2N[1]; }, 3], ["c3", function (d) { return d.per_cell_2N[2]; }, 3], ["c4", function (d) { return d.per_cell_2N[3]; }, 3],
+    ["μ med", function (d) { return d.mu.median; }, 3], ["tol-close", function (d) { return d.tolerance_close_share; }, 3],
+    ["conv", function (d) { return d.convergence.converged ? "yes" : "NO"; }, "s"], ["gates", function (d) { return d.gates.structural_passed ? "pass" : "FAIL"; }, "s"]
+  ];
+  var sortKey = 10, sortDir = -1;
+  function renderTable() {
+    var rows = D.slice().sort(function (a, b) { var x = cols[sortKey][1](a), y = cols[sortKey][1](b); if (typeof x === "string") { return sortDir * x.localeCompare(y); } return sortDir * (x - y) || a.case_id.localeCompare(b.case_id); });
+    var s = "<thead><tr>" + cols.map(function (c, i) { return '<th data-i="' + i + '">' + esc(c[0]) + (i === sortKey ? (sortDir > 0 ? " ▲" : " ▼") : "") + "</th>"; }).join("") + "</tr></thead><tbody>";
+    rows.forEach(function (d) { s += "<tr>" + cols.map(function (c) { var v = c[1](d); var cls = (v === "NO" || v === "FAIL") ? ' class="bad"' : (v === "yes" || v === "pass") ? ' class="ok"' : ""; return "<td" + cls + ">" + (c[2] === "s" ? esc(v) : fmt(v, c[2])) + "</td>"; }).join("") + "</tr>"; });
+    byId("table").innerHTML = s + "</tbody>";
+    Array.prototype.forEach.call(byId("table").querySelectorAll("th"), function (th) { th.addEventListener("click", function () { var i = +th.getAttribute("data-i"); if (i === sortKey) { sortDir = -sortDir; } else { sortKey = i; sortDir = 1; } renderTable(); }); });
+  }
+  renderTable();
+
+  // ---- Gates / consumer ----------------------------------------------------
+  var G = P.gates;
+  byId("gates").innerHTML = '<h3>Campaign gates</h3><table>' +
+    '<tr><td>dataset gates passed</td><td class="' + (G.passed ? "ok" : "bad") + '">' + (G.passed ? "PASS" : "FAIL") + '</td></tr>' +
+    '<tr><td>structural gates, all designs</td><td class="' + (G.structural_all_passed ? "ok" : "bad") + '">' + (G.structural_all_passed ? "PASS" : "FAIL") + '</td></tr>' +
+    '<tr><td>converged designs (per-design flag)</td><td>' + G.converged_design_count + ' / ' + P.design_count + '</td></tr>' +
+    '<tr><td>sealed cases (write replay + verified reload)</td><td>' + G.sealed_case_count + ' / ' + G.case_count + '</td></tr>' +
+    '<tr><td>exact authority replays</td><td>' + G.exact_authority_replay_count + '</td></tr>' +
+    '<tr><td>validators passed / failed</td><td>' + G.validators.passed + ' / ' + G.validators.failed + '</td></tr>' +
+    Object.keys(G.manufactured).sort().map(function (k) { return '<tr><td>manufactured: ' + esc(k) + '</td><td class="' + (G.manufactured[k] ? "ok" : "bad") + '">' + (G.manufactured[k] ? "pass" : "FAIL") + '</td></tr>'; }).join("") +
+    '<tr><td>cases wall time</td><td>' + fmt(P.execution.cases_wall_s / 60, 1) + ' min at ' + P.execution.worker_pool_size + ' workers (CPU only)</td></tr></table>' +
+    '<p class="small">Per-design structural gates: field adapter (interp ≤ 5 %, cross-resolution ≤ 5 %), preflight, zero numerical failures, energy drift ≤ 1e-10, final velocity = event velocity, wall endpoint ≤ 1e-8 m, earliest-event ordering, rotation bound, exact replay, cross-process determinism, handoff consumed. Timeouts are reported, not gated; μ variation is a diagnostic, never a gate.</p>';
+  var C = P.consumer;
+  byId("consumer").innerHTML = '<h3>Coupling-v4.2 export consumer</h3><p class="small">' + esc(C.consumer_id) + ': ' + C.screening_consumed + ' screening handoffs consumed and verified (Wilson interval, binomial uncertainty, artifact hash binding); ' + C.screening_unsealed + ' unsealed (not consumable).</p>' +
+    '<p class="small"><b>v4 reference (absent from the screening set):</b> ' + esc(C.v4_reference.design_id) + ', ' + esc(C.v4_reference.field_qualification) + ', P(wall) = ' + fmt(C.v4_reference.probability) + ' [' + fmt(C.v4_reference.confidence_interval_95[0]) + ', ' + fmt(C.v4_reference.confidence_interval_95[1]) + '], n = ' + C.v4_reference.trial_count + '. ' + esc(C.absence_statement) + '</p><p class="small">v4 headline: ' + esc(P.prior_v4) + '</p>';
+
+  var B = P.claim_boundary;
+  byId("claims").innerHTML = '<ul>' + ['field_level', 'orbit_model'].map(function (k) { return '<li>' + esc(B[k]) + '</li>'; }).join("") +
+    '<li>not accepted physical-orbit evidence: <b>' + B.not_accepted_physical_orbit_evidence + '</b>; not P2-qualified: <b>' + B.not_p2_qualified + '</b>; plasma/performance publication forbidden: <b>' + B.forbid_plasma_performance_publication + '</b>; PIC/self-consistent claim forbidden: <b>' + B.forbid_pic_or_self_consistent_claim + '</b>; mirror-formula publication forbidden: <b>' + B.forbid_mirror_formula_publication + '</b>; hardware validation: <b>' + B.hardware_or_experimental_validation + '</b>.</li>' +
+    '<li>Usable as: ' + B.usable_as.map(esc).join("; ") + '.</li></ul>';
+
+  var I = P.identity;
+  byId("footer").innerHTML = '<div>Bundle ' + esc(I.experiment_id) + ' · manifest <span class="mono">' + esc(I.manifest_file_sha256) + '</span> · terminal <span class="mono">' + esc(I.terminal_file_sha256) + '</span> · lock <span class="mono">' + esc(I.lock_file_sha256) + '</span> · ' + I.verified_file_count + ' files byte-verified of ' + I.artifact_count + ' manifest entries.</div>' +
+    '<div>Preregistration commit <span class="mono">' + esc(I.preregistration_commit_sha) + '</span> · protocol <span class="mono">' + esc(I.protocol_semantic_sha256) + '</span> · orbit_mc source <span class="mono">' + esc(I.orbit_mc_source_sha256) + '</span> · field pipeline <span class="mono">' + esc(I.field_pipeline_source_sha256) + '</span></div>' +
+    '<div>Generator <span class="mono">' + esc(I.generator_sha256) + '</span> · template <span class="mono">' + esc(I.template_sha256) + '</span> · command <span class="mono">' + esc(I.execution_command) + '</span></div>';
+})();
+</script>
+</body>
+</html>

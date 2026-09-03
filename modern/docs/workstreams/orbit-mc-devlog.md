@@ -428,3 +428,17 @@ physical CFT campaign, or wall-loss probability was produced.
 - Verification: `tests/orbit_mc` 147 passed (120 + 27), `tests/fields` 62,
   `tests/coupling` 143, `tests/fem_reference` 37, `tests/experiment_runtime`
   132 passed / 1 skipped, `tests/experiments/cft_orbit_wall_loss_v4` 26 passed.
+
+## 2026-09-03 — orbit_mc 1.7.0 consumed by the geometry screening campaign
+
+- `experiments/orbit_wall_loss_geometry_screening_v1` ran orbit_mc 1.7.0
+  (numpy CPU, source hash `9e3f8712`) on 96 accepted L1a sweep-v2 fields:
+  100 352 orbits, 196 sealed artifacts, 6664 validators / 0 failures, energy
+  drift exactly 0.0 everywhere, final velocity == event velocity everywhere,
+  wall-endpoint error <= 1e-8 m, zero numerical failures, zero timeouts.
+- First observed REFLECTED terminations in a campaign: every design reflects
+  (32-282 of 512 launches at 2N); the v4 P2 field had none. Reflection is the
+  first mirror point of the signed parallel velocity (`_reflection_fraction`).
+- Classification of that campaign: SCREENING_L1A_FIELD_TEST_PARTICLE_WALL_LOSS
+  (L1a fields, not P2-qualified); it is not orbit_mc verification evidence and
+  changes no orbit_mc contract.

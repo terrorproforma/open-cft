@@ -1,0 +1,361 @@
+{
+  "schema_version": "cft-revival.orbit-wall-loss-geometry-screening-v1.protocol/1.0.0",
+  "experiment_id": "orbit-wall-loss-geometry-screening-v1",
+  "status": "preregistered_pending_single_execution",
+  "classification": "SCREENING_L1A_FIELD_TEST_PARTICLE_WALL_LOSS",
+  "classification_statement": "Full-orbit collisionless test-particle electron wall-loss probabilities (orbit_mc v1.7) integrated in the accepted L1a linear-vacuum equivalent-current field maps of the geometry sweep v2. The fields are L1a screening fields (not P2-qualified), so every number in this campaign is SCREENING_L1A_FIELD_TEST_PARTICLE_WALL_LOSS: never accepted physical-orbit evidence, never a plasma or performance claim. The dataset is usable as surrogate training data and as a coupling/MDO input only when carried with this label.",
+  "claim_boundary": {
+    "field_level": "L1a linear constant-permeability axisymmetric equivalent-current FDM (cft_revival.fields); non-authoritative current bands, not a permanent-magnet material model, not P2 FEM, not hardware-valid",
+    "orbit_model": "collisionless prescribed-field relativistic-Boris test particles; no electric field, no collisions, no sheath, no self-consistent plasma",
+    "not_accepted_physical_orbit_evidence": true,
+    "not_p2_qualified": true,
+    "forbid_plasma_performance_publication": true,
+    "forbid_pic_or_self_consistent_claim": true,
+    "forbid_mirror_formula_publication": true,
+    "hardware_or_experimental_validation": false,
+    "usable_as": [
+      "surrogate training data labelled SCREENING_L1A_FIELD_TEST_PARTICLE_WALL_LOSS",
+      "design-dependent cusp/wall-loss input for the MDO labelled SCREENING_L1A_FIELD_TEST_PARTICLE_WALL_LOSS",
+      "a formal consumer of the orbit_mc coupling-v4.2 export format"
+    ],
+    "shakedown_outcomes_are_not_evidence": true
+  },
+  "authority": {
+    "base_commit": "8babb31ef757dff56fbd539868cb098c9fee438d",
+    "orbit_mc_commit": "8babb31ef757dff56fbd539868cb098c9fee438d",
+    "template_campaign": "modern/experiments/cft_orbit_wall_loss_v4 (accepted; commits 23d37bee tests / 757e365f prereg / 6922a3cf result)",
+    "template_reuse": "ValidatorLedger, run_case_integration, run_case_export, run_stage, stratum_summaries, result_diagnostics, mu_diagnostic, orbit_mc source hash/contract binding, runtime tag decoding and Wilson estimators are imported from experiments.cft_orbit_wall_loss_v4.experiment; the field adapter is replaced by designs.py (L1a re-solve) because the sweep fields are not P2 FEM."
+  },
+  "orbit_mc_contract": {
+    "package_version": "1.7.0",
+    "package_version_binding": "cft_revival.orbit_mc.__version__ must equal package_version exactly",
+    "result_schema_version": "cft-revival-orbit-mc-result/1.6.0",
+    "checkpoint_schema_version": "cft-revival-orbit-mc-checkpoint/1.6.0",
+    "validation_protocol_schema_version": "cft-revival-orbit-mc-validation-protocol/1.6.0",
+    "handoff_schema_version": "cft-revival-orbit-mc-coupling-v4.2/1.3.0",
+    "source_hash_scope": [
+      "modern/src/cft_revival/orbit_mc/*.py",
+      "modern/spec/orbit_mc/*.json"
+    ],
+    "source_hash_line_endings": "LF (repo-wide .gitattributes eol=lf since fab0eccc); the hash is over the working-tree bytes and fails closed on any CR byte",
+    "campaign_preflight_required": true,
+    "tolerance_close_events_are_physical": true,
+    "event_velocity_definition": "boris_push_of_event_fraction_times_step_dt_with_step_midpoint_fields",
+    "final_velocity_must_equal_event_velocity_exactly": true,
+    "backend": "numpy-cpu-relativistic-boris only; the Warp CUDA path is not used (RTX 5090 occupied by a PIC run; per-particle CUDA is 18x slower than numpy for this event loop)"
+  },
+  "field_source": {
+    "experiment": "modern/experiments/l1a_geometry_sweep_v2",
+    "classification": "L1a_FIELD_ONLY_SCREENING_NOT_HARDWARE_VALID",
+    "field_status": "accepted_L1a_screening_not_P2_qualified",
+    "preregistration_commit": "092f5fae692ee7d6711e0c7e1c94dac6a345f37c",
+    "manifest_path": "modern/experiments/l1a_geometry_sweep_v2/results/manifest.json",
+    "manifest_file_sha256": "768b345e946a45e623f83aaa18e01f8ec5bc7f823e81858a0a8c3a3e2e448754",
+    "raw_results_path": "modern/experiments/l1a_geometry_sweep_v2/results/raw-results.json",
+    "raw_results_file_sha256": "76f145f816a187c36c3260c184a07d8979c244999f40c2562f4207dbca90b4c1",
+    "raw_results_payload_sha256": "c53fdbf1cb1cb1d90447ceccf0f2e2f81a03a2096446a4509f537f27be0712fa",
+    "summary_path": "modern/experiments/l1a_geometry_sweep_v2/results/summary.json",
+    "summary_file_sha256": "942852295d3b2ee04f968734a31e15694e46d389838259a01113ae090ad30e29",
+    "summary_payload_sha256": "2b7643890a365e6b2f86597f30f138dcbf8f58baf754fb0f36e6a27dfe3f09dc",
+    "protocol_payload_sha256": "da319f2271d56b0d0c883b76d3106b094359a608b560d58ac7801de1293ecbc8",
+    "map_availability": "Only the four representative designs (roles strongest-centreline, strongest-mirror, steepest-stage-gradient, lowest-field-energy/best-boundary-isolation) carry stored full-field maps in results/representatives; the other 92 designs are recorded as QoIs only. Every design is therefore re-solved.",
+    "resolve": {
+      "solver": "cft_revival.fields.solve_problem_cpu",
+      "backend": "python (dependency-free binary64 Jacobi-PCG; deterministic)",
+      "case_builder": "experiments.l1a_geometry_sweep_v2.experiment.build_case(sample_designs()[index], index)",
+      "identity_proof": "rebuilt geometry_sha256, source_sha256, config_sha256 and case_sha256 must equal the sealed raw-results record; the re-solved QoIs must reproduce the recorded QoIs within the sweep's preregistered scale-aware replay tolerances; representatives must additionally reproduce the stored full-field nodes",
+      "domain": {
+        "radius_m": 0.03,
+        "z_min_m": -0.015,
+        "z_max_m": 0.05,
+        "radial_intervals": 80,
+        "axial_intervals": 144
+      },
+      "solver_config": {
+        "relative_tolerance": 1e-10,
+        "absolute_tolerance": 1e-13,
+        "max_iterations": 20000,
+        "residual_history_stride": 10,
+        "max_true_residual_restarts": 2
+      },
+      "stored_map_node_tolerance": {
+        "psi_max_abs_wb": 1e-15,
+        "b_max_abs_t": 1e-9
+      },
+      "source_binding": "field_pipeline_source_sha256 over cft_revival/{fields,geometry,magnetics,optimization}/**/*.py, spec/fields/*.json and l1a_geometry_sweep_v2/{experiment.py,protocol.py,protocol.json,protocol.json.sha256} (LF bytes) is recorded in shakedown.json and authorities.json and re-verified by execute"
+    },
+    "refined_diagnostic": {
+      "refinement": 2,
+      "role": "refined",
+      "purpose": "field-resolution diagnostic: the same problem re-solved at 160x288 intervals; compare_maps(accepted bore field, refined bore field) must stay within maximum_cross_resolution_b_relative_rms for every design, and the four representative designs additionally run a refined-N orbit case as a field-resolution sensitivity check of the wall-loss probability"
+    },
+    "bore_grid_rule": "radial nodes 0..first node >= wall radius; axial nodes from the last node <= domain_z_min_m to the first node >= chamber length; every cell is homogeneous plasma (material id l1a-vacuum-bore-screening); PsiBicubicField built from psi with the solver's Br/Bz as reference maps (5 % consistency check) and the certificate tightness floor from gates",
+    "adapter_gates": {
+      "maximum_b_relative_rms": 0.05,
+      "maximum_b_component_absolute_error_t": 0.02,
+      "maximum_cross_resolution_b_relative_rms": 0.05
+    }
+  },
+  "designs": {
+    "source_set": "the 96 accepted sweep-v2 designs",
+    "primary_batch": "the 25 non-dominated designs (summary.json nondominated_case_ids)",
+    "primary_case_ids": [
+      "l1a-gs-v2-000-48d2ccedd5",
+      "l1a-gs-v2-005-942c2d458e",
+      "l1a-gs-v2-028-8c0a501d9c",
+      "l1a-gs-v2-029-3940e2552f",
+      "l1a-gs-v2-032-570ad83ba6",
+      "l1a-gs-v2-040-827cdb9c2a",
+      "l1a-gs-v2-044-2f03fc2fb5",
+      "l1a-gs-v2-048-9e4abaf530",
+      "l1a-gs-v2-049-cf0a7d1028",
+      "l1a-gs-v2-054-58f94d4676",
+      "l1a-gs-v2-056-87997ee6f2",
+      "l1a-gs-v2-060-c3bf7e5c98",
+      "l1a-gs-v2-062-70a6b2f959",
+      "l1a-gs-v2-064-9f6ecd1a94",
+      "l1a-gs-v2-065-9e98f08f3b",
+      "l1a-gs-v2-067-dd5a30270f",
+      "l1a-gs-v2-068-375d1b1b13",
+      "l1a-gs-v2-071-f0c9ebbd40",
+      "l1a-gs-v2-075-a6696084a4",
+      "l1a-gs-v2-082-ec510a5bdb",
+      "l1a-gs-v2-083-4c9976a050",
+      "l1a-gs-v2-084-7fbadd6e3c",
+      "l1a-gs-v2-088-54d047707b",
+      "l1a-gs-v2-092-d532fb20ca",
+      "l1a-gs-v2-095-27f6ceb96c"
+    ],
+    "extension_batch": "the remaining 71 accepted designs, run in the same single execution",
+    "extension_case_ids": [
+      "l1a-gs-v2-001-0830ddda40", "l1a-gs-v2-002-48c4d2e317", "l1a-gs-v2-003-b98d8da7bf", "l1a-gs-v2-004-72b1c5ba70",
+      "l1a-gs-v2-006-110b30a28a", "l1a-gs-v2-007-9ea145255a", "l1a-gs-v2-008-b45d1d67d2", "l1a-gs-v2-009-4d592518ca",
+      "l1a-gs-v2-010-7aa8cd8bce", "l1a-gs-v2-011-eabda2c05f", "l1a-gs-v2-012-861e265ea9", "l1a-gs-v2-013-1a5f2faf5b",
+      "l1a-gs-v2-014-454d5ec089", "l1a-gs-v2-015-691452be4d", "l1a-gs-v2-016-9e4e222280", "l1a-gs-v2-017-55712611a0",
+      "l1a-gs-v2-018-99a8ddb38f", "l1a-gs-v2-019-9166fdf853", "l1a-gs-v2-020-b517ae2748", "l1a-gs-v2-021-5e0b38a851",
+      "l1a-gs-v2-022-4a12458d8a", "l1a-gs-v2-023-09c1438b40", "l1a-gs-v2-024-8ebc8e6892", "l1a-gs-v2-025-7bfbfbb365",
+      "l1a-gs-v2-026-c5d09bfafa", "l1a-gs-v2-027-56d238c396", "l1a-gs-v2-030-5f0cd58497", "l1a-gs-v2-031-3e7a3b3509",
+      "l1a-gs-v2-033-1f293d6cb7", "l1a-gs-v2-034-13a1a432e0", "l1a-gs-v2-035-6ca4a7f3c2", "l1a-gs-v2-036-b84b580964",
+      "l1a-gs-v2-037-4de0233d45", "l1a-gs-v2-038-474b968ed6", "l1a-gs-v2-039-df1626ab7e", "l1a-gs-v2-041-b62c5d7163",
+      "l1a-gs-v2-042-ae9a80d120", "l1a-gs-v2-043-b585cd28ea", "l1a-gs-v2-045-d52f4d6a1a", "l1a-gs-v2-046-1d0bed7f4c",
+      "l1a-gs-v2-047-e3196a8aa5", "l1a-gs-v2-050-012aa2a74e", "l1a-gs-v2-051-d243e11351", "l1a-gs-v2-052-e117399e75",
+      "l1a-gs-v2-053-e22999f79a", "l1a-gs-v2-055-a7ac306811", "l1a-gs-v2-057-68965a0576", "l1a-gs-v2-058-132b3d1a44",
+      "l1a-gs-v2-059-06306f4e8d", "l1a-gs-v2-061-d8ebe65ef1", "l1a-gs-v2-063-eaf6bef4a4", "l1a-gs-v2-066-d58df2fb43",
+      "l1a-gs-v2-069-9ae4602904", "l1a-gs-v2-070-5b284f066b", "l1a-gs-v2-072-79cfa36e3a", "l1a-gs-v2-073-274491a725",
+      "l1a-gs-v2-074-e2365d7a87", "l1a-gs-v2-076-900f037a8c", "l1a-gs-v2-077-44d74d05d4", "l1a-gs-v2-078-28bf64f2bb",
+      "l1a-gs-v2-079-62792322e0", "l1a-gs-v2-080-b666fbf97d", "l1a-gs-v2-081-601159d2a0", "l1a-gs-v2-085-3164dd7be8",
+      "l1a-gs-v2-086-fbb26d4705", "l1a-gs-v2-087-8428d611f2", "l1a-gs-v2-089-8275bc9272", "l1a-gs-v2-090-7ab4ba4fd8",
+      "l1a-gs-v2-091-1aab0b78cb", "l1a-gs-v2-093-27025a655c", "l1a-gs-v2-094-ba60c4fe8b"
+    ],
+    "extension_batch_included": true,
+    "extension_decision": "Included at preregistration iff the shakedown's timing_projection.within_budget is true: the shakedown's measured mean per-orbit cost at N and 2N (under the concurrent host load) times three integrations per orbit (integration + write replay + verified-reload replay) over all 196 evidentiary cases, divided by the 12-worker pool, must not exceed 5400 s. The projection is recorded in shakedown.json and authorities.json; prepare and execute refuse if extension_batch_included disagrees with within_budget.",
+    "representative_case_ids": [
+      "l1a-gs-v2-000-48d2ccedd5",
+      "l1a-gs-v2-032-570ad83ba6",
+      "l1a-gs-v2-065-9e98f08f3b",
+      "l1a-gs-v2-068-375d1b1b13"
+    ],
+    "fallback_rule": "a design whose field cannot be rebuilt, re-solved or verified against the sealed sweep record is EXCLUDED before any orbit is integrated and listed with its reason in artifacts/design-exclusions.json; the campaign proceeds on the remaining designs (deterministic subset)"
+  },
+  "orbit_geometry_rule": {
+    "wall_radius": "chamber.outer_radius_m (the dielectric bore radius)",
+    "wall_z_min_m": 0.0,
+    "wall_z_min_meaning": "anode plane (dielectric-straight region spans 0 <= z <= exit_start)",
+    "wall_z_max": "chamber.exit_start_m (end of the straight dielectric; equals chamber.length_m when the design has no divergent exit)",
+    "domain_radius": "chamber.outer_radius_m",
+    "domain_z_min_m": 0.0,
+    "domain_z_max": "chamber.length_m (exit plane)",
+    "divergent_exit_policy": "wall-hit authority is restricted to the straight cylindrical dielectric section exactly as v4 did; an electron reaching r = wall radius at z > exit_start enters the divergent section and is classified domain_escape (post hoc sub-class divergent_section_radial); z = 0 is upstream_anode_plane escape; z = chamber length is exit_plane escape",
+    "max_path_channel_lengths": 2.0,
+    "slowest_energy_ev": 5.0,
+    "max_time_transit_factor": 2.0,
+    "max_time_rule": "max_time_s = max_time_transit_factor * max_path_m / v(slowest_energy_ev); i.e. twice the time a 5 eV electron needs for two channel lengths",
+    "max_steps": 2000000,
+    "event_tolerance_m": 1e-9,
+    "maximum_gamma": 20.0,
+    "timestep_policies": {
+      "N": {"max_rotation_rad": 0.16},
+      "2N": {"max_rotation_rad": 0.08}
+    }
+  },
+  "launches": {
+    "campaign_id_prefix": "owlgs-v1",
+    "energies_ev": [5.0, 25.0],
+    "pitch_angles_deg": [20.0, 70.0],
+    "directions": [-1, 1],
+    "gyrophase_count": 8,
+    "gyrophase_offset_rad": 0.35997415822383044,
+    "gyrophase_offset_rule": "11*pi/96; disjoint (mod pi/4) from v1/v2 (0), v3 (pi/16), v4 (7*pi/48), the v4 shakedown (17*pi/96) and this campaign's shakedown (5*pi/96)",
+    "cell_id_prefix": "gs1-cell",
+    "cell_rule": "four axial cells at fixed fractions 1/8, 3/8, 5/8, 7/8 of the channel-straight span [chamber.injector_length_m, chamber.exit_start_m] (the region with wall-hit authority, excluding the injector zone); this scales v4's four-cell stratification to each design's own straight channel length. The sweep's axis |Bz| peak ('axis cusp') and axis null positions are recorded per design so each cell can be related to the field structure post hoc.",
+    "cell_fractions_of_straight_span": [0.125, 0.375, 0.625, 0.875],
+    "radius_fractions_of_wall": [0.675, 0.8],
+    "radius_rule": "two launch radii at 0.675 and 0.800 of the design's wall radius (as v4's 1.35 mm / 1.60 mm at 2 mm)",
+    "stratum_dimensions": ["cell_id", "kinetic_energy_ev", "pitch_angle_deg", "parallel_direction"],
+    "independent_repeats_per_stratum": 2,
+    "estimator_policy": "unweighted_binomial",
+    "equal_weights": true,
+    "batch_size": 64,
+    "launches_per_case": 512,
+    "batches_per_case": 8,
+    "strata_per_case": 32,
+    "seed_rule": "orbit_mc build_launch_ensemble: seed = first 8 bytes of sha256(launch_id); launch_id is case-prefixed so every design/role/timestep has disjoint seeds"
+  },
+  "cases": {
+    "roles_per_design": {
+      "accepted": ["N", "2N"],
+      "refined": ["N"]
+    },
+    "refined_role_designs": "representative_case_ids only",
+    "case_key_rule": "<case_id>--<role>-<timestep>",
+    "campaign_id_rule": "<campaign_id_prefix>:<case_id>:<role>:<timestep>",
+    "reported_probability_case": "accepted-2N (finest timestep); accepted-N is the convergence partner"
+  },
+  "shakedown": {
+    "evidentiary": false,
+    "outcomes_enter_estimand": false,
+    "purpose": "Exercise the complete production path (sweep binding, CPU re-solve, bore interpolant, preflight_campaign, integration, checkpoint chain, validators, estimators, gates, export construction, handoff consumer, dataset assembly, publication through the shared ExperimentRuntime into a temporary root, validate_bundle) on REAL re-solved fields for three designs before the preregistration freeze. v1/v2/v3 died on code the first time real data met the one-shot run; v4 and this campaign run the shakedown first.",
+    "campaign_id_prefix": "owlgs-v1-shakedown",
+    "seed_namespace": "orbit-wall-loss-geometry-screening-v1:shakedown",
+    "design_case_ids": [
+      "l1a-gs-v2-000-48d2ccedd5",
+      "l1a-gs-v2-049-cf0a7d1028",
+      "l1a-gs-v2-095-27f6ceb96c"
+    ],
+    "design_rule": "first, median and last of the sorted primary batch; the first is a representative so the refined-N path is exercised",
+    "position_rng": "numpy.random.default_rng(int.from_bytes(sha256(seed_namespace + ':' + case_id + ':positions')[:8], 'big')); per cell, per repeat: radius_fraction ~ U(range), axial_offset ~ U(-half_width, +half_width) * straight span",
+    "positions_per_cell": 2,
+    "radius_fraction_range": [0.5, 0.9],
+    "axial_half_width_fraction_of_straight_span": 0.03,
+    "gyrophase_count": 1,
+    "gyrophase_offset_rad": 0.1636246173744684,
+    "gyrophase_offset_rule": "5*pi/96",
+    "launches_per_case": 64,
+    "batch_size": 8,
+    "batches_per_case": 8,
+    "partial_checkpoint_prefix_count": 4,
+    "strata_per_case": 32,
+    "independent_repeats_per_stratum": 2,
+    "required_disjointness": ["launch_id", "seed_id", "position_m", "energy_pitch_direction_gyrophase"],
+    "gates_are_informational": true,
+    "record_path": "shakedown.json",
+    "prepare_requires": [
+      "shakedown.json exists",
+      "passed == true (all validators passed for every shakedown case; export and consumer stages ran; bundle validated)",
+      "protocol_semantic_sha256 equals the current protocol hash",
+      "orbit_mc_source_sha256 equals the current orbit_mc source hash",
+      "field_pipeline_source_sha256 equals the current field pipeline source hash",
+      "disjointness proven against the evidentiary design of the same three designs and against v1/v2/v3/v4"
+    ]
+  },
+  "gates": {
+    "scope": "evaluated PER DESIGN; the numerical/structural gates are binding for the dataset as a whole (a failure of any design rejects the execution), the probability-convergence gate is a per-design flag carried into the dataset",
+    "maximum_successive_probability_change": 0.02,
+    "convergence_rule": "|P_wall(2N) - P_wall(N)| <= 0.02 (screening) AND adjacent Wilson intervals overlap; recorded as converged=true/false per design; not campaign-binding",
+    "require_adjacent_wilson_overlap": true,
+    "require_zero_numerical_failures": true,
+    "numerical_failure_terminations": ["step_limit", "nonfinite_state", "extreme_relativity", "field_failure", "initial_state_invalid"],
+    "timeout_policy": "time_timeout and path_timeout are physical budget outcomes (survived two channel lengths of path); they are reported as the 'timeout' estimand per stratum and per design and flagged, not gated. v4 gated them because its P2 design had none; here the geometry varies.",
+    "maximum_relative_energy_error": 1e-10,
+    "minimum_helix_position_order": 1.8,
+    "minimum_varying_e_position_order": 1.8,
+    "maximum_mirror_point_relative_error": 0.03,
+    "maximum_wall_endpoint_error_m": 1e-8,
+    "maximum_cpu_cuda_relative_velocity_difference": 1e-11,
+    "backend_parity_scope": "cpu parity only (numpy vs Warp CPU); CUDA parity is not evaluated because the GPU is occupied and no CUDA path is used by this campaign",
+    "minimum_certificate_dense_to_bound_ratio": 0.001,
+    "require_max_b_bound": true,
+    "require_runtime_rotation_bound": true,
+    "require_relativistic_phase_gamma": true,
+    "require_earliest_fraction_event_ordering": true,
+    "require_homogeneous_plasma_material_cells": true,
+    "require_exact_authority_replay": true,
+    "require_campaign_preflight": true,
+    "require_final_velocity_equals_event_velocity": true,
+    "minimum_independent_repeats_per_stratum": 1,
+    "energy_gate_note": "BINDING. Under orbit_mc >= 1.6 the event velocity is the Boris state at the event time, so in a prescribed pure-B field the relative kinetic-energy drift of every orbit is exactly 0.0."
+  },
+  "diagnostics": {
+    "magnetic_moment_variation": {
+      "binding": false,
+      "informational_gate": false,
+      "role": "diagnostic_only",
+      "statement": "mu variation is reported per design (min/median/max, counts above 0.1 and 0.5) and never compared against a threshold that accepts or rejects anything; electrons in these cusp fields are non-adiabatic by construction."
+    },
+    "tolerance_close_share": "fraction of orbits terminated through the typed tolerance-close fraction-zero path (physical wall/domain contact within event_tolerance_m); reported per design",
+    "domain_escape_subclasses": ["upstream_anode_plane", "exit_plane", "divergent_section_radial", "unclassified"],
+    "reflection_counts": "reported per design and per stratum (v4 found zero)"
+  },
+  "execution": {
+    "shared_experiment_runtime_only": true,
+    "real_field_shakedown_before_prepare": true,
+    "clean_detached_pushed_preregistration_required": true,
+    "git_common_lock": "orbit-wall-loss-geometry-screening-v1.execution.lock",
+    "attempt": 1,
+    "single_execution": true,
+    "no_patch_or_rerun": true,
+    "sequential_batches_within_case": true,
+    "parallel_cases": true,
+    "max_case_workers": 12,
+    "cpu_budget_note": "at most 12 of the 24 logical CPUs (a concurrent MDO campaign shares the host); the GPU is not touched",
+    "parallel_determinism_rule": "every label access is recorded in case order before any orbit is integrated; field solves and cases then run in spawn process pools; each orbit is a pure function of (launch, field, config), every case is re-integrated twice by the deterministic replay validators (write + verified reload) and the first two launches of every case are re-integrated in the main process",
+    "partial_checkpoint_prefix_count": 32,
+    "orbit_artifacts_published_regardless_of_gates": true
+  },
+  "publication_policy": {
+    "per_case": [
+      "artifacts/summaries/<case_key>.json (summary, 32 strata with Wilson intervals, preflight, checkpoint-chain hashes, diagnostics, timing)",
+      "artifacts/endpoints/<case_key>.json.gz (one compact row per orbit: launch id, stratum, termination, escape sub-class, final r/z, steps, elapsed, energy error, mu variation, event resolution)",
+      "artifacts/orbits/<case_key>.json.sha256 (the sealed orbit artifact's sidecar; the artifact itself is replayed twice and hash-recorded)",
+      "artifacts/handoffs/<case_key>.json (coupling-v4.2 handoff, export format)"
+    ],
+    "full_orbit_artifacts_published_for": "representative_case_ids only (artifacts/orbits/<case_key>.json.gz), to bound the tracked bundle size; every other sealed artifact is identified by its sidecar hash and by the endpoints table",
+    "checkpoint_chain": "built and validated per case in the working cache; the partial/batch/final checkpoint file hashes are recorded in the case summary; checkpoint bytes are not published",
+    "per_design": [
+      "artifacts/fields/<case_id>.json (bore psi/Br/Bz grid, accepted role)",
+      "artifacts/field-evidence/<case_id>.json (identity proof, QoI replay, stored-map agreement, interpolation and cross-resolution reports)"
+    ],
+    "dataset": [
+      "artifacts/geometry-wall-loss-dataset.json",
+      "artifacts/geometry-wall-loss-dataset.csv",
+      "artifacts/coupling-consumer-record.json",
+      "artifacts/design-exclusions.json",
+      "artifacts/gates.json",
+      "artifacts/campaign-result.json"
+    ]
+  },
+  "coupling_consumer": {
+    "consumer_id": "orbit-wall-loss-geometry-screening-v1.consumer",
+    "handoff_schema": "modern/spec/orbit_mc/coupling-v4.2-handoff-v1.schema.json",
+    "v4_export_path": "modern/experiments/cft_orbit_wall_loss_v4/results/artifacts/coupling-export-only.json",
+    "v4_export_file_sha256": "45ff2d9e37f22db3f37d5212b05e05daa26daa70cc8ff0cbecf28486e3e20270",
+    "v4_export_sidecar_path": "modern/experiments/cft_orbit_wall_loss_v4/results/artifacts/coupling-export-only.json.sha256.json",
+    "v4_orbit_artifact_sidecar_path": "modern/experiments/cft_orbit_wall_loss_v4/results/artifacts/orbits/refined-4N.json.sha256",
+    "v4_result_commit": "6922a3cf97d261735266aa1a5a0c0c9683e021ca",
+    "v4_design_id": "divergent-exit-stack",
+    "v4_design_in_screening_set": false,
+    "v4_absence_statement": "The v4 design (divergent-exit-stack, P2 FEM, NUMERICAL_P2_QUALIFIED) is not a sweep-v2 design and is therefore absent from the geometry screening set; the consumer formally consumes its coupling-v4.2 export as the accepted-evidence reference row, labelled as such, and consumes every screening design's handoff through the same verified path.",
+    "consumer_checks": [
+      "closed key set and constants of the handoff schema",
+      "lowercase SHA-256 patterns",
+      "successes = round(probability * trial_count) reproduces probability exactly",
+      "confidence_interval_95 equals wilson_interval(successes, trial_count)",
+      "standard_uncertainty equals sqrt(p(1-p)/n)",
+      "orbit_result_artifact_sha256 equals the sealed orbit artifact sidecar hash"
+    ]
+  },
+  "prior_campaign_disclosure": {
+    "v4": {
+      "branch": "exp/cft-orbit-wall-loss-v4",
+      "preregistration_commit": "757e365f",
+      "result_commit": "6922a3cf97d261735266aa1a5a0c0c9683e021ca",
+      "terminal_state": "accepted_result",
+      "classification": "collisionless_prescribed_field_test_particle_wall_loss_not_pic",
+      "headline": "one P2-qualified design; wall-hit 0.641-0.645, escape 0.355-0.359, zero reflections, zero timeouts; cells 2-3 100 % wall loss, cell 4 (past wall end) 100 % escape, cell 1 direction-dependent",
+      "gyrophase_offset_rad": 0.4581489286485115,
+      "shakedown_gyrophase_offset_rad": 0.5563236990731926
+    },
+    "v1_v2_v3": "failed on code (see v4 protocol prior_campaign_disclosure); gyrophase offsets 0, 0, pi/16",
+    "relation": "This campaign is NOT a successor of v4's evidence class: v4 is accepted physical-orbit evidence on a P2-qualified field; this is screening on L1a fields across many designs. Its launch design is disjoint from v1-v4 by position, energy/pitch/direction/gyrophase tuple, launch id and seed."
+  }
+}
