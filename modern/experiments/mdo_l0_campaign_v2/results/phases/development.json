@@ -1,0 +1,1 @@
+{"__cft_type__":"dataclass","class":"cft_revival.experiment_runtime.lifecycle.Decision","fields":{"accepted":true,"payload":{"cpu_probe_passed":true,"cuda_probe_available":true,"dense_feasible":98216,"replay_passed":true,"separability_passed":true}}}
