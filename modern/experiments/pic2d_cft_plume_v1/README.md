@@ -261,6 +261,28 @@ steady-state v3 (model v1.4) is deferred until after this run (devlog).
   t_e_ev,ionization_rate_per_m3_s}.mp4` + `…-timeseries.html` (untracked). The n_i frames show
   the narrow beam and a broad low-density population whose front is still filling the box at
   3.78 µs — the plume has not reached its inventory.
+* **Launch 8 (09:51 AEST 2026-09-04, PID 51256; attempt 8 = RESUME of attempt 7)** — the same
+  command (`run`) continues `results/` from the step-2 520 000 checkpoint (3.780 µs) with the
+  cumulative wall budget raised on the CLI to **50 400 s** (`--wall-budget-seconds 50400`, i.e.
+  +10 h on top of the 14 443 s already spent; recorded per session in `run_state.sessions[].
+  wall_budget_seconds` since `e8b3fb7b`; the protocol's 14 400 s is unchanged); frames ON (the
+  recorder continues at frame 126); configuration identity unchanged (protocol untouched), package
+  code identity `8e33932e` unchanged (the attempt-7 fixes live in the experiment runner, which is
+  outside the checkpoint's code hash). **Deterministic replay verified before the launch**: two
+  independent resumes of the checkpoint in scratch copies (400 steps each, `--max-steps 2520400`)
+  agree bitwise in the full dynamical state (checkpoint arrays: 2 442 334 electrons, 2 469 710
+  ions, φ, surface charge, cumulative ledgers; identical npz hash `7b95f12a…`) and in 142 of the
+  150 series fields; the 8 that differ are the peak-node sample at 1 ULP (3.029392693028336e18 vs
+  …3366e18), and the 400-step window maps differ only in `sample_count_e` / `t_e_ev` at ≤ 2e-15
+  relative — atomic float diagnostics, the same class as the attempt-6/7 ledger ULPs; n_e, n_i, φ
+  and the ionisation maps are bitwise equal. (Two concurrent host factorisations oversubscribe the
+  BLAS threads — 20 min without finishing — run them one at a time: ~4 min each.) Expectation: the
+  plateau rule needs ≥ 3 transits = 9.3 µs → +3.68 M steps at 6.7 → ~9 ms/step (the step cost
+  grows with the particle count, 4.4 ms at 0.35 M → 6.7 ms at 2.44 M electrons) ≈ 7.5–9 h, so the
+  first plateau verdict can fall from ≈ 17:30 AEST; if the drifts (N_e +22 % per window now, plume
+  still filling) are not below 5 % by then the run continues to the budget (≈ 20:00 AEST,
+  ≈ 10.3–10.8 µs = 3.3–3.5 transits) and attempt 9 would be another resume. Logs: `results/run.log`
+  / `run.err` (attempt 7's are kept as `run-attempt7.log` / `.err` / `.pid` and in the record folder).
 
 ## Time-series frames and video
 
