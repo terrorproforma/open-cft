@@ -173,11 +173,17 @@ steady-state v3 (model v1.4) is deferred until after this run (devlog).
   integrates to S = 7.0e16 s⁻¹ (matches the series), so the data are right and the panel needs
   spatial binning (3 × 3 → 9× events) or a ~10-frame rolling average before it can be read
   quantitatively (proposed, not done).
-* **Launch 7 (attempt 7)** — attempt 6 plus the resolved-node plume-boundary gate (v2.0.1);
-  frames ON; fresh start (the gate parameter is part of the configuration identity, so the
-  attempt-6 checkpoint cannot be resumed). Same seed → the first 1.64 M steps should replay
-  attempt 6 (the gate change is diagnostic-only); the ignition verdicts fall at 0.75 µs (~45 min
-  of stepping) and 1.5 µs (~90 min).
+* **Launch 7 (04:19 AEST 2026-09-04, PID 52176; attempt 7)** — attempt 6 plus the resolved-node
+  plume-boundary gate (v2.0.1, commit `45edd30e`); frames ON; fresh start (the gate parameter is
+  part of the configuration identity, so the attempt-6 checkpoint cannot be resumed). Same seed →
+  the first 1.64 M steps should replay attempt 6 (the gate change is diagnostic-only); the
+  ignition verdicts fall at 0.75 µs (~45 min of stepping after the ~5 min factorisation) and
+  1.5 µs (~90 min). First readings (04:28 AEST, 42 600 steps = 0.064 µs, 4.2–5.9 ms/step):
+  connectivity 24/24, N_e 256 k / N_i 283 k, I_d 1.6 → 2.8 mA, S 1.7 → 2.8e16 s⁻¹, n_g 5.5e19,
+  ω_pe Δt 0.074, 0.7 cells/λ_D, `q_far=0.000(raw 0.000/0n)` (max raw 0.045, 0 resolved far-field
+  nodes, gate not yet armed). **Bitwise replay of attempt 6 confirmed**: all 213 series records at
+  common steps agree exactly in N_e, N_i, φ_max, K_e, I_d and n_g (same seed, order-independent
+  fixed-point deposit) — the run is deterministic and the gate change touched no dynamics.
 
 ## Time-series frames and video
 
