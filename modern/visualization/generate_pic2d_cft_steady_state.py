@@ -582,7 +582,10 @@ def build_payload(results: Path = RESULTS, protocol_path: Path = PROTOCOL, varia
         "status": protocol["status"],
         "claim_boundary": protocol["claim_boundary"],
         "claim_statement": (
-            "Development steady state (model v1.3), single seed until the convergence pair (seed-b, W x 0.7) completes; "
+            "Development steady state (model v1.3); the headline is a single seed and the convergence pair has completed: "
+            "seed-b (statistical spread <= 1 % on the window currents over the common window) and W x 0.7 (particle-resolution "
+            "sensitivity: I_d +4.7 %, I_beam +2.1 %, S -4.5 %, wall currents -7.5 %, peak n_e -12 % over the common window), so the "
+            "plateau quantities carry a ~5 % resolution band (peak density ~10 %); "
             "not preregistered; not validated against any experiment; not a thruster performance prediction. The plateau "
             "criterion (< 5 % drift of I_d, N_e and n_g over the trailing 20 %, after >= 3 ion transit times) held with the "
             "electron-count drift at 4.98 % - marginal, reported as such. The window peak density is 4.1 x the a-priori "
