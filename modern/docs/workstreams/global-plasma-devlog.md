@@ -1,5 +1,86 @@
 # Global Plasma Workstream Development Log
 
+## 2026-09-03 — Four-cell closure analysis for p != 0 (branch fix/plasma-network-closure)
+
+### Root cause
+
+- Reproduced the MDO v1 probe exactly (80 cases, `start_count=3`,
+  `residual_tolerance=1e-8`): 13/80 closed, all at `p=0`; floors
+  `4.739e-4..1.960e-1`; 2.9 s per failing multistart solve; dominant row R27
+  for moderate `p`, current rows R03/R06/R07/R11 for `p=0.64` below 1000 V.
+- Rows R00-R26 are consistent and parametrized by the four potentials.
+  Substituting them into R27 gives exactly
+  `2*(j_e3*(1-p4)+I4)*(phi_4-Ua) + EI*(p1*j_e0+p2*j_e1+p3*j_e2)`
+  (verified to `1.9e-13` relative over 400 random cases). Both terms are
+  non-negative on the admissible region, so no root exists for any positive
+  interior cusp probability; `p4`-only loss closes for every value tried
+  (`1e-4..0.3`), and every zero-cusp closure sits at `phi_4 = Ua`.
+- Origin: Kornfeld IEPC-2007-108 assumption 8 books ionization as a frozen
+  loss and again as recombination in the cusp loss (`+EI` per cusp-lost
+  electron, also in legacy `Power_B_EQs.m`), and the printed anode electron
+  term `(phi_4-Ua+T4)` has the sign of an ion. The published DM9.2 table's
+  R27 misfit (`1.49e-3`) and the earlier `4.89e-4` DM9.2 probe floor are the
+  same inconsistency. The 2026-09-01 audit corrections cancel in the
+  substitution and did not introduce it.
+- Classification: (a) genuine model inconsistency for interior `p != 0`, with
+  (d) the solution sub-region `p1=p2=p3=0`, `phi_4=Ua` (and an independent
+  current-carrying infeasibility for large interior loss at low voltage), plus
+  a secondary (b) solver defect below.
+
+### Evidence
+
+- Jacobian at every floor point: rank 22/25, independent-subspace condition
+  9-200, `|J^T r|` comparable to the floor (constrained minimum on the
+  `phi_4 >= Ua` face, not a stationary point).
+- Continuation `p = eps*(1,1,1,1)` at 300 V/1 A: floor `1.28e-6, 1.28e-5,
+  1.30e-4, 3.99e-4, 1.43e-3, 5.78e-3` for `eps = 1e-4..0.3` (linear; no lost
+  branch). `p = (0,0,0,eps)`: closes to `1e-14` at every `eps`.
+- Differential evolution over the 25-box (205k evaluations): best `2.06e-2`.
+  200 random feasible starts through the production LM: 0/200 closed, floors
+  `1.82e-3..8.25e-2`.
+- Relaxing `phi_4 >= Ua` admits exact roots 0.6-12.6 V below `Ua`
+  (compensating-error roots; rejected by `is_feasible`).
+- Infimum of `|R27|` on the feasible exact manifold: `4.45e-3` (DM9.2 `p`,
+  300 V/1 A), `3.19e-4` (1000 V/1 A); feasible manifold empty for
+  `p=(0.64,0.64,0.64,0.64)` at 150-500 V.
+
+### Solver defect fixed
+
+- The `sorted()` ordering projection permuted potential identities and stalled
+  3/16 zero-cusp probe cases at 1000 V (`step_tolerance_without_balance` with
+  damping `1e10`, `phi_3 = phi_4` pinned). Replaced by the isotonic
+  pool-adjacent-violators projection `project_nondecreasing` in
+  `cft_revival.plasma.solver` and `cft_revival.plasma_network.solver`;
+  zero-cusp grid now 16/16 (was 13/16). No effect on the `p != 0` outcome.
+
+### Implemented
+
+- `potential_parametrized_state`, `global_row_closed_form` (diagnostics),
+  `project_nondecreasing` (exported).
+- `spec/plasma/equation-ledger.json#global_row_consistency` with status
+  `PROPOSED_NOT_ACCEPTED` (drop `+EI` from `Pcusp`; anode electron term
+  `(Ua-phi_4+T4)`); rows and power expressions unchanged; new limitation line.
+- `docs/workstreams/global-plasma-closure-analysis.md` (derivation,
+  evidence, classification, proposal, MDO implication).
+- Tests: `tests/plasma/test_closure_p_nonzero.py` (9),
+  `tests/plasma_network/test_plasma_network_closure_p_nonzero.py` (2),
+  `tests/plasma/test_solver.py` (+13: projection properties, zero-cusp grid
+  incl. 1000 V, determinism).
+
+### Validation
+
+- `tests/plasma` 58 passed, `tests/plasma_network` 66 passed, `tests/physics`
+  86 passed; `tests/experiments/{l1a_plasma_coupling,
+  four_cell_topology_search, four_cell_topology_search_v2}` 8/9/10 passed.
+- No `results/`, preregistration, or `FYP/` file touched.
+
+### MDO implication
+
+- The MDO v1 disclosure remains historically correct. The solver is now
+  usable for anode-cusp-only loss (`p1=p2=p3=0`); a v2 campaign with interior
+  cusp probabilities still needs the proposal above accepted together with a
+  potential closure.
+
 ## 2026-09-01 — Corrected discharge foundation
 
 ### Evidence and derivation

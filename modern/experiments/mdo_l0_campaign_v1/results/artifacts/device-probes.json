@@ -1,0 +1,1 @@
+{"cpu":{"cuda_version":"13.0","device":"cpu","device_name":"cpu","float64_cholesky_probe":[2.0,0.0,1.0,1.4142135623730951],"torch_version":"2.13.0+cu130"},"cuda":{"available":true,"cuda_version":"13.0","device":"cuda:0","device_name":"NVIDIA GeForce RTX 5090","float64_cholesky_probe":[2.0,0.0,1.0,1.4142135623730951],"torch_version":"2.13.0+cu130"}}

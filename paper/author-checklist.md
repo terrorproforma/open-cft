@@ -49,6 +49,32 @@
   `four-cell-v2.tex` or `topology-characterization-v1.tex`.
 - [ ] Quote the superseded four-cell proxy search and the failed coupling-v4
   validations only inside the registered lineage non-claim.
+- [ ] Describe the optimisation campaign only as
+  `l0_model_robust_multiobjective_optimisation_under_declared_input_uncertainty_not_thruster_performance`:
+  optimiser evidence on the L0 model under the declared closure CL-1 and
+  declared priors; no thruster-performance, plasma or physical-device claim,
+  no design recommendation, no optimiser-superiority claim beyond the recorded
+  budget, seeds and model, geometry excluded, benchmark field still null.
+- [ ] Keep every number of the optimisation section a `\Mdo...` macro; never
+  type a digit into `paper/sections/mdo-l0-v1.tex`.
+- [ ] Keep the four Discussion readings of the optimisation campaign labelled
+  as interpretation and phrase the geometry-to-performance bridge as future
+  work, never as evidence.
+- [ ] Describe the four-cell closure analysis only as
+  `analytic_consistency_of_the_corrected_four_cell_power_balance_not_thruster_physics`:
+  a statement about the corrected equation set (no admissible root for any
+  positive interior cusp probability; solutions only with zero interior
+  probabilities at the anode potential), never about the physical thruster;
+  the proposed correction stays `PROPOSED_NOT_ACCEPTED`.
+- [ ] Keep every number of the closure section a `\Fcc...` macro (documented
+  values bound to the analysis document, ledger or frozen protocol; recomputed
+  values from the bound package); never type a digit into
+  `paper/sections/four-cell-closure.tex`, and keep the displayed closed form's
+  coefficient and row index as macros.
+- [ ] Keep the legacy-study consequence (residual floors accepted by
+  `lsqnonlin` exit status) and the three-finding synthesis labelled as
+  interpretation in the Discussion; never claim a numerical value of the
+  unavailable legacy run.
 
 ## Methods and uncertainty
 
@@ -71,6 +97,13 @@
   `git status` shows no change to the three generated wall-loss files.
 - [ ] Run `python paper/scripts/generate_topology_screening_evidence.py` and
   confirm `git status` shows no change to the nine generated screening files.
+- [ ] Run `python paper/scripts/generate_mdo_l0_v1_evidence.py` and confirm
+  `git status` shows no change to the three generated optimisation files.
+- [ ] Run `python paper/scripts/generate_four_cell_closure_evidence.py` (it
+  recomputes the verification from `cft_revival.plasma`; about half a minute)
+  and confirm `git status` shows no change to the three generated closure
+  files; any change to the plasma package requires re-admission at the new
+  revision.
 - [ ] Run `python paper/scripts/check_paper.py`.
 - [ ] Run `python -m unittest discover -s paper/tests -v`.
 - [ ] Run `python paper/scripts/verify_reproducible_build.py` and require two

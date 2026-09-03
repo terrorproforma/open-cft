@@ -508,6 +508,35 @@ def solve_bounded_least_squares(
     return LeastSquaresResult(None, residual, diagnostics)
 
 
+def project_nondecreasing(values: Sequence[float]) -> tuple[float, ...]:
+    """Euclidean projection onto the nondecreasing cone (pool adjacent violators).
+
+    ``sorted()`` is not a projection: it permutes variable identities, so an
+    LM step that lowers ``phi[k]`` below ``phi[k-1]`` is silently converted
+    into a step on ``phi[k-1]`` and the intended descent direction is lost.
+    Pooling adjacent violators to their mean returns the nearest nondecreasing
+    vector in the Euclidean norm and keeps every entry attached to its own
+    variable.  The result is idempotent and equals the input when the input is
+    already nondecreasing.
+    """
+
+    blocks: list[list[float]] = []
+    for raw in values:
+        value = float(raw)
+        if not isfinite(value):
+            raise PlasmaValidationError("project_nondecreasing requires finite values")
+        blocks.append([value, 1.0])
+        while len(blocks) > 1 and blocks[-2][0] / blocks[-2][1] > blocks[-1][0] / blocks[-1][1]:
+            total, count = blocks.pop()
+            blocks[-1][0] += total
+            blocks[-1][1] += count
+    projected: list[float] = []
+    for total, count in blocks:
+        mean = total / count
+        projected.extend(mean for _ in range(int(count)))
+    return tuple(projected)
+
+
 def representative_initial_state(inputs: XenonGlobalInputs) -> PlasmaState:
     """Deterministic, source-scale initial state; it is not a fitted solution."""
 
@@ -571,7 +600,7 @@ def solve_global_discharge(
 
     def project(vector: tuple[float, ...]) -> tuple[float, ...]:
         values = list(vector)
-        ordered_phi = sorted(values[0:4])
+        ordered_phi = list(project_nondecreasing(values[0:4]))
         ordered_phi[3] = max(ordered_phi[3], inputs.anode_voltage_v)
         values[0:4] = ordered_phi
         values[20] = max(values[20], -values[21])

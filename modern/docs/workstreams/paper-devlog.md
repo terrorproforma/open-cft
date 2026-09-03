@@ -396,3 +396,259 @@
 - Two overfull boxes appeared while integrating (a 148 pt gate table and the
   unbreakable `\texttt{manufacturability}` cell); fixed by ragged-right `p{}`
   columns with a wider gate column, not by editing any number.
+
+## 2026-09-03 — MDO L0 campaign v1 admitted to the claim matrix and manuscript
+
+### Scope
+
+- Worktree `uni-project-paper-mdo`, branch `paper/mdo-l0-v1-claim` from
+  `origin/feat/sota-foundation` (`e642f38c`), LF verified (`git ls-files --eol`
+  shows `w/crlf` only on three `attr/-text` files of other experiments).
+  Paper-owned paths and `modern/docs/workstreams/paper-*` only; nothing under
+  `modern/experiments/**/results/`, no frozen preregistration file and nothing
+  under `FYP/` touched; no GPU work.
+
+### Evidence level decision
+
+- The `numerical-campaign` kind is reused (second gate `GATE-MDO-L0-V1`,
+  `opens_level: null`) because its definition, one accepted preregistered
+  campaign about a declared component model, fits: the component model is the
+  accepted L0 conservation model under the declared multiplicative
+  cusp-survival closure CL-1 and declared uniform priors, executed once
+  (8 of 8 binding gates, `accepted_result`). It is optimiser evidence
+  (hypervolume per budget, paired comparisons, seed variance, Pareto sizes,
+  robust-versus-nominal fronts, sensitivity to the cusp prior), not
+  performance evidence; the gate record carries a `kind_justification`, and
+  the gate-kind description in `acceptance_policy` now names both campaigns.
+  No field solve, geometry variable or L0 mapping exists, so `GATE-L1`--`L3`
+  stay closed. A new manifest type `paper-mdo-campaign-manifest` 1.0 was
+  needed because required roles and metrics are type-specific.
+
+### Added
+
+- `paper/scripts/generate_mdo_l0_v1_evidence.py`: verifies the sealed bundle
+  of `modern/experiments/mdo_l0_campaign_v1` file by file against
+  `results/manifest.json` (137 files, every artifact sidecar re-checked; no
+  end-of-line tolerance exists or is granted), requires the frozen
+  `protocol.json`/`authorities.json`/`shakedown.json` to equal the sealed
+  canonical copies, cross-checks the committed results dashboard
+  (`modern/visualization/mdo-l0-campaign-v1.html` + generator, pinned
+  manifest SHA-256 and revisions, embedded `campaign_result`, seed variance,
+  gate blocks and per-run hypervolumes must equal the artifacts), recomputes
+  every repeated number (seed means/stds, attained fractions, Jaccard index,
+  scenario survivals, objective ranges, pair wins, invariance flags), and
+  writes 334 `\Mdo...` macros with three `\ArtifactClaim` tables
+  (`\MdoHvTable`, `\MdoRobustNominalTable`, `\MdoScenarioTable`) plus the
+  evidence file and sidecar. Derived macros record their derivation and
+  inputs; the four-cell solver probe numbers are parsed from the frozen
+  protocol's disclosure text with a fixed regular expression.
+- Typed manifest `paper/evidence/manifests/mdo-l0-v1.json`: 36 source files
+  bound by Git blob and SHA-256 at `c553124b` (results manifest, terminal,
+  lock, 20 artifacts, nine run records, two transitions, three frozen files
+  whose blobs equal those at `4898d0fd`), a `dashboard` block binding the
+  generator and HTML at `e642f38c`, 68 metrics copied from the raw macro
+  values plus 10 fixed policy metrics.
+- `result-gates.json` gate `GATE-MDO-L0-V1` (35 metric constraints,
+  prohibited inferences); `manifest-schemas.json` type; claims CLM-029
+  (abstract), CLM-030 (results, with `non_claims`), CLM-031 (tables), CLM-032
+  (robust versus nominal), CLM-033 (sensitivity/scenarios, bound to both the
+  optimisation and wall-loss manifests: the collisionless wall-hit estimand
+  is not the Kornfeld cusp probability; the corrected four-cell solver closed
+  only at p = 0 in the recorded probe), CLM-034 (scope limitation),
+  CLM-035 (labelled Discussion interpretation, four readings); contract item
+  `TAB-MDO-L0-V1` (`artifact_claim_count: 3`).
+- `check_paper.py`: `MDO_METRIC_MACROS`, `MDO_POLICY_METRICS`, schema type,
+  `_check_mdo_campaign` (byte-identical regeneration, artifact hashes on disk,
+  dashboard bound at its revision and equal to the checkout by LF-normalised
+  SHA-256, metric == raw with type equality, policy metrics, results tree
+  unchanged, prereg → results → dashboard → HEAD chains, frozen blobs,
+  macro-only section with no literal digit, classification and closure
+  macros, non-claims, bindings once, `\MdoEvidenceRevision`, three
+  ArtifactClaims, claim records bound and located), renderer, new required
+  section, new trackables.
+- `manuscript.tex`: `\MdoEvidenceRevision`, preamble `\input` of the macro
+  file, fourth date line, abstract sentence CLM-029, contribution list,
+  evidence-boundary paragraph, pointer from the optimisation-protocol
+  subsection, new Section 9 "Preregistered robust multi-objective
+  optimisation of the L0 model" (intro with the CL-1 formula, then
+  `\input{sections/mdo-l0-v1.tex}` with subsection 9.1), sentence after the
+  L1 gate box, Discussion paragraph with CLM-035 and a plain future-work
+  sentence on the geometry screening, Limitations rewritten (the old "no
+  admitted hypervolume result or baseline comparison" sentence was no longer
+  true), data availability, Conclusion.
+- Section `paper/sections/mdo-l0-v1.tex` (Method, Results, Robust versus
+  nominal fronts, Sensitivity to the cusp prior, boxed interpretation);
+  standalone driver; tests `test_mdo_l0_v1_admission.py` (17) and
+  `test_mdo_l0_v1_evidence.py` (8); README, author checklist, supplementary
+  outline (S4d) and notation updated.
+
+### Validation
+
+- Before the commit `check_paper.py` reported exactly the fail-closed
+  "accepted manifest is not committed at HEAD"; after commit `e6db2122` it
+  passed.
+- `python -m unittest discover -s paper/tests`: 83 tests OK (58 existing +
+  25 new).
+- `python paper/scripts/verify_reproducible_build.py`: two clean builds
+  byte-identical, `paper/build/manuscript.pdf` 446,316 bytes, SHA-256
+  `e7900c1000e3d48ef02cc6e67e114dce946c9cadfa4cd7820414ee48bde0d4ff`, 22
+  pages, no LaTeX errors, undefined references, warnings or overfull boxes.
+- Pages rendered with MiKTeX `pdftoppm -r 80` to `%TEMP%\paper-mdo-pages\`
+  (`p-01.png` … `p-22.png`) and inspected: abstract sentence and four-line
+  date p. 1; Section 9 opens p. 14 with the CL-1 equation and 9.1; Table 10
+  (hypervolume per optimiser and seed with mean ± std) p. 16; Table 11
+  (robust versus nominal) p. 17 with the boxed interpretation; Table 12
+  (priors and scenarios) p. 18 ahead of the L1 gate; Discussion paragraph
+  with CLM-035 p. 20.
+- One overfull box appeared while integrating (229 pt, the eight-column
+  sensitivity table); fixed by ragged-right `p{}` columns for the label and
+  probability columns, stacked two-line headers and `\scriptsize`, not by
+  dropping any number.
+
+## 2026-09-03 — Four-cell power-balance closure analysis admitted to the claim matrix and manuscript
+
+### Scope
+
+- Worktree `uni-project-paper-closure`, branch `paper/four-cell-closure-claim`
+  from `origin/feat/sota-foundation` (`ba6875f6`), LF verified (`git ls-files
+  --eol` shows no `w/crlf` under `paper/` or the paper workstream docs).
+  Paper-owned paths and `modern/docs/workstreams/paper-*` only; nothing under
+  `modern/experiments/**/results/`, no frozen preregistration file and nothing
+  under `FYP/` touched (`FYP/Power_B_EQs.m` is read at its blob); no GPU work.
+
+### Evidence level decision
+
+- The admitted object is neither a preregistered campaign nor a screening: it
+  is a derivation about the corrected four-cell discharge ledger (28 rows, 25
+  unknowns) whose closed form is verified numerically. A new gate kind
+  `analytic-consistency` was defined in `result-gates.json`: it admits one
+  analytic consistency result about a declared equation set (a derivation whose
+  closed form is verified numerically to a stated tolerance and pinned by
+  committed tests), opens no physics level, and its status `accepted` means the
+  derivation and its numerical verification are admitted as recorded; it
+  accepts no correction of the equation set (the proposal stays
+  `PROPOSED_NOT_ACCEPTED`) and says nothing about the physical thruster. Gate
+  `GATE-FOUR-CELL-CLOSURE-V1` carries a `kind_justification`; manifest type
+  `paper-analytic-consistency-manifest` 1.0.
+- The typed manifest binds 14 files by Git blob and SHA-256 at the analysis
+  commit `266d8a99` and requires them unchanged at `ba6875f6`: the analysis
+  document, the ledger, the five `cft_revival.plasma` files, three pinning test
+  files, the frozen MDO `protocol.json` (blob equal at preregistration
+  `4898d0fd`), `FYP/Power_B_EQs.m` as lineage, `AUDIT.md` and `REFERENCES.md`.
+  The executed package in the checkout must equal the bound blobs
+  (LF-normalised SHA-256) or the generator refuses; a future change to
+  `cft_revival.plasma` therefore requires re-admission at the new revision.
+
+### Added
+
+- `paper/scripts/generate_four_cell_closure_evidence.py`: binds the sources
+  (one `git ls-tree` per commit plus one `git cat-file --batch`), verifies the
+  executed package, imports `cft_revival.plasma` from `modern/src` of the
+  checkout only, and RECOMPUTES the verification: `global_row_closed_form`
+  against the full residual over 400 seeded random admissible states (max
+  relative difference `\FccClosedFormRelDiff`), the R00–R26 residual on the
+  manifold, the anode-fall coefficient at p = 0, the continuation ladder
+  p = eps (1,1,1,1) at 300 V / 1 A through the production multistart solver
+  (1 start, 600 iterations), the anode-only closures p = (0,0,0,eps) (5
+  starts), the published-state misfit on the exact manifold, one relaxed root
+  by bisection and the Jacobian rank at every floor. Documented numbers are
+  read from the analysis document blob with fixed regular expressions
+  (`DOCUMENT_PATTERNS`), from the ledger by JSON pointer and from the frozen
+  protocol with the optimisation generator's `PROBE_PATTERN`; the generator
+  refuses on any departure beyond `TOLERANCES` (closed form <= 1e-12,
+  manifold <= 1e-11, each floor within 25 % of the document, floor/eps spread
+  <= 2, anode-only closures converged under 1e-8, misfit within 2 %, relaxed
+  depth within 2 %, rank 22 and condition <= 200 at every floor). The 13/80
+  probe is read from the frozen protocol, not recomputed, and the document's
+  reproduction must agree; differential evolution and the 200 random starts
+  are documented only (SciPy, minutes). Recomputed values are recorded to a
+  declared number of significant digits. 163 `\Fcc...` macros, two
+  `\ArtifactClaim` tables (continuation ladder; global search / relaxed roots /
+  Jacobian / misfit / probe with per-row status), evidence file and sidecar.
+  Recomputation is cached per process (about 35 s once per process).
+- Manifest `paper/evidence/manifests/four-cell-closure.json` (69 metrics from
+  the evidence values plus 10 fixed policy metrics, 79 in all), gate record, gate-kind
+  description, `manifest-schemas.json` type, claims CLM-036 (abstract),
+  CLM-037 (closed form, verification, no admissible root; `non_claims`),
+  CLM-038 (sub-region, continuation, global search, Jacobian, probe; bound to
+  the MDO manifest too), CLM-039 (tables), CLM-040 (attribution: Kornfeld
+  assumption 8, printed anode sign, legacy lines 136–137, audit fixes cancel),
+  CLM-041 (proposed correction `PROPOSED_NOT_ACCEPTED`, rank 22 -> 21, solver
+  defect fixed), CLM-042 (claim boundary), CLM-043 (Discussion interpretation:
+  legacy `lsqnonlin` exit flags 1–3 accepted by status alone, residual norm
+  discarded, `TolFun=1e-50`; residual floors read as the reported values;
+  interpretation), CLM-044 (Discussion interpretation: mirror picture
+  unsupported, four-cell topology undemonstrated, power balance inconsistent
+  for interior p; bound to the wall-loss and four-cell manifests); contract
+  item `TAB-FOUR-CELL-CLOSURE-V1` (`artifact_claim_count: 2`); policy
+  `analytic_consistency_rule`.
+- `check_paper.py`: `ANALYTIC_GATE_KIND`, `FOUR_CELL_CLOSURE_METRIC_MACROS`,
+  `FOUR_CELL_CLOSURE_POLICY_METRICS`, schema type, `_check_four_cell_closure`
+  (byte-identical regeneration = recomputation, source bindings at the analysis
+  and verified-tree revisions, frozen protocol blob, executed package on disk
+  equal to the bound blobs, artifact blobs, metric == value with type equality,
+  policy metrics, classification and correction-status macros, opens no level,
+  bindings once, `\ClosureEvidenceRevision`, the displayed closed form in the
+  manuscript section with macro-bound coefficient and row index and no typed
+  digit, macro-only section, two ArtifactClaims, claim records bound and
+  located, interpretations kept out of the results section), renderer,
+  required Section 10, trackables, kind handling in `_check_gates`.
+- `manuscript.tex`: `\ClosureEvidenceRevision`, preamble `\input`, fifth
+  date line, abstract sentence CLM-036, contribution list, evidence-boundary
+  paragraph, Section 10 “Consistency of the four-cell power balance” (intro
+  with the displayed closed form, `\cite{Kornfeld2007}`, then
+  `\input{sections/four-cell-closure.tex}` with subsection 10.1), sentence
+  after the L2 gate box, Discussion paragraph with CLM-043 and CLM-044,
+  Limitations, data availability, Conclusion.
+- Section `paper/sections/four-cell-closure.tex` (Derivation and numerical
+  verification; Solution sub-region, continuation and global search;
+  Attribution; Proposed correction (not accepted); Scope with the boxed claim
+  boundary); standalone driver; tests `test_four_cell_closure_admission.py`
+  (19) and `test_four_cell_closure_evidence.py` (9); README, author checklist,
+  supplementary outline (S4e) and notation updated.
+
+### Recomputed against the document
+
+- Closed form vs evaluated R27: 2.0e-13 max relative over 400 states
+  (document 1.9e-13 over 400); manifold residual 2.8e-13 (< 1e-11).
+- Continuation floors (1 start, 600 it): 1.35e-6, 1.36e-5, 1.37e-4, 4.16e-4,
+  1.49e-3, 5.78e-3 against the document's 1.28e-6, 1.28e-5, 1.30e-4, 3.99e-4,
+  1.43e-3, 5.78e-3 (5 starts): largest departure 6 %, floor/eps spread 1.40,
+  every rung `iteration_limit` with R27 dominant, rank 22 of 25, condition
+  <= 20. Anode-only p = (0,0,0,eps): 6 of 6 converged, residuals 1e-16 to
+  2e-13, phi_4 - Ua = 0.
+- Published-state misfit 1.47e-3 (document 1.47e-3; ledger 1.4866e-3);
+  relaxed root 1.18 V below the anode with all rows to 2e-16, infeasible
+  (document 1.18 V at 300 V / 1 A); anode-fall coefficient 2.0.
+- Probe 13/80 from the frozen protocol equals the document's reproduction.
+- Legacy blob `8eeca9c6`: the three `+IE` cusp terms sit on line 136 and the
+  anode electron term `(x(9)-Ua+x(13))` on line 137; the document names
+  “line 137”, so the generator requires the documented line to fall inside the
+  two-line span and the paper reports both lines.
+
+### Validation
+
+- Before the commit `check_paper.py` reported exactly the fail-closed
+  “accepted manifest is not committed at HEAD”; after commit `bb7c25b2` it
+  passed (about 90 s, of which ~35 s is the recomputation).
+- `python -m unittest discover -s paper/tests`: 111 tests (83 existing + 28
+  new); the only pre-commit failure was that same fail-closed check; 111 OK
+  after the commit.
+- `python paper/scripts/verify_reproducible_build.py`: two clean builds
+  byte-identical, `paper/build/manuscript.pdf` 493,839 bytes, SHA-256
+  `6ac978b29ab899092e0427c44bbe5f26f8608190589877b50bd729f16ede8a85`, 27
+  pages, no LaTeX errors, undefined references, warnings or overfull boxes.
+- Pages rendered with MiKTeX `pdftoppm -r 80` to `%TEMP%\paper-closure-pages\`
+  (`p-01.png` … `p-27.png`) and inspected: abstract sentence and five-line
+  date p. 1; Section 10 opens p. 18 with the displayed closed form (eq. 8) on
+  p. 19; Table 13 (continuation ladder) p. 20; Table 14 (global search) p. 21;
+  Discussion paragraph with CLM-043 and CLM-044 p. 24; Limitations p. 25.
+- Corrections during integration: nested `$` from a `sci` macro inside a
+  caption's math (`\le\FccResidualTolerance`) gave “Missing $ inserted”;
+  moved the macro outside math. A 24 pt overfull from a typewriter ledger
+  expression with `\allowbreak` only; replaced by `\hspace{0pt plus 1.5pt}`
+  after every operator so the line has both break points and stretch.
+- The user brief said the legacy solver “accepted exit-flag-4 floors”; the
+  audit and `Performance_est.m:91-128` say flags 1–3 are accepted by status
+  alone and flag 4 is rejected (`HEMP_solver.m:64` discards the residual norm,
+  `TolFun=1e-50`). The claim uses the audit's wording, macro-bound.

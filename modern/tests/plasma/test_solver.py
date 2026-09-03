@@ -5,6 +5,8 @@ import pytest
 from cft_revival.plasma import (
     PlasmaValidationError,
     SolverOptions,
+    XenonGlobalInputs,
+    project_nondecreasing,
     solve_bounded_least_squares,
     solve_global_discharge,
     solve_global_discharge_multistart,
@@ -209,3 +211,48 @@ def test_deterministic_multistart_selects_strict_solution_and_retains_attempts(
     assert len(result.attempts) == 2
     assert result.best.state == state
     assert result.residual_floor < 1.0e-15
+
+
+@pytest.mark.parametrize(
+    "values,expected",
+    [
+        ((1.0, 2.0, 3.0, 4.0), (1.0, 2.0, 3.0, 4.0)),
+        ((4.0, 3.0, 2.0, 1.0), (2.5, 2.5, 2.5, 2.5)),
+        ((1.0, 3.0, 2.0, 4.0), (1.0, 2.5, 2.5, 4.0)),
+        ((0.0, 10.0, 9.0, 8.0), (0.0, 9.0, 9.0, 9.0)),
+        ((5.0,), (5.0,)),
+    ],
+)
+def test_nondecreasing_projection_pools_adjacent_violators(values, expected) -> None:
+    projected = project_nondecreasing(values)
+    assert projected == pytest.approx(expected)
+    assert all(a <= b for a, b in zip(projected, projected[1:], strict=False))
+    assert project_nondecreasing(projected) == pytest.approx(projected)
+    # Euclidean projection: never farther from the input than the sorted permutation.
+    sorted_distance = sum((a - b) ** 2 for a, b in zip(values, sorted(values), strict=True))
+    projected_distance = sum((a - b) ** 2 for a, b in zip(values, projected, strict=True))
+    assert projected_distance <= sorted_distance + 1.0e-12
+
+
+def test_nondecreasing_projection_rejects_nonfinite_values() -> None:
+    with pytest.raises(PlasmaValidationError, match="finite"):
+        project_nondecreasing((1.0, float("nan")))
+
+
+@pytest.mark.parametrize("voltage", [150.0, 1000.0])
+@pytest.mark.parametrize("current", [0.1, 1.0, 3.0])
+def test_zero_cusp_grid_closes_including_the_1000_v_cases(voltage, current) -> None:
+    # Before the isotonic projection the sort-based projection stalled the
+    # 1000 V / {0.1, 1, 3} A zero-cusp solves (13/16 of the 2026-09-03 probe grid).
+    inputs = XenonGlobalInputs(voltage, current, (0.0, 0.0, 0.0, 0.0))
+    options = SolverOptions(residual_tolerance=1.0e-8)
+    result = solve_global_discharge_multistart(inputs, start_count=3, options=options)
+    assert result.best.state is not None
+    assert result.best.diagnostics.converged
+    assert result.residual_floor <= 1.0e-8
+    assert result.best.diagnostics.jacobian_rank == 22
+    # Every published zero-cusp state sits on the phi_4 = Ua boundary: the
+    # global row reduces to 2*(j_e3+I4)*(phi_4-Ua) there.
+    assert result.best.state.plasma_potential_v[3] == pytest.approx(voltage, abs=1.0e-6 * voltage)
+    repeated = solve_global_discharge_multistart(inputs, start_count=3, options=options)
+    assert repeated == result

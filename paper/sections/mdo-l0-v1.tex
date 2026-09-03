@@ -1,0 +1,212 @@
+% Results subsection: MDO L0 campaign v1 (robust multi-objective optimisation of the
+% L0 conservation model under the declared closure CL-1).
+%
+% Every quantity in this file is a \Mdo... macro defined in
+% paper/generated/mdo-l0-v1.tex, which paper/scripts/generate_mdo_l0_v1_evidence.py
+% writes from the sealed results bundle of modern/experiments/mdo_l0_campaign_v1;
+% paper/evidence/mdo-l0-v1.json records the artifact path, JSON pointer and SHA-256
+% behind each macro, or the derivation of a derived macro. No numeric literal is
+% typed here.
+%
+% Status: admitted. manuscript.tex binds this file once through
+% \input{sections/mdo-l0-v1.tex}. Admission is governed by gate GATE-MDO-L0-V1 in
+% paper/evidence/result-gates.json, the typed manifest
+% paper/evidence/manifests/mdo-l0-v1.json and the campaign claim records in
+% paper/evidence/claims.json bound to manifest MDO-L0-V1-20260903-864-V1. Every
+% \EvidenceClaim body below must equal its registered authorized_tex exactly;
+% paper/scripts/check_paper.py verifies that, the macro-only rule, the
+% classification string and the presence of the registered non-claims. The
+% standalone driver paper/sections/mdo-l0-v1-standalone.tex compiles this file on
+% its own.
+\subsection{Robust optimiser comparison on the operating-point model under declared cusp-probability uncertainty}
+\label{sec:mdo-l0-v1}
+
+\paragraph{Method.}
+The campaign optimises the accepted operating-point model (fidelity
+\texttt{\MdoFidelity}, Python reference backend) over \MdoDesignVariableCount{}
+design variables: the discharge voltage from \MdoUaLower{} to \MdoUaUpper{} V, the
+anode current from \MdoIaLower{} to \MdoIaUpper{} A and the propellant mass flow from
+\MdoMdotLower{} to \MdoMdotUpper{} kg/s, that is the legacy operating variables
+clipped to the accepted sweep domain. The \MdoExcludedVariableCount{} legacy
+geometry radii are excluded because no geometry-to-model map survives the audit:
+the legacy finite-element, cusp-window and mirror-formula chain is quarantined and
+its mirror step is not supported by the admitted wall-loss campaign
+(Section~\ref{sec:wall-loss-v4}); the exclusion is recorded as a structural finding
+of the campaign. Its \MdoUncertainInputCount{} uncertain inputs carry independent
+uniform priors: the per-cell cusp probabilities $p_k$ of the \MdoCellCount{} cells
+on $[\MdoCuspLower, \MdoCuspUpper]$, the produced ionised fraction on
+$[\MdoEtaLower, \MdoEtaUpper]$, the doubly charged ion share on
+$[\MdoZetaLower, \MdoZetaUpper]$ and the divergence factor on
+$[\MdoGammaLower, \MdoGammaUpper]$. The cusp prior is wide by design: its implied
+mean survival, \MdoImpliedPriorSurvival, matches the pooled electron survival
+\MdoVFourSurvival{} of the wall-loss campaign (\MdoVFourWallHits{} of
+\MdoVFourTrials{} wall hits, \MdoVFourReflections{} reflections) within
+\MdoSurvivalCalibrationGap; the per-cell wall-loss values are not used as the prior
+because two cells hit the wall on every launch, and they are evaluated only as a
+scenario below. The cusp probabilities enter solely through the declared closure
+\texttt{\MdoClosureId} (\MdoClosureStatus), which multiplies the produced ionised
+fraction by the survival $S$ and leaves the anode current unaffected; the
+uncertain inputs are propagated through one frozen \MdoSampleCount-row Halton
+sample (bases \MdoSampleBases; hash prefix \texttt{\MdoSampleSha}; frozen:
+\MdoSampleFrozen). The \MdoObjectiveCount{} objectives are the model's ledgered
+axial thrust and specific impulse (maximised), its thruster-electrical-to-beam
+efficiency (maximised) and its anode input power (minimised); the constraint
+requires the anode current to exceed the largest beam current over the sample
+(\texttt{\MdoConstraintName} $\ge \MdoConstraintThreshold$~A), and a violating
+design records no robust objectives. Each objective is made robust with the
+\MdoRiskMeasure{} of the worst \MdoTailCount{} of \MdoSampleCount{} sample values
+(tail fraction \MdoTailFraction). \MdoStrategyCount{} optimisers receive the same
+\MdoInitialDesign-point initial design per seed and the same budget of
+\MdoEvaluationsPerRun{} model evaluations: constrained qLogNEHVI from
+\MdoBoLibrary{} \MdoBotorchVersion{} (independent Gaussian processes per output,
+\MdoBoBatch{} candidates per iteration for \MdoBoIterations{} iterations,
+\MdoBoMcSamples{} Monte Carlo samples, device \texttt{\MdoBoDevice} in
+\texttt{\MdoBoDtype}), NSGA-III from \MdoNsgaLibrary{} \MdoPymooVersion{}
+(population \MdoNsgaPopulation, \MdoNsgaGenerations{} generations) and a two-stage
+Latin-hypercube baseline, each with seeds \MdoSeeds. Hypervolume is computed exactly
+in a dimensionless all-maximise frame against the declared reference point (anode
+power \MdoRefAnodePowerW{}~W; thrust, specific impulse and efficiency at zero) with
+comparison scales of \MdoScaleThrust{}~N, \MdoScaleIsp{}~s, unity and
+\MdoScalePower{}~W. A \MdoDenseCount-design Halton reference (seed \MdoDenseSeed;
+\MdoDenseFeasible{} feasible, \MdoDenseInfeasible{} infeasible) supplies the robust
+and nominal reference fronts (\MdoDenseRobustFront{} and \MdoDenseNominalFront{}
+designs); it is not an optimiser run and not part of the comparison.
+
+The protocol was frozen at preregistration commit \texttt{\MdoPreregCommit} after a
+disclosed non-evidentiary shakedown of the complete production path
+(\MdoShakedownBudget{} evaluations per run, seeds \MdoShakedownSeeds; disjoint from
+the evidentiary design: \MdoShakedownDisjoint; passed: \MdoShakedownPassed;
+evidentiary: \MdoShakedownEvidentiary), and executed exactly \MdoAttemptCount{} time
+under an immutable Git-common lock (immutable: \MdoLockImmutable). The results are
+committed at \texttt{\MdoResultsCommit} (manifest hash prefix
+\texttt{\MdoManifestSha}; \MdoVerifiedFiles{} files verified byte for byte,
+\MdoToleratedEolFiles{} accepted through any end-of-line tolerance) and the results
+dashboard, whose embedded extraction the evidence generator requires to agree with
+the sealed artifacts, at \texttt{\MdoDashboardCommit}. Acceptance is decided by
+\MdoGateCount{} binding gates: bit-exact replay of every evaluation, model-domain
+integrity, monotone hypervolume curves, exact budgets, shared initial designs, the
+frozen sample hash, Pareto replay and the code contract (hashed source prefix
+\texttt{\MdoSourceSha}, protocol hash prefix \texttt{\MdoProtocolSha}; matches:
+\MdoCodeContractMatches). The optimiser comparisons, the design-set invariance and
+the robust-versus-nominal differences were predeclared as reported outcomes that
+never change the terminal state. The campaign ran on \MdoCpuCount{} CPU cores; a
+CUDA device (\MdoCudaDevice) was probed and not used, and all timings are
+diagnostic only.
+
+\paragraph{Results.}
+\EvidenceClaim{CLM-030}{The single execution terminated in state
+\texttt{\MdoTerminalState} with \MdoGatesPassed{} of \MdoGateCount{} binding gates
+passed, \MdoRuns{} runs of \MdoEvaluationsPerRun{} evaluations each
+(\MdoTotalEvaluations{} model evaluations, \MdoInfeasibleEvaluations{} of them
+constraint-violating, \MdoFailedRuns{} failed runs) and every evaluation replayed
+bit-exactly (\MdoReplayed{} replayed, \MdoReplayMismatches{} mismatches). Within the
+model classified as \texttt{\MdoClassification}, the final robust hypervolume of
+constrained qLogNEHVI was \MdoHvBoA, \MdoHvBoB{} and \MdoHvBoC{} for seeds
+\MdoSeeds{} (mean \MdoHvBoMean, sample standard deviation \MdoHvBoStd), against
+\MdoHvNsgaA, \MdoHvNsgaB{} and \MdoHvNsgaC{} for NSGA-III (mean \MdoHvNsgaMean,
+standard deviation \MdoHvNsgaStd) and \MdoHvLhsA, \MdoHvLhsB{} and \MdoHvLhsC{} for
+the Latin-hypercube baseline (mean \MdoHvLhsMean, standard deviation
+\MdoHvLhsStd). Paired by seed, qLogNEHVI exceeded the baseline in
+\MdoBoBeatsRandomWins{} of \MdoBoBeatsRandomSeeds{} seeds and NSGA-III in
+\MdoBoBeatsNsgaWins{} of \MdoBoBeatsNsgaSeeds{} seeds against a predeclared
+requirement of \MdoBoBeatsRandomRequired{} (outcomes \MdoBoBeatsRandomPassed{} and
+\MdoBoBeatsNsgaPassed); with \MdoEvaluationsPerRun{} evaluations it reached
+\MdoAttainedBoMin{} to \MdoAttainedBoMax{} of the \MdoDenseCount-design
+dense-reference robust hypervolume \MdoDenseRobustHv{} (mean
+\MdoAttainedBoMeanTwo{} of the reference from a \MdoDenseToBudgetRatio-fold smaller
+evaluation count), against \MdoAttainedNsgaMin{} to \MdoAttainedNsgaMax{} for
+NSGA-III and \MdoAttainedLhsMin{} to \MdoAttainedLhsMax{} for the baseline. Final
+Pareto-set sizes were \MdoParetoBoMin{} to \MdoParetoBoMax{} for qLogNEHVI,
+\MdoParetoNsgaMin{} to \MdoParetoNsgaMax{} for NSGA-III and \MdoParetoLhsMin{} to
+\MdoParetoLhsMax{} for the baseline, with \MdoInfeasibleBoMin{} to
+\MdoInfeasibleBoMax, \MdoInfeasibleNsgaMin{} to \MdoInfeasibleNsgaMax{} and
+\MdoInfeasibleLhsMin{} to \MdoInfeasibleLhsMax{} constraint-violating evaluations
+per run.}
+Table~\ref{tab:mdo-l0-v1-hypervolume} lists the per-run estimands. The acquisition
+optimisation dominated the wall time of the Bayesian runs (\MdoBoAcqSecondsMin{} to
+\MdoBoAcqSecondsMax{}~s per seed against at most \MdoBoFitSecondsMax{}~s of model
+fitting); the whole lifecycle took \MdoLifecycleWallMin{}~min from lock acquisition
+to the terminal record.
+\MdoHvTable
+
+\paragraph{Robust versus nominal fronts.}
+\EvidenceClaim{CLM-032}{Pooled over the \MdoUniqueDesigns{} unique designs
+evaluated by all runs, the robust front holds \MdoRobustFront{} designs
+(hypervolume \MdoPooledRobustHv{} over \MdoRobustCandidates{} robust-feasible
+designs) and the nominal front, a re-evaluation of the same designs at the prior
+midpoints under the nominal constraint, holds \MdoNominalFront{} designs
+(hypervolume \MdoPooledNominalHv{} over \MdoNominalCandidates{} nominally feasible
+designs); the two fronts share \MdoSharedDesigns{} designs (Jaccard index
+\MdoJaccard) and \MdoNominalRobustFeasible{} of the \MdoNominalFront{}
+nominal-front designs are robust-feasible. The nominal front reaches an
+electrical-to-beam efficiency of \MdoNominalEffMax{} and a specific impulse of
+\MdoNominalIspMax{}~s, whereas the robust front reaches \MdoRobustEffMax{} and
+\MdoRobustIspMax{}~s, both over anode powers from \MdoRobustPowerMin{} to
+\MdoRobustPowerMax{}~W. The predeclared separability expectation held on the dense
+reference (largest relative spread of the robust-to-nominal objective ratio
+\MdoSeparabilitySpreadMax{} against a tolerance of \MdoSeparabilityTolerance;
+passed: \MdoSeparabilityPassed): under the declared closure the cusp probabilities
+rescale thrust, specific impulse and efficiency uniformly, so the two fronts differ
+through the feasible set that the worst-case constraint restricts and not through
+the ranking of designs feasible under both constraints.}
+Table~\ref{tab:mdo-l0-v1-robust-nominal} sets the two fronts side by side; per
+optimiser, the pooled robust fronts hold \MdoPooledBoRobustFront{} (qLogNEHVI),
+\MdoPooledNsgaRobustFront{} (NSGA-III) and \MdoPooledLhsRobustFront{} (baseline)
+designs.
+\MdoRobustNominalTable
+
+\paragraph{Sensitivity to the cusp prior.}
+\EvidenceClaim{CLM-033}{Re-evaluating every recorded design under alternative
+uniform cusp priors with upper bounds \MdoPriorUppers{} and the same frozen sample
+rows, the robust nondominated design set restricted to the designs feasible under
+both the alternative and the campaign prior was identical to the campaign set for
+\MdoInvarianceIdenticalCount{} of \MdoPriorCount{} priors
+(\MdoInvarianceExactCount{} in exact arithmetic; predeclared design-set invariance
+\MdoInvariancePassed), while the feasible set itself moved from
+\MdoPriorFeasibleMin{} to \MdoPriorFeasibleMax{} designs and the unrestricted
+fronts from \MdoPriorFrontMin{} to \MdoPriorFrontMax{} designs (Jaccard index with
+the campaign front as low as \MdoPriorJaccardMin). At fixed cusp probabilities the
+\MdoRobustFront{} robust-Pareto designs respond as the closure dictates: the
+scenario \texttt{\MdoScenarioJeffreysId}, which sets the per-cell probabilities to
+the Jeffreys estimates of the wall-loss campaign's per-cell wall-hit counts
+(\MdoJeffreysCellOne, \MdoJeffreysCellTwo, \MdoJeffreysCellThree{} and
+\MdoJeffreysCellFour), gives a survival of \MdoScenarioJeffreysSurvival{} and a
+maximum thrust of \MdoScenarioJeffreysThrustMax{}~N, that is no beam, so the
+collisionless wall-hit probability of that campaign cannot be the per-cusp loss
+probability of a sustained discharge in the cusp cascade; the scenario
+\texttt{\MdoScenarioNoWallLossId} (survival \MdoScenarioNoWallLossSurvival, outside
+the sampled support whose largest survival is \MdoSampledSurvivalMax) makes
+\MdoScenarioNoWallLossInfeasible{} of the \MdoRobustFront{} robust-Pareto designs
+violate the anode-current constraint, because the worst case over a finite sample
+is the worst sampled case and not the worst case over the prior's support. The
+frozen protocol also discloses that the corrected four-cell discharge solver closed
+only for zero cusp probabilities in a probe of \MdoProbeTotalCases{} cases
+(\MdoProbeClosedCases{} converged; residual floors from \MdoProbeResidualMin{} to
+\MdoProbeResidualMax{} for every nonzero probability, about
+\MdoProbeSecondsPerSolve{}~s per multistart solve), which is why the campaign
+evaluates the declared closure and not that solver.}
+Table~\ref{tab:mdo-l0-v1-sensitivity} lists the alternative priors and the
+\MdoScenarioCount{} fixed scenarios.
+\MdoScenarioTable
+
+\paragraph{Interpretation.}
+The boxed statement is the only interpretation offered here; it is bounded to the
+model and closure and repeats the claim boundary sealed with the campaign.
+\par\medskip\noindent
+\fbox{\begin{minipage}{0.94\linewidth}
+\textbf{Model-bounded interpretation.}
+\EvidenceClaim{CLM-034}{This campaign is optimiser evidence about the
+operating-point model under the declared closure \texttt{\MdoClosureId} and the
+declared priors, classified \texttt{\MdoClassification}: it makes no
+thruster-performance, plasma or physical-device claim, none of its fronts is a
+design recommendation, calibration or validation, and every number is conditional
+on that closure and on those priors. It supports no statement that any optimiser
+is better beyond the recorded budget of \MdoEvaluationsPerRun{} evaluations, the
+\MdoSeedCount{} seeds and this model. The \MdoExcludedVariableCount{} legacy
+geometry variables are excluded because no geometry-to-model map survives the
+audit, so the campaign says nothing about geometry. It is not a physics level: it
+consumes the accepted operating-point model with a declared closure, opens none of
+the field-resolved, coupled or experimental gates, and leaves the benchmark field
+of the committed campaign policy null.}
+\end{minipage}}
+\par\medskip

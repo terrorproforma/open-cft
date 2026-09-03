@@ -3,6 +3,25 @@
 Scope: the standalone dashboards under `modern/visualization/`. Experiment-local
 dashboards keep their own logs next to their generators.
 
+## 2026-09-03 10:20 AEST - MDO L0 campaign v1 dashboard
+
+- New `generate_mdo_l0_campaign_v1_dashboard.py` -> `mdo-l0-campaign-v1.html`
+  (340,268 bytes) from the recorded bundle of
+  `experiments/mdo_l0_campaign_v1` (manifest `2a326f3c...`, result commit
+  `c553124b`): verifies all 137 manifest files byte-for-byte, cross-checks
+  metrics/curves/run artifacts/campaign-result against each other, embeds the
+  payload as JSON and draws every chart with inline SVG (hypervolume curves,
+  robust-vs-nominal fronts in three projections, parallel coordinates of the
+  114 robust-Pareto designs, cusp-prior and scenario sensitivity tables,
+  timing, protocol, provenance) under a claim-boundary panel.
+- Deterministic (no wall clock, no paths), offline, error sink `#jserrors`;
+  headless Edge: 0 JS errors at 1440 px and in a 390 px iframe host;
+  screenshots `%TEMP%\mdo_scratch\mdo-dashboard-final-{desktop,top,narrow390}.png`.
+- Tests `tests/visualization/test_mdo_l0_campaign_dashboard.py` (6): offline
+  template + error sink, script-terminator escaping, tamper refusal, pinned
+  manifest + byte-identical regeneration + committed freshness, payload equals
+  bundle numbers, section presence.
+
 ## 2026-09-03 02:40 AEST — regenerate stale design gallery and first-results
 
 - Break: `pytest tests/visualization` was 65 passed / 2 failed / 13 errors.

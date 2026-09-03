@@ -37,8 +37,38 @@
   declared component model that is not a physics level of the ladder. It is
   admitted by a `numerical-campaign` gate whose typed manifest is committed
   and cross-checked against the sealed results bundle; it opens no L gate. The
-  only current one is `GATE-WALL-LOSS-V4`, classified
-  `collisionless_prescribed_field_test_particle_wall_loss_not_pic`.
+  current ones are `GATE-WALL-LOSS-V4`, classified
+  `collisionless_prescribed_field_test_particle_wall_loss_not_pic`, and
+  `GATE-MDO-L0-V1`, classified
+  `l0_model_robust_multiobjective_optimisation_under_declared_input_uncertainty_not_thruster_performance`
+  (optimiser evidence on the L0 model under the declared closure CL-1).
+- **Closure CL-1** — the declared multiplicative cusp-survival closure of the
+  optimisation campaign: \(S(\mathbf p)=\prod_{k=1}^{4}(1-p_k)\) scales the
+  produced ionised fraction and leaves the anode current unchanged. It is a
+  declared assumption, neither derived nor validated; every number of the
+  campaign is conditional on it and on the declared priors.
+- **Robust objective (CVaR)** — for each L0 objective the mean of the worst
+  16 of 64 frozen Halton sample values of the uncertain inputs; the robust
+  constraint is the worst sampled beam-current margin, which enforces the
+  worst *sampled* case, not the worst case over the prior's support.
+- **Analytic consistency result** — a derivation about a declared equation set
+  whose closed form is verified numerically to a stated tolerance, pinned by
+  committed tests and recomputed by the checker at every run, admitted by an
+  `analytic-consistency` gate. The current one is `GATE-FOUR-CELL-CLOSURE-V1`,
+  classified
+  `analytic_consistency_of_the_corrected_four_cell_power_balance_not_thruster_physics`:
+  on the manifold of rows R00--R26 of the corrected four-cell ledger the global
+  power row is \(R_{27}=2\,(J_{e,3}+I_4)(\varphi_4-U_a)+E_I(p_1 j_{e,0}+p_2
+  j_{e,1}+p_3 j_{e,2})\) with \(J_{e,k}=j_{e,k}(1-p_k)\); both terms are
+  non-negative on the admissible region, so no admissible root exists for any
+  positive interior cusp probability. Gate status `accepted` means the
+  derivation and its verification are admitted as recorded; it accepts no
+  correction (the proposal is `PROPOSED_NOT_ACCEPTED`), says nothing about the
+  physical thruster and opens no L gate.
+- **Residual floor** — the least-squares stall value \(\max_i|r_i|\) of the
+  production solver when no admissible root exists; for the four-cell ledger it
+  is linear in the interior cusp probability with a Jacobian of constant rank
+  22 of 25, a property of the equations rather than of the solver.
 - **Numerical screening** — a preregistered, single-execution L1a field-only
   screening study (linear-vacuum equivalent-current fields; no
   permanent-magnet or nonlinear-iron material model) admitted by a
@@ -107,3 +137,11 @@
 - Sweep axis cusps and per-cell mirror ratios are field-only screening
   quantities; they are not confinement cells, confinement predictions or
   performance.
+- A robust or nominal Pareto front of the L0 optimisation campaign is an
+  optimiser estimand under the declared closure CL-1 and priors; it is not
+  thruster performance, a design recommendation, a calibration or a
+  validation, and "qLogNEHVI beat the baselines" holds only for the recorded
+  budget, seeds and model.
+- The collisionless wall-hit probability of the wall-loss campaign is not the
+  per-cusp loss probability of the Kornfeld cusp cascade; inserting the former
+  as the latter gives no beam under CL-1.

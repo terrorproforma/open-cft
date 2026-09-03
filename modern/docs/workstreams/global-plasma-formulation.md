@@ -125,6 +125,32 @@ discrepancy, never as a solved state. A zero-cusp manufactured state derived
 from the same current and energy equations closes below `1e-15`, proving the
 strict publication path without treating rounded evidence as truth.
 
+## Known global-row inconsistency for interior cusp loss (2026-09-03)
+
+Rows R00-R26 are mutually consistent and are parametrized by the four cell
+potentials (`potential_parametrized_state`). Substituting them into the global
+power row leaves
+
+`R27 = 2*(j_e3*(1-p4)+I4)*(phi_4-Ua) + EI*(p1*j_e0+p2*j_e1+p3*j_e2)`
+
+(`global_row_closed_form`), which is non-negative on the admissible region and
+vanishes only for `p1=p2=p3=0` with `phi_4=Ua`. Strict closure is therefore
+possible for zero interior cusp probability (any `p4`) and impossible for any
+positive interior probability; the residual floors reported by the solver for
+`p != 0` are this inconsistency, not a convergence failure. The two terms are
+inherited from the source: the recombination energy of cusp-lost ions is booked
+in both `PI` and `Pcusp` (Kornfeld assumption 8), and the anode electron term
+carries the sign of an ion. The derivation, evidence, and the minimal
+correction (status `PROPOSED_NOT_ACCEPTED`, because it makes the global row an
+identity and leaves all four potentials free) are in
+`global-plasma-closure-analysis.md` and
+`spec/plasma/equation-ledger.json#global_row_consistency`.
+
+The ordering projection inside the solver is the isotonic
+(pool-adjacent-violators) projection `project_nondecreasing`; the earlier
+`sorted()` permuted potential identities and stalled zero-cusp solves at
+1000 V.
+
 ## Remaining evidence blockers
 
 - A machine-readable original MathCAD worksheet is needed to settle raster

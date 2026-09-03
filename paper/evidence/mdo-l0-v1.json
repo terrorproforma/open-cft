@@ -1,0 +1,4759 @@
+{
+  "artifacts": {
+    "artifacts/authorities.json": {
+      "bytes": 7517,
+      "sha256": "03b3c74921b98737db74789adbad2647870ed4a5c0d0facc5eab7fcdcf13742f"
+    },
+    "artifacts/campaign-plan.json": {
+      "bytes": 514,
+      "sha256": "0c260f3ebee5078aa13e194fda0aba5079ec0d13f45974bdf2690a1b1a494d16"
+    },
+    "artifacts/campaign-result.json": {
+      "bytes": 3599,
+      "sha256": "394894a7f9e675a8280f14330530db52172a454e9d804f1b6f4db115190f9c8f"
+    },
+    "artifacts/code-contract.json": {
+      "bytes": 6055,
+      "sha256": "7d061a7dd48293e7df372f4192ff4d02942e20909063f0e3ef0a926f67bd98ed"
+    },
+    "artifacts/dense-reference-summary.json": {
+      "bytes": 919,
+      "sha256": "9bb9fa7449844624f62e18f1f3927be55e21d53ca19ecb20ffa703102688ce25"
+    },
+    "artifacts/device-probes.json": {
+      "bytes": 350,
+      "sha256": "6c0c909e16f7f8b75cbe37d2ad44fde58c30053f768f11a604a0e82401f72429"
+    },
+    "artifacts/gates.json": {
+      "bytes": 3218,
+      "sha256": "5bfe70aee8dd6aa9ed0b05354679dcf5c88381507eeaecdf8e94da5332aafe5f"
+    },
+    "artifacts/hypervolume-curves.json": {
+      "bytes": 91138,
+      "sha256": "036d0b5038e4030fe52a468e81d01959697e733af07525e2aca299aa6a30420c"
+    },
+    "artifacts/metrics.json": {
+      "bytes": 7158,
+      "sha256": "7550e55ce7b6a9a195d43eb65767f741dc46c63e486ba2275e51493629432509"
+    },
+    "artifacts/pareto-sets.json": {
+      "bytes": 131791,
+      "sha256": "28e302eda2da6963a4dbd5d47a2b5fab4895bcf1fa051e12a376f1bca867af56"
+    },
+    "artifacts/per-strategy-fronts.json": {
+      "bytes": 201703,
+      "sha256": "5d90d5cff58f5a55c5c88f589f03793e5c03e8f99e16fac1106304d2f287b9e4"
+    },
+    "artifacts/pooled-fronts.json": {
+      "bytes": 125598,
+      "sha256": "4a14f2213829dfc3592abb9061272785c6654ef57adb57937aa21cecba1a9848"
+    },
+    "artifacts/protocol-consistency.json": {
+      "bytes": 325,
+      "sha256": "3fd16ec7208b69d3020484848506ebec3b4191bd09902a0213992188e7387ddf"
+    },
+    "artifacts/protocol.json": {
+      "bytes": 22626,
+      "sha256": "09755b85393d3b3248941ce52f8c21edb832ce30c6f31e5c6919079c41d496ba"
+    },
+    "artifacts/runs/lhs-101.json": {
+      "bytes": 147135,
+      "sha256": "012eaac297acc4e78091a56dcba4b0a0421f732eab9476eb4b81c336ed34cdba"
+    },
+    "artifacts/runs/lhs-202.json": {
+      "bytes": 146980,
+      "sha256": "4486746ef1d87707513fcecc99827b3002137c011da41e3a5ffb6dfa7b065158"
+    },
+    "artifacts/runs/lhs-303.json": {
+      "bytes": 146483,
+      "sha256": "416fa6716e639e4a9a65c7e00356e4e9bfa25aaf669884b5b53c8dd742863785"
+    },
+    "artifacts/runs/nsga3-101.json": {
+      "bytes": 157733,
+      "sha256": "45333360614619c4137c2550e1b015c1f7882eedc4bd5289829d4153c574510e"
+    },
+    "artifacts/runs/nsga3-202.json": {
+      "bytes": 150090,
+      "sha256": "66e07cb81789a3e2468d0d39821ddf00a07ea1d393cdb207b57939228ec29cff"
+    },
+    "artifacts/runs/nsga3-303.json": {
+      "bytes": 157006,
+      "sha256": "89d193e46df424863a3c5ad65967eeb235244d5bca041c8e02246d33f19c5fe6"
+    },
+    "artifacts/runs/qlognehvi-101.json": {
+      "bytes": 153969,
+      "sha256": "72f5cfa26de46cf1614b738ec4ee72d71f23e698936069eb510847f00ce76c7f"
+    },
+    "artifacts/runs/qlognehvi-202.json": {
+      "bytes": 157193,
+      "sha256": "1701499584b58c246ae627b200daef5d32978e0a3064313c0658977995741562"
+    },
+    "artifacts/runs/qlognehvi-303.json": {
+      "bytes": 159721,
+      "sha256": "0d30e4b1e9e19b2d20e2ea96e760e4abc6d8701cf6ef7ef13d95c935c53fa863"
+    },
+    "artifacts/runtime.json": {
+      "bytes": 376,
+      "sha256": "cf00e1432bb82e3007470328529e6a6e8be9d1e97a9b89e52c793e8ddcc090dd"
+    },
+    "artifacts/sensitivity.json": {
+      "bytes": 157085,
+      "sha256": "100dd492a7d234f56ea3a2b4c745b28cae08a4c9800ab3e69b2e7b8120e65eb0"
+    },
+    "artifacts/shakedown.json": {
+      "bytes": 17008,
+      "sha256": "8b5a829302e7aa800d2c60ca1146d86195a71594482c1699a2698e79d76d5c1e"
+    },
+    "artifacts/uncertain-sample.json": {
+      "bytes": 22414,
+      "sha256": "0429829366dc4cbe58d4e3e4af38490d70f67b0aaf9657dd4511297ce7eff7ca"
+    },
+    "execution-lock.json": {
+      "bytes": 519,
+      "sha256": "194fabb7e750fce552fa99930a46cdd3805b16206cd66f82062b54d9cd7599fa"
+    },
+    "terminal.json": {
+      "bytes": 620,
+      "sha256": "2e96cbfe1c4f3432f4b25cd31a726e7e1c63f1e32bb02cd4b72a0e978d80b680"
+    },
+    "transitions/0001-lock-acquired.json": {
+      "bytes": 280,
+      "sha256": "427ba9aea9d8634fbf49ca88f71510b700f068311c2c18079230ebb15bdb16aa"
+    },
+    "transitions/0009-terminal.json": {
+      "bytes": 229,
+      "sha256": "efd0a03910b580e42f78320073edea80143fc44f5a5b2c39507a677756d8ea03"
+    }
+  },
+  "binding": {
+    "dashboard_commit": "e642f38cd613e3d687c32777080d8aefae93c7b3",
+    "manifest_git_blob": "87fec3c864008629a27f0832dff75aef381361d1",
+    "manifest_path": "modern/experiments/mdo_l0_campaign_v1/results/manifest.json",
+    "preregistration_commit": "4898d0fd3decddc5f308072e724d1936660c00e9",
+    "results_commit": "c553124b7393890d8ee9c6fc022e536c8a1fd35e",
+    "results_commit_subject": "record MDO L0 campaign v1 result",
+    "results_tree": "89e6e69f861fa201f8ad91ca9635577eba44a683"
+  },
+  "bundle": {
+    "artifact_count": 143,
+    "manifest_path": "modern/experiments/mdo_l0_campaign_v1/results/manifest.json",
+    "manifest_sha256": "2a326f3cf2e286a0ba8f9c91871d78b935a11e3e2c56bd9164acdc6166485381",
+    "tolerance_rule": "none: every manifest file entry must hash to its recorded byte_sha256 with its recorded size",
+    "tolerated_eol_files": [],
+    "verified_file_count": 137
+  },
+  "classification": "l0_model_robust_multiobjective_optimisation_under_declared_input_uncertainty_not_thruster_performance",
+  "closure": "CL-1-multiplicative-cusp-survival",
+  "dashboard": {
+    "generator_path": "modern/visualization/generate_mdo_l0_campaign_v1_dashboard.py",
+    "generator_sha256_lf": "0a589f03b1e65fefa16b9c29fef303b17c9bb875cc8b243aaf7b7c6a34fe5394",
+    "html_path": "modern/visualization/mdo-l0-campaign-v1.html",
+    "html_schema": "cft-revival.mdo-l0-campaign-v1-dashboard/1.0.0",
+    "html_sha256_lf": "178aeff96a98fc56ff05aeb651bfe9d30b5b7287ef707450956e04fad6866702",
+    "payload_manifest_sha256": "2a326f3cf2e286a0ba8f9c91871d78b935a11e3e2c56bd9164acdc6166485381",
+    "rule": "the committed dashboard pins the bundle's manifest SHA-256 and revisions and embeds its own extraction of the campaign result; the generator requires that extraction to equal the sealed artifacts before writing any macro"
+  },
+  "document_type": "paper-mdo-l0-v1-evidence",
+  "evidence_revision": "c553124b7393890d8ee9c6fc022e536c8a1fd35e",
+  "experiment_id": "mdo-l0-campaign-v1",
+  "generator": {
+    "command": "python paper/scripts/generate_mdo_l0_v1_evidence.py",
+    "path": "paper/scripts/generate_mdo_l0_v1_evidence.py",
+    "sha256": "d59d4b98646d8d007f71e9db4d521713844097eff454942586fdb3b65e789abd"
+  },
+  "macros": [
+    {
+      "derived": false,
+      "description": "campaign classification string",
+      "format": "ident",
+      "name": "MdoClassification",
+      "raw": "l0_model_robust_multiobjective_optimisation_under_declared_input_uncertainty_not_thruster_performance",
+      "source": {
+        "artifact": "artifacts/campaign-result.json",
+        "pointer": "/classification"
+      },
+      "value": "l0\\_\\allowbreak{}model\\_\\allowbreak{}robust\\_\\allowbreak{}multiobjective\\_\\allowbreak{}optimisation\\_\\allowbreak{}under\\_\\allowbreak{}declared\\_\\allowbreak{}input\\_\\allowbreak{}uncertainty\\_\\allowbreak{}not\\_\\allowbreak{}thruster\\_\\allowbreak{}performance"
+    },
+    {
+      "derived": false,
+      "description": "runtime terminal state",
+      "format": "ident",
+      "name": "MdoTerminalState",
+      "raw": "accepted_result",
+      "source": {
+        "artifact": "terminal.json",
+        "pointer": "/state"
+      },
+      "value": "accepted\\_\\allowbreak{}result"
+    },
+    {
+      "derived": false,
+      "description": "declared closure identifier",
+      "format": "ident",
+      "name": "MdoClosureId",
+      "raw": "CL-1-multiplicative-cusp-survival",
+      "source": {
+        "artifact": "artifacts/campaign-result.json",
+        "pointer": "/closure"
+      },
+      "value": "CL-\\allowbreak{}1-\\allowbreak{}multiplicative-\\allowbreak{}cusp-\\allowbreak{}survival"
+    },
+    {
+      "derived": false,
+      "description": "declared model fidelity label",
+      "format": "ident",
+      "name": "MdoFidelity",
+      "raw": "L0-conservation-reduced-performance",
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/authority/l0_model/fidelity"
+      },
+      "value": "L0-\\allowbreak{}conservation-\\allowbreak{}reduced-\\allowbreak{}performance"
+    },
+    {
+      "derived": false,
+      "description": "experiment identifier",
+      "format": "ident",
+      "name": "MdoExperimentId",
+      "raw": "mdo-l0-campaign-v1",
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/experiment_id"
+      },
+      "value": "mdo-\\allowbreak{}l0-\\allowbreak{}campaign-\\allowbreak{}v1"
+    },
+    {
+      "derived": false,
+      "description": "execution attempts",
+      "format": "int",
+      "name": "MdoAttemptCount",
+      "raw": 1,
+      "source": {
+        "artifact": "terminal.json",
+        "pointer": "/counts/attempt_count"
+      },
+      "value": "1"
+    },
+    {
+      "derived": false,
+      "description": "optimiser runs (strategies times seeds)",
+      "format": "int",
+      "name": "MdoRuns",
+      "raw": 9,
+      "source": {
+        "artifact": "artifacts/campaign-result.json",
+        "pointer": "/runs"
+      },
+      "value": "9"
+    },
+    {
+      "derived": false,
+      "description": "L0 design evaluations in the campaign",
+      "format": "int",
+      "name": "MdoTotalEvaluations",
+      "raw": 864,
+      "source": {
+        "artifact": "artifacts/campaign-result.json",
+        "pointer": "/total_evaluations"
+      },
+      "value": "864"
+    },
+    {
+      "derived": false,
+      "description": "constraint-violating design evaluations",
+      "format": "int",
+      "name": "MdoInfeasibleEvaluations",
+      "raw": 130,
+      "source": {
+        "artifact": "artifacts/campaign-result.json",
+        "pointer": "/infeasible_evaluations"
+      },
+      "value": "130"
+    },
+    {
+      "derived": false,
+      "description": "evaluation budget per run",
+      "format": "int",
+      "name": "MdoEvaluationsPerRun",
+      "raw": 96,
+      "source": {
+        "artifact": "artifacts/campaign-plan.json",
+        "pointer": "/evaluations_per_run"
+      },
+      "value": "96"
+    },
+    {
+      "derived": false,
+      "description": "shared initial design size per seed",
+      "format": "int",
+      "name": "MdoInitialDesign",
+      "raw": 16,
+      "source": {
+        "artifact": "artifacts/campaign-plan.json",
+        "pointer": "/initial_design"
+      },
+      "value": "16"
+    },
+    {
+      "derived": false,
+      "description": "evidentiary seeds",
+      "format": "list_int",
+      "name": "MdoSeeds",
+      "raw": [
+        101,
+        202,
+        303
+      ],
+      "source": {
+        "artifact": "artifacts/campaign-plan.json",
+        "pointer": "/seeds"
+      },
+      "value": "101, 202, 303"
+    },
+    {
+      "derivation": "len(plan.seeds)",
+      "derived": true,
+      "description": "number of seeds",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/campaign-plan.json",
+          "pointer": "/seeds"
+        }
+      ],
+      "name": "MdoSeedCount",
+      "raw": 3,
+      "value": "3"
+    },
+    {
+      "derivation": "len(plan.strategies)",
+      "derived": true,
+      "description": "number of optimisers",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/campaign-plan.json",
+          "pointer": "/strategies"
+        }
+      ],
+      "name": "MdoStrategyCount",
+      "raw": 3,
+      "value": "3"
+    },
+    {
+      "derived": false,
+      "description": "BO batch size",
+      "format": "int",
+      "name": "MdoBoBatch",
+      "raw": 4,
+      "source": {
+        "artifact": "artifacts/campaign-plan.json",
+        "pointer": "/qlognehvi_batch_size"
+      },
+      "value": "4"
+    },
+    {
+      "derived": false,
+      "description": "BO iterations",
+      "format": "int",
+      "name": "MdoBoIterations",
+      "raw": 20,
+      "source": {
+        "artifact": "artifacts/campaign-plan.json",
+        "pointer": "/qlognehvi_iterations"
+      },
+      "value": "20"
+    },
+    {
+      "derived": false,
+      "description": "NSGA-III population size",
+      "format": "int",
+      "name": "MdoNsgaPopulation",
+      "raw": 16,
+      "source": {
+        "artifact": "artifacts/campaign-plan.json",
+        "pointer": "/nsga3_population_size"
+      },
+      "value": "16"
+    },
+    {
+      "derived": false,
+      "description": "NSGA-III generations",
+      "format": "int",
+      "name": "MdoNsgaGenerations",
+      "raw": 6,
+      "source": {
+        "artifact": "artifacts/campaign-plan.json",
+        "pointer": "/nsga3_generations"
+      },
+      "value": "6"
+    },
+    {
+      "derived": false,
+      "description": "BO Monte Carlo samples",
+      "format": "int",
+      "name": "MdoBoMcSamples",
+      "raw": 32,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/optimizers/qlognehvi/mc_samples"
+      },
+      "value": "32"
+    },
+    {
+      "derived": false,
+      "description": "BO device",
+      "format": "ident",
+      "name": "MdoBoDevice",
+      "raw": "cpu",
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/optimizers/qlognehvi/device"
+      },
+      "value": "cpu"
+    },
+    {
+      "derived": false,
+      "description": "BO floating-point type",
+      "format": "ident",
+      "name": "MdoBoDtype",
+      "raw": "float64",
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/optimizers/qlognehvi/dtype"
+      },
+      "value": "float64"
+    },
+    {
+      "derived": false,
+      "description": "BO library",
+      "format": "text",
+      "name": "MdoBoLibrary",
+      "raw": "botorch",
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/optimizers/qlognehvi/library"
+      },
+      "value": "botorch"
+    },
+    {
+      "derived": false,
+      "description": "NSGA-III library",
+      "format": "text",
+      "name": "MdoNsgaLibrary",
+      "raw": "pymoo",
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/optimizers/nsga3/library"
+      },
+      "value": "pymoo"
+    },
+    {
+      "derived": false,
+      "description": "BoTorch version",
+      "format": "text",
+      "name": "MdoBotorchVersion",
+      "raw": "0.18.1",
+      "source": {
+        "artifact": "artifacts/code-contract.json",
+        "pointer": "/observed_package_versions/botorch"
+      },
+      "value": "0.18.1"
+    },
+    {
+      "derived": false,
+      "description": "pymoo version",
+      "format": "text",
+      "name": "MdoPymooVersion",
+      "raw": "0.6.2",
+      "source": {
+        "artifact": "artifacts/code-contract.json",
+        "pointer": "/observed_package_versions/pymoo"
+      },
+      "value": "0.6.2"
+    },
+    {
+      "derived": false,
+      "description": "torch version",
+      "format": "text",
+      "name": "MdoTorchVersion",
+      "raw": "2.13.0+cu130",
+      "source": {
+        "artifact": "artifacts/code-contract.json",
+        "pointer": "/observed_package_versions/torch"
+      },
+      "value": "2.13.0+cu130"
+    },
+    {
+      "derived": false,
+      "description": "code contract matches the preregistered authorities",
+      "format": "bool",
+      "name": "MdoCodeContractMatches",
+      "raw": true,
+      "source": {
+        "artifact": "artifacts/code-contract.json",
+        "pointer": "/matches"
+      },
+      "value": "true"
+    },
+    {
+      "derived": false,
+      "description": "hashed source prefix",
+      "format": "sha_short",
+      "name": "MdoSourceSha",
+      "raw": "da21671f9661f183f3f980044e000a1fdfd0d3495782ed3b0e1fbf5763a9682e",
+      "source": {
+        "artifact": "artifacts/code-contract.json",
+        "pointer": "/source_sha256"
+      },
+      "value": "da21671f9661"
+    },
+    {
+      "derived": false,
+      "description": "protocol semantic hash prefix",
+      "format": "sha_short",
+      "name": "MdoProtocolSha",
+      "raw": "09755b85393d3b3248941ce52f8c21edb832ce30c6f31e5c6919079c41d496ba",
+      "source": {
+        "artifact": "artifacts/authorities.json",
+        "pointer": "/protocol_semantic_sha256"
+      },
+      "value": "09755b85393d"
+    },
+    {
+      "derived": false,
+      "description": "frozen sample hash prefix",
+      "format": "sha_short",
+      "name": "MdoSampleSha",
+      "raw": "6e574ff122894e0facf951cdf89069c1b4625d6082a33b7026ff4d8a776db33e",
+      "source": {
+        "artifact": "artifacts/uncertain-sample.json",
+        "pointer": "/sha256"
+      },
+      "value": "6e574ff12289"
+    },
+    {
+      "derived": false,
+      "description": "preregistration commit recorded in the execution lock",
+      "format": "sha_short",
+      "name": "MdoPreregCommit",
+      "raw": "4898d0fd3decddc5f308072e724d1936660c00e9",
+      "source": {
+        "artifact": "execution-lock.json",
+        "pointer": "/commit"
+      },
+      "value": "4898d0fd3dec"
+    },
+    {
+      "derived": false,
+      "description": "execution lock immutability flag",
+      "format": "bool",
+      "name": "MdoLockImmutable",
+      "raw": true,
+      "source": {
+        "artifact": "execution-lock.json",
+        "pointer": "/immutable"
+      },
+      "value": "true"
+    },
+    {
+      "derivation": "git commit whose tree holds the results manifest blob (verified with rev-parse against the working tree)",
+      "derived": true,
+      "description": "results commit prefix",
+      "format": "sha_short",
+      "inputs": [
+        {
+          "artifact": "manifest.json",
+          "pointer": ""
+        }
+      ],
+      "name": "MdoResultsCommit",
+      "raw": "c553124b7393890d8ee9c6fc022e536c8a1fd35e",
+      "value": "c553124b7393"
+    },
+    {
+      "derivation": "git commit that added the results dashboard cross-checked by this generator",
+      "derived": true,
+      "description": "dashboard commit prefix",
+      "format": "sha_short",
+      "inputs": [
+        {
+          "artifact": "manifest.json",
+          "pointer": ""
+        }
+      ],
+      "name": "MdoDashboardCommit",
+      "raw": "e642f38cd613e3d687c32777080d8aefae93c7b3",
+      "value": "e642f38cd613"
+    },
+    {
+      "derivation": "sha256(results/manifest.json)",
+      "derived": true,
+      "description": "results manifest SHA-256 prefix",
+      "format": "sha_short",
+      "inputs": [
+        {
+          "artifact": "manifest.json",
+          "pointer": ""
+        }
+      ],
+      "name": "MdoManifestSha",
+      "raw": "2a326f3cf2e286a0ba8f9c91871d78b935a11e3e2c56bd9164acdc6166485381",
+      "value": "2a326f3cf2e2"
+    },
+    {
+      "derivation": "count of manifest file entries whose sha256 and size equal the checkout",
+      "derived": true,
+      "description": "bundle files verified byte-for-byte",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "manifest.json",
+          "pointer": "/artifacts"
+        }
+      ],
+      "name": "MdoVerifiedFiles",
+      "raw": 137,
+      "value": "137"
+    },
+    {
+      "derivation": "manifest.artifact_count",
+      "derived": true,
+      "description": "manifest entries (files and directories)",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "manifest.json",
+          "pointer": "/artifact_count"
+        }
+      ],
+      "name": "MdoArtifactCount",
+      "raw": 143,
+      "value": "143"
+    },
+    {
+      "derivation": "count of manifest file entries whose recorded byte_sha256 differs from sha256(bytes); the generator grants no tolerance and fails on any difference",
+      "derived": true,
+      "description": "manifest entries accepted through any end-of-line tolerance",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "manifest.json",
+          "pointer": "/artifacts"
+        }
+      ],
+      "name": "MdoToleratedEolFiles",
+      "raw": 0,
+      "value": "0"
+    },
+    {
+      "derivation": "len(gates.binding)",
+      "derived": true,
+      "description": "binding gates",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/gates.json",
+          "pointer": "/binding"
+        }
+      ],
+      "name": "MdoGateCount",
+      "raw": 8,
+      "value": "8"
+    },
+    {
+      "derivation": "count(gates.binding[*].passed == true)",
+      "derived": true,
+      "description": "binding gates passed",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/gates.json",
+          "pointer": "/binding"
+        }
+      ],
+      "name": "MdoGatesPassed",
+      "raw": 8,
+      "value": "8"
+    },
+    {
+      "derived": false,
+      "description": "evaluations replayed bit-exactly",
+      "format": "int",
+      "name": "MdoReplayed",
+      "raw": 864,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/binding/replay_bit_exact/replayed"
+      },
+      "value": "864"
+    },
+    {
+      "derivation": "len(gates.binding.replay_bit_exact.mismatches)",
+      "derived": true,
+      "description": "replay mismatches",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/gates.json",
+          "pointer": "/binding/replay_bit_exact/mismatches"
+        }
+      ],
+      "name": "MdoReplayMismatches",
+      "raw": 0,
+      "value": "0"
+    },
+    {
+      "derived": false,
+      "description": "dense-reference designs replayed",
+      "format": "int",
+      "name": "MdoDenseReplayed",
+      "raw": 32,
+      "source": {
+        "artifact": "artifacts/dense-reference-summary.json",
+        "pointer": "/replay/replayed"
+      },
+      "value": "32"
+    },
+    {
+      "derived": false,
+      "description": "dense-reference replay passed",
+      "format": "bool",
+      "name": "MdoDenseReplayPassed",
+      "raw": true,
+      "source": {
+        "artifact": "artifacts/dense-reference-summary.json",
+        "pointer": "/replay/passed"
+      },
+      "value": "true"
+    },
+    {
+      "derived": false,
+      "description": "separability check passed",
+      "format": "bool",
+      "name": "MdoSeparabilityPassed",
+      "raw": true,
+      "source": {
+        "artifact": "artifacts/dense-reference-summary.json",
+        "pointer": "/separability/passed"
+      },
+      "value": "true"
+    },
+    {
+      "derivation": "max over objectives of separability.ratios[*].relative_spread",
+      "derived": true,
+      "description": "largest relative spread of the robust-to-nominal objective ratio",
+      "format": "sci1",
+      "inputs": [
+        {
+          "artifact": "artifacts/dense-reference-summary.json",
+          "pointer": "/separability/ratios"
+        }
+      ],
+      "name": "MdoSeparabilitySpreadMax",
+      "raw": 9.426777692885295e-16,
+      "value": "$9.4\\times10^{-16}$"
+    },
+    {
+      "derived": false,
+      "description": "separability tolerance",
+      "format": "sci1",
+      "name": "MdoSeparabilityTolerance",
+      "raw": 1e-09,
+      "source": {
+        "artifact": "artifacts/dense-reference-summary.json",
+        "pointer": "/separability/tolerance_relative_spread"
+      },
+      "value": "$1.0\\times10^{-9}$"
+    },
+    {
+      "derivation": "len(protocol.design_variables)",
+      "derived": true,
+      "description": "design variables",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/protocol.json",
+          "pointer": "/design_variables"
+        }
+      ],
+      "name": "MdoDesignVariableCount",
+      "raw": 3,
+      "value": "3"
+    },
+    {
+      "derived": false,
+      "description": "discharge voltage lower bound (V)",
+      "format": "g",
+      "name": "MdoUaLower",
+      "raw": 150.0,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/design_variables/0/lower"
+      },
+      "value": "150"
+    },
+    {
+      "derived": false,
+      "description": "discharge voltage upper bound (V)",
+      "format": "g",
+      "name": "MdoUaUpper",
+      "raw": 500.0,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/design_variables/0/upper"
+      },
+      "value": "500"
+    },
+    {
+      "derived": false,
+      "description": "anode current lower bound (A)",
+      "format": "g",
+      "name": "MdoIaLower",
+      "raw": 0.1,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/design_variables/1/lower"
+      },
+      "value": "0.1"
+    },
+    {
+      "derived": false,
+      "description": "anode current upper bound (A)",
+      "format": "g",
+      "name": "MdoIaUpper",
+      "raw": 2.5,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/design_variables/1/upper"
+      },
+      "value": "2.5"
+    },
+    {
+      "derived": false,
+      "description": "mass flow lower bound (kg/s)",
+      "format": "sci1",
+      "name": "MdoMdotLower",
+      "raw": 2e-07,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/design_variables/2/lower"
+      },
+      "value": "$2.0\\times10^{-7}$"
+    },
+    {
+      "derived": false,
+      "description": "mass flow upper bound (kg/s)",
+      "format": "sci1",
+      "name": "MdoMdotUpper",
+      "raw": 2e-06,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/design_variables/2/upper"
+      },
+      "value": "$2.0\\times10^{-6}$"
+    },
+    {
+      "derivation": "len(protocol.excluded_legacy_variables)",
+      "derived": true,
+      "description": "excluded legacy geometry variables",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/protocol.json",
+          "pointer": "/excluded_legacy_variables"
+        }
+      ],
+      "name": "MdoExcludedVariableCount",
+      "raw": 5,
+      "value": "5"
+    },
+    {
+      "derivation": "len(protocol.uncertain_inputs.inputs)",
+      "derived": true,
+      "description": "uncertain inputs",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/protocol.json",
+          "pointer": "/uncertain_inputs/inputs"
+        }
+      ],
+      "name": "MdoUncertainInputCount",
+      "raw": 7,
+      "value": "7"
+    },
+    {
+      "derivation": "count of uncertain inputs named cusp_probability_cell_*",
+      "derived": true,
+      "description": "cusp cells with an uncertain probability",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/protocol.json",
+          "pointer": "/uncertain_inputs/inputs"
+        }
+      ],
+      "name": "MdoCellCount",
+      "raw": 4,
+      "value": "4"
+    },
+    {
+      "derived": false,
+      "description": "cusp probability prior lower bound",
+      "format": "g",
+      "name": "MdoCuspLower",
+      "raw": 0.0,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/uncertain_inputs/inputs/0/lower"
+      },
+      "value": "0"
+    },
+    {
+      "derived": false,
+      "description": "cusp probability prior upper bound",
+      "format": "g",
+      "name": "MdoCuspUpper",
+      "raw": 0.45,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/uncertain_inputs/inputs/0/upper"
+      },
+      "value": "0.45"
+    },
+    {
+      "derived": false,
+      "description": "ionised fraction lower bound",
+      "format": "g",
+      "name": "MdoEtaLower",
+      "raw": 0.65,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/uncertain_inputs/inputs/4/lower"
+      },
+      "value": "0.65"
+    },
+    {
+      "derived": false,
+      "description": "ionised fraction upper bound",
+      "format": "g",
+      "name": "MdoEtaUpper",
+      "raw": 0.98,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/uncertain_inputs/inputs/4/upper"
+      },
+      "value": "0.98"
+    },
+    {
+      "derived": false,
+      "description": "doubly charged share lower bound",
+      "format": "g",
+      "name": "MdoZetaLower",
+      "raw": 0.0,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/uncertain_inputs/inputs/5/lower"
+      },
+      "value": "0"
+    },
+    {
+      "derived": false,
+      "description": "doubly charged share upper bound",
+      "format": "g",
+      "name": "MdoZetaUpper",
+      "raw": 0.15,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/uncertain_inputs/inputs/5/upper"
+      },
+      "value": "0.15"
+    },
+    {
+      "derived": false,
+      "description": "divergence factor lower bound",
+      "format": "g",
+      "name": "MdoGammaLower",
+      "raw": 0.75,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/uncertain_inputs/inputs/6/lower"
+      },
+      "value": "0.75"
+    },
+    {
+      "derived": false,
+      "description": "divergence factor upper bound",
+      "format": "g",
+      "name": "MdoGammaUpper",
+      "raw": 0.98,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/uncertain_inputs/inputs/6/upper"
+      },
+      "value": "0.98"
+    },
+    {
+      "derived": false,
+      "description": "frozen QMC sample rows",
+      "format": "int",
+      "name": "MdoSampleCount",
+      "raw": 64,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/uncertain_inputs/sample/count"
+      },
+      "value": "64"
+    },
+    {
+      "derived": false,
+      "description": "Halton bases",
+      "format": "list_int",
+      "name": "MdoSampleBases",
+      "raw": [
+        2,
+        3,
+        5,
+        7,
+        11,
+        13,
+        17
+      ],
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/uncertain_inputs/sample/bases"
+      },
+      "value": "2, 3, 5, 7, 11, 13, 17"
+    },
+    {
+      "derived": false,
+      "description": "sample frozen flag",
+      "format": "bool",
+      "name": "MdoSampleFrozen",
+      "raw": true,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/uncertain_inputs/sample/frozen"
+      },
+      "value": "true"
+    },
+    {
+      "derived": false,
+      "description": "CVaR tail count",
+      "format": "int",
+      "name": "MdoTailCount",
+      "raw": 16,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/robust_formulation/tail_count"
+      },
+      "value": "16"
+    },
+    {
+      "derived": false,
+      "description": "CVaR tail fraction",
+      "format": "g",
+      "name": "MdoTailFraction",
+      "raw": 0.25,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/robust_formulation/tail_fraction"
+      },
+      "value": "0.25"
+    },
+    {
+      "derived": false,
+      "description": "risk measure",
+      "format": "text",
+      "name": "MdoRiskMeasure",
+      "raw": "CVaR",
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/robust_formulation/risk_measure"
+      },
+      "value": "CVaR"
+    },
+    {
+      "derived": false,
+      "description": "nominal cusp probability",
+      "format": "g",
+      "name": "MdoNominalCusp",
+      "raw": 0.225,
+      "source": {
+        "artifact": "artifacts/uncertain-sample.json",
+        "pointer": "/nominal/cusp_probability_cell_1"
+      },
+      "value": "0.225"
+    },
+    {
+      "derived": false,
+      "description": "fixed cathode input power (W)",
+      "format": "g",
+      "name": "MdoCathodePowerW",
+      "raw": 15.0,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/closures/fixed/cathode_input_power_w"
+      },
+      "value": "15"
+    },
+    {
+      "derived": false,
+      "description": "fixed PPU efficiency",
+      "format": "g",
+      "name": "MdoPpuEfficiency",
+      "raw": 0.9,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/closures/fixed/ppu_efficiency_fraction"
+      },
+      "value": "0.9"
+    },
+    {
+      "derived": false,
+      "description": "closure status",
+      "format": "text",
+      "name": "MdoClosureStatus",
+      "raw": "declared assumption; not derived; not validated",
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/closures/CL-1/status"
+      },
+      "value": "declared assumption; not derived; not validated"
+    },
+    {
+      "derivation": "(1 - upper/2) ** cell_count for independent uniform [0, upper] priors",
+      "derived": true,
+      "description": "mean CL-1 survival implied by the cusp prior",
+      "format": "fixed3",
+      "inputs": [
+        {
+          "artifact": "artifacts/protocol.json",
+          "pointer": "/uncertain_inputs/inputs/0/upper"
+        }
+      ],
+      "name": "MdoImpliedPriorSurvival",
+      "raw": 0.36075039062500003,
+      "value": "0.361"
+    },
+    {
+      "derivation": "1 - successes / trials",
+      "derived": true,
+      "description": "pooled electron survival of the wall-loss campaign as recorded in the protocol authority",
+      "format": "fixed3",
+      "inputs": [
+        {
+          "artifact": "artifacts/protocol.json",
+          "pointer": "/authority/wall_loss_v4/pooled_wall_hit"
+        }
+      ],
+      "name": "MdoVFourSurvival",
+      "raw": 0.35720486111111116,
+      "value": "0.357"
+    },
+    {
+      "derivation": "abs(MdoImpliedPriorSurvival - MdoVFourSurvival)",
+      "derived": true,
+      "description": "gap between the implied prior survival and the recorded pooled survival",
+      "format": "fixed4",
+      "inputs": [
+        {
+          "artifact": "artifacts/protocol.json",
+          "pointer": "/uncertain_inputs/inputs/0/upper"
+        },
+        {
+          "artifact": "artifacts/protocol.json",
+          "pointer": "/authority/wall_loss_v4/pooled_wall_hit"
+        }
+      ],
+      "name": "MdoSurvivalCalibrationGap",
+      "raw": 0.0035455295138888676,
+      "value": "0.0035"
+    },
+    {
+      "derived": false,
+      "description": "pooled wall hits recorded in the protocol authority",
+      "format": "int",
+      "name": "MdoVFourWallHits",
+      "raw": 2962,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/authority/wall_loss_v4/pooled_wall_hit/successes"
+      },
+      "value": "2962"
+    },
+    {
+      "derived": false,
+      "description": "pooled trials recorded in the protocol authority",
+      "format": "int",
+      "name": "MdoVFourTrials",
+      "raw": 4608,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/authority/wall_loss_v4/pooled_wall_hit/trials"
+      },
+      "value": "4608"
+    },
+    {
+      "derived": false,
+      "description": "reflections recorded in the protocol authority",
+      "format": "int",
+      "name": "MdoVFourReflections",
+      "raw": 0,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/authority/wall_loss_v4/reflections"
+      },
+      "value": "0"
+    },
+    {
+      "derived": false,
+      "description": "wall-loss result commit prefix recorded in the protocol authority",
+      "format": "text",
+      "name": "MdoVFourResultCommit",
+      "raw": "6922a3cf",
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/authority/wall_loss_v4/result_commit"
+      },
+      "value": "6922a3cf"
+    },
+    {
+      "derivation": "len(protocol.objectives)",
+      "derived": true,
+      "description": "objectives",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/protocol.json",
+          "pointer": "/objectives"
+        }
+      ],
+      "name": "MdoObjectiveCount",
+      "raw": 4,
+      "value": "4"
+    },
+    {
+      "derived": false,
+      "description": "hypervolume reference point, anode power (W)",
+      "format": "g",
+      "name": "MdoRefAnodePowerW",
+      "raw": 1300.0,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/reference_point/anode_input_power_w"
+      },
+      "value": "1300"
+    },
+    {
+      "derived": false,
+      "description": "thrust comparison scale (N)",
+      "format": "g",
+      "name": "MdoScaleThrust",
+      "raw": 0.06,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/objectives/0/comparison_scale"
+      },
+      "value": "0.06"
+    },
+    {
+      "derived": false,
+      "description": "specific impulse comparison scale (s)",
+      "format": "g",
+      "name": "MdoScaleIsp",
+      "raw": 3000.0,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/objectives/1/comparison_scale"
+      },
+      "value": "3000"
+    },
+    {
+      "derived": false,
+      "description": "anode power comparison scale (W)",
+      "format": "g",
+      "name": "MdoScalePower",
+      "raw": 1300.0,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/objectives/3/comparison_scale"
+      },
+      "value": "1300"
+    },
+    {
+      "derived": false,
+      "description": "robust constraint name",
+      "format": "ident",
+      "name": "MdoConstraintName",
+      "raw": "robust_beam_current_margin_a",
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/constraints/0/name"
+      },
+      "value": "robust\\_\\allowbreak{}beam\\_\\allowbreak{}current\\_\\allowbreak{}margin\\_\\allowbreak{}a"
+    },
+    {
+      "derived": false,
+      "description": "robust constraint threshold (A)",
+      "format": "g",
+      "name": "MdoConstraintThreshold",
+      "raw": 0.0,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/constraints/0/threshold"
+      },
+      "value": "0"
+    },
+    {
+      "derived": false,
+      "description": "dense reference design count",
+      "format": "int_comma",
+      "name": "MdoDenseCount",
+      "raw": 8192,
+      "source": {
+        "artifact": "artifacts/dense-reference-summary.json",
+        "pointer": "/count"
+      },
+      "value": "8{,}192"
+    },
+    {
+      "derived": false,
+      "description": "dense reference feasible designs",
+      "format": "int_comma",
+      "name": "MdoDenseFeasible",
+      "raw": 6576,
+      "source": {
+        "artifact": "artifacts/dense-reference-summary.json",
+        "pointer": "/feasible"
+      },
+      "value": "6{,}576"
+    },
+    {
+      "derived": false,
+      "description": "dense reference infeasible designs",
+      "format": "int_comma",
+      "name": "MdoDenseInfeasible",
+      "raw": 1616,
+      "source": {
+        "artifact": "artifacts/dense-reference-summary.json",
+        "pointer": "/infeasible"
+      },
+      "value": "1{,}616"
+    },
+    {
+      "derived": false,
+      "description": "dense reference robust hypervolume",
+      "format": "fixed6",
+      "name": "MdoDenseRobustHv",
+      "raw": 0.003797983245976796,
+      "source": {
+        "artifact": "artifacts/dense-reference-summary.json",
+        "pointer": "/robust_hypervolume"
+      },
+      "value": "0.003798"
+    },
+    {
+      "derived": false,
+      "description": "dense reference nominal hypervolume",
+      "format": "fixed4",
+      "name": "MdoDenseNominalHv",
+      "raw": 0.04676913466378779,
+      "source": {
+        "artifact": "artifacts/dense-reference-summary.json",
+        "pointer": "/nominal_hypervolume"
+      },
+      "value": "0.0468"
+    },
+    {
+      "derived": false,
+      "description": "dense reference robust front size",
+      "format": "int",
+      "name": "MdoDenseRobustFront",
+      "raw": 291,
+      "source": {
+        "artifact": "artifacts/dense-reference-summary.json",
+        "pointer": "/robust_front_size"
+      },
+      "value": "291"
+    },
+    {
+      "derived": false,
+      "description": "dense reference nominal front size",
+      "format": "int",
+      "name": "MdoDenseNominalFront",
+      "raw": 166,
+      "source": {
+        "artifact": "artifacts/dense-reference-summary.json",
+        "pointer": "/nominal_front_size"
+      },
+      "value": "166"
+    },
+    {
+      "derived": false,
+      "description": "dense reference seed",
+      "format": "int",
+      "name": "MdoDenseSeed",
+      "raw": 20260903,
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/dense_reference/seed"
+      },
+      "value": "20260903"
+    },
+    {
+      "derivation": "dense_reference.count / plan.evaluations_per_run",
+      "derived": true,
+      "description": "dense reference designs per optimiser-run evaluation budget",
+      "format": "fixed0",
+      "inputs": [
+        {
+          "artifact": "artifacts/dense-reference-summary.json",
+          "pointer": "/count"
+        },
+        {
+          "artifact": "artifacts/campaign-plan.json",
+          "pointer": "/evaluations_per_run"
+        }
+      ],
+      "name": "MdoDenseToBudgetRatio",
+      "raw": 85.33333333333333,
+      "value": "85"
+    },
+    {
+      "derived": false,
+      "description": "final robust hypervolume, qlognehvi:101",
+      "format": "fixed6",
+      "name": "MdoHvBoA",
+      "raw": 0.0038634857735177987,
+      "source": {
+        "artifact": "artifacts/metrics.json",
+        "pointer": "/runs/qlognehvi:101/final_hypervolume"
+      },
+      "value": "0.003863"
+    },
+    {
+      "derived": false,
+      "description": "final Pareto-set size, qlognehvi:101",
+      "format": "int",
+      "name": "MdoParetoBoA",
+      "raw": 28,
+      "source": {
+        "artifact": "artifacts/metrics.json",
+        "pointer": "/runs/qlognehvi:101/pareto_set_size"
+      },
+      "value": "28"
+    },
+    {
+      "derived": false,
+      "description": "infeasible evaluations, qlognehvi:101",
+      "format": "int",
+      "name": "MdoInfeasibleBoA",
+      "raw": 18,
+      "source": {
+        "artifact": "artifacts/metrics.json",
+        "pointer": "/runs/qlognehvi:101/infeasible_evaluations"
+      },
+      "value": "18"
+    },
+    {
+      "derived": false,
+      "description": "fraction of the dense-reference robust hypervolume, qlognehvi:101",
+      "format": "fixed3",
+      "name": "MdoAttainedBoA",
+      "raw": 1.0172466604770807,
+      "source": {
+        "artifact": "artifacts/metrics.json",
+        "pointer": "/hypervolume_table/qlognehvi:101/attained_fraction_of_dense_reference"
+      },
+      "value": "1.017"
+    },
+    {
+      "derived": false,
+      "description": "final robust hypervolume, qlognehvi:202",
+      "format": "fixed6",
+      "name": "MdoHvBoB",
+      "raw": 0.0038773291110720137,
+      "source": {
+        "artifact": "artifacts/metrics.json",
+        "pointer": "/runs/qlognehvi:202/final_hypervolume"
+      },
+      "value": "0.003877"
+    },
+    {
+      "derived": false,
+      "description": "final Pareto-set size, qlognehvi:202",
+      "format": "int",
+      "name": "MdoParetoBoB",
+      "raw": 30,
+      "source": {
+        "artifact": "artifacts/metrics.json",
+        "pointer": "/runs/qlognehvi:202/pareto_set_size"
+      },
+      "value": "30"
+    },
+    {
+      "derived": false,
+      "description": "infeasible evaluations, qlognehvi:202",
+      "format": "int",
+      "name": "MdoInfeasibleBoB",
+      "raw": 14,
+      "source": {
+        "artifact": "artifacts/metrics.json",
+        "pointer": "/runs/qlognehvi:202/infeasible_evaluations"
+      },
+      "value": "14"
+    },
+    {
+      "derived": false,
+      "description": "fraction of the dense-reference robust hypervolume, qlognehvi:202",
+      "format": "fixed3",
+      "name": "MdoAttainedBoB",
+      "raw": 1.020891578492156,
+      "source": {
+        "artifact": "artifacts/metrics.json",
+        "pointer": "/hypervolume_table/qlognehvi:202/attained_fraction_of_dense_reference"
+      },
+      "value": "1.021"
+    },
+    {
+      "derived": false,
+      "description": "final robust hypervolume, qlognehvi:303",
+      "format": "fixed6",
+      "name": "MdoHvBoC",
+      "raw": 0.0038598349135775373,
+      "source": {
+        "artifact": "artifacts/metrics.json",
+        "pointer": "/runs/qlognehvi:303/final_hypervolume"
+      },
+      "value": "0.003860"
+    },
+    {
+      "derived": false,
+      "description": "final Pareto-set size, qlognehvi:303",
+      "format": "int",
+      "name": "MdoParetoBoC",
+      "raw": 27,
+      "source": {
+        "artifact": "artifacts/metrics.json",
+        "pointer": "/runs/qlognehvi:303/pareto_set_size"
+      },
+      "value": "27"
+    },
+    {
+      "derived": false,
+      "description": "infeasible evaluations, qlognehvi:303",
+      "format": "int",
+      "name": "MdoInfeasibleBoC",
+      "raw": 11,
+      "source": {
+        "artifact": "artifacts/metrics.json",
+        "pointer": "/runs/qlognehvi:303/infeasible_evaluations"
+      },
+      "value": "11"
+    },
+    {
+      "derived": false,
+      "description": "fraction of the dense-reference robust hypervolume, qlognehvi:303",
+      "format": "fixed3",
+      "name": "MdoAttainedBoC",
+      "raw": 1.0162853976952797,
+      "source": {
+        "artifact": "artifacts/metrics.json",
+        "pointer": "/hypervolume_table/qlognehvi:303/attained_fraction_of_dense_reference"
+      },
+      "value": "1.016"
+    },
+    {
+      "derived": false,
+      "description": "final robust hypervolume, nsga3:101",
+      "format": "fixed6",
+      "name": "MdoHvNsgaA",
+      "raw": 0.002925589672975826,
+      "source": {
+        "artifact": "artifacts/metrics.json",
+        "pointer": "/runs/nsga3:101/final_hypervolume"
+      },
+      "value": "0.002926"
+    },
+    {
+      "derived": false,
+      "description": "final Pareto-set size, nsga3:101",
+      "format": "int",
+      "name": "MdoParetoNsgaA",
+      "raw": 31,
+      "source": {
+        "artifact": "artifacts/metrics.json",
+        "pointer": "/runs/nsga3:101/pareto_set_size"
+      },
+      "value": "31"
+    },
+    {
+      "derived": false,
+      "description": "infeasible evaluations, nsga3:101",
+      "format": "int",
+      "name": "MdoInfeasibleNsgaA",
+      "raw": 7,
+      "source": {
+        "artifact": "artifacts/metrics.json",
+        "pointer": "/runs/nsga3:101/infeasible_evaluations"
+      },
+      "value": "7"
+    },
+    {
+      "derived": false,
+      "description": "fraction of the dense-reference robust hypervolume, nsga3:101",
+      "format": "fixed3",
+      "name": "MdoAttainedNsgaA",
+      "raw": 0.7703008369178309,
+      "source": {
+        "artifact": "artifacts/metrics.json",
+        "pointer": "/hypervolume_table/nsga3:101/attained_fraction_of_dense_reference"
+      },
+      "value": "0.770"
+    },
+    {
+      "derived": false,
+      "description": "final robust hypervolume, nsga3:202",
+      "format": "fixed6",
+      "name": "MdoHvNsgaB",
+      "raw": 0.0035050153811134006,
+      "source": {
+        "artifact": "artifacts/metrics.json",
+        "pointer": "/runs/nsga3:202/final_hypervolume"
+      },
+      "value": "0.003505"
+    },
+    {
+      "derived": false,
+      "description": "final Pareto-set size, nsga3:202",
+      "format": "int",
+      "name": "MdoParetoNsgaB",
+      "raw": 24,
+      "source": {
+        "artifact": "artifacts/metrics.json",
+        "pointer": "/runs/nsga3:202/pareto_set_size"
+      },
+      "value": "24"
+    },
+    {
+      "derived": false,
+      "description": "infeasible evaluations, nsga3:202",
+      "format": "int",
+      "name": "MdoInfeasibleNsgaB",
+      "raw": 17,
+      "source": {
+        "artifact": "artifacts/metrics.json",
+        "pointer": "/runs/nsga3:202/infeasible_evaluations"
+      },
+      "value": "17"
+    },
+    {
+      "derived": false,
+      "description": "fraction of the dense-reference robust hypervolume, nsga3:202",
+      "format": "fixed3",
+      "name": "MdoAttainedNsgaB",
+      "raw": 0.922862254546874,
+      "source": {
+        "artifact": "artifacts/metrics.json",
+        "pointer": "/hypervolume_table/nsga3:202/attained_fraction_of_dense_reference"
+      },
+      "value": "0.923"
+    },
+    {
+      "derived": false,
+      "description": "final robust hypervolume, nsga3:303",
+      "format": "fixed6",
+      "name": "MdoHvNsgaC",
+      "raw": 0.0032705234934405926,
+      "source": {
+        "artifact": "artifacts/metrics.json",
+        "pointer": "/runs/nsga3:303/final_hypervolume"
+      },
+      "value": "0.003271"
+    },
+    {
+      "derived": false,
+      "description": "final Pareto-set size, nsga3:303",
+      "format": "int",
+      "name": "MdoParetoNsgaC",
+      "raw": 32,
+      "source": {
+        "artifact": "artifacts/metrics.json",
+        "pointer": "/runs/nsga3:303/pareto_set_size"
+      },
+      "value": "32"
+    },
+    {
+      "derived": false,
+      "description": "infeasible evaluations, nsga3:303",
+      "format": "int",
+      "name": "MdoInfeasibleNsgaC",
+      "raw": 8,
+      "source": {
+        "artifact": "artifacts/metrics.json",
+        "pointer": "/runs/nsga3:303/infeasible_evaluations"
+      },
+      "value": "8"
+    },
+    {
+      "derived": false,
+      "description": "fraction of the dense-reference robust hypervolume, nsga3:303",
+      "format": "fixed3",
+      "name": "MdoAttainedNsgaC",
+      "raw": 0.8611210954932618,
+      "source": {
+        "artifact": "artifacts/metrics.json",
+        "pointer": "/hypervolume_table/nsga3:303/attained_fraction_of_dense_reference"
+      },
+      "value": "0.861"
+    },
+    {
+      "derived": false,
+      "description": "final robust hypervolume, lhs:101",
+      "format": "fixed6",
+      "name": "MdoHvLhsA",
+      "raw": 0.0028440082962036773,
+      "source": {
+        "artifact": "artifacts/metrics.json",
+        "pointer": "/runs/lhs:101/final_hypervolume"
+      },
+      "value": "0.002844"
+    },
+    {
+      "derived": false,
+      "description": "final Pareto-set size, lhs:101",
+      "format": "int",
+      "name": "MdoParetoLhsA",
+      "raw": 19,
+      "source": {
+        "artifact": "artifacts/metrics.json",
+        "pointer": "/runs/lhs:101/pareto_set_size"
+      },
+      "value": "19"
+    },
+    {
+      "derived": false,
+      "description": "infeasible evaluations, lhs:101",
+      "format": "int",
+      "name": "MdoInfeasibleLhsA",
+      "raw": 18,
+      "source": {
+        "artifact": "artifacts/metrics.json",
+        "pointer": "/runs/lhs:101/infeasible_evaluations"
+      },
+      "value": "18"
+    },
+    {
+      "derived": false,
+      "description": "fraction of the dense-reference robust hypervolume, lhs:101",
+      "format": "fixed3",
+      "name": "MdoAttainedLhsA",
+      "raw": 0.748820653491912,
+      "source": {
+        "artifact": "artifacts/metrics.json",
+        "pointer": "/hypervolume_table/lhs:101/attained_fraction_of_dense_reference"
+      },
+      "value": "0.749"
+    },
+    {
+      "derived": false,
+      "description": "final robust hypervolume, lhs:202",
+      "format": "fixed6",
+      "name": "MdoHvLhsB",
+      "raw": 0.0032128210523537488,
+      "source": {
+        "artifact": "artifacts/metrics.json",
+        "pointer": "/runs/lhs:202/final_hypervolume"
+      },
+      "value": "0.003213"
+    },
+    {
+      "derived": false,
+      "description": "final Pareto-set size, lhs:202",
+      "format": "int",
+      "name": "MdoParetoLhsB",
+      "raw": 18,
+      "source": {
+        "artifact": "artifacts/metrics.json",
+        "pointer": "/runs/lhs:202/pareto_set_size"
+      },
+      "value": "18"
+    },
+    {
+      "derived": false,
+      "description": "infeasible evaluations, lhs:202",
+      "format": "int",
+      "name": "MdoInfeasibleLhsB",
+      "raw": 18,
+      "source": {
+        "artifact": "artifacts/metrics.json",
+        "pointer": "/runs/lhs:202/infeasible_evaluations"
+      },
+      "value": "18"
+    },
+    {
+      "derived": false,
+      "description": "fraction of the dense-reference robust hypervolume, lhs:202",
+      "format": "fixed3",
+      "name": "MdoAttainedLhsB",
+      "raw": 0.8459281793191401,
+      "source": {
+        "artifact": "artifacts/metrics.json",
+        "pointer": "/hypervolume_table/lhs:202/attained_fraction_of_dense_reference"
+      },
+      "value": "0.846"
+    },
+    {
+      "derived": false,
+      "description": "final robust hypervolume, lhs:303",
+      "format": "fixed6",
+      "name": "MdoHvLhsC",
+      "raw": 0.002803786563725489,
+      "source": {
+        "artifact": "artifacts/metrics.json",
+        "pointer": "/runs/lhs:303/final_hypervolume"
+      },
+      "value": "0.002804"
+    },
+    {
+      "derived": false,
+      "description": "final Pareto-set size, lhs:303",
+      "format": "int",
+      "name": "MdoParetoLhsC",
+      "raw": 24,
+      "source": {
+        "artifact": "artifacts/metrics.json",
+        "pointer": "/runs/lhs:303/pareto_set_size"
+      },
+      "value": "24"
+    },
+    {
+      "derived": false,
+      "description": "infeasible evaluations, lhs:303",
+      "format": "int",
+      "name": "MdoInfeasibleLhsC",
+      "raw": 19,
+      "source": {
+        "artifact": "artifacts/metrics.json",
+        "pointer": "/runs/lhs:303/infeasible_evaluations"
+      },
+      "value": "19"
+    },
+    {
+      "derived": false,
+      "description": "fraction of the dense-reference robust hypervolume, lhs:303",
+      "format": "fixed3",
+      "name": "MdoAttainedLhsC",
+      "raw": 0.7382303665229542,
+      "source": {
+        "artifact": "artifacts/metrics.json",
+        "pointer": "/hypervolume_table/lhs:303/attained_fraction_of_dense_reference"
+      },
+      "value": "0.738"
+    },
+    {
+      "derivation": "count of runs with evaluations != plan.evaluations_per_run",
+      "derived": true,
+      "description": "runs that did not record exactly the budget",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs"
+        }
+      ],
+      "name": "MdoFailedRuns",
+      "raw": 0,
+      "value": "0"
+    },
+    {
+      "derived": false,
+      "description": "mean final hypervolume, qlognehvi",
+      "format": "fixed6",
+      "name": "MdoHvBoMean",
+      "raw": 0.003866883266055783,
+      "source": {
+        "artifact": "artifacts/metrics.json",
+        "pointer": "/seed_variance/qlognehvi/mean"
+      },
+      "value": "0.003867"
+    },
+    {
+      "derived": false,
+      "description": "sample standard deviation of the final hypervolume, qlognehvi",
+      "format": "sci1",
+      "name": "MdoHvBoStd",
+      "raw": 9.228702679855986e-06,
+      "source": {
+        "artifact": "artifacts/metrics.json",
+        "pointer": "/seed_variance/qlognehvi/sample_std"
+      },
+      "value": "$9.2\\times10^{-6}$"
+    },
+    {
+      "derived": false,
+      "description": "minimum final hypervolume, qlognehvi",
+      "format": "fixed6",
+      "name": "MdoHvBoMin",
+      "raw": 0.0038598349135775373,
+      "source": {
+        "artifact": "artifacts/metrics.json",
+        "pointer": "/seed_variance/qlognehvi/minimum"
+      },
+      "value": "0.003860"
+    },
+    {
+      "derived": false,
+      "description": "maximum final hypervolume, qlognehvi",
+      "format": "fixed6",
+      "name": "MdoHvBoMax",
+      "raw": 0.0038773291110720137,
+      "source": {
+        "artifact": "artifacts/metrics.json",
+        "pointer": "/seed_variance/qlognehvi/maximum"
+      },
+      "value": "0.003877"
+    },
+    {
+      "derivation": "mean over seeds of hypervolume_table[*].attained_fraction_of_dense_reference",
+      "derived": true,
+      "description": "mean fraction of the dense-reference robust hypervolume, qlognehvi",
+      "format": "fixed3",
+      "inputs": [
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/hypervolume_table/qlognehvi:101/attained_fraction_of_dense_reference"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/hypervolume_table/qlognehvi:202/attained_fraction_of_dense_reference"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/hypervolume_table/qlognehvi:303/attained_fraction_of_dense_reference"
+        }
+      ],
+      "name": "MdoAttainedBoMean",
+      "raw": 1.0181412122215054,
+      "value": "1.018"
+    },
+    {
+      "derivation": "mean over seeds of hypervolume_table[*].attained_fraction_of_dense_reference",
+      "derived": true,
+      "description": "mean attained fraction to two decimals, qlognehvi",
+      "format": "fixed2",
+      "inputs": [
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/hypervolume_table/qlognehvi:101/attained_fraction_of_dense_reference"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/hypervolume_table/qlognehvi:202/attained_fraction_of_dense_reference"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/hypervolume_table/qlognehvi:303/attained_fraction_of_dense_reference"
+        }
+      ],
+      "name": "MdoAttainedBoMeanTwo",
+      "raw": 1.0181412122215054,
+      "value": "1.02"
+    },
+    {
+      "derivation": "min over seeds",
+      "derived": true,
+      "description": "minimum attained fraction, qlognehvi",
+      "format": "fixed3",
+      "inputs": [
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/qlognehvi:101"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/qlognehvi:202"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/qlognehvi:303"
+        }
+      ],
+      "name": "MdoAttainedBoMin",
+      "raw": 1.0162853976952797,
+      "value": "1.016"
+    },
+    {
+      "derivation": "max over seeds",
+      "derived": true,
+      "description": "maximum attained fraction, qlognehvi",
+      "format": "fixed3",
+      "inputs": [
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/qlognehvi:101"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/qlognehvi:202"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/qlognehvi:303"
+        }
+      ],
+      "name": "MdoAttainedBoMax",
+      "raw": 1.020891578492156,
+      "value": "1.021"
+    },
+    {
+      "derivation": "min over seeds of runs[*].pareto_set_size",
+      "derived": true,
+      "description": "minimum Pareto-set size, qlognehvi",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/qlognehvi:101"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/qlognehvi:202"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/qlognehvi:303"
+        }
+      ],
+      "name": "MdoParetoBoMin",
+      "raw": 27,
+      "value": "27"
+    },
+    {
+      "derivation": "max over seeds of runs[*].pareto_set_size",
+      "derived": true,
+      "description": "maximum Pareto-set size, qlognehvi",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/qlognehvi:101"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/qlognehvi:202"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/qlognehvi:303"
+        }
+      ],
+      "name": "MdoParetoBoMax",
+      "raw": 30,
+      "value": "30"
+    },
+    {
+      "derivation": "min over seeds of runs[*].infeasible_evaluations",
+      "derived": true,
+      "description": "minimum infeasible evaluations, qlognehvi",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/qlognehvi:101"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/qlognehvi:202"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/qlognehvi:303"
+        }
+      ],
+      "name": "MdoInfeasibleBoMin",
+      "raw": 11,
+      "value": "11"
+    },
+    {
+      "derivation": "max over seeds of runs[*].infeasible_evaluations",
+      "derived": true,
+      "description": "maximum infeasible evaluations, qlognehvi",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/qlognehvi:101"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/qlognehvi:202"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/qlognehvi:303"
+        }
+      ],
+      "name": "MdoInfeasibleBoMax",
+      "raw": 18,
+      "value": "18"
+    },
+    {
+      "derivation": "max over seeds of runs[*].wall_clock_seconds",
+      "derived": true,
+      "description": "maximum run wall time (s), qlognehvi",
+      "format": "fixed1",
+      "inputs": [
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/qlognehvi:101"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/qlognehvi:202"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/qlognehvi:303"
+        }
+      ],
+      "name": "MdoWallBoMax",
+      "raw": 536.5966056999896,
+      "value": "536.6"
+    },
+    {
+      "derivation": "min over seeds of runs[*].wall_clock_seconds",
+      "derived": true,
+      "description": "minimum run wall time (s), qlognehvi",
+      "format": "fixed1",
+      "inputs": [
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/qlognehvi:101"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/qlognehvi:202"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/qlognehvi:303"
+        }
+      ],
+      "name": "MdoWallBoMin",
+      "raw": 517.8989765000006,
+      "value": "517.9"
+    },
+    {
+      "derived": false,
+      "description": "mean final hypervolume, nsga3",
+      "format": "fixed6",
+      "name": "MdoHvNsgaMean",
+      "raw": 0.0032337095158432735,
+      "source": {
+        "artifact": "artifacts/metrics.json",
+        "pointer": "/seed_variance/nsga3/mean"
+      },
+      "value": "0.003234"
+    },
+    {
+      "derived": false,
+      "description": "sample standard deviation of the final hypervolume, nsga3",
+      "format": "sci1",
+      "name": "MdoHvNsgaStd",
+      "raw": 0.00029146181486188627,
+      "source": {
+        "artifact": "artifacts/metrics.json",
+        "pointer": "/seed_variance/nsga3/sample_std"
+      },
+      "value": "$2.9\\times10^{-4}$"
+    },
+    {
+      "derived": false,
+      "description": "minimum final hypervolume, nsga3",
+      "format": "fixed6",
+      "name": "MdoHvNsgaMin",
+      "raw": 0.002925589672975826,
+      "source": {
+        "artifact": "artifacts/metrics.json",
+        "pointer": "/seed_variance/nsga3/minimum"
+      },
+      "value": "0.002926"
+    },
+    {
+      "derived": false,
+      "description": "maximum final hypervolume, nsga3",
+      "format": "fixed6",
+      "name": "MdoHvNsgaMax",
+      "raw": 0.0035050153811134006,
+      "source": {
+        "artifact": "artifacts/metrics.json",
+        "pointer": "/seed_variance/nsga3/maximum"
+      },
+      "value": "0.003505"
+    },
+    {
+      "derivation": "mean over seeds of hypervolume_table[*].attained_fraction_of_dense_reference",
+      "derived": true,
+      "description": "mean fraction of the dense-reference robust hypervolume, nsga3",
+      "format": "fixed3",
+      "inputs": [
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/hypervolume_table/nsga3:101/attained_fraction_of_dense_reference"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/hypervolume_table/nsga3:202/attained_fraction_of_dense_reference"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/hypervolume_table/nsga3:303/attained_fraction_of_dense_reference"
+        }
+      ],
+      "name": "MdoAttainedNsgaMean",
+      "raw": 0.8514280623193222,
+      "value": "0.851"
+    },
+    {
+      "derivation": "mean over seeds of hypervolume_table[*].attained_fraction_of_dense_reference",
+      "derived": true,
+      "description": "mean attained fraction to two decimals, nsga3",
+      "format": "fixed2",
+      "inputs": [
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/hypervolume_table/nsga3:101/attained_fraction_of_dense_reference"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/hypervolume_table/nsga3:202/attained_fraction_of_dense_reference"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/hypervolume_table/nsga3:303/attained_fraction_of_dense_reference"
+        }
+      ],
+      "name": "MdoAttainedNsgaMeanTwo",
+      "raw": 0.8514280623193222,
+      "value": "0.85"
+    },
+    {
+      "derivation": "min over seeds",
+      "derived": true,
+      "description": "minimum attained fraction, nsga3",
+      "format": "fixed3",
+      "inputs": [
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/nsga3:101"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/nsga3:202"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/nsga3:303"
+        }
+      ],
+      "name": "MdoAttainedNsgaMin",
+      "raw": 0.7703008369178309,
+      "value": "0.770"
+    },
+    {
+      "derivation": "max over seeds",
+      "derived": true,
+      "description": "maximum attained fraction, nsga3",
+      "format": "fixed3",
+      "inputs": [
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/nsga3:101"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/nsga3:202"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/nsga3:303"
+        }
+      ],
+      "name": "MdoAttainedNsgaMax",
+      "raw": 0.922862254546874,
+      "value": "0.923"
+    },
+    {
+      "derivation": "min over seeds of runs[*].pareto_set_size",
+      "derived": true,
+      "description": "minimum Pareto-set size, nsga3",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/nsga3:101"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/nsga3:202"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/nsga3:303"
+        }
+      ],
+      "name": "MdoParetoNsgaMin",
+      "raw": 24,
+      "value": "24"
+    },
+    {
+      "derivation": "max over seeds of runs[*].pareto_set_size",
+      "derived": true,
+      "description": "maximum Pareto-set size, nsga3",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/nsga3:101"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/nsga3:202"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/nsga3:303"
+        }
+      ],
+      "name": "MdoParetoNsgaMax",
+      "raw": 32,
+      "value": "32"
+    },
+    {
+      "derivation": "min over seeds of runs[*].infeasible_evaluations",
+      "derived": true,
+      "description": "minimum infeasible evaluations, nsga3",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/nsga3:101"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/nsga3:202"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/nsga3:303"
+        }
+      ],
+      "name": "MdoInfeasibleNsgaMin",
+      "raw": 7,
+      "value": "7"
+    },
+    {
+      "derivation": "max over seeds of runs[*].infeasible_evaluations",
+      "derived": true,
+      "description": "maximum infeasible evaluations, nsga3",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/nsga3:101"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/nsga3:202"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/nsga3:303"
+        }
+      ],
+      "name": "MdoInfeasibleNsgaMax",
+      "raw": 17,
+      "value": "17"
+    },
+    {
+      "derivation": "max over seeds of runs[*].wall_clock_seconds",
+      "derived": true,
+      "description": "maximum run wall time (s), nsga3",
+      "format": "fixed1",
+      "inputs": [
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/nsga3:101"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/nsga3:202"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/nsga3:303"
+        }
+      ],
+      "name": "MdoWallNsgaMax",
+      "raw": 1.5150695000047563,
+      "value": "1.5"
+    },
+    {
+      "derivation": "min over seeds of runs[*].wall_clock_seconds",
+      "derived": true,
+      "description": "minimum run wall time (s), nsga3",
+      "format": "fixed1",
+      "inputs": [
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/nsga3:101"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/nsga3:202"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/nsga3:303"
+        }
+      ],
+      "name": "MdoWallNsgaMin",
+      "raw": 1.1404913000005763,
+      "value": "1.1"
+    },
+    {
+      "derived": false,
+      "description": "mean final hypervolume, lhs",
+      "format": "fixed6",
+      "name": "MdoHvLhsMean",
+      "raw": 0.0029535386374276384,
+      "source": {
+        "artifact": "artifacts/metrics.json",
+        "pointer": "/seed_variance/lhs/mean"
+      },
+      "value": "0.002954"
+    },
+    {
+      "derived": false,
+      "description": "sample standard deviation of the final hypervolume, lhs",
+      "format": "sci1",
+      "name": "MdoHvLhsStd",
+      "raw": 0.00022544395081333074,
+      "source": {
+        "artifact": "artifacts/metrics.json",
+        "pointer": "/seed_variance/lhs/sample_std"
+      },
+      "value": "$2.3\\times10^{-4}$"
+    },
+    {
+      "derived": false,
+      "description": "minimum final hypervolume, lhs",
+      "format": "fixed6",
+      "name": "MdoHvLhsMin",
+      "raw": 0.002803786563725489,
+      "source": {
+        "artifact": "artifacts/metrics.json",
+        "pointer": "/seed_variance/lhs/minimum"
+      },
+      "value": "0.002804"
+    },
+    {
+      "derived": false,
+      "description": "maximum final hypervolume, lhs",
+      "format": "fixed6",
+      "name": "MdoHvLhsMax",
+      "raw": 0.0032128210523537488,
+      "source": {
+        "artifact": "artifacts/metrics.json",
+        "pointer": "/seed_variance/lhs/maximum"
+      },
+      "value": "0.003213"
+    },
+    {
+      "derivation": "mean over seeds of hypervolume_table[*].attained_fraction_of_dense_reference",
+      "derived": true,
+      "description": "mean fraction of the dense-reference robust hypervolume, lhs",
+      "format": "fixed3",
+      "inputs": [
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/hypervolume_table/lhs:101/attained_fraction_of_dense_reference"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/hypervolume_table/lhs:202/attained_fraction_of_dense_reference"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/hypervolume_table/lhs:303/attained_fraction_of_dense_reference"
+        }
+      ],
+      "name": "MdoAttainedLhsMean",
+      "raw": 0.7776597331113354,
+      "value": "0.778"
+    },
+    {
+      "derivation": "mean over seeds of hypervolume_table[*].attained_fraction_of_dense_reference",
+      "derived": true,
+      "description": "mean attained fraction to two decimals, lhs",
+      "format": "fixed2",
+      "inputs": [
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/hypervolume_table/lhs:101/attained_fraction_of_dense_reference"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/hypervolume_table/lhs:202/attained_fraction_of_dense_reference"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/hypervolume_table/lhs:303/attained_fraction_of_dense_reference"
+        }
+      ],
+      "name": "MdoAttainedLhsMeanTwo",
+      "raw": 0.7776597331113354,
+      "value": "0.78"
+    },
+    {
+      "derivation": "min over seeds",
+      "derived": true,
+      "description": "minimum attained fraction, lhs",
+      "format": "fixed3",
+      "inputs": [
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/lhs:101"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/lhs:202"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/lhs:303"
+        }
+      ],
+      "name": "MdoAttainedLhsMin",
+      "raw": 0.7382303665229542,
+      "value": "0.738"
+    },
+    {
+      "derivation": "max over seeds",
+      "derived": true,
+      "description": "maximum attained fraction, lhs",
+      "format": "fixed3",
+      "inputs": [
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/lhs:101"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/lhs:202"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/lhs:303"
+        }
+      ],
+      "name": "MdoAttainedLhsMax",
+      "raw": 0.8459281793191401,
+      "value": "0.846"
+    },
+    {
+      "derivation": "min over seeds of runs[*].pareto_set_size",
+      "derived": true,
+      "description": "minimum Pareto-set size, lhs",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/lhs:101"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/lhs:202"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/lhs:303"
+        }
+      ],
+      "name": "MdoParetoLhsMin",
+      "raw": 18,
+      "value": "18"
+    },
+    {
+      "derivation": "max over seeds of runs[*].pareto_set_size",
+      "derived": true,
+      "description": "maximum Pareto-set size, lhs",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/lhs:101"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/lhs:202"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/lhs:303"
+        }
+      ],
+      "name": "MdoParetoLhsMax",
+      "raw": 24,
+      "value": "24"
+    },
+    {
+      "derivation": "min over seeds of runs[*].infeasible_evaluations",
+      "derived": true,
+      "description": "minimum infeasible evaluations, lhs",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/lhs:101"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/lhs:202"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/lhs:303"
+        }
+      ],
+      "name": "MdoInfeasibleLhsMin",
+      "raw": 18,
+      "value": "18"
+    },
+    {
+      "derivation": "max over seeds of runs[*].infeasible_evaluations",
+      "derived": true,
+      "description": "maximum infeasible evaluations, lhs",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/lhs:101"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/lhs:202"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/lhs:303"
+        }
+      ],
+      "name": "MdoInfeasibleLhsMax",
+      "raw": 19,
+      "value": "19"
+    },
+    {
+      "derivation": "max over seeds of runs[*].wall_clock_seconds",
+      "derived": true,
+      "description": "maximum run wall time (s), lhs",
+      "format": "fixed1",
+      "inputs": [
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/lhs:101"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/lhs:202"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/lhs:303"
+        }
+      ],
+      "name": "MdoWallLhsMax",
+      "raw": 0.894594400000642,
+      "value": "0.9"
+    },
+    {
+      "derivation": "min over seeds of runs[*].wall_clock_seconds",
+      "derived": true,
+      "description": "minimum run wall time (s), lhs",
+      "format": "fixed1",
+      "inputs": [
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/lhs:101"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/lhs:202"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/runs/lhs:303"
+        }
+      ],
+      "name": "MdoWallLhsMin",
+      "raw": 0.6250867999915499,
+      "value": "0.6"
+    },
+    {
+      "derivation": "min over BO seeds of timing[*].bo_acquisition_seconds",
+      "derived": true,
+      "description": "minimum BO acquisition seconds per seed",
+      "format": "fixed0",
+      "inputs": [
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/timing/qlognehvi:101/bo_acquisition_seconds"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/timing/qlognehvi:202/bo_acquisition_seconds"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/timing/qlognehvi:303/bo_acquisition_seconds"
+        }
+      ],
+      "name": "MdoBoAcqSecondsMin",
+      "raw": 509.6563640999957,
+      "value": "510"
+    },
+    {
+      "derivation": "max over BO seeds of timing[*].bo_acquisition_seconds",
+      "derived": true,
+      "description": "maximum BO acquisition seconds per seed",
+      "format": "fixed0",
+      "inputs": [
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/timing/qlognehvi:101/bo_acquisition_seconds"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/timing/qlognehvi:202/bo_acquisition_seconds"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/timing/qlognehvi:303/bo_acquisition_seconds"
+        }
+      ],
+      "name": "MdoBoAcqSecondsMax",
+      "raw": 529.0441412999935,
+      "value": "529"
+    },
+    {
+      "derivation": "max over BO seeds of timing[*].bo_fit_seconds",
+      "derived": true,
+      "description": "maximum BO fit seconds per seed",
+      "format": "fixed1",
+      "inputs": [
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/timing/qlognehvi:101/bo_fit_seconds"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/timing/qlognehvi:202/bo_fit_seconds"
+        },
+        {
+          "artifact": "artifacts/metrics.json",
+          "pointer": "/timing/qlognehvi:303/bo_fit_seconds"
+        }
+      ],
+      "name": "MdoBoFitSecondsMax",
+      "raw": 7.411748299986357,
+      "value": "7.4"
+    },
+    {
+      "derived": false,
+      "description": "assessment stage wall time (s)",
+      "format": "fixed0",
+      "name": "MdoAssessmentSeconds",
+      "raw": 1600.4247965999966,
+      "source": {
+        "artifact": "artifacts/campaign-result.json",
+        "pointer": "/assessment_seconds"
+      },
+      "value": "1600"
+    },
+    {
+      "derived": false,
+      "description": "dense reference evaluation time (s)",
+      "format": "fixed1",
+      "name": "MdoDenseEvaluationSeconds",
+      "raw": 28.64181020000251,
+      "source": {
+        "artifact": "artifacts/dense-reference-summary.json",
+        "pointer": "/evaluation_seconds"
+      },
+      "value": "28.6"
+    },
+    {
+      "derivation": "(terminal.recorded_at_utc - lock_acquired.recorded_at_utc) / 60",
+      "derived": true,
+      "description": "lock-acquired to terminal wall time (min)",
+      "format": "min1",
+      "inputs": [
+        {
+          "artifact": "transitions/0001-lock-acquired.json",
+          "pointer": "/recorded_at_utc/value"
+        },
+        {
+          "artifact": "transitions/0009-terminal.json",
+          "pointer": "/recorded_at_utc/value"
+        }
+      ],
+      "name": "MdoLifecycleWallMin",
+      "raw": 1635.498007,
+      "value": "27.3"
+    },
+    {
+      "derived": false,
+      "description": "host CPU count",
+      "format": "int",
+      "name": "MdoCpuCount",
+      "raw": 24,
+      "source": {
+        "artifact": "artifacts/runtime.json",
+        "pointer": "/cpu_count"
+      },
+      "value": "24"
+    },
+    {
+      "derived": false,
+      "description": "CUDA device probed and not used",
+      "format": "text",
+      "name": "MdoCudaDevice",
+      "raw": "NVIDIA GeForce RTX 5090",
+      "source": {
+        "artifact": "artifacts/device-probes.json",
+        "pointer": "/cuda/device_name"
+      },
+      "value": "NVIDIA GeForce RTX 5090"
+    },
+    {
+      "derived": false,
+      "description": "bo_beats_random: seeds won by qLogNEHVI",
+      "format": "int",
+      "name": "MdoBoBeatsRandomWins",
+      "raw": 3,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/reported_not_binding/bo_beats_random/wins"
+      },
+      "value": "3"
+    },
+    {
+      "derived": false,
+      "description": "bo_beats_random: paired seeds",
+      "format": "int",
+      "name": "MdoBoBeatsRandomSeeds",
+      "raw": 3,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/reported_not_binding/bo_beats_random/seeds"
+      },
+      "value": "3"
+    },
+    {
+      "derived": false,
+      "description": "bo_beats_random: predeclared required wins",
+      "format": "int",
+      "name": "MdoBoBeatsRandomRequired",
+      "raw": 2,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/reported_not_binding/bo_beats_random/required_wins"
+      },
+      "value": "2"
+    },
+    {
+      "derived": false,
+      "description": "bo_beats_random: predeclared comparison outcome",
+      "format": "bool",
+      "name": "MdoBoBeatsRandomPassed",
+      "raw": true,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/reported_not_binding/bo_beats_random/passed"
+      },
+      "value": "true"
+    },
+    {
+      "derived": false,
+      "description": "bo_beats_nsga3: seeds won by qLogNEHVI",
+      "format": "int",
+      "name": "MdoBoBeatsNsgaWins",
+      "raw": 3,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/reported_not_binding/bo_beats_nsga3/wins"
+      },
+      "value": "3"
+    },
+    {
+      "derived": false,
+      "description": "bo_beats_nsga3: paired seeds",
+      "format": "int",
+      "name": "MdoBoBeatsNsgaSeeds",
+      "raw": 3,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/reported_not_binding/bo_beats_nsga3/seeds"
+      },
+      "value": "3"
+    },
+    {
+      "derived": false,
+      "description": "bo_beats_nsga3: predeclared required wins",
+      "format": "int",
+      "name": "MdoBoBeatsNsgaRequired",
+      "raw": 2,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/reported_not_binding/bo_beats_nsga3/required_wins"
+      },
+      "value": "2"
+    },
+    {
+      "derived": false,
+      "description": "bo_beats_nsga3: predeclared comparison outcome",
+      "format": "bool",
+      "name": "MdoBoBeatsNsgaPassed",
+      "raw": true,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/reported_not_binding/bo_beats_nsga3/passed"
+      },
+      "value": "true"
+    },
+    {
+      "derived": false,
+      "description": "unique evaluated designs pooled over all runs",
+      "format": "int",
+      "name": "MdoUniqueDesigns",
+      "raw": 758,
+      "source": {
+        "artifact": "artifacts/pooled-fronts.json",
+        "pointer": "/unique_designs"
+      },
+      "value": "758"
+    },
+    {
+      "derived": false,
+      "description": "robust-feasible pooled designs",
+      "format": "int",
+      "name": "MdoRobustCandidates",
+      "raw": 644,
+      "source": {
+        "artifact": "artifacts/pooled-fronts.json",
+        "pointer": "/robust/candidates"
+      },
+      "value": "644"
+    },
+    {
+      "derived": false,
+      "description": "nominally feasible pooled designs",
+      "format": "int",
+      "name": "MdoNominalCandidates",
+      "raw": 730,
+      "source": {
+        "artifact": "artifacts/pooled-fronts.json",
+        "pointer": "/nominal/candidates"
+      },
+      "value": "730"
+    },
+    {
+      "derived": false,
+      "description": "pooled robust front size",
+      "format": "int",
+      "name": "MdoRobustFront",
+      "raw": 114,
+      "source": {
+        "artifact": "artifacts/pooled-fronts.json",
+        "pointer": "/robust/front_size"
+      },
+      "value": "114"
+    },
+    {
+      "derived": false,
+      "description": "pooled nominal front size",
+      "format": "int",
+      "name": "MdoNominalFront",
+      "raw": 62,
+      "source": {
+        "artifact": "artifacts/pooled-fronts.json",
+        "pointer": "/nominal/front_size"
+      },
+      "value": "62"
+    },
+    {
+      "derived": false,
+      "description": "pooled robust hypervolume",
+      "format": "fixed6",
+      "name": "MdoPooledRobustHv",
+      "raw": 0.003919578554533065,
+      "source": {
+        "artifact": "artifacts/pooled-fronts.json",
+        "pointer": "/robust/hypervolume"
+      },
+      "value": "0.003920"
+    },
+    {
+      "derived": false,
+      "description": "pooled nominal hypervolume",
+      "format": "fixed4",
+      "name": "MdoPooledNominalHv",
+      "raw": 0.04147096602502818,
+      "source": {
+        "artifact": "artifacts/pooled-fronts.json",
+        "pointer": "/nominal/hypervolume"
+      },
+      "value": "0.0415"
+    },
+    {
+      "derivation": "len(pooled.shared_design_ids)",
+      "derived": true,
+      "description": "designs on both pooled fronts",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/pooled-fronts.json",
+          "pointer": "/shared_design_ids"
+        }
+      ],
+      "name": "MdoSharedDesigns",
+      "raw": 24,
+      "value": "24"
+    },
+    {
+      "derived": false,
+      "description": "Jaccard index of the robust and nominal fronts",
+      "format": "fixed3",
+      "name": "MdoJaccard",
+      "raw": 0.15789473684210525,
+      "source": {
+        "artifact": "artifacts/pooled-fronts.json",
+        "pointer": "/jaccard_robust_nominal"
+      },
+      "value": "0.158"
+    },
+    {
+      "derived": false,
+      "description": "nominal-front designs that are robust-feasible",
+      "format": "int",
+      "name": "MdoNominalRobustFeasible",
+      "raw": 24,
+      "source": {
+        "artifact": "artifacts/pooled-fronts.json",
+        "pointer": "/nominal/robust_feasible_members"
+      },
+      "value": "24"
+    },
+    {
+      "derived": false,
+      "description": "robust front axial_thrust_n minimum",
+      "format": "sig3",
+      "name": "MdoRobustThrustMin",
+      "raw": 0.0006466284066485613,
+      "source": {
+        "artifact": "artifacts/pooled-fronts.json",
+        "pointer": "/robust/objective_ranges/axial_thrust_n/minimum"
+      },
+      "value": "$6.47\\times10^{-4}$"
+    },
+    {
+      "derived": false,
+      "description": "robust front axial_thrust_n maximum",
+      "format": "sig3",
+      "name": "MdoRobustThrustMax",
+      "raw": 0.00810829755014095,
+      "source": {
+        "artifact": "artifacts/pooled-fronts.json",
+        "pointer": "/robust/objective_ranges/axial_thrust_n/maximum"
+      },
+      "value": "0.00811"
+    },
+    {
+      "derived": false,
+      "description": "robust front specific_impulse_s minimum",
+      "format": "fixed0",
+      "name": "MdoRobustIspMin",
+      "raw": 226.43295473867605,
+      "source": {
+        "artifact": "artifacts/pooled-fronts.json",
+        "pointer": "/robust/objective_ranges/specific_impulse_s/minimum"
+      },
+      "value": "226"
+    },
+    {
+      "derived": false,
+      "description": "robust front specific_impulse_s maximum",
+      "format": "fixed0",
+      "name": "MdoRobustIspMax",
+      "raw": 413.40812357639726,
+      "source": {
+        "artifact": "artifacts/pooled-fronts.json",
+        "pointer": "/robust/objective_ranges/specific_impulse_s/maximum"
+      },
+      "value": "413"
+    },
+    {
+      "derived": false,
+      "description": "robust front thruster_electrical_to_beam_efficiency minimum",
+      "format": "fixed3",
+      "name": "MdoRobustEffMin",
+      "raw": 0.1423954297553916,
+      "source": {
+        "artifact": "artifacts/pooled-fronts.json",
+        "pointer": "/robust/objective_ranges/thruster_electrical_to_beam_efficiency/minimum"
+      },
+      "value": "0.142"
+    },
+    {
+      "derived": false,
+      "description": "robust front thruster_electrical_to_beam_efficiency maximum",
+      "format": "fixed3",
+      "name": "MdoRobustEffMax",
+      "raw": 0.25508519370144694,
+      "source": {
+        "artifact": "artifacts/pooled-fronts.json",
+        "pointer": "/robust/objective_ranges/thruster_electrical_to_beam_efficiency/maximum"
+      },
+      "value": "0.255"
+    },
+    {
+      "derived": false,
+      "description": "robust front anode_input_power_w minimum",
+      "format": "fixed1",
+      "name": "MdoRobustPowerMin",
+      "raw": 27.06628811114531,
+      "source": {
+        "artifact": "artifacts/pooled-fronts.json",
+        "pointer": "/robust/objective_ranges/anode_input_power_w/minimum"
+      },
+      "value": "27.1"
+    },
+    {
+      "derived": false,
+      "description": "robust front anode_input_power_w maximum",
+      "format": "fixed1",
+      "name": "MdoRobustPowerMax",
+      "raw": 521.1969325221335,
+      "source": {
+        "artifact": "artifacts/pooled-fronts.json",
+        "pointer": "/robust/objective_ranges/anode_input_power_w/maximum"
+      },
+      "value": "521.2"
+    },
+    {
+      "derived": false,
+      "description": "nominal front axial_thrust_n minimum",
+      "format": "sig3",
+      "name": "MdoNominalThrustMin",
+      "raw": 0.0011337882688601517,
+      "source": {
+        "artifact": "artifacts/pooled-fronts.json",
+        "pointer": "/nominal/objective_ranges/axial_thrust_n/minimum"
+      },
+      "value": "0.00113"
+    },
+    {
+      "derived": false,
+      "description": "nominal front axial_thrust_n maximum",
+      "format": "sig3",
+      "name": "MdoNominalThrustMax",
+      "raw": 0.014216963789797915,
+      "source": {
+        "artifact": "artifacts/pooled-fronts.json",
+        "pointer": "/nominal/objective_ranges/axial_thrust_n/maximum"
+      },
+      "value": "0.0142"
+    },
+    {
+      "derived": false,
+      "description": "nominal front specific_impulse_s minimum",
+      "format": "fixed0",
+      "name": "MdoNominalIspMin",
+      "raw": 403.9455171499812,
+      "source": {
+        "artifact": "artifacts/pooled-fronts.json",
+        "pointer": "/nominal/objective_ranges/specific_impulse_s/minimum"
+      },
+      "value": "404"
+    },
+    {
+      "derived": false,
+      "description": "nominal front specific_impulse_s maximum",
+      "format": "fixed0",
+      "name": "MdoNominalIspMax",
+      "raw": 724.8634237888534,
+      "source": {
+        "artifact": "artifacts/pooled-fronts.json",
+        "pointer": "/nominal/objective_ranges/specific_impulse_s/maximum"
+      },
+      "value": "725"
+    },
+    {
+      "derived": false,
+      "description": "nominal front thruster_electrical_to_beam_efficiency minimum",
+      "format": "fixed3",
+      "name": "MdoNominalEffMin",
+      "raw": 0.28440308331421765,
+      "source": {
+        "artifact": "artifacts/pooled-fronts.json",
+        "pointer": "/nominal/objective_ranges/thruster_electrical_to_beam_efficiency/minimum"
+      },
+      "value": "0.284"
+    },
+    {
+      "derived": false,
+      "description": "nominal front thruster_electrical_to_beam_efficiency maximum",
+      "format": "fixed3",
+      "name": "MdoNominalEffMax",
+      "raw": 0.889092897186504,
+      "source": {
+        "artifact": "artifacts/pooled-fronts.json",
+        "pointer": "/nominal/objective_ranges/thruster_electrical_to_beam_efficiency/maximum"
+      },
+      "value": "0.889"
+    },
+    {
+      "derived": false,
+      "description": "nominal front anode_input_power_w minimum",
+      "format": "fixed1",
+      "name": "MdoNominalPowerMin",
+      "raw": 27.066288111145308,
+      "source": {
+        "artifact": "artifacts/pooled-fronts.json",
+        "pointer": "/nominal/objective_ranges/anode_input_power_w/minimum"
+      },
+      "value": "27.1"
+    },
+    {
+      "derived": false,
+      "description": "nominal front anode_input_power_w maximum",
+      "format": "fixed1",
+      "name": "MdoNominalPowerMax",
+      "raw": 521.1969325221334,
+      "source": {
+        "artifact": "artifacts/pooled-fronts.json",
+        "pointer": "/nominal/objective_ranges/anode_input_power_w/maximum"
+      },
+      "value": "521.2"
+    },
+    {
+      "derivation": "same raw value as MdoNominalEffMax",
+      "derived": true,
+      "description": "nominal-front efficiency maximum to two decimals",
+      "format": "fixed2",
+      "inputs": [
+        {
+          "artifact": "artifacts/pooled-fronts.json",
+          "pointer": "/nominal/objective_ranges/thruster_electrical_to_beam_efficiency/maximum"
+        }
+      ],
+      "name": "MdoNominalEffMaxTwo",
+      "raw": 0.889092897186504,
+      "value": "0.89"
+    },
+    {
+      "derived": false,
+      "description": "pooled robust front size, qlognehvi",
+      "format": "int",
+      "name": "MdoPooledBoRobustFront",
+      "raw": 82,
+      "source": {
+        "artifact": "artifacts/per-strategy-fronts.json",
+        "pointer": "/qlognehvi/robust/front_size"
+      },
+      "value": "82"
+    },
+    {
+      "derived": false,
+      "description": "pooled robust hypervolume, qlognehvi",
+      "format": "fixed6",
+      "name": "MdoPooledBoRobustHv",
+      "raw": 0.003916373322458348,
+      "source": {
+        "artifact": "artifacts/per-strategy-fronts.json",
+        "pointer": "/qlognehvi/robust/hypervolume"
+      },
+      "value": "0.003916"
+    },
+    {
+      "derived": false,
+      "description": "pooled nominal front size, qlognehvi",
+      "format": "int",
+      "name": "MdoPooledBoNominalFront",
+      "raw": 54,
+      "source": {
+        "artifact": "artifacts/per-strategy-fronts.json",
+        "pointer": "/qlognehvi/nominal/front_size"
+      },
+      "value": "54"
+    },
+    {
+      "derived": false,
+      "description": "unique designs, qlognehvi",
+      "format": "int",
+      "name": "MdoPooledBoUnique",
+      "raw": 288,
+      "source": {
+        "artifact": "artifacts/per-strategy-fronts.json",
+        "pointer": "/qlognehvi/unique_designs"
+      },
+      "value": "288"
+    },
+    {
+      "derived": false,
+      "description": "pooled robust front size, nsga3",
+      "format": "int",
+      "name": "MdoPooledNsgaRobustFront",
+      "raw": 46,
+      "source": {
+        "artifact": "artifacts/per-strategy-fronts.json",
+        "pointer": "/nsga3/robust/front_size"
+      },
+      "value": "46"
+    },
+    {
+      "derived": false,
+      "description": "pooled robust hypervolume, nsga3",
+      "format": "fixed6",
+      "name": "MdoPooledNsgaRobustHv",
+      "raw": 0.003621536123787996,
+      "source": {
+        "artifact": "artifacts/per-strategy-fronts.json",
+        "pointer": "/nsga3/robust/hypervolume"
+      },
+      "value": "0.003622"
+    },
+    {
+      "derived": false,
+      "description": "pooled nominal front size, nsga3",
+      "format": "int",
+      "name": "MdoPooledNsgaNominalFront",
+      "raw": 28,
+      "source": {
+        "artifact": "artifacts/per-strategy-fronts.json",
+        "pointer": "/nsga3/nominal/front_size"
+      },
+      "value": "28"
+    },
+    {
+      "derived": false,
+      "description": "unique designs, nsga3",
+      "format": "int",
+      "name": "MdoPooledNsgaUnique",
+      "raw": 278,
+      "source": {
+        "artifact": "artifacts/per-strategy-fronts.json",
+        "pointer": "/nsga3/unique_designs"
+      },
+      "value": "278"
+    },
+    {
+      "derived": false,
+      "description": "pooled robust front size, lhs",
+      "format": "int",
+      "name": "MdoPooledLhsRobustFront",
+      "raw": 43,
+      "source": {
+        "artifact": "artifacts/per-strategy-fronts.json",
+        "pointer": "/lhs/robust/front_size"
+      },
+      "value": "43"
+    },
+    {
+      "derived": false,
+      "description": "pooled robust hypervolume, lhs",
+      "format": "fixed6",
+      "name": "MdoPooledLhsRobustHv",
+      "raw": 0.0032746364879501035,
+      "source": {
+        "artifact": "artifacts/per-strategy-fronts.json",
+        "pointer": "/lhs/robust/hypervolume"
+      },
+      "value": "0.003275"
+    },
+    {
+      "derived": false,
+      "description": "pooled nominal front size, lhs",
+      "format": "int",
+      "name": "MdoPooledLhsNominalFront",
+      "raw": 25,
+      "source": {
+        "artifact": "artifacts/per-strategy-fronts.json",
+        "pointer": "/lhs/nominal/front_size"
+      },
+      "value": "25"
+    },
+    {
+      "derived": false,
+      "description": "unique designs, lhs",
+      "format": "int",
+      "name": "MdoPooledLhsUnique",
+      "raw": 288,
+      "source": {
+        "artifact": "artifacts/per-strategy-fronts.json",
+        "pointer": "/lhs/unique_designs"
+      },
+      "value": "288"
+    },
+    {
+      "derivation": "len(sensitivity.priors)",
+      "derived": true,
+      "description": "alternative cusp priors evaluated",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/sensitivity.json",
+          "pointer": "/priors"
+        }
+      ],
+      "name": "MdoPriorCount",
+      "raw": 4,
+      "value": "4"
+    },
+    {
+      "derived": false,
+      "description": "upper bounds of the alternative uniform cusp priors",
+      "format": "list_g",
+      "name": "MdoPriorUppers",
+      "raw": [
+        0.0,
+        0.2,
+        0.45,
+        0.7
+      ],
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/uncertain_inputs/sensitivity_priors/cusp_upper_bounds"
+      },
+      "value": "0, 0.2, 0.45, 0.7"
+    },
+    {
+      "derivation": "min(sensitivity.priors[*].cusp_upper)",
+      "derived": true,
+      "description": "smallest alternative prior upper bound",
+      "format": "g",
+      "inputs": [
+        {
+          "artifact": "artifacts/sensitivity.json",
+          "pointer": "/priors"
+        }
+      ],
+      "name": "MdoPriorUpperMin",
+      "raw": 0.0,
+      "value": "0"
+    },
+    {
+      "derivation": "max(sensitivity.priors[*].cusp_upper)",
+      "derived": true,
+      "description": "largest alternative prior upper bound",
+      "format": "g",
+      "inputs": [
+        {
+          "artifact": "artifacts/sensitivity.json",
+          "pointer": "/priors"
+        }
+      ],
+      "name": "MdoPriorUpperMax",
+      "raw": 0.7,
+      "value": "0.7"
+    },
+    {
+      "derivation": "count(sensitivity.priors[*].identical_on_common_feasible_set_up_to_ties == true)",
+      "derived": true,
+      "description": "priors whose robust nondominated set is identical on the common feasible set",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/sensitivity.json",
+          "pointer": "/priors"
+        }
+      ],
+      "name": "MdoInvarianceIdenticalCount",
+      "raw": 4,
+      "value": "4"
+    },
+    {
+      "derivation": "count(sensitivity.priors[*].identical_on_common_feasible_set == true)",
+      "derived": true,
+      "description": "priors identical on the common feasible set in exact arithmetic",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/sensitivity.json",
+          "pointer": "/priors"
+        }
+      ],
+      "name": "MdoInvarianceExactCount",
+      "raw": 4,
+      "value": "4"
+    },
+    {
+      "derived": false,
+      "description": "design-set invariance outcome",
+      "format": "bool",
+      "name": "MdoInvariancePassed",
+      "raw": true,
+      "source": {
+        "artifact": "artifacts/gates.json",
+        "pointer": "/reported_not_binding/design_set_invariance/passed"
+      },
+      "value": "true"
+    },
+    {
+      "derived": false,
+      "description": "roundoff-aware dominance tolerance",
+      "format": "sci1",
+      "name": "MdoTieTolerance",
+      "raw": 1e-09,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/priors/0/tie_tolerance_relative"
+      },
+      "value": "$1.0\\times10^{-9}$"
+    },
+    {
+      "derivation": "min(sensitivity.priors[*].feasible)",
+      "derived": true,
+      "description": "fewest feasible designs under any prior",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/sensitivity.json",
+          "pointer": "/priors"
+        }
+      ],
+      "name": "MdoPriorFeasibleMin",
+      "raw": 397,
+      "value": "397"
+    },
+    {
+      "derivation": "max(sensitivity.priors[*].feasible)",
+      "derived": true,
+      "description": "most feasible designs under any prior",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/sensitivity.json",
+          "pointer": "/priors"
+        }
+      ],
+      "name": "MdoPriorFeasibleMax",
+      "raw": 687,
+      "value": "687"
+    },
+    {
+      "derivation": "min(sensitivity.priors[*].front_size)",
+      "derived": true,
+      "description": "smallest front under any prior",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/sensitivity.json",
+          "pointer": "/priors"
+        }
+      ],
+      "name": "MdoPriorFrontMin",
+      "raw": 74,
+      "value": "74"
+    },
+    {
+      "derivation": "max(sensitivity.priors[*].front_size)",
+      "derived": true,
+      "description": "largest front under any prior",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/sensitivity.json",
+          "pointer": "/priors"
+        }
+      ],
+      "name": "MdoPriorFrontMax",
+      "raw": 114,
+      "value": "114"
+    },
+    {
+      "derivation": "min(sensitivity.priors[*].jaccard_with_campaign_front)",
+      "derived": true,
+      "description": "smallest Jaccard index of an alternative-prior front with the campaign front",
+      "format": "fixed3",
+      "inputs": [
+        {
+          "artifact": "artifacts/sensitivity.json",
+          "pointer": "/priors"
+        }
+      ],
+      "name": "MdoPriorJaccardMin",
+      "raw": 0.0,
+      "value": "0.000"
+    },
+    {
+      "derived": false,
+      "description": "smallest sampled CL-1 survival under the campaign prior",
+      "format": "fixed3",
+      "name": "MdoSampledSurvivalMin",
+      "raw": 0.15558587619997133,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/priors/2/survival_min"
+      },
+      "value": "0.156"
+    },
+    {
+      "derived": false,
+      "description": "largest sampled CL-1 survival under the campaign prior",
+      "format": "fixed3",
+      "name": "MdoSampledSurvivalMax",
+      "raw": 0.704190217251035,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/priors/2/survival_max"
+      },
+      "value": "0.704"
+    },
+    {
+      "derived": false,
+      "description": "mean sampled CL-1 survival under the campaign prior",
+      "format": "fixed3",
+      "name": "MdoSampledSurvivalMean",
+      "raw": 0.3598101600915506,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/priors/2/survival_mean"
+      },
+      "value": "0.360"
+    },
+    {
+      "derived": false,
+      "description": "alternative prior upper bound (Zero)",
+      "format": "g",
+      "name": "MdoPriorZeroUpper",
+      "raw": 0.0,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/priors/0/cusp_upper"
+      },
+      "value": "0"
+    },
+    {
+      "derived": false,
+      "description": "feasible designs under prior Zero",
+      "format": "int",
+      "name": "MdoPriorZeroFeasible",
+      "raw": 397,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/priors/0/feasible"
+      },
+      "value": "397"
+    },
+    {
+      "derived": false,
+      "description": "front size under prior Zero",
+      "format": "int",
+      "name": "MdoPriorZeroFront",
+      "raw": 74,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/priors/0/front_size"
+      },
+      "value": "74"
+    },
+    {
+      "derived": false,
+      "description": "designs feasible under both prior Zero and the campaign prior",
+      "format": "int",
+      "name": "MdoPriorZeroCommon",
+      "raw": 397,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/priors/0/common_feasible_designs"
+      },
+      "value": "397"
+    },
+    {
+      "derived": false,
+      "description": "front identical on the common feasible set under prior Zero",
+      "format": "bool",
+      "name": "MdoPriorZeroIdentical",
+      "raw": true,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/priors/0/identical_on_common_feasible_set_up_to_ties"
+      },
+      "value": "true"
+    },
+    {
+      "derived": false,
+      "description": "Jaccard index with the campaign front under prior Zero",
+      "format": "fixed3",
+      "name": "MdoPriorZeroJaccard",
+      "raw": 0.0,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/priors/0/jaccard_with_campaign_front"
+      },
+      "value": "0.000"
+    },
+    {
+      "derived": false,
+      "description": "alternative prior upper bound (Low)",
+      "format": "g",
+      "name": "MdoPriorLowUpper",
+      "raw": 0.2,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/priors/1/cusp_upper"
+      },
+      "value": "0.2"
+    },
+    {
+      "derived": false,
+      "description": "feasible designs under prior Low",
+      "format": "int",
+      "name": "MdoPriorLowFeasible",
+      "raw": 480,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/priors/1/feasible"
+      },
+      "value": "480"
+    },
+    {
+      "derived": false,
+      "description": "front size under prior Low",
+      "format": "int",
+      "name": "MdoPriorLowFront",
+      "raw": 77,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/priors/1/front_size"
+      },
+      "value": "77"
+    },
+    {
+      "derived": false,
+      "description": "designs feasible under both prior Low and the campaign prior",
+      "format": "int",
+      "name": "MdoPriorLowCommon",
+      "raw": 480,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/priors/1/common_feasible_designs"
+      },
+      "value": "480"
+    },
+    {
+      "derived": false,
+      "description": "front identical on the common feasible set under prior Low",
+      "format": "bool",
+      "name": "MdoPriorLowIdentical",
+      "raw": true,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/priors/1/identical_on_common_feasible_set_up_to_ties"
+      },
+      "value": "true"
+    },
+    {
+      "derived": false,
+      "description": "Jaccard index with the campaign front under prior Low",
+      "format": "fixed3",
+      "name": "MdoPriorLowJaccard",
+      "raw": 0.010582010582010581,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/priors/1/jaccard_with_campaign_front"
+      },
+      "value": "0.011"
+    },
+    {
+      "derived": false,
+      "description": "alternative prior upper bound (Campaign)",
+      "format": "g",
+      "name": "MdoPriorCampaignUpper",
+      "raw": 0.45,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/priors/2/cusp_upper"
+      },
+      "value": "0.45"
+    },
+    {
+      "derived": false,
+      "description": "feasible designs under prior Campaign",
+      "format": "int",
+      "name": "MdoPriorCampaignFeasible",
+      "raw": 644,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/priors/2/feasible"
+      },
+      "value": "644"
+    },
+    {
+      "derived": false,
+      "description": "front size under prior Campaign",
+      "format": "int",
+      "name": "MdoPriorCampaignFront",
+      "raw": 114,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/priors/2/front_size"
+      },
+      "value": "114"
+    },
+    {
+      "derived": false,
+      "description": "designs feasible under both prior Campaign and the campaign prior",
+      "format": "int",
+      "name": "MdoPriorCampaignCommon",
+      "raw": 644,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/priors/2/common_feasible_designs"
+      },
+      "value": "644"
+    },
+    {
+      "derived": false,
+      "description": "front identical on the common feasible set under prior Campaign",
+      "format": "bool",
+      "name": "MdoPriorCampaignIdentical",
+      "raw": true,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/priors/2/identical_on_common_feasible_set_up_to_ties"
+      },
+      "value": "true"
+    },
+    {
+      "derived": false,
+      "description": "Jaccard index with the campaign front under prior Campaign",
+      "format": "fixed3",
+      "name": "MdoPriorCampaignJaccard",
+      "raw": 1.0,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/priors/2/jaccard_with_campaign_front"
+      },
+      "value": "1.000"
+    },
+    {
+      "derived": false,
+      "description": "alternative prior upper bound (High)",
+      "format": "g",
+      "name": "MdoPriorHighUpper",
+      "raw": 0.7,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/priors/3/cusp_upper"
+      },
+      "value": "0.7"
+    },
+    {
+      "derived": false,
+      "description": "feasible designs under prior High",
+      "format": "int",
+      "name": "MdoPriorHighFeasible",
+      "raw": 687,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/priors/3/feasible"
+      },
+      "value": "687"
+    },
+    {
+      "derived": false,
+      "description": "front size under prior High",
+      "format": "int",
+      "name": "MdoPriorHighFront",
+      "raw": 103,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/priors/3/front_size"
+      },
+      "value": "103"
+    },
+    {
+      "derived": false,
+      "description": "designs feasible under both prior High and the campaign prior",
+      "format": "int",
+      "name": "MdoPriorHighCommon",
+      "raw": 644,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/priors/3/common_feasible_designs"
+      },
+      "value": "644"
+    },
+    {
+      "derived": false,
+      "description": "front identical on the common feasible set under prior High",
+      "format": "bool",
+      "name": "MdoPriorHighIdentical",
+      "raw": true,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/priors/3/identical_on_common_feasible_set_up_to_ties"
+      },
+      "value": "true"
+    },
+    {
+      "derived": false,
+      "description": "Jaccard index with the campaign front under prior High",
+      "format": "fixed3",
+      "name": "MdoPriorHighJaccard",
+      "raw": 0.4090909090909091,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/priors/3/jaccard_with_campaign_front"
+      },
+      "value": "0.409"
+    },
+    {
+      "derivation": "len(sensitivity.scenarios)",
+      "derived": true,
+      "description": "fixed cusp-probability scenarios evaluated",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/sensitivity.json",
+          "pointer": "/scenarios"
+        }
+      ],
+      "name": "MdoScenarioCount",
+      "raw": 5,
+      "value": "5"
+    },
+    {
+      "derived": false,
+      "description": "scenario identifier (NoWallLoss)",
+      "format": "ident",
+      "name": "MdoScenarioNoWallLossId",
+      "raw": "no_wall_loss",
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/scenarios/0/id"
+      },
+      "value": "no\\_\\allowbreak{}wall\\_\\allowbreak{}loss"
+    },
+    {
+      "derived": false,
+      "description": "scenario cusp probabilities (NoWallLoss)",
+      "format": "list_g",
+      "name": "MdoScenarioNoWallLossProbabilities",
+      "raw": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/scenarios/0/cusp_probabilities"
+      },
+      "value": "0, 0, 0, 0"
+    },
+    {
+      "derived": false,
+      "description": "scenario CL-1 survival (NoWallLoss)",
+      "format": "sig3",
+      "name": "MdoScenarioNoWallLossSurvival",
+      "raw": 1.0,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/scenarios/0/survival"
+      },
+      "value": "1.00"
+    },
+    {
+      "derived": false,
+      "description": "robust-Pareto designs feasible in the scenario (NoWallLoss)",
+      "format": "int",
+      "name": "MdoScenarioNoWallLossEvaluated",
+      "raw": 4,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/scenarios/0/pareto_designs_evaluated"
+      },
+      "value": "4"
+    },
+    {
+      "derived": false,
+      "description": "robust-Pareto designs infeasible in the scenario (NoWallLoss)",
+      "format": "int",
+      "name": "MdoScenarioNoWallLossInfeasible",
+      "raw": 110,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/scenarios/0/pareto_designs_infeasible"
+      },
+      "value": "110"
+    },
+    {
+      "derived": false,
+      "description": "scenario thrust maximum (N) (NoWallLoss)",
+      "format": "sig3",
+      "name": "MdoScenarioNoWallLossThrustMax",
+      "raw": 0.018109761386697825,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/scenarios/0/objective_ranges/axial_thrust_n/maximum"
+      },
+      "value": "0.0181"
+    },
+    {
+      "derived": false,
+      "description": "scenario specific impulse maximum (s) (NoWallLoss)",
+      "format": "sig3",
+      "name": "MdoScenarioNoWallLossIspMax",
+      "raw": 1626.574791863436,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/scenarios/0/objective_ranges/specific_impulse_s/maximum"
+      },
+      "value": "1630"
+    },
+    {
+      "derived": false,
+      "description": "scenario efficiency maximum (NoWallLoss)",
+      "format": "sig3",
+      "name": "MdoScenarioNoWallLossEffMax",
+      "raw": 0.9193576995874818,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/scenarios/0/objective_ranges/thruster_electrical_to_beam_efficiency/maximum"
+      },
+      "value": "0.919"
+    },
+    {
+      "derived": false,
+      "description": "scenario hypervolume (NoWallLoss)",
+      "format": "sig3",
+      "name": "MdoScenarioNoWallLossHv",
+      "raw": 0.11789380194946666,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/scenarios/0/hypervolume"
+      },
+      "value": "0.118"
+    },
+    {
+      "derived": false,
+      "description": "scenario identifier (PriorMean)",
+      "format": "ident",
+      "name": "MdoScenarioPriorMeanId",
+      "raw": "wide_prior_mean",
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/scenarios/1/id"
+      },
+      "value": "wide\\_\\allowbreak{}prior\\_\\allowbreak{}mean"
+    },
+    {
+      "derived": false,
+      "description": "scenario cusp probabilities (PriorMean)",
+      "format": "list_g",
+      "name": "MdoScenarioPriorMeanProbabilities",
+      "raw": [
+        0.225,
+        0.225,
+        0.225,
+        0.225
+      ],
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/scenarios/1/cusp_probabilities"
+      },
+      "value": "0.225, 0.225, 0.225, 0.225"
+    },
+    {
+      "derived": false,
+      "description": "scenario CL-1 survival (PriorMean)",
+      "format": "sig3",
+      "name": "MdoScenarioPriorMeanSurvival",
+      "raw": 0.3607503906250001,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/scenarios/1/survival"
+      },
+      "value": "0.361"
+    },
+    {
+      "derived": false,
+      "description": "robust-Pareto designs feasible in the scenario (PriorMean)",
+      "format": "int",
+      "name": "MdoScenarioPriorMeanEvaluated",
+      "raw": 114,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/scenarios/1/pareto_designs_evaluated"
+      },
+      "value": "114"
+    },
+    {
+      "derived": false,
+      "description": "robust-Pareto designs infeasible in the scenario (PriorMean)",
+      "format": "int",
+      "name": "MdoScenarioPriorMeanInfeasible",
+      "raw": 0,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/scenarios/1/pareto_designs_infeasible"
+      },
+      "value": "0"
+    },
+    {
+      "derived": false,
+      "description": "scenario thrust maximum (N) (PriorMean)",
+      "format": "sig3",
+      "name": "MdoScenarioPriorMeanThrustMax",
+      "raw": 0.014216963789797915,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/scenarios/1/objective_ranges/axial_thrust_n/maximum"
+      },
+      "value": "0.0142"
+    },
+    {
+      "derived": false,
+      "description": "scenario specific impulse maximum (s) (PriorMean)",
+      "format": "sig3",
+      "name": "MdoScenarioPriorMeanIspMax",
+      "raw": 724.8634237888534,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/scenarios/1/objective_ranges/specific_impulse_s/maximum"
+      },
+      "value": "725"
+    },
+    {
+      "derived": false,
+      "description": "scenario efficiency maximum (PriorMean)",
+      "format": "sig3",
+      "name": "MdoScenarioPriorMeanEffMax",
+      "raw": 0.43317988556074105,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/scenarios/1/objective_ranges/thruster_electrical_to_beam_efficiency/maximum"
+      },
+      "value": "0.433"
+    },
+    {
+      "derived": false,
+      "description": "scenario hypervolume (PriorMean)",
+      "format": "sig3",
+      "name": "MdoScenarioPriorMeanHv",
+      "raw": 0.02046335146440467,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/scenarios/1/hypervolume"
+      },
+      "value": "0.0205"
+    },
+    {
+      "derived": false,
+      "description": "scenario identifier (PooledSplit)",
+      "format": "ident",
+      "name": "MdoScenarioPooledSplitId",
+      "raw": "v4_pooled_uniform_split",
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/scenarios/2/id"
+      },
+      "value": "v4\\_\\allowbreak{}pooled\\_\\allowbreak{}uniform\\_\\allowbreak{}split"
+    },
+    {
+      "derived": false,
+      "description": "scenario cusp probabilities (PooledSplit)",
+      "format": "list_g",
+      "name": "MdoScenarioPooledSplitProbabilities",
+      "raw": [
+        0.2269,
+        0.2269,
+        0.2269,
+        0.2269
+      ],
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/scenarios/2/cusp_probabilities"
+      },
+      "value": "0.2269, 0.2269, 0.2269, 0.2269"
+    },
+    {
+      "derived": false,
+      "description": "scenario CL-1 survival (PooledSplit)",
+      "format": "sig3",
+      "name": "MdoScenarioPooledSplitSurvival",
+      "raw": 0.3572256976626321,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/scenarios/2/survival"
+      },
+      "value": "0.357"
+    },
+    {
+      "derived": false,
+      "description": "robust-Pareto designs feasible in the scenario (PooledSplit)",
+      "format": "int",
+      "name": "MdoScenarioPooledSplitEvaluated",
+      "raw": 114,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/scenarios/2/pareto_designs_evaluated"
+      },
+      "value": "114"
+    },
+    {
+      "derived": false,
+      "description": "robust-Pareto designs infeasible in the scenario (PooledSplit)",
+      "format": "int",
+      "name": "MdoScenarioPooledSplitInfeasible",
+      "raw": 0,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/scenarios/2/pareto_designs_infeasible"
+      },
+      "value": "0"
+    },
+    {
+      "derived": false,
+      "description": "scenario thrust maximum (N) (PooledSplit)",
+      "format": "sig3",
+      "name": "MdoScenarioPooledSplitThrustMax",
+      "raw": 0.014078057683197934,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/scenarios/2/objective_ranges/axial_thrust_n/maximum"
+      },
+      "value": "0.0141"
+    },
+    {
+      "derived": false,
+      "description": "scenario specific impulse maximum (s) (PooledSplit)",
+      "format": "sig3",
+      "name": "MdoScenarioPooledSplitIspMax",
+      "raw": 717.7811833397712,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/scenarios/2/objective_ranges/specific_impulse_s/maximum"
+      },
+      "value": "718"
+    },
+    {
+      "derived": false,
+      "description": "scenario efficiency maximum (PooledSplit)",
+      "format": "sig3",
+      "name": "MdoScenarioPooledSplitEffMax",
+      "raw": 0.42894752397845676,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/scenarios/2/objective_ranges/thruster_electrical_to_beam_efficiency/maximum"
+      },
+      "value": "0.429"
+    },
+    {
+      "derived": false,
+      "description": "scenario hypervolume (PooledSplit)",
+      "format": "sig3",
+      "name": "MdoScenarioPooledSplitHv",
+      "raw": 0.019869384435175275,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/scenarios/2/hypervolume"
+      },
+      "value": "0.0199"
+    },
+    {
+      "derived": false,
+      "description": "scenario identifier (PriorUpper)",
+      "format": "ident",
+      "name": "MdoScenarioPriorUpperId",
+      "raw": "wide_prior_upper",
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/scenarios/3/id"
+      },
+      "value": "wide\\_\\allowbreak{}prior\\_\\allowbreak{}upper"
+    },
+    {
+      "derived": false,
+      "description": "scenario cusp probabilities (PriorUpper)",
+      "format": "list_g",
+      "name": "MdoScenarioPriorUpperProbabilities",
+      "raw": [
+        0.45,
+        0.45,
+        0.45,
+        0.45
+      ],
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/scenarios/3/cusp_probabilities"
+      },
+      "value": "0.45, 0.45, 0.45, 0.45"
+    },
+    {
+      "derived": false,
+      "description": "scenario CL-1 survival (PriorUpper)",
+      "format": "sig3",
+      "name": "MdoScenarioPriorUpperSurvival",
+      "raw": 0.09150625000000004,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/scenarios/3/survival"
+      },
+      "value": "0.0915"
+    },
+    {
+      "derived": false,
+      "description": "robust-Pareto designs feasible in the scenario (PriorUpper)",
+      "format": "int",
+      "name": "MdoScenarioPriorUpperEvaluated",
+      "raw": 114,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/scenarios/3/pareto_designs_evaluated"
+      },
+      "value": "114"
+    },
+    {
+      "derived": false,
+      "description": "robust-Pareto designs infeasible in the scenario (PriorUpper)",
+      "format": "int",
+      "name": "MdoScenarioPriorUpperInfeasible",
+      "raw": 0,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/scenarios/3/pareto_designs_infeasible"
+      },
+      "value": "0"
+    },
+    {
+      "derived": false,
+      "description": "scenario thrust maximum (N) (PriorUpper)",
+      "format": "sig3",
+      "name": "MdoScenarioPriorUpperThrustMax",
+      "raw": 0.0036062082719753026,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/scenarios/3/objective_ranges/axial_thrust_n/maximum"
+      },
+      "value": "0.00361"
+    },
+    {
+      "derived": false,
+      "description": "scenario specific impulse maximum (s) (PriorUpper)",
+      "format": "sig3",
+      "name": "MdoScenarioPriorUpperIspMax",
+      "raw": 183.86545211541673,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/scenarios/3/objective_ranges/specific_impulse_s/maximum"
+      },
+      "value": "184"
+    },
+    {
+      "derived": false,
+      "description": "scenario efficiency maximum (PriorUpper)",
+      "format": "sig3",
+      "name": "MdoScenarioPriorUpperEffMax",
+      "raw": 0.10987837555606969,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/scenarios/3/objective_ranges/thruster_electrical_to_beam_efficiency/maximum"
+      },
+      "value": "0.110"
+    },
+    {
+      "derived": false,
+      "description": "scenario hypervolume (PriorUpper)",
+      "format": "sig3",
+      "name": "MdoScenarioPriorUpperHv",
+      "raw": 0.00033397088491313745,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/scenarios/3/hypervolume"
+      },
+      "value": "$3.34\\times10^{-4}$"
+    },
+    {
+      "derived": false,
+      "description": "scenario identifier (Jeffreys)",
+      "format": "ident",
+      "name": "MdoScenarioJeffreysId",
+      "raw": "v4_per_cell_jeffreys",
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/scenarios/4/id"
+      },
+      "value": "v4\\_\\allowbreak{}per\\_\\allowbreak{}cell\\_\\allowbreak{}jeffreys"
+    },
+    {
+      "derived": false,
+      "description": "scenario cusp probabilities (Jeffreys)",
+      "format": "list_g",
+      "name": "MdoScenarioJeffreysProbabilities",
+      "raw": [
+        0.5712,
+        0.9996,
+        0.9996,
+        0.0004
+      ],
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/scenarios/4/cusp_probabilities"
+      },
+      "value": "0.5712, 0.9996, 0.9996, 0.0004"
+    },
+    {
+      "derived": false,
+      "description": "scenario CL-1 survival (Jeffreys)",
+      "format": "sig3",
+      "name": "MdoScenarioJeffreysSurvival",
+      "raw": 6.85805567999849e-08,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/scenarios/4/survival"
+      },
+      "value": "$6.86\\times10^{-8}$"
+    },
+    {
+      "derived": false,
+      "description": "robust-Pareto designs feasible in the scenario (Jeffreys)",
+      "format": "int",
+      "name": "MdoScenarioJeffreysEvaluated",
+      "raw": 114,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/scenarios/4/pareto_designs_evaluated"
+      },
+      "value": "114"
+    },
+    {
+      "derived": false,
+      "description": "robust-Pareto designs infeasible in the scenario (Jeffreys)",
+      "format": "int",
+      "name": "MdoScenarioJeffreysInfeasible",
+      "raw": 0,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/scenarios/4/pareto_designs_infeasible"
+      },
+      "value": "0"
+    },
+    {
+      "derived": false,
+      "description": "scenario thrust maximum (N) (Jeffreys)",
+      "format": "sig3",
+      "name": "MdoScenarioJeffreysThrustMax",
+      "raw": 2.7027199906330584e-09,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/scenarios/4/objective_ranges/axial_thrust_n/maximum"
+      },
+      "value": "$2.70\\times10^{-9}$"
+    },
+    {
+      "derived": false,
+      "description": "scenario specific impulse maximum (s) (Jeffreys)",
+      "format": "sig3",
+      "name": "MdoScenarioJeffreysIspMax",
+      "raw": 0.0001378003696794042,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/scenarios/4/objective_ranges/specific_impulse_s/maximum"
+      },
+      "value": "$1.38\\times10^{-4}$"
+    },
+    {
+      "derived": false,
+      "description": "scenario efficiency maximum (Jeffreys)",
+      "format": "sig3",
+      "name": "MdoScenarioJeffreysEffMax",
+      "raw": 8.234978674574073e-08,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/scenarios/4/objective_ranges/thruster_electrical_to_beam_efficiency/maximum"
+      },
+      "value": "$8.23\\times10^{-8}$"
+    },
+    {
+      "derived": false,
+      "description": "scenario hypervolume (Jeffreys)",
+      "format": "sig3",
+      "name": "MdoScenarioJeffreysHv",
+      "raw": 1.4059159348699218e-22,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/scenarios/4/hypervolume"
+      },
+      "value": "$1.41\\times10^{-22}$"
+    },
+    {
+      "derived": false,
+      "description": "Jeffreys scenario cell-one probability",
+      "format": "fixed4",
+      "name": "MdoJeffreysCellOne",
+      "raw": 0.5712,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/scenarios/4/cusp_probabilities/0"
+      },
+      "value": "0.5712"
+    },
+    {
+      "derived": false,
+      "description": "Jeffreys scenario cell-two probability",
+      "format": "fixed4",
+      "name": "MdoJeffreysCellTwo",
+      "raw": 0.9996,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/scenarios/4/cusp_probabilities/1"
+      },
+      "value": "0.9996"
+    },
+    {
+      "derived": false,
+      "description": "Jeffreys scenario cell-three probability",
+      "format": "fixed4",
+      "name": "MdoJeffreysCellThree",
+      "raw": 0.9996,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/scenarios/4/cusp_probabilities/2"
+      },
+      "value": "0.9996"
+    },
+    {
+      "derived": false,
+      "description": "Jeffreys scenario cell-four probability",
+      "format": "fixed4",
+      "name": "MdoJeffreysCellFour",
+      "raw": 0.0004,
+      "source": {
+        "artifact": "artifacts/sensitivity.json",
+        "pointer": "/scenarios/4/cusp_probabilities/3"
+      },
+      "value": "0.0004"
+    },
+    {
+      "derived": false,
+      "description": "Jeffreys scenario rule",
+      "format": "text",
+      "name": "MdoJeffreysRule",
+      "raw": "(successes + 0.5)/(trials + 1) per cell; must stay below 1 for the Kornfeld domain [0, 1)",
+      "source": {
+        "artifact": "artifacts/protocol.json",
+        "pointer": "/uncertain_inputs/sensitivity_scenarios/4/rule"
+      },
+      "value": "(successes + 0.5)/(trials + 1) per cell; must stay below 1 for the Kornfeld domain [0, 1)"
+    },
+    {
+      "derivation": "regex group 'closed' of PROBE_PATTERN over the protocol disclosure text",
+      "derived": true,
+      "description": "four-cell solver probe cases that closed",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/protocol.json",
+          "pointer": "/prior_model_disclosure/corrected_four_cell_solver_probe"
+        }
+      ],
+      "name": "MdoProbeClosedCases",
+      "raw": 13,
+      "value": "13"
+    },
+    {
+      "derivation": "regex group 'total' of PROBE_PATTERN over the protocol disclosure text",
+      "derived": true,
+      "description": "four-cell solver probe cases",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/protocol.json",
+          "pointer": "/prior_model_disclosure/corrected_four_cell_solver_probe"
+        }
+      ],
+      "name": "MdoProbeTotalCases",
+      "raw": 80,
+      "value": "80"
+    },
+    {
+      "derivation": "regex group 'rmin' of PROBE_PATTERN over the protocol disclosure text",
+      "derived": true,
+      "description": "smallest residual floor of the non-closing probe cases",
+      "format": "sci1",
+      "inputs": [
+        {
+          "artifact": "artifacts/protocol.json",
+          "pointer": "/prior_model_disclosure/corrected_four_cell_solver_probe"
+        }
+      ],
+      "name": "MdoProbeResidualMin",
+      "raw": 0.00047,
+      "value": "$4.7\\times10^{-4}$"
+    },
+    {
+      "derivation": "regex group 'rmax' of PROBE_PATTERN over the protocol disclosure text",
+      "derived": true,
+      "description": "largest residual floor of the non-closing probe cases",
+      "format": "fixed3",
+      "inputs": [
+        {
+          "artifact": "artifacts/protocol.json",
+          "pointer": "/prior_model_disclosure/corrected_four_cell_solver_probe"
+        }
+      ],
+      "name": "MdoProbeResidualMax",
+      "raw": 0.196,
+      "value": "0.196"
+    },
+    {
+      "derivation": "regex group 'sec' of PROBE_PATTERN over the protocol disclosure text",
+      "derived": true,
+      "description": "seconds per multistart solve in the probe",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "artifacts/protocol.json",
+          "pointer": "/prior_model_disclosure/corrected_four_cell_solver_probe"
+        }
+      ],
+      "name": "MdoProbeSecondsPerSolve",
+      "raw": 3,
+      "value": "3"
+    },
+    {
+      "derived": false,
+      "description": "shakedown passed",
+      "format": "bool",
+      "name": "MdoShakedownPassed",
+      "raw": true,
+      "source": {
+        "artifact": "artifacts/shakedown.json",
+        "pointer": "/passed"
+      },
+      "value": "true"
+    },
+    {
+      "derived": false,
+      "description": "shakedown evidentiary flag",
+      "format": "bool",
+      "name": "MdoShakedownEvidentiary",
+      "raw": false,
+      "source": {
+        "artifact": "artifacts/shakedown.json",
+        "pointer": "/evidentiary"
+      },
+      "value": "false"
+    },
+    {
+      "derived": false,
+      "description": "shakedown disjointness proven",
+      "format": "bool",
+      "name": "MdoShakedownDisjoint",
+      "raw": true,
+      "source": {
+        "artifact": "artifacts/shakedown.json",
+        "pointer": "/disjointness/proven"
+      },
+      "value": "true"
+    },
+    {
+      "derived": false,
+      "description": "shakedown evaluations per run",
+      "format": "int",
+      "name": "MdoShakedownBudget",
+      "raw": 24,
+      "source": {
+        "artifact": "artifacts/shakedown.json",
+        "pointer": "/shakedown_plan/evaluations_per_run"
+      },
+      "value": "24"
+    },
+    {
+      "derived": false,
+      "description": "shakedown seeds",
+      "format": "list_int",
+      "name": "MdoShakedownSeeds",
+      "raw": [
+        900101,
+        900202
+      ],
+      "source": {
+        "artifact": "artifacts/shakedown.json",
+        "pointer": "/shakedown_plan/seeds"
+      },
+      "value": "900101, 900202"
+    },
+    {
+      "derived": false,
+      "description": "shakedown runtime (s)",
+      "format": "fixed0",
+      "name": "MdoShakedownRuntimeS",
+      "raw": 142.13726279999537,
+      "source": {
+        "artifact": "artifacts/shakedown.json",
+        "pointer": "/timing_s/runtime_total"
+      },
+      "value": "142"
+    }
+  ],
+  "manuscript_integration": {
+    "artifact_claim_id": "CLM-031",
+    "artifact_id": "TAB-MDO-L0-V1",
+    "gate_id": "GATE-MDO-L0-V1",
+    "gate_kind": "numerical-campaign",
+    "generated_binding": "\\input{generated/mdo-l0-v1.tex}",
+    "generated_tex_path": "paper/generated/mdo-l0-v1.tex",
+    "manifest_id": "MDO-L0-V1-20260903-864-V1",
+    "manifest_path": "paper/evidence/manifests/mdo-l0-v1.json",
+    "prose_claim_ids": [
+      "CLM-029",
+      "CLM-030",
+      "CLM-032",
+      "CLM-033",
+      "CLM-034",
+      "CLM-035"
+    ],
+    "rule": "Every number in the section is a macro defined here; each macro is bound below to an artifact path, JSON pointer, formatter and SHA-256, or to a stated derivation over such inputs. Claim-bearing sentences are exact EvidenceClaim bodies registered in paper/evidence/claims.json; the numerical-campaign gate in paper/evidence/result-gates.json names the typed manifest that admits the section. Every number is conditional on the declared closure and priors and none is thruster performance.",
+    "section_binding": "\\input{sections/mdo-l0-v1.tex}",
+    "section_heading": "Robust optimiser comparison on the operating-point model under declared cusp-probability uncertainty",
+    "section_path": "paper/sections/mdo-l0-v1.tex",
+    "status": "admitted"
+  },
+  "output": {
+    "path": "paper/generated/mdo-l0-v1.tex",
+    "sha256": "26de404da19ec343204c8c6969a0f055577f2cddb92d6226bfc32e55aaed168f"
+  },
+  "schema_version": "1.0",
+  "tables": {
+    "MdoHvTable": {
+      "rows": 12,
+      "source": "artifacts/metrics.json#/runs, #/hypervolume_table, #/seed_variance"
+    },
+    "MdoRobustNominalTable": {
+      "rows": 9,
+      "source": "artifacts/pooled-fronts.json#/robust, #/nominal"
+    },
+    "MdoScenarioTable": {
+      "rows": 9,
+      "source": "artifacts/sensitivity.json#/priors, #/scenarios"
+    }
+  }
+}

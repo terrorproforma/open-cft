@@ -1,5 +1,40 @@
 # Global Plasma Learning Ledger
 
+## 2026-09-03 closure analysis
+
+- [self] Before blaming a least-squares floor on the solver, eliminate the
+  consistent rows analytically: substituting R00-R26 into R27 turned an 80-case
+  numerical mystery into a two-term closed form in one page of algebra.
+- [self] A rank-deficient overdetermined ledger can be "almost redundant":
+  here R27 differs from the identity implied by the local balances by exactly
+  the double-counted recombination energy plus an anode-fall sign error. Check
+  whether the global row is implied by the local rows; if it is not, the
+  difference is either new physics or a bookkeeping error.
+- [self] Every closed zero-cusp state sitting on the same inequality face
+  (`phi_4 = Ua`) is a symptom, not a coincidence; an active constraint at every
+  solution means the equation set is pinning a variable it should not.
+- [self] Continuation from the consistent point is the cheapest branch test: a
+  floor linear in `eps` from `1e-4` upward means no branch exists; a floor that
+  jumps means the solver lost one.
+- [self] `|J^T r|` at a reported floor discriminates "unconstrained LS minimum
+  of an inconsistent system" from "blocked by the admissible region"; here it
+  was the latter, and relaxing the blocking constraint exposed compensating-
+  error roots that must not be published.
+- [self] `sorted()` is not a projection onto the ordered cone: it permutes
+  variable identities and silently rewrites the LM step. Use pool-adjacent-
+  violators; the fix closed the three 1000 V zero-cusp stalls.
+- [self] Read the primary source text, not only the ledger transcription:
+  Kornfeld's assumption 8 states the double booking in prose ("frozen losses
+  ... except the recombination losses at boundaries"), which settled the origin
+  question in one sentence.
+- [self] A physically justified correction can make a model worse for the
+  consumer: dropping the two errors turns R27 into an identity and frees all
+  four potentials. Propose, flag `PROPOSED_NOT_ACCEPTED`, and name the missing
+  closure rather than accept silently.
+- [tool] The MDO probe script lived only in the agent transcript; the five
+  cusp vectors were recovered from there. Record probe inputs in the devlog
+  when a decision depends on them.
+
 ## 2026-09-01
 
 - [user] This concurrent workstream owns only new plasma source, test, spec,

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from math import isfinite, sqrt
+from math import fsum, isfinite, sqrt
 from sys import float_info
 from typing import Sequence
 
@@ -444,6 +444,99 @@ def finite_difference_jacobian(
         else:
             raise PlasmaValidationError(f"state variable {column} has no finite-difference room")
     return tuple(tuple(columns[column][row] for column in range(25)) for row in range(28))
+
+
+def potential_parametrized_state(
+    inputs: XenonGlobalInputs, potentials: Sequence[float]
+) -> PlasmaState:
+    """Return the unique state that satisfies rows R00-R26 for given potentials.
+
+    Rows R00-R26 determine every other state value from the four cell
+    potentials by an explicit recursion (emission -> ionization -> cell energy
+    -> continuity -> interface currents -> cusp currents).  The result is a
+    diagnostic parametrization of the 27-row solution manifold; it does not
+    evaluate the global power row R27 and it is not a published solution.
+    """
+
+    phi = _tuple_of_four("potentials", potentials)
+    probability = inputs.cusp_arrival_probabilities
+    cathode = inputs.cathode_potential_v
+    energy = inputs.xenon_ionization_energy_ev
+    if phi[0] < cathode:
+        raise PlasmaValidationError("potentials[0] must not be below the cathode potential")
+    electron: list[float] = [
+        inputs.cathode_perveance_a_per_v_3_2 * (phi[0] - cathode) ** 1.5
+    ]
+    source: list[float] = []
+    temperature: list[float] = []
+    for cell in range(4):
+        if cell == 0:
+            gain = phi[0] - cathode + inputs.cathode_electron_temperature_ev
+        else:
+            gain = phi[cell] - phi[cell - 1] + temperature[cell - 1]
+        if gain < 0.0:
+            raise PlasmaValidationError("every cell electron-energy gain must be non-negative")
+        transmitted = electron[cell] * (1.0 - probability[cell])
+        ionization = transmitted * inputs.ionization_fraction * gain / energy
+        source.append(ionization)
+        outgoing = transmitted + ionization
+        if outgoing <= 0.0:
+            raise PlasmaValidationError("transported electron current must be positive")
+        temperature.append(
+            ((1.0 - inputs.excitation_fraction) * transmitted * gain - ionization * energy)
+            / outgoing
+        )
+        if cell < 3:
+            electron.append(outgoing)
+    electron.append(electron[3] + source[3])
+    ion = tuple(inputs.anode_current_a - value for value in electron)
+    cusp_ion = tuple(electron[cell] * probability[cell] for cell in range(3))
+    return PlasmaState(
+        plasma_potential_v=phi,
+        electron_temperature_ev=tuple(temperature),  # type: ignore[arg-type]
+        ionization_source_current_a=tuple(source),  # type: ignore[arg-type]
+        electron_current_a=tuple(electron),  # type: ignore[arg-type]
+        ion_current_a=ion,  # type: ignore[arg-type]
+        cusp_ion_current_a=cusp_ion,  # type: ignore[arg-type]
+    )
+
+
+def global_row_closed_form(state: PlasmaState, inputs: XenonGlobalInputs) -> float:
+    """Closed form of the raw global power row R27 on the R00-R26 manifold [W].
+
+    Substituting rows R00-R26 into R27 leaves
+
+    ``2*(j_e3*(1-p4)+I4)*(phi_4-Ua) + EI*(p1*j_e0 + p2*j_e1 + p3*j_e2)``.
+
+    The first term is the anode-fall sign inconsistency (zero only at
+    ``phi_4 = Ua``); the second is the recombination energy of cusp-lost ions,
+    which ``Pcusp`` books a second time after ``PI``.  Under the admissible
+    region ``phi_4 >= Ua`` both terms are non-negative, so no admissible root
+    exists when any interior cusp probability is positive.  Documented in
+    ``docs/workstreams/global-plasma-closure-analysis.md``; the correction is
+    ``PROPOSED_NOT_ACCEPTED`` in ``spec/plasma/equation-ledger.json``.
+    """
+
+    probability = inputs.cusp_arrival_probabilities
+    electron = state.electron_current_a
+    transported = electron[3] * (1.0 - probability[3]) + state.ionization_source_current_a[3]
+    anode_fall_term = 2.0 * transported * (state.plasma_potential_v[3] - inputs.anode_voltage_v)
+    recombination_term = inputs.xenon_ionization_energy_ev * fsum(
+        electron[cell] * probability[cell] for cell in range(3)
+    )
+    value = anode_fall_term + recombination_term
+    if not isfinite(value):
+        raise PlasmaNumericsError("global row closed form produced a non-finite value")
+    return value
+
+
+def _tuple_of_four(name: str, values: Sequence[float]) -> tuple[float, float, float, float]:
+    if len(values) != 4:
+        raise PlasmaValidationError(f"{name} must contain exactly four values")
+    converted = tuple(float(value) for value in values)
+    if any(not isfinite(value) for value in converted):
+        raise PlasmaValidationError(f"{name} must be finite")
+    return converted  # type: ignore[return-value]
 
 
 def constraint_margins(state: PlasmaState, inputs: XenonGlobalInputs) -> tuple[float, ...]:

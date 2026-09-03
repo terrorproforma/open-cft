@@ -1,0 +1,1 @@
+{"budget_arithmetic":true,"closures":true,"constraints":true,"cusp_prior_calibration":true,"design_variables":true,"objectives":true,"reference_point":true,"robust_formulation":true,"sample_parameters":true,"sample_sha256":true,"seed_namespaces":true,"shakedown_arithmetic":true,"uncertain_inputs":true,"uniform_priors":true}

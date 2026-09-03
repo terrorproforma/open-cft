@@ -104,3 +104,44 @@
   keys at top-level or arbitrary nesting before dictionary construction.
 - Added cross-context isolation, same-context dominance, canonical replay, and
   top-level/nested duplicate-key tests.
+
+## 2026-09-03 first in-repo BoTorch execution; MDO L0 campaign v1 preregistration
+
+- `botorch_adapter.load_api` resolved `optimize_acqf_list` from `botorch.optim`;
+  BoTorch 0.18.1 only exports it from `botorch.optim.optimize`. The adapter
+  had never been executed against an installed BoTorch ("execution remains
+  unverified"); the first call from the campaign runner failed with
+  `OptionalDependencyError`. Fixed the lookup.
+- `build_qlognehvi` gained an optional `sampler` argument: qLogNEHVI caches
+  Cholesky base samples at construction, so assigning `.sampler` afterwards
+  raises a shape error in `SobolQMCNormalSampler._update_base_samples`.
+- Campaign `modern/experiments/mdo_l0_campaign_v1` (protocol frozen, shakedown
+  passed on the `.venv-sota` runtime: torch 2.13.0+cu130, BoTorch 0.18.1,
+  GPyTorch 1.15.2, pymoo 0.6.2): three operating-point design variables, seven
+  uncertain inputs with the cusp probabilities as declared uncertain inputs
+  (mirror formula falsified by wall-loss v4), closure CL-1, CVaR robust
+  objectives, constrained qLogNEHVI vs NSGA-III vs LHS at 96 evaluations per
+  run, three seeds. Geometry radii excluded (no geometry-to-L0 map).
+- Measured under the concurrent PIC GPU run: GP fit + acquisition on `cuda:0`
+  20-40x slower than cpu for these tiny models; the campaign declares cpu.
+- `spec/optimization/campaign-v1.json#benchmark.results` stays null (no F3
+  verification); the instance index `spec/optimization/mdo-l0-campaign-v1.json`
+  points at the campaign and receives the recorded bundle pointer after the
+  single execution.
+
+## 2026-09-03 MDO L0 campaign v1 recorded (first optimiser run on the new physics)
+
+- Preregistration `4898d0fd`, result `c553124b` on `exp/mdo-l0-campaign-v1`;
+  terminal `accepted_result`, 8/8 binding gates, 864 evaluations, 28 min.
+- Robust hypervolume at 96 evaluations: qLogNEHVI 0.003863/0.003877/0.003860,
+  NSGA-III 0.002926/0.003505/0.003271, LHS 0.002844/0.003213/0.002804 (seeds
+  101/202/303); BO beats random 3/3 and NSGA-III 3/3; BO seed std 9.2e-6; the
+  8192-point dense reference reaches 0.003798, so BO attains 1.02x of it with
+  96 evaluations. The predeclared design-set invariance to the cusp prior
+  holds on the common feasible set. Robust vs nominal fronts: 114 vs 62
+  designs, 24 shared.
+- This is an optimiser-comparison and evaluation-chain result on the L0
+  model under closure CL-1 and declared priors. It is not a thruster
+  performance result and `campaign-v1.json#benchmark.results` stays null.
+- Dashboard `modern/visualization/mdo-l0-campaign-v1.html` (generator
+  `generate_mdo_l0_campaign_v1_dashboard.py`, 6 tests).

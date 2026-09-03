@@ -75,6 +75,59 @@
   plasma, mirror-probability or performance quantity is claimed, and that the
   superseded proxy search and failed criterion validations are lineage only.
 
+## S4d. Preregistered robust multi-objective optimisation of the L0 model (campaign v1)
+
+- Typed campaign manifest `paper/evidence/manifests/mdo-l0-v1.json` and the
+  hash-bound evidence file `paper/evidence/mdo-l0-v1.json`.
+- Preregistration, results and dashboard commits; the sealed bundle (manifest,
+  lock, transitions, protocol, authorities, code contract, shakedown, frozen
+  sample, nine run records with per-evaluation designs and objectives,
+  hypervolume curves, Pareto sets, pooled and per-strategy fronts, dense
+  reference, sensitivity) and the committed results dashboard whose embedded
+  extraction the generator requires to agree with the bundle.
+- Frozen protocol verbatim: design variables and excluded legacy radii with
+  the recorded reason, uncertain inputs and cusp-prior calibration, closure
+  CL-1 (declared, not derived), objectives, constraint, CVaR robust
+  formulation and separability expectation, optimiser settings, budget and
+  fairness rules, binding and reported gates, shakedown rule, prior-model
+  disclosures (F0-only status; corrected four-cell solver probe).
+- Tables regenerated from the bundle: hypervolume per optimiser and seed with
+  seed variance; robust versus nominal pooled fronts; alternative priors and
+  fixed scenarios.
+- Explicit statements that the campaign is optimiser evidence under CL-1 and
+  the declared priors, not thruster performance, not a design recommendation,
+  not an optimiser-superiority claim beyond the recorded budget, seeds and
+  model; that the worst case enforced is the worst sampled case; and that the
+  collisionless wall-hit probability is not the per-cusp loss probability.
+
+## S4e. Consistency of the corrected four-cell power balance (analytic result)
+
+- Typed analysis manifest `paper/evidence/manifests/four-cell-closure.json`
+  and the evidence file `paper/evidence/four-cell-closure.json`.
+- Analysis commit `266d8a99` (document, ledger entry
+  `global_row_consistency`, diagnostics `potential_parametrized_state` and
+  `global_row_closed_form`, pinning tests), verified-tree commit `ba6875f6`,
+  the frozen MDO protocol disclosure (probe 13/80) at preregistration
+  `4898d0fd`, and the legacy `FYP/Power_B_EQs.m` blob as lineage.
+- The derivation verbatim: substitution of R00--R26 into R27, the closed form
+  `2 (j_e3 (1-p4) + I4)(phi_4 - Ua) + EI (p1 j_e0 + p2 j_e1 + p3 j_e2)`,
+  non-negativity on the admissible region, the solution sub-region
+  (p1 = p2 = p3 = 0, any p4, phi_4 = Ua), the source of both terms (Kornfeld
+  assumption 8; printed anode electron sign), the cancellation of the audit
+  corrections, and the proposed correction with its `PROPOSED_NOT_ACCEPTED`
+  status and rank consequence.
+- Recomputation protocol and tolerances exactly as declared in the generator
+  (seeded 400-state sample, continuation ladder, anode-only closures,
+  published-state misfit, relaxed root, Jacobian rank, anode-fall coefficient)
+  with the recorded significant digits; the documented-only items
+  (differential evolution, random starts, the 80-case probe) marked as such.
+- Tables regenerated at every check: the continuation ladder (documented and
+  recomputed floors) and the global-search/relaxed-root/Jacobian/misfit table
+  with per-row status.
+- Explicit statements that the result is about the equation set, not the
+  thruster; that the correction is not accepted; that the legacy-study
+  consequence is interpretation; and that no value of the legacy run is claimed.
+
 ## S5. Controlled performance benchmark
 
 This supplement remains closed until a benchmark manifest records kernel

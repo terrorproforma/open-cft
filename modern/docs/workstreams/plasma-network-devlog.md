@@ -1,5 +1,18 @@
 # Plasma Network Development Log
 
+## 2026-09-03 — Isotonic projection; inherited global-row inconsistency
+
+- `_projection` uses `cft_revival.plasma.project_nondecreasing`
+  (pool-adjacent-violators) instead of `sorted()`, which permuted potential
+  identities and stalled the accepted four-cell solver at 1000 V
+  (`global-plasma-closure-analysis.md`, Section 7). Seeds from
+  `deterministic_initial_states` are unchanged.
+- Documented that the N=4 network inherits the global-row inconsistency for
+  interior cusp loss (no admissible root for `p1..p3 > 0`; anode-only loss
+  publishes under `REPRESENT_NULLSPACE` at `phi_N = Ua`). New tests
+  `tests/plasma_network/test_plasma_network_closure_p_nonzero.py`.
+- Validation: `tests/plasma_network` 66 passed.
+
 ## 2026-09-02 — Topology-general solver
 
 ### Implemented

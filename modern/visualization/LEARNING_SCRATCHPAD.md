@@ -3,6 +3,18 @@
 Policy: committed with the shared `modern/visualization/` dashboards. Evidence
 directories, accepted packages and experiment-local dashboards stay read-only.
 
+## 2026-09-03 10:20 AEST - MDO L0 campaign v1 dashboard
+
+- [tool] `experiment_runtime` manifests key file digests as `byte_sha256` +
+  `bytes` (not `sha256`); a verifier written against the wrong key fails on
+  the first file. Read one manifest entry before writing the verifier.
+- [self] Develop a dashboard generator against the shakedown bundle (same
+  artifact layout, `experiment_id` suffixed `-shakedown`) with an explicit
+  `--no-pin` flag, then pin the manifest and result commit once recorded.
+- [tool] Headless Edge clamps window widths below ~500 px; use a 390 px
+  iframe host page for the narrow check. `Get-Item f | Select-Object Length`
+  prints nothing here; use `(Get-Item f).Length`.
+
 ## 2026-09-03 02:40 AEST — stale design gallery was an EOL artefact
 
 - [self] Before touching any pin, classify it: hash the committed blob

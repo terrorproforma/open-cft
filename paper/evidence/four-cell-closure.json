@@ -1,0 +1,3029 @@
+{
+  "artifacts": {
+    "FYP/Power_B_EQs.m": {
+      "bytes": 7059,
+      "git_blob": "8eeca9c61cce5b1f9157b7db5a7c9e6c21d63d80",
+      "revision": "266d8a99ce75fe35b4870d5d046c9069d7b26c0b",
+      "sha256": "28ebf8b5cda67529f3978d10c781a09affcc5933e8f199576729594516726c80"
+    },
+    "modern/docs/AUDIT.md": {
+      "bytes": 12666,
+      "git_blob": "ce30e2141557fda277351715b754f9432c865715",
+      "revision": "266d8a99ce75fe35b4870d5d046c9069d7b26c0b",
+      "sha256": "3c813ef8fd3ebbce5745c33ea655dc161864e43ea321741445733b919c38235e"
+    },
+    "modern/docs/REFERENCES.md": {
+      "bytes": 6757,
+      "git_blob": "9b27fc7b74446526be14c0fcb6f1a297f7c14f64",
+      "revision": "266d8a99ce75fe35b4870d5d046c9069d7b26c0b",
+      "sha256": "808bf44e01eaac87b43cba5c45895fd6222aadc5a4bc1d2dd127a01841d575b1"
+    },
+    "modern/docs/workstreams/global-plasma-closure-analysis.md": {
+      "bytes": 14542,
+      "git_blob": "75e543503e91e6b1aef828a37b3e38983209a69f",
+      "revision": "266d8a99ce75fe35b4870d5d046c9069d7b26c0b",
+      "sha256": "555915928ffc9734b62615dc273ad63d890a99948367811726ddace2c9d8c54b"
+    },
+    "modern/experiments/mdo_l0_campaign_v1/protocol.json": {
+      "bytes": 24531,
+      "git_blob": "06eef451c8c5f3a3b161f893fc9116787caf2c4c",
+      "revision": "266d8a99ce75fe35b4870d5d046c9069d7b26c0b",
+      "sha256": "a9776f642e6a5da904c7a733d6eb0f42bcd3328afbef69cbd9f5bc5c6a2b139e"
+    },
+    "modern/spec/plasma/equation-ledger.json": {
+      "bytes": 16548,
+      "git_blob": "a09d76fef9cfc7d2f83c2ebac46fb8d47c451240",
+      "revision": "266d8a99ce75fe35b4870d5d046c9069d7b26c0b",
+      "sha256": "19822eb3364a5cc660c8b9bba2b699218f7d80c9657a16f0d8580f33188faff0"
+    },
+    "modern/src/cft_revival/plasma/__init__.py": {
+      "bytes": 1971,
+      "git_blob": "939e5c67ad11e276263b3760379eab8c989c5869",
+      "revision": "266d8a99ce75fe35b4870d5d046c9069d7b26c0b",
+      "sha256": "1217101c5cd4f13b441e65f73a1121fd99443c6321f4eb0036b4199c180b9c9f"
+    },
+    "modern/src/cft_revival/plasma/models.py": {
+      "bytes": 11674,
+      "git_blob": "81725f3aff34e30b095d9ef055c78145e027f612",
+      "revision": "266d8a99ce75fe35b4870d5d046c9069d7b26c0b",
+      "sha256": "5a39c4992bfba4b1925a773af50d74035ecdef164fa9bf15ecb46aa39eaafa90"
+    },
+    "modern/src/cft_revival/plasma/reference.py": {
+      "bytes": 1453,
+      "git_blob": "b1386e05b303cdedba7a223d2429612f28836e72",
+      "revision": "266d8a99ce75fe35b4870d5d046c9069d7b26c0b",
+      "sha256": "6eee1cc1b11283c009ab7cc3fd453f7b4d85ded8ce5e856921b6ef878f5a0356"
+    },
+    "modern/src/cft_revival/plasma/residuals.py": {
+      "bytes": 21694,
+      "git_blob": "d4cb8cb1a33e8b0351c9fbb05efe048dd3fd0531",
+      "revision": "266d8a99ce75fe35b4870d5d046c9069d7b26c0b",
+      "sha256": "be1d4ff8e8ba728b5a28c01a4df7cfdce8d2bcad8b85d3c14267c95e18ca7d8c"
+    },
+    "modern/src/cft_revival/plasma/solver.py": {
+      "bytes": 27199,
+      "git_blob": "face43023e81ac0eb0a87636daf4fec98d899e38",
+      "revision": "266d8a99ce75fe35b4870d5d046c9069d7b26c0b",
+      "sha256": "10141bf125853a47cb1ed1bed133fea36f7d96d2d70ceb31b40d25b06567f9ed"
+    },
+    "modern/tests/plasma/test_closure_p_nonzero.py": {
+      "bytes": 8445,
+      "git_blob": "805b4a645cf734f890d6457e091c35c5cb41fcd3",
+      "revision": "266d8a99ce75fe35b4870d5d046c9069d7b26c0b",
+      "sha256": "006cc52e6b4338138c9c8b897745e6743ffac498d29dbad9270e60814e5a7d0a"
+    },
+    "modern/tests/plasma/test_solver.py": {
+      "bytes": 9038,
+      "git_blob": "9a43a60e689e0dd48954dfd65ad76091a372a432",
+      "revision": "266d8a99ce75fe35b4870d5d046c9069d7b26c0b",
+      "sha256": "0aa64864b2724e44f499c9621d85a0f435d39792febf8127084fbd59e099d6fc"
+    },
+    "modern/tests/plasma_network/test_plasma_network_closure_p_nonzero.py": {
+      "bytes": 3192,
+      "git_blob": "0b931ed5d83ee32c66cb5490cb1ae3b4b8ccdbe4",
+      "revision": "266d8a99ce75fe35b4870d5d046c9069d7b26c0b",
+      "sha256": "ff516a59dddf0c278553f4098bec7d0fcef204ac3db28055a27f27523a1f067e"
+    }
+  },
+  "binding": {
+    "analysis_commit": "266d8a99ce75fe35b4870d5d046c9069d7b26c0b",
+    "analysis_commit_subject": "fix(plasma): isotonic potential projection; four-cell closure analysis for p != 0",
+    "mdo_preregistration_commit": "4898d0fd3decddc5f308072e724d1936660c00e9",
+    "rule": "every source file is bound by Git blob and SHA-256 at the analysis commit and verified unchanged at the verified-tree commit; the MDO protocol blob equals the frozen preregistration blob; the executed cft_revival.plasma package in the checkout must equal the bound blobs (LF-normalised SHA-256) or the generator refuses to recompute",
+    "verified_tree_commit": "ba6875f604746e8fbeaf2aee2bdf06b8f06bdc04"
+  },
+  "classification": "analytic_consistency_of_the_corrected_four_cell_power_balance_not_thruster_physics",
+  "correction_status": "PROPOSED_NOT_ACCEPTED",
+  "document_type": "paper-four-cell-closure-evidence",
+  "documented_summary": {
+    "continuation_floors": [
+      1.28e-06,
+      1.28e-05,
+      0.00013,
+      0.000399,
+      0.00143,
+      0.00578
+    ],
+    "continuation_interior_floors": [
+      1.31e-06,
+      1.29e-05,
+      0.000129,
+      0.000398,
+      0.00144,
+      0.00595
+    ],
+    "dm92_misfit": 0.00147,
+    "jacobian_rank": 22,
+    "probe": {
+      "closed": 13,
+      "protocol_closed": 13,
+      "protocol_total": 80,
+      "source": "mdo-protocol-disclosure",
+      "total": 80
+    }
+  },
+  "evidence_revision": "266d8a99ce75fe35b4870d5d046c9069d7b26c0b",
+  "executed_package": {
+    "files": [
+      {
+        "git_blob_sha256": "1217101c5cd4f13b441e65f73a1121fd99443c6321f4eb0036b4199c180b9c9f",
+        "path": "modern/src/cft_revival/plasma/__init__.py",
+        "sha256_lf": "1217101c5cd4f13b441e65f73a1121fd99443c6321f4eb0036b4199c180b9c9f"
+      },
+      {
+        "git_blob_sha256": "5a39c4992bfba4b1925a773af50d74035ecdef164fa9bf15ecb46aa39eaafa90",
+        "path": "modern/src/cft_revival/plasma/models.py",
+        "sha256_lf": "5a39c4992bfba4b1925a773af50d74035ecdef164fa9bf15ecb46aa39eaafa90"
+      },
+      {
+        "git_blob_sha256": "6eee1cc1b11283c009ab7cc3fd453f7b4d85ded8ce5e856921b6ef878f5a0356",
+        "path": "modern/src/cft_revival/plasma/reference.py",
+        "sha256_lf": "6eee1cc1b11283c009ab7cc3fd453f7b4d85ded8ce5e856921b6ef878f5a0356"
+      },
+      {
+        "git_blob_sha256": "be1d4ff8e8ba728b5a28c01a4df7cfdce8d2bcad8b85d3c14267c95e18ca7d8c",
+        "path": "modern/src/cft_revival/plasma/residuals.py",
+        "sha256_lf": "be1d4ff8e8ba728b5a28c01a4df7cfdce8d2bcad8b85d3c14267c95e18ca7d8c"
+      },
+      {
+        "git_blob_sha256": "10141bf125853a47cb1ed1bed133fea36f7d96d2d70ceb31b40d25b06567f9ed",
+        "path": "modern/src/cft_revival/plasma/solver.py",
+        "sha256_lf": "10141bf125853a47cb1ed1bed133fea36f7d96d2d70ceb31b40d25b06567f9ed"
+      }
+    ],
+    "import_root": "modern/src",
+    "matches_bound_blobs": true
+  },
+  "generator": {
+    "command": "python paper/scripts/generate_four_cell_closure_evidence.py",
+    "path": "paper/scripts/generate_four_cell_closure_evidence.py",
+    "sha256": "eb2dabd919b273da8807cce3e3d60d64c2a939473dced45f96428c0d5beaeaeb"
+  },
+  "macros": [
+    {
+      "derivation": "declared in the generator and the manifest",
+      "derived": true,
+      "description": "classification string of the admitted result",
+      "format": "ident",
+      "inputs": [
+        {
+          "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+          "pointer": "regex:*"
+        }
+      ],
+      "name": "FccClassification",
+      "raw": "analytic_consistency_of_the_corrected_four_cell_power_balance_not_thruster_physics",
+      "recomputed": false,
+      "value": "analytic\\_\\allowbreak{}consistency\\_\\allowbreak{}of\\_\\allowbreak{}the\\_\\allowbreak{}corrected\\_\\allowbreak{}four\\_\\allowbreak{}cell\\_\\allowbreak{}power\\_\\allowbreak{}balance\\_\\allowbreak{}not\\_\\allowbreak{}thruster\\_\\allowbreak{}physics"
+    },
+    {
+      "derived": false,
+      "description": "status of the proposed ledger correction",
+      "format": "ident",
+      "name": "FccCorrectionStatus",
+      "raw": "PROPOSED_NOT_ACCEPTED",
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/spec/plasma/equation-ledger.json",
+        "pointer": "/global_row_consistency/status"
+      },
+      "value": "PROPOSED\\_\\allowbreak{}NOT\\_\\allowbreak{}ACCEPTED"
+    },
+    {
+      "derived": false,
+      "description": "date of the analysis recorded in the ledger",
+      "format": "text",
+      "name": "FccAnalysisDate",
+      "raw": "2026-09-03",
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/spec/plasma/equation-ledger.json",
+        "pointer": "/global_row_consistency/analysis_date"
+      },
+      "value": "2026-09-03"
+    },
+    {
+      "derivation": "commit that added the analysis document, ledger entry, diagnostics and tests",
+      "derived": true,
+      "description": "analysis commit prefix",
+      "format": "sha_short",
+      "inputs": [
+        {
+          "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+          "pointer": "regex:*"
+        }
+      ],
+      "name": "FccAnalysisCommit",
+      "raw": "266d8a99ce75fe35b4870d5d046c9069d7b26c0b",
+      "recomputed": false,
+      "value": "266d8a99ce75"
+    },
+    {
+      "derivation": "git rev-parse at both commits",
+      "derived": true,
+      "description": "later commit at which every bound blob was verified unchanged",
+      "format": "sha_short",
+      "inputs": [
+        {
+          "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+          "pointer": "regex:*"
+        }
+      ],
+      "name": "FccVerifiedTreeCommit",
+      "raw": "ba6875f604746e8fbeaf2aee2bdf06b8f06bdc04",
+      "recomputed": false,
+      "value": "ba6875f60474"
+    },
+    {
+      "derivation": "git rev-parse",
+      "derived": true,
+      "description": "MDO preregistration commit whose frozen protocol carries the probe disclosure",
+      "format": "sha_short",
+      "inputs": [
+        {
+          "artifact": "modern/experiments/mdo_l0_campaign_v1/protocol.json",
+          "pointer": ""
+        }
+      ],
+      "name": "FccMdoPreregCommit",
+      "raw": "4898d0fd3decddc5f308072e724d1936660c00e9",
+      "recomputed": false,
+      "value": "4898d0fd3dec"
+    },
+    {
+      "derivation": "len(SOURCE_ROLES)",
+      "derived": true,
+      "description": "files bound by blob and SHA-256",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+          "pointer": "regex:*"
+        }
+      ],
+      "name": "FccBoundFileCount",
+      "raw": 14,
+      "recomputed": false,
+      "value": "14"
+    },
+    {
+      "derivation": "len(PACKAGE_FILES)",
+      "derived": true,
+      "description": "package files executed and required to equal their bound blobs",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        }
+      ],
+      "name": "FccPackageFileCount",
+      "raw": 5,
+      "recomputed": false,
+      "value": "5"
+    },
+    {
+      "derivation": "LF-normalised SHA-256 of every checkout file equals the blob SHA-256 at the analysis commit",
+      "derived": true,
+      "description": "executed package equals the bound blobs",
+      "format": "bool",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        }
+      ],
+      "name": "FccPackageMatches",
+      "raw": true,
+      "recomputed": false,
+      "value": "true"
+    },
+    {
+      "derivation": "read from the frozen MDO protocol disclosure; not recomputed",
+      "derived": true,
+      "description": "where the probe pattern was read from",
+      "format": "ident",
+      "inputs": [
+        {
+          "artifact": "modern/experiments/mdo_l0_campaign_v1/protocol.json",
+          "pointer": "/prior_model_disclosure/corrected_four_cell_solver_probe"
+        }
+      ],
+      "name": "FccProbeSource",
+      "raw": "mdo-protocol-disclosure",
+      "recomputed": false,
+      "value": "mdo-\\allowbreak{}protocol-\\allowbreak{}disclosure"
+    },
+    {
+      "derived": false,
+      "description": "IEPC identifier of the source paper as cited in the analysis document",
+      "format": "ident",
+      "name": "FccKornfeldId",
+      "raw": "IEPC-2007-108",
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:kornfeld_id[id]"
+      },
+      "value": "IEPC-\\allowbreak{}2007-\\allowbreak{}108"
+    },
+    {
+      "derived": false,
+      "description": "number of the source assumption that books recombination losses at boundaries",
+      "format": "int",
+      "name": "FccKornfeldAssumption",
+      "raw": 8,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:kornfeld_assumption[n]"
+      },
+      "value": "8"
+    },
+    {
+      "derived": false,
+      "description": "label of the source's published operating point",
+      "format": "text",
+      "name": "FccDmLabel",
+      "raw": "DM9.2",
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:dm92_probabilities[label]"
+      },
+      "value": "DM9.2"
+    },
+    {
+      "derived": false,
+      "description": "published cusp probabilities of that operating point",
+      "format": "list_g",
+      "name": "FccDmProbabilities",
+      "raw": [
+        0.06,
+        0.119,
+        0.16,
+        0.254
+      ],
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:dm92_probabilities[p]"
+      },
+      "value": "0.06, 0.119, 0.16, 0.254"
+    },
+    {
+      "derivation": "len(residual_rows)",
+      "derived": true,
+      "description": "residual rows of the ledger",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "modern/spec/plasma/equation-ledger.json",
+          "pointer": "/residual_rows"
+        }
+      ],
+      "name": "FccRowCount",
+      "raw": 28,
+      "recomputed": false,
+      "value": "28"
+    },
+    {
+      "derivation": "len(residual_rows) - 1 (row id R27)",
+      "derived": true,
+      "description": "index of the global power row",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "modern/spec/plasma/equation-ledger.json",
+          "pointer": "/residual_rows/27/id"
+        }
+      ],
+      "name": "FccGlobalRowIndex",
+      "raw": 27,
+      "recomputed": false,
+      "value": "27"
+    },
+    {
+      "derivation": "len(residual_rows) - 2 (row id R26)",
+      "derived": true,
+      "description": "index of the last cell row",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "modern/spec/plasma/equation-ledger.json",
+          "pointer": "/residual_rows/26/id"
+        }
+      ],
+      "name": "FccLastCellRowIndex",
+      "raw": 26,
+      "recomputed": false,
+      "value": "26"
+    },
+    {
+      "derivation": "len(power_expressions)",
+      "derived": true,
+      "description": "power expressions of the ledger",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "modern/spec/plasma/equation-ledger.json",
+          "pointer": "/power_expressions"
+        }
+      ],
+      "name": "FccPowerExpressionCount",
+      "raw": 7,
+      "recomputed": false,
+      "value": "7"
+    },
+    {
+      "derivation": "len(cusp_arrival_probabilities)",
+      "derived": true,
+      "description": "cells of the four-cell model",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "modern/spec/plasma/equation-ledger.json",
+          "pointer": "/state_layout"
+        }
+      ],
+      "name": "FccCellCount",
+      "raw": 4,
+      "recomputed": false,
+      "value": "4"
+    },
+    {
+      "derivation": "len(PlasmaState.to_vector())",
+      "derived": true,
+      "description": "state variables",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        }
+      ],
+      "name": "FccStateDimension",
+      "raw": 25,
+      "recomputed": true,
+      "value": "25"
+    },
+    {
+      "derivation": "len(evaluate_residual(...).normalized)",
+      "derived": true,
+      "description": "rows evaluated by the residual",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        }
+      ],
+      "name": "FccRowCountRecomputed",
+      "raw": 28,
+      "recomputed": true,
+      "value": "28"
+    },
+    {
+      "derived": false,
+      "description": "anode-fall coefficient in the ledger's closed form",
+      "format": "int",
+      "name": "FccLedgerCoefficient",
+      "raw": 2,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/spec/plasma/equation-ledger.json",
+        "pointer": "regex:LEDGER_CLOSED_FORM[coefficient]"
+      },
+      "value": "2"
+    },
+    {
+      "derivation": "R27 / ((j_e3 + I4)(phi_4 - Ua)) on the manifold at p = 0",
+      "derived": true,
+      "description": "recomputed anode-fall coefficient",
+      "format": "g",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        }
+      ],
+      "name": "FccAnodeFallCoefficient",
+      "raw": 2.0,
+      "recomputed": true,
+      "recorded_significant_digits": 12,
+      "value": "2"
+    },
+    {
+      "derived": false,
+      "description": "executable cusp-loss expression",
+      "format": "expr",
+      "name": "FccPcuspCurrent",
+      "raw": "j_e0*p1*(phi_1-phi_0+EI)+j_e1*p2*(phi_2-phi_1+EI+T1)+j_e2*p3*(phi_3-phi_2+EI+T2)",
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/spec/plasma/equation-ledger.json",
+        "pointer": "/global_row_consistency/proposed_corrections/0/current_expression"
+      },
+      "value": "j\\_e0*\\hspace{0pt plus 1.5pt}p1*\\hspace{0pt plus 1.5pt}(phi\\_1-\\hspace{0pt plus 1.5pt}phi\\_0+\\hspace{0pt plus 1.5pt}EI)\\hspace{0pt plus 1.5pt}+\\hspace{0pt plus 1.5pt}j\\_e1*\\hspace{0pt plus 1.5pt}p2*\\hspace{0pt plus 1.5pt}(phi\\_2-\\hspace{0pt plus 1.5pt}phi\\_1+\\hspace{0pt plus 1.5pt}EI+\\hspace{0pt plus 1.5pt}T1)\\hspace{0pt plus 1.5pt}+\\hspace{0pt plus 1.5pt}j\\_e2*\\hspace{0pt plus 1.5pt}p3*\\hspace{0pt plus 1.5pt}(phi\\_3-\\hspace{0pt plus 1.5pt}phi\\_2+\\hspace{0pt plus 1.5pt}EI+\\hspace{0pt plus 1.5pt}T2)\\hspace{0pt plus 1.5pt}"
+    },
+    {
+      "derived": false,
+      "description": "proposed cusp-loss expression (not accepted)",
+      "format": "expr",
+      "name": "FccPcuspProposed",
+      "raw": "j_e0*p1*(phi_1-phi_0+T0)+j_e1*p2*(phi_2-phi_1+T1)+j_e2*p3*(phi_3-phi_2+T2)",
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/spec/plasma/equation-ledger.json",
+        "pointer": "/global_row_consistency/proposed_corrections/0/proposed_expression"
+      },
+      "value": "j\\_e0*\\hspace{0pt plus 1.5pt}p1*\\hspace{0pt plus 1.5pt}(phi\\_1-\\hspace{0pt plus 1.5pt}phi\\_0+\\hspace{0pt plus 1.5pt}T0)\\hspace{0pt plus 1.5pt}+\\hspace{0pt plus 1.5pt}j\\_e1*\\hspace{0pt plus 1.5pt}p2*\\hspace{0pt plus 1.5pt}(phi\\_2-\\hspace{0pt plus 1.5pt}phi\\_1+\\hspace{0pt plus 1.5pt}T1)\\hspace{0pt plus 1.5pt}+\\hspace{0pt plus 1.5pt}j\\_e2*\\hspace{0pt plus 1.5pt}p3*\\hspace{0pt plus 1.5pt}(phi\\_3-\\hspace{0pt plus 1.5pt}phi\\_2+\\hspace{0pt plus 1.5pt}T2)\\hspace{0pt plus 1.5pt}"
+    },
+    {
+      "derived": false,
+      "description": "executable anode electron expression",
+      "format": "expr",
+      "name": "FccPanodeCurrent",
+      "raw": "j_e3*p4*(Ua-phi_3+T3)+[I4+j_e3*(1-p4)]*(phi_4-Ua+T4)",
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/spec/plasma/equation-ledger.json",
+        "pointer": "/global_row_consistency/proposed_corrections/1/current_expression"
+      },
+      "value": "j\\_e3*\\hspace{0pt plus 1.5pt}p4*\\hspace{0pt plus 1.5pt}(Ua-\\hspace{0pt plus 1.5pt}phi\\_3+\\hspace{0pt plus 1.5pt}T3)\\hspace{0pt plus 1.5pt}+\\hspace{0pt plus 1.5pt}[I4+\\hspace{0pt plus 1.5pt}j\\_e3*\\hspace{0pt plus 1.5pt}(1-\\hspace{0pt plus 1.5pt}p4)\\hspace{0pt plus 1.5pt}]\\hspace{0pt plus 1.5pt}*\\hspace{0pt plus 1.5pt}(phi\\_4-\\hspace{0pt plus 1.5pt}Ua+\\hspace{0pt plus 1.5pt}T4)\\hspace{0pt plus 1.5pt}"
+    },
+    {
+      "derived": false,
+      "description": "proposed anode electron expression (not accepted)",
+      "format": "expr",
+      "name": "FccPanodeProposed",
+      "raw": "j_e3*p4*(Ua-phi_3+T3)+[I4+j_e3*(1-p4)]*(Ua-phi_4+T4)",
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/spec/plasma/equation-ledger.json",
+        "pointer": "/global_row_consistency/proposed_corrections/1/proposed_expression"
+      },
+      "value": "j\\_e3*\\hspace{0pt plus 1.5pt}p4*\\hspace{0pt plus 1.5pt}(Ua-\\hspace{0pt plus 1.5pt}phi\\_3+\\hspace{0pt plus 1.5pt}T3)\\hspace{0pt plus 1.5pt}+\\hspace{0pt plus 1.5pt}[I4+\\hspace{0pt plus 1.5pt}j\\_e3*\\hspace{0pt plus 1.5pt}(1-\\hspace{0pt plus 1.5pt}p4)\\hspace{0pt plus 1.5pt}]\\hspace{0pt plus 1.5pt}*\\hspace{0pt plus 1.5pt}(Ua-\\hspace{0pt plus 1.5pt}phi\\_4+\\hspace{0pt plus 1.5pt}T4)\\hspace{0pt plus 1.5pt}"
+    },
+    {
+      "derived": false,
+      "description": "largest normalized residual of the rounded published table recorded by the ledger",
+      "format": "sci2",
+      "name": "FccLedgerDmMisfit",
+      "raw": 0.0014866093499999807,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/spec/plasma/equation-ledger.json",
+        "pointer": "/evidence_comparisons/dm92_published_max_normalized_residual"
+      },
+      "value": "$1.49\\times10^{-3}$"
+    },
+    {
+      "derived": false,
+      "description": "row of that residual",
+      "format": "int",
+      "name": "FccLedgerDmRow",
+      "raw": 27,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/spec/plasma/equation-ledger.json",
+        "pointer": "/evidence_comparisons/dm92_published_max_row"
+      },
+      "value": "27"
+    },
+    {
+      "derived": false,
+      "description": "Jacobian rank at the published state recorded by the ledger",
+      "format": "int",
+      "name": "FccLedgerDmRank",
+      "raw": 22,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/spec/plasma/equation-ledger.json",
+        "pointer": "/evidence_comparisons/jacobian_rank_at_dm92"
+      },
+      "value": "22"
+    },
+    {
+      "derived": false,
+      "description": "single-start residual floor recorded by the ledger",
+      "format": "sci2",
+      "name": "FccLedgerSingleStartFloor",
+      "raw": 0.0004893506813569956,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/spec/plasma/equation-ledger.json",
+        "pointer": "/evidence_comparisons/single_start_observed_residual_floor_500_iterations"
+      },
+      "value": "$4.89\\times10^{-4}$"
+    },
+    {
+      "derived": false,
+      "description": "documented relative agreement of the closed form with the evaluated global row",
+      "format": "sci1",
+      "name": "FccDocClosedFormRelDiff",
+      "raw": 1.9e-13,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:closed_form_verification[rel]"
+      },
+      "value": "$1.9\\times10^{-13}$"
+    },
+    {
+      "derived": false,
+      "description": "documented random cases behind that agreement",
+      "format": "int",
+      "name": "FccDocClosedFormSamples",
+      "raw": 400,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:closed_form_verification[n]"
+      },
+      "value": "400"
+    },
+    {
+      "derived": false,
+      "description": "documented random cases behind the manifold check",
+      "format": "int",
+      "name": "FccDocManifoldSamples",
+      "raw": 200,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:manifold_verification[n]"
+      },
+      "value": "200"
+    },
+    {
+      "derived": false,
+      "description": "documented bound on the R00-R26 residual on the manifold",
+      "format": "sci0",
+      "name": "FccDocManifoldBound",
+      "raw": 1e-11,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:manifold_verification[bound]"
+      },
+      "value": "$1\\times10^{-11}$"
+    },
+    {
+      "derivation": "max over the seeded sample of |raw R27 - global_row_closed_form| / |global_row_closed_form|",
+      "derived": true,
+      "description": "recomputed maximum relative difference between the closed form and the evaluated global row",
+      "format": "sci1",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        }
+      ],
+      "name": "FccClosedFormRelDiff",
+      "raw": 2e-13,
+      "recomputed": true,
+      "recorded_significant_digits": 2,
+      "value": "$2.0\\times10^{-13}$"
+    },
+    {
+      "derivation": "SAMPLE_COUNT",
+      "derived": true,
+      "description": "recomputed sample size",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        }
+      ],
+      "name": "FccClosedFormSamples",
+      "raw": 400,
+      "recomputed": true,
+      "value": "400"
+    },
+    {
+      "derivation": "SAMPLE_SEED (random.Random)",
+      "derived": true,
+      "description": "seed of the recomputed sample",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        }
+      ],
+      "name": "FccClosedFormSeed",
+      "raw": 20260903,
+      "recomputed": true,
+      "value": "20260903"
+    },
+    {
+      "derivation": "TOLERANCES",
+      "derived": true,
+      "description": "declared upper bound on the recomputed relative difference",
+      "format": "sci0",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        }
+      ],
+      "name": "FccClosedFormBound",
+      "raw": 1e-12,
+      "recomputed": false,
+      "value": "$1\\times10^{-12}$"
+    },
+    {
+      "derivation": "max over the seeded sample of max|normalized R00..R26|",
+      "derived": true,
+      "description": "recomputed maximum normalized residual of rows R00-R26 on the manifold",
+      "format": "sci1",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        }
+      ],
+      "name": "FccManifoldMaxResidual",
+      "raw": 2.8e-13,
+      "recomputed": true,
+      "recorded_significant_digits": 2,
+      "value": "$2.8\\times10^{-13}$"
+    },
+    {
+      "derivation": "TOLERANCES",
+      "derived": true,
+      "description": "declared upper bound on the manifold residual",
+      "format": "sci0",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        }
+      ],
+      "name": "FccManifoldBound",
+      "raw": 1e-11,
+      "recomputed": false,
+      "value": "$1\\times10^{-11}$"
+    },
+    {
+      "derivation": "SAMPLE_VOLTAGES",
+      "derived": true,
+      "description": "anode voltages of the seeded sample (V)",
+      "format": "list_g",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        }
+      ],
+      "name": "FccSampleVoltages",
+      "raw": [
+        150.0,
+        300.0,
+        500.0,
+        1000.0
+      ],
+      "recomputed": false,
+      "value": "150, 300, 500, 1000"
+    },
+    {
+      "derivation": "SAMPLE_CURRENTS",
+      "derived": true,
+      "description": "anode currents of the seeded sample (A)",
+      "format": "list_g",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        }
+      ],
+      "name": "FccSampleCurrents",
+      "raw": [
+        0.1,
+        0.5,
+        1.0,
+        3.0
+      ],
+      "recomputed": false,
+      "value": "0.1, 0.5, 1, 3"
+    },
+    {
+      "derivation": "SAMPLE_PROBABILITY_UPPER",
+      "derived": true,
+      "description": "upper bound of the uniform cusp probabilities in the seeded sample",
+      "format": "g",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        }
+      ],
+      "name": "FccSampleProbabilityUpper",
+      "raw": 0.7,
+      "recomputed": false,
+      "value": "0.7"
+    },
+    {
+      "derived": false,
+      "description": "documented continuation anode voltage (V)",
+      "format": "int",
+      "name": "FccDocContinuationVoltage",
+      "raw": 300,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:continuation_setup[v]"
+      },
+      "value": "300"
+    },
+    {
+      "derived": false,
+      "description": "documented continuation anode current (A)",
+      "format": "int",
+      "name": "FccDocContinuationCurrent",
+      "raw": 1,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:continuation_setup[i]"
+      },
+      "value": "1"
+    },
+    {
+      "derived": false,
+      "description": "documented multistart count",
+      "format": "int",
+      "name": "FccDocContinuationStarts",
+      "raw": 5,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:continuation_setup[starts]"
+      },
+      "value": "5"
+    },
+    {
+      "derived": false,
+      "description": "documented iteration limit",
+      "format": "int",
+      "name": "FccDocContinuationIterations",
+      "raw": 600,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:continuation_setup[iterations]"
+      },
+      "value": "600"
+    },
+    {
+      "derivation": "CONTINUATION_START_COUNT",
+      "derived": true,
+      "description": "recomputation start count",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        },
+        {
+          "artifact": "modern/src/cft_revival/plasma/solver.py",
+          "pointer": "solve_global_discharge_multistart"
+        }
+      ],
+      "name": "FccContinuationStarts",
+      "raw": 1,
+      "recomputed": true,
+      "value": "1"
+    },
+    {
+      "derivation": "ANODE_ONLY_START_COUNT",
+      "derived": true,
+      "description": "recomputation start count of the anode-only closures",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        },
+        {
+          "artifact": "modern/src/cft_revival/plasma/solver.py",
+          "pointer": "solve_global_discharge_multistart"
+        }
+      ],
+      "name": "FccAnodeOnlyStarts",
+      "raw": 5,
+      "recomputed": true,
+      "value": "5"
+    },
+    {
+      "derivation": "CONTINUATION_MAX_ITERATIONS",
+      "derived": true,
+      "description": "recomputation iteration limit",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        },
+        {
+          "artifact": "modern/src/cft_revival/plasma/solver.py",
+          "pointer": "solve_global_discharge_multistart"
+        }
+      ],
+      "name": "FccContinuationIterations",
+      "raw": 600,
+      "recomputed": true,
+      "value": "600"
+    },
+    {
+      "derivation": "RESIDUAL_TOLERANCE",
+      "derived": true,
+      "description": "residual tolerance of the recomputation solves",
+      "format": "sci0",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        },
+        {
+          "artifact": "modern/src/cft_revival/plasma/solver.py",
+          "pointer": "solve_global_discharge_multistart"
+        }
+      ],
+      "name": "FccResidualTolerance",
+      "raw": 1e-08,
+      "recomputed": true,
+      "value": "$1\\times10^{-8}$"
+    },
+    {
+      "derivation": "len(CONTINUATION_EPSILONS)",
+      "derived": true,
+      "description": "rungs of the continuation ladder",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+          "pointer": "regex:*"
+        }
+      ],
+      "name": "FccLadderCount",
+      "raw": 6,
+      "recomputed": false,
+      "value": "6"
+    },
+    {
+      "derived": false,
+      "description": "documented residual of the anode-only closures",
+      "format": "sci0",
+      "name": "FccDocAnodeOnlyResidual",
+      "raw": 1e-14,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:anode_only_residual[r]"
+      },
+      "value": "$1\\times10^{-14}$"
+    },
+    {
+      "derived": false,
+      "description": "continuation epsilon A",
+      "format": "g",
+      "name": "FccDocEpsA",
+      "raw": 0.0001,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:continuation_header[a]"
+      },
+      "value": "0.0001"
+    },
+    {
+      "derived": false,
+      "description": "documented floor for p = eps (1,1,1,1), rung A",
+      "format": "sci2",
+      "name": "FccDocFloorA",
+      "raw": 1.28e-06,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:continuation_all_cells[a]"
+      },
+      "value": "$1.28\\times10^{-6}$"
+    },
+    {
+      "derived": false,
+      "description": "documented floor for p = eps (1,1,1,0), rung A",
+      "format": "sci2",
+      "name": "FccDocInteriorFloorA",
+      "raw": 1.31e-06,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:continuation_interior_cells[a]"
+      },
+      "value": "$1.31\\times10^{-6}$"
+    },
+    {
+      "derivation": "residual_floor of solve_global_discharge_multistart (max|normalized r| at the least-squares stall)",
+      "derived": true,
+      "description": "recomputed floor for p = eps (1,1,1,1), rung A",
+      "format": "sci2",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        },
+        {
+          "artifact": "modern/src/cft_revival/plasma/solver.py",
+          "pointer": "solve_global_discharge_multistart"
+        }
+      ],
+      "name": "FccFloorA",
+      "raw": 1.35e-06,
+      "recomputed": true,
+      "recorded_significant_digits": 3,
+      "value": "$1.35\\times10^{-6}$"
+    },
+    {
+      "derivation": "floor / eps",
+      "derived": true,
+      "description": "recomputed floor divided by eps, rung A",
+      "format": "sig3",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        },
+        {
+          "artifact": "modern/src/cft_revival/plasma/solver.py",
+          "pointer": "solve_global_discharge_multistart"
+        }
+      ],
+      "name": "FccSlopeA",
+      "raw": 0.0135,
+      "recomputed": true,
+      "recorded_significant_digits": 3,
+      "value": "0.0135"
+    },
+    {
+      "derivation": "residual_inf_norm of the converged anode-only solve",
+      "derived": true,
+      "description": "recomputed max|normalized r| of the anode-only closure, rung A",
+      "format": "sci0",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        },
+        {
+          "artifact": "modern/src/cft_revival/plasma/solver.py",
+          "pointer": "solve_global_discharge_multistart"
+        }
+      ],
+      "name": "FccAnodeOnlyResidualA",
+      "raw": 1e-13,
+      "recomputed": true,
+      "recorded_significant_digits": 1,
+      "value": "$1\\times10^{-13}$"
+    },
+    {
+      "derived": false,
+      "description": "continuation epsilon B",
+      "format": "g",
+      "name": "FccDocEpsB",
+      "raw": 0.001,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:continuation_header[b]"
+      },
+      "value": "0.001"
+    },
+    {
+      "derived": false,
+      "description": "documented floor for p = eps (1,1,1,1), rung B",
+      "format": "sci2",
+      "name": "FccDocFloorB",
+      "raw": 1.28e-05,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:continuation_all_cells[b]"
+      },
+      "value": "$1.28\\times10^{-5}$"
+    },
+    {
+      "derived": false,
+      "description": "documented floor for p = eps (1,1,1,0), rung B",
+      "format": "sci2",
+      "name": "FccDocInteriorFloorB",
+      "raw": 1.29e-05,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:continuation_interior_cells[b]"
+      },
+      "value": "$1.29\\times10^{-5}$"
+    },
+    {
+      "derivation": "residual_floor of solve_global_discharge_multistart (max|normalized r| at the least-squares stall)",
+      "derived": true,
+      "description": "recomputed floor for p = eps (1,1,1,1), rung B",
+      "format": "sci2",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        },
+        {
+          "artifact": "modern/src/cft_revival/plasma/solver.py",
+          "pointer": "solve_global_discharge_multistart"
+        }
+      ],
+      "name": "FccFloorB",
+      "raw": 1.36e-05,
+      "recomputed": true,
+      "recorded_significant_digits": 3,
+      "value": "$1.36\\times10^{-5}$"
+    },
+    {
+      "derivation": "floor / eps",
+      "derived": true,
+      "description": "recomputed floor divided by eps, rung B",
+      "format": "sig3",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        },
+        {
+          "artifact": "modern/src/cft_revival/plasma/solver.py",
+          "pointer": "solve_global_discharge_multistart"
+        }
+      ],
+      "name": "FccSlopeB",
+      "raw": 0.0136,
+      "recomputed": true,
+      "recorded_significant_digits": 3,
+      "value": "0.0136"
+    },
+    {
+      "derivation": "residual_inf_norm of the converged anode-only solve",
+      "derived": true,
+      "description": "recomputed max|normalized r| of the anode-only closure, rung B",
+      "format": "sci0",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        },
+        {
+          "artifact": "modern/src/cft_revival/plasma/solver.py",
+          "pointer": "solve_global_discharge_multistart"
+        }
+      ],
+      "name": "FccAnodeOnlyResidualB",
+      "raw": 2e-16,
+      "recomputed": true,
+      "recorded_significant_digits": 1,
+      "value": "$2\\times10^{-16}$"
+    },
+    {
+      "derived": false,
+      "description": "continuation epsilon C",
+      "format": "g",
+      "name": "FccDocEpsC",
+      "raw": 0.01,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:continuation_header[c]"
+      },
+      "value": "0.01"
+    },
+    {
+      "derived": false,
+      "description": "documented floor for p = eps (1,1,1,1), rung C",
+      "format": "sci2",
+      "name": "FccDocFloorC",
+      "raw": 0.00013,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:continuation_all_cells[c]"
+      },
+      "value": "$1.30\\times10^{-4}$"
+    },
+    {
+      "derived": false,
+      "description": "documented floor for p = eps (1,1,1,0), rung C",
+      "format": "sci2",
+      "name": "FccDocInteriorFloorC",
+      "raw": 0.000129,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:continuation_interior_cells[c]"
+      },
+      "value": "$1.29\\times10^{-4}$"
+    },
+    {
+      "derivation": "residual_floor of solve_global_discharge_multistart (max|normalized r| at the least-squares stall)",
+      "derived": true,
+      "description": "recomputed floor for p = eps (1,1,1,1), rung C",
+      "format": "sci2",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        },
+        {
+          "artifact": "modern/src/cft_revival/plasma/solver.py",
+          "pointer": "solve_global_discharge_multistart"
+        }
+      ],
+      "name": "FccFloorC",
+      "raw": 0.000137,
+      "recomputed": true,
+      "recorded_significant_digits": 3,
+      "value": "$1.37\\times10^{-4}$"
+    },
+    {
+      "derivation": "floor / eps",
+      "derived": true,
+      "description": "recomputed floor divided by eps, rung C",
+      "format": "sig3",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        },
+        {
+          "artifact": "modern/src/cft_revival/plasma/solver.py",
+          "pointer": "solve_global_discharge_multistart"
+        }
+      ],
+      "name": "FccSlopeC",
+      "raw": 0.0137,
+      "recomputed": true,
+      "recorded_significant_digits": 3,
+      "value": "0.0137"
+    },
+    {
+      "derivation": "residual_inf_norm of the converged anode-only solve",
+      "derived": true,
+      "description": "recomputed max|normalized r| of the anode-only closure, rung C",
+      "format": "sci0",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        },
+        {
+          "artifact": "modern/src/cft_revival/plasma/solver.py",
+          "pointer": "solve_global_discharge_multistart"
+        }
+      ],
+      "name": "FccAnodeOnlyResidualC",
+      "raw": 2e-13,
+      "recomputed": true,
+      "recorded_significant_digits": 1,
+      "value": "$2\\times10^{-13}$"
+    },
+    {
+      "derived": false,
+      "description": "continuation epsilon D",
+      "format": "g",
+      "name": "FccDocEpsD",
+      "raw": 0.03,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:continuation_header[d]"
+      },
+      "value": "0.03"
+    },
+    {
+      "derived": false,
+      "description": "documented floor for p = eps (1,1,1,1), rung D",
+      "format": "sci2",
+      "name": "FccDocFloorD",
+      "raw": 0.000399,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:continuation_all_cells[d]"
+      },
+      "value": "$3.99\\times10^{-4}$"
+    },
+    {
+      "derived": false,
+      "description": "documented floor for p = eps (1,1,1,0), rung D",
+      "format": "sci2",
+      "name": "FccDocInteriorFloorD",
+      "raw": 0.000398,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:continuation_interior_cells[d]"
+      },
+      "value": "$3.98\\times10^{-4}$"
+    },
+    {
+      "derivation": "residual_floor of solve_global_discharge_multistart (max|normalized r| at the least-squares stall)",
+      "derived": true,
+      "description": "recomputed floor for p = eps (1,1,1,1), rung D",
+      "format": "sci2",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        },
+        {
+          "artifact": "modern/src/cft_revival/plasma/solver.py",
+          "pointer": "solve_global_discharge_multistart"
+        }
+      ],
+      "name": "FccFloorD",
+      "raw": 0.000416,
+      "recomputed": true,
+      "recorded_significant_digits": 3,
+      "value": "$4.16\\times10^{-4}$"
+    },
+    {
+      "derivation": "floor / eps",
+      "derived": true,
+      "description": "recomputed floor divided by eps, rung D",
+      "format": "sig3",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        },
+        {
+          "artifact": "modern/src/cft_revival/plasma/solver.py",
+          "pointer": "solve_global_discharge_multistart"
+        }
+      ],
+      "name": "FccSlopeD",
+      "raw": 0.0139,
+      "recomputed": true,
+      "recorded_significant_digits": 3,
+      "value": "0.0139"
+    },
+    {
+      "derivation": "residual_inf_norm of the converged anode-only solve",
+      "derived": true,
+      "description": "recomputed max|normalized r| of the anode-only closure, rung D",
+      "format": "sci0",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        },
+        {
+          "artifact": "modern/src/cft_revival/plasma/solver.py",
+          "pointer": "solve_global_discharge_multistart"
+        }
+      ],
+      "name": "FccAnodeOnlyResidualD",
+      "raw": 3e-16,
+      "recomputed": true,
+      "recorded_significant_digits": 1,
+      "value": "$3\\times10^{-16}$"
+    },
+    {
+      "derived": false,
+      "description": "continuation epsilon E",
+      "format": "g",
+      "name": "FccDocEpsE",
+      "raw": 0.1,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:continuation_header[e]"
+      },
+      "value": "0.1"
+    },
+    {
+      "derived": false,
+      "description": "documented floor for p = eps (1,1,1,1), rung E",
+      "format": "sci2",
+      "name": "FccDocFloorE",
+      "raw": 0.00143,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:continuation_all_cells[e]"
+      },
+      "value": "$1.43\\times10^{-3}$"
+    },
+    {
+      "derived": false,
+      "description": "documented floor for p = eps (1,1,1,0), rung E",
+      "format": "sci2",
+      "name": "FccDocInteriorFloorE",
+      "raw": 0.00144,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:continuation_interior_cells[e]"
+      },
+      "value": "$1.44\\times10^{-3}$"
+    },
+    {
+      "derivation": "residual_floor of solve_global_discharge_multistart (max|normalized r| at the least-squares stall)",
+      "derived": true,
+      "description": "recomputed floor for p = eps (1,1,1,1), rung E",
+      "format": "sci2",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        },
+        {
+          "artifact": "modern/src/cft_revival/plasma/solver.py",
+          "pointer": "solve_global_discharge_multistart"
+        }
+      ],
+      "name": "FccFloorE",
+      "raw": 0.00149,
+      "recomputed": true,
+      "recorded_significant_digits": 3,
+      "value": "$1.49\\times10^{-3}$"
+    },
+    {
+      "derivation": "floor / eps",
+      "derived": true,
+      "description": "recomputed floor divided by eps, rung E",
+      "format": "sig3",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        },
+        {
+          "artifact": "modern/src/cft_revival/plasma/solver.py",
+          "pointer": "solve_global_discharge_multistart"
+        }
+      ],
+      "name": "FccSlopeE",
+      "raw": 0.0149,
+      "recomputed": true,
+      "recorded_significant_digits": 3,
+      "value": "0.0149"
+    },
+    {
+      "derivation": "residual_inf_norm of the converged anode-only solve",
+      "derived": true,
+      "description": "recomputed max|normalized r| of the anode-only closure, rung E",
+      "format": "sci0",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        },
+        {
+          "artifact": "modern/src/cft_revival/plasma/solver.py",
+          "pointer": "solve_global_discharge_multistart"
+        }
+      ],
+      "name": "FccAnodeOnlyResidualE",
+      "raw": 1e-16,
+      "recomputed": true,
+      "recorded_significant_digits": 1,
+      "value": "$1\\times10^{-16}$"
+    },
+    {
+      "derived": false,
+      "description": "continuation epsilon F",
+      "format": "g",
+      "name": "FccDocEpsF",
+      "raw": 0.3,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:continuation_header[f]"
+      },
+      "value": "0.3"
+    },
+    {
+      "derived": false,
+      "description": "documented floor for p = eps (1,1,1,1), rung F",
+      "format": "sci2",
+      "name": "FccDocFloorF",
+      "raw": 0.00578,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:continuation_all_cells[f]"
+      },
+      "value": "$5.78\\times10^{-3}$"
+    },
+    {
+      "derived": false,
+      "description": "documented floor for p = eps (1,1,1,0), rung F",
+      "format": "sci2",
+      "name": "FccDocInteriorFloorF",
+      "raw": 0.00595,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:continuation_interior_cells[f]"
+      },
+      "value": "$5.95\\times10^{-3}$"
+    },
+    {
+      "derivation": "residual_floor of solve_global_discharge_multistart (max|normalized r| at the least-squares stall)",
+      "derived": true,
+      "description": "recomputed floor for p = eps (1,1,1,1), rung F",
+      "format": "sci2",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        },
+        {
+          "artifact": "modern/src/cft_revival/plasma/solver.py",
+          "pointer": "solve_global_discharge_multistart"
+        }
+      ],
+      "name": "FccFloorF",
+      "raw": 0.00578,
+      "recomputed": true,
+      "recorded_significant_digits": 3,
+      "value": "$5.78\\times10^{-3}$"
+    },
+    {
+      "derivation": "floor / eps",
+      "derived": true,
+      "description": "recomputed floor divided by eps, rung F",
+      "format": "sig3",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        },
+        {
+          "artifact": "modern/src/cft_revival/plasma/solver.py",
+          "pointer": "solve_global_discharge_multistart"
+        }
+      ],
+      "name": "FccSlopeF",
+      "raw": 0.0193,
+      "recomputed": true,
+      "recorded_significant_digits": 3,
+      "value": "0.0193"
+    },
+    {
+      "derivation": "residual_inf_norm of the converged anode-only solve",
+      "derived": true,
+      "description": "recomputed max|normalized r| of the anode-only closure, rung F",
+      "format": "sci0",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        },
+        {
+          "artifact": "modern/src/cft_revival/plasma/solver.py",
+          "pointer": "solve_global_discharge_multistart"
+        }
+      ],
+      "name": "FccAnodeOnlyResidualF",
+      "raw": 3e-16,
+      "recomputed": true,
+      "recorded_significant_digits": 1,
+      "value": "$3\\times10^{-16}$"
+    },
+    {
+      "derivation": "min over the ladder",
+      "derived": true,
+      "description": "smallest recomputed floor",
+      "format": "sci2",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        },
+        {
+          "artifact": "modern/src/cft_revival/plasma/solver.py",
+          "pointer": "solve_global_discharge_multistart"
+        }
+      ],
+      "name": "FccFloorMin",
+      "raw": 1.35e-06,
+      "recomputed": true,
+      "recorded_significant_digits": 3,
+      "value": "$1.35\\times10^{-6}$"
+    },
+    {
+      "derivation": "max over the ladder",
+      "derived": true,
+      "description": "largest recomputed floor",
+      "format": "sci2",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        },
+        {
+          "artifact": "modern/src/cft_revival/plasma/solver.py",
+          "pointer": "solve_global_discharge_multistart"
+        }
+      ],
+      "name": "FccFloorMax",
+      "raw": 0.00578,
+      "recomputed": true,
+      "recorded_significant_digits": 3,
+      "value": "$5.78\\times10^{-3}$"
+    },
+    {
+      "derivation": "min over the documented ladder",
+      "derived": true,
+      "description": "smallest documented floor",
+      "format": "sci2",
+      "inputs": [
+        {
+          "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+          "pointer": "regex:*"
+        }
+      ],
+      "name": "FccDocFloorMin",
+      "raw": 1.28e-06,
+      "recomputed": false,
+      "value": "$1.28\\times10^{-6}$"
+    },
+    {
+      "derivation": "max over the documented ladder",
+      "derived": true,
+      "description": "largest documented floor",
+      "format": "sci2",
+      "inputs": [
+        {
+          "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+          "pointer": "regex:*"
+        }
+      ],
+      "name": "FccDocFloorMax",
+      "raw": 0.00578,
+      "recomputed": false,
+      "value": "$5.78\\times10^{-3}$"
+    },
+    {
+      "derivation": "max over the ladder of |recomputed - documented| / documented",
+      "derived": true,
+      "description": "largest relative departure of a recomputed floor from the document",
+      "format": "pct0",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        },
+        {
+          "artifact": "modern/src/cft_revival/plasma/solver.py",
+          "pointer": "solve_global_discharge_multistart"
+        },
+        {
+          "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+          "pointer": "regex:*"
+        }
+      ],
+      "name": "FccFloorDepartureMax",
+      "raw": 0.059,
+      "recomputed": true,
+      "recorded_significant_digits": 2,
+      "value": "6\\%"
+    },
+    {
+      "derivation": "TOLERANCES",
+      "derived": true,
+      "description": "declared relative tolerance on each recomputed floor",
+      "format": "pct0",
+      "inputs": [
+        {
+          "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+          "pointer": "regex:*"
+        }
+      ],
+      "name": "FccFloorTolerance",
+      "raw": 0.25,
+      "recomputed": false,
+      "value": "25\\%"
+    },
+    {
+      "derivation": "max(floor/eps) / min(floor/eps)",
+      "derived": true,
+      "description": "ratio of the largest to the smallest recomputed floor/eps over the ladder",
+      "format": "fixed2",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        },
+        {
+          "artifact": "modern/src/cft_revival/plasma/solver.py",
+          "pointer": "solve_global_discharge_multistart"
+        }
+      ],
+      "name": "FccSlopeSpread",
+      "raw": 1.4,
+      "recomputed": true,
+      "recorded_significant_digits": 2,
+      "value": "1.40"
+    },
+    {
+      "derivation": "TOLERANCES",
+      "derived": true,
+      "description": "declared maximum of that ratio (no branch)",
+      "format": "g",
+      "inputs": [
+        {
+          "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+          "pointer": "regex:*"
+        }
+      ],
+      "name": "FccSlopeSpreadMax",
+      "raw": 2.0,
+      "recomputed": false,
+      "value": "2"
+    },
+    {
+      "derivation": "any(converged)",
+      "derived": true,
+      "description": "whether any interior rung of the ladder closed",
+      "format": "bool",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        },
+        {
+          "artifact": "modern/src/cft_revival/plasma/solver.py",
+          "pointer": "solve_global_discharge_multistart"
+        }
+      ],
+      "name": "FccBranchFound",
+      "raw": false,
+      "recomputed": true,
+      "value": "false"
+    },
+    {
+      "derivation": "all(argmax |normalized r| == 27)",
+      "derived": true,
+      "description": "whether the global row dominates every recomputed floor",
+      "format": "bool",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        },
+        {
+          "artifact": "modern/src/cft_revival/plasma/solver.py",
+          "pointer": "solve_global_discharge_multistart"
+        }
+      ],
+      "name": "FccDominantRowIsGlobal",
+      "raw": true,
+      "recomputed": true,
+      "value": "true"
+    },
+    {
+      "derivation": "count(anode_only_converged)",
+      "derived": true,
+      "description": "anode-only rungs that closed",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        },
+        {
+          "artifact": "modern/src/cft_revival/plasma/solver.py",
+          "pointer": "solve_global_discharge_multistart"
+        }
+      ],
+      "name": "FccAnodeOnlyClosed",
+      "raw": 6,
+      "recomputed": true,
+      "value": "6"
+    },
+    {
+      "derivation": "max over the ladder",
+      "derived": true,
+      "description": "largest max|normalized r| over the anode-only closures",
+      "format": "sci0",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        },
+        {
+          "artifact": "modern/src/cft_revival/plasma/solver.py",
+          "pointer": "solve_global_discharge_multistart"
+        }
+      ],
+      "name": "FccAnodeOnlyMaxResidual",
+      "raw": 2e-13,
+      "recomputed": true,
+      "recorded_significant_digits": 1,
+      "value": "$2\\times10^{-13}$"
+    },
+    {
+      "derivation": "TOLERANCES",
+      "derived": true,
+      "description": "declared bound on the anode-only residual",
+      "format": "sci0",
+      "inputs": [
+        {
+          "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+          "pointer": "regex:*"
+        }
+      ],
+      "name": "FccAnodeOnlyBound",
+      "raw": 1e-08,
+      "recomputed": false,
+      "value": "$1\\times10^{-8}$"
+    },
+    {
+      "derivation": "max |state.plasma_potential_v[3] - Ua|",
+      "derived": true,
+      "description": "largest |phi_4 - Ua| over the anode-only closures (V)",
+      "format": "g",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        },
+        {
+          "artifact": "modern/src/cft_revival/plasma/solver.py",
+          "pointer": "solve_global_discharge_multistart"
+        }
+      ],
+      "name": "FccAnodeOnlyPhiFourGap",
+      "raw": 0.0,
+      "recomputed": true,
+      "recorded_significant_digits": 1,
+      "value": "0"
+    },
+    {
+      "derived": false,
+      "description": "documented Jacobian rank at every floor and closed point",
+      "format": "int",
+      "name": "FccDocJacobianRank",
+      "raw": 22,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:jacobian_rank[rank]"
+      },
+      "value": "22"
+    },
+    {
+      "derived": false,
+      "description": "documented state dimension",
+      "format": "int",
+      "name": "FccDocJacobianColumns",
+      "raw": 25,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:jacobian_rank[n]"
+      },
+      "value": "25"
+    },
+    {
+      "derived": false,
+      "description": "documented smallest condition of the independent subspace",
+      "format": "int",
+      "name": "FccDocConditionMin",
+      "raw": 9,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:jacobian_condition[lo]"
+      },
+      "value": "9"
+    },
+    {
+      "derived": false,
+      "description": "documented largest condition of the independent subspace",
+      "format": "int",
+      "name": "FccDocConditionMax",
+      "raw": 200,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:jacobian_condition[hi]"
+      },
+      "value": "200"
+    },
+    {
+      "derivation": "SolverDiagnostics.jacobian_rank (column-pivoted QR)",
+      "derived": true,
+      "description": "recomputed Jacobian rank at every floor point of the ladder",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        },
+        {
+          "artifact": "modern/src/cft_revival/plasma/solver.py",
+          "pointer": "solve_global_discharge_multistart"
+        }
+      ],
+      "name": "FccJacobianRank",
+      "raw": 22,
+      "recomputed": true,
+      "value": "22"
+    },
+    {
+      "derivation": "state_dimension - rank",
+      "derived": true,
+      "description": "dimension of the potential null space",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        },
+        {
+          "artifact": "modern/src/cft_revival/plasma/solver.py",
+          "pointer": "solve_global_discharge_multistart"
+        }
+      ],
+      "name": "FccJacobianNullity",
+      "raw": 3,
+      "recomputed": true,
+      "value": "3"
+    },
+    {
+      "derivation": "max SolverDiagnostics.jacobian_condition_estimate",
+      "derived": true,
+      "description": "largest recomputed condition estimate of the independent subspace over the ladder",
+      "format": "sig2",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        },
+        {
+          "artifact": "modern/src/cft_revival/plasma/solver.py",
+          "pointer": "solve_global_discharge_multistart"
+        }
+      ],
+      "name": "FccConditionMax",
+      "raw": 20.0,
+      "recomputed": true,
+      "recorded_significant_digits": 2,
+      "value": "20"
+    },
+    {
+      "derived": false,
+      "description": "documented box dimension of the differential-evolution search",
+      "format": "int",
+      "name": "FccDocDeDimension",
+      "raw": 25,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:differential_evolution[dim]"
+      },
+      "value": "25"
+    },
+    {
+      "derived": false,
+      "description": "documented differential-evolution evaluations",
+      "format": "int_comma",
+      "name": "FccDocDeEvaluations",
+      "raw": 205312,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:differential_evolution[n]"
+      },
+      "value": "205{,}312"
+    },
+    {
+      "derived": false,
+      "description": "documented best max|r| of the differential-evolution search",
+      "format": "sci2",
+      "name": "FccDocDeBest",
+      "raw": 0.0206,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:differential_evolution[best]"
+      },
+      "value": "$2.06\\times10^{-2}$"
+    },
+    {
+      "derived": false,
+      "description": "documented anode voltage of the global search (V)",
+      "format": "int",
+      "name": "FccDocDeVoltage",
+      "raw": 300,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:differential_evolution[v]"
+      },
+      "value": "300"
+    },
+    {
+      "derived": false,
+      "description": "documented anode current of the global search (A)",
+      "format": "int",
+      "name": "FccDocDeCurrent",
+      "raw": 1,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:differential_evolution[i]"
+      },
+      "value": "1"
+    },
+    {
+      "derived": false,
+      "description": "documented random feasible starts",
+      "format": "int",
+      "name": "FccDocLmStarts",
+      "raw": 200,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:random_starts[n]"
+      },
+      "value": "200"
+    },
+    {
+      "derived": false,
+      "description": "documented closures among the random starts",
+      "format": "int",
+      "name": "FccDocLmClosed",
+      "raw": 0,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:random_starts[closed]"
+      },
+      "value": "0"
+    },
+    {
+      "derived": false,
+      "description": "documented smallest floor of the random starts",
+      "format": "sci2",
+      "name": "FccDocLmFloorMin",
+      "raw": 0.00182,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:random_starts[min]"
+      },
+      "value": "$1.82\\times10^{-3}$"
+    },
+    {
+      "derived": false,
+      "description": "documented median floor of the random starts",
+      "format": "sci2",
+      "name": "FccDocLmFloorMedian",
+      "raw": 0.002,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:random_starts[median]"
+      },
+      "value": "$2.00\\times10^{-3}$"
+    },
+    {
+      "derived": false,
+      "description": "documented largest floor of the random starts",
+      "format": "sci2",
+      "name": "FccDocLmFloorMax",
+      "raw": 0.0825,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:random_starts[max]"
+      },
+      "value": "$8.25\\times10^{-2}$"
+    },
+    {
+      "derived": false,
+      "description": "documented residual of the relaxed-constraint roots",
+      "format": "sci0",
+      "name": "FccDocRelaxedResidual",
+      "raw": 1e-16,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:relaxed_roots[r]"
+      },
+      "value": "$1\\times10^{-16}$"
+    },
+    {
+      "derived": false,
+      "description": "documented smallest depth of a relaxed root below the anode (V)",
+      "format": "fixed1",
+      "name": "FccDocRelaxedDepthMin",
+      "raw": 0.6,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:relaxed_roots[lo]"
+      },
+      "value": "0.6"
+    },
+    {
+      "derived": false,
+      "description": "documented largest depth of a relaxed root below the anode (V)",
+      "format": "fixed1",
+      "name": "FccDocRelaxedDepthMax",
+      "raw": 12.6,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:relaxed_roots[hi]"
+      },
+      "value": "12.6"
+    },
+    {
+      "derived": false,
+      "description": "documented relaxed-root depth at the published probabilities and 300 V (V)",
+      "format": "fixed2",
+      "name": "FccDocRelaxedDepthThreeHundred",
+      "raw": 1.18,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:relaxed_roots[a]"
+      },
+      "value": "1.18"
+    },
+    {
+      "derived": false,
+      "description": "documented relaxed-root depth at the published probabilities and 1000 V (V)",
+      "format": "fixed2",
+      "name": "FccDocRelaxedDepthThousand",
+      "raw": 0.63,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:relaxed_roots[b]"
+      },
+      "value": "0.63"
+    },
+    {
+      "derivation": "Ua - phi_4 at the bisection root of raw R27 with fixed interior potentials",
+      "derived": true,
+      "description": "recomputed depth of one relaxed-constraint root below the anode (V)",
+      "format": "fixed2",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        }
+      ],
+      "name": "FccRelaxedDepth",
+      "raw": 1.18,
+      "recomputed": true,
+      "recorded_significant_digits": 3,
+      "value": "1.18"
+    },
+    {
+      "derivation": "max|normalized residual|",
+      "derived": true,
+      "description": "recomputed max|normalized r| at that root",
+      "format": "sci0",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        }
+      ],
+      "name": "FccRelaxedResidual",
+      "raw": 2e-16,
+      "recomputed": true,
+      "recorded_significant_digits": 1,
+      "value": "$2\\times10^{-16}$"
+    },
+    {
+      "derivation": "is_feasible",
+      "derived": true,
+      "description": "whether that root is admissible",
+      "format": "bool",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        }
+      ],
+      "name": "FccRelaxedFeasible",
+      "raw": false,
+      "recomputed": true,
+      "value": "false"
+    },
+    {
+      "derivation": "RELAXED_INTERIOR_POTENTIALS_V",
+      "derived": true,
+      "description": "fixed interior potentials of the relaxed-root bisection (V)",
+      "format": "list_g",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        }
+      ],
+      "name": "FccRelaxedInterior",
+      "raw": [
+        4.23,
+        270.0,
+        285.0
+      ],
+      "recomputed": false,
+      "value": "4.23, 270, 285"
+    },
+    {
+      "derivation": "RELAXED_VOLTAGE_V",
+      "derived": true,
+      "description": "anode voltage of the relaxed-root bisection (V)",
+      "format": "g",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        }
+      ],
+      "name": "FccRelaxedVoltage",
+      "raw": 300.0,
+      "recomputed": false,
+      "value": "300"
+    },
+    {
+      "derivation": "RELAXED_CURRENT_A",
+      "derived": true,
+      "description": "anode current of the relaxed-root bisection (A)",
+      "format": "g",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        }
+      ],
+      "name": "FccRelaxedCurrent",
+      "raw": 1.0,
+      "recomputed": false,
+      "value": "1"
+    },
+    {
+      "derived": false,
+      "description": "documented global-row misfit of the published state on the exact manifold",
+      "format": "sci2",
+      "name": "FccDocDmMisfit",
+      "raw": 0.00147,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:dm92_misfit[misfit]"
+      },
+      "value": "$1.47\\times10^{-3}$"
+    },
+    {
+      "derived": false,
+      "description": "documented ledger misfit of the rounded published table",
+      "format": "sci2",
+      "name": "FccDocDmLedgerMisfit",
+      "raw": 0.00149,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:dm92_misfit[ledger]"
+      },
+      "value": "$1.49\\times10^{-3}$"
+    },
+    {
+      "derived": false,
+      "description": "documented published-state anode voltage (V)",
+      "format": "int",
+      "name": "FccDocDmVoltage",
+      "raw": 1000,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:dm92_misfit[v]"
+      },
+      "value": "1000"
+    },
+    {
+      "derived": false,
+      "description": "documented published-state anode current (A)",
+      "format": "int",
+      "name": "FccDocDmCurrent",
+      "raw": 1,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:dm92_misfit[i]"
+      },
+      "value": "1"
+    },
+    {
+      "derivation": "normalized R27 of potential_parametrized_state at the published potentials",
+      "derived": true,
+      "description": "recomputed normalized global-row residual of the published state on the exact manifold",
+      "format": "sci2",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        }
+      ],
+      "name": "FccDmMisfit",
+      "raw": 0.00147,
+      "recomputed": true,
+      "recorded_significant_digits": 3,
+      "value": "$1.47\\times10^{-3}$"
+    },
+    {
+      "derivation": "max|normalized R00..R26|",
+      "derived": true,
+      "description": "recomputed max|normalized R00..R26| at that state",
+      "format": "sci0",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        }
+      ],
+      "name": "FccDmManifoldResidual",
+      "raw": 8e-17,
+      "recomputed": true,
+      "recorded_significant_digits": 1,
+      "value": "$8\\times10^{-17}$"
+    },
+    {
+      "derivation": "DM92_POTENTIALS_V",
+      "derived": true,
+      "description": "published cell potentials used for the misfit (V)",
+      "format": "list_g",
+      "inputs": [
+        {
+          "artifact": "modern/src/cft_revival/plasma/residuals.py",
+          "pointer": "potential_parametrized_state, global_row_closed_form, evaluate_residual"
+        }
+      ],
+      "name": "FccDmPotentials",
+      "raw": [
+        14.1,
+        1000.0,
+        1000.0,
+        1000.0
+      ],
+      "recomputed": false,
+      "value": "14.1, 1000, 1000, 1000"
+    },
+    {
+      "derived": false,
+      "description": "probe cases that closed (frozen MDO protocol)",
+      "format": "int",
+      "name": "FccProbeClosed",
+      "raw": 13,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/experiments/mdo_l0_campaign_v1/protocol.json",
+        "pointer": "regex:MDO_PROBE_PATTERN[closed]@/prior_model_disclosure/corrected_four_cell_solver_probe"
+      },
+      "value": "13"
+    },
+    {
+      "derived": false,
+      "description": "probe cases (frozen MDO protocol)",
+      "format": "int",
+      "name": "FccProbeTotal",
+      "raw": 80,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/experiments/mdo_l0_campaign_v1/protocol.json",
+        "pointer": "regex:MDO_PROBE_PATTERN[total]@/prior_model_disclosure/corrected_four_cell_solver_probe"
+      },
+      "value": "80"
+    },
+    {
+      "derived": false,
+      "description": "smallest probe residual floor (frozen MDO protocol)",
+      "format": "sci1",
+      "name": "FccProbeFloorMin",
+      "raw": 0.00047,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/experiments/mdo_l0_campaign_v1/protocol.json",
+        "pointer": "regex:MDO_PROBE_PATTERN[rmin]@/prior_model_disclosure/corrected_four_cell_solver_probe"
+      },
+      "value": "$4.7\\times10^{-4}$"
+    },
+    {
+      "derived": false,
+      "description": "largest probe residual floor (frozen MDO protocol)",
+      "format": "sig3",
+      "name": "FccProbeFloorMax",
+      "raw": 0.196,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/experiments/mdo_l0_campaign_v1/protocol.json",
+        "pointer": "regex:MDO_PROBE_PATTERN[rmax]@/prior_model_disclosure/corrected_four_cell_solver_probe"
+      },
+      "value": "0.196"
+    },
+    {
+      "derived": false,
+      "description": "probe cases that closed in the document's exact reproduction",
+      "format": "int",
+      "name": "FccDocProbeClosed",
+      "raw": 13,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:probe_reproduction[closed]"
+      },
+      "value": "13"
+    },
+    {
+      "derived": false,
+      "description": "probe cases in the document's exact reproduction",
+      "format": "int",
+      "name": "FccDocProbeTotal",
+      "raw": 80,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:probe_reproduction[total]"
+      },
+      "value": "80"
+    },
+    {
+      "derived": false,
+      "description": "documented wall time of the probe reproduction (s)",
+      "format": "int",
+      "name": "FccDocProbeSeconds",
+      "raw": 197,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:probe_reproduction[seconds]"
+      },
+      "value": "197"
+    },
+    {
+      "derived": false,
+      "description": "documented smallest floor of the probe reproduction",
+      "format": "sci2",
+      "name": "FccDocProbeFloorMin",
+      "raw": 0.0004739,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:probe_reproduction[fmin]"
+      },
+      "value": "$4.74\\times10^{-4}$"
+    },
+    {
+      "derived": false,
+      "description": "documented largest floor of the probe reproduction",
+      "format": "sci2",
+      "name": "FccDocProbeFloorMax",
+      "raw": 0.196,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:probe_reproduction[fmax]"
+      },
+      "value": "$1.96\\times10^{-1}$"
+    },
+    {
+      "derived": false,
+      "description": "zero-cusp grid cases closing after the projection fix",
+      "format": "int",
+      "name": "FccDocZeroCuspAfter",
+      "raw": 16,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:zero_cusp_grid[after]"
+      },
+      "value": "16"
+    },
+    {
+      "derived": false,
+      "description": "zero-cusp grid cases closing before the projection fix",
+      "format": "int",
+      "name": "FccDocZeroCuspBefore",
+      "raw": 13,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:zero_cusp_grid[before]"
+      },
+      "value": "13"
+    },
+    {
+      "derived": false,
+      "description": "zero-cusp grid cases",
+      "format": "int",
+      "name": "FccDocZeroCuspTotal",
+      "raw": 16,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:zero_cusp_grid[total]"
+      },
+      "value": "16"
+    },
+    {
+      "derived": false,
+      "description": "documented line of the legacy cusp-loss term",
+      "format": "int",
+      "name": "FccDocLegacyLine",
+      "raw": 137,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:legacy_line[line]"
+      },
+      "value": "137"
+    },
+    {
+      "derivation": "first line matching LEGACY_CUSP_LINE",
+      "derived": true,
+      "description": "line of the legacy cusp-loss term found in the bound blob",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "FYP/Power_B_EQs.m",
+          "pointer": "regex:LEGACY_CUSP_LINE"
+        }
+      ],
+      "name": "FccLegacyCuspLine",
+      "raw": 136,
+      "recomputed": true,
+      "value": "136"
+    },
+    {
+      "derivation": "first line matching LEGACY_ANODE_LINE",
+      "derived": true,
+      "description": "line of the legacy anode-loss term found in the bound blob",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "FYP/Power_B_EQs.m",
+          "pointer": "regex:LEGACY_ANODE_LINE"
+        }
+      ],
+      "name": "FccLegacyAnodeLine",
+      "raw": 137,
+      "recomputed": true,
+      "value": "137"
+    },
+    {
+      "derivation": "count('+IE') on that line",
+      "derived": true,
+      "description": "+IE terms on the legacy cusp-loss line",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "FYP/Power_B_EQs.m",
+          "pointer": "regex:LEGACY_CUSP_LINE"
+        }
+      ],
+      "name": "FccLegacyIeTerms",
+      "raw": 3,
+      "recomputed": true,
+      "value": "3"
+    },
+    {
+      "derivation": "git rev-parse",
+      "derived": true,
+      "description": "Git blob prefix of the legacy file",
+      "format": "sha_short",
+      "inputs": [
+        {
+          "artifact": "FYP/Power_B_EQs.m",
+          "pointer": ""
+        }
+      ],
+      "name": "FccLegacyBlob",
+      "raw": "8eeca9c61cce5b1f9157b7db5a7c9e6c21d63d80",
+      "recomputed": false,
+      "value": "8eeca9c61cce"
+    },
+    {
+      "derived": false,
+      "description": "structural rank before the proposed correction",
+      "format": "int",
+      "name": "FccDocCorrectedRankBefore",
+      "raw": 22,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:corrected_rank[before]"
+      },
+      "value": "22"
+    },
+    {
+      "derived": false,
+      "description": "structural rank if the proposed correction were accepted",
+      "format": "int",
+      "name": "FccDocCorrectedRankAfter",
+      "raw": 21,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:corrected_rank[after]"
+      },
+      "value": "21"
+    },
+    {
+      "derived": false,
+      "description": "nullity if the proposed correction were accepted",
+      "format": "int",
+      "name": "FccDocCorrectedNullity",
+      "raw": 4,
+      "recomputed": false,
+      "source": {
+        "artifact": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+        "pointer": "regex:corrected_rank[nullity]"
+      },
+      "value": "4"
+    },
+    {
+      "derivation": "regex group 'flags' of AUDIT_ACCEPTANCE",
+      "derived": true,
+      "description": "legacy exit flags accepted by status alone (AUDIT.md section 7)",
+      "format": "text",
+      "inputs": [
+        {
+          "artifact": "modern/docs/AUDIT.md",
+          "pointer": "regex:AUDIT_ACCEPTANCE"
+        }
+      ],
+      "name": "FccAuditAcceptedFlags",
+      "raw": "1-3",
+      "recomputed": false,
+      "value": "1-3"
+    },
+    {
+      "derivation": "regex group 'rejected' of AUDIT_ACCEPTANCE",
+      "derived": true,
+      "description": "legacy exit flag rejected (AUDIT.md section 7)",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "modern/docs/AUDIT.md",
+          "pointer": "regex:AUDIT_ACCEPTANCE"
+        }
+      ],
+      "name": "FccAuditRejectedFlag",
+      "raw": 4,
+      "recomputed": false,
+      "value": "4"
+    },
+    {
+      "derivation": "regex group 'tolfun' of AUDIT_TOLFUN",
+      "derived": true,
+      "description": "legacy lsqnonlin TolFun (AUDIT.md section 7)",
+      "format": "text",
+      "inputs": [
+        {
+          "artifact": "modern/docs/AUDIT.md",
+          "pointer": "regex:AUDIT_TOLFUN"
+        }
+      ],
+      "name": "FccAuditTolFun",
+      "raw": "1e-50",
+      "recomputed": false,
+      "value": "1e-50"
+    },
+    {
+      "derivation": "regex group 'line' of AUDIT_ACCEPTANCE",
+      "derived": true,
+      "description": "legacy line that discards the residual norm (AUDIT.md section 7)",
+      "format": "int",
+      "inputs": [
+        {
+          "artifact": "modern/docs/AUDIT.md",
+          "pointer": "regex:AUDIT_ACCEPTANCE"
+        }
+      ],
+      "name": "FccAuditSolverLine",
+      "raw": 64,
+      "recomputed": false,
+      "value": "64"
+    }
+  ],
+  "manuscript_integration": {
+    "artifact_claim_id": "CLM-039",
+    "artifact_id": "TAB-FOUR-CELL-CLOSURE-V1",
+    "gate_id": "GATE-FOUR-CELL-CLOSURE-V1",
+    "gate_kind": "analytic-consistency",
+    "generated_binding": "\\input{generated/four-cell-closure.tex}",
+    "generated_tex_path": "paper/generated/four-cell-closure.tex",
+    "manifest_id": "FOUR-CELL-CLOSURE-20260903-R27-V1",
+    "manifest_path": "paper/evidence/manifests/four-cell-closure.json",
+    "prose_claim_ids": [
+      "CLM-036",
+      "CLM-037",
+      "CLM-038",
+      "CLM-040",
+      "CLM-041",
+      "CLM-042",
+      "CLM-043",
+      "CLM-044"
+    ],
+    "revision_macro": "ClosureEvidenceRevision",
+    "rule": "Every number in the section is a macro defined here; each macro is bound below to a document, ledger, protocol or legacy path with a JSON pointer or fixed regular expression and the file's SHA-256, or to a recomputation whose inputs and protocol are recorded. Claim-bearing sentences are exact EvidenceClaim bodies registered in paper/evidence/claims.json; the analytic-consistency gate in paper/evidence/result-gates.json names the typed manifest that admits the section. The result is about the corrected equation set; it is not a statement about the physical thruster, it accepts no correction, and it opens no physics level.",
+    "section_binding": "\\input{sections/four-cell-closure.tex}",
+    "section_heading": "Closed form of the global power row and its admissible roots",
+    "section_path": "paper/sections/four-cell-closure.tex",
+    "status": "admitted"
+  },
+  "output": {
+    "path": "paper/generated/four-cell-closure.tex",
+    "sha256": "db749f42fc4bd6986def22b63e52612d65a6320800ec592bf5cb2bbe32d8b6e1"
+  },
+  "recomputation_protocol": {
+    "anode_fall_coefficient": {
+      "current_a": 1.0,
+      "delta_v": 1.0,
+      "probabilities": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "voltage_v": 300.0
+    },
+    "closed_form_sample": {
+      "count": 400,
+      "currents_a": [
+        0.1,
+        0.5,
+        1.0,
+        3.0
+      ],
+      "interior_potentials": "three uniform draws on [0.01 Ua, Ua] sorted; anode-cell potential uniform on [Ua, 1.5 Ua]",
+      "probability_upper": 0.7,
+      "seed": 20260903,
+      "voltages_v": [
+        150.0,
+        300.0,
+        500.0,
+        1000.0
+      ]
+    },
+    "continuation": {
+      "current_a": 1.0,
+      "epsilons": [
+        0.0001,
+        0.001,
+        0.01,
+        0.03,
+        0.1,
+        0.3
+      ],
+      "max_iterations": 600,
+      "patterns": [
+        "eps*(1,1,1,1)",
+        "(0,0,0,eps)"
+      ],
+      "residual_tolerance": 1e-08,
+      "solver": "cft_revival.plasma.solve_global_discharge_multistart",
+      "start_count_anode_only": 5,
+      "start_count_interior": 1,
+      "voltage_v": 300.0
+    },
+    "not_recomputed": [
+      "differential evolution (205 312 evaluations; SciPy)",
+      "200 random feasible LM starts",
+      "the 80-case solver probe (read from the frozen MDO protocol; its reproduction is documented)"
+    ],
+    "published_state": {
+      "current_a": 1.0,
+      "potentials_v": [
+        14.1,
+        1000.0,
+        1000.0,
+        1000.0
+      ],
+      "probabilities": [
+        0.06,
+        0.119,
+        0.16,
+        0.254
+      ],
+      "voltage_v": 1000.0
+    },
+    "recorded_significant_digits": {
+      "anode_only_residual": 1,
+      "closed_form_relative_difference": 2,
+      "continuation_floor": 3,
+      "continuation_slope": 3,
+      "departure": 2,
+      "dm92_misfit": 3,
+      "jacobian_condition": 2,
+      "manifold_normalized_residual": 2,
+      "relaxed_root_depth_v": 3,
+      "relaxed_root_residual": 1
+    },
+    "relaxed_root": {
+      "bisections": 200,
+      "current_a": 1.0,
+      "interior_potentials_v": [
+        4.23,
+        270.0,
+        285.0
+      ],
+      "probabilities": [
+        0.06,
+        0.119,
+        0.16,
+        0.254
+      ],
+      "voltage_v": 300.0
+    },
+    "tolerances": {
+      "anode_fall_coefficient_absolute": 1e-09,
+      "anode_only_residual_upper_bound": 1e-08,
+      "closed_form_relative_difference_upper_bound": 1e-12,
+      "continuation_floor_relative": 0.25,
+      "continuation_slope_spread_maximum": 2.0,
+      "dm92_misfit_relative": 0.02,
+      "manifold_normalized_residual_upper_bound": 1e-11,
+      "relaxed_root_depth_relative": 0.02,
+      "relaxed_root_residual_upper_bound": 1e-10
+    }
+  },
+  "recomputed_summary": {
+    "anode_fall_coefficient": 2.0,
+    "anode_only_residuals": [
+      1e-13,
+      2e-16,
+      2e-13,
+      3e-16,
+      1e-16,
+      3e-16
+    ],
+    "closed_form_relative_difference": 2e-13,
+    "continuation_dominant_rows": [
+      27,
+      27,
+      27,
+      27,
+      27,
+      27
+    ],
+    "continuation_floors": [
+      1.35e-06,
+      1.36e-05,
+      0.000137,
+      0.000416,
+      0.00149,
+      0.00578
+    ],
+    "continuation_max_relative_departure": 0.059,
+    "continuation_reasons": [
+      "iteration_limit",
+      "iteration_limit",
+      "iteration_limit",
+      "iteration_limit",
+      "iteration_limit",
+      "iteration_limit"
+    ],
+    "continuation_slope_spread": 1.4,
+    "dm92_misfit": 0.00147,
+    "jacobian_condition_max": 20.0,
+    "jacobian_ranks": [
+      22,
+      22,
+      22,
+      22,
+      22,
+      22
+    ],
+    "manifold_normalized_residual": 2.8e-13,
+    "relaxed_root_depth_v": 1.18,
+    "relaxed_root_feasible": false
+  },
+  "schema_version": "1.0",
+  "sources": [
+    {
+      "bytes": 14542,
+      "git_blob": "75e543503e91e6b1aef828a37b3e38983209a69f",
+      "git_blob_sha256": "555915928ffc9734b62615dc273ad63d890a99948367811726ddace2c9d8c54b",
+      "path": "modern/docs/workstreams/global-plasma-closure-analysis.md",
+      "role": "analysis-document"
+    },
+    {
+      "bytes": 16548,
+      "git_blob": "a09d76fef9cfc7d2f83c2ebac46fb8d47c451240",
+      "git_blob_sha256": "19822eb3364a5cc660c8b9bba2b699218f7d80c9657a16f0d8580f33188faff0",
+      "path": "modern/spec/plasma/equation-ledger.json",
+      "role": "equation-ledger"
+    },
+    {
+      "bytes": 21694,
+      "git_blob": "d4cb8cb1a33e8b0351c9fbb05efe048dd3fd0531",
+      "git_blob_sha256": "be1d4ff8e8ba728b5a28c01a4df7cfdce8d2bcad8b85d3c14267c95e18ca7d8c",
+      "path": "modern/src/cft_revival/plasma/residuals.py",
+      "role": "diagnostics-source"
+    },
+    {
+      "bytes": 27199,
+      "git_blob": "face43023e81ac0eb0a87636daf4fec98d899e38",
+      "git_blob_sha256": "10141bf125853a47cb1ed1bed133fea36f7d96d2d70ceb31b40d25b06567f9ed",
+      "path": "modern/src/cft_revival/plasma/solver.py",
+      "role": "solver-source"
+    },
+    {
+      "bytes": 11674,
+      "git_blob": "81725f3aff34e30b095d9ef055c78145e027f612",
+      "git_blob_sha256": "5a39c4992bfba4b1925a773af50d74035ecdef164fa9bf15ecb46aa39eaafa90",
+      "path": "modern/src/cft_revival/plasma/models.py",
+      "role": "model-source"
+    },
+    {
+      "bytes": 1453,
+      "git_blob": "b1386e05b303cdedba7a223d2429612f28836e72",
+      "git_blob_sha256": "6eee1cc1b11283c009ab7cc3fd453f7b4d85ded8ce5e856921b6ef878f5a0356",
+      "path": "modern/src/cft_revival/plasma/reference.py",
+      "role": "reference-source"
+    },
+    {
+      "bytes": 1971,
+      "git_blob": "939e5c67ad11e276263b3760379eab8c989c5869",
+      "git_blob_sha256": "1217101c5cd4f13b441e65f73a1121fd99443c6321f4eb0036b4199c180b9c9f",
+      "path": "modern/src/cft_revival/plasma/__init__.py",
+      "role": "package-init"
+    },
+    {
+      "bytes": 8445,
+      "git_blob": "805b4a645cf734f890d6457e091c35c5cb41fcd3",
+      "git_blob_sha256": "006cc52e6b4338138c9c8b897745e6743ffac498d29dbad9270e60814e5a7d0a",
+      "path": "modern/tests/plasma/test_closure_p_nonzero.py",
+      "role": "closure-tests"
+    },
+    {
+      "bytes": 3192,
+      "git_blob": "0b931ed5d83ee32c66cb5490cb1ae3b4b8ccdbe4",
+      "git_blob_sha256": "ff516a59dddf0c278553f4098bec7d0fcef204ac3db28055a27f27523a1f067e",
+      "path": "modern/tests/plasma_network/test_plasma_network_closure_p_nonzero.py",
+      "role": "network-closure-tests"
+    },
+    {
+      "bytes": 9038,
+      "git_blob": "9a43a60e689e0dd48954dfd65ad76091a372a432",
+      "git_blob_sha256": "0aa64864b2724e44f499c9621d85a0f435d39792febf8127084fbd59e099d6fc",
+      "path": "modern/tests/plasma/test_solver.py",
+      "role": "solver-tests"
+    },
+    {
+      "bytes": 24531,
+      "git_blob": "06eef451c8c5f3a3b161f893fc9116787caf2c4c",
+      "git_blob_sha256": "a9776f642e6a5da904c7a733d6eb0f42bcd3328afbef69cbd9f5bc5c6a2b139e",
+      "path": "modern/experiments/mdo_l0_campaign_v1/protocol.json",
+      "role": "mdo-protocol-disclosure"
+    },
+    {
+      "bytes": 7059,
+      "git_blob": "8eeca9c61cce5b1f9157b7db5a7c9e6c21d63d80",
+      "git_blob_sha256": "28ebf8b5cda67529f3978d10c781a09affcc5933e8f199576729594516726c80",
+      "path": "FYP/Power_B_EQs.m",
+      "role": "legacy-lineage"
+    },
+    {
+      "bytes": 12666,
+      "git_blob": "ce30e2141557fda277351715b754f9432c865715",
+      "git_blob_sha256": "3c813ef8fd3ebbce5745c33ea655dc161864e43ea321741445733b919c38235e",
+      "path": "modern/docs/AUDIT.md",
+      "role": "legacy-audit"
+    },
+    {
+      "bytes": 6757,
+      "git_blob": "9b27fc7b74446526be14c0fcb6f1a297f7c14f64",
+      "git_blob_sha256": "808bf44e01eaac87b43cba5c45895fd6222aadc5a4bc1d2dd127a01841d575b1",
+      "path": "modern/docs/REFERENCES.md",
+      "role": "references"
+    }
+  ],
+  "tables": {
+    "FccContinuationTable": {
+      "rows": 6,
+      "source": "analysis document section 3.2 (documented) and the recomputed ladder"
+    },
+    "FccGlobalSearchTable": {
+      "rows": 10,
+      "source": "analysis document sections 2-4 and the ledger (documented), recomputed checks, frozen MDO protocol"
+    }
+  }
+}

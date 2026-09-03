@@ -74,7 +74,45 @@
     "jacobian_rank_at_dm92": 22,
     "editorial_interpretation": "The rounded table is a minimum-error evidence point, not a strict root. The rank-deficient 28-by-25 formulation and remaining power-component discrepancy block a unique predictive solve."
   },
+  "global_row_consistency": {
+    "status": "PROPOSED_NOT_ACCEPTED",
+    "analysis_date": "2026-09-03",
+    "document": "docs/workstreams/global-plasma-closure-analysis.md",
+    "finding": "Rows R00-R26 are mutually consistent and are parametrized by the four cell potentials (potential_parametrized_state). Substituting them into R27 leaves a residual that cannot vanish inside the admissible region whenever any interior cusp probability p1..p3 is positive. The 2026-09-03 MDO v1 probe (13/80 closures, all at p=0) is this inconsistency, not a solver failure. Legacy FYP/Power_B_EQs.m carries the same +IE cusp terms, and the published DM9.2 minimum-error table carries the same R27 misfit (1.49e-3 normalized, ~EI*(jic1+jic2+jic3)/(Ua*Ia)).",
+    "closed_form_on_manifold": "R27 = 2*(j_e3*(1-p4)+I4)*(phi_4-Ua) + EI*(p1*j_e0+p2*j_e1+p3*j_e2)  [W], exact on the R00-R26 manifold (global_row_closed_form; verified to 1e-12 relative over random (Ua, Ia, p, phi)).",
+    "admissible_root_set": "p1=p2=p3=0 with phi_4=Ua exactly; p4 is unrestricted. Every published zero-cusp state therefore sits on the phi_4>=Ua boundary. Relaxing phi_4>=Ua admits exact roots a few volts below Ua that balance the two bookkeeping errors against each other; they are rejected by the admissible region and must not be published.",
+    "secondary_infeasibility": "For large interior probabilities at low voltage (e.g. p=(0.64,0.64,0.64,0.64) at 150-500 V) the electron cascade cannot carry the imposed anode current under j_i4<=0 (j_e4>=Ia), so the R00-R26 manifold has no admissible point at all and the least-squares floor is dominated by current rows R03/R06/R07/R11 rather than R27.",
+    "source_of_inconsistency": [
+      "Kornfeld IEPC-2007-108 assumption 8 books ionization as a frozen loss (PI=EI*sum I) and again as recombination in the cusp loss CL ('electronic-, ionic- and recombination'); the +EI per cusp-lost electron in Pcusp therefore counts the ionization energy of every cusp-lost ion twice against Ua*Ia.",
+      "The printed anode electron term (phi_4-Ua+T4) with the restriction phi_4>=Ua has the sign of an ion, not an electron: an electron leaving the cell-4 plasma at phi_4 and arriving at the anode at Ua deposits T4+(Ua-phi_4). With the printed sign the global row retains 2*(j_e3*(1-p4)+I4)*(phi_4-Ua), which is why the source's own DM9.2 solution and every rebuilt closure sit at phi_4=Ua.",
+      "The corrected terminal ion row R11 and the fourth-cell transport row R14 cancel exactly in the substitution; the 2026-09-01 audit corrections did not introduce the inconsistency."
+    ],
+    "proposed_corrections": [
+      {
+        "id": "Pcusp",
+        "status": "PROPOSED_NOT_ACCEPTED",
+        "current_expression": "j_e0*p1*(phi_1-phi_0+EI)+j_e1*p2*(phi_2-phi_1+EI+T1)+j_e2*p3*(phi_3-phi_2+EI+T2)",
+        "proposed_expression": "j_e0*p1*(phi_1-phi_0+T0)+j_e1*p2*(phi_2-phi_1+T1)+j_e2*p3*(phi_3-phi_2+T2)",
+        "justification": "Electron plus ion kinetic energy delivered to the dielectric cusp (cusp potential cancels). Recombination energy stays booked once, in PI. Equivalent alternative that keeps the cusp thermal load explicit: keep +EI in Pcusp and book PI'=EI*(sum I - sum jic) as the frozen loss carried by the beam."
+      },
+      {
+        "id": "Panode_e",
+        "status": "PROPOSED_NOT_ACCEPTED",
+        "current_expression": "j_e3*p4*(Ua-phi_3+T3)+[I4+j_e3*(1-p4)]*(phi_4-Ua+T4)",
+        "proposed_expression": "j_e3*p4*(Ua-phi_3+T3)+[I4+j_e3*(1-p4)]*(Ua-phi_4+T4)",
+        "justification": "Electrostatic consistency with the direct-cusp electron term (Ua-phi_3+T3) and with the ion term -j_i4*(phi_4-Ua) of the same ledger. The nonnegative-loss margin then reads T4>=phi_4-Ua."
+      }
+    ],
+    "consequence_if_accepted": "With both corrections R27 is implied identically by R23-R26 and charge conservation for every p; the global row becomes a verification identity, the structural rank drops from 22 to 21 (nullity 4: all four potentials free), and an independent potential closure (e.g. the dielectric-cusp sheath relation that Kornfeld's cancelled cusp potentials were meant to supply) is required before any state can be published. Accepting the corrections without that closure would replace a non-closing model by an underdetermined one.",
+    "pinning_tests": [
+      "tests/plasma/test_closure_p_nonzero.py",
+      "tests/plasma_network/test_plasma_network_closure_p_nonzero.py",
+      "tests/plasma/test_solver.py::test_zero_cusp_grid_closes_including_the_1000_v_cases"
+    ],
+    "solver_defect_fixed_2026_09_03": "The ordering projection used sorted(), which permutes potential identities and stalled 3 of 16 zero-cusp probe cases at 1000 V (reasons step_tolerance_without_balance / iteration_limit, floors 7.6e-6..3.5e-4). Replaced by the isotonic pool-adjacent-violators projection (project_nondecreasing) in cft_revival.plasma and cft_revival.plasma_network; 16/16 zero-cusp probe cases now close. This does not and cannot change the p1..p3>0 outcome."
+  },
   "limitations": [
+    "The global power row R27 has no admissible root when any interior cusp probability p1..p3 is positive (see global_row_consistency); strict closure is only possible for p1=p2=p3=0 with phi_4=Ua. A correction is proposed but not accepted.",
     "No neutral density or mass-flow balance; anode current is prescribed.",
     "No double ionization, charge exchange, kinetic electron distribution, plume divergence, or facility effects.",
     "CE, CI, and CT are empirical thermal-loss partitions, not independent xenon rate closures.",

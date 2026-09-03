@@ -1,0 +1,197 @@
+{
+  "artifact_id": "TAB-MDO-L0-V1",
+  "bundle_manifest": {
+    "git_blob": "87fec3c864008629a27f0832dff75aef381361d1",
+    "path": "modern/experiments/mdo_l0_campaign_v1/results/manifest.json",
+    "sha256": "2a326f3cf2e286a0ba8f9c91871d78b935a11e3e2c56bd9164acdc6166485381"
+  },
+  "claim_ids": [
+    "CLM-031"
+  ],
+  "claim_status": "authorized by CLM-031 (quantitative-generated-table) in paper/evidence/claims.json; admitted through GATE-MDO-L0-V1",
+  "dashboard": {
+    "generator_path": "modern/visualization/generate_mdo_l0_campaign_v1_dashboard.py",
+    "generator_sha256_lf": "0a589f03b1e65fefa16b9c29fef303b17c9bb875cc8b243aaf7b7c6a34fe5394",
+    "html_path": "modern/visualization/mdo-l0-campaign-v1.html",
+    "html_schema": "cft-revival.mdo-l0-campaign-v1-dashboard/1.0.0",
+    "html_sha256_lf": "178aeff96a98fc56ff05aeb651bfe9d30b5b7287ef707450956e04fad6866702",
+    "payload_manifest_sha256": "2a326f3cf2e286a0ba8f9c91871d78b935a11e3e2c56bd9164acdc6166485381",
+    "rule": "the committed dashboard pins the bundle's manifest SHA-256 and revisions and embeds its own extraction of the campaign result; the generator requires that extraction to equal the sealed artifacts before writing any macro"
+  },
+  "document_type": "paper-generated-artifact-provenance",
+  "evidence_revision": "c553124b7393890d8ee9c6fc022e536c8a1fd35e",
+  "generator": {
+    "command": "python paper/scripts/generate_mdo_l0_v1_evidence.py",
+    "path": "paper/scripts/generate_mdo_l0_v1_evidence.py",
+    "sha256": "d59d4b98646d8d007f71e9db4d521713844097eff454942586fdb3b65e789abd"
+  },
+  "inputs": [
+    {
+      "bytes": 7517,
+      "path": "modern/experiments/mdo_l0_campaign_v1/results/artifacts/authorities.json",
+      "sha256": "03b3c74921b98737db74789adbad2647870ed4a5c0d0facc5eab7fcdcf13742f"
+    },
+    {
+      "bytes": 514,
+      "path": "modern/experiments/mdo_l0_campaign_v1/results/artifacts/campaign-plan.json",
+      "sha256": "0c260f3ebee5078aa13e194fda0aba5079ec0d13f45974bdf2690a1b1a494d16"
+    },
+    {
+      "bytes": 3599,
+      "path": "modern/experiments/mdo_l0_campaign_v1/results/artifacts/campaign-result.json",
+      "sha256": "394894a7f9e675a8280f14330530db52172a454e9d804f1b6f4db115190f9c8f"
+    },
+    {
+      "bytes": 6055,
+      "path": "modern/experiments/mdo_l0_campaign_v1/results/artifacts/code-contract.json",
+      "sha256": "7d061a7dd48293e7df372f4192ff4d02942e20909063f0e3ef0a926f67bd98ed"
+    },
+    {
+      "bytes": 919,
+      "path": "modern/experiments/mdo_l0_campaign_v1/results/artifacts/dense-reference-summary.json",
+      "sha256": "9bb9fa7449844624f62e18f1f3927be55e21d53ca19ecb20ffa703102688ce25"
+    },
+    {
+      "bytes": 350,
+      "path": "modern/experiments/mdo_l0_campaign_v1/results/artifacts/device-probes.json",
+      "sha256": "6c0c909e16f7f8b75cbe37d2ad44fde58c30053f768f11a604a0e82401f72429"
+    },
+    {
+      "bytes": 3218,
+      "path": "modern/experiments/mdo_l0_campaign_v1/results/artifacts/gates.json",
+      "sha256": "5bfe70aee8dd6aa9ed0b05354679dcf5c88381507eeaecdf8e94da5332aafe5f"
+    },
+    {
+      "bytes": 91138,
+      "path": "modern/experiments/mdo_l0_campaign_v1/results/artifacts/hypervolume-curves.json",
+      "sha256": "036d0b5038e4030fe52a468e81d01959697e733af07525e2aca299aa6a30420c"
+    },
+    {
+      "bytes": 7158,
+      "path": "modern/experiments/mdo_l0_campaign_v1/results/artifacts/metrics.json",
+      "sha256": "7550e55ce7b6a9a195d43eb65767f741dc46c63e486ba2275e51493629432509"
+    },
+    {
+      "bytes": 131791,
+      "path": "modern/experiments/mdo_l0_campaign_v1/results/artifacts/pareto-sets.json",
+      "sha256": "28e302eda2da6963a4dbd5d47a2b5fab4895bcf1fa051e12a376f1bca867af56"
+    },
+    {
+      "bytes": 201703,
+      "path": "modern/experiments/mdo_l0_campaign_v1/results/artifacts/per-strategy-fronts.json",
+      "sha256": "5d90d5cff58f5a55c5c88f589f03793e5c03e8f99e16fac1106304d2f287b9e4"
+    },
+    {
+      "bytes": 125598,
+      "path": "modern/experiments/mdo_l0_campaign_v1/results/artifacts/pooled-fronts.json",
+      "sha256": "4a14f2213829dfc3592abb9061272785c6654ef57adb57937aa21cecba1a9848"
+    },
+    {
+      "bytes": 325,
+      "path": "modern/experiments/mdo_l0_campaign_v1/results/artifacts/protocol-consistency.json",
+      "sha256": "3fd16ec7208b69d3020484848506ebec3b4191bd09902a0213992188e7387ddf"
+    },
+    {
+      "bytes": 22626,
+      "path": "modern/experiments/mdo_l0_campaign_v1/results/artifacts/protocol.json",
+      "sha256": "09755b85393d3b3248941ce52f8c21edb832ce30c6f31e5c6919079c41d496ba"
+    },
+    {
+      "bytes": 147135,
+      "path": "modern/experiments/mdo_l0_campaign_v1/results/artifacts/runs/lhs-101.json",
+      "sha256": "012eaac297acc4e78091a56dcba4b0a0421f732eab9476eb4b81c336ed34cdba"
+    },
+    {
+      "bytes": 146980,
+      "path": "modern/experiments/mdo_l0_campaign_v1/results/artifacts/runs/lhs-202.json",
+      "sha256": "4486746ef1d87707513fcecc99827b3002137c011da41e3a5ffb6dfa7b065158"
+    },
+    {
+      "bytes": 146483,
+      "path": "modern/experiments/mdo_l0_campaign_v1/results/artifacts/runs/lhs-303.json",
+      "sha256": "416fa6716e639e4a9a65c7e00356e4e9bfa25aaf669884b5b53c8dd742863785"
+    },
+    {
+      "bytes": 157733,
+      "path": "modern/experiments/mdo_l0_campaign_v1/results/artifacts/runs/nsga3-101.json",
+      "sha256": "45333360614619c4137c2550e1b015c1f7882eedc4bd5289829d4153c574510e"
+    },
+    {
+      "bytes": 150090,
+      "path": "modern/experiments/mdo_l0_campaign_v1/results/artifacts/runs/nsga3-202.json",
+      "sha256": "66e07cb81789a3e2468d0d39821ddf00a07ea1d393cdb207b57939228ec29cff"
+    },
+    {
+      "bytes": 157006,
+      "path": "modern/experiments/mdo_l0_campaign_v1/results/artifacts/runs/nsga3-303.json",
+      "sha256": "89d193e46df424863a3c5ad65967eeb235244d5bca041c8e02246d33f19c5fe6"
+    },
+    {
+      "bytes": 153969,
+      "path": "modern/experiments/mdo_l0_campaign_v1/results/artifacts/runs/qlognehvi-101.json",
+      "sha256": "72f5cfa26de46cf1614b738ec4ee72d71f23e698936069eb510847f00ce76c7f"
+    },
+    {
+      "bytes": 157193,
+      "path": "modern/experiments/mdo_l0_campaign_v1/results/artifacts/runs/qlognehvi-202.json",
+      "sha256": "1701499584b58c246ae627b200daef5d32978e0a3064313c0658977995741562"
+    },
+    {
+      "bytes": 159721,
+      "path": "modern/experiments/mdo_l0_campaign_v1/results/artifacts/runs/qlognehvi-303.json",
+      "sha256": "0d30e4b1e9e19b2d20e2ea96e760e4abc6d8701cf6ef7ef13d95c935c53fa863"
+    },
+    {
+      "bytes": 376,
+      "path": "modern/experiments/mdo_l0_campaign_v1/results/artifacts/runtime.json",
+      "sha256": "cf00e1432bb82e3007470328529e6a6e8be9d1e97a9b89e52c793e8ddcc090dd"
+    },
+    {
+      "bytes": 157085,
+      "path": "modern/experiments/mdo_l0_campaign_v1/results/artifacts/sensitivity.json",
+      "sha256": "100dd492a7d234f56ea3a2b4c745b28cae08a4c9800ab3e69b2e7b8120e65eb0"
+    },
+    {
+      "bytes": 17008,
+      "path": "modern/experiments/mdo_l0_campaign_v1/results/artifacts/shakedown.json",
+      "sha256": "8b5a829302e7aa800d2c60ca1146d86195a71594482c1699a2698e79d76d5c1e"
+    },
+    {
+      "bytes": 22414,
+      "path": "modern/experiments/mdo_l0_campaign_v1/results/artifacts/uncertain-sample.json",
+      "sha256": "0429829366dc4cbe58d4e3e4af38490d70f67b0aaf9657dd4511297ce7eff7ca"
+    },
+    {
+      "bytes": 519,
+      "path": "modern/experiments/mdo_l0_campaign_v1/results/execution-lock.json",
+      "sha256": "194fabb7e750fce552fa99930a46cdd3805b16206cd66f82062b54d9cd7599fa"
+    },
+    {
+      "bytes": 620,
+      "path": "modern/experiments/mdo_l0_campaign_v1/results/terminal.json",
+      "sha256": "2e96cbfe1c4f3432f4b25cd31a726e7e1c63f1e32bb02cd4b72a0e978d80b680"
+    },
+    {
+      "bytes": 280,
+      "path": "modern/experiments/mdo_l0_campaign_v1/results/transitions/0001-lock-acquired.json",
+      "sha256": "427ba9aea9d8634fbf49ca88f71510b700f068311c2c18079230ebb15bdb16aa"
+    },
+    {
+      "bytes": 229,
+      "path": "modern/experiments/mdo_l0_campaign_v1/results/transitions/0009-terminal.json",
+      "sha256": "efd0a03910b580e42f78320073edea80143fc44f5a5b2c39507a677756d8ea03"
+    }
+  ],
+  "manifest": {
+    "gate_manifest_path": "paper/evidence/manifests/mdo-l0-v1.json",
+    "manifest_id": "MDO-L0-V1-20260903-864-V1",
+    "path": "paper/evidence/mdo-l0-v1.json",
+    "sha256": "f30b296db3c5f5bb254d8e7213552ca3bec411657d76fa4f8711177bbcf19c7a"
+  },
+  "output": {
+    "path": "paper/generated/mdo-l0-v1.tex",
+    "sha256": "26de404da19ec343204c8c6969a0f055577f2cddb92d6226bfc32e55aaed168f"
+  },
+  "schema_version": "1.0",
+  "source_date_epoch": 1788270043
+}

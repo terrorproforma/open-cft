@@ -1,0 +1,172 @@
+% Results subsection: consistency of the corrected four-cell power balance (closed
+% form of the global power row on the R00-R26 manifold; no admissible root for any
+% positive interior cusp probability).
+%
+% Every quantity in this file is a \Fcc... macro defined in
+% paper/generated/four-cell-closure.tex, which
+% paper/scripts/generate_four_cell_closure_evidence.py writes by binding the analysis
+% document, the equation ledger, the frozen MDO protocol and the legacy lineage blob at
+% the analysis revision and by RECOMPUTING the numerical verification from the bound
+% cft_revival.plasma package; paper/evidence/four-cell-closure.json records the path,
+% pointer or fixed pattern and SHA-256 behind each documented macro, or the
+% recomputation behind each recomputed macro. No numeric literal is typed here.
+%
+% Status: admitted. manuscript.tex binds this file once through
+% \input{sections/four-cell-closure.tex} from the section that displays the closed
+% form. Admission is governed by gate GATE-FOUR-CELL-CLOSURE-V1 (kind
+% analytic-consistency) in paper/evidence/result-gates.json, the typed manifest
+% paper/evidence/manifests/four-cell-closure.json and the claim records in
+% paper/evidence/claims.json bound to manifest FOUR-CELL-CLOSURE-20260903-R27-V1.
+% Every \EvidenceClaim body below must equal its registered authorized_tex exactly;
+% paper/scripts/check_paper.py verifies that, the macro-only rule, the classification
+% and correction-status strings and the presence of the registered non-claims. The
+% standalone driver paper/sections/four-cell-closure-standalone.tex compiles this file
+% on its own.
+\subsection{Closed form of the global power row and its admissible roots}
+\label{sec:four-cell-closure-result}
+
+\paragraph{Derivation and numerical verification.}
+The corrected ledger carries \FccRowCount{} residual rows in \FccStateDimension{}
+unknowns and \FccPowerExpressionCount{} power expressions for \FccCellCount{} cells.
+Its first \FccGlobalRowIndex{} rows (cathode emission, ionisation source currents,
+electron continuity, cell energy balances, interface currents and cusp currents) are
+mutually consistent and are parametrized exactly by the four cell potentials, which
+the diagnostic \texttt{potential\_parametrized\_state} implements; the diagnostic
+\texttt{global\_row\_closed\_form} evaluates the closed form displayed above. Both
+diagnostics evaluate and never publish a state. The recomputation behind this
+subsection draws \FccClosedFormSamples{} random admissible states (seed
+\FccClosedFormSeed; anode voltages \FccSampleVoltages{}~V, anode currents
+\FccSampleCurrents{}~A, cusp probabilities uniform up to \FccSampleProbabilityUpper,
+ordered interior potentials below the anode voltage and an anode-cell potential at or
+above it) from the bound package, which must equal the admitted blobs file for file
+(\FccPackageFileCount{} files; matches: \FccPackageMatches). The analysis document,
+the ledger entry (dated \FccAnalysisDate), the package, the pinning tests, the frozen
+protocol of the optimisation campaign (preregistration \texttt{\FccMdoPreregCommit})
+and the legacy lineage file, \FccBoundFileCount{} files in all, are bound at the
+analysis commit \texttt{\FccAnalysisCommit} and verified unchanged at
+\texttt{\FccVerifiedTreeCommit}.
+\EvidenceClaim{CLM-037}{On the manifold of states that satisfy the first
+\FccGlobalRowIndex{} rows of the corrected four-cell ledger, which the four cell
+potentials parametrize exactly (largest normalized residual of those rows
+\FccManifoldMaxResidual{} over the \FccClosedFormSamples{} seeded random states of the
+recomputation, against a documented bound of \FccDocManifoldBound), the global power
+row $R_{\FccGlobalRowIndex}$ reduces to the closed form displayed in
+Section~\ref{sec:four-cell-closure}: \FccAnodeFallCoefficient{} times the transported
+anode-cell electron current times the anode fall, plus the ionisation energy times
+the electron current lost to the three interior cusps. The closed form agrees with the
+evaluated row to a largest relative difference of \FccClosedFormRelDiff{} over those
+\FccClosedFormSamples{} states (documented \FccDocClosedFormRelDiff{} over
+\FccDocClosedFormSamples{} states; declared bound \FccClosedFormBound), and the
+anode-fall coefficient recomputed at zero cusp probability is
+\FccAnodeFallCoefficient{} against the ledger's \FccLedgerCoefficient. Inside the
+admissible region, where the anode-cell potential is at or above the anode potential
+and every current is non-negative, both terms are non-negative, so the corrected
+equation set has no admissible root whenever any interior cusp probability is
+positive.}
+
+\paragraph{Solution sub-region, continuation and global search.}
+\EvidenceClaim{CLM-038}{Solutions exist exactly on the sub-region where the three
+interior cusp probabilities vanish, the anode-cusp probability is arbitrary and the
+anode-cell potential equals the anode potential: the anode-only pattern closed at
+every one of the \FccLadderCount{} rungs of the ladder in the recomputation
+(\FccAnodeOnlyClosed{} of \FccLadderCount; largest residual
+\FccAnodeOnlyMaxResidual{} against the convergence tolerance \FccResidualTolerance;
+largest gap between the anode-cell and anode potentials \FccAnodeOnlyPhiFourGap{}~V),
+as the analysis document records. For the uniform interior pattern at
+\FccDocContinuationVoltage{}~V and \FccDocContinuationCurrent{}~A the production solver
+stalls at a least-squares floor that is linear in the probability: the documented
+floors run from \FccDocFloorMin{} to \FccDocFloorMax{} and the recomputed floors from
+\FccFloorMin{} to \FccFloorMax{} (largest departure \FccFloorDepartureMax{} against a
+declared tolerance of \FccFloorTolerance; the floor divided by the probability varies
+by a factor of \FccSlopeSpread{} over the ladder against a declared maximum of
+\FccSlopeSpreadMax), no rung closed (branch found: \FccBranchFound) and the global row
+dominates every floor (\FccDominantRowIsGlobal). The documented global search found
+nothing better: differential evolution over the full \FccDocDeDimension-value box
+(\FccDocDeEvaluations{} evaluations) reached \FccDocDeBest, and \FccDocLmClosed{} of
+\FccDocLmStarts{} random feasible starts closed (smallest floor \FccDocLmFloorMin).
+Relaxing only the anode-potential inequality exposes exact roots
+\FccDocRelaxedDepthMin{} to \FccDocRelaxedDepthMax{}~V below the anode potential,
+which balance the two terms against each other and are rejected by the admissible
+region (recomputed example at the published probabilities: \FccRelaxedDepth{}~V below
+the anode, largest residual \FccRelaxedResidual, admissible: \FccRelaxedFeasible). The
+Jacobian has rank \FccJacobianRank{} of \FccStateDimension{} at every floor point
+(nullity \FccJacobianNullity, the potential null space) with condition at most
+\FccConditionMax{} in the recomputation (documented \FccDocConditionMin{} to
+\FccDocConditionMax), so conditioning does not explain the floors. The frozen protocol
+of the optimisation campaign discloses \FccProbeClosed{} closures in \FccProbeTotal{}
+probe cases, all at zero cusp probability, which the analysis reproduced exactly
+(\FccDocProbeClosed{} of \FccDocProbeTotal) and which is this inconsistency; the probe
+pattern is read from the frozen protocol (source \texttt{\FccProbeSource}) and is not
+recomputed here.}
+Table~\ref{tab:four-cell-closure-continuation} lists the ladder rung by rung with the
+documented floors (\FccDocContinuationStarts{} starts, \FccDocContinuationIterations{}
+iterations of the production solver) beside the recomputed floors
+(\FccContinuationStarts{} start, \FccContinuationIterations{} iterations; the
+anode-only closures use \FccAnodeOnlyStarts{} starts) and the documented floors of the
+pattern that spares the anode cusp; Table~\ref{tab:four-cell-closure-search} lists
+the global search, the relaxed roots, the Jacobian and the published-state misfit
+(\FccDmLabel{} potentials \FccDmPotentials{}~V at \FccDocDmVoltage{}~V and
+\FccDocDmCurrent{}~A; documented \FccDocDmMisfit, recomputed \FccDmMisfit) with their
+status (documented, recomputed or read from the frozen protocol). The floors are
+solver-stall values and are recorded to three significant digits; the documented and
+recomputed floors agree to within the declared tolerance but are not expected to agree
+bitwise across start counts or platforms.
+\FccContinuationTable
+\FccGlobalSearchTable
+
+\paragraph{Attribution.}
+\EvidenceClaim{CLM-040}{Both terms of the closed form are inherited from the source
+formulation: assumption \FccKornfeldAssumption{} of \FccKornfeldId{} books ionisation
+as a frozen loss and again as recombination heat at the boundaries, which is the
+ionisation energy carried by the cusp-loss expression \texttt{\FccPcuspCurrent}, and
+the printed anode electron term \texttt{\FccPanodeCurrent} carries the sign of an ion
+under the restriction that the anode-cell potential is at or above the anode
+potential, which is why the source's own published state and every rebuilt closure
+sit on that boundary. The legacy \texttt{Power\_B\_EQs.m} (blob \texttt{\FccLegacyBlob})
+carries the same terms on lines \FccLegacyCuspLine{} and \FccLegacyAnodeLine{}
+(\FccLegacyIeTerms{} ionisation-energy terms on the cusp-loss line), and the rounded
+published table of the source leaves a global-row misfit of \FccDocDmLedgerMisfit{} in
+the ledger against \FccDmMisfit{} recomputed on the exact manifold at the published
+potentials. The audit corrections of the rebuild (signed terminal ion row,
+fourth-cell transport, excitation as a loss, cusp current subtracted in the ion rows)
+cancel exactly in the substitution and do not appear in the closed form; they did not
+introduce the inconsistency.}
+
+\paragraph{Proposed correction (not accepted).}
+\EvidenceClaim{CLM-041}{The minimal correction recorded in the ledger, dropping the
+ionisation energy from the cusp-loss expression (\texttt{\FccPcuspProposed}) and giving
+the anode electron term the electron sign (\texttt{\FccPanodeProposed}), has status
+\texttt{\FccCorrectionStatus} and is not accepted here: with both changes the global
+row is implied identically by the cell energy rows and charge conservation for every
+cusp probability, the structural rank drops from \FccDocCorrectedRankBefore{} to
+\FccDocCorrectedRankAfter{} (nullity \FccDocCorrectedNullity, all four potentials
+free), and the model would need an independent potential closure, the
+dielectric-cusp sheath relation that the source's cancelled cusp potentials were meant
+to supply, before any state could be published; accepting the correction without that
+closure would replace a non-closing model by an underdetermined one. A secondary
+solver defect found alongside the analysis, an ordering projection that permuted
+variable identities, was replaced by the isotonic projection and raised the zero-cusp
+grid from \FccDocZeroCuspBefore{} to \FccDocZeroCuspAfter{} of \FccDocZeroCuspTotal{}
+closures; it does not and cannot change the outcome for positive interior
+probabilities.}
+
+\paragraph{Scope.}
+The boxed statement is the claim boundary of this result; the reading for the legacy
+study is interpretation and is given in the Discussion.
+\par\medskip\noindent
+\fbox{\begin{minipage}{0.94\linewidth}
+\textbf{Claim boundary.}
+\EvidenceClaim{CLM-042}{This result is an analytic consistency statement about the
+corrected four-cell equation set, classified \texttt{\FccClassification}: it says
+nothing about the physical thruster, its plasma or its performance, it does not claim
+that the corrected equation set or the proposed correction is right, and it accepts
+no correction (status \texttt{\FccCorrectionStatus}). The residual floors are a
+property of the equations, not of the solver: they are linear in the interior
+probability with a well-conditioned Jacobian of constant rank, and the global search
+found no branch. The verification is recomputed from the bound package at every
+check; the differential-evolution and random-start searches and the
+\FccProbeTotal-case probe are documented values read from the analysis document and
+the frozen protocol, not recomputed. It opens none of the field-resolved, coupled or
+experimental gates.}
+\end{minipage}}
+\par\medskip

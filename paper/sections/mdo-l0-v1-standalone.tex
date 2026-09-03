@@ -1,0 +1,24 @@
+% Standalone dry-parse driver for the admitted MDO L0 campaign v1 subsection.
+% Compile from the paper/ directory, for example:
+%   pdflatex -interaction=nonstopmode -halt-on-error -output-directory=<scratch> sections/mdo-l0-v1-standalone.tex
+% (twice, so the table references resolve). paper/tests/test_mdo_l0_v1_evidence.py
+% runs exactly this when pdflatex is available. The claim macros mirror manuscript.tex
+% so that the section renders identically on its own.
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{microtype}
+\usepackage{xcolor}
+\ifdefined\pdfinfoomitdate\pdfinfoomitdate=1\fi
+\ifdefined\pdftrailerid\pdftrailerid{}\fi
+\ifdefined\pdfsuppressptexinfo\pdfsuppressptexinfo=15\fi
+\newcommand{\EvidenceClaim}[2]{#2\textsuperscript{\textcolor{blue}{[#1]}}}
+\newcommand{\ArtifactClaim}[3]{#3\par\noindent\textsuperscript{\textcolor{blue}{[#1; #2]}}}
+\input{generated/mdo-l0-v1.tex}
+\begin{document}
+% The wall-loss subsection is not compiled here; give its label a target.
+\section{Wall-loss campaign (compiled in the manuscript)}\label{sec:wall-loss-v4}
+\input{sections/mdo-l0-v1.tex}
+\end{document}
