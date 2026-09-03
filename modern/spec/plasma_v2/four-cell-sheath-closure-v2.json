@@ -1,0 +1,171 @@
+{
+  "schema_version": "1.0.0",
+  "workstream": "sheath-closed-four-cell-power-balance-v2",
+  "status": "DEVELOPMENT_NOT_ACCEPTED",
+  "claim_boundary": "Development model. Nothing in this specification or in cft_revival.plasma_v2 is accepted evidence; it opens no paper gate, replaces no accepted ledger, and supports no statement about the physical thruster. Reproduction targets are the literature's numbers, not truth. The PIC comparison is model-to-model context, never validation.",
+  "lineage": {
+    "v1_ledger": "spec/plasma/equation-ledger.json (rows R00-R27, PROPOSED_NOT_ACCEPTED corrections in #global_row_consistency)",
+    "v1_package": "src/cft_revival/plasma (five files hash-bound by paper/evidence/manifests/four-cell-closure.json; imported read-only, never modified)",
+    "analysis": "docs/workstreams/global-plasma-closure-analysis.md (closed form of R27 on the R00-R26 manifold; rank 22 -> 21 if the corrections are accepted without a potential closure)",
+    "literature_review": "docs/literature/reduced-models-cusp-topology-blockers.md sections 1.5 and 2.4 (rows R28-R31, CL-3-sheath-limited, CL-4-hybrid-area, CL-3-potentials)",
+    "formulation": "docs/workstreams/plasma-v2-formulation.md",
+    "verification_record": "docs/workstreams/plasma-v2-verification.json (python -m cft_revival.plasma_v2.verification)"
+  },
+  "v1_package_policy": {
+    "modified": false,
+    "reuse": "rows R00-R26 re-implemented with forward-mode duals and tested for round-off parity against cft_revival.plasma.evaluate_plasma_residual_cpu; potential_parametrized_state, project_nondecreasing, solve_bounded_least_squares, representative_initial_state and SolverOptions imported read-only",
+    "rule": "check_paper.py binds the five v1 files by SHA-256; any edit fails the analytic-consistency gate, so v2 lives in src/cft_revival/plasma_v2"
+  },
+  "corrections_applied_to_r27": [
+    {
+      "id": "Pcusp",
+      "v1_expression": "sum_k j_e,k-1 p_k (dE_k + EI)",
+      "v2_expression": "sum_k j_e,k-1 p_k dE_k",
+      "reason": "the ionization energy of a cusp-lost ion is already booked once in PI = EI sum I_k (Kornfeld assumption 8 double-books it as recombination); Lieberman & Lichtenberg and Goebel & Katz book each joule once"
+    },
+    {
+      "id": "Panode_e",
+      "v1_expression": "j_e3 p4 (Ua - phi_3 + T3) + (I4 + j_e3 (1-p4)) (phi_4 - Ua + T4)",
+      "v2_expression": "j_e3 p4 (Ua - phi_3 + T3) + (I4 + j_e3 (1-p4)) (Ua - phi_4 + T4)",
+      "reason": "an electron leaving the cell-4 plasma at phi_4 and arriving at the anode at Ua deposits T4 + (Ua - phi_4); the printed sign is an ion's"
+    }
+  ],
+  "consequence_of_the_corrections_alone": "R27 becomes an identity on the R00-R26 manifold (verified to 4.8e-15 relative over 200 seeded states), the structural rank of the 28-row core drops from 22 to 21 and all four cell potentials are free; a potential closure is therefore mandatory before any state is published.",
+  "state_layout": {
+    "size": 31,
+    "order": [
+      "phi_1..phi_4 [V] (v1 layout)",
+      "T_1..T_4 [eV]",
+      "I_1..I_4 [A]",
+      "j_e0..j_e4 [A]",
+      "j_i0..j_i4 [A]",
+      "j_ic1..j_ic3 [A]",
+      "Dphi_s,1..Dphi_s,3 [V] (sheath drop phi_k - phi_ck at dielectric cusp k; re-identifies Kornfeld's cancelled cusp potentials)",
+      "p_1..p_3 [-] (interior cusp loss probabilities; declared or closed)"
+    ],
+    "declared_inputs": [
+      "Ua, Ia, p_0 (cathode perveance 0.002 A/V^1.5), EI = 12.1 eV, CE/CI/CT = 0.25/0.07/0.68 (all v1)",
+      "p_4 anode-cusp probability (no dielectric sheath at the metal anode cusp; stays declared in every mode)",
+      "per cusp: sheath regime, emission yield gamma_k, area ratio rho_k = A_e,k/A_i,k, access fraction A_k (CL-3), density n_k and wall field B_k (CL-4)",
+      "leak-width prefactor c (CL-4 or via rho_k), wall radius r_w (CL-4)",
+      "potential closure: interior steps phi_3-phi_2 and phi_4-phi_3, anode row kind, fourth row kind, anode fall or cathode coupling"
+    ]
+  },
+  "residual_rows": [
+    {"id": "R00", "expression": "j_e0 - p0 (phi_1 - phi_0)^(3/2)", "unit": "A", "source": "v1 (Kornfeld)"},
+    {"id": "R01", "expression": "j_e1 - j_e0 (1-p1) - I1", "unit": "A", "source": "v1"},
+    {"id": "R02", "expression": "j_e2 - j_e1 (1-p2) - I2", "unit": "A", "source": "v1"},
+    {"id": "R03", "expression": "j_e3 - j_e2 (1-p3) - I3", "unit": "A", "source": "v1"},
+    {"id": "R04", "expression": "I1 - j_e0 (1-p1) CI dE1/EI", "unit": "A", "source": "v1"},
+    {"id": "R05", "expression": "I2 - j_e1 (1-p2) CI dE2/EI", "unit": "A", "source": "v1"},
+    {"id": "R06", "expression": "I3 - j_e2 (1-p3) CI dE3/EI", "unit": "A", "source": "v1"},
+    {"id": "R07", "expression": "I4 - j_e3 (1-p4) CI dE4/EI", "unit": "A", "source": "v1"},
+    {"id": "R08", "expression": "j_i0 - j_i1 - I1 + j_ic1", "unit": "A", "source": "v1"},
+    {"id": "R09", "expression": "j_i1 - j_i2 - I2 + j_ic2", "unit": "A", "source": "v1"},
+    {"id": "R10", "expression": "j_i2 - j_i3 - I3 + j_ic3", "unit": "A", "source": "v1"},
+    {"id": "R11", "expression": "j_i3 - I4 - j_i4", "unit": "A", "source": "v1"},
+    {"id": "R12", "expression": "T2 (j_e1 (1-p2) + I2) - CT j_e1 (1-p2) dE2", "unit": "W", "source": "v1"},
+    {"id": "R13", "expression": "T3 (j_e2 (1-p3) + I3) - CT j_e2 (1-p3) dE3", "unit": "W", "source": "v1"},
+    {"id": "R14", "expression": "T4 (j_e3 (1-p4) + I4) - CT j_e3 (1-p4) dE4", "unit": "W", "source": "v1"},
+    {"id": "R15", "expression": "j_e0 + j_i0 - Ia", "unit": "A", "source": "v1"},
+    {"id": "R16", "expression": "j_e1 + j_i1 - Ia", "unit": "A", "source": "v1"},
+    {"id": "R17", "expression": "j_e2 + j_i2 - Ia", "unit": "A", "source": "v1"},
+    {"id": "R18", "expression": "j_e3 + j_i3 - Ia", "unit": "A", "source": "v1"},
+    {"id": "R19", "expression": "j_e4 + j_i4 - Ia", "unit": "A", "source": "v1"},
+    {"id": "R20", "expression": "j_ic1 - p1 j_e0", "unit": "A", "source": "v1 (floating dielectric cusp, Kornfeld assumption 5)"},
+    {"id": "R21", "expression": "j_ic2 - p2 j_e1", "unit": "A", "source": "v1"},
+    {"id": "R22", "expression": "j_ic3 - p3 j_e2", "unit": "A", "source": "v1"},
+    {"id": "R23", "expression": "(1-CE) j_e0 (1-p1) dE1 - [j_e0 (1-p1) + I1] T1 - I1 EI", "unit": "W", "source": "v1"},
+    {"id": "R24", "expression": "(1-CE) j_e1 (1-p2) dE2 - [j_e1 (1-p2) + I2] T2 - I2 EI", "unit": "W", "source": "v1"},
+    {"id": "R25", "expression": "(1-CE) j_e2 (1-p3) dE3 - [j_e2 (1-p3) + I3] T3 - I3 EI", "unit": "W", "source": "v1"},
+    {"id": "R26", "expression": "(1-CE) j_e3 (1-p4) dE4 - [j_e3 (1-p4) + I4] T4 - I4 EI", "unit": "W", "source": "v1"},
+    {"id": "R27", "expression": "Pb + PI + PE + Pcusp' + Panode_e' + Panode_i - Ua Ia, with Pcusp' = sum_k j_e,k-1 p_k dE_k, Panode_e' = j_e3 p4 (Ua - phi_3 + T3) + (I4 + j_e3 (1-p4)) (Ua - phi_4 + T4), Panode_i = -j_i4 (phi_4 - Ua)", "unit": "W", "source": "v1 with the two corrections; identity on the R00-R26 manifold (kept as a verification row)"},
+    {"id": "R28", "expression": "Dphi_s,1 - c_s,1 T1", "unit": "V", "source": "floating-dielectric sheath at cusp 1; c_s = ln[(1-gamma) K0 rho] (Lieberman & Lichtenberg 6.2.17; Hobbs & Wesson 1967), or 1.02 at the space-charge limit (Hobbs & Wesson 1967); K0 = sqrt(M_Xe/(2 pi m_e))"},
+    {"id": "R29", "expression": "Dphi_s,2 - c_s,2 T2", "unit": "V", "source": "as R28, cusp 2"},
+    {"id": "R30", "expression": "Dphi_s,3 - c_s,3 T3", "unit": "V", "source": "as R28, cusp 3"},
+    {"id": "R31", "expression": "anode_sheath: (phi_4 - Ua) - T4 ln[K0 (-j_i4)/j_e4]  |  declared_anode_fall: (phi_4 - Ua) - Delta_a", "unit": "V", "source": "electron-collecting anode sheath: j_e4 = (1/4) e n_s v_e_bar A exp(-(phi_4-Ua)/T4) and -j_i4 = e n_s u_B A at a common sheath-edge density (Lieberman & Lichtenberg Ch. 6; Goebel & Katz Ch. 4); the review's R31 alternative is the declared fall"},
+    {"id": "R32", "expression": "phi_3 - phi_2 - delta_3", "unit": "V", "source": "CL-3-potentials declared interior step (Koch 2011 finding ii: flat interior; Brandt 2016: ~5-10 V steps)"},
+    {"id": "R33", "expression": "phi_4 - phi_3 - delta_4", "unit": "V", "source": "CL-3-potentials declared interior step"},
+    {"id": "R34", "expression": "anode_fall_declared: (phi_4 - Ua) - Delta_a  |  cathode_coupling_declared: (phi_1 - phi_0) - V_c", "unit": "V", "source": "fourth declared potential relation; with the anode sheath row R31 the remaining potential quantity (phi_1 or the anode fall) is SOLVED"},
+    {"id": "R35", "expression": "CL-1: p1 - p1,declared  |  CL-3: p1 - A_1 exp(-Dphi_s,1/T1)  |  CL-4: p1 j_e0 - (1/4) e n_1 v_e_bar(T1) c w_h(T1,B_1) 2 pi r_w exp(-Dphi_s,1/T1)", "unit": "- or A", "source": "review section 2.4 (CL-3-sheath-limited, CL-4-hybrid-area); Goebel & Katz Ch. 4 hybrid area sqrt(r_e r_i) L_c; Puca 2024 Table 3 (prefactor 1); Hershkowitz 1975 (~4)"},
+    {"id": "R36", "expression": "as R35, cusp 2", "unit": "- or A", "source": "as R35"},
+    {"id": "R37", "expression": "as R35, cusp 3", "unit": "- or A", "source": "as R35"}
+  ],
+  "definitions": {
+    "dE_k": "phi_k - phi_{k-1} + T_{k-1} (electron energy gained entering cell k; T_0 = cathode electron temperature, phi_0 = cathode potential)",
+    "Je_k": "j_e,k-1 (1 - p_k), electrons surviving cusp k",
+    "L_k": "j_e,k-1 p_k, electrons lost to cusp k",
+    "K0": "sqrt(M_Xe / (2 pi m_e)) = 195.169 for xenon (CODATA 2018 e, m_e; CIAAW 131.293 u)",
+    "c_s,k": "sheath coefficient: ln(K0 rho_k) = 5.2739 (+ ln rho_k) without emission; max(ln((1-gamma_k) K0 rho_k), 1.02) with emission; 1.02 space-charge limited",
+    "hybrid leak width": "w_h = sqrt(r_e r_i) with r_e = sqrt(2 m_e e T)/(e B) and r_i = sqrt(M e T)/(e B) (declared characteristic speeds; the prefactor c in [1, 4] absorbs the definitional spread)",
+    "electron mean speed": "v_e_bar = sqrt(8 e T / (pi m_e))"
+  },
+  "constants": {
+    "mass_flux_ratio_K0": 195.16902943528603,
+    "floating_sheath_coefficient": 5.273866000711168,
+    "space_charge_limited_coefficient": 1.02,
+    "critical_emission_yield_xenon": 0.9830340862127932,
+    "boltzmann_factor_no_emission": 0.0051237637595137955,
+    "boltzmann_factor_space_charge_limited": 0.3605949401730783,
+    "leak_width_prefactor_range": [1.0, 4.0]
+  },
+  "energy_bookkeeping_at_a_cusp": {
+    "booked_in_R27": "L_k dE_k (Kornfeld's electronic + ionic terms; the cusp potential cancels, recombination booked once in PI)",
+    "split_identified_by_R28_R30": {
+      "electron_kinetic_energy_at_wall": "L_k (dE_k - Dphi_s,k)",
+      "ion_energy_at_wall": "L_k Dphi_s,k"
+    },
+    "maxwellian_estimates_reported_as_diagnostics_only": {
+      "electron": "L_k (2 T_k + Dphi_s,k)",
+      "ion": "L_k (Dphi_s,k + T_k/2)",
+      "why_not_in_the_balance": "the cascade rows R23-R26 carry no presheath term and the lost electrons are the monoenergetic entering beam; booking the Maxwellian forms would break the R27 identity unless the cell rows were reformulated"
+    },
+    "consistency_margin": {
+      "definition": "dE_k - Dphi_s,k >= 0 (an electron that reaches the wall arrives with non-negative kinetic energy); enforced fail-closed by default (SolverPolicy.enforce_cusp_energy_margin)",
+      "closed_form": "on the manifold T_k (Je_k + I_k) = CT Je_k dE_k, so the margin is dE_k [1 - c_s CT Je_k/(Je_k + I_k)] and its sign is independent of the step size: margin >= 0  <=>  c_s,k <= (1 + I_k/Je_k)/CT",
+      "consequence": "with CT = 0.68 the space-charge-limited sheath (1.02 < 1/CT = 1.47) always passes; the no-emission floating sheath (5.27) passes only where I_k/Je_k >= CT ln K0 - 1 = 2.59, i.e. dE_k >= (EI/CI)(CT ln K0 - 1) = 447 V - the exit drop at >= 500 V and nowhere else"
+    }
+  },
+  "closures": {
+    "cusp_loss": {
+      "CL-1-declared": "p_1..p_3 declared (v1 comparison mode)",
+      "CL-3-sheath-limited": "p_k = A_k exp(-Dphi_s,k/T_k) = A_k exp(-c_s,k); A_k is the collisionless geometric access fraction from the orbit screening (screening label; never a cusp probability). Constant per cusp: 0.0051 A_k without emission, 0.36 A_k at the space-charge limit",
+      "CL-4-hybrid-area": "p_k j_e,k-1 = (1/4) e n_k v_e_bar A_leak,k exp(-c_s,k), A_leak,k = c sqrt(r_e r_i) 2 pi r_w; needs declared n_k, B_k, r_w, c"
+    },
+    "potentials": {
+      "CL-3-potentials": "declared interior steps delta_3 = phi_3 - phi_2, delta_4 = phi_4 - phi_3 (default 0 V: flat interior, Koch 2011); R31 + R34 close the last two relations",
+      "mode_A_default": "R31 anode sheath + R34 anode fall declared (default 0 V) -> phi_1 SOLVED",
+      "mode_B": "R31 anode sheath + R34 cathode coupling declared -> anode fall SOLVED",
+      "mode_C": "R31 declared fall + R34 cathode coupling declared -> all potentials declared (used to evaluate published states)"
+    }
+  },
+  "rank": {
+    "rows": 38,
+    "unknowns": 31,
+    "corrected_core_rank": 21,
+    "corrected_core_nullity": 4,
+    "rank_with_sheath_and_anode_rows": 28,
+    "nullity_before_potential_closure": 3,
+    "full_rank_with_declared_potential_rows": 31,
+    "statement": "The sheath rows R28-R30 identify only their own unknowns (the density cancels in the ambipolar balance, so they say nothing about the cell-to-cell potentials). The anode row R31 identifies one potential relation. The remaining three (interior steps and one of phi_1 / anode fall) are DECLARED. Solved vs declared is reported per solve by rank_report."
+  },
+  "solver": {
+    "machinery": "cft_revival.plasma.solve_bounded_least_squares (variable-scaled column-pivoted QR Levenberg-Marquardt) and project_nondecreasing, imported read-only",
+    "seed": "deterministic reduced solve on the R00-R30 manifold (v1 potential_parametrized_state; bracket scan + bisection on the anode row) plus the v1 deterministic start spread",
+    "publication": "fail-closed as v1: every normalized row <= 1e-9, finite, in the box, all inequality margins >= 0 (including the cusp energy margin unless the policy relaxes it); otherwise the residual floor and the reason are reported and no state is published",
+    "normalization": "A rows / Ia, W rows / (Ua Ia), V rows / Ua, dimensionless rows / 1"
+  },
+  "reproduction_targets": [
+    "Kornfeld, Koch, Harmann, IEPC-2007-108, Table 3.1 (DM9.2 and DM10, 4-stage, 1 kV / 1 A)",
+    "Puca, Panelli, Battista, Aerotecnica Missili & Spazio 103(4) 321-338 (2024), DOI 10.1007/s42496-024-00203-x, Table 1 (DM9.2 and DM10 GA columns)"
+  ],
+  "model_to_model_context": "experiments/pic2d_cft_steady_state_v2/results (300 V, 3.44 mA plateau; development, single seed, under-resolved at the density peak); mapping declared in cft_revival.plasma_v2.pic_context",
+  "limitations": [
+    "The cell-to-cell potential steps are declared, not solved; the literature closes them by an electron cross-field transport row that needs densities and B, which this model does not have.",
+    "The floating-sheath rows use the cell temperature T_k; Kornfeld's cascade electrons entering cusp k are a monoenergetic beam at dE_k, so a Maxwellian sheath is an approximation whose consistency is tested by the cusp energy margin.",
+    "CL-4 needs a cusp sheath-edge density; segment-mean PIC densities give leak currents far above the discharge current at the PIC operating point.",
+    "No neutral density or mass-flow balance; anode current prescribed (v1 limitations inherited).",
+    "The cathode perveance law p0 = 0.002 A/V^1.5 is Kornfeld's 1 A-class value; at mA currents it yields sub-volt plume potentials.",
+    "Kornfeld's printed cusp potentials cancel from his equations; the comparison of Dphi_s,k with them is informational only."
+  ]
+}
