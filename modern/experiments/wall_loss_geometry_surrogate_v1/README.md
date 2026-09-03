@@ -64,3 +64,28 @@ python -m experiments.wall_loss_geometry_surrogate_v1.run validate
 Dashboard: `modern/visualization/wall-loss-geometry-surrogate-v1.html`.
 Tests: `modern/tests/experiments/wall_loss_geometry_surrogate_v1` (system
 Python runs the dependency-free subset; the venv runs everything).
+
+## Recorded result (single execution at `b602d147`, recorded in `b400d924`)
+
+**Terminal state `assessment_rejection` - `rejected_surrogate`.** Three of the
+four science gates failed on the single-use assessment role; every structural
+gate passed. Numbers as recorded in `results/artifacts/`:
+
+| gate | value | threshold | result |
+| --- | --- | --- | --- |
+| pooled P(wall) RMSE | 0.0562 (floor-corrected 0.0525) | <= 0.05 | FAIL |
+| cell P(wall) RMSE, floor-corrected | 0.129 (raw 0.133, floor 0.034) | <= 0.05 | FAIL |
+| best baseline / surrogate (pooled) | 0.97x (ridge 0.0546; mean 0.0553; k-NN 0.0681) | >= 2.0x | FAIL |
+| 90 % coverage (80 intervals) | 0.800 (64 / 80) | [0.80, 0.97] | PASS |
+| extrapolation pooled RMSE (reported) | 0.093 | <= 0.10 | met |
+| extrapolation coverage (reported) | 0.84 | [0.80, 0.97] | met |
+| structural gates (6) | binding, single-use labels, no tautology, bit-exact determinism, predictor replay 3e-14, code contract | - | PASS |
+
+Selected candidate `botorch-icm-logit` (method-selection mean RMSE 0.1035 vs
+0.1047 / 0.1067 / 0.1375 / 0.158 for the others); calibration inflated the GP
+variance 3.34x. Permutation importance: `stage_count_selector` (0.18) and
+`exit_length_fraction` (0.16) dominate, `stage_pitch_m` 0.03, everything else
+< 0.004 - the step discontinuities of the design -> geometry map, not smooth
+magnet parameters, move the cell probabilities. The surrogate is NOT usable
+as an MDO v2 input beyond the trivial baselines; `predictor.json` is published
+as the recorded (rejected) contract for audit only.

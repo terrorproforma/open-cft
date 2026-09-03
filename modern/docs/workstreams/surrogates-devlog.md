@@ -95,3 +95,31 @@
   contracts during the run, so the stable compatible remainder excluded the
   already documented external failures plus that validation directory and
   passed 571 tests with one optional-extension skip.
+
+## 2026-09-03 - wall-loss geometry surrogate v1 (first surrogate campaign on physically varying data)
+
+- `modern/experiments/wall_loss_geometry_surrogate_v1`: preregistered one-shot
+  GP surrogate of the geometry wall-loss screening dataset (96 designs, 11
+  declared inputs, per-cell/pooled wall-hit and reflection probabilities with
+  KNOWN binomial noise). Candidates: package `ExactGP` (logit/direct), BoTorch
+  `SingleTaskGP` fixed-noise Matern-5/2 ARD (logit/direct), BoTorch
+  `MultiTaskGP` ICM over the four cells; baselines mean / k-NN(3) / ridge.
+  Roles frozen before any fit (50 fit / 10 method-selection / 10 calibration /
+  16 assessment + 10 top-decile chamber-length extrapolation hold-out).
+- Recorded outcome (`b400d924`, terminal `assessment_rejection`,
+  `rejected_surrogate`): selected `botorch-icm-logit`; pooled P(wall) RMSE
+  0.0562 (gate 0.05; ridge baseline 0.0546, global mean 0.0553 - the
+  surrogate did NOT beat the trivial baselines); floor-corrected cell RMSE
+  0.129 (gate 0.05); 90 % coverage 0.80 (gate met at the boundary, after a
+  3.34x variance inflation from the calibration role); extrapolation pooled
+  RMSE 0.093 (reported gate 0.10 met), coverage 0.84. All structural gates
+  passed (dataset/Git binding, single-use labels, no tautology, bit-exact
+  determinism, predictor-contract replay 3e-14, code contract).
+- Reading: with 50 fit designs in 11-D and step discontinuities in the
+  design -> geometry map (`stage_count_selector`, `exit_length_fraction`
+  dominate the permutation importance), the GP has no advantage over a
+  linear model for the pooled probability and cannot resolve the cell-level
+  structure (label sd 0.18-0.25, floor 0.035). Method selection on 10
+  designs was unstable (the shakedown partition selected `botorch-stgp-direct`).
+- The package still has no ICM/LMC kernel; the coregionalised candidate used
+  BoTorch and its posterior is reproduced by the numpy predictor contract.

@@ -82,3 +82,19 @@
 - Small-sample uncertainty cannot be repaired by relabelling assessment as
   calibration. Calibration-fit data, held-out assessment, and minimum evidence
   size remain separate contracts.
+
+## Lessons from wall-loss geometry surrogate v1 (2026-09-03)
+
+- Known label noise must enter the GP as fixed variance AND the accuracy
+  gate must be read against the binomial floor; with 128-launch cell labels
+  the floor (0.035) is 70 % of a 0.05 gate.
+- A ridge/global-mean baseline chosen on the assessment role is a strong
+  honest yardstick: the GP lost to it on the pooled probability with 50
+  fit designs in 11 dimensions.
+- Method selection on 10 designs is unstable between partitions; report the
+  full candidate table, not only the winner.
+- Discontinuous design -> geometry maps (selectors, minimum lengths) should
+  be declared as irreducible error for a stationary kernel, or the inputs
+  should be the realised geometry.
+- Deciding a shakedown by its structural gates only keeps an honest negative
+  science preview from reading as a broken pipeline.

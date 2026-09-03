@@ -29,3 +29,18 @@
   (science gates informational), the evidentiary plan by all binding gates.
 - Shakedown run 2 on the final code: see `shakedown.json` (informational
   numbers must not be read as the result).
+
+## 2026-09-03 (AEST) - preregistration, execution, record
+
+- Commits: `aa9349a9` code/protocol/tests, `b602d147` preregistration
+  (shakedown.json, partitions.json, authorities.json; rebased once onto
+  `c32dd780` before the push, hash scope unchanged), `b400d924` record.
+- Shakedown 2 (final code, 37 s): `accepted_result` on structural gates;
+  informational science gates: pooled 0.040 PASS, cells 0.077 FAIL, 2x 1.36
+  FAIL, coverage 0.95 PASS; selected `botorch-stgp-direct`.
+- Execution (detached worktree `uni-project-wl-surrogate-run` at `b602d147`,
+  cpu, 8 threads, 169 s): `assessment_rejection` / `rejected_surrogate`;
+  selected `botorch-icm-logit`; see README "Recorded result".
+- Dashboard `modern/visualization/wall-loss-geometry-surrogate-v1.html`
+  (generator + template + 7 tests); headless Edge: 0 JS errors, screenshots
+  under `%TEMP%\wls_probe\shots\`.
