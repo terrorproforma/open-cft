@@ -152,6 +152,7 @@ def test_status_and_checkpoint_cadence_and_summary(tiny, tmp_path: Path):
     assert checkpoint["step"] == 200
     state = json.loads((results / "run_state.json").read_text(encoding="utf-8"))
     assert state["finished"] and state["checkpoint_step"] == 200 and len(state["sessions"]) == 1
+    assert state["sessions"][0]["wall_budget_seconds"] == protocol["stopping_rule"]["wall_budget_seconds"]   # budget in force, per session
     assert (results / "run.pid").is_file() and (results / "maps.npz").is_file() and (results / "series.npz").is_file()
     assert summary["artifacts"]["maps_npz_sha256"] and summary["plateau"] is not None
     # the run is "on GPU-idle single process" agnostic: the summary carries the wall budget bookkeeping
@@ -171,7 +172,8 @@ def test_resume_reproduces_uninterrupted_run_bitwise(tiny, tmp_path: Path):
     stray["step"] = 100
     with (interrupted / "series.jsonl").open("a", encoding="utf-8", newline="\n") as handle:
         handle.write(json.dumps(stray) + "\n")
-    runner.run_steady_state(protocol, interrupted, backend="cpu", field_map=field, cross_sections=xs, max_steps=160, log=lambda _: None)
+    runner.run_steady_state(protocol, interrupted, backend="cpu", field_map=field, cross_sections=xs, max_steps=160, wall_budget_seconds=7200.0,
+                            log=lambda _: None)
     a = np.load(reference / "checkpoint-final.npz")
     b = np.load(interrupted / "checkpoint-final.npz")
     for key in a.files:
@@ -180,6 +182,9 @@ def test_resume_reproduces_uninterrupted_run_bitwise(tiny, tmp_path: Path):
     sb = artifacts.read_canonical_json(interrupted / "summary.json")
     assert sa["steps_completed"] == sb["steps_completed"] == 160
     assert len(sb["sessions"]) == 2 and sb["sessions"][1]["resumed_from_step"] == 80
+    # a raised budget on the resume is recorded with the session that used it
+    assert sb["sessions"][0]["wall_budget_seconds"] == protocol["stopping_rule"]["wall_budget_seconds"]
+    assert sb["sessions"][1]["wall_budget_seconds"] == 7200.0
     # series: same steps, same particle counts, same currents on every interval (bookkeeping re-based at the resume)
     ra = np.load(reference / "series.npz")
     rb = np.load(interrupted / "series.npz")

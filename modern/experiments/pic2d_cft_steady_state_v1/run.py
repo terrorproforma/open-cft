@@ -1045,7 +1045,9 @@ def run_steady_state(
     run_state: dict[str, Any] = {"wall_seconds_total": 0.0, "sessions": [], "checkpoint_step": 0, "finished": False}
     records: list[dict[str, Any]] = []
     checkpoint = find_checkpoint(results)
-    session = {"started_utc": datetime.now(timezone.utc).isoformat(), "resumed_from_step": 0, "pid": os.getpid()}
+    # the budget in force for this session is recorded because the CLI may raise it on a resume (attempt 8: 14400 -> 50400 s)
+    session = {"started_utc": datetime.now(timezone.utc).isoformat(), "resumed_from_step": 0, "pid": os.getpid(),
+               "wall_budget_seconds": wall_budget}
     if checkpoint is not None:
         state = artifacts.load_checkpoint(checkpoint, config, field_sha256=field_map.sha256, cross_section_sha256=xs_sha,
                                           require_same_code=require_same_code)
