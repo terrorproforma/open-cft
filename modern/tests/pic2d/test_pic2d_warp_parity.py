@@ -149,6 +149,8 @@ def test_l_shaped_plume_domain_with_cathode_parity(device: str):
     for key in ("thrust_flux_n", "force_on_thruster_n", "absorbed_momentum_rate_n", "electrostatic_force_thruster_n"):
         assert ra.momentum[key] == pytest.approx(rb.momentum[key], rel=1e-8, abs=1e-30), key
     assert ra.plume["charge_fraction_of_peak"] == pytest.approx(rb.plume["charge_fraction_of_peak"], rel=1e-9, abs=1e-12)
+    assert ra.plume["charge_fraction_of_peak_raw"] == pytest.approx(rb.plume["charge_fraction_of_peak_raw"], rel=1e-9, abs=1e-12)
+    assert ra.plume["far_field_resolved_nodes"] == rb.plume["far_field_resolved_nodes"] and ra.plume["far_field_raw_max_node"] == rb.plume["far_field_raw_max_node"]
     # (b) with the cathode: the emission samples use each backend's RNG stream (not bitwise, like the v1.x
     # injection); the emitted count is deterministic and both ledgers close to round-off
     config = make(CathodeConfig(3.5e-3, 4.5e-3, 9.0e-3, 10.0e-3, 2.0, 2e-3))

@@ -20,7 +20,7 @@ block D").
 | neutrals | two-zone: channel 0-D inventory with recycling (v1.4) + analytic free-molecular cosine cone from the aperture in the plume (capped at 0.5 at the lip) as the local MCC factor; ion–neutral collisions OFF | review blocker 3 / 4a; CEX (Miller et al. 2002) deferred as a sensitivity flag |
 | thrust | (a) momentum flux through the far field per species + cold-gas effusion; (b) −F_on_thruster from the particle ledger (absorbed momentum − field impulse) and the **Maxwell-stress force** on every solid boundary from the field; closure reported | conservation check, not enforced |
 | plume diagnostics | j_i(θ) per steradian, 95 % divergence half-angle, IEDF mean/peak and peak − U_a, self-consistent exit-plane axis potential, acceleration region (90 → 10 % of the axis drop), Isp, anode efficiency | Koch et al. 2011: ion-energy peak ≈ U_a − 15 V is the validation-v1 observable (context, not validation) |
-| gates | v1.4 gates over the whole domain + plume-boundary charge pile-up gate (25 % of the peak density after 2.4 µs) | Brandt 2016 box-size finding |
+| gates | v1.4 gates over the whole domain + plume-boundary charge pile-up gate (25 % of the peak density after 2.4 µs, read on far-field nodes holding ≥ 32 macro-particles in the deposit — attempt 7+; the unrestricted single-deposit maximum is recorded as `charge_fraction_of_peak_raw`) | Brandt 2016 box-size finding; the sample-size floor mirrors the peak-node Debye gate (attempt 6 was stopped by one macro-ion on the axis corner node, see the launch log) |
 | seed | 5e16 m⁻³, 5 eV in the **channel only**; the plume starts empty | a plume seed would be 4.5 M unphysical macro-particles |
 
 ## Cost (measured 2026-09-03, RTX 5090, CUDA-graph step)
@@ -130,8 +130,54 @@ steady-state v3 (model v1.4) is deferred until after this run (devlog).
   it). Fixed in `warp_backend` (device-resident density, as the emission rate already was;
   regression test fails on the old backend). Unaffected: every v1.3 record (launched before
   the graph commit) and attempt 3's coupling diagnosis (n_g stayed 5.6–6.3e19 there).
-* **Launch 6 (attempt 6)** — attempt 5 plus the graph-safe MCC density; frames ON; this is
-  the plume development run.
+* **Launch 6 (01:35 AEST 2026-09-04, PID 53824; attempt 6)** — attempt 5 plus the graph-safe
+  MCC density; frames ON. **Ignited cleanly** (connectivity 24/24; ignition gate 0.75 µs: S ratio
+  1.42 / N_e ratio 2.00; 1.5 µs: 1.70 / 3.60; S_ref 3.18e16 s⁻¹) and ran 1 644 000 steps = 2.466 µs
+  (0.80 transits) in 2.34 h (5.1 ms/step, 1.62 M e⁻ / 1.64 M Xe⁺, 82 frames), then **stopped
+  fail-closed by the plume-boundary gate 66 ns after it armed**: `net charge density at the
+  far-field nodes is 0.259 of the peak electron density (limit 0.25)`. State at the stop: I_d
+  6.3–6.9 mA (still rising, drift +8.6 %), I_beam 0.4–0.9 mA, S 6.9–7.6e16 s⁻¹ (gross utilisation
+  0.77–0.85, net ~0.5), n_g 2.77e19 tracking its fixed point (2.5–2.8e19), peak n_e 2.3e18 at
+  3.2–3.6 cells/λ_D (gate 4.5), ω_pe Δt 0.134 (gate 0.2), energy residual −3.4 % of the electrode
+  work, neutral ledger closed to 0.05 atoms, thrust 11–18 µN (closure −7 … −180 %, far from a
+  plateau), φ_exit(axis) 55–77 V, IEDF peak 145 eV, 95 % half-angle 77°.
+  **Diagnosis — the gate observable, not the plasma (numerical):** the gate read
+  `max |n_i − n_e|` over the 481 far-field nodes from the *single-step* deposit (`charge_maps()`),
+  and the axis corner node (0, 720) of the far plane has a bilinear shape volume
+  π Δr² Δz / 6 = 6.5e-14 m³, so ONE macro-ion (W = 6e4) deposited there reads 9.2e17 m⁻³ = 0.39 of
+  the peak. The final checkpoint reproduces the trigger exactly: 0.66 macro-ions and 0.00
+  macro-electrons on node (0, 720) → 6.06e17 m⁻³ = 0.259 of the 2.34e18 peak; the whole far-field
+  boundary held 3 macro-electrons and 145 macro-ions (median 0 per node). Over 1.5–2.4 µs, 3 % of
+  the 200-step samples exceeded 0.25 (91 records, max 0.64) with lag-1 autocorrelation 0.84 — the
+  q_far log column shows linear ramps of ~10 samples (an ion crossing the last 50 µm cell at
+  1.5e4 m/s = 3 ns) ending in a drop when the ion leaves, e.g. 0.054 → 0.087 → 0.122 → 0.147 →
+  0.184 → 0.224 → 0.259 (stop). The interval-averaged frames (20 000 steps) give max |n_i − n_e| /
+  peak = 0.030–0.033 over the far-field nodes and 1e-4 volume-weighted; the 400 000-step window
+  maps 0.040: **no sheath on the box boundary**. The far plane does carry a normal Dirichlet-wall
+  sheath (axis φ 44 → 0 V over the last ~0.5 mm ≈ 3.5 λ_D at n 3e16, T_e 11 eV; n_i 1e17 vs n_e
+  3e16 on the axis 2 mm before the plane), which is the declared chamber-reference boundary, not a
+  charge pile-up. No other gate was near its limit. Fix (v2.0.1, tests
+  `test_plume_boundary_gate_ignores_single_macro_particle_shot_noise_on_the_axis_corner_node`):
+  the gate reads only far-field nodes holding ≥ `min_macro_particles_per_node` = 32
+  macro-particles (electrons + ions, bilinear weights) — the same sample-size floor the peak-node
+  Debye gate applies to its argmax; the unrestricted maximum, its node and macro count are
+  recorded (`charge_fraction_of_peak_raw`, `far_field_raw_max_node`, `far_field_resolved_nodes`).
+  The threshold (0.25) and the arming time (2.4 µs) are unchanged. Kept as
+  `results-attempt6-gate-shot-noise/` (video in its `video/`: five MP4s + the HTML player).
+  Video check — the **ionisation-rate panel is shot-noise dominated by construction**: in the
+  last 30 ns frame the 42 423 nodes with ≥ 20 electron samples hold 35 005 macro-ionisation events
+  in total, 72.5 % of them zero (grey), 16 % one or two, none ≥ 20 (max 18); one event on a
+  50 µm node is ~1e23 m⁻³s⁻¹ (mid-scale), on an axis node 3e25 (the colour-scale top). The
+  dashboard's event-count mask from `6bd5e5b0` is **not** in the video renderer (which masks by
+  electron samples only) and at N = 20 would blank the panel at this cadence; the frame's rate
+  integrates to S = 7.0e16 s⁻¹ (matches the series), so the data are right and the panel needs
+  spatial binning (3 × 3 → 9× events) or a ~10-frame rolling average before it can be read
+  quantitatively (proposed, not done).
+* **Launch 7 (attempt 7)** — attempt 6 plus the resolved-node plume-boundary gate (v2.0.1);
+  frames ON; fresh start (the gate parameter is part of the configuration identity, so the
+  attempt-6 checkpoint cannot be resumed). Same seed → the first 1.64 M steps should replay
+  attempt 6 (the gate change is diagnostic-only); the ignition verdicts fall at 0.75 µs (~45 min
+  of stepping) and 1.5 µs (~90 min).
 
 ## Time-series frames and video
 

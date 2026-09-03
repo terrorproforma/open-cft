@@ -480,6 +480,8 @@ def test_plume_protocol_builds_the_v20_config_and_runs_with_the_v20_artifacts(tm
     assert real.grid.geometry.has_plume and real.grid.cell_shape == (240, 720) and real.grid.dr_m == pytest.approx(5e-5)
     assert real.cathode is not None and real.cathode.current_rule == "continuity" and real.injection is None
     assert real.seed_plasma.region == "channel" and real.plume_boundary_gate.max_charge_fraction == 0.25
+    # v2.0.1 (attempt 7+): the gate reads only resolved far-field nodes; the protocol declares the 32-particle floor
+    assert real.plume_boundary_gate.min_macro_particles_per_node == 32 and real.plume_boundary_gate.enforce_after_s == 2.4e-6
     assert real.neutral_inventory.wall_recycling and real.peak_debye_gate is not None
     assert runner.protocol_budget(runner.load_protocol(PLUME_PROTOCOL))["ion_transit_time_s"] == 3.1e-6
 
@@ -496,8 +498,10 @@ def test_plume_protocol_builds_the_v20_config_and_runs_with_the_v20_artifacts(tm
     assert samples[-1]["plume"]["far_field_phi_max_abs_deviation_v"] == 0.0 and samples[-1]["plume"]["gate_enforced"] is False
     with np.load(results / "series.npz") as series:   # closed before the resume rewrites the file (Windows lock)
         for key in ("momentum_thrust_total_n", "momentum_closure_fraction", "momentum_electrostatic_force_thruster_n",
-                    "momentum_cathode_emission_next_a", "plume_exit_plane_axis_potential_v", "plume_charge_fraction_of_peak"):
+                    "momentum_cathode_emission_next_a", "plume_exit_plane_axis_potential_v", "plume_charge_fraction_of_peak",
+                    "plume_charge_fraction_of_peak_raw", "plume_far_field_resolved_nodes"):
             assert key in series.files and series[key].size == 20, key
+        assert np.all(series["plume_charge_fraction_of_peak_raw"] >= series["plume_charge_fraction_of_peak"])
     with np.load(results / "maps.npz") as maps:
         for key in ("plume_ion_current_per_sr_a", "plume_ion_counts_per_theta", "iedf_ion_counts", "iedf_edges_ev", "sample_count_e"):
             assert key in maps.files, key

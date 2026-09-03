@@ -118,6 +118,8 @@ PLUME_SCALARS = (
     "charge_fraction_of_peak", "far_field_induced_charge_c", "body_conductor_induced_charge_c", "exit_plane_axis_potential_v",
     "axis_phi_max_v", "axis_phi_max_z_m", "acceleration_z90_m", "acceleration_z10_m", "acceleration_width_m",
     "cathode_rate_per_step",
+    # v2.0.1: unrestricted single-deposit statistic and the resolved-node count (NaN in attempt-6 and older records)
+    "charge_fraction_of_peak_raw", "far_field_net_charge_density_max_raw_per_m3", "far_field_resolved_nodes",
 )
 
 
@@ -576,6 +578,9 @@ def status_from_record(
     if plume is not None:  # v2.0 plume-boundary sample
         line["plume"] = {key: plume[key] for key in ("charge_fraction_of_peak", "far_field_phi_max_abs_deviation_v",
                                                    "exit_plane_axis_potential_v", "acceleration_z90_m", "acceleration_z10_m")}
+        for key in ("charge_fraction_of_peak_raw", "far_field_resolved_nodes"):   # v2.0.1
+            if key in plume:
+                line["plume"][key] = plume[key]
         if "gate_enforced" in plume:
             line["plume"]["gate_enforced"] = plume["gate_enforced"]
     return line
@@ -791,6 +796,8 @@ def plume_summary(
         "acceleration_z10_m": mean("plume_acceleration_z10_m") if "plume_acceleration_z10_m" in arrays else None,
         "acceleration_width_m": mean("plume_acceleration_width_m") if "plume_acceleration_width_m" in arrays else None,
         "charge_fraction_of_peak_max": float(np.nanmax(arrays["plume_charge_fraction_of_peak"])) if "plume_charge_fraction_of_peak" in arrays else None,
+        "charge_fraction_of_peak_raw_max": (float(np.nanmax(arrays["plume_charge_fraction_of_peak_raw"]))
+                                            if "plume_charge_fraction_of_peak_raw" in arrays and np.isfinite(arrays["plume_charge_fraction_of_peak_raw"]).any() else None),
         "mass_flow_kg_per_s": feed_kg_per_s,
         "discharge_power_w": power_w,
         "specific_impulse_s": isp,
@@ -1074,6 +1081,8 @@ def run_steady_state(
                 extra += (f" T={record.momentum['thrust_total_n']*1e6:.1f} uN closure={record.momentum['closure_fraction']*100:.0f}%")
             if record.plume is not None:
                 extra += f" phi_exit={record.plume['exit_plane_axis_potential_v']:.1f} V q_far={record.plume['charge_fraction_of_peak']:.3f}"
+                if "charge_fraction_of_peak_raw" in record.plume:  # v2.0.1: the unrestricted single-deposit statistic
+                    extra += f"(raw {record.plume['charge_fraction_of_peak_raw']:.3f}/{record.plume['far_field_resolved_nodes']}n)"
             log(f"[steady-state] step {record.step} t={record.time_s*1e6:.3f} us e={record.electrons} i={record.ions} "
                 f"I_d={record.currents_a['discharge_a']*1e3:.2f} mA I_beam={record.currents_a['exit_ion_beam_a']*1e3:.2f} mA "
                 f"S={record.currents_a['ionization_rate_per_s']:.3g}/s{extra} w_pe*dt={record.peak_omega_pe_dt:.3f} "

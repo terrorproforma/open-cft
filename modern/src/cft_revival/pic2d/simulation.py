@@ -1120,6 +1120,12 @@ class SeriesRecord:
           | ({} if self.plume is None else {"plume": dict(self.plume)})
 
 
+# v2.0.1: sample-size floor for the plume-boundary gate's node density estimate (see PlumeBoundaryGateConfig);
+# also the recording floor when the gate is off.  Same order as PeakDebyeGateConfig.min_macro_particles_at_peak (32
+# in the plume protocol): relative shot noise ~ N^-1/2 = 18 %.
+PLUME_GATE_MIN_MACRO_PARTICLES_PER_NODE = 32
+
+
 @dataclass(frozen=True, slots=True)
 class PlumeBoundaryGateConfig:
     """v2.0 plume-boundary sanity gate (fail-closed).
@@ -1131,19 +1137,37 @@ class PlumeBoundaryGateConfig:
     quasi-neutrally (Brandt et al. 2016 found a 20 x 5 mm box "still too small"; the
     outer-boundary condition changed their plume current ratios).  Enforced after
     ``enforce_after_s`` so the seed plasma's first transit does not trip it.
+
+    The gate quantity is evaluated only on far-field nodes that hold at least
+    ``min_macro_particles_per_node`` macro-particles (electrons + ions, bilinear weights)
+    in the deposit, as the peak-node Debye gate does for its argmax: the density estimate
+    on a node is a single-deposit shot-noise sample, and the axis corner node of the far
+    plane has a bilinear shape volume of ``pi dr^2 dz / 6`` (6.5e-14 m^3 on the 50 um plume grid),
+    so ONE macro-ion (W = 6e4) deposited there reads 9.2e17 m^-3 = 0.4 of a 2.3e18 peak.
+    Plume attempt 6 (2026-09-04) was stopped by exactly that: 0.66 macro-ions and no
+    electrons on node (0, nz) gave 0.259 of the peak while the interval-averaged far-field
+    charge fraction was 0.03 (max over nodes) and 1e-4 (volume-weighted).  The unrestricted
+    maximum is still recorded (``charge_fraction_of_peak_raw``) so the shot-noise statistic
+    stays visible; a real sheath at the gate density puts >> 32 macro-particles on every
+    far-field node except the innermost few (r < 0.35 mm), which a resolved neighbour covers.
     """
 
     max_charge_fraction: float = 0.25
     enforce_after_s: float = 0.0
+    min_macro_particles_per_node: int = PLUME_GATE_MIN_MACRO_PARTICLES_PER_NODE
 
     def __post_init__(self) -> None:
         if not isfinite(self.max_charge_fraction) or self.max_charge_fraction <= 0.0:
             raise PIC2DValidationError("max_charge_fraction must be positive")
         if not isfinite(self.enforce_after_s) or self.enforce_after_s < 0.0:
             raise PIC2DValidationError("enforce_after_s must be non-negative")
+        if (isinstance(self.min_macro_particles_per_node, bool) or not isinstance(self.min_macro_particles_per_node, int)
+                or self.min_macro_particles_per_node < 1):
+            raise PIC2DValidationError("min_macro_particles_per_node must be a positive integer")
 
-    def to_dict(self) -> dict[str, float]:
-        return {"max_charge_fraction": self.max_charge_fraction, "enforce_after_s": self.enforce_after_s}
+    def to_dict(self) -> dict[str, float | int]:
+        return {"max_charge_fraction": self.max_charge_fraction, "enforce_after_s": self.enforce_after_s,
+                "min_macro_particles_per_node": self.min_macro_particles_per_node}
 
 
 def boundary_forces_n(masks: MeshMasks, phi: np.ndarray) -> dict[str, float]:
@@ -1557,13 +1581,24 @@ class Simulation:
         config = self.config
         grid = masks.grid
         q_e, q_i = self.backend.charge_maps()
+        gate = config.plume_boundary_gate
+        min_particles = gate.min_macro_particles_per_node if gate is not None else PLUME_GATE_MIN_MACRO_PARTICLES_PER_NODE
         with np.errstate(invalid="ignore", divide="ignore"):
             volume = np.where(masks.plasma_node, masks.shape_volume_m3, np.inf)
             n_e = np.abs(q_e) / (ELEMENTARY_CHARGE_C * volume)
             net = (q_i + q_e) / (ELEMENTARY_CHARGE_C * volume)
         peak = float(n_e[masks.plasma_node].max()) if masks.plasma_node.any() else 0.0
         far = masks.far_field_node
-        far_net = float(np.max(np.abs(net[far]))) if far.any() else 0.0
+        # macro-particles (electrons + ions, bilinear weights) deposited on each node: the shot-noise
+        # sample size of its density estimate.  The gate reads only RESOLVED far-field nodes (>= min);
+        # the unrestricted maximum is recorded as the raw statistic (plume attempt 6 stopped on one
+        # macro-ion at the axis corner node, see PlumeBoundaryGateConfig).
+        macro = (np.abs(q_e) + np.abs(q_i)) / (ELEMENTARY_CHARGE_C * config.macro_weight)
+        resolved = far & (macro >= float(min_particles))
+        far_abs = np.abs(net)
+        far_net_raw = float(np.max(far_abs[far])) if far.any() else 0.0
+        far_net = float(np.max(far_abs[resolved])) if resolved.any() else 0.0
+        raw_node = [int(k) for k in np.unravel_index(int(np.argmax(np.where(far, far_abs, -1.0))), net.shape)] if far.any() else [0, 0]
         phi_dev = float(np.max(np.abs(phi[far] - config.potentials.exit_v))) if far.any() else 0.0
         induced = apply_operator(masks, phi)
         # axis potential: exit-plane value and the acceleration region (90 % -> 10 % of the drop from
@@ -1584,12 +1619,18 @@ class Simulation:
                 z90 = float(z[k_max + below90[0]])
             if below10.size:
                 z10 = float(z[k_max + below10[0]])
-        gate = config.plume_boundary_gate
         record = {
             "far_field_phi_max_abs_deviation_v": phi_dev,
             "far_field_net_charge_density_max_per_m3": far_net,
             "peak_electron_density_per_m3": peak,
             "charge_fraction_of_peak": far_net / peak if peak > 0.0 else 0.0,
+            # unrestricted single-deposit statistic (the attempt-6 gate quantity) and its node
+            "far_field_net_charge_density_max_raw_per_m3": far_net_raw,
+            "charge_fraction_of_peak_raw": far_net_raw / peak if peak > 0.0 else 0.0,
+            "far_field_raw_max_node": raw_node,
+            "far_field_raw_max_macro_particles": float(macro[raw_node[0], raw_node[1]]) if far.any() else 0.0,
+            "far_field_resolved_nodes": int(resolved.sum()),
+            "min_macro_particles_per_node": int(min_particles),
             "far_field_induced_charge_c": float(induced[far].sum()) if far.any() else 0.0,
             "body_conductor_induced_charge_c": float(induced[masks.body_conductor_node].sum()),
             "exit_plane_axis_potential_v": float(axis[j_exit]),
@@ -1696,6 +1737,7 @@ __all__ = [
     "InjectionConfig",
     "MOMENTUM_KEYS",
     "PIC2DConfig",
+    "PLUME_GATE_MIN_MACRO_PARTICLES_PER_NODE",
     "PeakDebyeGateConfig",
     "PlumeBoundaryGateConfig",
     "SeedPlasmaConfig",
