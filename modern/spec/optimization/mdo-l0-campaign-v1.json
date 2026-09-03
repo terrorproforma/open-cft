@@ -15,5 +15,16 @@
   "objectives": ["axial_thrust_n max", "specific_impulse_s max", "thruster_electrical_to_beam_efficiency max", "anode_input_power_w min"],
   "uncertain_inputs": 7,
   "strategies": ["qlognehvi", "nsga3", "lhs"],
-  "results": null
+  "results": {
+    "bundle": "modern/experiments/mdo_l0_campaign_v1/results",
+    "manifest_sha256": "2a326f3cf2e286a0ba8f9c91871d78b935a11e3e2c56bd9164acdc6166485381",
+    "terminal_state": "accepted_result",
+    "preregistration_commit": "4898d0fd3decddc5f308072e724d1936660c00e9",
+    "runs": 9,
+    "total_evaluations": 864,
+    "binding_gates_passed": 8,
+    "bo_beats_random": true,
+    "bo_beats_nsga3": true,
+    "claim": "optimiser-comparison and evaluation-chain result on the L0 model under declared uncertainty; no thruster-performance claim"
+  }
 }

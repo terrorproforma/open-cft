@@ -66,7 +66,8 @@ def test_recorded_bundle_inventory_is_byte_exact() -> None:
             continue
         path = RESULTS_ROOT / Path(*entry["path"].split("/"))
         assert path.is_file(), entry["path"]
-        if hashlib.sha256(path.read_bytes()).hexdigest() != entry["sha256"]:
+        data = path.read_bytes()
+        if hashlib.sha256(data).hexdigest() != entry["byte_sha256"] or len(data) != entry["bytes"]:
             mismatches.append(entry["path"])
     assert mismatches == []
     terminal = strict_json_file(RESULTS_ROOT / "terminal.json")
