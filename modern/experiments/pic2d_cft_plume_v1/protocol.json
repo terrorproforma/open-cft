@@ -41,16 +41,17 @@
       "two_zone_note": "v2.0: the 0-D inventory is the CHANNEL zone (volume 3.43e-7 m^3 of the channel plasma cells; wall/anode ions recycled as 400 K neutrals; ions on the front face are NOT recycled into the channel); the PLUME zone carries the free-molecular expansion of the effusing flux from the exit aperture as an analytic density shape n_g(r,z) = n_g,channel x f(r,z), f = cosine-law point-source cone from the aperture centre capped at 0.5 at the lip (half-space effusion), used only as the local MCC probability factor (spec pic2d-model-v2.0.json, neutrals). Ion-neutral collisions remain OFF (no CEX; the Miller et al. 2002 table is a later sensitivity flag)."
     },
     "cathode": {
-      "r_inner_m": 0.0045,
-      "r_outer_m": 0.006,
-      "z_start_m": 0.026,
-      "z_end_m": 0.028,
+      "r_inner_m": 0.0005,
+      "r_outer_m": 0.002,
+      "z_start_m": 0.0243,
+      "z_end_m": 0.025,
       "electron_temperature_ev": 2.0,
       "current_a": 0.003,
       "current_rule": "continuity",
       "max_current_a": 0.015,
       "continuity_relaxation_intervals": 4.0,
-      "position_justification": "annulus r = 4.5-6.0 mm (1.5-2.0 r_exit), 2-4 mm downstream of the exit plane, in front of the grounded pole face: HEMP-T neutralisers sit off-axis outside the exit (Kornfeld, Koch and Harmann 2007; Koch et al. 2011). Electrons are born uniformly in the annulus volume with an isotropic 2 eV Maxwellian (the v1.x injection temperature).",
+      "require_channel_connected_fraction": 1.0,
+      "position_justification": "attempt 4 (revised after attempt 3, no ignition): the emission region r = 0.5-2.0 mm, z = 24.3-25.0 mm lies INSIDE the channel's exit flux tube in the plume. Event-aware field-line tracing on the run's own P2 node field (cft_revival.pic2d.fieldlines) shows the channel's field lines leave the aperture, balloon to r = 4.3 mm at the front face and close on the front face / exit pole within 1.5 mm of the exit plane (r band <= 2.9 mm at z = 24.9 mm, <= 1.6 mm at 25.3 mm; axis null at z = 25.45 mm): NO plume volume beyond z ~ 25.7 mm is magnetically connected to the bore. Attempt 3's annulus (r 4.5-6 mm, z 26-28 mm; the off-axis HEMP-T neutraliser position of Kornfeld, Koch and Harmann 2007 / Koch et al. 2011) sat on lines running from the pole face (r ~ 5.2 mm) to the far field: connected fraction 0 of 24 samples, and 95 % of the emitted 3 mA left through the far-field boundary, 16 % hit the body face, ~0 reached the anode (I_d -> 0, S 3e15 -> 2e14 /s, N_e decaying). In the electrostatic, collisionless-plume model electrons cannot cross from that flux tube to the channel's (no anomalous transport, n_g in the plume too low for collisional diffusion), whereas the real neutraliser electrons reach the beam through the null / weak-field region by collisions and instabilities the model excludes (review blocker 4d; Brandt et al. 2016 fed electrons from the far outer boundaries at 1 eV, Szabo 2001 / Charoy et al. 2019 inject at a cathode plane tied to the ion current). The region therefore represents the ARRIVAL of the neutraliser electrons into the channel-connected flux tube - a declared model choice, not a neutraliser position. Every sample of the region is connected (100 % of 48 samples: one half-line enters the channel, the other ends on the front face; |B| 19-64 mT; volume 8.3 mm^3); the runner re-traces at launch and refuses to start if the fraction drops below require_channel_connected_fraction. Electrons are born uniformly in the annulus volume with an isotropic 2 eV Maxwellian (the v1.x injection temperature); the half moving toward the exit plane replicates v1.3's proven exit-plane injection 0.3-1.0 mm downstream of it, the other half is lost to the dielectric flange and charges it.",
       "current_rule_justification": "current continuity (review blocker 4d variant (c)): the emitted current follows the discharge (anode) current of the previous series interval, relaxed over 4 intervals (800 steps = 1.2 ns) and clamped to [3 mA (floor = the v1.x injection current, ignition), 15 mA (5 x the v1.3 discharge current, against the seed dump transient)]. Charge conservation then makes the far-field boundary current-free in steady state (I_cathode = I_d + (I_e - I_i)_far). Fixed-current emission remains available (current_rule fixed) and the exit-plane injection stays as the legacy A/B option (electron_injection_current_a)."
     },
     "electron_injection_current_a": null,
@@ -119,8 +120,17 @@
     "min_transit_times": 3,
     "wall_budget_seconds": 14400,
     "wall_budget_note": "4 h cumulative over resumes (run_state.json). At 5-7 ms/step the budget reaches 2.0-2.8 M steps = 3.0-4.2 us = 1.0-1.4 transit times: this development run is EXPECTED to stop on the wall budget before a plateau can be declared; it is resumable (the same command continues from checkpoint/) and the window-average artifacts of the last completed 0.6 us window are written at the stop.",
-    "fail_closed": "runtime omega_pe dt gate, peak-node Debye gate (4.5 cells per lambda_D, whole domain), grid-heating triad hard bounds after one transit, plume-boundary charge pile-up gate after 2.4 us, one-cell Courant crossing, Poisson residual contract, neutral inventory exhaustion or ceiling violation: the run ends with the artifacts written",
+    "fail_closed": "cathode field-line connectivity at launch, ignition gate (no_ignition), runtime omega_pe dt gate, peak-node Debye gate (4.5 cells per lambda_D, whole domain), grid-heating triad hard bounds after one transit, plume-boundary charge pile-up gate after 2.4 us, one-cell Courant crossing, Poisson residual contract, neutral inventory exhaustion or ceiling violation: the run ends with the artifacts written",
     "ignition_check": "after ~3 minutes (the first ~5 min are the host factorisation): S growing, N_e rising, cathode current relaxing from the 15 mA ceiling toward I_d, ions crossing the far field (I_beam > 0), thrust ledger residual at round-off, exit-plane axis potential settling below 300 V, q_far ~ 0",
+    "ignition_gate": {
+      "reference_window_s": [5e-08, 2e-07],
+      "check_window_s": 1.5e-07,
+      "checks": [
+        {"time_s": 7.5e-07, "min_s_ratio": 0.8, "min_electron_ratio": 1.1},
+        {"time_s": 1.5e-06, "min_s_ratio": 1.2, "min_electron_ratio": 1.4}
+      ],
+      "note": "fail-closed stop_reason no_ignition, evaluated at every checkpoint from the series: trailing 0.15 us means of S and N_e over their 0.05-0.2 us reference means (after the seed dump). Calibration: v1.3 attempt 2 (ignited; seed-b identical) S ratio 1.07 / 1.41 and N_e ratio 1.29 / 1.76 at 0.75 / 1.5 us; v1.3 attempt 1 (failed) S 0.59, N_e 1.03 at 0.75 us; plume attempt 3 (cathode not channel-connected) S 0.23, N_e 0.83 at 0.75 us. The suggested 'x3 within 0.75 us' would have rejected the ignited v1.3 run (its S e-fold in the first 2 us was ~2.8 us; the 1.1 us e-fold belongs to the later N_e growth), so the thresholds sit between the ignited and the failed runs with ~25 % margin on S and ~15 % on N_e at 0.75 us. A failed gate costs <= 0.75 us = 0.5 M steps = ~40 min at 4.3 ms/step; the ignition transient (< 1.5 us) is excluded from any plateau window by the >= 3 transit-time rule."
+    },
     "grid_heating_triad": {
       "energy_residual_over_electrode_work_max": 0.1,
       "soft_drift_max": 0.05,

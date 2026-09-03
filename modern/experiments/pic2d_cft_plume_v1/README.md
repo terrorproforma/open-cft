@@ -15,7 +15,8 @@ block D").
 | domain | L-shaped plasma region: channel (r ≤ r_wall(z), z < 24 mm) + plume box r ≤ 12 mm, 24 ≤ z ≤ 36 mm; uniform 50 × 50 µm, 240 × 720 cells (77,940 plasma cells, 78,228 unknowns) | R_plume = 12 mm = 4 r_exit = 6 r_bore is the return-yoke radius (thruster envelope); **L_plume = 12 mm = 0.5 L_channel is bounded by the P2 FEM domain** (z ≤ 36.25 mm) — the requested 1–1.5 L_channel needs a new FEM solve (declared deviation). Brandt et al. 2016: 20 × 5 mm box behind a 14 × 1.5 mm channel was "still too small"; hence the charge pile-up gate |
 | internal boundaries | channel wall, cone and the front-face flange r ∈ (3, 4.4] mm: dielectric with surface charge; anode 300 V; front face r > 4.4 mm: **grounded conductor** | the pole faces / shield are metal on the cathode/chamber reference in the tested HEMP-Ts (Kornfeld et al. 2007; Koch et al. 2011); the 4.0–4.4 mm gap is closed as dielectric |
 | far field | Dirichlet 0 V on r = 12 mm and z = 36 mm; crossings counted as beam by species with axial momentum, angle about the aperture centre (90 bins) and ion energy (IEDF, 256 bins to 1.5 U_a) | chamber / neutraliser reference; box-size dependence declared |
-| cathode | annulus r 4.5–6.0 mm (1.5–2 r_exit), z 26–28 mm, isotropic 2 eV Maxwellian, **current continuity**: emits the previous interval's discharge current, relaxed over 4 intervals, clamped to [3 mA floor, 15 mA] | off-axis neutraliser outside the exit (Kornfeld 2007); continuity = review 4d variant (c); charge conservation makes the far field current-free in steady state. Legacy exit-plane injection kept as the A/B option |
+| cathode | **attempt 4:** region r 0.5–2.0 mm, z 24.3–25.0 mm — inside the channel's exit flux tube (every traced sample connects to the bore; runner re-traces at launch, `require_channel_connected_fraction: 1.0`), isotropic 2 eV Maxwellian, **current continuity**: emits the previous interval's discharge current, relaxed over 4 intervals, clamped to [3 mA floor, 15 mA]. Attempt 3 used the off-axis neutraliser annulus r 4.5–6.0 mm, z 26–28 mm (Kornfeld 2007) and did not ignite — see the launch log | electrons follow B; the channel's field lines close on the front face within 1.5 mm of the exit (axis null at 25.45 mm), so only that volume is magnetically connected to the bore (review blocker 4d; Brandt 2016 fed electrons from the outer boundary in a model with Bohm transport). Continuity = review 4d variant (c); charge conservation makes the far field current-free in steady state. Legacy exit-plane injection kept as the A/B option |
+| ignition gate | S and N_e trailing 0.15 µs means over their 0.05–0.2 µs reference means: ≥ 0.8 / 1.1 at 0.75 µs and ≥ 1.2 / 1.4 at 1.5 µs, else `stop_reason = no_ignition` | calibrated on v1.3 attempt 2 (ignited: 1.07 / 1.29, 1.41 / 1.76), v1.3 attempt 1 (failed: 0.59 / 1.03) and plume attempt 3 (0.23 / 0.83); a failed gate costs ≤ 40 min |
 | neutrals | two-zone: channel 0-D inventory with recycling (v1.4) + analytic free-molecular cosine cone from the aperture in the plume (capped at 0.5 at the lip) as the local MCC factor; ion–neutral collisions OFF | review blocker 3 / 4a; CEX (Miller et al. 2002) deferred as a sensitivity flag |
 | thrust | (a) momentum flux through the far field per species + cold-gas effusion; (b) −F_on_thruster from the particle ledger (absorbed momentum − field impulse) and the **Maxwell-stress force** on every solid boundary from the field; closure reported | conservation check, not enforced |
 | plume diagnostics | j_i(θ) per steradian, 95 % divergence half-angle, IEDF mean/peak and peak − U_a, self-consistent exit-plane axis potential, acceleration region (90 → 10 % of the axis drop), Isp, anode efficiency | Koch et al. 2011: ion-energy peak ≈ U_a − 15 V is the validation-v1 observable (context, not validation) |
@@ -91,8 +92,23 @@ steady-state v3 (model v1.4) is deferred until after this run (devlog).
 * **Launch 2 (22:11 AEST, PID 38948)** — stopped by hand during the host factorisation (no
   stepping) when the user asked for whole-run video frames before the development run; its
   results were discarded (protocol hash changes with the `frame_recorder` block).
-* **Launch 3 (see below)** — the same protocol plus `numerics.frame_recorder` (see the
-  frames section); this is the plume development run.
+* **Launch 3 (22:50 AEST, PID 28860; attempt 3)** — the same protocol plus
+  `numerics.frame_recorder`. **No ignition**: stopped by hand at step 760 000 (1.14 µs, 53 min
+  of stepping at 4.3 ms/step, 38 frames) and finalised from the checkpoint. N_e 241 k → 172 k,
+  S 2.9e15 → 5e14 s⁻¹, I_d → 0, I_beam ≤ 0.2 mA, cathode 3.0 mA steady, n_g 6.3e19 → 5.6e19.
+  Diagnosis (field-line tracing on the run's own node field, `cft_revival.pic2d.fieldlines`;
+  frames): the channel's exit flux tube closes on the front face within 1.5 mm of the exit
+  plane (axis null at z = 25.45 mm) — no plume volume beyond z ≈ 25.7 mm connects to the bore;
+  the cathode annulus (r 4.5–6 mm, z 26–28 mm) sat on lines running from the pole face at
+  r ≈ 5.2 mm to the far field (0 of 24 samples connected). Electron budget of the last
+  interval: 2.85 of the 3.01 mA emitted left through the far field, 0.48 mA hit the body face,
+  0.06 mA reached the anode; φ along the cathode lines stayed within ±1.4 V of the 0 V
+  reference while the axis sat at 105 V (z = 27 mm) and 239 V (exit). The seed (5e16, 5 eV,
+  channel) was present (N_e(0) = 241 k). Artifacts kept as the development record
+  (`results-attempt3-no-ignition/`, video in its `video/`).
+* **Launch 4 (attempt 4)** — cathode region moved onto the channel-connected flux tube
+  (r 0.5–2.0 mm, z 24.3–25.0 mm), launch-time connectivity gate and the ignition gate added
+  (see the table); frames ON; this is the plume development run.
 
 ## Time-series frames and video
 
