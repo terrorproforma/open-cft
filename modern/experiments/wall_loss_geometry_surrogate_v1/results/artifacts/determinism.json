@@ -1,0 +1,1 @@
+{"candidate":"botorch-icm-logit","hyperparameters_bit_exact":true,"hyperparameters_max_relative_difference":0.0,"passed":true,"predictions_bit_exact":true,"predictions_max_abs_difference_working_space":0.0,"tolerance_abs":1e-09,"tolerance_rel":1e-09}

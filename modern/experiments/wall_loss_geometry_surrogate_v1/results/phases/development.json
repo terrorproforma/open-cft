@@ -1,0 +1,1 @@
+{"__cft_type__":"dataclass","class":"cft_revival.experiment_runtime.lifecycle.Decision","fields":{"accepted":true,"payload":{"candidates_fitted":5,"determinism_replay_passed":true,"no_tautology_passed":true,"predictor_replay_passed":true,"selected":"botorch-icm-logit"}}}

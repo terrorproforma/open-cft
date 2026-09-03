@@ -1,0 +1,1 @@
+{"details":{"count":10,"role":"calibration","role_sha256":"9b0f6c05286d30c05aed553e38e63fb690a8a5d54b84fc9c40691c1d74530d4f"},"kind":"label","operation":"labels-calibration","recorded_at_utc":{"__cft_type__":"aware-utc-datetime","value":"2026-09-03T03:22:31.314088Z"},"recorded_before_operation":true,"schema_version":"cft-revival.experiment-access/1.0.0","sequence":5}

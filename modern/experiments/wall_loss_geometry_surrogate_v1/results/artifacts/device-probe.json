@@ -1,0 +1,1 @@
+{"cuda_used":false,"device":"cpu","float64_cholesky_probe":[2.0,0.0,1.0,1.4142135623730951],"threads":8,"torch_version":"2.13.0+cu130"}
