@@ -3,6 +3,28 @@
 Scope: the standalone dashboards under `modern/visualization/`. Experiment-local
 dashboards keep their own logs next to their generators.
 
+## 2026-09-03 16:50 AEST - MDO L0 campaign v2 dashboard
+
+- New `generate_mdo_l0_campaign_v2_dashboard.py` -> `mdo-l0-campaign-v2.html`
+  (567,188 bytes) from the recorded bundle of `experiments/mdo_l0_campaign_v2`
+  (manifest `ca3b58ce...`, result commit `a003f766`, 147 files verified
+  byte-for-byte) AND the v1 bundle (manifest `2a326f3c...`, pinned) for the
+  v1-versus-v2 panel. Panels: claim boundary with the closure identification,
+  v1 vs v2 table, hypervolume curves against the 96 x 1024 dense reference,
+  HV table with the catalogue designs on each Pareto set, 12 integrity gates,
+  catalogue panel (robust-front designs with sealed geometry + screening
+  P(wall) with Wilson-95, and a pooled-P(wall) vs per-design dense HV
+  scatter over all 96 designs), robust-vs-nominal fronts with the dense
+  front, CL-1 vs CL-2 overlap, width sensitivity, timing, protocol,
+  provenance.
+- Deterministic, offline, `#jserrors` sink; headless Edge: 0 JS errors at
+  1440 px and 390 px; screenshots
+  `%TEMP%\mdo2\mdo-l0-campaign-v2-{desktop,top,narrow}.png`.
+- Tests `tests/visualization/test_mdo_l0_campaign_v2_dashboard.py` (7):
+  offline + sink, escaping, v1 bundle pinned and summarised, tamper refusal,
+  pinned + byte-identical regeneration + committed freshness, payload equals
+  bundle numbers (v2 and v1), section presence.
+
 ## 2026-09-03 10:20 AEST - MDO L0 campaign v1 dashboard
 
 - New `generate_mdo_l0_campaign_v1_dashboard.py` -> `mdo-l0-campaign-v1.html`

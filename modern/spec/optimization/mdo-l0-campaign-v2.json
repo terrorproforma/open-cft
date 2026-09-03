@@ -10,13 +10,50 @@
   "classification": "l0_model_optimisation_over_screened_design_catalogue_with_test_particle_wall_loss_closure_not_thruster_performance",
   "claim_boundary": "Optimises the corrected L0 conservation model over the 96 screened designs (per-cell P(wall) taken directly from orbit_wall_loss_geometry_screening_v1 through the declared closure CL-1) times the operating point; a design that wins here wins under the declared closure only; no thruster-performance claim.",
   "decision_space": {
-    "catalogue": {"name": "catalogue_index", "kind": "categorical", "size": 96, "source": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/geometry-wall-loss-dataset.json"},
+    "catalogue": {
+      "name": "catalogue_index",
+      "kind": "categorical",
+      "size": 96,
+      "source": "modern/experiments/orbit_wall_loss_geometry_screening_v1/results/artifacts/geometry-wall-loss-dataset.json"
+    },
     "continuous_dimensions": 3,
-    "variables": ["discharge_voltage_v", "anode_current_a", "propellant_mass_flow_kg_per_s"],
+    "variables": [
+      "discharge_voltage_v",
+      "anode_current_a",
+      "propellant_mass_flow_kg_per_s"
+    ],
     "surrogate": "none (wall_loss_geometry_surrogate_v1 and _v2 were rejected on predeclared gates)"
   },
-  "objectives": ["axial_thrust_n max", "specific_impulse_s max", "thruster_electrical_to_beam_efficiency max", "anode_input_power_w min"],
+  "objectives": [
+    "axial_thrust_n max",
+    "specific_impulse_s max",
+    "thruster_electrical_to_beam_efficiency max",
+    "anode_input_power_w min"
+  ],
   "uncertain_inputs": "4 per-design Jeffreys Beta posteriors (128 launches per cell) + 3 shared uniform inputs; pooled posterior (512 launches) for the sensitivity closure CL-2",
-  "strategies": ["qlognehvi", "nsga3", "lhs"],
-  "results": null
+  "strategies": [
+    "qlognehvi",
+    "nsga3",
+    "lhs"
+  ],
+  "results": {
+    "bundle": "modern/experiments/mdo_l0_campaign_v2/results",
+    "manifest_sha256": "ca3b58ce21eedb8ef094a3d73894b508fe8c438183fa02620d05f759541f7b1f",
+    "terminal_state": "accepted_result",
+    "preregistration_commit": "99914dc2fdbe88d18ab11ca86acad634129b4e08",
+    "result_commit": "a003f766c330d4e5648844ba49cdf1c3a3ce3bc1",
+    "runs": 9,
+    "total_evaluations": 1440,
+    "binding_gates_passed": 12,
+    "bo_beats_random": true,
+    "bo_beats_random_wins": "3/3",
+    "bo_beats_nsga3": true,
+    "bo_beats_nsga3_wins": "3/3",
+    "robust_front_catalogue_indices": [
+      49,
+      50,
+      94
+    ],
+    "claim": "optimiser-comparison and evaluation-chain result on the L0 model over the screened catalogue under the declared closure CL-1; a design wins under the closure only; no thruster-performance claim"
+  }
 }

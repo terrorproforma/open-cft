@@ -145,3 +145,44 @@
   performance result and `campaign-v1.json#benchmark.results` stays null.
 - Dashboard `modern/visualization/mdo-l0-campaign-v1.html` (generator
   `generate_mdo_l0_campaign_v1_dashboard.py`, 6 tests).
+
+## 2026-09-03 MDO L0 campaign v2: the corrected L0 model over the screened design catalogue
+
+- Design space = the 96 screened sweep-v2 designs (categorical catalogue index with
+  sealed geometry and accepted-2N wall-hit counts from
+  `orbit_wall_loss_geometry_screening_v1`) x v1's operating point (Ua, Ia, mdot). No
+  surrogate (both geometry surrogates were rejected); each design's per-cell P(wall)
+  enters CL-1 directly through its Jeffreys Beta posterior (frozen 64-row QMC sample per
+  design, v1's unit rows). Classification
+  `l0_model_optimisation_over_screened_design_catalogue_with_test_particle_wall_loss_closure_not_thruster_performance`;
+  CL-1 identifies the collisionless test-particle wall-hit probability with the per-cusp
+  survival factor, so a design wins under the declared closure only.
+- Optimisers on the mixed space: BoTorch qLogNEHVI over `MixedSingleTaskGP` models
+  (CategoricalKernel on the index, Matern-5/2 ARD on the operating point) with an
+  exhaustive categorical candidate stage (`optimize_acqf_discrete`, 96 x 8 LHS points)
+  plus per-member continuous refinement (`optimize_acqf`, fixed catalogue feature);
+  pymoo NSGA-III with `Choice`/`Real` variables and
+  `MixedVariableDuplicateElimination`; two-stage LHS over the catalogue. 160
+  evaluations per run (32 shared initial), seeds 101/202/303, 1440 total; dense
+  reference 96 x 1024 evaluated in parallel by design (12 workers, 54 s).
+- The six v1 audit disclosures are closed by protocol fields and binding gates: F9
+  result commit = results/ only; F10 explicit import-bound hash scope + gate
+  `code_hash_scope_matches_imports` + fresh-interpreter import-trace test; F22 no rounded
+  probabilities; F26 gate semantics declared (integrity, not efficacy; seed counts on
+  every efficacy statement); F27 duplicate elimination + gate; F28 labels generated from
+  the arguments / fitted objects + gate `labels_consistent`.
+- Tests/code `19c91a90`, preregistration `99914dc2`, result `a003f766` on
+  `exp/mdo-l0-campaign-v2`; terminal `accepted_result`, 12/12 binding gates, 1440
+  evaluations (91 infeasible), ~83 min wall under full CPU contention.
+- Robust hypervolume at 160 evaluations (v1 frame, fraction of the 98,304-point dense
+  reference 1.9073e-3): qLogNEHVI 9.269e-4 / 2.159e-3 / 2.151e-3 (0.49 / 1.13 / 1.13),
+  NSGA-III 5.864e-4 / 6.435e-4 / 4.652e-4, LHS 1.184e-4 / 1.983e-4 / 2.692e-4; BO beats
+  LHS 3/3 and NSGA-III 3/3 (counts; three seeds carry no significance). Pooled robust
+  front: 96 points on catalogue designs 49, 50, 94 (the three lowest screening P(wall),
+  0.375-0.430; all 5-stage, divergent exit); nominal front on 49, 50, 74, 94 (75 shared,
+  Jaccard 0.70). CL-2 (pooled survival) front shares 0 designs with the CL-1 front; the
+  posterior width moves the front from 15 points (w = 1/4) to 91-94 (w = 4, point).
+- This is an optimiser-comparison and evaluation-chain result under a declared closure;
+  no thruster-performance claim; `campaign-v1.json#benchmark.results` stays null.
+- Dashboard `modern/visualization/mdo-l0-campaign-v2.html` (generator
+  `generate_mdo_l0_campaign_v2_dashboard.py`, 7 tests) with a v1-versus-v2 panel.
