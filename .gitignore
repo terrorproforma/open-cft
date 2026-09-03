@@ -137,3 +137,6 @@ modern/experiments/pic2d_cft_steady_state_v2/results*/*.log
 modern/experiments/pic2d_cft_steady_state_v2/results*/*.err
 # convergence pair (b): w-0.7 results stay untracked until the case ends
 modern/experiments/pic2d_cft_steady_state_v2/results-w-0.7/
+
+# PIC-2D steady-state v3 (model v1.4): results stay untracked until the run ends
+modern/experiments/pic2d_cft_steady_state_v3/results*/

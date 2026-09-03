@@ -162,6 +162,10 @@ def save_checkpoint(
     if state.neutral is not None:
         # v1.3: n_g and the atom ledgers travel with the arrays (hash-bound like the particles)
         arrays["neutral"] = state.neutral.to_array()
+    # v1.4: optional tallies (sensitivity hooks) beyond the fixed ledger, e.g. "anomalous"
+    extra_keys = sorted(key for key in state.cumulative if key not in CUMULATIVE_KEYS)
+    if extra_keys:
+        arrays["cumulative_extra"] = np.array([state.cumulative[key] for key in extra_keys], dtype=np.float64)
     npz_path = directory / f"{name}.npz"
     npz_sha = write_npz(npz_path, arrays)
     metadata = {
@@ -173,6 +177,7 @@ def save_checkpoint(
         "ion_count": state.ions.count,
         "cumulative_keys": list(CUMULATIVE_KEYS),
         "neutral_keys": None if state.neutral is None else ["density_per_m3", *NEUTRAL_LEDGER_KEYS],
+        **({"cumulative_extra_keys": extra_keys} if extra_keys else {}),
         "arrays_file": npz_path.name,
         "arrays_sha256": npz_sha,
         "config_sha256": config_identity(config),
@@ -223,9 +228,15 @@ def load_checkpoint(
     if not np.isfinite(surface).all() or not np.isfinite(phi).all():
         raise PIC2DValidationError("checkpoint node arrays are nonfinite")
     cumulative = {key: float(value) for key, value in zip(CUMULATIVE_KEYS, arrays["cumulative"], strict=True)}
+    extra_keys = metadata.get("cumulative_extra_keys")
+    if extra_keys:
+        if "cumulative_extra" not in arrays or len(extra_keys) != int(arrays["cumulative_extra"].size):
+            raise PIC2DValidationError("checkpoint extra tallies do not match their keys")
+        cumulative |= {key: float(value) for key, value in zip(extra_keys, arrays["cumulative_extra"], strict=True)}
     neutral = None
     if metadata.get("neutral_keys") is not None or "neutral" in arrays:
-        if metadata.get("neutral_keys") != ["density_per_m3", *NEUTRAL_LEDGER_KEYS] or "neutral" not in arrays:
+        accepted = (["density_per_m3", *NEUTRAL_LEDGER_KEYS], ["density_per_m3", *NEUTRAL_LEDGER_KEYS[:4]])  # v1.4 / v1.3 layouts
+        if metadata.get("neutral_keys") not in accepted or "neutral" not in arrays:
             raise PIC2DValidationError("checkpoint neutral inventory keys differ")
         neutral = NeutralState.from_array(arrays["neutral"])
     if (config.neutral_inventory is not None) != (neutral is not None):

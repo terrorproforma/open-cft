@@ -60,8 +60,10 @@ from cft_revival.pic2d.models import (
     StabilityLimits,
 )
 from cft_revival.pic2d.neutrals import NEUTRAL_LEDGER_KEYS, NeutralInventoryConfig
+from cft_revival.pic2d.sensitivity import AnomalousCollisionConfig
 from cft_revival.pic2d.simulation import (
     InjectionConfig,
+    PeakDebyeGateConfig,
     PIC2DConfig,
     SeedPlasmaConfig,
     SeriesRecord,
@@ -91,6 +93,13 @@ LEDGER_SCALARS = (
 NEUTRAL_SCALARS = (
     "density_per_m3", "fixed_point_per_m3", "scale", "ionization_rate_per_s", "effusion_rate_per_s",
     "artificial_rate_per_s", "interval_ledger_residual_atoms",
+)
+# v1.4 (wall-ion recycling): absent from v1.3 records -> NaN in the arrays
+NEUTRAL_SCALARS_V14 = ("recycled_rate_per_s", "wall_ion_absorption_rate_per_s", "gross_utilisation", "net_utilisation")
+# v1.4 peak-node Debye sample (blocker 1); absent from v1.3 records -> arrays omitted
+PEAK_NODE_SCALARS = (
+    "n_e_peak_per_m3", "t_e_peak_ev", "debye_length_m", "cells_per_debye", "macro_particles_at_peak", "t_e_dense_ev",
+    "r_m", "z_m",
 )
 
 
@@ -164,9 +173,23 @@ def build_config(protocol: dict[str, Any], *, backend: str = "warp-cuda") -> PIC
     inventory = None
     if operating.get("neutral_inventory") is not None:
         block = operating["neutral_inventory"]
-        inventory = NeutralInventoryConfig(float(block["feed_atoms_per_s"]), float(block["relaxation_time_s"]))
+        # v1.4: relaxation_time_s may be null (physical effusion time scale only) and the
+        # inventory may recycle wall/anode ions as thermal neutrals at the wall temperature
+        relaxation = block["relaxation_time_s"]
+        inventory = NeutralInventoryConfig(
+            float(block["feed_atoms_per_s"]), None if relaxation is None else float(relaxation),
+            wall_recycling=bool(block.get("wall_recycling", False)),
+            recombination_coefficient=float(block.get("recombination_coefficient", 1.0)),
+            wall_temperature_k=None if block.get("wall_temperature_k") is None else float(block["wall_temperature_k"]),
+        )
         if int(numerics["series_interval_steps"]) != sync:
             raise PIC2DValidationError("the neutral inventory is updated at the series interval, which must equal device_sync_steps")
+    peak_gate = None
+    if numerics.get("peak_debye_gate") is not None:
+        peak_gate = PeakDebyeGateConfig(**{k: v for k, v in numerics["peak_debye_gate"].items() if not k.endswith("_note")})
+    anomalous = None
+    if numerics.get("anomalous_collisions") is not None:
+        anomalous = AnomalousCollisionConfig(**{k: v for k, v in numerics["anomalous_collisions"].items() if not k.endswith("_note")})
     return PIC2DConfig(
         grid=grid,
         potentials=BoundaryPotentials(operating["anode_potential_v"], operating["exit_plane_potential_v"]),
@@ -188,7 +211,15 @@ def build_config(protocol: dict[str, Any], *, backend: str = "warp-cuda") -> PIC
         ion_subcycle=int(numerics["ion_subcycle"]),
         device_sync_steps=sync,
         neutral_inventory=inventory,
+        peak_debye_gate=peak_gate,
+        anomalous=anomalous,
     )
+
+
+def step_graph_flag(protocol: dict[str, Any]) -> bool:
+    """v1.4: CUDA-graph replay of the step (``numerics.step_graph``, default on; no effect on the CPU backends)."""
+
+    return bool(protocol["numerics"].get("step_graph", True))
 
 
 # -- plateau criterion ------------------------------------------------------
@@ -249,6 +280,60 @@ def evaluate_plateau(
     }
 
 
+def evaluate_triad(arrays: dict[str, np.ndarray], rule: dict[str, Any], transit_time_s: float) -> dict[str, Any] | None:
+    """v1.4 grid-heating triad (literature review, blocker 1, change (d)3), recorded and gated.
+
+    (i) energy-ledger residual over the electrode work (cumulative; the momentum-conserving
+    scheme heats the grid when the cells are coarser than lambda_D: Birdsall and Maron 1980,
+    Ueda et al. 1994, Adams et al. 2025); (ii) T_e in the densest cells (n >= dense_fraction
+    n_peak) and the ionisation rate S: their trailing-window drifts; (iii) the peak omega_pe dt
+    drift.  Each drift uses the plateau window; ``soft`` thresholds must hold for a plateau to
+    be declared; the ``hard`` thresholds (and the residual bound) stop the run fail-closed once
+    ``enforced_after_transit_times`` have elapsed (before that the ratio and drifts are
+    ill-conditioned: small electrode work, ignition transient).  Returns ``None`` when the
+    protocol declares no triad block (v1.2/v1.3 protocols).
+    """
+
+    block = rule.get("grid_heating_triad")
+    if block is None or arrays.get("step") is None or arrays["step"].size < 2:
+        return None
+    fraction = float(rule["plateau_window_fraction"])
+    time_s = arrays["time_s"]
+    transits = float(time_s[-1]) / transit_time_s
+    residual = float(arrays["interval_residual_j"][1:].sum())
+    electrode = float(arrays["interval_electrode_work_j"][1:].sum())
+    ratio = residual / electrode if abs(electrode) > 0.0 else None
+    drifts = {
+        "ionisation_rate_drift": trailing_time_drift(time_s, arrays["current_ionization_rate_per_s"], fraction),
+        "omega_pe_dt_drift": trailing_time_drift(time_s, arrays["peak_omega_pe_dt"], fraction),
+    }
+    if "peak_node_t_e_dense_ev" in arrays:
+        drifts["t_e_dense_drift"] = trailing_time_drift(time_s, arrays["peak_node_t_e_dense_ev"], fraction)
+    soft = float(block["soft_drift_max"])
+    hard = float(block["hard_drift_max"])
+    residual_max = float(block["energy_residual_over_electrode_work_max"])
+    enforce_after = float(block.get("enforced_after_transit_times", 1.0))
+    enforced = transits >= enforce_after
+    soft_ok = ratio is not None and abs(ratio) < residual_max and all(v is not None and abs(v) < soft for v in drifts.values())
+    hard_failures = []
+    if enforced:
+        if ratio is None or abs(ratio) >= residual_max:
+            hard_failures.append(f"energy residual / electrode work {ratio} exceeds {residual_max}")
+        for key, value in drifts.items():
+            if value is not None and abs(value) >= hard:
+                hard_failures.append(f"{key} {value:.3g} exceeds {hard}")
+    return {
+        "energy_residual_over_electrode_work": ratio,
+        **drifts,
+        "soft_ok": bool(soft_ok),
+        "enforced": bool(enforced),
+        "hard_failures": hard_failures,
+        "thresholds": {"energy_residual_over_electrode_work_max": residual_max, "soft_drift_max": soft, "hard_drift_max": hard,
+                       "enforced_after_transit_times": enforce_after},
+        "window_fraction": fraction,
+    }
+
+
 # -- records ----------------------------------------------------------------
 
 def records_to_arrays(records: list[dict[str, Any]]) -> dict[str, np.ndarray]:
@@ -257,11 +342,15 @@ def records_to_arrays(records: list[dict[str, Any]]) -> dict[str, np.ndarray]:
     for key in current_keys:
         arrays[f"current_{key}"] = []
     with_neutral = bool(records) and records[0].get("neutral") is not None
+    with_peak = bool(records) and records[0].get("peak_node") is not None
     if with_neutral:
-        for key in NEUTRAL_SCALARS:
+        for key in NEUTRAL_SCALARS + NEUTRAL_SCALARS_V14:
             arrays[f"neutral_{key}"] = []
         for key in NEUTRAL_LEDGER_KEYS:
             arrays[f"neutral_ledger_{key}"] = []
+    if with_peak:
+        for key in PEAK_NODE_SCALARS:
+            arrays[f"peak_node_{key}"] = []
     for record in records:
         for key in SERIES_SCALARS:
             arrays[key].append(float(record[key]))
@@ -273,14 +362,20 @@ def records_to_arrays(records: list[dict[str, Any]]) -> dict[str, np.ndarray]:
             neutral = record["neutral"]
             for key in NEUTRAL_SCALARS:
                 arrays[f"neutral_{key}"].append(float(neutral[key]))
+            for key in NEUTRAL_SCALARS_V14:
+                arrays[f"neutral_{key}"].append(float(neutral.get(key, float("nan"))))
             for key in NEUTRAL_LEDGER_KEYS:
-                arrays[f"neutral_ledger_{key}"].append(float(neutral["ledger"][key]))
+                arrays[f"neutral_ledger_{key}"].append(float(neutral["ledger"].get(key, 0.0)))  # v1.3 records: no 'recycled'
+        if with_peak:
+            peak = record["peak_node"]
+            for key in PEAK_NODE_SCALARS:
+                arrays[f"peak_node_{key}"].append(float("nan") if peak[key] is None else float(peak[key]))
     return {key: np.asarray(values, dtype=np.float64) for key, values in arrays.items()}
 
 
 def status_from_record(
     record: dict[str, Any], config: PIC2DConfig, plasma_volume_m3: float, *, wall_seconds_total: float,
-    ms_per_step: float | None, plateau: dict[str, Any] | None,
+    ms_per_step: float | None, plateau: dict[str, Any] | None, triad: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     n_e = record["electrons"] * config.macro_weight
     omega = record["peak_omega_pe_dt"] / config.dt_s
@@ -311,6 +406,19 @@ def status_from_record(
         line["n_g_fixed_point_per_m3"] = neutral["fixed_point_per_m3"]
         line["effusion_rate_per_s"] = neutral["effusion_rate_per_s"]
         line["neutral_ledger_residual_atoms"] = neutral["interval_ledger_residual_atoms"]
+        if "recycled_rate_per_s" in neutral:  # v1.4
+            line["recycled_rate_per_s"] = neutral["recycled_rate_per_s"]
+            line["gross_utilisation"] = neutral["gross_utilisation"]
+            line["net_utilisation"] = neutral["net_utilisation"]
+    peak = record.get("peak_node")
+    if peak is not None:  # v1.4 peak-node Debye sample
+        line["peak_node"] = {key: peak[key] for key in ("n_e_peak_per_m3", "t_e_peak_ev", "cells_per_debye", "macro_particles_at_peak",
+                                                        "t_e_dense_ev", "z_m", "r_m")}
+        if "gate_enforced" in peak:
+            line["peak_node"]["gate_enforced"] = peak["gate_enforced"]
+            line["peak_node"]["gate_max_cells_per_debye"] = peak["gate_max_cells_per_debye"]
+    if triad is not None:
+        line["grid_heating_triad"] = {key: triad[key] for key in triad if key not in ("thresholds", "window_fraction")}
     return line
 
 
@@ -404,11 +512,16 @@ def neutral_summary(arrays: dict[str, np.ndarray], sim: Simulation, initial_dens
         return None
     inventory = sim.neutrals
     ledger = {key: float(arrays[f"neutral_ledger_{key}"][-1]) for key in NEUTRAL_LEDGER_KEYS}
-    closure = ledger["fed"] - ledger["ionized"] - ledger["effused"] - ledger["artificial"]
+    # v1.4 balance: fed + recycled - ionised - effused - artificial = V (n_1 - n_0); 'recycled' is 0 for v1.3 runs
+    closure = ledger["fed"] + ledger["recycled"] - ledger["ionized"] - ledger["effused"] - ledger["artificial"]
     n_final = float(arrays["neutral_density_per_m3"][-1])
     expected = inventory.volume_m3 * (n_final - initial_density)
     tail = arrays["neutral_density_per_m3"][-max(arrays["neutral_density_per_m3"].size // 5, 1):]
     s_tail = arrays["neutral_ionization_rate_per_s"][-tail.size:]
+    recycled_tail = arrays["neutral_recycled_rate_per_s"][-tail.size:]
+    recycled_mean = float(np.nanmean(recycled_tail)) if np.any(np.isfinite(recycled_tail)) else 0.0
+    feed = inventory.config.feed_atoms_per_s
+    relaxation_on = getattr(inventory, "relaxation_on", inventory.config.relaxation_time_s is not None)
     return {
         **inventory.to_dict(),
         "initial_density_per_m3": initial_density,
@@ -416,14 +529,22 @@ def neutral_summary(arrays: dict[str, np.ndarray], sim: Simulation, initial_dens
         "final_fixed_point_per_m3": float(arrays["neutral_fixed_point_per_m3"][-1]),
         "trailing_20pct_mean_density_per_m3": float(np.mean(tail)),
         "trailing_20pct_mean_ionization_rate_per_s": float(np.mean(s_tail)),
-        "trailing_20pct_analytic_fixed_point_per_m3": inventory.fixed_point(float(np.mean(s_tail))),
+        "trailing_20pct_mean_recycled_rate_per_s": recycled_mean,
+        "trailing_20pct_analytic_fixed_point_per_m3": inventory.fixed_point(float(np.mean(s_tail)), recycled_mean),
         "trailing_20pct_mean_artificial_rate_per_s": float(np.mean(arrays["neutral_artificial_rate_per_s"][-tail.size:])),
+        "trailing_20pct_artificial_rate_rms_per_s": float(np.sqrt(np.mean(arrays["neutral_artificial_rate_per_s"][-tail.size:] ** 2))),
         "cumulative_ledger_atoms": ledger,
         "cumulative_ledger_closure_atoms": closure - expected,
         "cumulative_ledger_closure_relative_to_inventory": (closure - expected) / (inventory.volume_m3 * initial_density),
         "max_interval_ledger_residual_atoms": float(np.max(np.abs(arrays["neutral_interval_ledger_residual_atoms"]))),
-        "propellant_utilisation_trailing": float(np.mean(s_tail)) / inventory.config.feed_atoms_per_s,
-        "note": "the transient toward the fixed point is artificial (relaxation_time_s); only the fixed point is physical",
+        "propellant_utilisation_trailing": float(np.mean(s_tail)) / feed,
+        "gross_utilisation_trailing": float(np.mean(s_tail)) / feed,
+        "net_utilisation_trailing": (float(np.mean(s_tail)) - recycled_mean) / feed,
+        "utilisation_note": "gross = S / Q_in (ionisations per fed atom); net = (S - recycled wall/anode ions) / Q_in = beam ions per fed "
+                            "atom at the fixed point; without wall recycling (v1.3) the two coincide and the gross value overstates the "
+                            "atoms consumed",
+        "note": ("the transient toward the fixed point is artificial (relaxation_time_s); only the fixed point is physical"
+                 if relaxation_on else "no artificial relaxation: n_g evolves on the physical effusion time scale V/c"),
     }
 
 
@@ -454,9 +575,30 @@ def write_final_artifacts(
     transit_time = float(budget["ion_transit_time_s"])
     arrays = records_to_arrays(records) if records else {}
     plateau = None
+    triad = None
+    peak_node_summary = None
     if records:
         plateau = evaluate_plateau(arrays["time_s"], arrays["current_discharge_a"], arrays["electrons"], rule, transit_time,
                                    arrays.get("neutral_density_per_m3"))
+        triad = evaluate_triad(arrays, rule, transit_time)
+        if triad is not None:
+            plateau["triad_soft_ok"] = triad["soft_ok"]
+            plateau["reached"] = bool(plateau["reached"] and triad["soft_ok"])
+        if "peak_node_cells_per_debye" in arrays:
+            n_tail = max(arrays["step"].size // 5, 1)
+            gate = config.peak_debye_gate
+            peak_node_summary = {
+                "trailing_20pct_mean_cells_per_debye": float(np.mean(arrays["peak_node_cells_per_debye"][-n_tail:])),
+                "max_cells_per_debye": float(np.max(arrays["peak_node_cells_per_debye"])),
+                "trailing_20pct_mean_n_e_peak_per_m3": float(np.mean(arrays["peak_node_n_e_peak_per_m3"][-n_tail:])),
+                "trailing_20pct_mean_t_e_peak_ev": float(np.mean(arrays["peak_node_t_e_peak_ev"][-n_tail:])),
+                "trailing_20pct_mean_t_e_dense_ev": float(np.mean(arrays["peak_node_t_e_dense_ev"][-n_tail:])),
+                "trailing_20pct_mean_macro_particles_at_peak": float(np.mean(arrays["peak_node_macro_particles_at_peak"][-n_tail:])),
+                "trailing_20pct_mean_peak_z_m": float(np.mean(arrays["peak_node_z_m"][-n_tail:])),
+                "gate": None if gate is None else gate.to_dict(),
+                "note": "peak node = densest node holding >= min_macro_particles_at_peak macro-electrons; the gate fails closed on "
+                        "max(dr, dz) / lambda_D there (review blocker 1: resolve the peak, not the mean)",
+            }
     maps_sha = artifacts.write_npz(results / "maps.npz", maps)
     series_sha = artifacts.write_npz(results / "series.npz", arrays) if arrays else None
     checkpoint_json, checkpoint_npz = artifacts.save_checkpoint(
@@ -493,6 +635,8 @@ def write_final_artifacts(
         "stop_reason": stop_reason,
         "stability_gate_message": gate_error,
         "plateau": plateau,
+        "grid_heating_triad": triad,
+        "peak_node_debye": peak_node_summary,
         "sessions": run_state["sessions"],
         "wall_seconds_total": run_state["wall_seconds_total"],
         "wall_seconds_setup_this_session": setup_seconds,
@@ -583,11 +727,12 @@ def run_steady_state(
     xs_sha = cross_sections.payload_sha256 if cross_sections is not None else None
     setup_seconds = time.perf_counter() - t0
 
-    sim = Simulation(config, field_map, cross_sections=cross_sections, backend=backend)  # a-priori gate inside
+    sim = Simulation(config, field_map, cross_sections=cross_sections, backend=backend, step_graph=step_graph_flag(protocol))  # a-priori gate inside
     log(f"[steady-state] stability gate: {json.dumps(sim.stability.to_dict())}")
     log(f"[steady-state] mesh: {sim.masks.to_dict()}")
     if sim.neutrals is not None:
         log(f"[steady-state] neutral inventory: {json.dumps(sim.neutrals.to_dict())}")
+    log(f"[steady-state] v1.4 options: {json.dumps(sim.to_provenance().get('v1_4_options'))}")
     plasma_volume = float(sim.masks.to_dict()["plasma_volume_m3"])
 
     series_path = results / "series.jsonl"
@@ -618,6 +763,7 @@ def run_steady_state(
     last_status_step = sim.backend.step_index
     last_print = t_session
     last_plateau: dict[str, Any] | None = None
+    last_triad: dict[str, Any] | None = None
     gpu_samples: list[float] = []
 
     def wall_total() -> float:
@@ -632,11 +778,15 @@ def run_steady_state(
         ms = 1e3 * (now - last_status_wall) / max(record.step - last_status_step, 1)
         last_status_wall, last_status_step = now, record.step
         _append_jsonl(status_path, status_from_record(payload, config, plasma_volume, wall_seconds_total=wall_total(),
-                                                      ms_per_step=ms, plateau=last_plateau))
+                                                      ms_per_step=ms, plateau=last_plateau, triad=last_triad))
         if now - last_print > 60.0:
             last_print = now
             gpu_samples.append(_gpu_utilisation())
             extra = "" if record.neutral is None else f" n_g={record.neutral['density_per_m3']:.3g}"
+            if record.neutral is not None and "net_utilisation" in record.neutral:
+                extra += f" util={record.neutral['gross_utilisation']:.2f}/{record.neutral['net_utilisation']:.2f}"
+            if record.peak_node is not None:
+                extra += f" peak={record.peak_node['n_e_peak_per_m3']:.2e} cells/lD={record.peak_node['cells_per_debye']:.2f}"
             log(f"[steady-state] step {record.step} t={record.time_s*1e6:.3f} us e={record.electrons} i={record.ions} "
                 f"I_d={record.currents_a['discharge_a']*1e3:.2f} mA I_beam={record.currents_a['exit_ion_beam_a']*1e3:.2f} mA "
                 f"S={record.currents_a['ionization_rate_per_s']:.3g}/s{extra} w_pe*dt={record.peak_omega_pe_dt:.3f} "
@@ -673,6 +823,16 @@ def run_steady_state(
         arrays = records_to_arrays(records)
         last_plateau = evaluate_plateau(arrays["time_s"], arrays["current_discharge_a"], arrays["electrons"], rule, transit_time,
                                         arrays.get("neutral_density_per_m3"))
+        last_triad = evaluate_triad(arrays, rule, transit_time)
+        if last_triad is not None:
+            # v1.4: the grid-heating triad is a fail-closed gate once enforced, and a plateau precondition always
+            if last_triad["hard_failures"]:
+                gate_error = "grid-heating triad gate: " + "; ".join(last_triad["hard_failures"])
+                stop_reason = "grid_heating_triad_gate_stopped_run"
+                log(f"[steady-state] fail-closed stop at step {step}: {gate_error}")
+                break
+            last_plateau["triad_soft_ok"] = last_triad["soft_ok"]
+            last_plateau["reached"] = bool(last_plateau["reached"] and last_triad["soft_ok"])
         if last_plateau["reached"]:
             stop_reason = "plateau_reached_after_min_transit_times"
             break
@@ -745,7 +905,7 @@ def finalize(
     t0 = time.perf_counter()
     field_map, cross_sections = load_inputs(config, field_map, cross_sections)
     xs_sha = cross_sections.payload_sha256 if cross_sections is not None else None
-    sim = Simulation(config, field_map, cross_sections=cross_sections, backend=backend)
+    sim = Simulation(config, field_map, cross_sections=cross_sections, backend=backend, step_graph=step_graph_flag(protocol))
     state = artifacts.load_checkpoint(checkpoint, config, field_sha256=field_map.sha256, cross_section_sha256=xs_sha, require_same_code=False)
     sim.load_state(state)
     setup_seconds = time.perf_counter() - t0

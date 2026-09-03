@@ -120,6 +120,104 @@ def test_fixed_point_matches_analytic_balance_and_rate():
     assert inventory.scale(result.state) == pytest.approx(0.7)
 
 
+def _recycling_inventory(feed: float, *, tau: float | None = 3.0e-8, gamma: float = 1.0, t_wall: float | None = None) -> NeutralInventory:
+    return NeutralInventory(
+        NeutralInventoryConfig(feed, tau, wall_recycling=True, recombination_coefficient=gamma, wall_temperature_k=t_wall),
+        ceiling_density_per_m3=5.5e19, exit_area_m2=EXIT_AREA, temperature_k=300.0, volume_m3=VOLUME,
+    )
+
+
+def test_v14_recycling_ledger_closes_and_fixed_point_includes_the_wall_source():
+    """fed + recycled - ionised - effused - artificial = V dn (round-off), n_g* = (Q_in + R - S)/c."""
+
+    feed = feed_for_density(5.5e19, EXIT_AREA, 300.0)
+    inventory = _recycling_inventory(feed)
+    assert NEUTRAL_LEDGER_KEYS == ("fed", "ionized", "effused", "artificial", "recycled")
+    state = NeutralState.initial(5.5e19)
+    rng = np.random.default_rng(1)
+    for k in range(400):
+        s = float(rng.uniform(0.2, 0.7) * feed)
+        r = float(rng.uniform(0.3, 0.7)) * s                      # 30-70 % of the ionisation hits the wall
+        before = state
+        result = inventory.advance(state, s, 3.0e-10, r)
+        state = result.state
+        d = {key: state.ledger[key] - before.ledger[key] for key in NEUTRAL_LEDGER_KEYS}
+        closure = d["fed"] + d["recycled"] - d["ionized"] - d["effused"] - d["artificial"]
+        assert abs(closure - VOLUME * (state.density_per_m3 - before.density_per_m3)) <= 1e-9 * VOLUME * 5.5e19
+        assert abs(result.ledger_residual_atoms) <= 1e-9 * VOLUME * 5.5e19
+        assert result.recycled_rate_per_s == pytest.approx(r)
+        assert result.fixed_point_per_m3 == pytest.approx((feed + r - s) / inventory.effusion_coefficient)
+    assert state.ledger["recycled"] > 0.0
+    # the plateau numbers of steady-state v2: S = 3.93e16 /s, wall+anode ions 2.355e16 /s -> n_g* rises from 2.97e19 to 4.49e19
+    v2 = NeutralInventory(NeutralInventoryConfig(8.551102004120011e16, 3e-8, wall_recycling=True),
+                          ceiling_density_per_m3=5.5e19, exit_area_m2=EXIT_AREA, temperature_k=300.0, volume_m3=3.432268513863189e-07)
+    assert v2.fixed_point(3.93e16) == pytest.approx(2.97e19, rel=0.01)
+    assert v2.fixed_point(3.93e16, 2.355e16) == pytest.approx(4.49e19, rel=0.01)
+
+
+def test_v14_recycling_converges_to_the_recycled_fixed_point_with_gross_and_net_utilisation():
+    feed = feed_for_density(5.5e19, EXIT_AREA, 300.0)
+    inventory = _recycling_inventory(feed)
+    s, r = 0.5 * feed, 0.3 * feed
+    state = NeutralState.initial(5.5e19)
+    for _ in range(3000):        # 900 ns = 30 tau
+        state = inventory.advance(state, s, 3.0e-10, r).state
+    result = inventory.advance(state, s, 3.0e-10, r)
+    n_star = (feed + r - s) / inventory.effusion_coefficient
+    assert result.state.density_per_m3 == pytest.approx(n_star, rel=1e-8)
+    assert result.effusion_rate_per_s == pytest.approx(feed + r - s, rel=1e-8)   # feed + recycled = ionisation + effusion
+    assert abs(result.artificial_rate_per_s) <= 1e-8 * feed
+    gross, net = s / feed, (s - r) / feed
+    assert gross == pytest.approx(0.5) and net == pytest.approx(0.2)
+    # recombination coefficient scales the source; recycling off ignores it entirely
+    half = _recycling_inventory(feed, gamma=0.5).advance(NeutralState.initial(5.5e19), s, 3.0e-10, r)
+    assert half.recycled_rate_per_s == pytest.approx(0.5 * r)
+    off = _inventory(feed, ceiling=5.5e19).advance(NeutralState.initial(5.5e19), s, 3.0e-10, r)
+    assert off.recycled_rate_per_s == 0.0 and off.fixed_point_per_m3 == pytest.approx((feed - s) / inventory.effusion_coefficient)
+
+
+def test_v14_wall_temperature_mixture_effusion_and_relaxation_off():
+    feed = feed_for_density(5.5e19, EXIT_AREA, 300.0)
+    hot = _recycling_inventory(feed, t_wall=500.0)
+    c_g, c_w = hot.effusion_coefficient, hot.wall_effusion_coefficient
+    assert c_w / c_g == pytest.approx((500.0 / 300.0) ** 0.5)
+    r = 0.25 * feed
+    assert hot.effective_effusion_coefficient(0.0) == c_g
+    assert hot.effective_effusion_coefficient(r) == pytest.approx((feed * c_g + r * c_w) / (feed + r))
+    assert hot.fixed_point(0.4 * feed, r) == pytest.approx((feed + r - 0.4 * feed) / hot.effective_effusion_coefficient(r))
+    result = hot.advance(NeutralState.initial(5.5e19), 0.4 * feed, 3.0e-10, r)
+    assert result.effusion_coefficient_m3_per_s == pytest.approx(hot.effective_effusion_coefficient(r))
+    assert hot.to_dict()["wall_temperature_k"] == 500.0 and hot.to_dict()["wall_recycling"] is True
+    with pytest.raises(PIC2DValidationError):
+        NeutralInventoryConfig(feed, 1e-8, wall_temperature_k=500.0)          # wall temperature needs recycling
+    with pytest.raises(PIC2DValidationError):
+        NeutralInventoryConfig(feed, 1e-8, wall_recycling=True, recombination_coefficient=1.5)
+    # relaxation OFF: the physical effusion time scale only (rate c/V), artificial ledger stays zero
+    physical = _recycling_inventory(feed, tau=None)
+    assert physical.relaxation_on is False and physical.to_dict()["transient_is_artificial"] is False
+    state = NeutralState.initial(5.5e19)
+    s = 0.3 * feed
+    result = physical.advance(state, s, 1.0e-6, 0.0)
+    rate = physical.effusion_coefficient / VOLUME
+    n_star = (feed - s) / physical.effusion_coefficient
+    assert result.state.density_per_m3 == pytest.approx(n_star + (5.5e19 - n_star) * exp(-rate * 1.0e-6), rel=1e-12)
+    assert result.artificial_rate_per_s == 0.0 and result.state.ledger["artificial"] == 0.0
+    assert abs(result.ledger_residual_atoms) <= 1e-9 * VOLUME * 5.5e19
+    # after 1 us the physical inventory has moved < 1 % of the way: why a plateau without relaxation needs >> us
+    assert abs(result.state.density_per_m3 - 5.5e19) < 0.01 * abs(n_star - 5.5e19)
+
+
+def test_v14_state_array_reads_v13_and_v14_layouts():
+    v13 = NeutralState.from_array(np.array([3.0e19, 1.0, 2.0, 3.0, 4.0]))
+    assert v13.ledger == {"fed": 1.0, "ionized": 2.0, "effused": 3.0, "artificial": 4.0, "recycled": 0.0}
+    v14 = NeutralState(2.0e19, {"fed": 1.0, "ionized": 2.0, "effused": 3.0, "artificial": 4.0, "recycled": 5.0})
+    assert NeutralState.from_array(v14.to_array()).ledger == v14.ledger
+    with pytest.raises(PIC2DValidationError):
+        NeutralState.from_array(np.array([1.0, 2.0]))
+    # v1.3 config identity is unchanged (no recycling keys)
+    assert NeutralInventoryConfig(1e17, 3e-8).to_dict() == {"feed_atoms_per_s": 1e17, "relaxation_time_s": 3e-8}
+
+
 def test_fail_closed_feed_above_ceiling_scale_and_exhaustion():
     with pytest.raises(PIC2DValidationError):
         _inventory(feed_for_density(5.1e19, EXIT_AREA, 300.0), ceiling=5.0e19)
@@ -208,7 +306,7 @@ def test_checkpoint_carries_neutral_state_and_resume_is_bitwise(tmp_path: Path):
         tmp_path, "ckpt", first.state, config, field_sha256=field.sha256, cross_section_sha256=xs.payload_sha256, backend="cpu"
     )
     arrays = np.load(npz_path)
-    assert "neutral" in arrays.files and arrays["neutral"].shape == (5,)
+    assert "neutral" in arrays.files and arrays["neutral"].shape == (6,)   # density + 5 ledgers (v1.4 adds recycled)
     assert artifacts.read_canonical_json(json_path)["neutral_keys"] == ["density_per_m3", *NEUTRAL_LEDGER_KEYS]
     loaded = artifacts.load_checkpoint(json_path, config, field_sha256=field.sha256, cross_section_sha256=xs.payload_sha256)
     assert loaded.neutral is not None and loaded.neutral.density_per_m3 == first.state.neutral.density_per_m3

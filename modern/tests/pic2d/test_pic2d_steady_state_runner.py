@@ -337,3 +337,119 @@ def test_v13_run_records_neutral_inventory_in_status_series_and_summary(tiny, tm
         bad = copy.deepcopy(protocol)
         bad["numerics"]["series_interval_steps"] = 40
         runner.build_config(bad, backend="cpu")
+
+
+# -- v1.4: recycling, peak-node gate, grid-heating triad -------------------------
+
+TRIAD_RULE = {
+    **RULE,
+    "grid_heating_triad": {"energy_residual_over_electrode_work_max": 0.10, "soft_drift_max": 0.05, "hard_drift_max": 0.25,
+                           "enforced_after_transit_times": 1.0},
+}
+
+
+def _triad_arrays(t: np.ndarray, *, residual_ratio: float, s_slope: float, te_slope: float, te_exp: float = 0.0) -> dict[str, np.ndarray]:
+    n = t.size
+    electrode = np.full(n, 1.0e-9)
+    return {
+        "step": np.arange(n, dtype=float), "time_s": t,
+        "interval_residual_j": residual_ratio * electrode, "interval_electrode_work_j": electrode,
+        "current_ionization_rate_per_s": 1.0e16 * np.exp(s_slope * t), "peak_omega_pe_dt": np.full(n, 0.1),
+        "peak_node_t_e_dense_ev": 8.0 * (1.0 + te_slope * t) * np.exp(te_exp * t),
+    }
+
+
+def test_triad_absent_without_block_recorded_soft_and_hard_with_it():
+    t = np.linspace(0.0, 2.0, 1000)
+    arrays = _triad_arrays(t, residual_ratio=0.04, s_slope=0.0, te_slope=0.0)
+    assert runner.evaluate_triad(arrays, RULE, TRANSIT) is None
+    ok = runner.evaluate_triad(arrays, TRIAD_RULE, TRANSIT)
+    assert ok["soft_ok"] and ok["enforced"] and ok["hard_failures"] == []
+    assert ok["energy_residual_over_electrode_work"] == pytest.approx(0.04)
+    assert abs(ok["ionisation_rate_drift"]) < 1e-9 and abs(ok["t_e_dense_drift"]) < 1e-9 and abs(ok["omega_pe_dt_drift"]) < 1e-9
+    # (i) residual bound: recorded before one transit, fail-closed after
+    bad = _triad_arrays(np.linspace(0.0, 0.5, 250), residual_ratio=0.2, s_slope=0.0, te_slope=0.0)
+    early = runner.evaluate_triad(bad, TRIAD_RULE, TRANSIT)
+    assert not early["enforced"] and not early["soft_ok"] and early["hard_failures"] == []
+    late = runner.evaluate_triad(_triad_arrays(t, residual_ratio=0.2, s_slope=0.0, te_slope=0.0), TRIAD_RULE, TRANSIT)
+    assert late["hard_failures"] and "energy residual" in late["hard_failures"][0]
+    # (ii) dense-cell T_e drift: ~7 % over the window blocks the plateau (soft) but does not stop the run;
+    # exponential heating (e-folding 1 transit -> ~40 % over the window) stops it
+    mild = runner.evaluate_triad(_triad_arrays(t, residual_ratio=0.0, s_slope=0.0, te_slope=0.25), TRIAD_RULE, TRANSIT)
+    assert 0.05 < mild["t_e_dense_drift"] < 0.25 and not mild["soft_ok"] and mild["hard_failures"] == []
+    hot = runner.evaluate_triad(_triad_arrays(t, residual_ratio=0.0, s_slope=0.0, te_slope=0.0, te_exp=1.0), TRIAD_RULE, TRANSIT)
+    assert hot["t_e_dense_drift"] > 0.25 and hot["hard_failures"] and "t_e_dense_drift" in hot["hard_failures"][0]
+    # (ii) ionisation-rate drift alone is enough
+    s_ramp = runner.evaluate_triad(_triad_arrays(t, residual_ratio=0.0, s_slope=1.0, te_slope=0.0), TRIAD_RULE, TRANSIT)
+    assert s_ramp["hard_failures"] and "ionisation_rate_drift" in s_ramp["hard_failures"][0]
+
+
+def _v14_protocol(protocol: dict) -> dict:
+    from cft_revival.pic2d.neutrals import feed_for_density
+
+    protocol = copy.deepcopy(protocol)
+    n_g0 = protocol["operating_point"]["neutral_density_per_m3"]
+    feed = feed_for_density(n_g0 / 2.0, np.pi * protocol["geometry"]["exit_radius_m"] ** 2, protocol["operating_point"]["neutral_temperature_k"])
+    protocol["operating_point"]["neutral_inventory"] = {
+        "feed_atoms_per_s": feed, "relaxation_time_s": 1.0e-9, "wall_recycling": True, "recombination_coefficient": 1.0,
+        "wall_temperature_k": 400.0,
+    }
+    protocol["operating_point"]["seed_plasma_density_per_m3"] = 3.0e16
+    protocol["numerics"]["peak_debye_gate"] = {"max_cells_per_debye": 50.0, "min_macro_particles_at_peak": 4, "dense_fraction": 0.5}
+    protocol["numerics"]["step_graph"] = True
+    protocol["stopping_rule"]["grid_heating_triad"] = TRIAD_RULE["grid_heating_triad"]
+    return protocol
+
+
+def test_v14_run_records_recycling_peak_node_and_triad(tiny, tmp_path: Path):
+    base, _, field, xs = tiny
+    protocol = _v14_protocol(base)
+    config = runner.build_config(protocol, backend="cpu")
+    assert config.neutral_inventory.wall_recycling and config.neutral_inventory.wall_temperature_k == 400.0
+    assert config.peak_debye_gate is not None and config.peak_debye_gate.max_cells_per_debye == 50.0
+    assert config.anomalous is None and runner.step_graph_flag(protocol) is True
+    results = tmp_path / "v14"
+    runner.run_steady_state(protocol, results, backend="cpu", field_map=field, cross_sections=xs, max_steps=120, log=lambda _: None)
+    samples = [json.loads(l) for l in (results / "status.jsonl").read_text(encoding="utf-8").splitlines()]
+    samples = [s for s in samples if "event" not in s]
+    assert all("recycled_rate_per_s" in s and "net_utilisation" in s and "peak_node" in s for s in samples)
+    assert all(s["net_utilisation"] <= s["gross_utilisation"] for s in samples)
+    peak = samples[-1]["peak_node"]
+    assert peak["cells_per_debye"] > 0.0 and peak["gate_max_cells_per_debye"] == 50.0 and peak["n_e_peak_per_m3"] > 0.0
+    assert "grid_heating_triad" in samples[-1] and "energy_residual_over_electrode_work" in samples[-1]["grid_heating_triad"]
+    series = np.load(results / "series.npz")
+    for key in ("neutral_recycled_rate_per_s", "neutral_net_utilisation", "neutral_ledger_recycled", "peak_node_cells_per_debye",
+                "peak_node_t_e_dense_ev", "peak_node_n_e_peak_per_m3"):
+        assert key in series.files and series[key].size == 6, key
+    assert np.all(np.isfinite(series["neutral_recycled_rate_per_s"]))
+    summary = artifacts.read_canonical_json(results / "summary.json")
+    neutral = summary["neutral_inventory"]
+    assert neutral["wall_recycling"] is True and neutral["wall_temperature_k"] == 400.0
+    assert abs(neutral["cumulative_ledger_closure_relative_to_inventory"]) < 1e-12       # closes WITH the recycled term
+    assert neutral["net_utilisation_trailing"] <= neutral["gross_utilisation_trailing"]
+    assert summary["grid_heating_triad"] is not None and "triad_soft_ok" in summary["plateau"]
+    assert summary["peak_node_debye"]["gate"]["max_cells_per_debye"] == 50.0
+    assert summary["peak_node_debye"]["max_cells_per_debye"] >= summary["peak_node_debye"]["trailing_20pct_mean_cells_per_debye"] * 0.999
+    assert summary["provenance"]["v1_4_options"]["wall_recycling"] is True
+    assert summary["provenance"]["v1_4_options"]["peak_debye_gate"]["max_cells_per_debye"] == 50.0
+    # a v1.3 series (no recycled key, no peak node) still loads through records_to_arrays
+    old = [json.loads(l) for l in (results / "series.jsonl").read_text(encoding="utf-8").splitlines()]
+    for record in old:
+        record["neutral"] = {k: v for k, v in record["neutral"].items() if k not in ("recycled_rate_per_s", "net_utilisation")}
+        record["neutral"]["ledger"].pop("recycled")
+        record["peak_node"] = None
+    arrays = runner.records_to_arrays(old)
+    assert np.all(np.isnan(arrays["neutral_recycled_rate_per_s"])) and np.all(arrays["neutral_ledger_recycled"] == 0.0)
+    assert "peak_node_cells_per_debye" not in arrays
+
+
+def test_v14_peak_gate_stops_the_run_fail_closed(tiny, tmp_path: Path):
+    base, _, field, xs = tiny
+    protocol = _v14_protocol(base)
+    protocol["numerics"]["peak_debye_gate"] = {"max_cells_per_debye": 0.01, "min_macro_particles_at_peak": 1}
+    results = tmp_path / "v14-gate"
+    runner.run_steady_state(protocol, results, backend="cpu", field_map=field, cross_sections=xs, max_steps=120, log=lambda _: None)
+    summary = artifacts.read_canonical_json(results / "summary.json")
+    assert summary["stop_reason"] == "runtime_stability_gate_stopped_run"
+    assert "peak-node Debye gate" in summary["stability_gate_message"]
+    assert summary["steps_completed"] <= 20

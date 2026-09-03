@@ -363,3 +363,52 @@ File policy: `COMMITTED` workstream evidence (`modern/docs/workstreams/pic2d-*`)
 - Embedding the comparison into the dashboard payload (computed from the hash-verified
   series) beats a side JSON: it is regenerated deterministically, validated (one comparison
   per finished variant) and tested, and the w-0.7 case will get the same treatment for free.
+
+## 2026-09-03 (Phase 5): what v1.4 taught
+
+### Learned (physics / modelling)
+
+- "Utilisation" is closure-dependent. With absorbing walls and no recycling, 60 % of the ions never return as
+  atoms, so S/Q_in (46 %) counts atoms that the physical device would ionise again. Recycling moves the fixed
+  point by ~40-50 % in n_g before S responds; the literature's number to compare with is the *net* one
+  ((S - R)/Q_in ~ 25 % here; Brandt 2016 quotes 24 % for a different device) - and even then it is
+  model-to-model context, not validation.
+- A 0-D fixed point can be estimated with one measured "conductance": k = S/n_g from the previous plateau,
+  then n_g* = Q/(c + (1 - gamma f_w) k). It reproduces the old plateau exactly at gamma = 0 by construction,
+  which is the check that the algebra is right; the range comes from letting k or f_w move.
+- The artificial relaxation is not "small" at the plateau: with tau_g = 30 ns the artificial rate has an interval
+  RMS of 3e19 atoms/s (it tracks the shot noise of S through n_g* = (Q - S)/c) while its mean is 5e16 +- 4e17
+  ~ 0. Report the mean with its RMS, and treat any statement about the transient as a statement about the
+  numerical device.
+- The density peak sits off-axis (r = 0.47 mm, z = 14.3 mm, between the second and third cusps) at 7.4 eV,
+  where Delta z / lambda_D = 3.17 and Delta r / lambda_D = 2.1 on the 33 x 50 um grid. A peak-node gate at
+  Brandt's 2 lambda_D would trip this grid at ignition; the honest move is to declare the shortfall, gate
+  against *runaway* (4.5 = 1.5x the expected peak density), and size the campaign grid for the peak (30 um).
+
+### Learned (numerics / tooling)
+
+- The axis is a trap for "peak" diagnostics: the r = 0 node volume is pi (dr/2)^2 dz = 4.4e-14 m^3, so one
+  macro-particle at W = 6e4 reads 1.4e18 m^-3. Any argmax over node densities must carry a particle floor;
+  keep the raw maximum in the record so the floor's effect is visible.
+- CUDA-graph capture is a *refactoring* discipline, not a performance trick: enumerate every per-step host
+  input (RNG seed, injection count/carry, launch dims) and move each to a device array that the graph reads;
+  then the captured and direct paths share one launch function so they cannot diverge, and the bitwise test is
+  the proof. Warp 1.14's mempool allocator made even `array_scan` (compaction) capturable on WDDM; the
+  earlier "PCG-only graphs" limitation was self-imposed.
+- Graph gains measured under contention are lower bounds on the ratio and useless as absolute numbers:
+  9 k particles 7.8 -> 1.5 ms (launch-bound regime), 206 k 8.2 -> 3.0 ms; the plateau-count figure has to
+  come from the run itself. Say "pending" rather than extrapolate.
+- A drift criterion over a trailing 20 % window is bounded for a linear ramp (0.22 relative): hard thresholds
+  above that only catch accelerating behaviour. Test gate thresholds against synthetic ramps and exponentials
+  before trusting what they can and cannot stop.
+- `inf` is not canonical JSON: an undefined lambda_D leaked into `summary.json` via the series record and
+  killed the suite. Use `None` for undefined physical quantities and convert to NaN only at the array layer.
+- Optional record keys need a read path for older artifacts (v1.3 series without `recycled` or `peak_node`);
+  `dict.get` with NaN/0 defaults at the array-conversion layer keeps finalize/dashboards working on old runs.
+
+### Guardrails carried forward
+
+- Never quote gross utilisation alone; net beside it, with the closure named.
+- Every review-derived gate has a development value (recorded) and a campaign value (declared); the difference
+  is the declared shortfall of the development grid, not a relaxation of the standard.
+- No GPU campaign while another runs; tiny parity tests only, and mark contended measurements as such.

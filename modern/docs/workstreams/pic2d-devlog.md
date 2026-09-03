@@ -703,3 +703,90 @@ L2 difference of 24 % is concentrated in the inner cells).
   peak node) + 13 runner tests (new: re-finalize refused). Screenshot:
   `%TEMP%\pic2d-steady-state-seedb-full.png` (1400×9000) and the convergence crop
   `%TEMP%\pic2d-steady-state-seedb-convergence.png`.
+
+## 2026-09-03 (Phase 5): model v1.4 — recycling, peak-node gate, triad, CUDA-graph step, hooks
+
+Source: `modern/docs/literature/pic-mcc-blockers.md` (commit ccb22d5d; blockers 1, 2, 3, 5; Brandt et al. 2016
+analogue). Spec `modern/spec/pic2d/pic2d-model-v1.4.json`; foundation spec reference added. All work in the
+pic2d worktree, rebased on origin/feat/sota-foundation (b6bb6215); GPU held by w-0.7 (PID 9856) throughout, so
+GPU tests were tiny (12 x 96, 200 steps) and the ms/step measurements are contended.
+
+### 1. Wall-ion recycling (review blocker 3(d)1)
+
+- `neutrals.py`: `NeutralInventoryConfig(wall_recycling, recombination_coefficient = 1.0, wall_temperature_k)`;
+  `advance(state, S, dt, recycled_ion_rate)` adds R = gamma x (wall + anode ion absorption rate) as a source,
+  fifth ledger `recycled`, source-weighted mixture effusion coefficient c_mix = (Q c + R c_wall)/(Q + R)
+  (c_wall = 1.795e-3 at 400 K vs c = 1.555e-3 at 300 K), fixed point n_g* = (Q + R - S)/c_mix; balance
+  fed + recycled - ionised - effused - artificial = V dn_g to round-off (tests 1e-9). `relaxation_time_s = None`
+  turns the artificial term off (physical V/c = 221 us). `simulation._record` hands the interval's wall + anode
+  ion tallies x W / interval to the inventory and records gross (S/Q) and net ((S - R)/Q) utilisation.
+- Checkpoints: the neutral array grows 5 -> 6 entries; v1.3 checkpoints (4 ledgers) load with recycled = 0.
+- Budget recomputed from the v1.3 plateau (S 3.93e16, wall + anode 2.355e16 = 59.9 % of S, beam 1.43e16):
+  frozen-S bound n_g* = 4.49e19 (+51 %, the review's number); self-consistent with k = S/n_g = 1.32e-3 m^3/s
+  and f_w = 0.60 fixed: n_g* = Q/(c + 0.4 k) = 4.10e19 (+38 %), S = 5.4e16 (gross 63 %), R = 3.2e16,
+  net 25 % (Brandt 2016: 24 %, model-to-model context only), beam ~3.5 mA, n_e mean 2.9e17 / peak 2.2e18,
+  3.3 M macro-particles, cells/lambda_D at the peak 3.7 (v1.3: 3.17), omega_pe dt 0.126.
+
+### 2. Peak-node Debye gate and grid-heating triad (blocker 1(d)2-3)
+
+- `simulation.peak_node_debye`: node moments (count, v, v^2) of the electrons at their current positions
+  (CPU numpy; Warp `deposit_moment_kernel` x 5 + D2H per record); density = count x W / shape volume, thermal
+  T_e; the peak is the densest node holding >= `min_macro_particles_at_peak` macro-electrons (axis nodes read
+  1.4e18 per single particle at W = 6e4 — the unrestricted argmax is noise; reported as `raw_peak`);
+  `PeakDebyeGateConfig(max_cells_per_debye, min_macro_particles_at_peak = 16, dense_fraction = 0.5)` raises
+  `PIC2DStabilityError` after the record is written. Development value 4.5 (expected 3.7), campaign 2.0.
+- Runner `evaluate_triad` (protocol `stopping_rule.grid_heating_triad`): (i) cumulative energy residual /
+  electrode work (v1.3: -4.4 %; bound 10 %), (ii) trailing-window drifts of the dense-cell T_e and of S,
+  (iii) peak omega_pe dt drift; soft 5 % = plateau precondition (`plateau.triad_soft_ok`), hard 25 % or the
+  residual bound = fail-closed stop (`grid_heating_triad_gate_stopped_run`) after one transit. A linear
+  ramp cannot exceed 0.22 over a 20 % window, so only accelerating heating trips the hard bound (tested).
+- Runner records `peak_node` (n_e, T_e, cells/lambda_D, particles, dense T_e, position), `recycled_rate_per_s`,
+  gross/net utilisation and the triad in status lines, `series.npz` (`peak_node_*`, `neutral_recycled_rate_per_s`,
+  `neutral_ledger_recycled`, ...) and `summary.json` (`grid_heating_triad`, `peak_node_debye`, neutral summary
+  with the recycled closure and both utilisations); v1.3 series still load (NaN / 0 for the missing keys).
+- Bug found on the way: an undefined lambda_D was `inf`, which is not canonical JSON; it is `None` now.
+
+### 3. CUDA-graph replay of the whole step (blocker 2(d)1)
+
+- `warp_backend.py`: the per-step host inputs of v1.3 were the RNG seed (Python int per step), the injection
+  count and carry (host floor arithmetic) and the live particle counts (launch dims). They moved to the
+  device: a `seed_table` of `SEED_STREAMS` = 4 streams x `device_sync_steps` entries filled at every
+  `_begin_interval` from the same generator sequence, indexed by a device `step_counter` (`tick_kernel`);
+  `inject_ctrl = [carry, count]` updated by `inject_control_kernel` / `carry_kernel` (count = floor(rate + carry)
+  exactly as before); fixed-capacity launches bounded by the live count arrays. `step()` dispatches to
+  `_step_graph_launch`, which captures one `wp.ScopedCapture` per (ion_step, inject, mcc) variant and replays
+  it; `_launch_step` is the single launch sequence used both inside the capture and for direct launches, so
+  the two paths cannot diverge. `WarpBlockThomas.solve_sequence` exposes the raw solve launches (the residual
+  contract is still checked at every host sync). `_grow`, `_ensure_scratch` and `load_state` invalidate the
+  cached graphs. `wp.utils.array_scan` (particle compaction) was verified capturable under Warp 1.14 mempools
+  on WDDM, so no fallback (periodic cell sort) was needed.
+- Test (`test_cuda_graph_step_is_bitwise_identical_to_the_direct_launches_for_200_steps`): 200 steps with
+  ionisation, injection and ion sub-cycling; positions, velocities, surface charge, phi and the injection carry
+  bitwise equal, integer tallies exact, currents to 1e-9; a resume through the graph path from a direct-path
+  checkpoint is bitwise too; `graph_captures >= 2` proves the graph actually ran.
+- ms/step (GPU shared with w-0.7, indicative only): 30 x 240, 9 k particles: 7.79 -> 1.50 (5.2x);
+  60 x 480, 206 k particles: 8.19 -> 2.99 (2.7x). **1 M and 2 M measurements PENDING** until the GPU is free;
+  the v3 run's status lines are that measurement (v2 ran 2.0 ms/step at 2.0 M with direct launches).
+
+### 4. Sensitivity hooks (review 4.2, 4.3), default OFF
+
+- `sensitivity.py`: `AnomalousCollisionConfig(alpha)`: P = 1 - exp(-alpha omega_ce dt) per electron per step,
+  isotropic speed-preserving redirection after the push and before MCC (CPU `apply_bohm_scattering`, Warp
+  `bohm_kernel` on the seed table), tallied as `cumulative['anomalous']` (new `cumulative_extra` checkpoint
+  array; v1.3 checkpoints load) and `currents_a['anomalous_collision_rate_per_s']`. Tests: speed to 1e-12,
+  count within 4 sigma of binomial at alpha = 1/16, off by default, tallied when on.
+- `SEEConfig`: Vaughan 1989 yield (k = 0.56 / 0.25, 1.125 v^-0.35 tail, angular factors) with PROVISIONAL
+  BN parameters (delta_max 2.9, E_max 350 eV, E_0 12.5 eV; first crossover ~35 eV) flagged in the code and
+  provenance; `virtual_wall_yield` diagnostic counts columns at or above the Hobbs-Wesson limit;
+  `enabled = True` fails closed (emission not implemented).
+
+### 5. Docs, experiment v3, tests
+
+- `pic2d-campaign-v1-proposal.md` revision 2: peak-based gate, 30 um grid + 20 um discriminator, >= 50 us
+  physical-neutral development case before freezing, breathing contingency (period-averaged estimands,
+  >= 3 periods), blocks E (Bohm) and F (SEE), Brandt 2016 as model-to-model context labelled by closure,
+  section 8 mapping every review item to a change and its status.
+- `experiments/pic2d_cft_steady_state_v3/` (protocol v1.4: recycling ON, relaxation ON and recorded, peak gate
+  4.5 / 32 particles, triad, step_graph, 3.5 h budget, seed a, `budget_v1_4` with the recycled fixed point).
+- pic2d suite: 111 passed (was 77 + the earlier v1.4 additions): 4 new inventory tests, 6 gate/hook tests,
+  1 graph test, 3 runner tests (triad unit, v1.4 protocol end-to-end, peak gate stop).
