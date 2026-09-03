@@ -1248,8 +1248,10 @@ class Simulation:
                 temperature_k=config.mcc.neutral_temperature_k,
                 volume_m3=float(self.masks.channel_volume_m3 if self.masks.has_plume else self.masks.plasma_volume_m3),
             )
-            self.neutral_state = NeutralState.initial(config.mcc.neutral_density_per_m3)
-            self.backend.set_neutral_scale(1.0)
+            # v2.0: the inventory may start below the null-collision ceiling (declared headroom for the
+            # recycling transient above Q/c); the MCC scale is n_g / ceiling from the first step
+            self.neutral_state = NeutralState.initial(self.neutrals.initial_density)
+            self.backend.set_neutral_scale(self.neutrals.scale(self.neutral_state))
         self._last_momentum: float | None = None
         if config.cathode is not None and config.cathode.current_rule == "continuity":
             self.backend.set_emission_rate(config.initial_emission_rate_per_step)

@@ -73,3 +73,18 @@ physics; two-zone neutral closure without CEX; no SEE, no anomalous transport; e
 axisymmetric; 50 µm grid resolving the channel peak at 3–4 cells per λ_D (gated at 4.5).
 Thrust, Isp, efficiency, divergence and the IEDF are development numbers. Channel-only
 steady-state v3 (model v1.4) is deferred until after this run (devlog).
+
+## Launch log
+
+* **Launch 1 (2026-09-03 21:50 AEST, PID 42400)** — stopped fail-closed at step 9600 (14 ns,
+  40 s of stepping after the 5 min factorisation): `neutral density 5.503e19 exceeds the
+  null-collision ceiling 5.5e19`. Cause: the ceiling sat AT n_g0 = Q/c while the seeded ions
+  (1.7e10, never fed) were being recycled at R = 0.6 → 2.0e16 /s against S ≈ 0.8e16 /s; with
+  the artificial relaxation (τ = 30 ns) the inventory tracks the rate-based fixed point
+  (Q + R − S)/c = 1.11 Q/c and rising. In steady state R ≤ S keeps n* ≤ Q/c; the overshoot is
+  a transient artefact of the development relaxation. Fix (protocol revision): the ceiling is
+  2 × n_g0 (1.1e20 m⁻³, null-collision probability 1.3e-4 per step) and the inventory starts
+  at the declared `neutral_inventory.initial_density_per_m3` = n_g0; the real collision rate
+  is unchanged (scale n_g / ceiling). `neutral_inventory.max_density_over_zero_ionization` in
+  `summary.json` records the transient. The launch-1 artifacts were discarded (a different
+  protocol hash); launch 2 starts fresh.

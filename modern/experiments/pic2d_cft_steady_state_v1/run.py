@@ -200,6 +200,8 @@ def build_config(protocol: dict[str, Any], *, backend: str = "warp-cuda") -> PIC
             wall_recycling=bool(block.get("wall_recycling", False)),
             recombination_coefficient=float(block.get("recombination_coefficient", 1.0)),
             wall_temperature_k=None if block.get("wall_temperature_k") is None else float(block["wall_temperature_k"]),
+            # v2.0: declared start density below the null-collision ceiling (headroom for the recycling transient)
+            initial_density_per_m3=None if block.get("initial_density_per_m3") is None else float(block["initial_density_per_m3"]),
         )
         if int(numerics["series_interval_steps"]) != sync:
             raise PIC2DValidationError("the neutral inventory is updated at the series interval, which must equal device_sync_steps")
@@ -597,6 +599,7 @@ def neutral_summary(arrays: dict[str, np.ndarray], sim: Simulation, initial_dens
         "initial_density_per_m3": initial_density,
         "final_density_per_m3": n_final,
         "final_fixed_point_per_m3": float(arrays["neutral_fixed_point_per_m3"][-1]),
+        "max_density_over_zero_ionization": float(np.max(arrays["neutral_density_per_m3"])) / inventory.zero_ionization_density,
         "trailing_20pct_mean_density_per_m3": float(np.mean(tail)),
         "trailing_20pct_mean_ionization_rate_per_s": float(np.mean(s_tail)),
         "trailing_20pct_mean_recycled_rate_per_s": recycled_mean,
@@ -815,7 +818,7 @@ def write_final_artifacts(
         "final_series": records[-1] if records else None,
         "window_currents_a": window_currents,
         "ledger": ledger_summary(arrays),
-        "neutral_inventory": neutral_summary(arrays, sim, float(config.mcc.neutral_density_per_m3)) if config.mcc is not None else None,
+        "neutral_inventory": neutral_summary(arrays, sim, float(sim.neutrals.initial_density) if sim.neutrals is not None else float(config.mcc.neutral_density_per_m3)) if config.mcc is not None else None,
         "plume": plume_summary(arrays, maps, window_range, config, window_currents) if arrays else None,
         "window_maps_summary": {
             "n_e_peak_per_m3": stat("n_e_per_m3", np.nanmax),

@@ -26,8 +26,8 @@
     "anode_potential_v": 300.0,
     "exit_plane_potential_v": 0.0,
     "exit_plane_potential_note": "in v2.0 this is the far-field / front-face conductor reference potential; the exit plane itself (z = 24 mm, r <= 3 mm) is interior and its potential is self-consistent (reported as plume.exit_plane_axis_potential_v)",
-    "neutral_density_per_m3": 5.5e+19,
-    "neutral_density_role": "initial channel density AND MCC null-collision ceiling n_g0 (= Q_in / c); the plume shape factor <= 0.5 multiplies the real collision frequency there",
+    "neutral_density_per_m3": 1.1e+20,
+    "neutral_density_role": "MCC null-collision ceiling = 2 x n_g0 (n_g0 = Q_in / c = 5.5e19 m^-3 is the initial channel density, neutral_inventory.initial_density_per_m3). Headroom for the seed-ion recycling transient: launch 1 of this run (2026-09-03 21:50 AEST) stopped fail-closed at 14 ns with the ceiling AT Q/c because the seeded ions (1.7e10, never fed) returned as atoms at R = 0.6e16 -> 2.0e16 /s while S stayed ~0.8e16 /s, and the artificial relaxation (tau = 30 ns) makes n_g TRACK the rate-based fixed point (Q + R - S)/c, which was 1.11 Q/c and rising. In steady state R <= S so n* <= Q/c; the transient overshoot is an artefact of the development relaxation (recorded as neutral_inventory.max_density_over_zero_ionization). A ceiling of 2 Q/c tolerates R - S up to Q at a null-collision probability of 1.3e-4 per step (negligible cost); the real collision probability is unchanged (scale n_g / ceiling <= 0.5 in the channel, x the plume shape factor <= 0.5 in the plume)",
     "neutral_temperature_k": 300.0,
     "neutral_inventory": {
       "feed_atoms_per_s": 8.551102004120011e+16,
@@ -35,6 +35,8 @@
       "wall_recycling": true,
       "recombination_coefficient": 1.0,
       "wall_temperature_k": 400.0,
+      "initial_density_per_m3": 5.5e+19,
+      "initial_density_note": "n_g(0) = Q_in / c (the zero-ionisation fixed point); with recycling the quasi-steady density is (Q_in + R - S)/c <= Q_in/c whenever R <= S, but while the seeded ions drain R exceeds S and, because the artificial relaxation tracks the rate-based fixed point, the inventory overshoots Q/c by (R - S)/Q (11 % at 14 ns in launch 1, still rising); the ceiling above carries 2x headroom for that transient (see neutral_density_role)",
       "feed_justification": "as steady-state v2/v3: Q_in = c n_g0 with c = v_bar A_exit / 4 = 1.5547e-3 m^3/s and n_g0 = 5.5e19 m^-3: 8.55e16 atoms/s = 0.01864 mg/s at 300 V",
       "two_zone_note": "v2.0: the 0-D inventory is the CHANNEL zone (volume 3.43e-7 m^3 of the channel plasma cells; wall/anode ions recycled as 400 K neutrals; ions on the front face are NOT recycled into the channel); the PLUME zone carries the free-molecular expansion of the effusing flux from the exit aperture as an analytic density shape n_g(r,z) = n_g,channel x f(r,z), f = cosine-law point-source cone from the aperture centre capped at 0.5 at the lip (half-space effusion), used only as the local MCC probability factor (spec pic2d-model-v2.0.json, neutrals). Ion-neutral collisions remain OFF (no CEX; the Miller et al. 2002 table is a later sensitivity flag)."
     },

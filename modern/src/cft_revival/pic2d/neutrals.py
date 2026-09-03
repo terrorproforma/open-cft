@@ -63,10 +63,18 @@ class NeutralInventoryConfig:
     wall_recycling: bool = False
     recombination_coefficient: float = 1.0
     wall_temperature_k: float | None = None
+    # v2.0 (plume run 1 lesson): with recycling on, the seeded ions return as atoms before the
+    # ionisation catches up, so the inventory transiently EXCEEDS the zero-ionisation density
+    # Q/c. The null-collision ceiling (mcc.neutral_density_per_m3) must then carry headroom
+    # above Q/c, and the inventory starts at this declared density (None = at the ceiling, the
+    # v1.3/v1.4 behaviour and identity).
+    initial_density_per_m3: float | None = None
 
     def __post_init__(self) -> None:
         if not isfinite(self.feed_atoms_per_s) or self.feed_atoms_per_s <= 0.0:
             raise PIC2DValidationError("neutral feed must be positive")
+        if self.initial_density_per_m3 is not None and (not isfinite(self.initial_density_per_m3) or self.initial_density_per_m3 <= 0.0):
+            raise PIC2DValidationError("initial_density_per_m3 must be positive or None (start at the null-collision ceiling)")
         if self.relaxation_time_s is not None and (not isfinite(self.relaxation_time_s) or self.relaxation_time_s <= 0.0):
             raise PIC2DValidationError("neutral relaxation time must be positive or None (physical effusion time scale)")
         if not isinstance(self.wall_recycling, bool):
@@ -84,6 +92,8 @@ class NeutralInventoryConfig:
         if self.wall_recycling:
             out |= {"wall_recycling": True, "recombination_coefficient": self.recombination_coefficient,
                     "wall_temperature_k": self.wall_temperature_k}
+        if self.initial_density_per_m3 is not None:   # identity of ceiling-started configs preserved
+            out["initial_density_per_m3"] = self.initial_density_per_m3
         return out
 
 
@@ -185,6 +195,17 @@ class NeutralInventory:
                 "neutral feed exceeds the null-collision ceiling: zero-ionisation density "
                 f"{self.zero_ionization_density:.4g} > n_g0 {self.ceiling:.4g} m^-3"
             )
+        self.initial_density = self.ceiling if config.initial_density_per_m3 is None else float(config.initial_density_per_m3)
+        if self.initial_density > self.ceiling * (1.0 + 1e-12):
+            raise PIC2DValidationError(
+                f"initial neutral density {self.initial_density:.4g} exceeds the null-collision ceiling {self.ceiling:.4g} m^-3"
+            )
+
+    @property
+    def ceiling_headroom(self) -> float:
+        """Ceiling over the zero-ionisation density Q/c (1.0 = no room for a recycling transient above Q/c)."""
+
+        return self.ceiling / self.zero_ionization_density
 
     @property
     def physical_time_constant_s(self) -> float:
@@ -266,6 +287,8 @@ class NeutralInventory:
             "mean_thermal_speed_m_per_s": mean_thermal_speed_m_per_s(self.temperature_k, self.mass_kg),
             "effusion_coefficient_m3_per_s": self.effusion_coefficient,
             "zero_ionization_density_per_m3": self.zero_ionization_density,
+            "initial_density_per_m3": self.initial_density,
+            "ceiling_headroom_over_zero_ionization": self.ceiling_headroom,
             "physical_time_constant_s": self.physical_time_constant_s,
             "mass_flow_mg_per_s": mass_flow_mg_per_s(self.config.feed_atoms_per_s, self.mass_kg),
             "wall_recycling": self.config.wall_recycling,
