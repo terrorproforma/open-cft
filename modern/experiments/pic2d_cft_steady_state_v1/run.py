@@ -37,6 +37,8 @@ from __future__ import annotations
 
 import argparse
 from datetime import datetime, timezone
+import hashlib
+import io
 import json
 import os
 from pathlib import Path
@@ -831,7 +833,7 @@ def write_final_artifacts(
     session: dict[str, Any],
     setup_seconds: float,
     wall_session: float,
-    gpu_samples: list[float],
+    gpu_samples: list[float | None],
 ) -> Path:
     state = sim.state
     budget = protocol_budget(protocol)
@@ -910,7 +912,8 @@ def write_final_artifacts(
         "ms_per_step_this_session": (
             1e3 * wall_session / max(state.step - session["resumed_from_step"], 1) if state.step > session["resumed_from_step"] else None
         ),
-        "gpu_utilisation_percent_samples": gpu_samples,
+        # nvidia-smi failures / timeouts are None (attempt-7 lesson: a NaN sample made the summary non-canonical)
+        "gpu_utilisation_percent_samples": [None if sample is None else _finite(sample) for sample in gpu_samples],
         "maps_kind": maps_kind,
         "averaging_window_steps": window,
         "averaging_window_step_range": list(window_range),
@@ -959,7 +962,21 @@ def write_final_artifacts(
             "not a thruster performance prediction"
         )),
     }
-    artifacts.write_canonical_json(results / "summary.json", summary)
+    try:
+        artifacts.write_canonical_json(results / "summary.json", summary)
+    except Exception as error:
+        # Fail closed but leave an honest terminal record: the stepping artifacts (maps, series, checkpoint-final)
+        # are on disk, the run is NOT finished, and the reason is recorded so `finalize --recover-runner-stop`
+        # can rebuild the summary from them without stepping or fabricating a stop.
+        run_state.update({
+            "finished": False,
+            "finalization_error": {
+                "utc": datetime.now(timezone.utc).isoformat(), "stop_reason_at_failure": stop_reason,
+                "error": f"{type(error).__name__}: {error}", "artifacts_written": ["maps.npz", "series.npz", checkpoint_json.name, checkpoint_npz.name],
+            },
+        })
+        artifacts.write_canonical_json(results / "run_state.json", run_state)
+        raise
     artifacts.write_canonical_json(results / "run_state.json", run_state)
     _append_jsonl(status_path, {"event": "stop", "step": int(state.step), "time_s": float(state.time_s), "stop_reason": stop_reason})
     return results / "summary.json"
@@ -1191,6 +1208,7 @@ def finalize(
     protocol_path: Path = PROTOCOL_PATH,
     log: Callable[[str], None] = lambda text: print(text, flush=True),
     allow_refinalize: bool = False,
+    recover_runner_stop: bool = False,
 ) -> Path:
     """Write summary/maps/series from the latest checkpoint and the series history without stepping.
 
@@ -1205,6 +1223,16 @@ def finalize(
     has its window-average artifacts; finalizing it again would *downgrade* the maps
     to instantaneous ones and rewrite the stop reason, so that is refused unless
     ``allow_refinalize`` is set.
+
+    ``recover_runner_stop`` (fail-closed) rebuilds ``summary.json`` for a run whose runner
+    DID stop and wrote ``maps.npz`` / ``series.npz`` / ``checkpoint-final.*`` but crashed
+    before the summary (plume attempt 7: a NaN GPU-utilisation sample made the summary
+    non-canonical).  It reuses the window-average maps verbatim (``maps_kind`` stays
+    ``window_average``; the rebuilt bytes must hash to the sidecar the runner wrote) and
+    the final checkpoint, and it accepts only a ``stop_reason`` whose evidence is on disk:
+    ``wall_clock_budget_reached`` needs ``run_state.wall_seconds_total`` above the
+    protocol's budget, ``plateau_reached_after_min_transit_times`` needs the plateau rule
+    to hold on the recorded series.  Nothing is stepped and no stop is invented.
     """
 
     checkpoint = find_checkpoint(results)
@@ -1218,6 +1246,10 @@ def finalize(
                 f"{results.name} was already finished by the runner ({previous.get('stop_reason')}) with window-average "
                 "maps; finalize would replace them with instantaneous checkpoint maps (use --allow-refinalize to override)"
             )
+    recovery: dict[str, Any] | None = None
+    if recover_runner_stop:
+        recovery = _runner_stop_recovery_preflight(results, protocol, stop_reason)
+        checkpoint = results / "checkpoint-final.json"
     config = build_config(protocol, backend=backend)
     t0 = time.perf_counter()
     field_map, cross_sections = load_inputs(config, field_map, cross_sections)
@@ -1237,16 +1269,119 @@ def finalize(
     if state_path.is_file():
         run_state = json.loads(state_path.read_text(encoding="utf-8"))
     session = {"started_utc": datetime.now(timezone.utc).isoformat(), "resumed_from_step": int(state.step), "pid": os.getpid(), "finalize_only": True}
-    run_state["sessions"].append(session)
-    run_state.update({"finished": True, "stop_reason": stop_reason, "finalized_from_step": int(state.step)})
-    maps = instantaneous_maps(config, sim.masks, state)
-    log(f"[steady-state] finalizing {results.name} from step {state.step} (t = {state.time_s*1e6:.3f} us), {len(records)} records")
-    return write_final_artifacts(
+    if recovery is not None:
+        if int(state.step) != int(recovery["step"]):
+            raise PIC2DValidationError("checkpoint-final step differs from its metadata")   # pragma: no cover - load_checkpoint binds it
+        session["recovered_runner_stop"] = True
+        run_state["sessions"].append(session)
+        run_state.update({
+            "finished": True, "stop_reason": stop_reason, "finalized_from_step": int(state.step),
+            "finalization_recovery": {
+                "mode": "runner_stop_artifacts_reused", "recovered_utc": session["started_utc"], "stop_reason_evidence": recovery["evidence"],
+                "reused": ["maps.npz (window average, byte-identical to the runner's sidecar)", "checkpoint-final.json/.npz"],
+                "original_error": recovery["original_error"],
+                "wall_seconds_note": "wall_seconds_total is the value recorded at the last checkpoint before the stop; the seconds spent "
+                                     "writing the stop artifacts are not included",
+            },
+        })
+        maps = recovery["maps"]
+        window_range = recovery["window_range"]
+        maps_kind = "window_average"
+        log(f"[steady-state] recovering the runner stop of {results.name} at step {state.step} (t = {state.time_s*1e6:.3f} us): "
+            f"{stop_reason} ({recovery['evidence']}); window {window_range}, {len(records)} records")
+    else:
+        run_state["sessions"].append(session)
+        run_state.update({"finished": True, "stop_reason": stop_reason, "finalized_from_step": int(state.step)})
+        maps = instantaneous_maps(config, sim.masks, state)
+        window_range = (int(state.step), int(state.step))
+        maps_kind = "instantaneous_checkpoint"
+        log(f"[steady-state] finalizing {results.name} from step {state.step} (t = {state.time_s*1e6:.3f} us), {len(records)} records")
+    summary_path = write_final_artifacts(
         protocol=protocol, protocol_path=protocol_path, results=results, sim=sim, config=config, field_map=field_map,
-        xs_sha=xs_sha, records=records, maps=maps, window_range=(int(state.step), int(state.step)),
-        maps_kind="instantaneous_checkpoint", stop_reason=stop_reason, gate_error=None, run_state=run_state,
+        xs_sha=xs_sha, records=records, maps=maps, window_range=window_range,
+        maps_kind=maps_kind, stop_reason=stop_reason, gate_error=None, run_state=run_state,
         session=session, setup_seconds=setup_seconds, wall_session=0.0, gpu_samples=[],
     )
+    if recovery is not None:
+        for name, expected in (("maps.npz", recovery["maps_sha256"]), ("checkpoint-final.npz", recovery["checkpoint_npz_sha256"])):
+            rewritten = json.loads((results / f"{name}.sha256.json").read_text(encoding="utf-8"))["byte_sha256"]
+            if rewritten != expected:
+                raise PIC2DValidationError(f"recovered {name} does not hash to the runner's sidecar ({rewritten[:12]} != {expected[:12]})")
+    return summary_path
+
+
+def _runner_stop_recovery_preflight(results: Path, protocol: dict[str, Any], stop_reason: str) -> dict[str, Any]:
+    """Fail-closed evidence check for ``finalize(recover_runner_stop=True)``.
+
+    Returns the verified window-average maps, the window range the runner used, the final
+    checkpoint step, the stop-reason evidence and the recorded finalization error.
+    """
+
+    if (results / "summary.json").is_file():
+        raise PIC2DValidationError(f"{results.name} already has a summary.json; nothing to recover")
+    state_path = results / "run_state.json"
+    if not state_path.is_file():
+        raise PIC2DValidationError(f"{results.name} has no run_state.json; the runner never checkpointed")
+    run_state = json.loads(state_path.read_text(encoding="utf-8"))
+    if run_state.get("finished"):
+        raise PIC2DValidationError(f"{results.name} is marked finished ({run_state.get('stop_reason')}); nothing to recover")
+    final_json = results / "checkpoint-final.json"
+    if not final_json.is_file() or not (results / "maps.npz").is_file() or not (results / "maps.npz.sha256.json").is_file():
+        raise PIC2DValidationError(f"{results.name}: the runner did not reach its stop (checkpoint-final.json / maps.npz missing)")
+    final_meta = artifacts.read_canonical_json(final_json)
+    latest = find_checkpoint(results)
+    if latest is not None and int(artifacts.read_canonical_json(latest)["step"]) != int(final_meta["step"]):
+        raise PIC2DValidationError("checkpoint-final and checkpoint-latest disagree on the step; the run did not stop at this checkpoint")
+    step = int(final_meta["step"])
+    if int(run_state.get("checkpoint_step", -1)) != step:
+        raise PIC2DValidationError(f"run_state checkpoint_step {run_state.get('checkpoint_step')} differs from checkpoint-final step {step}")
+    maps_sha = json.loads((results / "maps.npz.sha256.json").read_text(encoding="utf-8"))["byte_sha256"]
+    maps = artifacts.read_npz(results / "maps.npz", expected_sha256=maps_sha)
+    # write_final_artifacts re-serialises the maps through artifacts.write_npz; prove the round trip is byte-exact BEFORE
+    # touching the file (deterministic uncompressed savez over sorted keys)
+    buffer = io.BytesIO()
+    np.savez(buffer, **{key: np.ascontiguousarray(maps[key]) for key in sorted(maps)})
+    if hashlib.sha256(buffer.getvalue()).hexdigest() != maps_sha:
+        raise PIC2DValidationError("maps.npz does not round-trip byte-exactly through write_npz; refusing to rewrite it")
+    # the runner's window choice: the current window if at least half full, else the last completed one
+    window_steps = int(protocol["numerics"]["averaging_window_steps"])
+    used = int(maps["window_steps"][0])
+    if used < window_steps:
+        window_range = (step - used, step)
+    else:
+        end = step - step % window_steps
+        window_range = (end - window_steps, end)
+    if window_range[0] < 0 or window_range[1] > step or window_range[1] - window_range[0] != used:
+        raise PIC2DValidationError(f"cannot reconstruct the averaging window ({used} steps) at step {step}")
+    records = [r for r in _read_jsonl(results / "series.jsonl") if r["step"] <= step]
+    rule = protocol["stopping_rule"]
+    if stop_reason == "wall_clock_budget_reached":
+        wall = float(run_state.get("wall_seconds_total", 0.0))
+        budget = float(rule["wall_budget_seconds"])
+        if not wall > budget:
+            raise PIC2DValidationError(f"recorded wall time {wall:.0f} s does not exceed the budget {budget:.0f} s; refusing '{stop_reason}'")
+        evidence = f"run_state.wall_seconds_total {wall:.1f} s > wall_budget_seconds {budget:.0f} s at checkpoint step {step}"
+    elif stop_reason == "plateau_reached_after_min_transit_times":
+        if not records:
+            raise PIC2DValidationError("no series records; cannot verify the plateau stop")
+        arrays = records_to_arrays(records)
+        transit = float(protocol_budget(protocol)["ion_transit_time_s"])
+        plateau = evaluate_plateau(arrays["time_s"], arrays["current_discharge_a"], arrays["electrons"], rule, transit,
+                                   arrays.get("neutral_density_per_m3"))
+        triad = evaluate_triad(arrays, rule, transit)
+        if not plateau["reached"] or (triad is not None and not triad["soft_ok"]):
+            raise PIC2DValidationError(f"the recorded series does not satisfy the plateau rule; refusing '{stop_reason}'")
+        evidence = f"plateau rule holds on the recorded series at step {step} ({plateau['transit_times_elapsed']:.2f} transits)"
+    else:
+        raise PIC2DValidationError(f"stop reason '{stop_reason}' has no on-disk evidence; recovery accepts wall_clock_budget_reached or "
+                                   "plateau_reached_after_min_transit_times")
+    original_error = run_state.get("finalization_error")
+    if original_error is None:
+        err_path = results / "run.err"
+        tail = err_path.read_text(encoding="utf-8", errors="replace").strip().splitlines()[-1:] if err_path.is_file() else []
+        original_error = {"error": tail[0] if tail else None, "source": "run.err (last line)" if tail else "not recorded"}
+    return {"maps": maps, "maps_sha256": maps_sha, "checkpoint_npz_sha256": str(final_meta["arrays_sha256"]), "window_range": window_range,
+            "step": step, "evidence": evidence, "original_error": original_error}
 
 
 # -- status -----------------------------------------------------------------
@@ -1290,6 +1425,9 @@ def main(argv: list[str] | None = None, *, protocol_path: Path = PROTOCOL_PATH, 
     fin.add_argument("--backend", default="warp-cuda", help="the backend the run used (part of the config identity)")
     fin.add_argument("--stop-reason", default="finalized_from_checkpoint")
     fin.add_argument("--allow-refinalize", action="store_true", help="re-finalize a run the runner already finished (downgrades the maps)")
+    fin.add_argument("--recover-runner-stop", action="store_true",
+                     help="rebuild summary.json for a runner stop whose final write crashed (reuses maps.npz + checkpoint-final; "
+                          "--stop-reason must be evidenced on disk: wall_clock_budget_reached or plateau_reached_after_min_transit_times)")
     sub.add_parser("status")
     args = parser.parse_args(argv)
     protocol, results_name = apply_case(load_protocol(protocol_path), args.case, load_variants(protocol_path))
@@ -1298,7 +1436,8 @@ def main(argv: list[str] | None = None, *, protocol_path: Path = PROTOCOL_PATH, 
         run_steady_state(protocol, results, backend=args.backend, max_steps=args.max_steps, wall_budget_seconds=args.wall_budget_seconds,
                          require_same_code=not args.ignore_code_identity, protocol_path=protocol_path)
     elif args.command == "finalize":
-        finalize(protocol, results, backend=args.backend, stop_reason=args.stop_reason, protocol_path=protocol_path, allow_refinalize=args.allow_refinalize)
+        finalize(protocol, results, backend=args.backend, stop_reason=args.stop_reason, protocol_path=protocol_path,
+                 allow_refinalize=args.allow_refinalize, recover_runner_stop=args.recover_runner_stop)
     else:
         print(json.dumps(status(results, protocol), indent=1))
     return 0

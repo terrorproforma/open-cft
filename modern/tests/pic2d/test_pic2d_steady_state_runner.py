@@ -302,6 +302,134 @@ def test_finalize_writes_artifacts_from_checkpoint_without_stepping(tiny, tmp_pa
     assert status_lines[-1]["event"] == "stop" and status_lines[-1]["stop_reason"] == "finalized_no_ignition_reference"
 
 
+# -- attempt-7 regression: a non-canonical diagnostic must not lose the terminal state ----------------
+
+def test_gpu_utilisation_sample_is_none_not_nan_on_timeout_or_garbage(monkeypatch):
+    """Plume attempt 7: 15 of 238 nvidia-smi calls hit the 5 s timeout under GPU contention; the old
+    ``float('nan')`` fall-back made summary.json non-canonical at the wall-budget stop."""
+
+    import subprocess
+    from experiments.pic2d_cft_snapshot_v1 import run as snapshot
+
+    def timeout(*_args, **_kwargs):
+        raise subprocess.TimeoutExpired("nvidia-smi", 5)
+
+    monkeypatch.setattr(snapshot.subprocess, "run", timeout)
+    assert snapshot._gpu_utilisation() is None
+
+    class Completed:
+        stdout = "nan\n"
+
+    monkeypatch.setattr(snapshot.subprocess, "run", lambda *a, **k: Completed())
+    assert snapshot._gpu_utilisation() is None
+    Completed.stdout = "37\n"
+    assert snapshot._gpu_utilisation() == 37.0
+
+
+def _stepped_sim(config, field, xs, steps: int):
+    sim = Simulation(config, field, cross_sections=xs)
+    records: list[dict] = []
+    sim.run(steps, accumulate_from_step=0, progress=lambda record: records.append(record.to_dict()))
+    return sim, records
+
+
+def test_final_summary_sanitises_gpu_samples_and_records_a_failed_canonical_write(tiny, tmp_path: Path):
+    protocol, config, field, xs = tiny
+    protocol_path = tmp_path / "protocol.json"
+    protocol_path.write_text(json.dumps(protocol), encoding="utf-8")
+    sim, records = _stepped_sim(config, field, xs, 40)
+    maps = sim.diagnostic_arrays()
+    common = dict(protocol_path=protocol_path, sim=sim, config=config, field_map=field, xs_sha=xs.payload_sha256, records=records,
+                  maps=maps, window_range=(0, 40), maps_kind="window_average", stop_reason="wall_clock_budget_reached", gate_error=None,
+                  session={"resumed_from_step": 0}, setup_seconds=1.0, wall_session=2.0)
+    # (i) NaN / None GPU samples are recorded as null, the summary is canonical and the run is finished
+    results = tmp_path / "ok"
+    run_state = {"wall_seconds_total": 3.0, "sessions": [{"resumed_from_step": 0}], "checkpoint_step": 40, "finished": True}
+    summary_path = runner.write_final_artifacts(protocol=protocol, results=results, run_state=run_state,
+                                                gpu_samples=[float("nan"), 12.0, None], **common)
+    summary = artifacts.read_canonical_json(summary_path)
+    assert summary["gpu_utilisation_percent_samples"] == [None, 12.0, None]
+    assert json.loads((results / "run_state.json").read_text(encoding="utf-8"))["finished"] is True
+    # (ii) any other non-finite value still fails closed, but the terminal record is honest: not finished, error recorded,
+    # stepping artifacts present so `finalize --recover-runner-stop` can rebuild the summary
+    poisoned = copy.deepcopy(protocol)
+    poisoned["simplifications"] = [float("nan")]
+    results = tmp_path / "poisoned"
+    run_state = {"wall_seconds_total": 3.0, "sessions": [{"resumed_from_step": 0}], "checkpoint_step": 40, "finished": True}
+    with pytest.raises(Exception, match="not canonical finite JSON"):
+        runner.write_final_artifacts(protocol=poisoned, results=results, run_state=run_state, gpu_samples=[], **common)
+    assert not (results / "summary.json").exists()
+    state = json.loads((results / "run_state.json").read_text(encoding="utf-8"))
+    assert state["finished"] is False and state["finalization_error"]["stop_reason_at_failure"] == "wall_clock_budget_reached"
+    assert "not canonical finite JSON" in state["finalization_error"]["error"]
+    assert state["finalization_error"]["artifacts_written"] == ["maps.npz", "series.npz", "checkpoint-final.json", "checkpoint-final.npz"]
+    for name in ("maps.npz", "series.npz", "checkpoint-final.json", "checkpoint-final.npz"):
+        assert (results / name).is_file(), name
+
+
+@pytest.mark.parametrize("max_steps", [80, 120])   # 80: last completed window (0, 80); 120: half-full current window (80, 120)
+def test_finalize_recovers_a_runner_stop_whose_summary_write_failed(tiny, tmp_path: Path, max_steps: int):
+    protocol, config, field, xs = tiny
+    protocol = copy.deepcopy(protocol)
+    protocol["stopping_rule"]["wall_budget_seconds"] = 100.0
+    results = tmp_path / "attempt7"
+    runner.run_steady_state(protocol, results, backend="cpu", field_map=field, cross_sections=xs, max_steps=max_steps, log=lambda _: None)
+    reference = artifacts.read_canonical_json(results / "summary.json")
+    maps_before = (results / "maps.npz").read_bytes()
+    final_before = (results / "checkpoint-final.npz").read_bytes()
+    # replay the attempt-7 failure: the runner stopped on the budget, wrote maps/series/checkpoint-final, then the summary
+    # write raised -> no summary.json, run_state still unfinished (as checkpointed), no stop event
+    for name in ("summary.json", "summary.json.sha256.json"):
+        (results / name).unlink()
+    state = json.loads((results / "run_state.json").read_text(encoding="utf-8"))
+    state.pop("stop_reason", None)
+    state.update({"finished": False, "wall_seconds_total": 50.0})
+    artifacts.write_canonical_json(results / "run_state.json", state)
+    status_lines = (results / "status.jsonl").read_text(encoding="utf-8").splitlines()
+    assert json.loads(status_lines[-1])["event"] == "stop"
+    (results / "status.jsonl").write_text("\n".join(status_lines[:-1]) + "\n", encoding="utf-8", newline="\n")
+    (results / "run.err").write_text("...\ncft_revival.orbit_mc.models.OrbitValidationError: artifact is not canonical finite JSON\n",
+                                    encoding="utf-8", newline="\n")
+    # fail-closed: no evidence for a generic reason, none for the budget while the recorded wall time is under it
+    with pytest.raises(runner.PIC2DValidationError, match="no on-disk evidence"):
+        runner.finalize(protocol, results, backend="cpu", field_map=field, cross_sections=xs, recover_runner_stop=True, log=lambda _: None)
+    with pytest.raises(runner.PIC2DValidationError, match="does not exceed the budget"):
+        runner.finalize(protocol, results, backend="cpu", field_map=field, cross_sections=xs, recover_runner_stop=True,
+                        stop_reason="wall_clock_budget_reached", log=lambda _: None)
+    with pytest.raises(runner.PIC2DValidationError, match="does not satisfy the plateau rule"):
+        runner.finalize(protocol, results, backend="cpu", field_map=field, cross_sections=xs, recover_runner_stop=True,
+                        stop_reason="plateau_reached_after_min_transit_times", log=lambda _: None)
+    assert not (results / "summary.json").exists()
+    state["wall_seconds_total"] = 101.0
+    artifacts.write_canonical_json(results / "run_state.json", state)
+    summary_path = runner.finalize(protocol, results, backend="cpu", field_map=field, cross_sections=xs, recover_runner_stop=True,
+                                   stop_reason="wall_clock_budget_reached", log=lambda _: None)
+    summary = artifacts.read_canonical_json(summary_path)
+    # the window-average maps and the final checkpoint are reused verbatim; the window range is the runner's
+    assert summary["maps_kind"] == "window_average" and summary["stop_reason"] == "wall_clock_budget_reached"
+    assert summary["averaging_window_step_range"] == reference["averaging_window_step_range"]
+    assert summary["averaging_window_steps"] == reference["averaging_window_steps"]
+    assert summary["artifacts"]["maps_npz_sha256"] == reference["artifacts"]["maps_npz_sha256"]
+    assert (results / "maps.npz").read_bytes() == maps_before
+    assert (results / "checkpoint-final.npz").read_bytes() == final_before
+    assert summary["steps_completed"] == reference["steps_completed"] == max_steps
+    assert summary["window_maps_summary"] == reference["window_maps_summary"]
+    assert summary["plume"] == reference["plume"] and summary["ledger"] == reference["ledger"]
+    assert summary["wall_seconds_total"] == 101.0 and summary["sessions"][-1]["recovered_runner_stop"] is True
+    recovered_state = json.loads((results / "run_state.json").read_text(encoding="utf-8"))
+    assert recovered_state["finished"] is True and recovered_state["stop_reason"] == "wall_clock_budget_reached"
+    recovery = recovered_state["finalization_recovery"]
+    assert recovery["mode"] == "runner_stop_artifacts_reused" and "101.0 s > wall_budget_seconds 100 s" in recovery["stop_reason_evidence"]
+    assert "not canonical finite JSON" in recovery["original_error"]["error"]
+    status_lines = [json.loads(l) for l in (results / "status.jsonl").read_text(encoding="utf-8").splitlines()]
+    assert status_lines[-1] == {"event": "stop", "step": max_steps, "time_s": pytest.approx(max_steps * config.dt_s),
+                                "stop_reason": "wall_clock_budget_reached"}
+    # a recovered (or any finished) run is not recovered twice
+    with pytest.raises(runner.PIC2DValidationError, match="already has a summary.json"):
+        runner.finalize(protocol, results, backend="cpu", field_map=field, cross_sections=xs, recover_runner_stop=True,
+                        stop_reason="wall_clock_budget_reached", log=lambda _: None)
+
+
 def test_v13_run_records_neutral_inventory_in_status_series_and_summary(tiny, tmp_path: Path):
     protocol, _, field, xs = tiny
     protocol = copy.deepcopy(protocol)

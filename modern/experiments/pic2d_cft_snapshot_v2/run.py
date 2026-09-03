@@ -198,7 +198,7 @@ def run_case(case: str, *, backend: str, max_wall_seconds: float, max_steps: int
     t_run = time.perf_counter()
     step = 0
     last_print = time.perf_counter()
-    gpu_samples: list[float] = []
+    gpu_samples: list[float | None] = []
     plateau: dict[str, Any] = {"reached": False}
 
     def progress(record: SeriesRecord) -> None:

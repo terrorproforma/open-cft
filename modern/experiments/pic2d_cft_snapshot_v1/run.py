@@ -16,6 +16,7 @@ from __future__ import annotations
 import argparse
 from datetime import datetime, timezone
 import json
+import math
 from pathlib import Path
 import subprocess
 import sys
@@ -126,7 +127,7 @@ def run_case(case: str, *, backend: str, max_wall_seconds: float, max_steps: int
     t_run = time.perf_counter()
     step = 0
     last_print = time.perf_counter()
-    gpu_samples: list[float] = []
+    gpu_samples: list[float | None] = []
 
     def progress(record: SeriesRecord) -> None:
         nonlocal last_print
@@ -262,14 +263,22 @@ def _file_sha256(path: Path) -> str:
     return sha256(path.read_bytes()).hexdigest()
 
 
-def _gpu_utilisation() -> float:
+def _gpu_utilisation() -> float | None:
+    """GPU utilisation sample in percent, or ``None`` when nvidia-smi fails or exceeds its 5 s timeout.
+
+    The samples land verbatim in ``summary.json``, which is canonical *finite* JSON: a NaN here
+    ended plume attempt 7 at its wall-budget stop (15 of 238 nvidia-smi calls timed out under GPU
+    contention and the final ``write_canonical_json`` refused the summary). ``None`` is canonical.
+    """
+
     try:
         completed = subprocess.run(
             ["nvidia-smi", "--query-gpu=utilization.gpu", "--format=csv,noheader,nounits"], capture_output=True, text=True, check=True, timeout=5
         )
-        return float(completed.stdout.strip().splitlines()[0])
+        value = float(completed.stdout.strip().splitlines()[0])
+        return value if math.isfinite(value) else None
     except Exception:
-        return float("nan")
+        return None
 
 
 def summarize() -> Path:
