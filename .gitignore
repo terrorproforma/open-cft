@@ -182,3 +182,14 @@ modern/experiments/pic2d_cft_plume_v1/results-attempt6-gate-shot-noise/series.js
 modern/experiments/pic2d_cft_plume_v1/results-attempt6-gate-shot-noise/*.pid
 modern/experiments/pic2d_cft_plume_v1/results-attempt6-gate-shot-noise/*.log
 modern/experiments/pic2d_cft_plume_v1/results-attempt6-gate-shot-noise/*.err
+!modern/experiments/pic2d_cft_plume_v1/results-attempt7-wall-budget-no-plateau/
+!modern/experiments/pic2d_cft_plume_v1/results-attempt7-wall-budget-no-plateau/maps.npz
+!modern/experiments/pic2d_cft_plume_v1/results-attempt7-wall-budget-no-plateau/series.npz
+modern/experiments/pic2d_cft_plume_v1/results-attempt7-wall-budget-no-plateau/checkpoint/
+modern/experiments/pic2d_cft_plume_v1/results-attempt7-wall-budget-no-plateau/frames/
+modern/experiments/pic2d_cft_plume_v1/results-attempt7-wall-budget-no-plateau/video/
+modern/experiments/pic2d_cft_plume_v1/results-attempt7-wall-budget-no-plateau/checkpoint-final.npz*
+modern/experiments/pic2d_cft_plume_v1/results-attempt7-wall-budget-no-plateau/series.jsonl
+modern/experiments/pic2d_cft_plume_v1/results-attempt7-wall-budget-no-plateau/*.pid
+modern/experiments/pic2d_cft_plume_v1/results-attempt7-wall-budget-no-plateau/*.log
+modern/experiments/pic2d_cft_plume_v1/results-attempt7-wall-budget-no-plateau/*.err

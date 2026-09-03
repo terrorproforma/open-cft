@@ -184,6 +184,83 @@ steady-state v3 (model v1.4) is deferred until after this run (devlog).
   nodes, gate not yet armed). **Bitwise replay of attempt 6 confirmed**: all 213 series records at
   common steps agree exactly in N_e, N_i, φ_max, K_e, I_d and n_g (same seed, order-independent
   fixed-point deposit) — the run is deterministic and the gate change touched no dynamics.
+* **Attempt 7 outcome (stopped 08:25 AEST 2026-09-04; finalized 09:23 AEST)** — ran the whole
+  4 h budget: **2 520 000 steps = 3.780 µs = 1.22 transits, 126 frames, 14 443 s wall**
+  (5.73 ms/step average including the 5 min factorisation; 6.35 → 6.7 ms/step from 2.0 to 2.4 M
+  electrons; 4.4 ms/step at 0.35 M), `stop_reason = wall_clock_budget_reached` at the step-2 520 000
+  checkpoint (recorded wall 14 443 s > 14 400 s). **The finalization crashed after the stop**:
+  `write_final_artifacts` wrote `maps.npz` (last completed 400 000-step window, steps 2.0–2.4 M =
+  3.0–3.6 µs), `series.npz` and `checkpoint-final.*`, then `write_canonical_json(summary.json)` raised
+  `OrbitValidationError: artifact is not canonical finite JSON` (`run.err`, 08:25:21 AEST) and the
+  process exited with `run_state.json` still at its checkpoint state (`finished=false`, no stop
+  reason). Cause: `_gpu_utilisation()` returned `float('nan')` whenever `nvidia-smi` failed or
+  exceeded its 5 s timeout, and the per-minute samples went verbatim into the canonical summary —
+  17 of the 238 calls of this run took ≥ 5 s (the 200-step interval after a log print stretched to
+  5.0–5.7 s in `status.jsonl`; the median call cost 2.3 s → 557 s = 3.9 % of the budget spent in
+  `nvidia-smi` under GPU contention; attempt 6's 139 samples all returned). Fixed in `3b8b577a`
+  (`None` samples, sanitised summary, honest `finalization_error` record on any further failure,
+  and `finalize --recover-runner-stop`, a fail-closed rebuild of the summary from the runner's own
+  stop artifacts that accepts only an evidenced stop reason). Attempt 7 was finalized that way
+  (`--stop-reason wall_clock_budget_reached`; `maps.npz` and `checkpoint-final.npz` byte-identical to
+  the runner's sidecars; recorded in `run_state.finalization_recovery` and the second session).
+  **Replay of attempt 6**: all 8219 common records agree bitwise in N_e, N_i, φ, kinetic/field
+  energies, every current, n_g and the cumulative particle tallies; only the host-summed momentum /
+  field-work ledgers differ at 1 ULP (non-associative reductions, diagnostic only).
+  **Gate (v2.0.1) after arming at 2.4 µs (4601 records)**: resolved statistic 0.000 throughout — no
+  far-field node ever held ≥ 32 macro-particles in a single-step deposit (`far_field_resolved_nodes`
+  = 0 in every record); the raw statistic exceeded 0.25 in 35 records (0.8 %, max 0.37), the first
+  at 2.466 µs = exactly the attempt-6 stop. The 400 000-step window average gives max |n_i − n_e| /
+  peak = 0.035 over the 481 far-field nodes (volume-weighted 1e-4) with 105 of them holding ≥ 32
+  electron samples over the window: **no charge pile-up, but the v2.0.1 floor is unreachable on a
+  single-step deposit at far-field densities** (1e16–1e17 m⁻³ × 6.5e-14–1e-11 m³ node volumes / W =
+  0.01–20 macro-particles per node) — the gate no longer false-fires, but it cannot fire at all.
+  Proposed v2.0.2 (not done): read the gate from the window/frame accumulators (interval sample
+  count ≥ 32), which is the statistic the diagnosis of attempt 6 actually used.
+  **No plateau** (rule: I_d, N_e, n_g drifts < 5 % over the trailing 20 % AND ≥ 3 transits): at
+  1.22 transits the trailing-20 % (3.02–3.78 µs, 2521 records) drifts are I_d −13.1 %, N_e +21.8 %,
+  n_g −4.5 %; triad: S +15.5 % (soft fail), ω_pe Δt +3.9 %, T_e,dense +3.8 %, cumulative energy
+  residual +1.44 % of the electrode work (hard bounds clear). Trailing means ± block standard error
+  (60 ns blocks): **I_d 5.99 ± 0.06 mA** (per-record scatter 7.8 % = the shot noise of 190
+  macro-electrons per 200-step interval, 7.3 %), cathode 5.99 mA (continuity), **S 8.57 ±
+  0.11e16 s⁻¹** (gross utilisation 0.94, net 0.52; 6 % of S in the plume box), **N_e 2.20 ± 0.04 M /
+  N_i 2.23 M** (2.44 / 2.47 M at the stop, 20.7 % of the ions in the plume box, still growing
+  ~+0.6 M µs⁻¹), **n_g 2.54 ± 0.01e19 m⁻³ on its fixed point 2.54e19**, peak n_e 2.95e18 at
+  3.64 cells/λ_D (max 3.92; gate 4.5), ω_pe Δt 0.151 (max 0.182; gate 0.2), T_e,dense 9.3 eV,
+  φ_exit(axis) 77 ± 2 V (+23 % over the window). The window maps (3.0–3.6 µs): I_d 6.09 mA,
+  I_beam 0.94 mA, body-face ion current 0.82 mA, anode ion current 0.06 mA.
+  **Thrust / exit-plane diagnostics — development numbers, NOT plateaued (every beam quantity still
+  drifts +20 % per trailing window; quoted with statistical uncertainty only)**: far-field momentum
+  flux T_flux 19.4 ± 0.4 µN, cold-gas effusion 1.56 µN → **T_total 20.9 ± 0.4 µN = 0.021 mN**
+  (statistical ±2 %; 3.0–3.6 µs window 20.5 ± 0.5 µN); momentum-balance thrust −F_on_thruster
+  19.6 ± 0.4 µN (window 20.55 ± 0.30) → window closure −7.9 % (per-record closure scatter ±0.33);
+  Maxwell-stress force on the solids 1.74 µN. I_beam (far field) 0.96 ± 0.02 mA (+23 %/window;
+  58 555 macro-ion crossings in the map window, Poisson 0.4 %), 0.874 mA through the z = 36 mm
+  plane and 0.064 mA through the r = 12 mm side; flux-weighted ⟨v_z⟩ 14.8 km s⁻¹ (149 eV); IEDF
+  at the far field: mean 184 eV, peak 133 eV (peak − U_a = −167 V; the far plane sits at 23 V),
+  10/50/90 % quantiles 119/168/289 eV; half-angles containing 50/90/95 % of the crossings 8° / 29° /
+  60°; Isp 112 s; anode efficiency 0.6 % at 1.83 W. Channel exit plane (z = 24 mm, final checkpoint,
+  ±0.5 mm slab, instantaneous): net ion current 2.24 mA (±0.2 % counting; 104 k of 165 k
+  macro-ions forward-moving), density-weighted mean ion energy 28 eV (⟨v_z⟩ 1.4 km s⁻¹ — the
+  exit-plane population is dominated by slow, locally born ions), axial ion momentum flux 29 µN
+  (includes the ions that later hit the front face). Acceleration region 90 → 10 % of the axis
+  drop: z = 5.0 → 35.8 mm, i.e. the whole channel plus plume (φ_axis 330 V at 3.75 mm, 81 V at
+  25 mm, a 99 V hump at 27 mm next to the cathode region, 67 V at 30 mm, 59 V at 33 mm, 23 V at
+  35.9 mm).
+  **Plume shape (window-average n_i)**: exit-plane axis 6.4e17 m⁻³ (aperture area mean 2.5e17);
+  the axis density RISES to 1.0e18 at z = 27 mm (beam focus ~1.5 mm past the axis null at
+  25.45 mm), falls to 50 % of the exit-axis value at z = 32.8 mm and is still 14.6 % at the far
+  plane: **neither the 10 % nor the 1 % axial contour fits in the 12 mm box** (the declared
+  box-size limit). Radially the beam is narrow: r(10 % of the local axis value) = 1.3–1.9 mm and
+  r(1 %) = 2.9–3.9 mm at z = 27–36 mm, consistent with the 8° / 29° half-angles; the 95 % angle of
+  60° comes from the slow wide-angle wings (plume-born ions and the front-face population).
+  Record: `results-attempt7-wall-budget-no-plateau/` (a copy of `results/`, which keeps the
+  checkpoint for the resume; tracked: summary, run_state, maps/series npz, checkpoint-final.json,
+  status.jsonl); video (renderer v0.2, `--cusps 0.006028 0.012 0.017972`, auto window K = 10 frames
+  = 300 ns, median resolved node 35 events, 6.1 % of the plasma nodes resolved carrying 69 % of S)
+  in its `video/`: `pic2d-results-attempt7-wall-budget-no-plateau-{n_e_per_m3,n_i_per_m3,phi_v,
+  t_e_ev,ionization_rate_per_m3_s}.mp4` + `…-timeseries.html` (untracked). The n_i frames show
+  the narrow beam and a broad low-density population whose front is still filling the box at
+  3.78 µs — the plume has not reached its inventory.
 
 ## Time-series frames and video
 
