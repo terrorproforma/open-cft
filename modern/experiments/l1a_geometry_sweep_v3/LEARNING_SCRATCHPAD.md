@@ -21,6 +21,18 @@
 - The bounds were fixed after six corner solves for the sweep-v2 gates (boundary ratio
   <= 0.021 vs 0.05); no rho value was consulted.
 
+## Learned from the accepted result
+
+- [self] The single-harmonic I_1(x_w) is an UPPER envelope of the realised Koch ratio,
+  not its value: rho / I_1 sits at 0.80 (end cusps) and 0.87 (interior cusps) because
+  the finite stack's end field raises the adjacent axis peaks; the HEMP-like threshold
+  moves from r_w / L = 0.617 to about 0.75. Report end and interior cusps separately.
+- [self] 28 of the 36 "predicted but not realised" designs fail only at their end
+  cusps: the anode-side and exit-side cells see the un-cancelled end field. A HEMP-like
+  five-stage four-cusp stack needs x_w >= 2.6 here, and only 2/42 reached it.
+- [tool] `validate_bundle` pins the root identity; it passes only in the worktree that
+  ran the execution. Byte-level verification through the manifest is the portable check.
+
 ## Claim guardrail
 
 L1a linear-vacuum screening only. The declared soft-iron pole pieces are source-free

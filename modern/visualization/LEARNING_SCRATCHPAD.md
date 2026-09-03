@@ -3,6 +3,19 @@
 Policy: committed with the shared `modern/visualization/` dashboards. Evidence
 directories, accepted packages and experiment-local dashboards stay read-only.
 
+## 2026-09-03 21:30 AEST - L1a geometry sweep v3 dashboard
+
+- [self] Plot a ratio that spans two decades (rho 0.2-15) on a log axis with the
+  theoretical curve drawn through the same transform; a linear axis hides the whole
+  sub-1 population where the original design space lives.
+- [self] Mark end cusps and interior cusps with different glyphs: the split of the
+  scatter into two bands is physics (end field), and a single glyph reads as noise.
+- [self] Storing 241-point wall/axis profiles per design in the record makes the cusp
+  maps a pure read of sealed data; recomputing them in the generator would re-run the
+  interpolant outside the hash-bound pipeline.
+- [tool] Headless Edge screenshots always start at the top; to inspect a lower panel,
+  render a %TEMP% copy with the upper sections hidden by CSS rather than scrolling.
+
 ## 2026-09-03 19:55 AEST - cusp topology search v3 dashboard
 
 - [self] When the accepted campaign is a corrected re-run, the dashboard must load the

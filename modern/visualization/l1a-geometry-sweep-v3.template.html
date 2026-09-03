@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>L1a geometry sweep v3 - HEMP-like wall-radius-to-pitch regime - offline dashboard</title>
+<style>
+  :root { --ink: #1c2430; --muted: #5d6b7a; --line: #d6dde6; --bg: #f7f9fb; --panel: #ffffff; --accent: #0b5cad; --warn: #b7560b; --ok: #1e7f4b; --bad: #a92626; --s3: #0b5cad; --s4: #1e7f4b; --s5: #7a3ea1; --v2: #8a94a0; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 14px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--ink); background: var(--bg); }
+  header { padding: 20px 24px 12px; background: var(--panel); border-bottom: 1px solid var(--line); }
+  h1 { margin: 0 0 6px; font-size: 22px; }
+  h2 { margin: 0 0 10px; font-size: 17px; }
+  h3 { margin: 12px 0 6px; font-size: 14px; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 12px; font-weight: 600; color: #fff; background: var(--accent); margin-right: 6px; margin-bottom: 4px; }
+  .badge.warn { background: var(--warn); }
+  .badge.ok { background: var(--ok); }
+  .badge.bad { background: var(--bad); }
+  .badge.grey { background: var(--v2); }
+  main { padding: 16px 24px 40px; display: grid; gap: 16px; grid-template-columns: repeat(12, 1fr); }
+  .panel { grid-column: span 12; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; min-width: 0; }
+  .panel.half { grid-column: span 6; }
+  .panel.third { grid-column: span 4; }
+  @media (max-width: 1000px) { .panel.half, .panel.third { grid-column: span 12; } }
+  .small { font-size: 12px; color: var(--muted); }
+  code { font-family: ui-monospace, Consolas, monospace; font-size: 12px; word-break: break-all; }
+  table { border-collapse: collapse; width: 100%; font-size: 12.5px; }
+  th, td { text-align: left; padding: 4px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { background: #eef2f6; position: sticky; top: 0; }
+  .scroll { max-height: 460px; overflow: auto; border: 1px solid var(--line); border-radius: 6px; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+  .card { border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; background: #fbfcfd; }
+  .card .v { font-size: 22px; font-weight: 700; }
+  .card .k { font-size: 12px; color: var(--muted); }
+  .box { border-left: 4px solid var(--warn); background: #fff8f0; padding: 8px 12px; border-radius: 4px; }
+  .box.ok { border-color: var(--ok); background: #f1faf4; }
+  .box.bad { border-color: var(--bad); background: #fdf2f2; }
+  svg { display: block; max-width: 100%; height: auto; }
+  svg text { font: 11px system-ui, sans-serif; fill: var(--ink); }
+  .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(440px, 1fr)); gap: 12px; }
+  .legend span { display: inline-block; margin-right: 12px; }
+  .legend i { display: inline-block; width: 12px; height: 12px; border-radius: 6px; vertical-align: -2px; margin-right: 4px; }
+  ul.tight { margin: 4px 0; padding-left: 18px; }
+  ul.tight li { margin: 2px 0; }
+  .hemp { color: var(--ok); font-weight: 600; }
+  #jserrors { color: var(--bad); font-family: ui-monospace, monospace; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<header>
+  <h1>L1a geometry sweep v3 - does the HEMP design ratio &rho; follow I<sub>1</sub>(&pi; r<sub>w</sub>/L)?</h1>
+  <div id="labels"></div>
+  <p class="small" id="statement"></p>
+  <div id="jserrors"></div>
+</header>
+<main>
+  <section class="panel" id="claim"></section>
+  <section class="panel" id="headline"></section>
+  <section class="panel" id="scatter"></section>
+  <section class="panel half" id="agreement"></section>
+  <section class="panel half" id="hypothesis"></section>
+  <section class="panel" id="cuspmaps"></section>
+  <section class="panel third" id="bystage"></section>
+  <section class="panel third" id="v2region"></section>
+  <section class="panel third" id="region"></section>
+  <section class="panel half" id="space"></section>
+  <section class="panel half" id="heldout"></section>
+  <section class="panel" id="designs"></section>
+  <section class="panel" id="gates"></section>
+  <section class="panel" id="identity"></section>
+</main>
+<script id="payload" type="application/json">__PAYLOAD_JSON__</script>
+<script>
+(function () {
+  "use strict";
+  window.addEventListener("error", (e) => { document.getElementById("jserrors").textContent += "JS error: " + e.message + "\n"; });
+  const DATA = JSON.parse(document.getElementById("payload").textContent.replace(/<\\\//g, "</"));
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const mm = (v, d = 3) => (v === null || v === undefined) ? "-" : (v * 1e3).toFixed(d);
+  const num = (v, d = 3) => (v === null || v === undefined) ? "-" : Number(v).toFixed(d);
+  const pct = (v) => (v === null || v === undefined) ? "-" : (100 * v).toFixed(1) + " %";
+  const STAGE_COLOR = { 3: "var(--s3)", 4: "var(--s4)", 5: "var(--s5)" };
+  const svgNs = "http://www.w3.org/2000/svg";
+  function el(tag, attrs, text) {
+    const node = document.createElementNS(svgNs, tag);
+    for (const k in attrs) node.setAttribute(k, attrs[k]);
+    if (text !== undefined) node.textContent = text;
+    return node;
+  }
+
+  // ------------------------------------------------------------- header
+  $("labels").innerHTML = `<span class="badge">${esc(DATA.classification)}</span><span class="badge">${esc(DATA.topology_label)} (catalogue)</span><span class="badge ok">bundle ${esc(DATA.identity.state)}</span><span class="badge warn">linear-vacuum screening: no plasma / mirror-probability / performance claim</span><span class="badge warn">L1b/P2 confirmation for r_w/L &gt; 0.5: ${esc(DATA.l1b_p2_queue.status)}</span>`;
+  $("statement").textContent = DATA.classification_statement;
+
+  // ------------------------------------------------------------- claim boundary
+  const cb = DATA.claim_boundary;
+  $("claim").innerHTML = `<h2>Claim boundary</h2><div class="box"><ul class="tight">
+    <li><b>Field level:</b> ${esc(cb.field_level)}</li>
+    <li><b>Definitions:</b> ${esc(cb.definition_source)}</li>
+    <li><b>Iron:</b> ${esc(cb.iron_sensitivity)}</li>
+    <li><b>L1b/P2:</b> ${esc(cb.l1b_p2_confirmation.statement)}</li>
+    <li><b>&rho; and mirror descriptors</b> are field ratios (${cb.mirror_ratios_are_field_descriptors_not_probabilities ? "never probabilities" : "?"}); plasma/performance publication forbidden: ${cb.forbid_plasma_performance_publication}.</li>
+    <li><b>Usable as:</b> ${cb.usable_as.map(esc).join("; ")}</li>
+  </ul></div><p class="small">${esc(DATA.purpose)}</p>`;
+
+  // ------------------------------------------------------------- headline
+  const H = DATA.headline;
+  const T = DATA.hypothesis_outcome.test;
+  const sob = DATA.estimands.sobol_v3;
+  const cf = T.confusion_predicted_i1_vs_realised;
+  const histText = Object.keys(H.sobol_wall_cusp_count_histogram).map((k) => `${k}:${H.sobol_wall_cusp_count_histogram[k]}`).join(" / ");
+  $("headline").innerHTML = `<h2>Headline (reported, not gated) - ${H.design_count} designs (${H.set_counts.sobol_v3} Sobol + ${H.set_counts.sweep_v2} held-out sweep-v2), all ${Object.keys(DATA.gates.campaign).length} binding integrity gates true</h2>
+  <div class="cards">
+    <div class="card"><div class="v hemp">${H.sobol_hemp_like_count}/${H.set_counts.sobol_v3}</div><div class="k">Sobol designs HEMP-like (every wall cusp &rho;<sub>cons</sub> &ge; 1.5): ${pct(H.sobol_hemp_like_fraction)}; ${pct(sob.hemp_like_fraction_among_designs_with_cusps)} of designs with a cusp</div></div>
+    <div class="card"><div class="v">${H.sobol_predicted_hemp_like_i1_count}</div><div class="k">predicted HEMP-like by I<sub>1</sub>(x_w) &ge; 1.5 (x_w &ge; ${num(T.x_star_prediction, 3)}); realised &amp; predicted ${cf.predicted_and_realised}, predicted only ${cf.predicted_not_realised}, realised only ${cf.not_predicted_but_realised}; accuracy ${pct(T.prediction_accuracy)}</div></div>
+    <div class="card"><div class="v">${num(H.sobol_rho_conservative.min, 2)} - ${num(H.sobol_rho_conservative.max, 1)}</div><div class="k">&rho;<sub>cons</sub> range over ${H.sobol_rho_conservative.count} Sobol wall cusps (median ${num(H.sobol_rho_conservative.median, 2)})</div></div>
+    <div class="card"><div class="v">${num(T.slope_through_origin, 3)} / ${num(T.r_squared, 2)}</div><div class="k">slope of &rho;<sub>cons</sub> on I<sub>1</sub>(x_w) through the origin / R&sup2;; ${pct(T.fraction_within_band)} of cusps within &plusmn;${pct(T.band)} of I<sub>1</sub></div></div>
+    <div class="card"><div class="v">${num(T.x_star_from_fitted_slope, 2)}</div><div class="k">x_w at which the fitted line reaches &rho; = 1.5 (r_w/L = ${num(T.wall_radius_over_pitch_star_from_fitted_slope, 3)}); prediction ${num(T.x_star_prediction, 3)} (r_w/L = 0.617); smallest realised HEMP-like x_w ${num(T.smallest_x_w_realised_hemp_like, 2)}, largest non-HEMP-like ${num(T.largest_x_w_not_hemp_like, 2)}</div></div>
+    <div class="card"><div class="v">${H.sobol_five_stage_four_cusp_hemp_like_count}</div><div class="k">five-stage designs with exactly four wall cusps that are HEMP-like (of ${DATA.by_stage["5"].count} five-stage designs, ${DATA.by_stage["5"].four_cusps} with four cusps)</div></div>
+    <div class="card"><div class="v">${H.sweep_v2_region_hemp_like_count} / ${num(H.sweep_v2_region_max_rho_conservative, 3)}</div><div class="k">sweep-v2 region (96 held-out + ${DATA.designs.filter((d) => d.set === "sobol_v3" && d.in_v2_box).length} Sobol inside the v2 box): HEMP-like designs / maximum &rho;<sub>cons</sub></div></div>
+    <div class="card"><div class="v">${esc(histText)}</div><div class="k">Sobol wall-cusp count : designs; ${pct(sob.n_minus_1_cusp_fraction)} have N-1 cusps for N stages</div></div>
+    <div class="card"><div class="v">${H.pooled_cusp_is_wall_maximum_count}/${H.pooled_cusp_count}</div><div class="k">cusps that are the wall |B| maximum of their neighbourhood (&rho;<sub>wall</sub> &ge; 1); pooled &rho;<sub>wall</sub> ${num(H.pooled_rho_wall.min, 2)} - ${num(H.pooled_rho_wall.max, 2)} (PPM prediction I<sub>1</sub>/I<sub>0</sub> &lt; 1)</div></div>
+    <div class="card"><div class="v">${H.held_out.passed_count}/${H.held_out.design_count}</div><div class="k">sweep-v2 held-out reproduction (QoI replay ${H.held_out.qoi_replay_passed_count}, axis-null bijection ${H.held_out.axis_null_bijection_count}, ${H.held_out.reference_null_count} nulls, max ${mm(H.held_out.max_axis_null_difference_m, 4)} mm)</div></div>
+    <div class="card"><div class="v">${H.stable_design_count}/${H.design_count}</div><div class="k">stable under 2x refinement (max wall-intersection shift ${mm(H.max_wall_intersection_shift_m, 3)} mm); max &rho; resolution sensitivity ${pct(H.rho_resolution_sensitivity_max)}</div></div>
+  </div>`;
+
+  // ------------------------------------------------------------- scatter rho vs x_w
+  function scatterPlot(container, opts) {
+    const W = 960, Hh = 430, mL = 60, mR = 20, mT = 26, mB = 44;
+    const xs = DATA.scatter.map((p) => p.x_w);
+    const x0 = Math.min(...xs, DATA.v2_x_range[0]) * 0.95, x1 = Math.max(...xs) * 1.03;
+    const ys = DATA.scatter.map((p) => opts.y(p)).filter((v) => v !== null && isFinite(v) && v > 0);
+    const y0 = Math.log10(Math.min(...ys, opts.ymin)), y1 = Math.log10(Math.max(...ys, opts.ymax));
+    const sx = (x) => mL + (x - x0) / (x1 - x0) * (W - mL - mR);
+    const sy = (y) => Hh - mB - (Math.log10(y) - y0) / (y1 - y0) * (Hh - mT - mB);
+    const svg = el("svg", { viewBox: `0 0 ${W} ${Hh}`, role: "img", "aria-label": opts.title });
+    svg.appendChild(el("text", { x: mL, y: 14, "font-weight": "600" }, opts.title));
+    // v2 region band
+    svg.appendChild(el("rect", { x: sx(DATA.v2_x_range[0]), y: mT, width: Math.max(0, sx(DATA.v2_x_range[1]) - sx(DATA.v2_x_range[0])), height: Hh - mT - mB, fill: "#e9edf2", opacity: 0.8 }));
+    svg.appendChild(el("text", { x: sx(DATA.v2_x_range[0]) + 4, y: mT + 12, "font-size": "10", fill: "#5d6b7a" }, "sweep-v2 box (x_w range)"));
+    // gridlines (decades and 1.5)
+    for (const yv of [0.1, 0.2, 0.5, 1, 2, 5, 10, 20]) {
+      if (yv < Math.pow(10, y0) || yv > Math.pow(10, y1)) continue;
+      svg.appendChild(el("line", { x1: mL, y1: sy(yv), x2: W - mR, y2: sy(yv), stroke: "#eee" }));
+      svg.appendChild(el("text", { x: mL - 6, y: sy(yv) + 4, "text-anchor": "end", "font-size": "10" }, String(yv)));
+    }
+    if (opts.threshold) {
+      svg.appendChild(el("line", { x1: mL, y1: sy(1.5), x2: W - mR, y2: sy(1.5), stroke: "#a92626", "stroke-dasharray": "6 4" }));
+      svg.appendChild(el("text", { x: W - mR - 4, y: sy(1.5) - 4, "text-anchor": "end", "font-size": "10", fill: "#a92626" }, "rho = 1.5 (Koch DM9-1 anode cusp 1.53)"));
+      svg.appendChild(el("line", { x1: sx(DATA.x_star), y1: mT, x2: sx(DATA.x_star), y2: Hh - mB, stroke: "#a92626", "stroke-dasharray": "2 4" }));
+      svg.appendChild(el("text", { x: sx(DATA.x_star) + 4, y: Hh - mB - 6, "font-size": "10", fill: "#a92626" }, `x* = ${num(DATA.x_star, 3)}`));
+    }
+    // prediction curve
+    const curve = DATA.curve.map((c, i) => (i ? "L" : "M") + sx(c.x).toFixed(1) + " " + sy(Math.max(opts.curve(c), 1e-6)).toFixed(1)).join(" ");
+    svg.appendChild(el("path", { d: curve, fill: "none", stroke: "#222", "stroke-width": 1.8 }));
+    svg.appendChild(el("text", { x: sx(DATA.curve[DATA.curve.length - 1].x) - 4, y: sy(Math.max(opts.curve(DATA.curve[DATA.curve.length - 1]), 1e-6)) - 6, "text-anchor": "end", "font-size": "10" }, opts.curveLabel));
+    // points
+    DATA.scatter.forEach((p) => {
+      const yv = opts.y(p);
+      if (yv === null || !isFinite(yv) || yv <= 0) return;
+      const isV2 = p.set === "sweep_v2";
+      const color = isV2 ? "var(--v2)" : STAGE_COLOR[p.stages];
+      if (p.end_cusp && !isV2) {
+        svg.appendChild(el("rect", { x: sx(p.x_w) - 3, y: sy(yv) - 3, width: 6, height: 6, fill: color, opacity: 0.75 }));
+      } else {
+        svg.appendChild(el("circle", { cx: sx(p.x_w), cy: sy(yv), r: isV2 ? 2.6 : 3.4, fill: color, opacity: isV2 ? 0.7 : 0.8 }));
+      }
+    });
+    for (let xv = Math.ceil(x0 * 2) / 2; xv <= x1; xv += 0.5) {
+      svg.appendChild(el("line", { x1: sx(xv), y1: Hh - mB, x2: sx(xv), y2: Hh - mB + 4, stroke: "#999" }));
+      svg.appendChild(el("text", { x: sx(xv), y: Hh - mB + 16, "text-anchor": "middle", "font-size": "10" }, xv.toFixed(1)));
+    }
+    svg.appendChild(el("line", { x1: mL, y1: Hh - mB, x2: W - mR, y2: Hh - mB, stroke: "#999" }));
+    svg.appendChild(el("line", { x1: mL, y1: mT, x2: mL, y2: Hh - mB, stroke: "#999" }));
+    svg.appendChild(el("text", { x: (mL + W - mR) / 2, y: Hh - 8, "text-anchor": "middle" }, "x_w = pi r_w / L"));
+    svg.appendChild(el("text", { x: 14, y: (mT + Hh - mB) / 2, "text-anchor": "middle", transform: `rotate(-90 14 ${(mT + Hh - mB) / 2})` }, opts.ylabel));
+    container.appendChild(svg);
+  }
+  const sc = $("scatter");
+  sc.innerHTML = `<h2>Koch &rho; per wall cusp vs x_w, against the PPM prediction I<sub>1</sub>(x_w) (log scale)</h2>
+  <div class="legend"><span><i style="background:var(--s3)"></i>3 stages</span><span><i style="background:var(--s4)"></i>4 stages</span><span><i style="background:var(--s5)"></i>5 stages</span><span><i style="background:var(--v2)"></i>held-out sweep-v2 (96)</span><span>&#9632; end cusp (first / last of its design) &nbsp; &#9679; interior cusp</span><span>black curve: I<sub>1</sub>(x_w); grey band: sweep-v2 x_w range</span></div>`;
+  scatterPlot(sc, { title: "rho_conservative = |B|(r_w, z_c) / max(adjacent axis |B_z| peaks)", y: (p) => p.rho, curve: (c) => c.i1, curveLabel: "I_1(x_w)", ylabel: "rho (conservative)", threshold: true, ymin: 0.3, ymax: 2 });
+  sc.insertAdjacentHTML("beforeend", `<p class="small">${esc(DATA.koch_rho.quotation)} (${esc(DATA.koch_rho.citation)}). ${esc(DATA.koch_rho.radius_of_downstream_field)}. End cusps divide by the strong un-cancelled axis field of the end cell on one side, interior cusps by two interior peaks - the split in the scatter is that geometry, not noise.</p>`);
+  scatterPlot(sc, { title: "rho_wall = |B|(r_w, z_c) / max wall |B| of the adjacent cells  (the 'cusp is the wall maximum' reading)", y: (p) => p.rho_wall, curve: (c) => c.i1_i0, curveLabel: "I_1/I_0(x_w)", ylabel: "rho_wall", threshold: false, ymin: 0.2, ymax: 1.2 });
+
+  // ------------------------------------------------------------- agreement rho / I1
+  function agreementPlot(container) {
+    const W = 560, Hh = 300, mL = 50, mR = 14, mT = 26, mB = 40;
+    const pts = DATA.scatter.filter((p) => p.rho !== null && p.rho > 0);
+    const ratios = pts.map((p) => Math.log10(p.rho / p.i1));
+    const x0 = Math.min(...pts.map((p) => p.x_w)) * 0.95, x1 = Math.max(...pts.map((p) => p.x_w)) * 1.03;
+    const y0 = Math.min(...ratios, Math.log10(0.5)), y1 = Math.max(...ratios, Math.log10(2));
+    const sx = (x) => mL + (x - x0) / (x1 - x0) * (W - mL - mR);
+    const sy = (v) => Hh - mB - (v - y0) / (y1 - y0) * (Hh - mT - mB);
+    const svg = el("svg", { viewBox: `0 0 ${W} ${Hh}`, role: "img", "aria-label": "rho over I1" });
+    svg.appendChild(el("text", { x: mL, y: 14, "font-weight": "600" }, "rho_conservative / I_1(x_w) per cusp (log10); band = preregistered +-25 %"));
+    svg.appendChild(el("rect", { x: mL, y: sy(Math.log10(1.25)), width: W - mL - mR, height: sy(Math.log10(0.75)) - sy(Math.log10(1.25)), fill: "#eaf5ee" }));
+    svg.appendChild(el("line", { x1: mL, y1: sy(0), x2: W - mR, y2: sy(0), stroke: "#222" }));
+    pts.forEach((p) => {
+      const c = p.set === "sweep_v2" ? "var(--v2)" : STAGE_COLOR[p.stages];
+      svg.appendChild(el("circle", { cx: sx(p.x_w), cy: sy(Math.log10(p.rho / p.i1)), r: 3, fill: c, opacity: 0.75 }));
+    });
+    for (const v of [0.25, 0.5, 1, 2, 4, 8]) {
+      const lv = Math.log10(v);
+      if (lv < y0 || lv > y1) continue;
+      svg.appendChild(el("text", { x: mL - 6, y: sy(lv) + 4, "text-anchor": "end", "font-size": "10" }, String(v)));
+      svg.appendChild(el("line", { x1: mL, y1: sy(lv), x2: W - mR, y2: sy(lv), stroke: "#eee" }));
+    }
+    svg.appendChild(el("line", { x1: mL, y1: Hh - mB, x2: W - mR, y2: Hh - mB, stroke: "#999" }));
+    svg.appendChild(el("text", { x: (mL + W - mR) / 2, y: Hh - 8, "text-anchor": "middle" }, "x_w"));
+    container.appendChild(svg);
+  }
+  const ag = $("agreement");
+  ag.innerHTML = "<h2>Agreement with the single-harmonic prediction</h2>";
+  agreementPlot(ag);
+  ag.insertAdjacentHTML("beforeend", `<p class="small">Median &rho;/I<sub>1</sub> ${num(T.rho_over_i1.median, 3)} (min ${num(T.rho_over_i1.min, 3)}, max ${num(T.rho_over_i1.max, 3)}, n = ${T.rho_over_i1.count}); ${pct(T.fraction_within_band)} inside the band. ${esc(DATA.ppm_prediction.why_i1_not_the_realised_ratio)}</p>`);
+
+  // ------------------------------------------------------------- hypothesis panel
+  const HO = DATA.hypothesis_outcome;
+  const flag = (ok) => `<span class="badge ${ok ? "ok" : "bad"}">${ok ? "as predicted" : "NOT as predicted"}</span>`;
+  $("hypothesis").innerHTML = `<h2>Preregistered hypotheses (reported, not gates)</h2>
+  <p class="small">${esc(DATA.hypothesis.statement)}</p>
+  <table><thead><tr><th>test</th><th>preregistered criterion</th><th>measured</th><th>outcome</th></tr></thead><tbody>
+  <tr><td>H1 slope</td><td>slope of &rho;<sub>cons</sub> on I<sub>1</sub>(x_w) in [0.80, 1.00]</td><td>${num(T.slope_through_origin, 3)} (R&sup2; ${num(T.r_squared, 3)})</td><td>${flag(HO.h1.slope_in_range)}</td></tr>
+  <tr><td>H1 band</td><td>&ge; 80 % of cusps within &plusmn;25 % of I<sub>1</sub></td><td>${pct(T.fraction_within_band)} of ${T.cusp_count}</td><td>${flag(HO.h1.band_fraction_ok)}</td></tr>
+  <tr><td>H2 threshold</td><td>I<sub>1</sub>(x_w) &ge; 1.5 predicts HEMP-like with accuracy &ge; 0.85</td><td>${pct(T.prediction_accuracy)} over ${T.design_count_with_cusps} designs (${cf.predicted_and_realised} both, ${cf.neither} neither, ${cf.predicted_not_realised} predicted only, ${cf.not_predicted_but_realised} realised only)</td><td>${flag(HO.h2.accuracy_ok)}</td></tr>
+  <tr><td>H2 v2 box</td><td>no HEMP-like design inside the sweep-v2 box</td><td>${H.sweep_v2_region_hemp_like_count} HEMP-like; max &rho; ${num(H.sweep_v2_region_max_rho_conservative, 3)}</td><td>${flag(HO.h2.no_hemp_like_in_v2_box)}</td></tr>
+  </tbody></table>
+  <p class="small">${esc(HO.note)}. ${esc(DATA.hypothesis.what_would_falsify)}</p>`;
+
+  // ------------------------------------------------------------- cusp maps
+  function cuspMap(rep) {
+    const W = 900, Hh = 380, mL = 50, mR = 14, mT = 24, mB = 30, gap = 14;
+    const P = rep.profiles;
+    const z0 = P.z_m[0], z1 = P.z_m[P.z_m.length - 1];
+    const sx = (z) => mL + (z - z0) / (z1 - z0) * (W - mL - mR);
+    const svg = el("svg", { viewBox: `0 0 ${W} ${Hh}`, role: "img", "aria-label": `cusp map of ${rep.id}` });
+    svg.appendChild(el("text", { x: mL, y: 14, "font-weight": "600" }, `${rep.set} / ${rep.id}: ${rep.stages} stages, r_w ${mm(rep.rw_m, 2)} mm, L ${mm(rep.pitch_m, 2)} mm, x_w ${num(rep.x_w, 2)}, I_1 ${num(rep.i1, 2)}, r_m,in ${mm(rep.rm_in_m, 2)} mm${rep.hemp ? "  - HEMP-like (every cusp rho >= 1.5)" : "  - not HEMP-like"}`));
+    // top: profiles
+    const pT = mT, pH = 200;
+    const maxB = Math.max(...P.wall_abs_b_t, ...P.axis_b_z_t.map(Math.abs));
+    const syB = (b) => pT + pH - (b / maxB) * (pH - 10);
+    rep.cells.forEach((c, i) => svg.appendChild(el("rect", { x: sx(c.z0), y: pT, width: Math.max(0, sx(c.z1) - sx(c.z0)), height: pH, fill: i % 2 ? "#eef4fb" : "#f7f9fc" })));
+    // magnets (axial extent) as purple bars along the top
+    rep.stage_centres_m.forEach((zc) => svg.appendChild(el("rect", { x: sx(zc - rep.magnet_t_m / 2), y: pT, width: Math.max(1, sx(zc + rep.magnet_t_m / 2) - sx(zc - rep.magnet_t_m / 2)), height: 5, fill: "#7a3ea1", opacity: 0.6 })));
+    const wallPath = P.z_m.map((z, i) => (i ? "L" : "M") + sx(z).toFixed(1) + " " + syB(P.wall_abs_b_t[i]).toFixed(1)).join(" ");
+    const axisPath = P.z_m.map((z, i) => (i ? "L" : "M") + sx(z).toFixed(1) + " " + syB(Math.abs(P.axis_b_z_t[i])).toFixed(1)).join(" ");
+    svg.appendChild(el("path", { d: axisPath, fill: "none", stroke: "#1e7f4b", "stroke-width": 1.6 }));
+    svg.appendChild(el("path", { d: wallPath, fill: "none", stroke: "#0b5cad", "stroke-width": 1.8 }));
+    svg.appendChild(el("line", { x1: sx(rep.straight_m[0]), y1: pT + pH, x2: sx(rep.straight_m[1]), y2: pT + pH, stroke: "#333", "stroke-width": 2.5 }));
+    rep.cusps.forEach((c) => {
+      svg.appendChild(el("line", { x1: sx(c.z_m), y1: pT, x2: sx(c.z_m), y2: pT + pH, stroke: c.hemp ? "#1e7f4b" : "#a92626", "stroke-dasharray": "3 3" }));
+      svg.appendChild(el("text", { x: sx(c.z_m), y: pT + 16, "text-anchor": "middle", "font-size": "10", fill: c.hemp ? "#1e7f4b" : "#a92626" }, `rho ${num(c.rho, 2)}`));
+    });
+    svg.appendChild(el("text", { x: mL - 4, y: syB(maxB) + 4, "text-anchor": "end", "font-size": "10" }, num(maxB, 2) + " T"));
+    svg.appendChild(el("text", { x: mL - 4, y: syB(0) + 4, "text-anchor": "end", "font-size": "10" }, "0"));
+    svg.appendChild(el("text", { x: W - mR, y: pT + 12, "text-anchor": "end", "font-size": "10", fill: "#0b5cad" }, "wall |B|(r_w, z)"));
+    svg.appendChild(el("text", { x: W - mR, y: pT + 24, "text-anchor": "end", "font-size": "10", fill: "#1e7f4b" }, "axis |B_z(0, z)|"));
+    // bottom: meridional plane with separatrices
+    const qT = pT + pH + gap, qH = Hh - mB - qT;
+    const rMax = rep.rw_m * 1.08;
+    const syR = (r) => qT + qH - (r / rMax) * qH;
+    rep.cells.forEach((c, i) => svg.appendChild(el("rect", { x: sx(c.z0), y: syR(rep.rw_m), width: Math.max(0, sx(c.z1) - sx(c.z0)), height: syR(0) - syR(rep.rw_m), fill: i % 2 ? "#eef4fb" : "#f7f9fc" })));
+    svg.appendChild(el("line", { x1: sx(rep.straight_m[0]), y1: syR(rep.rw_m), x2: sx(rep.straight_m[1]), y2: syR(rep.rw_m), stroke: "#333", "stroke-width": 2.5 }));
+    svg.appendChild(el("line", { x1: sx(z0), y1: syR(0), x2: sx(z1), y2: syR(0), stroke: "#333" }));
+    rep.traces.forEach((t) => {
+      const d = t.path.map((p, i) => (i ? "L" : "M") + sx(p[1]).toFixed(1) + " " + syR(Math.min(p[0], rMax)).toFixed(1)).join(" ");
+      svg.appendChild(el("path", { d, fill: "none", stroke: t.reaches_wall ? "#0b5cad" : "#b7560b", "stroke-width": 1.5 }));
+    });
+    rep.nulls.forEach((n) => svg.appendChild(el("circle", { cx: sx(n.z_m), cy: syR(0), r: 3.2, fill: n.zone === "channel" ? "#1e7f4b" : "#999" })));
+    rep.cusps.forEach((c) => svg.appendChild(el("polygon", { points: `${sx(c.z_m)},${syR(rep.rw_m) - 1} ${sx(c.z_m) - 5},${syR(rep.rw_m) - 10} ${sx(c.z_m) + 5},${syR(rep.rw_m) - 10}`, fill: c.hemp ? "#1e7f4b" : "#a92626" })));
+    rep.stage_centres_m.forEach((zc) => svg.appendChild(el("line", { x1: sx(zc), y1: syR(rMax), x2: sx(zc), y2: syR(rMax * 0.93), stroke: "#7a3ea1", "stroke-width": 3 })));
+    svg.appendChild(el("text", { x: sx(z0), y: Hh - 8 }, `z = ${mm(z0, 1)} mm`));
+    svg.appendChild(el("text", { x: sx(z1), y: Hh - 8, "text-anchor": "end" }, `${mm(z1, 1)} mm`));
+    svg.appendChild(el("text", { x: 4, y: syR(rep.rw_m) + 4 }, "r_w"));
+    svg.appendChild(el("text", { x: 4, y: syR(0) + 4 }, "axis"));
+    return svg;
+  }
+  const cm = $("cuspmaps");
+  cm.innerHTML = `<h2>Cusp maps of HEMP-like representatives (accepted maps) and one sweep-v2-region design</h2>
+  <p class="small">Top: wall |B| (blue) and axis |B_z| (green) along z; dashed verticals at the wall cusps with their &rho;<sub>cons</sub> (green &ge; 1.5, red &lt; 1.5); purple bars: magnet axial extents. Bottom: separatrices from the axis nulls (blue = reaches the wall cylinder, orange = leaves the window), nulls (green = channel), cusps (triangles), stage centres (purple ticks), shaded cells. Everything is a linear-vacuum screening field.</p>
+  <div class="grid2" id="cmgrid"></div>`;
+  const cmGrid = $("cmgrid");
+  DATA.cusp_maps.forEach((rep) => {
+    const wrap = document.createElement("div");
+    wrap.appendChild(cuspMap(rep));
+    const rows = rep.cusps.map((c) => `<tr><td>${esc(c.id)}</td><td>${mm(c.z_m, 2)}</td><td>${num(c.b_t, 4)}</td><td>${num(c.up_peak_t, 4)} / ${num(c.down_peak_t, 4)}</td><td>${num(c.rho_up, 2)} / ${num(c.rho_down, 2)}</td><td><b>${num(c.rho, 2)}</b></td><td>${num(c.rho_wall, 2)}</td><td>${num(c.angle_deg, 1)}&deg;</td></tr>`).join("");
+    wrap.insertAdjacentHTML("beforeend", `<div class="scroll" style="max-height:180px"><table><thead><tr><th>cusp</th><th>z_c (mm)</th><th>|B| wall (T)</th><th>axis peak up / down (T)</th><th>&rho; up / down</th><th>&rho; cons</th><th>&rho; wall</th><th>angle</th></tr></thead><tbody>${rows}</tbody></table></div>
+    <p class="small">wall harmonics |b3/b1| ${num(rep.harmonics.b3_over_b1, 4)}, |b5/b1| ${num(rep.harmonics.b5_over_b1, 4)} (fit RMS/max ${num(rep.harmonics.fit_rms_over_max, 3)}); stable ${rep.stability.stable} (max shift ${mm(rep.stability.max_shift_m, 4)} mm); &rho; resolution sensitivity ${pct(rep.rho_sens)}</p>`);
+    cmGrid.appendChild(wrap);
+  });
+
+  // ------------------------------------------------------------- by stage
+  const BS = DATA.by_stage;
+  $("bystage").innerHTML = `<h2>By stage count (Sobol)</h2><table><thead><tr><th>stages</th><th>designs</th><th>predicted (I<sub>1</sub>)</th><th>HEMP-like</th><th>N-1 cusps</th><th>four cusps</th><th>wall-cusp histogram</th></tr></thead><tbody>
+  ${["3", "4", "5"].map((k) => `<tr><td>${k}</td><td>${BS[k].count}</td><td>${BS[k].predicted}</td><td class="hemp">${BS[k].hemp}</td><td>${BS[k].n_minus_1}</td><td>${BS[k].four_cusps}</td><td>${esc(Object.entries(BS[k].cusp_histogram).map(([a, b]) => `${a}:${b}`).join(", "))}</td></tr>`).join("")}
+  </tbody></table><p class="small">${esc(DATA.hemp_like_rule)}</p>`;
+
+  // ------------------------------------------------------------- v2 region
+  const V2 = DATA.estimands.sweep_v2_region_pooled;
+  const V2h = DATA.estimands.sweep_v2;
+  $("v2region").innerHTML = `<h2>Sweep-v2 region (held-out 96 + Sobol inside the v2 box)</h2>
+  <div class="cards"><div class="card"><div class="v">${V2.hemp_like_count}/${V2.design_count}</div><div class="k">HEMP-like designs in the v2 region</div></div>
+  <div class="card"><div class="v">${num(V2.rho_conservative.min, 3)} - ${num(V2.rho_conservative.max, 3)}</div><div class="k">&rho;<sub>cons</sub> over ${V2.rho_conservative.count} cusps (median ${num(V2.rho_conservative.median, 3)})</div></div>
+  <div class="card"><div class="v">${num(V2.x_w.min, 2)} - ${num(V2.x_w.max, 2)}</div><div class="k">x_w range of the region (I<sub>1</sub> &le; ${num(DATA.curve.filter((c) => c.x <= V2.x_w.max).slice(-1)[0].i1, 2)})</div></div>
+  <div class="card"><div class="v">${esc(Object.entries(V2h.wall_cusp_count_histogram).map(([a, b]) => `${a}:${b}`).join(" / "))}</div><div class="k">held-out sweep-v2 wall-cusp histogram (v3.1 found the same)</div></div></div>
+  <p class="small">The original study's parameterisation (radii 1.4-2.2 mm, pitch 3.8-6.5 mm) lives entirely in this band: the wall cusp is the weak point of its cell (&rho; &lt; 1) for every one of its designs.</p>`;
+
+  // ------------------------------------------------------------- HEMP-like region
+  const R = DATA.estimands.sobol_v3.hemp_like_region;
+  $("region").innerHTML = `<h2>Feasible HEMP-like sub-region (Sobol)</h2>` + (R ? `<table><tbody>
+  <tr><td>x_w</td><td>${num(R.x_w.min, 2)} - ${num(R.x_w.max, 2)} (median ${num(R.x_w.median, 2)})</td></tr>
+  <tr><td>r_w / L</td><td>${num(R.wall_radius_over_pitch.min, 3)} - ${num(R.wall_radius_over_pitch.max, 3)}</td></tr>
+  <tr><td>x_m = pi r_m,in / L</td><td>${num(R.x_m_inner.min, 2)} - ${num(R.x_m_inner.max, 2)}</td></tr>
+  <tr><td>stage counts</td><td>${esc(Object.entries(R.stage_counts).map(([a, b]) => `${a}:${b}`).join(", "))}</td></tr>
+  <tr><td>wall-cusp counts</td><td>${esc(Object.entries(R.wall_cusp_counts).map(([a, b]) => `${a}:${b}`).join(", "))}</td></tr>
+  <tr><td>min &rho;<sub>cons</sub> per design</td><td>${num(R.min_rho_conservative.min, 2)} - ${num(R.min_rho_conservative.max, 2)}</td></tr>
+  </tbody></table><p class="small">Ranges of the ${DATA.estimands.sobol_v3.hemp_like_count} HEMP-like designs; the L1b/P2 confirmation of these designs is ${esc(DATA.l1b_p2_queue.status)}.</p>` : `<p>No HEMP-like design was found.</p>`);
+
+  // ------------------------------------------------------------- design space
+  const S = DATA.sampling;
+  $("space").innerHTML = `<h2>Design space</h2><p class="small">${esc(S.algorithm)}; ${S.design_count} designs, seed ${S.seed}.</p>
+  <table><thead><tr><th>variable</th><th>v3 bounds</th><th>sweep-v2 bounds</th></tr></thead><tbody>
+  ${S.variables.map((v) => { const b = S.sweep_v2_box[v.name]; return `<tr><td>${esc(v.name)}</td><td>${v.lower} - ${v.upper} ${esc(v.units)}</td><td>${b ? `${b[0]} - ${b[1]}` : "same"}</td></tr>`; }).join("")}
+  </tbody></table>
+  <p class="small">${esc(S.regime_coverage.hemp_like_predicted_where)}. ${esc(S.regime_coverage.why_not_shorter_pitch)}. ${esc(S.bounds_provenance)}.</p>
+  <p class="small"><b>Manufacturability assumed:</b> ${esc(DATA.manufacturability.magnet_material)}; minimum thickness ${DATA.manufacturability.minimum_manufacturable_thickness_m * 1e3} mm, tolerances ${DATA.manufacturability.radial_and_axial_tolerance_m * 1e6} um, thermal clearance ${DATA.manufacturability.magnet_to_dielectric_thermal_clearance_m * 1e3} mm. ${esc(DATA.manufacturability.pole_pieces)}.</p>`;
+
+  // ------------------------------------------------------------- held-out
+  const HD = DATA.held_out;
+  $("heldout").innerHTML = `<h2>Held-out reproduction of sweep v2 (binding)</h2><table><tbody>
+  <tr><td>designs rebuilt with sealed hashes and re-solved</td><td>${HD.design_count}</td></tr>
+  <tr><td>QoIs replayed within the sweep-v2 tolerances</td><td>${HD.qoi_replay_passed_count}/${HD.design_count}</td></tr>
+  <tr><td>stored representative maps reproduced node-wise</td><td>${HD.stored_representatives_checked}</td></tr>
+  <tr><td>sealed axis nulls in bijection with v3 nulls</td><td>${HD.axis_null_bijection_count}/${HD.design_count} (${HD.reference_null_count} nulls, max difference ${mm(HD.max_axis_null_difference_m, 4)} mm)</td></tr>
+  </tbody></table>
+  <h3>Sweep-v2 metric gates verbatim (all 224 designs)</h3><table><thead><tr><th>gate</th><th>comparator / limit</th><th>observed extreme</th><th>passed</th></tr></thead><tbody>
+  ${Object.entries(DATA.gates.sweep_v2_gate_breakdown).map(([k, g]) => `<tr><td>${esc(k)}</td><td>${esc(g.comparator)} ${g.limit}</td><td>${typeof g.observed_extreme === "number" ? g.observed_extreme.toExponential(3) : esc(String(g.observed_extreme))}</td><td><span class="badge ${g.passed ? "ok" : "bad"}">${g.passed}</span></td></tr>`).join("")}
+  </tbody></table><p class="small">${esc(Object.entries(DATA.gates.not_applicable).map(([k, v]) => `${k}: ${v}`).join("; "))}.</p>`;
+
+  // ------------------------------------------------------------- design table
+  const rows = DATA.designs.map((d) => `<tr><td>${esc(d.set)}</td><td>${esc(d.id)}</td><td>${d.stages}</td><td>${mm(d.rw_m, 2)}</td><td>${mm(d.pitch_m, 2)}</td><td>${num(d.x_w, 2)}</td><td>${num(d.i1, 2)}</td><td>${d.in_v2_box ? "yes" : ""}</td><td>${d.nulls}</td><td><b>${d.cusps}</b></td><td>${d.rho.map((r) => num(r, 2)).join(", ")}</td><td>${d.hemp ? '<span class="hemp">yes</span>' : "no"}</td><td>${num(d.b3_b1, 3)}</td><td>${num(d.angle_max, 1)}</td><td>${mm(d.shift_m, 4)}</td><td>${pct(d.rho_sens)}</td><td>${d.boundary.toExponential(2)}</td></tr>`).join("");
+  $("designs").innerHTML = `<h2>All ${DATA.designs.length} designs</h2><div class="scroll"><table><thead><tr><th>set</th><th>design</th><th>N</th><th>r_w (mm)</th><th>L (mm)</th><th>x_w</th><th>I_1</th><th>v2 box</th><th>nulls</th><th>cusps</th><th>&rho;<sub>cons</sub> per cusp</th><th>HEMP-like</th><th>|b3/b1| wall</th><th>max angle (&deg;)</th><th>max shift (mm)</th><th>&rho; sens.</th><th>boundary ratio</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+
+  // ------------------------------------------------------------- gates
+  const G = DATA.gates;
+  $("gates").innerHTML = `<h2>Binding integrity gates (all true) and replay</h2><table><thead><tr><th>gate</th><th>value</th><th>definition</th></tr></thead><tbody>
+  ${Object.keys(G.campaign).map((k) => `<tr><td>${esc(k)}</td><td><span class="badge ${G.campaign[k] ? "ok" : "bad"}">${G.campaign[k]}</span></td><td class="small">${esc(G.definitions[k] || "")}</td></tr>`).join("")}
+  </tbody></table><p class="small">Reported, not binding: ${G.reported_not_binding.map(esc).join("; ")}. Replays (main-process re-solve + re-characterization vs worker payload): ${G.replays.map((r) => `${esc(r.key)} bit-identical=${r.bit_identical}`).join("; ")}. Execution: ${DATA.execution.worker_pool_size} CPU workers, design stage ${num(DATA.execution.stage_wall_s, 0)} s, assessment ${num(DATA.execution.assessment_wall_s, 0)} s.</p>`;
+
+  // ------------------------------------------------------------- identity
+  const I = DATA.identity;
+  $("identity").innerHTML = `<h2>Provenance</h2><ul class="tight small">
+  <li>experiment <code>${esc(I.experiment_id)}</code>, preregistration commit <code>${esc(I.preregistration_commit_sha)}</code>, command <code>${esc(I.execution_command)}</code>, device <code>${esc(I.device)}</code></li>
+  <li>manifest <code>${esc(I.manifest_file_sha256)}</code> (${I.verified_file_count} files byte-verified of ${I.artifact_count} artifacts); terminal <code>${esc(I.terminal_file_sha256)}</code>; lock <code>${esc(I.lock_file_sha256)}</code></li>
+  <li>protocol semantic <code>${esc(I.protocol_semantic_sha256)}</code>; protocol file (LF) <code>${esc(I.protocol_file_sha256_lf)}</code></li>
+  <li>experiment code <code>${esc(I.experiment_code_sha256)}</code>; dependency sources <code>${esc(I.dependency_source_sha256)}</code>; field pipeline <code>${esc(I.field_pipeline_source_sha256)}</code></li>
+  <li>sealed sweep-v2 source: manifest <code>${esc(I.sealed_sources.sweep_v2.manifest_file_sha256)}</code>, preregistration <code>${esc(I.sealed_sources.sweep_v2.preregistration_commit)}</code></li>
+  <li>catalogue <code>${esc(DATA.catalogue.schema_version)}</code> at <code>${esc(DATA.catalogue.path)}</code>: ${DATA.catalogue.design_count} entries, ${DATA.catalogue.stable_design_count} stable, ${DATA.catalogue.hemp_like_design_count} HEMP-like - ${esc(DATA.catalogue.consumer_contract)}</li>
+  <li>generator <code>${esc(I.generator_sha256)}</code>; template <code>${esc(I.template_sha256)}</code></li>
+  </ul>`;
+})();
+</script>
+</body>
+</html>
