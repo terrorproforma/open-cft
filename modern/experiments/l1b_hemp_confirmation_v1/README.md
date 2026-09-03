@@ -1,5 +1,11 @@
 # Preregistered L1b HEMP confirmation v1 - material-aware P2 check of the 15 HEMP-like designs
 
+> **Recorded development rejection.** The one execution at `b9449ee5` resolved 13/15 designs and
+> recorded two level-0 mesh-angle failures (028, 048) before any solve; results committed as is
+> (`978c71be`), see `POSTHOC_REJECTION.md`. No verdict exists for v1. The campaign continues as
+> `../l1b_hemp_confirmation_v1_1` (verdict CONFIRMED, `4db0a852`); the dashboard
+> `modern/visualization/l1b-hemp-confirmation-v1.html` shows v1.1 and carries this record.
+
 One-execution confirmation campaign: for each of the 15 HEMP-like designs of the accepted
 L1a geometry sweep v3 (`l1a_geometry_sweep_v3/results`, Koch rho_conservative >= 1.5 at
 every wall cusp) the material-aware field (adaptive P2 FEM of `cft_revival.fem_reference`:

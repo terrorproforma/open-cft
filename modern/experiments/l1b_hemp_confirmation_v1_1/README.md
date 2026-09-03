@@ -53,3 +53,25 @@ python -m experiments.l1b_hemp_confirmation_v1_1.run validate
 Dashboard: `modern/visualization/l1b-hemp-confirmation-v1.html`
 (`generate_l1b_hemp_confirmation_v1_dashboard.py`, reads this bundle and the v1 rejection
 record). Paper admission is NOT in scope.
+
+## Launch log
+
+| step | commit | when (AEST, 2026-09-04) | outcome |
+| --- | --- | --- | --- |
+| v1 code + tests + shakedown (015/036/106, 902 s) | `3e19575b` | 03:40-04:00 | shakedown passed, 11/11 gates, replay bit-identical |
+| v1 preregistration | `b9449ee5` | 04:00 | pushed to `origin/exp/l1b-hemp-confirmation-v1` |
+| v1 execution (detached `uni-project-l1b-hemp-run`) | - | 04:01-04:55 | `development_rejection`: 13/15 resolved; 028 / 048 below the 10 deg mesh gate before any solve |
+| v1 result recorded (results/ only) | `978c71be` | 05:05 | no verdict; `POSTHOC_REJECTION.md` |
+| v1.1 code + tests + shakedown (5 designs incl. 028 / 048 + whole-set mesh preflight 15/15, 1560 s) | `3d232c7c` | 05:10-05:44 | passed, 11/11 gates, replay bit-identical |
+| v1.1 preregistration | `ead9b525` | 05:45 | pushed |
+| v1.1 execution (detached `uni-project-l1b-hemp-v11-run`, one CPU worker) | - | 05:45-06:50 | `accepted_result`, status `accepted_l1b_confirmation_confirmed`; design stage 3079 s; peak RSS 240 MB |
+| v1.1 result recorded (results/ only) | `4db0a852` | 06:52 | verdict **CONFIRMED** |
+
+Verdict CONFIRMED: GATE (b) 15/15 designs keep their wall-cusp count (strict); GATE (c) 37
+matched cusps, every design a bijection, max shift 0.362 mm = 0.80 of the design tolerance
+(median 0.267 mm). Reported: HEMP-like preserved 14/15 (028: rho_cons 1.515 -> 1.464);
+rho_cons P2/L1a 0.94-1.45 (median 1.06); wall |B| at the cusps 1.05-1.53x L1a at equal magnet
+strength (median 1.23); channel axis nulls move up to 1.07 mm and the axis-null-to-cusp lean
+grows from <= 0.46 mm (L1a) to <= 1.14 mm (P2); nulls outside the straight section move
+1.1-1.75 mm. P2 discretisation sensitivity of the cusps (level 0 -> level 1) <= 1.4e-6 m;
+2x sampling stable 15/15; residual <= 2.0e-10.
