@@ -117,12 +117,21 @@ steady-state v3 (model v1.4) is deferred until after this run (devlog).
   and the discharge did not recover when n_g refilled (S 3e15 at n_g 5.9e19, T_e 11 eV,
   N_e 484 k). Ignition gate at 0.75 µs: S/S_ref 0.11 (min 0.8), N_e/N_ref 1.75 → stopped
   `no_ignition` at step 520 000 (0.78 µs, 40 min, 26 frames). Kept as
-  `results-attempt4-neutral-crash/` (video in its `video/`). Fix: the relaxation is
-  suspended whenever S > Q + R (no fixed point); the inventory then follows the conservative
-  balance (the channel holds 1.65e13 atoms — ~1 ms to empty at S − Q = 2e16 s⁻¹, not 30 ns).
-  The v1.3/v1.4 channel runs never had S > Q + R, so their closure is unchanged.
-* **Launch 5 (00:52 AEST, PID 40140; attempt 5)** — attempt 4 plus the relaxation
-  suspension; frames ON; this is the plume development run.
+  `results-attempt4-neutral-crash/` (video in its `video/`).
+* **Launch 5 (00:52 AEST, PID 40140; attempt 5)** — attempt 4 plus a guard that suspends
+  the artificial relaxation whenever S > Q + R (no fixed point). Reproduced the crash
+  (n_g 7.8e18 at 0.375 µs, S then stuck at 1.4e16 with n_g back at 5.5e19); stopped by hand
+  at 0.56 µs once the root cause was found (`results-attempt5-stale-scale/`, untracked).
+  **Root cause (both attempts): the v1.4 CUDA-graph step baked the MCC neutral density into
+  the captured kernels as a scalar**, so the MCC ionised at the n_g of the last graph capture
+  (a particle-array reallocation), not the inventory's n_g: S grew unchecked by the falling
+  inventory (hence S > Q and the negative fixed point), and after the crash the MCC kept the
+  trough density (S/(n_e n_g) ×100 low at an unchanged T_e distribution — the frames show
+  it). Fixed in `warp_backend` (device-resident density, as the emission rate already was;
+  regression test fails on the old backend). Unaffected: every v1.3 record (launched before
+  the graph commit) and attempt 3's coupling diagnosis (n_g stayed 5.6–6.3e19 there).
+* **Launch 6 (attempt 6)** — attempt 5 plus the graph-safe MCC density; frames ON; this is
+  the plume development run.
 
 ## Time-series frames and video
 

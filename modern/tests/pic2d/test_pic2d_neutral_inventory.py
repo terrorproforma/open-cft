@@ -235,9 +235,10 @@ def test_fail_closed_feed_above_ceiling_scale_and_exhaustion():
 
 
 def test_v20_artificial_relaxation_is_suspended_when_ionisation_exceeds_the_sources():
-    """Plume run attempt 4 (2026-09-04): S peaked at 1.26 x Q for two 30 ns intervals; relaxing toward the NEGATIVE fixed
-    point emptied the channel (5.5e19 -> 4e18) in one interval and the discharge collapsed. Without a fixed point the
-    relaxation is suspended and the inventory follows the conservative balance (decay by (S - Q) dt / V only)."""
+    """Plume run attempt 4 (2026-09-04): with the MCC density frozen by the step graph (fixed separately), S ran to
+    1.26 x Q and relaxing toward the NEGATIVE fixed point emptied the channel (5.5e19 -> 4e18) in one interval.
+    Guard: without a fixed point the relaxation is suspended and the inventory follows the conservative balance
+    (decay by (S - Q) dt / V only)."""
 
     n_g0 = 5.5e19
     feed = feed_for_density(n_g0, EXIT_AREA, 300.0)
@@ -450,3 +451,36 @@ def test_gpu_backend_applies_the_same_neutral_scale():
     assert gpu.series[-1].neutral is not None
     assert gpu.series[-1].neutral["fixed_point_per_m3"] == pytest.approx(cpu.series[-1].neutral["fixed_point_per_m3"], rel=0.5)
     assert gpu.state.neutral.density_per_m3 == pytest.approx(gpu.series[-1].neutral["density_per_m3"])
+
+
+@pytest.mark.skipif(not _warp_cuda(), reason="CUDA Warp device unavailable")
+def test_cuda_graph_step_sees_every_neutral_density_update():
+    """Plume attempt 4 (2026-09-04): the MCC density was a kernel scalar baked into the captured step graph, so the
+    GPU kept ionising at the n_g of the last capture (the inventory trough) after n_g had refilled. With the density
+    device-resident the graph path is bitwise the direct path while n_g falls every interval, and a density set to
+    zero after capture switches the collisions off in the replayed graph."""
+
+    from cft_revival.pic2d.models import PoissonConfig2D
+
+    grid = Grid2D(CFT_GEOMETRY, 12, 96)
+    xs = XenonCrossSections.from_file()
+    field = uniform_field_map(grid, 0.05)
+    feed = feed_for_density(1e21 / 3, EXIT_AREA, 300.0)
+    base = _config(grid, inventory=NeutralInventoryConfig(feed, 1e-9), series=25)
+    config = PIC2DConfig(**{**{f: getattr(base, f) for f in base.__dataclass_fields__},
+                           "poisson": PoissonConfig2D(method="device-direct", relative_tolerance=1e-10), "device_sync_steps": 25})
+    direct = Simulation(config, field, cross_sections=xs, backend="warp-cuda", step_graph=False)
+    graph = Simulation(config, field, cross_sections=xs, backend="warp-cuda", step_graph=True)
+    direct.run(200)
+    graph.run(200)
+    assert graph.backend.step_graph_active
+    assert direct.state.neutral.density_per_m3 < 0.6e21 and direct.state.neutral.density_per_m3 == graph.state.neutral.density_per_m3
+    assert direct.state.cumulative["ionizations"] == graph.state.cumulative["ionizations"] > 0
+    np.testing.assert_array_equal(direct.state.electrons.z_m, graph.state.electrons.z_m)
+    # after the capture a density set to zero must reach the replayed graph exactly as it reaches the direct launches
+    # (the next series record restores the inventory scale on both paths; the steps before it see no collisions)
+    for sim in (direct, graph):
+        sim.backend.set_neutral_scale(0.0)
+        sim.run(50)
+    assert direct.state.cumulative["ionizations"] == graph.state.cumulative["ionizations"]
+    np.testing.assert_array_equal(direct.state.electrons.z_m, graph.state.electrons.z_m)

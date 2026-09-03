@@ -30,10 +30,12 @@ replaces) obeys the atom balance of the channel volume ``V``::
   exists (``n_g* < 0``): the relaxation is then SWITCHED OFF for the interval and the
   inventory follows the conservative balance alone (it decays at the physical rate,
   ``S - Q_in - R`` atoms per second, ~0.1 ms to empty the CFT channel at S = 1e17 /s).
-  Relaxing toward a negative density emptied the channel in one 30 ns interval in the
-  plume development run attempt 4 (S peaked at 1.26 x the feed for 60 ns) and the
-  ionisation collapsed with it; the depletion the term produced there was not the
-  transient it was declared to accelerate.  ``artificial_relaxation_suspended`` in the
+  In the plume development run attempt 4 the GPU step graph had frozen the MCC density
+  (a captured kernel scalar, fixed in warp_backend on 2026-09-04), so S ran past the feed
+  unchecked by the falling n_g and the relaxation toward the then-negative fixed point
+  emptied the channel in one 30 ns interval; with the self-consistent S(n_g) feedback the
+  fixed point stays positive, and this guard only bounds the closure when the electron
+  population grows faster than one interval.  ``artificial_relaxation_suspended`` in the
   advance record marks such intervals.
 
 The linear ODE is integrated exactly over each update interval (``S`` and ``R`` held at
