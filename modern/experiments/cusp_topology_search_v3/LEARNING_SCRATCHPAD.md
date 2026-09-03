@@ -23,3 +23,11 @@
 - [self] The v2 candidate family (even stages at 16-42 % of the odd stages, first polarity
   +1) has ~one axis null in the channel: it is not an equal-strength PPM stack, so its
   zero four-cell count is doubly by construction (definition AND source policy).
+- [self] (post-execution) A held-out reference must be extracted by the SOURCE's own
+  semantics, never by a float identity on a derived quantity: v1 clusters an axis
+  sign-change with a neighbouring bilinear Newton root and reports the centroid, so
+  `r_m == 0.0` dropped 26 of 206 sealed axis clusters and cost the one-shot execution.
+  Select by member method (`axis_sign_change`/`axis_grid`).
+- [self] Pick shakedown designs that exercise the reference's edge cases (multi-member
+  clusters), not just the smallest and largest of a family; both shakedown v1 cases had
+  single-member axis clusters and the defect stayed invisible until the freeze.

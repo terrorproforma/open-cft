@@ -165,10 +165,15 @@ def test_load_catalogue_requires_the_sealed_manifest_bytes(tmp_path: Path, value
         C.load_catalogue(root)
 
 
-def test_recorded_catalogue_loads_when_the_campaign_has_executed() -> None:
+def test_recorded_catalogue_is_schema_valid_but_refused_by_the_loader() -> None:
+    """The v3 bundle is a recorded assessment_rejection; consumers must not ingest its catalogue."""
+
     if not (E.RESULTS_ROOT / "manifest.json").is_file():
         pytest.skip("not executed yet")
-    catalogue = C.load_catalogue(E.RESULTS_ROOT)
+    with pytest.raises(ValueError, match="not an accepted result"):
+        C.load_catalogue(E.RESULTS_ROOT)
+    catalogue = json.loads((E.RESULTS_ROOT / "artifacts" / "cusp-cell-catalogue.json").read_text(encoding="utf-8"))
+    C.validate_catalogue(catalogue)
     dataset = json.loads((E.RESULTS_ROOT / "artifacts" / "topology-dataset.json").read_text(encoding="utf-8"))
     assert catalogue["design_count"] == dataset["design_count"] == 281
     by_key = {(row["set_id"], row["design_id"]): row for row in dataset["designs"]}
