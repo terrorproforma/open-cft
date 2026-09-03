@@ -50,6 +50,38 @@ python -m experiments.wall_loss_geometry_surrogate_v2.run validate
 
 CPU only (`.venv-sota`, 8 threads). Dashboard: `modern/visualization/wall-loss-geometry-surrogate-v2.html`.
 
-## Result
+## Result (recorded `a2b503be`, terminal `assessment_rejection`, `rejected_surrogate`)
 
-See `DEVLOG.md` (filled after the single execution).
+Selected on the method-selection role: `botorch-stgp-logit` (mean-over-outputs RMSE 0.0637 vs
+direct 0.0644, stage mixture 0.0835; baselines ridge 0.0512, gbt 0.0566, k-NN 0.0878, mean 0.1616).
+
+Assessment role, same 16 designs as v1:
+
+| quantity | v1 (`b400d924`) | v2 | ridge | gbt | gate |
+|---|---|---|---|---|---|
+| pooled P(wall) RMSE | 0.0562 | **0.0337** | 0.0334 | 0.0368 | ≤ 0.05 **pass** |
+| cells RMSE raw / floor-corrected | 0.1332 / 0.129 | **0.0904 / 0.0836** | 0.0778 | 0.0906 | ≤ 0.05 **fail** |
+| best-baseline ratio (pooled) | 0.97× | 0.99× (ridge) | – | – | ≥ 2× **fail** |
+| 90 % coverage (gated outputs) | 0.800 | 0.8125 | – | – | [0.80, 0.97] **pass** |
+| extrapolation pooled RMSE / coverage | 0.093 / 0.84 | 0.1027 / 0.80 | 0.0557 | 0.1563 | ≤ 0.10 reported, missed |
+
+v2 improves on v1 for every output on the identical designs (pooled −0.0225, cells −0.0428; v2
+closer on 8 / 16 pooled and 11–12 / 16 for cells 1–3), passes the pooled gate v1 failed, but fails
+the cell gate and the 2× baseline gate: ridge on the derived features is as good as the GP
+(0.0334), and the tree baseline does not beat the GP (pooled 0.0368, cells 0.0906) — the remaining
+error is not the step structure. Variance scale 1.86 (v1 3.34). All structural gates passed.
+
+Learning curve (pooled RMSE on the method-selection role, 3 seeds): 20 → 0.0527, 30 → 0.0455,
+40 → 0.0448, 50 → 0.0449 — flat beyond 30 designs (log-log slope −0.18). Features that matter
+(permutation, ARD and tree importance agree): the per-cell cusp / null distances in pitches,
+`stage_pitch_m`, `stage_count_is_5`; the magnet and field-magnitude descriptors carry little.
+
+`predictor.json` is written and replays (1e-15) but is marked
+`not_usable_as_mdo_v2_input_rejected_surrogate`. What v3 would need (from `campaign-result.json`):
+lower label noise (more launches per design; the cell floor 0.035 is 70 % of the gate) rather than
+more designs of the same kind; a 2× gate restated against the binomial floor instead of a ratio to
+a mean baseline whose pooled RMSE is already 0.055; and a cell-level model that uses the cusp /
+null distances directly (they are the signal in all three importance measures).
+
+Dashboard: `modern/visualization/wall-loss-geometry-surrogate-v2.html` (v1 vs v2 panel, learning
+curve, feature table with provenance; tests in `modern/tests/visualization/`).

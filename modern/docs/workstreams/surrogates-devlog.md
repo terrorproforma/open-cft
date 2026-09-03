@@ -123,3 +123,40 @@
   designs was unstable (the shakedown partition selected `botorch-stgp-direct`).
 - The package still has no ICM/LMC kernel; the coregionalised candidate used
   BoTorch and its posterior is reproduced by the numpy predictor contract.
+
+## 2026-09-03 - wall-loss geometry surrogate v2 (derived physical features)
+
+- `modern/experiments/wall_loss_geometry_surrogate_v2`: v1's roles, seed and
+  gates verbatim (`partitions.json` inherited by hash, byte-identical), inputs
+  replaced by 31 DERIVED geometry / field features (straight length, wall
+  radius, exit section, stage count + one-hot, pitch, polarity, magnet
+  dimensions, L1a sweep field QoIs, per-cell distance to the nearest axis
+  |Bz| peak and Bz null in pitches) - deterministic from the committed
+  dataset row, extraction code hash-bound. Candidates: BoTorch SingleTaskGP
+  logit / direct and a per-stage-count GP mixture (13 / 29 / 8 fit designs,
+  all counts served); baselines mean / k-NN(3) / ridge / gradient-boosted
+  trees (scikit-learn, grid on the method-selection role).
+- Recorded outcome (`a2b503be`, terminal `assessment_rejection`,
+  `rejected_surrogate`): selected `botorch-stgp-logit`; on the identical
+  16 assessment designs pooled P(wall) RMSE 0.0562 (v1) -> 0.0337 (gate 0.05
+  now PASSED), cells 0.1332 -> 0.0904 (floor-corrected 0.0836; gate 0.05
+  FAILED), 90 % coverage 0.8125 (passed), 2x-baseline gate FAILED (ridge on
+  the same features 0.0334, ratio 0.99x); gbt 0.0368 did not beat the GP.
+  Extrapolation pooled 0.1027 (reported gate 0.10 missed by 0.003). All
+  structural gates passed. Predictor contract written and replayed (1e-15)
+  but marked `not_usable_as_mdo_v2_input_rejected_surrogate`.
+- Learning curve (fit sizes 20 / 30 / 40 / 50, 3 seeds, scored on the
+  method-selection role): 0.0527 / 0.0455 / 0.0448 / 0.0449 - flat beyond 30
+  designs. Importance (permutation, ARD, tree) agrees: per-cell cusp / null
+  distances, `stage_pitch_m`, `stage_count_is_5`; magnet and field
+  magnitude descriptors carry little.
+- Reading: the representation was the problem, not the kernel - every model
+  including ridge improved by 40 % once the inputs were the realised
+  geometry. What is left is label noise (cell floor 0.035 against a 0.05
+  gate) and a gate that compares against a baseline sharing the features.
+  v3 would need more launches per design rather than more designs, a
+  floor-referenced accuracy gate, and a cell-level model built on the
+  cusp / null distances.
+- Dashboard `modern/visualization/wall-loss-geometry-surrogate-v2.html`
+  (v1 vs v2 panel, learning curve, feature provenance table; 8 tests,
+  headless Edge/Chrome 0 console errors).

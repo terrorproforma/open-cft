@@ -98,3 +98,22 @@
   should be the realised geometry.
 - Deciding a shakedown by its structural gates only keeps an honest negative
   science preview from reading as a broken pipeline.
+
+## Lessons from wall-loss geometry surrogate v2 (2026-09-03)
+
+- Change the input representation before the model family: realised
+  geometry / field features cut the pooled RMSE of EVERY model (GP, ridge,
+  k-NN, trees) from ~0.056 to ~0.034 on the same 16 designs; the GP's
+  advantage over ridge stayed nil.
+- A "2x better than the best baseline" gate measures the model family, not
+  the surrogate's usefulness, once the baseline shares informative features;
+  state accuracy gates against the binomial floor instead.
+- A learning curve that is flat from 30 to 50 designs points at label
+  precision (launches per design) as the next unit of evidence, not design
+  count; report power-law extrapolations with that caveat.
+- Inherit the prior campaign's partition by hash (byte-identical file) when
+  the goal is a paired comparison; verify it in `prepare` and again in the
+  structural gates, and pair per-design errors from hash-bound artifacts.
+- Out-of-sample (leave-one-out) checks are required for any "inputs cannot
+  reconstruct the target" test whose coefficient count approaches the sample
+  size.

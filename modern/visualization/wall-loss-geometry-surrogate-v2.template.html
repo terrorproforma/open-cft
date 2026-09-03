@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wall-loss geometry surrogate v2 (derived physical features) — SURROGATE_OF_SCREENING_L1A_FIELD_TEST_PARTICLE_WALL_LOSS</title>
+<style>
+:root { --ink:#1b1f24; --muted:#5b6470; --line:#d6dbe1; --bg:#ffffff; --panel:#f6f8fa; --warn:#8a4b00; --warnbg:#fff4e0; --ok:#1d6f3f; --okbg:#e6f4ea; --bad:#a12d2d; --badbg:#fbe9e9; --acc:#2456a4; --acc2:#c2571b; --acc3:#6a4c93; }
+* { box-sizing: border-box; }
+body { margin:0; font: 14px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color:var(--ink); background:var(--bg); overflow-wrap: anywhere; }
+main { max-width: 1320px; margin: 0 auto; padding: 16px 20px 48px; }
+h1 { font-size: 22px; margin: 8px 0 4px; }
+h2 { font-size: 17px; margin: 28px 0 8px; border-bottom: 1px solid var(--line); padding-bottom: 4px; }
+h3 { font-size: 14px; margin: 14px 0 6px; color: var(--muted); font-weight: 600; }
+p { margin: 6px 0; }
+code, .mono { font-family: ui-monospace, Consolas, "SFMono-Regular", monospace; font-size: 12px; }
+.banner { border: 2px solid var(--warn); background: var(--warnbg); color: var(--warn); padding: 10px 14px; border-radius: 6px; margin: 10px 0 14px; }
+.banner strong { display:block; font-size: 15px; margin-bottom: 4px; }
+.verdict { border-radius: 6px; padding: 10px 14px; margin: 10px 0; border: 2px solid; }
+.verdict.bad { border-color: var(--bad); background: var(--badbg); color: var(--bad); }
+.verdict.ok { border-color: var(--ok); background: var(--okbg); color: var(--ok); }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 10px 0; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; }
+.card .v { font-size: 22px; font-weight: 700; }
+.card .l { color: var(--muted); font-size: 12px; }
+.row { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 10px; flex: 1 1 420px; min-width: 0; overflow-x: auto; }
+svg { width: 100%; height: auto; display: block; }
+svg text { font: 11px system-ui, sans-serif; fill: var(--ink); }
+.axis line, .axis path { stroke: #98a2ad; stroke-width: 1; fill: none; }
+.grid line { stroke: #e3e7eb; stroke-width: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 12px; }
+th, td { border-bottom: 1px solid var(--line); padding: 3px 6px; text-align: right; white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; }
+th { background: var(--panel); position: sticky; top: 0; }
+.ok { color: var(--ok); font-weight: 600; } .bad { color: var(--bad); font-weight: 600; }
+.tablewrap { max-height: 520px; overflow: auto; border: 1px solid var(--line); border-radius: 6px; }
+.legend span { display:inline-block; margin-right: 12px; }
+.sw { display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:4px; vertical-align:middle; }
+footer { margin-top: 30px; color: var(--muted); font-size: 12px; border-top: 1px solid var(--line); padding-top: 10px; }
+footer .mono { word-break: break-all; }
+.small { font-size: 12px; color: var(--muted); }
+ul { margin: 4px 0 4px 18px; padding: 0; }
+</style>
+</head>
+<body>
+<main>
+<h1>Wall-loss geometry surrogate v2 (derived physical features)</h1>
+<div class="banner" id="banner"></div>
+<div id="verdict"></div>
+<p id="lead" class="small"></p>
+
+<h2>Headline (assessment role, single use)</h2>
+<div class="cards" id="cards"></div>
+<p class="small" id="headline-notes"></p>
+
+<h2>Predeclared gates</h2>
+<div class="tablewrap"><table id="gates"></table></div>
+<p class="small" id="gate-notes"></p>
+
+<h2>v1 vs v2 on the identical designs (reported, not gated)</h2>
+<div class="row">
+  <div class="panel" style="flex:1 1 420px"><h3>Paired per-output RMSE (assessment role, same 16 designs; extrapolation, same 10)</h3><div id="compare-chart"></div></div>
+  <div class="panel" style="flex:1 1 420px"><h3>Comparison table</h3><div id="compare-table"></div></div>
+</div>
+<p class="small" id="compare-note"></p>
+
+<h2>Surrogate vs baselines</h2>
+<div class="row">
+  <div class="panel" style="flex:2 1 640px"><h3>Assessment role (interpolation scope, 16 designs)</h3><div id="model-table"></div></div>
+  <div class="panel" style="flex:1 1 360px"><h3>Method selection (method-selection role, 10 designs)</h3><div id="selection"></div></div>
+</div>
+
+<h2>Derived features (deterministic functions of the committed sweep record; not fitted)</h2>
+<div class="tablewrap"><table id="features"></table></div>
+<p class="small" id="features-note"></p>
+
+<h2>Parity: predicted vs recorded probability</h2>
+<div class="row">
+  <div class="panel"><h3>Pooled P(wall), 512 launches</h3><div id="parity-pooled"></div></div>
+  <div class="panel"><h3>Per-cell P(wall), 128 launches</h3><div id="parity-cells"></div></div>
+</div>
+<p class="small">Filled circles: assessment role (interpolation scope). Hollow squares: extrapolation hold-out (the ten longest chambers, all five-stage). Bars: calibrated 90 % observation intervals. The dotted band is the 128- or 512-launch binomial floor around the diagonal.</p>
+
+<h2>Calibration</h2>
+<div class="row">
+  <div class="panel"><h3>Coverage of the 90 % observation intervals</h3><div id="coverage"></div></div>
+  <div class="panel"><h3>Calibration-role standardised residuals (before the scale)</h3><div id="residuals"></div><p class="small" id="calibration-note"></p></div>
+</div>
+
+<h2>Which derived features drive the screening wall loss</h2>
+<div class="row">
+  <div class="panel"><h3>Permutation importance (fit role, in-sample; ΔRMSE in P units)</h3><div id="permutation"></div></div>
+  <div class="panel"><h3>Tree feature importance (gbt baseline, impurity-based, mean over the five gated outputs)</h3><div id="tree"></div></div>
+</div>
+<div class="row"><div class="panel"><h3>ARD length-scales of the selected GP (fit-role unit box; short = sensitive)</h3><div id="ard"></div></div></div>
+<p class="small" id="sensitivity-note"></p>
+
+<h2>Extrapolation scope and learning curve (reported, not gated)</h2>
+<div class="row">
+  <div class="panel"><h3>Extrapolation hold-out (10 designs)</h3><div id="extrapolation"></div></div>
+  <div class="panel"><h3>Learning curve: selected candidate refitted on nested fit-role subsets</h3><div id="curve"></div></div>
+</div>
+
+<h2>Partition, structural gates and predictor contract</h2>
+<div class="row">
+  <div class="panel" id="partition"></div>
+  <div class="panel" id="structural"></div>
+</div>
+
+<h2>Claim boundary</h2>
+<div class="panel" id="claims"></div>
+
+<footer id="footer"></footer>
+</main>
+<script id="payload" type="application/json">__PAYLOAD_JSON__</script>
+<script>
+(function () {
+  "use strict";
+  var P = JSON.parse(document.getElementById("payload").textContent);
+  var byId = function (id) { return document.getElementById(id); };
+  var esc = function (s) { return String(s).replace(/[&<>"']/g, function (c) { return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); };
+  var fmt = function (x, d) { return (x === null || x === undefined) ? "–" : Number(x).toFixed(d === undefined ? 3 : d); };
+  var pf = function (ok) { return ok ? '<span class="ok">PASS</span>' : '<span class="bad">FAIL</span>'; };
+  var labels = { p_wall_cell1: "P(wall) cell 1", p_wall_cell2: "P(wall) cell 2", p_wall_cell3: "P(wall) cell 3", p_wall_cell4: "P(wall) cell 4", p_wall_pooled: "P(wall) pooled", p_reflect_pooled: "P(reflect) pooled" };
+  var rejected = P.status !== "accepted_surrogate";
+
+  byId("banner").innerHTML = "<strong>" + esc(P.classification) + "</strong>" + esc(P.classification_statement);
+  byId("verdict").innerHTML = '<div class="verdict ' + (rejected ? "bad" : "ok") + '"><strong>Recorded terminal state: ' + esc(P.terminal_state) + " — " + esc(P.status) + "</strong><br>" +
+    (rejected ? "The preregistered surrogate FAILED " + P.gates.rows.filter(function (g) { return g.kind === "binding" && !g.passed; }).length + " of " + P.gates.rows.filter(function (g) { return g.kind === "binding"; }).length + " binding gates on the single-use assessment role. Thresholds were fixed before the run and were not tuned; every metric below is published as recorded." : "All binding gates passed on the single-use assessment role.") +
+    " Structural gates (binding, replay, determinism, no tautology, code contract): " + (P.gates.structural_all_passed ? "all passed" : "FAILED") + ". Predictor status: <code>" + esc(P.mdo_v2_input_status) + "</code>." +
+    (P.rejection_diagnosis ? "<br><span class='small'>Failed: " + esc(P.rejection_diagnosis.reasons.join("; ")) + ".<br>What v3 would need: " + esc(P.rejection_diagnosis.v3_requirements.join(" | ")) + "</span>" : "") + "</div>";
+  byId("lead").textContent = "Selected candidate: " + P.selection.selected + " (chosen on the method-selection role by " + P.selection.criterion + ") on 31 DERIVED features. Roles inherited from v1 by hash (partitions equal v1: " + (P.partition.equals_v1 ? "yes" : "NO") + "). Source dataset: " + P.source_classification + " (screening result commit " + P.identity.screening_result_commit.slice(0, 8) + ", dataset sha256 " + P.identity.dataset_file_sha256.slice(0, 12) + "…). v1 result commit " + P.identity.v1_result_commit.slice(0, 8) + ".";
+
+  var H = P.headline;
+  var I = P.scopes.interpolation, X = P.scopes.extrapolation;
+  var cards = [
+    ["pooled P(wall) RMSE", fmt(H.interpolation_rmse_pooled, 4), "gate ≤ 0.050; floor-corrected " + fmt(H.interpolation_rmse_pooled_floor_corrected, 4)],
+    ["cell P(wall) RMSE (floor-corr.)", fmt(H.interpolation_rmse_cells_floor_corrected, 4), "gate ≤ 0.050; raw " + fmt(H.interpolation_rmse_cells_raw, 4) + ", floor " + fmt(I.cells.binomial_floor, 4)],
+    ["best baseline / surrogate", fmt(H.best_baseline_pooled.ratio_to_surrogate, 2) + "×", "gate ≥ 2.0×; " + H.best_baseline_pooled.baseline + " RMSE " + fmt(H.best_baseline_pooled.rmse, 4)],
+    ["90 % coverage", fmt(H.interpolation_coverage_90, 3), "gate [0.80, 0.97]; " + I.gated_coverage.covered + " / " + I.gated_coverage.count + " intervals"],
+    ["extrapolation RMSE (pooled)", fmt(H.extrapolation_rmse_pooled, 4), "reported gate ≤ 0.10; coverage " + fmt(H.extrapolation_coverage_90, 2)],
+    ["variance scale", fmt(H.variance_scale, 2) + "×", "calibration role, 50 residuals, 90 % rank rule"],
+    ["v1 pooled RMSE, same 16 designs", fmt(H.v1_pooled_rmse_same_designs, 4), "v2 " + fmt(H.interpolation_rmse_pooled, 4) + " → " + (H.interpolation_rmse_pooled < H.v1_pooled_rmse_same_designs ? "v2 better" : "v1 better") + "; cells v1 " + fmt(H.v1_cells_rmse_same_designs, 3) + " vs v2 " + fmt(H.interpolation_rmse_cells_raw, 3)],
+    ["tree baseline pooled RMSE", fmt(H.gbt_pooled_rmse, 4), (H.gbt_pooled_rmse < H.interpolation_rmse_pooled ? "tree beats the GP" : "GP beats the tree") + "; gbt depth " + P.selection.gbt_parameters.max_depth + ", " + P.selection.gbt_parameters.n_estimators + " trees"],
+    ["designs", P.partition.counts.fit + " / " + P.partition.counts["method-selection"] + " / " + P.partition.counts.calibration + " / " + P.partition.counts.assessment + " / " + P.partition.counts.extrapolation, "fit / method-selection / calibration / assessment / extrapolation (= v1)"],
+    ["selected", P.selection.selected, "of " + P.selection.order.length + " candidates; ridge λ = " + P.selection.ridge_penalty]
+  ];
+  byId("cards").innerHTML = cards.map(function (c) { return '<div class="card"><div class="v">' + esc(c[1]) + '</div><div class="l">' + esc(c[0]) + '</div><div class="l">' + esc(c[2]) + '</div></div>'; }).join("");
+  byId("headline-notes").textContent = "Binomial floors are the RMSE a perfect predictor would show against the recorded 128- or 512-launch labels; floor-corrected RMSE = sqrt(max(RMSE² − floor², 0)). The best baseline is chosen on the assessment role itself (conservative against the surrogate). Label access order recorded by the runtime: " + P.partition.label_access_sequence.join(" → ") + ".";
+
+  // ---- gates ---------------------------------------------------------------
+  var thr = function (g) { if (Array.isArray(g.threshold)) { return "[" + g.threshold.map(function (v) { return fmt(v, 2); }).join(", ") + "]"; } if (g.threshold === null || g.threshold === undefined) { return "structural"; } return (g.name.indexOf("baseline") >= 0 ? "≥ " : "≤ ") + fmt(g.threshold, 2); };
+  var extra = function (g) { var e = g.extra || {}; var parts = []; if (e.raw !== undefined) { parts.push("raw " + fmt(e.raw, 4)); } if (e.floor !== undefined) { parts.push("floor " + fmt(e.floor, 4)); } if (e.best_baseline) { parts.push("best baseline " + e.best_baseline + (e.best_baseline_rmse !== undefined ? " (" + fmt(e.best_baseline_rmse, 4) + ")" : "")); } if (e.covered !== undefined) { parts.push(e.covered + " / " + e.count + " covered"); } return parts.join("; "); };
+  byId("gates").innerHTML = "<tr><th>gate</th><th>kind</th><th>value</th><th>threshold</th><th>result</th><th>detail</th></tr>" + P.gates.rows.map(function (g) {
+    return "<tr><td>" + esc(g.name) + "</td><td>" + esc(g.kind) + "</td><td>" + (g.value === null || g.value === undefined ? "–" : fmt(g.value, 4)) + "</td><td>" + esc(thr(g)) + "</td><td>" + pf(g.passed) + "</td><td>" + esc(extra(g)) + "</td></tr>";
+  }).join("");
+  byId("gate-notes").textContent = "Decision basis: " + P.gates.decision_basis + ". Reported gates never decide the campaign; the extrapolation gate was declared as one that may fail.";
+
+  // ---- v1 vs v2 comparison ---------------------------------------------------
+  (function () {
+    var C = P.comparison;
+    var W = 520, Hh = 30 + 26 * (P.outputs.length + 1), m = { l: 120, r: 60, t: 8, b: 26 };
+    var rows = P.outputs.map(function (o) { return [labels[o], C.interpolation.per_output[o].v1, C.interpolation.per_output[o].v2]; });
+    rows.push(["cells pooled (64)", C.interpolation.cells.v1_rmse, C.interpolation.cells.v2_rmse]);
+    var maxv = Math.max.apply(null, rows.map(function (r) { return Math.max(r[1], r[2]); })) * 1.05;
+    var x = scale([0, maxv], [m.l, W - m.r]), y = scale([0, rows.length], [m.t, Hh - m.b]);
+    var s = svgOpen(W, Hh);
+    rows.forEach(function (r, i) {
+      var h = (y(1) - y(0)) * 0.36;
+      s += '<rect x="' + x(0) + '" y="' + (y(i) + 2) + '" width="' + (x(r[1]) - x(0)) + '" height="' + h + '" style="fill:#98a2ad"/>';
+      s += '<rect x="' + x(0) + '" y="' + (y(i) + 2 + h) + '" width="' + (x(r[2]) - x(0)) + '" height="' + h + '" style="fill:' + (r[2] < r[1] ? "#1d6f3f" : "#a12d2d") + '"/>';
+      s += '<text x="' + (m.l - 6) + '" y="' + (y(i) + 2 + h + 4) + '" text-anchor="end">' + esc(r[0]) + '</text>';
+      s += '<text x="' + (x(Math.max(r[1], r[2])) + 4) + '" y="' + (y(i) + 2 + h + 4) + '">' + fmt(r[1], 3) + " → " + fmt(r[2], 3) + '</text>';
+    });
+    s += '<text x="' + ((m.l + W - m.r) / 2) + '" y="' + (Hh - 6) + '" text-anchor="middle">raw RMSE (P units) on the 16 assessment designs: grey = v1 (' + esc(C.v1_selected) + '), colour = v2 (' + esc(P.selection.selected) + ')</text></svg>';
+    byId("compare-chart").innerHTML = s;
+    var t = "<table><tr><th>output</th><th>v1 RMSE</th><th>v2 RMSE</th><th>Δ (v2 − v1)</th><th>designs v2 closer</th><th>extrap. v1</th><th>extrap. v2</th></tr>";
+    P.outputs.forEach(function (o) { var a = C.interpolation.per_output[o], e = C.extrapolation.per_output[o]; t += "<tr><td>" + esc(labels[o]) + "</td><td>" + fmt(a.v1, 4) + "</td><td><b>" + fmt(a.v2, 4) + "</b></td><td class='" + (a.improves ? "ok" : "bad") + "'>" + (a.diff > 0 ? "+" : "") + fmt(a.diff, 4) + "</td><td>" + a.closer + " / " + a.n + "</td><td>" + fmt(e.v1, 4) + "</td><td>" + fmt(e.v2, 4) + "</td></tr>"; });
+    t += "<tr><td>cells pooled (64 / 40)</td><td>" + fmt(C.interpolation.cells.v1_rmse, 4) + "</td><td><b>" + fmt(C.interpolation.cells.v2_rmse, 4) + "</b></td><td class='" + (C.interpolation.cells.v2_improves ? "ok" : "bad") + "'>" + fmt(C.interpolation.cells.difference_v2_minus_v1, 4) + "</td><td>–</td><td>" + fmt(C.extrapolation.cells.v1_rmse, 4) + "</td><td>" + fmt(C.extrapolation.cells.v2_rmse, 4) + "</td></tr>";
+    t += "<tr><td>90 % coverage (gated)</td><td>" + fmt(C.interpolation.coverage_90.v1, 3) + "</td><td>" + fmt(C.interpolation.coverage_90.v2, 3) + "</td><td>–</td><td>–</td><td>" + fmt(C.extrapolation.coverage_90.v1, 2) + "</td><td>" + fmt(C.extrapolation.coverage_90.v2, 2) + "</td></tr>";
+    t += "<tr><td>best baseline (pooled)</td><td>" + esc(C.interpolation.best_baseline_pooled.v1.baseline) + " " + fmt(C.interpolation.best_baseline_pooled.v1.rmse, 4) + "</td><td>" + esc(C.interpolation.best_baseline_pooled.v2.baseline) + " " + fmt(C.interpolation.best_baseline_pooled.v2.rmse, 4) + "</td><td colspan='4'>ratio to surrogate v1 " + fmt(C.interpolation.best_baseline_pooled.v1.ratio_to_surrogate, 2) + "× → v2 " + fmt(C.interpolation.best_baseline_pooled.v2.ratio_to_surrogate, 2) + "× (gate ≥ 2×)</td></tr></table>";
+    byId("compare-table").innerHTML = t;
+    var tv = C.interpolation.tree_vs_gp;
+    byId("compare-note").textContent = "Same 16 assessment and 10 extrapolation designs (v1's partitions.json inherited by hash; v1 truths and errors read from v1's hash-bound assessment artifact at commit " + P.identity.v1_result_commit.slice(0, 8) + "). Tree baseline (gbt) vs selected GP on the assessment role: pooled " + fmt(tv.gbt_pooled_rmse, 4) + " vs " + fmt(tv.gp_pooled_rmse, 4) + " (" + (tv.tree_beats_gp_pooled ? "tree wins" : "GP wins") + "); cells " + fmt(tv.gbt_cells_rmse, 4) + " vs " + fmt(tv.gp_cells_rmse, 4) + " (" + (tv.tree_beats_gp_cells ? "tree wins" : "GP wins") + "). Both campaigns are surrogates of the same screening dataset; the comparison says nothing about physics.";
+  })();
+
+  // ---- model vs baselines table --------------------------------------------
+  var mt = "<table><tr><th>output</th><th>surrogate RMSE</th><th>floor</th><th>floor-corr.</th><th>MAE</th><th>worst</th><th>coverage 90 %</th><th>mean</th><th>k-NN(3)</th><th>ridge</th><th>gbt</th></tr>";
+  P.outputs.forEach(function (o) {
+    var r = I.per_output[o];
+    var b = function (name) { var bl = I.baselines[name]; return (bl.per_output[o] !== undefined) ? fmt(bl.per_output[o], 4) : (o === "p_wall_pooled" ? fmt(bl.pooled, 4) : "–"); };
+    mt += "<tr><td>" + esc(labels[o]) + (P.gated_outputs.indexOf(o) < 0 ? " (reported)" : "") + "</td><td><b>" + fmt(r.rmse, 4) + "</b></td><td>" + fmt(r.floor, 4) + "</td><td>" + fmt(r.rmse_corrected, 4) + "</td><td>" + fmt(r.mae, 4) + "</td><td>" + fmt(r.worst, 4) + "</td><td>" + fmt(r.coverage, 3) + "</td><td>" + b("global-mean") + "</td><td>" + b("knn-3") + "</td><td>" + b("ridge") + "</td><td>" + b("gbt") + "</td></tr>";
+  });
+  mt += "<tr><td>cells pooled (64)</td><td><b>" + fmt(I.cells.rmse, 4) + "</b></td><td>" + fmt(I.cells.binomial_floor, 4) + "</td><td>" + fmt(I.cells.rmse_floor_corrected, 4) + "</td><td>–</td><td>–</td><td>" + fmt(I.cells.coverage_observation_interval, 3) + "</td><td>" + fmt(I.baselines["global-mean"].cells, 4) + "</td><td>" + fmt(I.baselines["knn-3"].cells, 4) + "</td><td>" + fmt(I.baselines.ridge.cells, 4) + "</td><td>" + fmt(I.baselines.gbt.cells, 4) + "</td></tr></table>";
+  byId("model-table").innerHTML = mt;
+
+  // ---- derived features ------------------------------------------------------
+  (function () {
+    var F = P.features, imp = P.sensitivity.permutation.increase, tree = P.sensitivity.tree.mean_over_outputs;
+    var t = "<tr><th>feature</th><th>unit</th><th>kind</th><th>distinct</th><th>GP ΔRMSE</th><th>tree imp.</th><th>provenance (deterministic from the committed dataset row)</th></tr>";
+    F.names.forEach(function (n, i) { t += "<tr><td class='mono'>" + esc(n) + "</td><td>" + esc(F.units[i]) + "</td><td>" + esc(F.kinds[n]) + "</td><td>" + F.distinct[n] + "</td><td>" + fmt(imp[n].mean_over_outputs, 4) + "</td><td>" + fmt(tree[n], 3) + "</td><td style='text-align:left;white-space:normal'>" + esc(F.provenance[n]) + "</td></tr>"; });
+    byId("features").innerHTML = t;
+    byId("features-note").innerHTML = esc(F.statement) + " Excluded recorded quantities: " + Object.keys(F.excluded).sort().map(function (k) { return "<code>" + esc(k) + "</code> (" + esc(F.excluded[k]) + ")"; }).join("; ") + ".";
+  })();
+
+  var st = "<table><tr><th>candidate</th><th>transform</th><th>mean RMSE (5 outputs)</th><th>pooled</th><th>cells 1–4</th><th>fit s</th></tr>";
+  P.selection.order.forEach(function (c) {
+    var k = P.selection.candidates[c];
+    st += "<tr><td>" + (c === P.selection.selected ? "<b>" + esc(c) + " ✓</b>" : esc(c)) + "</td><td>" + esc(k.transform) + "</td><td>" + fmt(k.ms_rmse.mean_over_outputs, 4) + "</td><td>" + fmt(k.ms_rmse.p_wall_pooled, 4) + "</td><td>" + [1, 2, 3, 4].map(function (i) { return fmt(k.ms_rmse["p_wall_cell" + i], 3); }).join(" / ") + "</td><td>" + fmt(k.fit_seconds, 1) + "</td></tr>";
+  });
+  Object.keys(P.selection.baselines_ms).sort().forEach(function (b) {
+    var k = P.selection.baselines_ms[b];
+    st += "<tr><td><i>baseline " + esc(b) + "</i></td><td>P</td><td>" + fmt(k.mean_over_outputs, 4) + "</td><td>" + fmt(k.p_wall_pooled, 4) + "</td><td>" + [1, 2, 3, 4].map(function (i) { return fmt(k["p_wall_cell" + i], 3); }).join(" / ") + "</td><td>–</td></tr>";
+  });
+  st += "</table><p class='small'>Selection used fit and method-selection labels only; the assessment labels were opened once, afterwards. Candidate definitions are in the protocol.</p>";
+  byId("selection").innerHTML = st;
+
+  // ---- SVG helpers -------------------------------------------------------
+  function svgOpen(w, h) { return '<svg viewBox="0 0 ' + w + ' ' + h + '" xmlns="http://www.w3.org/2000/svg" role="img">'; }
+  function scale(dom, rng) { var d0 = dom[0], d1 = dom[1] === dom[0] ? dom[0] + 1 : dom[1]; return function (v) { return rng[0] + (v - d0) / (d1 - d0) * (rng[1] - rng[0]); }; }
+  function ticks(dom, n) { var span = dom[1] - dom[0]; if (span <= 0) { return [dom[0]]; } var step = Math.pow(10, Math.floor(Math.log10(span / n))); var err = span / n / step; step *= err >= 7.5 ? 10 : err >= 3.5 ? 5 : err >= 1.5 ? 2 : 1; var out = []; for (var t = Math.ceil(dom[0] / step) * step; t <= dom[1] + 1e-12; t += step) { out.push(+t.toFixed(12)); } return out; }
+  function axes(x, y, xd, yd, W, Hh, m, xl, yl) {
+    var s = '<g class="grid">';
+    ticks(xd, 6).forEach(function (t) { s += '<line x1="' + x(t) + '" x2="' + x(t) + '" y1="' + m.t + '" y2="' + (Hh - m.b) + '"/>'; });
+    ticks(yd, 6).forEach(function (t) { s += '<line x1="' + m.l + '" x2="' + (W - m.r) + '" y1="' + y(t) + '" y2="' + y(t) + '"/>'; });
+    s += '</g><g class="axis"><path d="M' + m.l + ' ' + m.t + ' V' + (Hh - m.b) + ' H' + (W - m.r) + '" style="fill:none"/>';
+    ticks(xd, 6).forEach(function (t) { s += '<text x="' + x(t) + '" y="' + (Hh - m.b + 14) + '" text-anchor="middle">' + fmt(t, 2) + '</text>'; });
+    ticks(yd, 6).forEach(function (t) { s += '<text x="' + (m.l - 6) + '" y="' + (y(t) + 4) + '" text-anchor="end">' + fmt(t, 2) + '</text>'; });
+    s += '<text x="' + ((m.l + W - m.r) / 2) + '" y="' + (Hh - 4) + '" text-anchor="middle">' + esc(xl) + '</text>';
+    s += '<text transform="translate(12,' + ((m.t + Hh - m.b) / 2) + ') rotate(-90)" text-anchor="middle">' + esc(yl) + '</text></g>';
+    return s;
+  }
+
+  function parity(id, outputs, floorN) {
+    var W = 520, Hh = 400, m = { l: 48, r: 14, t: 12, b: 36 };
+    var x = scale([0, 1], [m.l, W - m.r]), y = scale([0, 1], [Hh - m.b, m.t]);
+    var s = svgOpen(W, Hh) + axes(x, y, [0, 1], [0, 1], W, Hh, m, "recorded probability (accepted-2N)", "surrogate prediction");
+    var band = "";
+    for (var i = 0; i <= 40; i++) { var p = i / 40, f = Math.sqrt(Math.max(p * (1 - p), 0) / floorN); band += (i ? " L" : "M") + x(p) + " " + y(Math.min(1, p + f)); }
+    for (var j = 40; j >= 0; j--) { var q = j / 40, g = Math.sqrt(Math.max(q * (1 - q), 0) / floorN); band += " L" + x(q) + " " + y(Math.max(0, q - g)); }
+    s += '<path d="' + band + ' Z" style="fill:#2456a4;fill-opacity:0.08;stroke:#2456a4;stroke-dasharray:3 3;stroke-width:1"/>';
+    s += '<line x1="' + x(0) + '" y1="' + y(0) + '" x2="' + x(1) + '" y2="' + y(1) + '" style="stroke:#98a2ad;stroke-width:1"/>';
+    var colors = { p_wall_cell1: "#2456a4", p_wall_cell2: "#c2571b", p_wall_cell3: "#6a4c93", p_wall_cell4: "#1d6f3f", p_wall_pooled: "#2456a4" };
+    [["interpolation", true], ["extrapolation", false]].forEach(function (sc) {
+      P.scopes[sc[0]].rows.forEach(function (r) {
+        outputs.forEach(function (o) {
+          var it = r.outputs[o], c = colors[o];
+          s += '<line x1="' + x(it.truth) + '" x2="' + x(it.truth) + '" y1="' + y(it.lo) + '" y2="' + y(it.hi) + '" style="stroke:' + c + ';stroke-opacity:0.35;stroke-width:1"/>';
+          if (sc[1]) { s += '<circle cx="' + x(it.truth) + '" cy="' + y(it.pred) + '" r="4" style="fill:' + c + ';fill-opacity:0.85"><title>' + esc(r.case_id + " " + labels[o] + ": truth " + fmt(it.truth) + ", pred " + fmt(it.pred) + " [" + fmt(it.lo) + ", " + fmt(it.hi) + "]") + '</title></circle>'; }
+          else { s += '<rect x="' + (x(it.truth) - 4) + '" y="' + (y(it.pred) - 4) + '" width="8" height="8" style="fill:none;stroke:' + c + ';stroke-width:1.5"><title>' + esc(r.case_id + " (extrapolation) " + labels[o] + ": truth " + fmt(it.truth) + ", pred " + fmt(it.pred)) + '</title></rect>'; }
+        });
+      });
+    });
+    s += "</svg>";
+    var leg = '<div class="legend small">' + outputs.map(function (o) { return '<span><i class="sw" style="background:' + colors[o] + '"></i>' + esc(labels[o]) + '</span>'; }).join("") + "</div>";
+    byId(id).innerHTML = s + leg;
+  }
+  parity("parity-pooled", ["p_wall_pooled"], 512);
+  parity("parity-cells", ["p_wall_cell1", "p_wall_cell2", "p_wall_cell3", "p_wall_cell4"], 128);
+
+  // ---- coverage bars -------------------------------------------------------
+  (function () {
+    var W = 520, Hh = 260, m = { l: 150, r: 14, t: 12, b: 30 };
+    var rows = [];
+    P.outputs.forEach(function (o) { rows.push([labels[o] + " (assess.)", I.per_output[o].coverage, I.design_count]); });
+    rows.push(["gated outputs pooled (assess.)", I.gated_coverage.coverage, I.gated_coverage.count]);
+    rows.push(["gated outputs pooled (extrap.)", X.gated_coverage.coverage, X.gated_coverage.count]);
+    var y = scale([0, rows.length], [m.t, Hh - m.b]), x = scale([0, 1], [m.l, W - m.r]);
+    var s = svgOpen(W, Hh);
+    s += '<rect x="' + x(0.8) + '" y="' + m.t + '" width="' + (x(0.97) - x(0.8)) + '" height="' + (Hh - m.b - m.t) + '" style="fill:#1d6f3f;fill-opacity:0.10"/>';
+    s += '<line x1="' + x(0.9) + '" x2="' + x(0.9) + '" y1="' + m.t + '" y2="' + (Hh - m.b) + '" style="stroke:#1d6f3f;stroke-dasharray:4 3"/>';
+    rows.forEach(function (r, i) {
+      var h = (y(1) - y(0)) * 0.7;
+      var ok = r[1] >= 0.8 && r[1] <= 0.97;
+      s += '<rect x="' + x(0) + '" y="' + (y(i) + 3) + '" width="' + (x(r[1]) - x(0)) + '" height="' + h + '" style="fill:' + (ok ? "#2456a4" : "#a12d2d") + ';fill-opacity:0.75"/>';
+      s += '<text x="' + (m.l - 6) + '" y="' + (y(i) + 3 + h / 2 + 4) + '" text-anchor="end">' + esc(r[0]) + '</text>';
+      s += '<text x="' + (x(r[1]) + 4) + '" y="' + (y(i) + 3 + h / 2 + 4) + '">' + fmt(r[1], 3) + " (n=" + r[2] + ")</text>";
+    });
+    s += '<g class="axis">' + ticks([0, 1], 5).map(function (t) { return '<text x="' + x(t) + '" y="' + (Hh - m.b + 14) + '" text-anchor="middle">' + fmt(t, 1) + '</text>'; }).join("") + '<text x="' + ((m.l + W - m.r) / 2) + '" y="' + (Hh - 4) + '" text-anchor="middle">empirical coverage of the 90 % observation interval (green band = gate [0.80, 0.97])</text></g></svg>';
+    byId("coverage").innerHTML = s;
+  })();
+
+  // ---- residual QQ -----------------------------------------------------------
+  (function () {
+    var z = P.calibration.standardised_residuals.slice().sort(function (a, b) { return a - b; });
+    var n = z.length;
+    function invnorm(p) { var a = [-3.969683028665376e+01, 2.209460984245205e+02, -2.759285104469687e+02, 1.383577518672690e+02, -3.066479806614716e+01, 2.506628277459239e+00]; var b = [-5.447609879822406e+01, 1.615858368580409e+02, -1.556989798598866e+02, 6.680131188771972e+01, -1.328068155288572e+01]; var c = [-7.784894002430293e-03, -3.223964580411365e-01, -2.400758277161838e+00, -2.549732539343734e+00, 4.374664141464968e+00, 2.938163982698783e+00]; var d = [7.784695709041462e-03, 3.224671290700398e-01, 2.445134137142996e+00, 3.754408661907416e+00]; var q, r; if (p < 0.02425) { q = Math.sqrt(-2 * Math.log(p)); return (((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) / ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1); } if (p > 1 - 0.02425) { q = Math.sqrt(-2 * Math.log(1 - p)); return -(((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) / ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1); } q = p - 0.5; r = q * q; return (((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * q / (((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1); }
+    var W = 520, Hh = 320, m = { l: 48, r: 14, t: 12, b: 36 };
+    var lim = Math.max(3, Math.ceil(Math.max.apply(null, z.map(Math.abs))));
+    var x = scale([-lim, lim], [m.l, W - m.r]), y = scale([-lim, lim], [Hh - m.b, m.t]);
+    var s = svgOpen(W, Hh) + axes(x, y, [-lim, lim], [-lim, lim], W, Hh, m, "normal quantile", "standardised residual (y − μ) / sd");
+    s += '<line x1="' + x(-lim) + '" y1="' + y(-lim) + '" x2="' + x(lim) + '" y2="' + y(lim) + '" style="stroke:#98a2ad"/>';
+    var sc = Math.sqrt(P.calibration.variance_scale);
+    s += '<line x1="' + x(-lim / sc) + '" y1="' + y(-lim) + '" x2="' + x(lim / sc) + '" y2="' + y(lim) + '" style="stroke:#c2571b;stroke-dasharray:4 3"/>';
+    z.forEach(function (v, i) { var q = invnorm((i + 0.5) / n); s += '<circle cx="' + x(q) + '" cy="' + y(v) + '" r="3.5" style="fill:#2456a4;fill-opacity:0.8"/>'; });
+    s += "</svg>";
+    byId("residuals").innerHTML = s;
+    byId("calibration-note").textContent = "Fifty standardised residuals (five gated outputs × ten calibration designs) in the selected candidate's working space, standardised by sqrt(latent variance + known binomial variance). Grey: identity. Orange: slope sqrt(variance_scale) = " + fmt(sc, 3) + " — the single scale the 90 % rank rule (" + P.calibration.rank_rule + ") applied to every interval. A scale of 1 would mean the GP's own uncertainty was already calibrated.";
+  })();
+
+  // ---- sensitivity -----------------------------------------------------------
+  (function () {
+    var names = P.sensitivity.input_names.slice();
+    var inc = P.sensitivity.permutation.increase;
+    var order = P.sensitivity.permutation.ranking;
+    var W = 520, Hh = 30 + 22 * order.length, m = { l: 190, r: 60, t: 8, b: 26 };
+    var maxv = Math.max.apply(null, order.map(function (n) { return inc[n].mean_over_outputs; })) || 1;
+    var x = scale([0, maxv], [m.l, W - m.r]), y = scale([0, order.length], [m.t, Hh - m.b]);
+    var s = svgOpen(W, Hh);
+    order.forEach(function (n, i) {
+      var v = inc[n].mean_over_outputs, h = (y(1) - y(0)) * 0.7;
+      s += '<rect x="' + x(0) + '" y="' + (y(i) + 3) + '" width="' + Math.max(0, x(Math.max(v, 0)) - x(0)) + '" height="' + h + '" style="fill:#6a4c93;fill-opacity:0.8"/>';
+      s += '<text x="' + (m.l - 6) + '" y="' + (y(i) + 3 + h / 2 + 4) + '" text-anchor="end">' + esc(n) + '</text>';
+      s += '<text x="' + (x(Math.max(v, 0)) + 4) + '" y="' + (y(i) + 3 + h / 2 + 4) + '">' + fmt(v, 4) + '</text>';
+    });
+    s += '<text x="' + ((m.l + W - m.r) / 2) + '" y="' + (Hh - 6) + '" text-anchor="middle">mean over the five gated outputs of the RMSE increase (' + P.sensitivity.permutation.repeats + ' permutations)</text></svg>';
+    byId("permutation").innerHTML = s;
+
+    var T = P.sensitivity.tree, torder = T.ranking, tmax = Math.max.apply(null, torder.map(function (n) { return T.mean_over_outputs[n]; })) || 1;
+    var tx = scale([0, tmax], [m.l, W - m.r]);
+    var ts = svgOpen(W, Hh);
+    torder.forEach(function (n, i) {
+      var v = T.mean_over_outputs[n], h = (y(1) - y(0)) * 0.7;
+      ts += '<rect x="' + tx(0) + '" y="' + (y(i) + 3) + '" width="' + Math.max(0, tx(v) - tx(0)) + '" height="' + h + '" style="fill:#1d6f3f;fill-opacity:0.8"/>';
+      ts += '<text x="' + (m.l - 6) + '" y="' + (y(i) + 3 + h / 2 + 4) + '" text-anchor="end">' + esc(n) + '</text>';
+      ts += '<text x="' + (tx(v) + 4) + '" y="' + (y(i) + 3 + h / 2 + 4) + '">' + fmt(v, 3) + '</text>';
+    });
+    ts += '<text x="' + ((m.l + W - m.r) / 2) + '" y="' + (Hh - 6) + '" text-anchor="middle">gbt (depth ' + T.parameters.max_depth + ', ' + T.parameters.n_estimators + ' trees) impurity importance, mean over outputs (sums to 1)</text></svg>';
+    byId("tree").innerHTML = ts;
+
+    var blocks = Object.keys(P.sensitivity.ard).sort();
+    var t = "<table><tr><th>input</th>" + blocks.map(function (b) { return "<th>" + esc(P.sensitivity.ard[b].outputs.join(", ").replace(/p_wall_/g, "").replace(/p_reflect_/g, "reflect ")) + "</th>"; }).join("") + "</tr>";
+    names.forEach(function (n) {
+      t += "<tr><td>" + esc(n) + "</td>" + blocks.map(function (b) { var v = P.sensitivity.ard[b].length_scales_unit_box[n]; var hot = P.sensitivity.ard[b].most_sensitive_inputs.indexOf(n) >= 0; return "<td" + (hot ? ' style="font-weight:700;color:#6a4c93"' : "") + ">" + fmt(v, 2) + "</td>"; }).join("") + "</tr>";
+    });
+    t += "</table><p class='small'>Bold: the four shortest length-scales of each block. Length-scales far above 1 mean the output is nearly flat in that input across the fit-role box.</p>";
+    byId("ard").innerHTML = t;
+    byId("sensitivity-note").textContent = P.sensitivity.interpretation + " Known discontinuities in the feature space: " + P.predictor.known_discontinuities;
+  })();
+
+  // ---- extrapolation table -----------------------------------------------------
+  (function () {
+    var t = "<table><tr><th>output</th><th>RMSE</th><th>floor-corr.</th><th>coverage</th><th>mean</th><th>k-NN(3)</th><th>ridge</th><th>gbt</th></tr>";
+    P.outputs.forEach(function (o) {
+      var r = X.per_output[o];
+      var b = function (name) { var bl = X.baselines[name]; return (bl.per_output[o] !== undefined) ? fmt(bl.per_output[o], 4) : "–"; };
+      t += "<tr><td>" + esc(labels[o]) + "</td><td><b>" + fmt(r.rmse, 4) + "</b></td><td>" + fmt(r.rmse_corrected, 4) + "</td><td>" + fmt(r.coverage, 2) + "</td><td>" + b("global-mean") + "</td><td>" + b("knn-3") + "</td><td>" + b("ridge") + "</td><td>" + b("gbt") + "</td></tr>";
+    });
+    t += "<tr><td>cells pooled (40)</td><td><b>" + fmt(X.cells.rmse, 4) + "</b></td><td>" + fmt(X.cells.rmse_floor_corrected, 4) + "</td><td>" + fmt(X.cells.coverage_observation_interval, 2) + "</td><td>" + fmt(X.baselines["global-mean"].cells, 4) + "</td><td>" + fmt(X.baselines["knn-3"].cells, 4) + "</td><td>" + fmt(X.baselines.ridge.cells, 4) + "</td><td>" + fmt(X.baselines.gbt.cells, 4) + "</td></tr></table>";
+    var c = P.partition.extrapolation_cluster;
+    t += "<p class='small'>Hold-out rule: " + esc(c.rule) + " Threshold L ≥ " + fmt(c.chamber_length_threshold_m * 1000, 2) + " mm (next shorter " + fmt(c.next_shorter_chamber_length_m * 1000, 2) + " mm); stage counts " + c.stage_counts.join(", ") + "; " + c.nondominated_in_cluster + " non-dominated designs. The frozen interpolation model was applied unchanged.</p>";
+    byId("extrapolation").innerHTML = t;
+  })();
+
+  // ---- learning curve ------------------------------------------------------------
+  (function () {
+    var L = P.learning_curve, gate = 0.05;
+    var W = 520, Hh = 300, m = { l: 48, r: 14, t: 12, b: 36 };
+    var xs = L.sizes;
+    var all = [gate].concat(L.runs.map(function (r) { return r.points.map(function (p) { return p.pooled; }); }).reduce(function (a, b) { return a.concat(b); }, []));
+    var ymin = Math.min.apply(null, all) * 0.9, ymax = Math.max.apply(null, all) * 1.08;
+    var x = scale([xs[0] - 3, xs[xs.length - 1] + 3], [m.l, W - m.r]), y = scale([ymin, ymax], [Hh - m.b, m.t]);
+    var s = svgOpen(W, Hh) + axes(x, y, [xs[0] - 3, xs[xs.length - 1] + 3], [ymin, ymax], W, Hh, m, "fit-role designs used (nested seeded subsets)", "pooled P(wall) RMSE on the " + L.evaluation_role + " role");
+    s += '<line x1="' + x(xs[0] - 3) + '" x2="' + x(xs[xs.length - 1] + 3) + '" y1="' + y(gate) + '" y2="' + y(gate) + '" style="stroke:#a12d2d;stroke-dasharray:4 3"/>';
+    L.runs.forEach(function (r) {
+      s += '<path d="' + r.points.map(function (p, i) { return (i ? "L" : "M") + x(p.size) + " " + y(p.pooled); }).join(" ") + '" style="fill:none;stroke:#98a2ad;stroke-width:1"/>';
+    });
+    s += '<path d="' + L.summary.map(function (p, i) { return (i ? "L" : "M") + x(p.size) + " " + y(p.pooled_rmse_mean); }).join(" ") + '" style="fill:none;stroke:#2456a4;stroke-width:2.5"/>';
+    L.summary.forEach(function (p) { s += '<circle cx="' + x(p.size) + '" cy="' + y(p.pooled_rmse_mean) + '" r="4" style="fill:#2456a4"/>'; });
+    s += "</svg>";
+    s += '<div class="legend small"><span><i class="sw" style="background:#2456a4"></i>mean over ' + L.seeds.length + ' subset seeds (' + esc(L.candidate) + ')</span><span><i class="sw" style="background:#98a2ad"></i>individual seeds</span><span><i class="sw" style="background:#a12d2d"></i>pooled gate 0.05</span></div>';
+    s += "<table><tr><th>fit designs</th><th>pooled RMSE mean</th><th>min</th><th>max</th><th>mean over outputs</th></tr>" + L.summary.map(function (p) { return "<tr><td>" + p.size + "</td><td>" + fmt(p.pooled_rmse_mean, 4) + "</td><td>" + fmt(p.pooled_rmse_min, 4) + "</td><td>" + fmt(p.pooled_rmse_max, 4) + "</td><td>" + fmt(p.mean_over_outputs_rmse_mean, 4) + "</td></tr>"; }).join("") + "</table>";
+    var E = L.extrapolation;
+    s += "<p class='small'>Scored on the " + L.evaluation_role + " role (never the assessment role). Power law fit: " + (E.fitted ? esc(E.model) + " with b = " + fmt(E.b, 3) + ". " + esc(E.statement) : esc(E.reason)) + " Reported, never gated.</p>";
+    byId("curve").innerHTML = s;
+  })();
+
+  // ---- partition + structural --------------------------------------------------
+  (function () {
+    var c = P.partition.counts, sc = P.partition.stratum_counts;
+    var t = "<h3>Frozen role partition (seed " + P.partition.seed + ", " + esc(P.partition.seed_namespace) + ")</h3><table><tr><th>role</th><th>primary (non-dominated)</th><th>extension</th><th>total</th><th>role sha256</th></tr>";
+    ["fit", "method-selection", "calibration", "assessment", "extrapolation"].forEach(function (r) { t += "<tr><td>" + r + "</td><td>" + sc.primary[r] + "</td><td>" + sc.extension[r] + "</td><td>" + c[r] + "</td><td class='mono'>" + P.partition.role_sha256[r].slice(0, 16) + "…</td></tr>"; });
+    t += "</table><p class='small'>Extrapolation hold-out: " + P.partition.extrapolation_case_ids.map(function (i) { return i.split("-")[3]; }).join(", ") + ". Roles are disjoint by case id, design id and input tuple; the partition is byte-identical to v1's (semantic sha256 " + P.identity.v1_partitions_semantic_sha256.slice(0, 16) + "…), recomputed from v1's rule and hash-bound in the preregistration commit.</p>";
+    byId("partition").innerHTML = t;
+
+    var D = P.determinism, T = P.no_tautology;
+    var u = "<h3>Structural gates</h3><ul>";
+    u += "<li>Dataset binding: byte sha256 " + P.identity.dataset_file_sha256.slice(0, 16) + "… = Git blob " + P.identity.dataset_git_blob.slice(0, 10) + " at screening result commit " + P.identity.screening_result_commit.slice(0, 8) + " (preregistration " + P.identity.screening_preregistration_commit.slice(0, 8) + ", merge " + P.identity.screening_merge_commit.slice(0, 8) + "); manifest sha256 " + P.identity.manifest_file_sha256_screening.slice(0, 16) + "….</li>";
+    u += "<li>No tautology: stored probabilities equal count ratios (" + (T.stored_probabilities_equal_count_ratios ? "yes" : "NO") + "); max single-input affine R² " + fmt(T.max_single_input_affine_r2, 3) + " (&lt; 0.99); leave-one-out ridge stays above the binomial floor (" + (T.ridge_stays_above_binomial_floor ? "yes" : "NO") + "). " + esc(T.statement) + "</li>";
+    u += "<li>Determinism replay of " + esc(D.candidate) + ": hyperparameters bit-exact " + (D.hyperparameters_bit_exact ? "yes" : "no") + ", predictions bit-exact " + (D.predictions_bit_exact ? "yes" : "no") + " (max |Δ| " + Number(D.predictions_max_abs_difference_working_space).toExponential(2) + ").</li>";
+    u += "<li>Predictor contract: <code>" + esc(P.predictor.path) + "</code> (" + esc(P.predictor.schema_version) + "), " + Object.keys(P.predictor.models).length + " GP block(s): " + Object.keys(P.predictor.models).sort().map(function (k) { var b = P.predictor.models[k]; return esc(k) + " (" + b.tasks + " task" + (b.tasks > 1 ? "s" : "") + ", " + b.rows + " rows)"; }).join("; ") + ". Replays the library posteriors within 1e-9 (gate). Inputs: 31 derived features (consumer computes them with <code>features.derive_features</code> on the design's committed sweep record). Interpolation scope: chamber length &lt; " + fmt(P.predictor.interpolation_scope.chamber_length_max_m * 1000, 2) + " mm and features inside the fit-role box. Status <code>" + esc(P.mdo_v2_input_status) + "</code>: " + esc(P.predictor.status_note) + "</li>";
+    u += "<li>Code contract: source sha256 " + P.identity.source_sha256.slice(0, 16) + "…; " + Object.keys(P.identity.package_versions).sort().map(function (k) { return k + " " + P.identity.package_versions[k]; }).join(", ") + "; cpu float64, 8 threads.</li></ul>";
+    byId("structural").innerHTML = u;
+  })();
+
+  // ---- claims --------------------------------------------------------------------
+  (function () {
+    var B = P.claim_boundary;
+    var s = "<p><b>" + esc(B.statement) + "</b></p><ul>";
+    ["surrogate_of_screening_dataset", "not_physical_orbit_evidence", "not_performance_model", "not_p2_qualified", "forbid_plasma_performance_publication", "forbid_physical_accuracy_claim"].forEach(function (k) { s += "<li><code>" + k + "</code>: " + (B[k] ? "true" : "false") + "</li>"; });
+    s += "</ul><h3>Forbidden readings</h3><ul>" + B.forbidden_readings.map(function (r) { return "<li>" + esc(r) + "</li>"; }).join("") + "</ul>";
+    s += "<h3>Usable as</h3><ul>" + B.usable_as.map(function (r) { return "<li>" + esc(r) + "</li>"; }).join("") + "</ul>";
+    s += "<h3>Prior surrogate campaigns</h3><p class='small'>" + esc(P.prior_failures) + "</p>";
+    byId("claims").innerHTML = s;
+  })();
+
+  byId("footer").innerHTML = "Bundle: " + P.identity.experiment_id + " · terminal state " + esc(P.terminal_state) + " · preregistration commit <span class='mono'>" + esc(P.identity.preregistration_commit_sha) + "</span> · manifest sha256 <span class='mono'>" + esc(P.identity.manifest_file_sha256) + "</span> (" + P.identity.verified_file_count + " files byte-verified) · terminal <span class='mono'>" + esc(P.identity.terminal_file_sha256.slice(0, 16)) + "…</span> · lock <span class='mono'>" + esc(P.identity.lock_file_sha256.slice(0, 16)) + "…</span> · protocol (LF) <span class='mono'>" + esc(P.identity.protocol_file_sha256_lf.slice(0, 16)) + "…</span> · generator <span class='mono'>" + esc(P.identity.generator_sha256.slice(0, 16)) + "…</span> · template <span class='mono'>" + esc(P.identity.template_sha256.slice(0, 16)) + "…</span> · command <code>" + esc(P.identity.execution_command) + "</code>. Offline; no network resources; every number traces to a hash-bound artifact.";
+})();
+</script>
+</body>
+</html>
