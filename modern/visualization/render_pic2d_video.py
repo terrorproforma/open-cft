@@ -6,11 +6,13 @@ Inputs: a results directory of the steady-state runner with the frame recorder o
 
 Outputs (deterministic for the same frames):
   <out>/pic2d-<run>-<map>.mp4 | .gif   one video per requested map, fixed colour scale across
-                                       frames (log with a floor for densities and the ionisation
-                                       rate, symmetric/linear for phi and T_e), grey mask for cells
-                                       sampled by fewer than N macro-particles, thruster body dark,
-                                       time stamp and the scalar diagnostics printed per frame, and
-                                       a synchronised time-series strip (I_d, I_beam, N_e, n_g, T)
+                                       frames (log with a floor for the densities, robust log
+                                       percentiles for the windowed ionisation rate, symmetric /
+                                       linear for phi and T_e), grey mask for cells sampled by fewer
+                                       than N macro-particles (N macro-ionisation events for the
+                                       ionisation panel), thruster body dark, time stamp and the
+                                       scalar diagnostics printed per frame, and a synchronised
+                                       time-series strip (I_d, I_beam, N_e, n_g, T)
   <out>/pic2d-<run>-timeseries.html    offline player: frames embedded as 2x-downsampled palette
                                        PNGs (the same fixed scale), scrubber / play / speed, map
                                        selector, body outline + cusp planes drawn, time series under
@@ -18,6 +20,22 @@ Outputs (deterministic for the same frames):
 
 Video backend, in the declared order: ``imageio_ffmpeg`` (if importable), the ``ffmpeg``
 executable on PATH (raw RGB pipe -> H.264 yuv420p), else an animated GIF via Pillow.
+
+Ionisation-rate panel (v0.2). A single frame's ionisation map is shot-noise dominated by
+construction: the map is ``events * W / (V_node * dt_frame)`` where ``events`` is the
+bilinear-deposited weight of the macro-ionisation events of the interval (attempt 6: 30 ns
+frames, ~73 % of the electron-resolved nodes hold zero events, one event on an axis node is
+~3e25 m^-3 s^-1 and sets a per-frame maximum).  The panel therefore shows a CAUSAL rolling
+window of K frames: windowed events = trailing sum of the per-frame events (partial window
+over the first K-1 frames), windowed rate = windowed events * W / (V_node * windowed time),
+which is the exact time-weighted mean of the frame rates and integrates to the mean
+ionisation rate S of the window.  Nodes with fewer than N windowed events are grey
+("unresolved", same semantics as the dashboards' ionisation-event mask, default N = 20 =
+``MIN_SAMPLES_DEFAULT``), never zero.  K defaults to the smallest window for which the median
+electron-resolved node carrying at least one event weight holds >= 10 events
+(``choose_window``).  The colour scale is log10 between the 0.5th and 99.5th percentile of the
+resolved windowed values over the whole run (not the per-frame maximum) and the window, the
+mask and the scale are written into the panel legend.  No spatial smoothing is applied.
 """
 
 from __future__ import annotations
@@ -28,11 +46,12 @@ import hashlib
 import io
 import json
 import math
-from pathlib import Path
 import shutil
 import subprocess
 import sys
-from typing import Any, Mapping, Sequence
+from collections.abc import Mapping, Sequence
+from pathlib import Path
+from typing import Any
 
 import numpy as np
 
@@ -42,13 +61,16 @@ if str(MODERN / "src") not in sys.path:
 if str(MODERN) not in sys.path:
     sys.path.insert(0, str(MODERN))
 
-from cft_revival.pic2d.frames import FrameSet, load_frames  # noqa: E402
-from cft_revival.pic2d.mesh import build_mesh_masks  # noqa: E402
-from cft_revival.pic2d.models import ChannelGeometry, Grid2D  # noqa: E402
+from cft_revival.pic2d.frames import FrameSet, load_frames
+from cft_revival.pic2d.mesh import build_mesh_masks
+from cft_revival.pic2d.models import ChannelGeometry, Grid2D
 
-SCHEMA = "cft-pic2d-timeseries-player/0.1.0"
+SCHEMA = "cft-pic2d-timeseries-player/0.2.0"
 MIN_SAMPLES_DEFAULT = 20
 LOG_DECADES = 4.0
+IZ_KEY = "ionization_rate_per_m3_s"
+IZ_TARGET_MEDIAN_EVENTS = 10.0          # window selection: median resolved event-bearing node holds >= this many events
+IZ_PERCENTILES = (0.5, 99.5)            # fixed colour range of the windowed rate over the run (robust, not the max)
 DEFAULT_MAPS = ("n_e_per_m3", "n_i_per_m3", "phi_v", "t_e_ev", "ionization_rate_per_m3_s")
 MAP_LABELS = {
     "n_e_per_m3": ("Electron density n_e", "m^-3", "log"),
@@ -104,6 +126,150 @@ def colour_scale(frames: FrameSet, key: str, plasma_node: np.ndarray, min_sample
         return {"kind": "signed", "lo": lo, "hi": hi}
     hi = float(np.percentile(values, 99.5)) or 1.0
     return {"kind": "linear", "lo": 0.0, "hi": hi}
+
+
+# -- ionisation rate: event counts, causal window, resolution mask, robust scale ---------------
+
+def frame_interval_s(frames: FrameSet, dt_s: float) -> np.ndarray:
+    """Duration of each recorded interval (s), from the step range of the frame."""
+
+    return (np.asarray(frames.end_step, dtype=np.float64) - np.asarray(frames.start_step, dtype=np.float64)) * float(dt_s)
+
+
+def ionisation_events(frames: FrameSet, volume_m3: np.ndarray, plasma_node: np.ndarray, macro_weight: float, dt_s: float) -> np.ndarray:
+    """Per-frame, per-node macro-ionisation event weight ``rate * V_node * dt_frame / W`` (float64, 0 outside the plasma).
+
+    Same derivation as the dashboards' ``ionization_events`` (commit 6bd5e5b0).  The runner deposits every
+    macro-ionisation event with bilinear weights on the four nodes around the born ion, so a node value is a
+    fractional share; the sum over the domain is the integer number of events of the interval.
+    """
+
+    rate = np.asarray(frames.maps[IZ_KEY], dtype=np.float64)
+    volume = np.asarray(volume_m3, dtype=np.float64)
+    dt = frame_interval_s(frames, dt_s)
+    events = rate * volume[None, :, :] * dt[:, None, None] / float(macro_weight)
+    events = np.where(plasma_node[None, :, :], events, 0.0)
+    return np.where(np.isfinite(events), events, 0.0)
+
+
+def causal_window_sum(values: np.ndarray, window: int) -> np.ndarray:
+    """Trailing sum over the last ``window`` entries along axis 0 (partial windows at the start; causal)."""
+
+    if window < 1:
+        raise ValueError("window must be at least one frame")
+    v = np.asarray(values, dtype=np.float64)
+    cumulative = np.concatenate([np.zeros((1,) + v.shape[1:]), np.cumsum(v, axis=0)], axis=0)
+    n = v.shape[0]
+    end = np.arange(1, n + 1)
+    start = np.maximum(end - window, 0)
+    return cumulative[end] - cumulative[start]
+
+
+def windowed_ionisation(frames: FrameSet, volume_m3: np.ndarray, plasma_node: np.ndarray, macro_weight: float, dt_s: float,
+                        window: int) -> dict[str, Any]:
+    """Causal K-frame window of the ionisation map: events, time, rate (= events W / (V T), i.e. the time-weighted mean rate)."""
+
+    events = ionisation_events(frames, volume_m3, plasma_node, macro_weight, dt_s)
+    dt = frame_interval_s(frames, dt_s)
+    w_events = causal_window_sum(events, window)
+    w_time = causal_window_sum(dt, window)
+    w_samples = causal_window_sum(np.asarray(frames.maps["sample_count_e"], dtype=np.float64), window)
+    n = frames.count
+    frames_in_window = np.minimum(np.arange(n) + 1, window)
+    volume = np.where(plasma_node, np.asarray(volume_m3, dtype=np.float64), np.inf)
+    rate = w_events * float(macro_weight) / (volume[None, :, :] * w_time[:, None, None])
+    rate = np.where(plasma_node[None, :, :], rate, 0.0)
+    return {"window": int(window), "events": w_events, "rate": rate, "window_s": w_time, "frames_in_window": frames_in_window,
+            "sample_count_e": w_samples, "frame_events": events}
+
+
+def choose_window(events: np.ndarray, sample_count_e: np.ndarray, plasma_node: np.ndarray, *, target_median_events: float = IZ_TARGET_MEDIAN_EVENTS,
+                  min_samples: int = MIN_SAMPLES_DEFAULT, max_window: int | None = None) -> int:
+    """Smallest K for which the median windowed event count of the resolved, event-bearing nodes reaches the target.
+
+    "Resolved" = at least ``min_samples`` electron samples summed over the window; "event-bearing" = at least
+    one event weight in the window.  Full windows only (K..n); the median is taken over all (window, node)
+    pairs.  Returns n (the whole run) when no K satisfies the target.
+    """
+
+    ev = np.asarray(events, dtype=np.float64)[:, plasma_node]
+    es = np.asarray(sample_count_e, dtype=np.float64)[:, plasma_node]
+    n = ev.shape[0]
+    limit = n if max_window is None else max(1, min(int(max_window), n))
+    c_ev = np.concatenate([np.zeros((1, ev.shape[1])), np.cumsum(ev, axis=0)], axis=0)
+    c_es = np.concatenate([np.zeros((1, es.shape[1])), np.cumsum(es, axis=0)], axis=0)
+    for k in range(1, limit + 1):
+        end = np.arange(k, n + 1)
+        w_ev = c_ev[end] - c_ev[end - k]
+        w_es = c_es[end] - c_es[end - k]
+        selected = w_ev[(w_es >= min_samples) & (w_ev >= 1.0)]
+        if selected.size and float(np.median(selected)) >= target_median_events:
+            return k
+    return limit
+
+
+def ionisation_scale(rate: np.ndarray, events: np.ndarray, plasma_node: np.ndarray, min_events: float,
+                     percentiles: tuple[float, float] = IZ_PERCENTILES) -> dict[str, Any]:
+    """Fixed log10 scale of the windowed rate between two robust percentiles of the resolved nodes over the whole run."""
+
+    values = np.asarray(rate, dtype=np.float64)
+    valid = plasma_node[None, :, :] & (np.asarray(events) >= min_events) & np.isfinite(values) & (values > 0.0)
+    picked = values[valid]
+    if picked.size == 0:   # nothing resolved: fall back to every positive value so the render still has a scale
+        picked = values[plasma_node[None, :, :] & np.isfinite(values) & (values > 0.0)]
+    if picked.size == 0:
+        picked = np.array([1.0, 10.0])
+    lo, hi = (float(v) for v in np.percentile(picked, percentiles))
+    if not lo < hi:   # degenerate (one distinct value): one decade either side
+        lo, hi = (hi / 10.0, hi * 10.0) if hi > 0 else (0.1, 1.0)
+    return {"kind": "log", "lo": lo, "hi": hi, "decades": math.log10(hi / lo), "percentiles": [float(p) for p in percentiles],
+            "basis": f"{percentiles[0]:g}th-{percentiles[1]:g}th percentile of the resolved windowed nodes over the run"}
+
+
+def prepare_ionisation(frames: FrameSet, masks: Any, macro_weight: float, dt_s: float, *, window: int | None = None,
+                       min_events: float = MIN_SAMPLES_DEFAULT, min_samples: int = MIN_SAMPLES_DEFAULT,
+                       target_median_events: float = IZ_TARGET_MEDIAN_EVENTS, percentiles: tuple[float, float] = IZ_PERCENTILES) -> dict[str, Any]:
+    """Everything the two render paths need for the ionisation panel (window, maps, mask, scale, per-frame honesty numbers)."""
+
+    plasma = masks.plasma_node
+    volume = np.asarray(masks.shape_volume_m3, dtype=np.float64)
+    events = ionisation_events(frames, volume, plasma, macro_weight, dt_s)
+    auto = window is None
+    k = choose_window(events, frames.maps["sample_count_e"], plasma, target_median_events=target_median_events, min_samples=min_samples) if auto else int(window)
+    w = windowed_ionisation(frames, volume, plasma, macro_weight, dt_s, k)
+    scale = ionisation_scale(w["rate"], w["events"], plasma, min_events, percentiles)
+    resolved = plasma[None, :, :] & (w["events"] >= min_events)
+    total = w["events"].sum(axis=(1, 2))
+    share = np.where(total > 0, (w["events"] * resolved).sum(axis=(1, 2)) / np.where(total > 0, total, 1.0), np.nan)
+    s_window = total * float(macro_weight) / w["window_s"]                       # mean ionisation rate of the window (s^-1)
+    bearing = resolved & (w["events"] >= 1.0)
+    median_events = float(np.median(w["events"][bearing])) if bearing.any() else float("nan")
+    dt = frame_interval_s(frames, dt_s)
+    w.update({
+        "auto": auto, "min_events": float(min_events), "min_samples": int(min_samples), "target_median_events": float(target_median_events),
+        "scale": scale, "resolved": resolved, "resolved_nodes": resolved.sum(axis=(1, 2)), "plasma_nodes": int(plasma.sum()),
+        "share_resolved": share, "s_window_per_s": s_window, "median_events_resolved": median_events,
+        "nominal_window_s": float(k * np.median(dt)) if frames.count else 0.0,
+    })
+    return w
+
+
+def ionisation_legend(iz: Mapping[str, Any], frame_i: int) -> tuple[str, list[str]]:
+    """Title suffix and legend lines of the ionisation panel for one frame (ASCII only, see compose_video_frame)."""
+
+    m = int(iz["frames_in_window"][frame_i])
+    k = int(iz["window"])
+    scale = iz["scale"]
+    window_txt = f"window {m}/{k} frames = {iz['window_s'][frame_i] * 1e9:.0f} ns (causal{', partial' if m < k else ''})"
+    line1 = (f"log10 {scale['lo']:.2e} - {scale['hi']:.2e} m^-3 s^-1 (fixed over the run: {scale['percentiles'][0]:g}-{scale['percentiles'][1]:g} pct of resolved "
+             f"windowed nodes, {scale['decades']:.1f} decades); dark: thruster body")
+    line2 = (f"grey = unresolved: < {iz['min_events']:g} macro-ionisation events (bilinear node weight, W = macro weight) in the window; "
+             f"no spatial smoothing")
+    share = iz["share_resolved"][frame_i]
+    share_txt = f"{share * 100:.0f} %" if np.isfinite(share) else "-"
+    line3 = (f"resolved: {int(iz['resolved_nodes'][frame_i])} of {iz['plasma_nodes']} plasma nodes carry {share_txt} of the window's ionisation; "
+             f"S_window = {iz['s_window_per_s'][frame_i]:.2e} /s")
+    return window_txt, [line1, line2, line3]
 
 
 def index_frame(values: np.ndarray, sample_count: np.ndarray, plasma_node: np.ndarray, scale: Mapping[str, Any], min_samples: int) -> np.ndarray:
@@ -170,7 +336,6 @@ def mask_outline(plasma_node: np.ndarray) -> list[list[list[int]]]:
     """Unit-square edges between plasma and non-plasma nodes in (col, row_from_top) pixel coordinates."""
 
     m = np.asarray(plasma_node, dtype=bool)[::-1, :]
-    h, w = m.shape
     segments: list[list[list[int]]] = []
     horizontal = m[1:, :] != m[:-1, :]
     for i, j in zip(*np.nonzero(horizontal)):
@@ -192,8 +357,12 @@ def _font(size: int):
 
 
 def compose_video_frame(idx: np.ndarray, scale: Mapping[str, Any], key: str, frame_i: int, frames: FrameSet, grid: Grid2D, *,
-                        upscale: int, min_samples: int, cusp_z_m: Sequence[float] = ()) -> np.ndarray:
-    """One RGB video frame: the map (nearest upscale), the body outline, cusp planes, texts and a time-series strip."""
+                        upscale: int, min_samples: int, cusp_z_m: Sequence[float] = (), title_suffix: str | None = None,
+                        legend: Sequence[str] | None = None) -> np.ndarray:
+    """One RGB video frame: the map (nearest upscale), the body outline, cusp planes, texts and a time-series strip.
+
+    ``title_suffix`` / ``legend`` override the default single-line legend (used by the windowed ionisation panel,
+    which declares its window, mask and scale); one extra 16 px row per additional legend line."""
 
     from PIL import Image, ImageDraw
 
@@ -201,7 +370,8 @@ def compose_video_frame(idx: np.ndarray, scale: Mapping[str, Any], key: str, fra
     h, w = idx.shape
     map_img = Image.fromarray(rgb, "RGB").resize((w * upscale, h * upscale), Image.NEAREST)
     strip_h = 150
-    margin_top = 48
+    legend_lines = list(legend) if legend is not None else None
+    margin_top = 48 + 16 * (len(legend_lines) - 1 if legend_lines else 0)
     canvas = Image.new("RGB", (map_img.width + 90, margin_top + map_img.height + strip_h + 20), (17, 20, 23))
     canvas.paste(map_img, (0, margin_top))
     draw = ImageDraw.Draw(canvas)
@@ -210,7 +380,7 @@ def compose_video_frame(idx: np.ndarray, scale: Mapping[str, Any], key: str, fra
         draw.line([(x0 * upscale, margin_top + y0 * upscale), (x1 * upscale, margin_top + y1 * upscale)], fill=(155, 184, 176), width=1)
     z0, z1 = grid.geometry.z_min_m, grid.geometry.domain_z_max_m
     for z in cusp_z_m:
-        x = int(round((z - z0) / (z1 - z0) * (w - 1) * upscale))
+        x = round((z - z0) / (z1 - z0) * (w - 1) * upscale)
         for y in range(margin_top, margin_top + map_img.height, 8):
             draw.line([(x, y), (x, y + 4)], fill=(255, 207, 103), width=1)
     label, unit, kind = MAP_LABELS[key]
@@ -218,11 +388,16 @@ def compose_video_frame(idx: np.ndarray, scale: Mapping[str, Any], key: str, fra
     font = _font(16)
     small = _font(12)
     # ASCII only: Pillow's fallback bitmap font has no glyphs for the dash / micro sign
-    draw.text((6, 4), f"{label} ({unit}) - t = {t_us:.3f} us, steps {int(frames.start_step[frame_i])}-{int(frames.end_step[frame_i])}",
-              fill=(232, 236, 239), font=font)
-    scale_txt = (f"log10 {scale['lo']:.2e} - {scale['hi']:.2e} (fixed, {scale['decades']:.0f} decades)" if kind == "log"
-                 else f"{scale['lo']:.3g} - {scale['hi']:.3g} (fixed)")
-    draw.text((6, 26), f"{scale_txt}; grey: < {min_samples} electron samples in the interval; dark: thruster body", fill=(155, 184, 176), font=small)
+    title = f"{label} ({unit}) - t = {t_us:.3f} us, steps {int(frames.start_step[frame_i])}-{int(frames.end_step[frame_i])}"
+    if title_suffix:
+        title = f"{title}; {title_suffix}"
+    draw.text((6, 4), title, fill=(232, 236, 239), font=font)
+    if legend_lines is None:
+        scale_txt = (f"log10 {scale['lo']:.2e} - {scale['hi']:.2e} (fixed, {scale['decades']:.0f} decades)" if kind == "log"
+                     else f"{scale['lo']:.3g} - {scale['hi']:.3g} (fixed)")
+        legend_lines = [f"{scale_txt}; grey: < {min_samples} electron samples in the interval; dark: thruster body"]
+    for line_i, line in enumerate(legend_lines):
+        draw.text((6, 26 + 16 * line_i), line, fill=(155, 184, 176), font=small)
     # colour bar
     bar = palette(kind)[:254][::-1]
     bar_img = Image.fromarray(np.repeat(bar[:, None, :], 16, axis=1), "RGB").resize((16, map_img.height), Image.NEAREST)
@@ -236,7 +411,7 @@ def compose_video_frame(idx: np.ndarray, scale: Mapping[str, Any], key: str, fra
     width = map_img.width
     draw.rectangle([(0, top), (width, top + strip_h)], fill=(24, 28, 32))
     n = frames.count
-    xs = [int(round(k / max(n - 1, 1) * (width - 1))) for k in range(n)]
+    xs = [round(k / max(n - 1, 1) * (width - 1)) for k in range(n)]
     colours = [(255, 107, 107), (90, 214, 192), (88, 168, 255), (255, 207, 103), (200, 160, 255)]
     texts = []
     for (skey, slabel, factor), colour in zip(SERIES, colours):
@@ -260,14 +435,25 @@ def compose_video_frame(idx: np.ndarray, scale: Mapping[str, Any], key: str, fra
     return np.asarray(canvas)
 
 
-_PLASMA_CACHE: dict[int, np.ndarray] = {}
+_MASKS_CACHE: dict[int, Any] = {}
+
+
+def _masks(grid: Grid2D) -> Any:
+    key = id(grid)
+    if key not in _MASKS_CACHE:
+        _MASKS_CACHE[key] = build_mesh_masks(grid)
+    return _MASKS_CACHE[key]
 
 
 def _plasma(grid: Grid2D) -> np.ndarray:
-    key = id(grid)
-    if key not in _PLASMA_CACHE:
-        _PLASMA_CACHE[key] = build_mesh_masks(grid).plasma_node
-    return _PLASMA_CACHE[key]
+    return _masks(grid).plasma_node
+
+
+def run_constants(summary: Mapping[str, Any]) -> tuple[float, float]:
+    """(macro weight W, time step dt_s) of the run, from the recorded configuration."""
+
+    cfg = summary["provenance"]["config"]
+    return float(cfg["macro_weight"]), float(cfg["dt_s"])
 
 
 # -- video writers ---------------------------------------------------------------------------
@@ -313,7 +499,7 @@ def write_video(images: Sequence[np.ndarray], path: Path, fps: int, backend: str
     from PIL import Image
     path = path.with_suffix(".gif")
     pil = [Image.fromarray(f, "RGB").quantize(colors=256, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.NONE) for f in frames]
-    pil[0].save(path, save_all=True, append_images=pil[1:], duration=int(round(1000 / fps)), loop=0, optimize=False)
+    pil[0].save(path, save_all=True, append_images=pil[1:], duration=round(1000 / fps), loop=0, optimize=False)
     return path, "pillow_gif"
 
 
@@ -332,20 +518,52 @@ def _round(values: np.ndarray, digits: int = 6) -> list[float | None]:
     return [None if not np.isfinite(v) else float(f"{v:.{digits}g}") for v in np.asarray(values, dtype=np.float64)]
 
 
+def ionisation_payload_block(iz: Mapping[str, Any]) -> dict[str, Any]:
+    """Window / mask / scale declaration of the ionisation map for the player (what the viewer is looking at)."""
+
+    scale = iz["scale"]
+    return {
+        "window": {"frames": int(iz["window"]), "seconds": float(f"{iz['nominal_window_s']:.6g}"), "causal": True, "auto": bool(iz["auto"]),
+                   "target_median_events": float(iz["target_median_events"]), "median_events_resolved": _round(np.array([iz["median_events_resolved"]]))[0],
+                   "frames_in_window": [int(v) for v in iz["frames_in_window"]], "window_s": _round(iz["window_s"], 6),
+                   "resolved_nodes": [int(v) for v in iz["resolved_nodes"]], "plasma_nodes": int(iz["plasma_nodes"]),
+                   "share_resolved": _round(iz["share_resolved"], 4), "s_window_per_s": _round(iz["s_window_per_s"], 5)},
+        "mask": {"counts": "macro-ionisation events (bilinear node weight, rate V_node T_window / W)", "min_count": float(iz["min_events"]),
+                 "note": (f"grey = unresolved: fewer than {iz['min_events']:g} macro-ionisation events in the causal {iz['window']}-frame window "
+                          f"({iz['nominal_window_s'] * 1e9:.0f} ns; partial over the first {iz['window'] - 1} frames); no spatial smoothing")},
+        "scale_note": (f"log10 {scale['lo']:.2e} - {scale['hi']:.2e} m^-3 s^-1, fixed over the run at the {scale['percentiles'][0]:g}th-"
+                       f"{scale['percentiles'][1]:g}th percentile of the resolved windowed nodes ({scale['decades']:.1f} decades), not the per-frame maximum"),
+    }
+
+
 def build_player_payload(results: Path, frames: FrameSet, summary: Mapping[str, Any], grid: Grid2D, *, maps: Sequence[str] = DEFAULT_MAPS,
-                         min_samples: int = MIN_SAMPLES_DEFAULT, factor: int = 2, cusp_z_m: Sequence[float] = ()) -> dict[str, Any]:
+                         min_samples: int = MIN_SAMPLES_DEFAULT, factor: int = 2, cusp_z_m: Sequence[float] = (),
+                         ionisation: Mapping[str, Any] | None = None) -> dict[str, Any]:
     plasma = _plasma(grid)
     plasma_ds = downsample(plasma.astype(np.float64), factor, how="any") if factor > 1 else plasma
+    if IZ_KEY in maps and ionisation is None:
+        macro_weight, dt_s = run_constants(summary)
+        ionisation = prepare_ionisation(frames, _masks(grid), macro_weight, dt_s, min_samples=min_samples)
     scales: dict[str, Any] = {}
     images: dict[str, list[str]] = {}
+    extras: dict[str, dict[str, Any]] = {}
     for key in maps:
-        scale = colour_scale(frames, key, plasma, min_samples)
+        if key == IZ_KEY:
+            assert ionisation is not None
+            scale = ionisation["scale"]
+            value_maps, count_maps, threshold = ionisation["rate"], ionisation["events"], float(ionisation["min_events"])
+            extras[key] = ionisation_payload_block(ionisation)
+        else:
+            scale = colour_scale(frames, key, plasma, min_samples)
+            value_maps, count_maps, threshold = frames.maps[key], frames.maps["sample_count_e"], float(min_samples)
+            extras[key] = {"mask": {"counts": "electron samples", "min_count": float(min_samples),
+                                    "note": f"grey: fewer than {min_samples} electron samples in the frame interval"}}
         scales[key] = scale
         pngs = []
         for i in range(frames.count):
-            values = downsample(frames.maps[key][i], factor) if factor > 1 else frames.maps[key][i]
-            counts = downsample(frames.maps["sample_count_e"][i], factor, how="sum") if factor > 1 else frames.maps["sample_count_e"][i]
-            idx = index_frame(values, counts, plasma_ds, scale, min_samples)
+            values = downsample(value_maps[i], factor) if factor > 1 else value_maps[i]
+            counts = downsample(count_maps[i], factor, how="sum") if factor > 1 else count_maps[i]
+            idx = index_frame(values, counts, plasma_ds, scale, threshold)
             pngs.append(base64.b64encode(_png_bytes(idx, scale["kind"])).decode("ascii"))
         images[key] = pngs
     geometry = grid.geometry
@@ -359,8 +577,10 @@ def build_player_payload(results: Path, frames: FrameSet, summary: Mapping[str, 
         "claim_statement": (
             "Time series of interval-averaged maps from one development run; not preregistered, not validated against experiment, "
             "not a thruster performance prediction. Each frame averages the recorded interval; the colour scale is fixed across all "
-            "frames (log with a floor for densities and the ionisation rate) so evolution is visible without autoscaling; grey cells "
-            "were sampled by fewer macro-electrons than the declared threshold in that interval."
+            "frames (log with a floor for the densities; log between two robust percentiles for the ionisation rate) so evolution is "
+            "visible without autoscaling; grey cells were sampled by fewer macro-electrons than the declared threshold in that interval. "
+            "The ionisation-rate map is a causal rolling window of recorded frames (declared in its caption) and greys out nodes with "
+            "fewer macro-ionisation events than its threshold: a single frame is shot-noise dominated at this cadence."
         ),
         "protocol_sha256": summary.get("protocol_sha256"),
         "frames_sha256": manifest.get("sha256"),
@@ -376,7 +596,7 @@ def build_player_payload(results: Path, frames: FrameSet, summary: Mapping[str, 
         "start_step": [int(v) for v in frames.start_step],
         "end_step": [int(v) for v in frames.end_step],
         "series": {key: {"label": label, "values": _round(frames.scalars[key] * factor_)} for key, label, factor_ in SERIES},
-        "maps": {key: {"label": MAP_LABELS[key][0], "unit": MAP_LABELS[key][1], "scale": scales[key], "png": images[key]} for key in maps},
+        "maps": {key: {"label": MAP_LABELS[key][0], "unit": MAP_LABELS[key][1], "scale": scales[key], "png": images[key], **extras[key]} for key in maps},
         "image_shape": [int(plasma_ds.shape[0]), int(plasma_ds.shape[1])],
         "domain": {"z_min_m": geometry.z_min_m, "z_max_m": geometry.domain_z_max_m, "r_max_m": geometry.max_radius_m,
                    "channel_z_max_m": geometry.z_max_m, "has_plume": bool(geometry.has_plume)},
@@ -406,11 +626,24 @@ def validate_player_payload(payload: Mapping[str, Any]) -> None:
             raise ValueError("unknown map or scale")
         if not block["scale"]["lo"] < block["scale"]["hi"]:
             raise ValueError("scale must be increasing")
+        mask = block.get("mask")
+        if not isinstance(mask, Mapping) or not mask.get("min_count", -1.0) >= 0.0 or "note" not in mask:
+            raise ValueError(f"map {key} must declare its resolution mask (counts, min_count, note)")
+        if key == IZ_KEY:
+            window = block.get("window")
+            if not isinstance(window, Mapping) or int(window.get("frames", 0)) < 1 or window.get("causal") is not True:
+                raise ValueError("the ionisation map must declare a causal window of at least one frame")
+            if len(window["frames_in_window"]) != n or any(not 1 <= m <= window["frames"] for m in window["frames_in_window"]):
+                raise ValueError("ionisation window lengths must be 1..K for every frame")
+            if any(m != min(i + 1, window["frames"]) for i, m in enumerate(window["frames_in_window"])):
+                raise ValueError("ionisation window must be causal: min(i + 1, K) frames at frame i")
+            if "percentiles" not in block["scale"] or "scale_note" not in block:
+                raise ValueError("the ionisation scale must declare its percentile basis")
     for key, block in payload["series"].items():
         if len(block["values"]) != n:
             raise ValueError(f"series {key} length mismatch")
     if not isinstance(payload["frames_sha256"], (str, type(None))):
-        raise ValueError("frames_sha256 must be a hash or null")
+        raise TypeError("frames_sha256 must be a hash or null")
     if payload["min_samples"] < 0 or payload["downsample_factor"] < 1:
         raise ValueError("bad mask / downsample declaration")
 
@@ -466,9 +699,12 @@ const D=DATA.domain;g.setLineDash([4,4]);g.strokeStyle="#ffcf67";for(const z of 
 g.fillStyle="#e8ecef";g.font="12px system-ui";g.textAlign="center";for(let k=0;k<=4;k++){const z=D.z_min_m+k/4*(D.z_max_m-D.z_min_m);g.fillText((z*1e3).toFixed(1),l+k/4*pw,h-14)}g.fillText("z (mm)",l+pw/2,h-2);
 g.textAlign="right";for(let k=0;k<=3;k++){const rr=k/3*D.r_max_m;g.fillText((rr*1e3).toFixed(1),l-6,t+ph-k/3*ph+4)}g.save();g.translate(12,t+ph/2);g.rotate(-Math.PI/2);g.textAlign="center";g.fillText("r (mm)",0,0);g.restore();
 const S=DATA.maps[mapKey].scale,pal=S.kind==="signed"?DATA.palette.diverging:DATA.palette.viridis,bx=l+pw+14;for(let k=0;k<ph;k++){const c2=pal[Math.min(253,Math.floor((1-k/ph)*253))];g.fillStyle=`rgb(${c2[0]},${c2[1]},${c2[2]})`;g.fillRect(bx,t+k,12,1.5)}
-g.textAlign="left";g.fillStyle="#e8ecef";g.fillText(S.kind==="log"?sci(S.hi,1):fmt(S.hi,3),bx+16,t+10);g.fillText(S.kind==="log"?sci(S.lo,1):fmt(S.lo,3),bx+16,t+ph);g.fillStyle=`rgb(${DATA.palette.mask.join(",")})`;g.fillRect(bx,t+ph+8,12,8);g.fillStyle="#9bb8b0";g.font="11px system-ui";g.fillText(`< ${DATA.min_samples}`,bx+16,t+ph+15);
-const tUs=DATA.time_s[frame]*1e6;$("frameLabel").textContent=`${frame+1} / ${DATA.frame_count} — t = ${tUs.toFixed(3)} µs (steps ${DATA.start_step[frame]}–${DATA.end_step[frame]})`;
-$("caption").textContent=`${DATA.maps[mapKey].label} (${DATA.maps[mapKey].unit}), interval average over ${DATA.cadence_steps} steps = ${(DATA.interval_s*1e9).toFixed(1)} ns; colour scale fixed over all frames: ${S.kind==="log"?`log10 ${sci(S.lo,2)} – ${sci(S.hi,2)} (${S.decades} decades, floor = max / 10^${S.decades})`:S.kind==="signed"?`${fmt(S.lo,3)} – ${fmt(S.hi,3)} (full range over all frames)`:`linear 0 – ${fmt(S.hi,3)} (99.5th percentile)`}; ${DATA.min_samples_note}; dark = thruster body / outside the plasma cell mask; dashed verticals = cusp planes; spatial downsample ${DATA.downsample_factor}× (block mean).`}
+const M=DATA.maps[mapKey],mk=M.mask||{min_count:DATA.min_samples},Wn=M.window;
+g.textAlign="left";g.fillStyle="#e8ecef";g.fillText(S.kind==="log"?sci(S.hi,1):fmt(S.hi,3),bx+16,t+10);g.fillText(S.kind==="log"?sci(S.lo,1):fmt(S.lo,3),bx+16,t+ph);g.fillStyle=`rgb(${DATA.palette.mask.join(",")})`;g.fillRect(bx,t+ph+8,12,8);g.fillStyle="#9bb8b0";g.font="11px system-ui";g.fillText(`< ${mk.min_count}`,bx+16,t+ph+15);
+const tUs=DATA.time_s[frame]*1e6,win=Wn?` · window ${Wn.frames_in_window[frame]}/${Wn.frames} frames = ${(Wn.window_s[frame]*1e9).toFixed(0)} ns`:"";$("frameLabel").textContent=`${frame+1} / ${DATA.frame_count} — t = ${tUs.toFixed(3)} µs (steps ${DATA.start_step[frame]}–${DATA.end_step[frame]})${win}`;
+const scaleTxt=S.kind==="log"?(S.percentiles?M.scale_note:`log10 ${sci(S.lo,2)} – ${sci(S.hi,2)} (${S.decades} decades, floor = max / 10^${S.decades})`):S.kind==="signed"?`${fmt(S.lo,3)} – ${fmt(S.hi,3)} (full range over all frames)`:`linear 0 – ${fmt(S.hi,3)} (99.5th percentile)`;
+const winTxt=Wn?`causal rolling window of ${Wn.frames} frames (${(Wn.seconds*1e9).toFixed(0)} ns${Wn.auto?", chosen so the median resolved event-bearing node holds ≥ "+Wn.target_median_events+" events":""}); this frame: ${Wn.frames_in_window[frame]} frames, ${Wn.resolved_nodes[frame]} of ${Wn.plasma_nodes} plasma nodes resolved carrying ${Wn.share_resolved[frame]==null?"–":(Wn.share_resolved[frame]*100).toFixed(0)+" %"} of the window's ionisation (S_window ${sci(Wn.s_window_per_s[frame],2)} s⁻¹)`:`interval average over ${DATA.cadence_steps} steps = ${(DATA.interval_s*1e9).toFixed(1)} ns`;
+$("caption").textContent=`${M.label} (${M.unit}), ${winTxt}; colour scale fixed over all frames: ${scaleTxt}; ${mk.note||DATA.min_samples_note}${DATA.downsample_factor>1?" (counts summed over the "+DATA.downsample_factor+"×"+DATA.downsample_factor+" block)":""}; dark = thruster body / outside the plasma cell mask; dashed verticals = cusp planes; spatial downsample ${DATA.downsample_factor}× (block mean).`}
 function drawSeries(){const c=$("series"),{g,w,h}=setup(c,0.28),l=58,t=10,r=16,b=30,pw=w-l-r,ph=h-t-b,keys=Object.keys(DATA.series),cols=["#ff6b6b","#5ad6c0","#58a8ff","#ffcf67","#c8a0ff"],n=DATA.frame_count;g.clearRect(0,0,w,h);g.fillStyle="#161c21";g.fillRect(0,0,w,h);
 const x=i=>l+(n>1?i/(n-1):0.5)*pw;let legendX=l;keys.forEach((k,ki)=>{const v=DATA.series[k].values,fin=v.filter(u=>u!=null&&isFinite(u));if(!fin.length)return;const lo=Math.min(...fin),hi=Math.max(...fin),span=hi-lo||1;g.strokeStyle=cols[ki];g.lineWidth=1.4;g.beginPath();let on=false;v.forEach((u,i)=>{if(u==null||!isFinite(u)){on=false;return}const yy=t+ph-(u-lo)/span*ph;on?g.lineTo(x(i),yy):g.moveTo(x(i),yy);on=true});g.stroke();const cur=v[frame];const txt=`${DATA.series[k].label}: ${cur==null?"–":fmt(cur,4)}`;g.fillStyle=cols[ki];g.font="12px system-ui";g.textAlign="left";g.fillText(txt,legendX,h-8);legendX+=g.measureText(txt).width+18});
 g.strokeStyle="#e8ecef";g.beginPath();g.moveTo(x(frame),t);g.lineTo(x(frame),t+ph);g.stroke();g.fillStyle="#9bb8b0";g.font="11px system-ui";g.textAlign="center";for(let k=0;k<=4;k++){const i=Math.round(k/4*(n-1));g.fillText((DATA.time_s[i]*1e6).toFixed(2)+" µs",x(i),t+ph+12)}
@@ -519,7 +755,14 @@ def cusp_planes(results: Path, protocol_path: Path | None) -> list[float]:
 
 def render_run(results: Path, out_dir: Path, *, maps: Sequence[str] = DEFAULT_MAPS, fps: int = 10, min_samples: int = MIN_SAMPLES_DEFAULT,
                upscale: int = 3, factor: int = 2, backend: str | None = None, cusp_z_m: Sequence[float] | None = None,
-               protocol_path: Path | None = None, video: bool = True, html: bool = True) -> dict[str, Any]:
+               protocol_path: Path | None = None, video: bool = True, html: bool = True, suffix: str = "",
+               iz_window: int | None = None, iz_min_events: float = MIN_SAMPLES_DEFAULT, iz_percentiles: tuple[float, float] = IZ_PERCENTILES,
+               iz_target_median_events: float = IZ_TARGET_MEDIAN_EVENTS) -> dict[str, Any]:
+    """Render the videos and the HTML player.  ``suffix`` is appended to every output name (e.g. ``-v2``).
+
+    Ionisation panel: ``iz_window`` frames (None = automatic, see ``choose_window``), ``iz_min_events`` resolution
+    threshold on the windowed event weight, ``iz_percentiles`` fixed colour range of the windowed rate."""
+
     results = Path(results)
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -530,21 +773,46 @@ def render_run(results: Path, out_dir: Path, *, maps: Sequence[str] = DEFAULT_MA
     cusps = list(cusp_z_m) if cusp_z_m is not None else cusp_planes(results, protocol_path)
     run_name = results.parent.name if results.name == "results" else results.name
     report: dict[str, Any] = {"run": run_name, "frames": frames.count, "videos": {}, "html": None, "backend": None,
-                              "scales": {}, "min_samples": min_samples, "upscale": upscale, "downsample_factor": factor}
+                              "scales": {}, "min_samples": min_samples, "upscale": upscale, "downsample_factor": factor, "suffix": suffix}
+    ionisation: dict[str, Any] | None = None
+    if IZ_KEY in maps:
+        macro_weight, dt_s = run_constants(summary)
+        ionisation = prepare_ionisation(frames, _masks(grid), macro_weight, dt_s, window=iz_window, min_events=iz_min_events, min_samples=min_samples,
+                                        target_median_events=iz_target_median_events, percentiles=iz_percentiles)
+        share = ionisation["share_resolved"]
+        report["ionisation"] = {
+            "window_frames": ionisation["window"], "window_s": ionisation["nominal_window_s"], "auto": ionisation["auto"],
+            "target_median_events": ionisation["target_median_events"], "median_events_resolved": ionisation["median_events_resolved"],
+            "min_events": ionisation["min_events"], "scale": ionisation["scale"], "macro_weight": macro_weight, "dt_s": dt_s,
+            "resolved_fraction_of_plasma_nodes_mean": float(np.mean(ionisation["resolved_nodes"]) / max(ionisation["plasma_nodes"], 1)),
+            "share_of_ionisation_resolved_mean": float(np.nanmean(share)) if np.isfinite(share).any() else None,
+            "share_of_ionisation_resolved_last": float(share[-1]) if np.isfinite(share[-1]) else None,
+        }
     if video:
         for key in maps:
-            scale = colour_scale(frames, key, plasma, min_samples)
+            if key == IZ_KEY:
+                assert ionisation is not None
+                scale = ionisation["scale"]
+                images = []
+                for i in range(frames.count):
+                    title_suffix, legend = ionisation_legend(ionisation, i)
+                    idx = index_frame(ionisation["rate"][i], ionisation["events"][i], plasma, scale, ionisation["min_events"])
+                    images.append(compose_video_frame(idx, scale, key, i, frames, grid, upscale=upscale, min_samples=min_samples, cusp_z_m=cusps,
+                                                      title_suffix=title_suffix, legend=legend))
+            else:
+                scale = colour_scale(frames, key, plasma, min_samples)
+                images = [compose_video_frame(index_frame(frames.maps[key][i], frames.maps["sample_count_e"][i], plasma, scale, min_samples),
+                                              scale, key, i, frames, grid, upscale=upscale, min_samples=min_samples, cusp_z_m=cusps)
+                          for i in range(frames.count)]
             report["scales"][key] = scale
-            images = [compose_video_frame(index_frame(frames.maps[key][i], frames.maps["sample_count_e"][i], plasma, scale, min_samples),
-                                          scale, key, i, frames, grid, upscale=upscale, min_samples=min_samples, cusp_z_m=cusps)
-                      for i in range(frames.count)]
-            path, used = write_video(images, out_dir / f"pic2d-{run_name}-{key}", fps, backend)
+            path, used = write_video(images, out_dir / f"pic2d-{run_name}-{key}{suffix}", fps, backend)
             report["videos"][key] = {"path": str(path), "bytes": path.stat().st_size, "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
             report["backend"] = used
     if html:
-        payload = build_player_payload(results, frames, summary, grid, maps=maps, min_samples=min_samples, factor=factor, cusp_z_m=cusps)
+        payload = build_player_payload(results, frames, summary, grid, maps=maps, min_samples=min_samples, factor=factor, cusp_z_m=cusps,
+                                       ionisation=ionisation)
         text = render_player_html(payload, f"{run_name} ({summary.get('model_version', '')})")
-        path = out_dir / f"pic2d-{run_name}-timeseries.html"
+        path = out_dir / f"pic2d-{run_name}-timeseries{suffix}.html"
         path.write_text(text, encoding="utf-8", newline="\n")
         report["html"] = {"path": str(path), "bytes": path.stat().st_size, "sha256": hashlib.sha256(text.encode("utf-8")).hexdigest()}
     return report
@@ -564,10 +832,19 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--cusps", nargs="*", type=float, default=None, help="cusp plane z positions (m); overrides --protocol")
     parser.add_argument("--no-video", action="store_true")
     parser.add_argument("--no-html", action="store_true")
+    parser.add_argument("--suffix", default="", help="appended to every output file name, e.g. --suffix=-v2 (keeps an earlier render for comparison)")
+    parser.add_argument("--iz-window", type=int, default=None,
+                        help=f"ionisation panel: causal window in frames (default: smallest K whose median resolved event-bearing node holds >= {IZ_TARGET_MEDIAN_EVENTS:g} events)")
+    parser.add_argument("--iz-min-events", type=float, default=MIN_SAMPLES_DEFAULT,
+                        help="ionisation panel: grey out nodes with fewer windowed macro-ionisation events (dashboard mask semantics)")
+    parser.add_argument("--iz-percentiles", type=float, nargs=2, default=list(IZ_PERCENTILES), metavar=("LO", "HI"),
+                        help="ionisation panel: fixed log colour range = these percentiles of the resolved windowed rate over the run")
+    parser.add_argument("--iz-target-median-events", type=float, default=IZ_TARGET_MEDIAN_EVENTS, help="window selection target (auto mode)")
     args = parser.parse_args(argv)
     report = render_run(args.results, args.out or (args.results / "video"), maps=args.maps, fps=args.fps, min_samples=args.min_samples,
                         upscale=args.upscale, factor=args.downsample, backend=args.backend, cusp_z_m=args.cusps, protocol_path=args.protocol,
-                        video=not args.no_video, html=not args.no_html)
+                        video=not args.no_video, html=not args.no_html, suffix=args.suffix, iz_window=args.iz_window, iz_min_events=args.iz_min_events,
+                        iz_percentiles=(float(args.iz_percentiles[0]), float(args.iz_percentiles[1])), iz_target_median_events=args.iz_target_median_events)
     print(json.dumps(report, indent=2))
     return 0
 
