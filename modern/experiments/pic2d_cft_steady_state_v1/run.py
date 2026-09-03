@@ -49,6 +49,7 @@ import numpy as np
 
 from cft_revival.pic2d import artifacts
 from cft_revival.pic2d.fields import MagneticFieldMap, build_p2_psi_field, p2_plume_field_map, sample_field_map
+from cft_revival.pic2d.frames import FrameRecorder, FrameRecorderConfig, estimate_frame_bytes, frames_manifest, list_frames
 from cft_revival.pic2d.mcc import MCCConfig, XenonCrossSections
 from cft_revival.pic2d.models import (
     BoundaryPotentials,
@@ -254,6 +255,15 @@ def step_graph_flag(protocol: dict[str, Any]) -> bool:
     """v1.4: CUDA-graph replay of the step (``numerics.step_graph``, default on; no effect on the CPU backends)."""
 
     return bool(protocol["numerics"].get("step_graph", True))
+
+
+def frame_recorder_config(protocol: dict[str, Any]) -> FrameRecorderConfig | None:
+    """v2.0: ``numerics.frame_recorder`` = {cadence_steps, precision} (absent/null = OFF, the v1.x behaviour)."""
+
+    block = protocol["numerics"].get("frame_recorder")
+    if block is None:
+        return None
+    return FrameRecorderConfig(int(block["cadence_steps"]), str(block.get("precision", "float32")))
 
 
 # -- plateau criterion ------------------------------------------------------
@@ -847,6 +857,9 @@ def write_final_artifacts(
             "checkpoint_npz": checkpoint_npz.name,
             "status_jsonl": status_path.name,
             "series_jsonl": (results / "series.jsonl").name,
+            # v2.0 frame recorder: hash-bound manifest of frames/frame-NNNNNN.npz (None when recording was off)
+            "frames": (frames_manifest(results) | {"config": getattr(frame_recorder_config(protocol), "to_dict", lambda: None)()})
+            if list_frames(results) else None,
         },
         "provenance": sim.to_provenance() | {"runtime": artifacts.runtime_identity(), "config_sha256": artifacts.config_identity(config)},
         "simplifications": protocol["simplifications"],
@@ -903,6 +916,15 @@ def run_steady_state(
     if config.grid.geometry.has_plume:
         log(f"[steady-state] v2.0 options: {json.dumps(sim.to_provenance().get('v2_0_options'))}")
     plasma_volume = float(sim.masks.to_dict()["plasma_volume_m3"])
+    # v2.0 frame recorder (default OFF): interval-averaged maps every cadence_steps, aligned with checkpoints/windows
+    frame_config = frame_recorder_config(protocol)
+    recorder: FrameRecorder | None = None
+    if frame_config is not None:
+        frame_config.validate_alignment(sync_steps=int(numerics["device_sync_steps"]), checkpoint_every_steps=checkpoint_every,
+                                        window_steps=window_steps)
+        recorder = FrameRecorder(results, frame_config, sim)
+        log(f"[steady-state] frame recorder: every {frame_config.cadence_steps} steps ({frame_config.cadence_steps*config.dt_s*1e9:.1f} ns), "
+            f"{frame_config.precision}, ~{estimate_frame_bytes(config.grid.node_shape, frame_config.precision)/1e6:.1f} MB/frame uncompressed")
 
     series_path = results / "series.jsonl"
     status_path = results / "status.jsonl"
@@ -922,6 +944,9 @@ def run_steady_state(
         session["resumed_from_step"] = int(state.step)
         _append_jsonl(status_path, {"event": "resume", "step": int(state.step), "time_s": float(state.time_s), "utc": session["started_utc"]})
         log(f"[steady-state] resumed from step {state.step} (t = {state.time_s*1e9:.1f} ns), {len(records)} series records kept")
+        if recorder is not None:
+            removed = recorder.reconcile(int(state.step))
+            log(f"[steady-state] frames: {recorder.index} kept, {removed} past the checkpoint removed")
     run_state["sessions"].append(session)
     wall_before = float(run_state["wall_seconds_total"])
 
@@ -971,6 +996,8 @@ def run_steady_state(
     completed_range: tuple[int, int] | None = None
     while True:
         chunk = min(checkpoint_every, window_start + window_steps - step)
+        if recorder is not None:   # stop at every frame boundary (the cadence divides checkpoint and window)
+            chunk = min(chunk, recorder.steps_to_next_boundary(step))
         if max_steps is not None:
             chunk = min(chunk, max_steps - step)
         if chunk <= 0:
@@ -984,14 +1011,22 @@ def run_steady_state(
             log(f"[steady-state] fail-closed stop at step {sim.backend.step_index}: {gate_error}")
             break
         step = sim.backend.step_index
+        if recorder is not None and recorder.due(step):
+            recorder.capture(records[-1] if records else None)
         if step - window_start >= window_steps:
             completed_window = sim.diagnostic_arrays()
             completed_range = (window_start, step)
             sim.backend.reset_diagnostics()
             window_start = step
-        # a chunk is at most checkpoint_every steps: checkpoint after every chunk
+            if recorder is not None:
+                recorder.on_window_reset()
+        if recorder is not None and step % checkpoint_every != 0 and (max_steps is None or step < max_steps):
+            continue   # frame boundary inside a checkpoint interval: no checkpoint / plateau evaluation yet
+        # checkpoint after every checkpoint_every steps (every chunk without a recorder)
         save_checkpoint_atomic(results, sim, config, field_map.sha256, xs_sha)
         run_state.update({"wall_seconds_total": wall_total(), "checkpoint_step": step, "checkpoint_time_s": sim.state.time_s})
+        if recorder is not None:
+            run_state["frames_written"] = recorder.index
         artifacts.write_canonical_json(state_path, run_state)
         arrays = records_to_arrays(records)
         last_plateau = evaluate_plateau(arrays["time_s"], arrays["current_discharge_a"], arrays["electrons"], rule, transit_time,
@@ -1084,6 +1119,10 @@ def finalize(
     setup_seconds = time.perf_counter() - t0
     records = [r for r in _read_jsonl(results / "series.jsonl") if r["step"] <= state.step]
     _write_jsonl(results / "series.jsonl", records)
+    frame_config = frame_recorder_config(protocol)
+    if frame_config is not None and list_frames(results):
+        removed = FrameRecorder(results, frame_config, sim).reconcile(int(state.step))
+        log(f"[steady-state] frames past the checkpoint removed: {removed}")
     state_path = results / "run_state.json"
     run_state: dict[str, Any] = {"wall_seconds_total": 0.0, "sessions": [], "checkpoint_step": int(state.step), "finished": False}
     if state_path.is_file():
@@ -1125,6 +1164,7 @@ def status(results: Path = RESULTS, protocol: dict[str, Any] | None = None) -> d
         "projection": remaining,
         "pid": int(pid_file.read_text().strip()) if pid_file.is_file() else None,
         "finished": (results / "summary.json").is_file(),
+        "frames_written": len(list_frames(results)),
     }
 
 

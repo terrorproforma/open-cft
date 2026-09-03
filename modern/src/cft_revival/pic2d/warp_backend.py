@@ -1609,6 +1609,10 @@ class WarpBackend:
     def step_index(self) -> int:
         return int(self.state_meta["step"])
 
+    @property
+    def time_s(self) -> float:
+        return float(self.state_meta["time_s"])
+
     def _alloc_species(self, capacity: int) -> DeviceSpecies:
         dev = self.device
         arrays = [wp.zeros(capacity, dtype=wp.float64, device=dev) for _ in range(5)]
@@ -2204,6 +2208,18 @@ class WarpBackend:
                                min_particles=gate.min_macro_particles_at_peak if gate is not None else 16)
 
     def diagnostic_arrays(self) -> dict[str, np.ndarray]:
+        return self._host_accumulator().to_arrays(self.config.macro_weight, self.config.dt_s)
+
+    def diagnostic_sums(self) -> dict[str, np.ndarray]:
+        """v2.0 frame recorder: the raw device window sums on the host."""
+
+        return self._host_accumulator().raw_sums()
+
+    def surface_charge_map(self) -> np.ndarray:
+        self.flush()
+        return self.surface.numpy().reshape(self.masks.grid.node_shape).copy()
+
+    def _host_accumulator(self) -> DiagnosticAccumulator:
         wp.synchronize_device(self.device)
         shape = self.masks.grid.node_shape
         acc = DiagnosticAccumulator(self.masks, self.iedf_max_ev)
@@ -2227,7 +2243,7 @@ class WarpBackend:
         acc.wall_ion_energy_j = self.d_wall_i_energy.numpy()
         acc.exit_electrons = self.d_exit_e.numpy()
         acc.exit_ions = self.d_exit_i.numpy()
-        return acc.to_arrays(self.config.macro_weight, self.config.dt_s)
+        return acc
 
     def reset_diagnostics(self) -> None:
         for array in (self.d_n_e, self.d_n_i, self.d_phi, self.d_w, self.d_vr, self.d_vt, self.d_vz, self.d_v2, self.d_ion,

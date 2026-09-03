@@ -467,7 +467,7 @@ def _tiny_plume_protocol() -> dict:
     protocol["geometry"]["body_dielectric_radius_m"] = 0.0045
     protocol["case"].update({"radial_cells": 48, "axial_cells": 144, "macro_weight": 6.0e5})
     protocol["numerics"].update({"dt_s": 5.0e-12, "device_sync_steps": 20, "series_interval_steps": 20, "checkpoint_every_steps": 100,
-                                 "averaging_window_steps": 200})
+                                 "averaging_window_steps": 200, "frame_recorder": {"cadence_steps": 100, "precision": "float32"}})
     protocol["numerics"]["stability_reference"]["density_per_m3"] = 1.0e16
     protocol["operating_point"]["seed_plasma_density_per_m3"] = 5.0e15
     return protocol
@@ -517,3 +517,5 @@ def test_plume_protocol_builds_the_v20_config_and_runs_with_the_v20_artifacts(tm
     runner.run_steady_state(protocol, results, backend="cpu", field_map=field, cross_sections=xs, max_steps=600, log=lambda _: None)
     resumed = artifacts.read_canonical_json(results / "summary.json")
     assert resumed["steps_completed"] == 600 and len(resumed["sessions"]) == 2 and resumed["plume"] is not None
+    # the frame recorder (declared in the protocol) wrote one frame per cadence across both sessions
+    assert resumed["artifacts"]["frames"]["count"] == 6 and resumed["artifacts"]["frames"]["config"]["cadence_steps"] == 100

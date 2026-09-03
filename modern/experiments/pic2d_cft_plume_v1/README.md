@@ -88,3 +88,37 @@ steady-state v3 (model v1.4) is deferred until after this run (devlog).
   is unchanged (scale n_g / ceiling). `neutral_inventory.max_density_over_zero_ionization` in
   `summary.json` records the transient. The launch-1 artifacts were discarded (a different
   protocol hash); launch 2 starts fresh.
+* **Launch 2 (22:11 AEST, PID 38948)** — stopped by hand during the host factorisation (no
+  stepping) when the user asked for whole-run video frames before the development run; its
+  results were discarded (protocol hash changes with the `frame_recorder` block).
+* **Launch 3 (see below)** — the same protocol plus `numerics.frame_recorder` (see the
+  frames section); this is the plume development run.
+
+## Time-series frames and video
+
+`numerics.frame_recorder = {cadence_steps: 20000, precision: float32}` records, every 30 ns,
+the exact interval averages of the full-domain maps (n_e, n_i, φ, T_e from the moments,
+ionisation rate, electron sample counts), the wall / exit / far-field flux profiles, j_i(θ) and
+the IEDF of the interval, the instantaneous surface charge and the scalar series record at the
+frame end (t, I_d, I_beam, S, N_e, N_i, n_g, thrust flux / balance / total, closure, cathode
+current). Frames are computed as differences of the window-accumulator sums (nothing is added
+to the step), written one compressed `frames/frame-NNNNNN.npz` each (4.9 MB uncompressed on
+the 241 × 721 grid, ≈ 100–140 frames in the 4 h budget, 257 frames = 1.26 GB at 7.7 µs — no
+downsampling needed) atomically before the checkpoint that follows; resume removes frames past
+the checkpoint; the manifest is hash-bound in `summary.json → artifacts.frames`. Details and
+tests: `spec/pic2d/pic2d-model-v2.0.json → frame_recorder_v2_0`.
+
+Render (after the run has written `summary.json`; the run's protocol supplies the cusp planes):
+
+```powershell
+python visualization\render_pic2d_video.py experiments\pic2d_cft_plume_v1\results `
+    --protocol experiments\pic2d_cft_plume_v1\protocol.json --fps 10
+# -> results\video\pic2d-pic2d_cft_plume_v1-<map>.mp4 (one per map; ffmpeg on PATH or
+#    imageio_ffmpeg in .venv-sota; GIF through Pillow otherwise) and
+#    results\video\pic2d-pic2d_cft_plume_v1-timeseries.html (offline player: scrubber, play,
+#    map selector, body + cusp planes, synchronised I_d / I_beam / N_e / n_g / thrust)
+```
+
+Colour scales are fixed across all frames (log with a floor of max/10⁴ for densities and the
+ionisation rate; full range for φ; 0–99.5 % for T_e), cells with < 20 electron samples in the
+interval are grey, the thruster body dark.

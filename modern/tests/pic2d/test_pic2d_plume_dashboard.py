@@ -42,7 +42,7 @@ def tiny_run(tmp_path_factory) -> tuple[Path, Path]:
     protocol["geometry"]["body_dielectric_radius_m"] = 0.0045
     protocol["case"].update({"radial_cells": 48, "axial_cells": 144, "macro_weight": 6.0e5})
     protocol["numerics"].update({"dt_s": 5.0e-12, "device_sync_steps": 20, "series_interval_steps": 20, "checkpoint_every_steps": 100,
-                                 "averaging_window_steps": 200})
+                                 "averaging_window_steps": 200, "frame_recorder": {"cadence_steps": 100, "precision": "float32"}})
     protocol["numerics"]["stability_reference"]["density_per_m3"] = 1.0e16
     protocol["operating_point"]["seed_plasma_density_per_m3"] = 5.0e15
     protocol_path = root / "protocol.json"

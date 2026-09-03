@@ -84,6 +84,11 @@
     "averaging_window_steps": 400000,
     "averaging_window_note": "consecutive 400000-step (0.6 us) windows; maps, plume histograms (j_i(theta), IEDF) and the electron sample counts are window accumulations; the reported maps are the last completed window (or the current one if at least half full)",
     "checkpoint_every_steps": 40000,
+    "frame_recorder": {
+      "cadence_steps": 20000,
+      "precision": "float32",
+      "note": "time-series video frames: exact interval averages over every 20000 steps (30 ns at dt = 1.5 ps) of the full-domain node maps n_e, n_i, phi, T_e (moments), ionisation rate and the electron sample counts, plus the wall/exit/side flux profiles, the plume histograms, the instantaneous surface charge and the scalar diagnostics of the series record at the frame end (t, I_d, I_beam, S, N_e, N_i, n_g, thrust flux/balance/total, closure, cathode current). Computed as differences of the window accumulator sums (nothing added to the step kernels); cadence = 100 sync intervals, divides the 40000-step checkpoint and the 400000-step window, so every checkpoint and window reset is a frame boundary and a resume never duplicates or drops a frame. Storage: one compressed frames/frame-NNNNNN.npz per frame written atomically before its checkpoint; 241 x 721 nodes x float32 x 7 arrays = 4.9 MB/frame uncompressed -> 100-140 frames in the 4 h budget (0.5-0.7 GB), 257 frames = 1.26 GB uncompressed if resumed to 7.7 us; no spatial downsampling needed; hash-bound in summary.json artifacts.frames"
+    },
     "peak_debye_gate": {
       "max_cells_per_debye": 4.5,
       "min_macro_particles_at_peak": 32,

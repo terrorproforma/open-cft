@@ -505,6 +505,27 @@ class DiagnosticAccumulator:
     def reset(self) -> None:
         self.__init__(self.masks, self.iedf_max_ev)
 
+    # v2.0 frame recorder: the raw window sums, so that an interval [a, b] inside the window is
+    # recovered exactly as the difference of two cumulative snapshots (sums are additive)
+    SUM_KEYS = (
+        "n_e", "n_i", "phi", "e_weight", "e_vr", "e_vt", "e_vz", "e_v2", "ionization", "wall_electrons", "wall_ions",
+        "wall_electron_energy_j", "wall_ion_energy_j", "exit_ions", "exit_electrons", "side_ions", "side_electrons",
+        "theta_ions", "iedf_ions",
+    )
+
+    def raw_sums(self) -> dict[str, np.ndarray]:
+        out = {key: np.asarray(getattr(self, key)).copy() for key in self.SUM_KEYS}
+        out["steps"] = np.array([self.steps], dtype=np.int64)
+        return out
+
+    @classmethod
+    def from_sums(cls, masks: MeshMasks, sums: Mapping[str, np.ndarray], iedf_max_ev: float = 450.0) -> "DiagnosticAccumulator":
+        acc = cls(masks, iedf_max_ev)
+        for key in cls.SUM_KEYS:
+            setattr(acc, key, np.asarray(sums[key], dtype=np.float64).copy())
+        acc.steps = int(np.asarray(sums["steps"]).reshape(-1)[0])
+        return acc
+
     def record_exit(self, is_electron: bool, r_m: np.ndarray, z_m: np.ndarray, energy_ev: np.ndarray) -> None:
         """Bin far-field crossings (positions after the push) into the exit histograms."""
 
@@ -672,6 +693,11 @@ class CPUBackend:
     def step_index(self) -> int:
         assert self.state is not None
         return self.state.step
+
+    @property
+    def time_s(self) -> float:
+        assert self.state is not None
+        return self.state.time_s
 
     def flush(self) -> StepTally | None:
         return self.last_tally
@@ -916,6 +942,15 @@ class CPUBackend:
 
     def diagnostic_arrays(self) -> dict[str, np.ndarray]:
         return self.diagnostics.to_arrays(self.config.macro_weight, self.config.dt_s)
+
+    def diagnostic_sums(self) -> dict[str, np.ndarray]:
+        """v2.0 frame recorder: the cumulative window sums (additive; see DiagnosticAccumulator.raw_sums)."""
+
+        return self.diagnostics.raw_sums()
+
+    def surface_charge_map(self) -> np.ndarray:
+        assert self.state is not None
+        return self.state.surface_charge_c.copy()
 
     def reset_diagnostics(self) -> None:
         self.diagnostics.reset()
@@ -1597,6 +1632,16 @@ class Simulation:
 
     def diagnostic_arrays(self) -> dict[str, np.ndarray]:
         return self.backend.diagnostic_arrays()
+
+    def diagnostic_sums(self) -> dict[str, np.ndarray]:
+        """v2.0: cumulative window sums for the frame recorder (both backends)."""
+
+        return self.backend.diagnostic_sums()
+
+    def surface_charge_map(self) -> np.ndarray:
+        """Instantaneous dielectric surface charge per node (C), without pulling the particles."""
+
+        return self.backend.surface_charge_map()
 
     def to_provenance(self) -> dict[str, Any]:
         record: dict[str, Any] = {
