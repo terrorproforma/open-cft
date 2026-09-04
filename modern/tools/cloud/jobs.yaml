@@ -212,6 +212,70 @@ jobs:
     transit_time_s: 2.4e-6
     enabled: false                # enable when a slot frees
 
+  # ---------------------------------------------------------------- (ii-d) physics effects v1 - PREREGISTERED SEE(BN) / xe_collision_set_v2 campaign (models v2.2.0 + v2.3.0, roadmap R2 + R3)
+  # modern/experiments/pic2d_physics_effects_v1/: the ss-v4 33 um protocol (90 x 720, dt 1.4 ps, W 26666.7, seed 20260903, v1.3 closure, frames ON)
+  # + numerics.see {BN preset} (see-bn), + operating_point.collision_set {xe_collision_set_v2, ion_neutral true} (xe-set-v2), or both
+  # (see-bn+xe-set-v2); the v2.0.6 accumulated-particle-step Debye floor (64 000) + K = 5; NO anomalous-transport block (alpha = 0): every case is
+  # read against the RECORDED ss-v4 plateau (0d228ad2, (b) FAIL at +2.46 % on the corrected ledger - stated). Identities d45b0f859bf6 / 7cfaa7847fb5 /
+  # 815762d7faab vs v4's f10772b2. Predeclared hypotheses (audit 4.a / 4.e): SEE -> I_d up, T_e,peak down, cusp sheath drops down (SCL flag per cusp);
+  # collision set -> I_d unchanged, exit-IEDF low-energy fraction +0.15-0.30, thrust redistributed to fast neutrals; combined -> additivity statement.
+  # Box preflight 18:25-18:43 UTC 2026-09-04 as the 5th MPS client (4 PIC clients running): 6.33 / 5.60 / 6.52 ms/step at 4.5 M particles -> 9.05 /
+  # 8.00 / 9.31 h to 3 transits, budgets 49 200 / 43 200 / 50 400 s = 1.5x; ~1.4 GB device pool each. `commit` / `--expect-commit` = the PREREG commit;
+  # `--require-mps`. Launch ORDER: AFTER the R1 queue (ext-val-v0-channel-20um-bohm-0.4 -> at-alpha-1over64 -> at-alpha-0.345): pe-see-bn -> pe-xe-set-v2
+  # -> pe-see-bn+xe-set-v2, one MPS slot each as the scheduler frees one; never a 5th client. All three stay `enabled: false` (a plain `launch` must
+  # not abort on 'no free slot' while they wait); the box's CHAINED slot-waiter (tmux `pe-queue`, tools/cloud/slot_queue.sh -> $WORK/pe-queue/queue.log)
+  # only starts calling `launch --only <id>` (which ignores `enabled`) after $WORK/r1/queue.log carries 'queue done', in that order, retrying every 10 min
+  # only on the no-free-slot refusal, never --force; flip the flag in each launch-log commit.
+  - id: pe-see-bn
+    note: >
+      pic2d_physics_effects_v1 case see-bn (model v2.2.0 SEE from the BN wall, legacy collision set): 90 x 720 at 33 um, dt 1.4 ps,
+      W 26666.7, ~4.5 M particles at the plateau, 5.14 M steps to 3 transits (2.4 us); preflight 6.33 ms/step (5th client) -> 9.05 h;
+      budget 49,200 s (13.7 h). Launch 1 of the campaign (after the R1 queue).
+    module: experiments.pic2d_physics_effects_v1.run
+    args: [launch, --case, see-bn, --expect-commit, "79a7c87a2fd1807180958f085f9dc36939488029", --require-mps]
+    gpu: auto
+    commit: 79a7c87a2fd1807180958f085f9dc36939488029
+    preregistered: true
+    protocol: modern/experiments/pic2d_physics_effects_v1/protocols/see-bn.json
+    results: modern/experiments/pic2d_physics_effects_v1/results/see-bn
+    checkout: worktree
+    gpu_memory_gib: 2
+    expected_ms_per_step: 6.3
+    transit_time_s: 2.4e-6
+    enabled: false                # launched by the pe-queue slot-waiter after the R1 queue; flip in the launch-log commit
+  - id: pe-xe-set-v2
+    note: >
+      pic2d_physics_effects_v1 case xe-set-v2 (model v2.3.0 xenon collision set v2: four excitation levels + Xe+ / Xe CEX and MEX, absorbing
+      wall); same grid / dt / W / seed; preflight 5.60 ms/step -> 8.0 h; budget 43,200 s (12.0 h). Launch 2 of the campaign.
+    module: experiments.pic2d_physics_effects_v1.run
+    args: [launch, --case, xe-set-v2, --expect-commit, "79a7c87a2fd1807180958f085f9dc36939488029", --require-mps]
+    gpu: auto
+    commit: 79a7c87a2fd1807180958f085f9dc36939488029
+    preregistered: true
+    protocol: modern/experiments/pic2d_physics_effects_v1/protocols/xe-set-v2.json
+    results: modern/experiments/pic2d_physics_effects_v1/results/xe-set-v2
+    checkout: worktree
+    gpu_memory_gib: 2
+    expected_ms_per_step: 5.6
+    transit_time_s: 2.4e-6
+    enabled: false                # launched by the pe-queue slot-waiter after pe-see-bn
+  - id: pe-see-bn+xe-set-v2
+    note: >
+      pic2d_physics_effects_v1 case see-bn+xe-set-v2 (both effects); same grid / dt / W / seed; preflight 6.52 ms/step -> 9.3 h; budget
+      50,400 s (14.0 h). Launch 3 of the campaign (the additivity statement needs both single-effect plateaus).
+    module: experiments.pic2d_physics_effects_v1.run
+    args: [launch, --case, see-bn+xe-set-v2, --expect-commit, "79a7c87a2fd1807180958f085f9dc36939488029", --require-mps]
+    gpu: auto
+    commit: 79a7c87a2fd1807180958f085f9dc36939488029
+    preregistered: true
+    protocol: modern/experiments/pic2d_physics_effects_v1/protocols/see-bn+xe-set-v2.json
+    results: modern/experiments/pic2d_physics_effects_v1/results/see-bn+xe-set-v2
+    checkout: worktree
+    gpu_memory_gib: 2
+    expected_ms_per_step: 6.5
+    transit_time_s: 2.4e-6
+    enabled: false                # launched by the pe-queue slot-waiter after pe-xe-set-v2
+
   # ---------------------------------------------------------------- (iii) PIC design mini-sweep v1 (4 primary designs) - PREREGISTERED channel-33um option
   # modern/experiments/pic2d_design_mini_sweep_v1/: the steady-state v4 template (model v1.3 closure + v2.0.3 gates), 33.33 um / 1.4 ps,
   # W = 6e4 x dr dz / (50 um)^2 (particles-per-cell parity; 26 666.7 for the reference = v4), wall budgets 1.5x the projected
