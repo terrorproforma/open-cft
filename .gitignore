@@ -193,3 +193,14 @@ modern/experiments/pic2d_cft_plume_v1/results-attempt7-wall-budget-no-plateau/se
 modern/experiments/pic2d_cft_plume_v1/results-attempt7-wall-budget-no-plateau/*.pid
 modern/experiments/pic2d_cft_plume_v1/results-attempt7-wall-budget-no-plateau/*.log
 modern/experiments/pic2d_cft_plume_v1/results-attempt7-wall-budget-no-plateau/*.err
+!modern/experiments/pic2d_cft_plume_v1/results-attempt8-grid-heating-triad-stop/
+!modern/experiments/pic2d_cft_plume_v1/results-attempt8-grid-heating-triad-stop/maps.npz
+!modern/experiments/pic2d_cft_plume_v1/results-attempt8-grid-heating-triad-stop/series.npz
+modern/experiments/pic2d_cft_plume_v1/results-attempt8-grid-heating-triad-stop/checkpoint/
+modern/experiments/pic2d_cft_plume_v1/results-attempt8-grid-heating-triad-stop/frames/
+modern/experiments/pic2d_cft_plume_v1/results-attempt8-grid-heating-triad-stop/video/
+modern/experiments/pic2d_cft_plume_v1/results-attempt8-grid-heating-triad-stop/checkpoint-final.npz*
+modern/experiments/pic2d_cft_plume_v1/results-attempt8-grid-heating-triad-stop/series.jsonl
+modern/experiments/pic2d_cft_plume_v1/results-attempt8-grid-heating-triad-stop/*.pid
+modern/experiments/pic2d_cft_plume_v1/results-attempt8-grid-heating-triad-stop/*.log
+modern/experiments/pic2d_cft_plume_v1/results-attempt8-grid-heating-triad-stop/*.err

@@ -328,6 +328,114 @@ steady-state v3 (model v1.4) is deferred until after this run (devlog).
   `pic2d-model-v2.0.json` `gates_v2_0` (v2.0.2 entry, floor/window justification, version history)
   and `protocol.json` `numerics.plume_boundary_gate` (`window_steps`, `min_accumulated_macro_particles_per_node`)
   updated; the configuration identity changes, so v2.0.2 applies to fresh starts (attempt 9+).
+* **Attempt 8 outcome (stopped 11:36 AEST 2026-09-04 by the grid-heating triad gate; finalized
+  cleanly)** — **3 320 000 steps = 4.980 µs = 1.61 transits, 166 frames, 20 611 s cumulative wall**
+  (6 168 s this session at 7.7 ms/step for +800 000 steps), `stop_reason =
+  grid_heating_triad_gate_stopped_run`: "ionisation_rate_drift 0.253 exceeds 0.25". The `3b8b577a`
+  finalizer worked (two `null` GPU samples in the summary, no `finalization_error`; `run_state`
+  finished = true). Triad at the stop (trailing 20 % = 3.98–4.98 µs): **S drift +0.253 (hard limit
+  0.25 — the member that tripped)**, T_e,dense +0.155 (soft fail, hard 0.25), ω_pe Δt +0.048,
+  cumulative energy residual / electrode work **+0.0857 (limit 0.10; rising 0.005 per 60 ns →
+  would have tripped at ≈ 5.15 µs)**. Trajectory of the S drift at the 40 000-step checkpoints:
+  +0.155 at the resume (3.78 µs), a dip to +0.131 at 4.14 µs, then monotonic +0.133 (4.20) → 0.171
+  (4.50) → 0.210 (4.74) → 0.253 (4.98 µs); T_e,dense drift −0.02 at 4.2 µs → +0.155.
+  **Diagnosis — numerical runaway (finite-grid heating), not a discharge approaching a denser
+  plateau.** The energy ledger's residual (`ΔE_total − accounted sources`; positive = energy the
+  scheme created) per 0.4 µs segment, as a fraction of the electrode work in the segment: −7.6 %
+  (0.4–0.8 µs) … −0.5 % (2.0–2.4) → **+2.4 % (2.4–2.8) → +5.8 → +11.3 → +15.3 → +23.5 → +37.0 →
+  +54.8 % (4.8–5.0 µs)**; residual power −9 → +45 → +110 → +203 → +258 → +384 → +545 → **+719 mW**
+  against 1.37–1.55 W of electrode power. Attempt 8 alone: +0.558 µJ on 1.844 µJ = **30 %** (attempt
+  7 cumulative: +0.081 µJ on 5.61 µJ = 1.4 % — the cumulative ratio lagged the segment ratio by
+  ~1 µs, which is why the +1.44 % at 3.78 µs looked healthy). Power budget of the last 0.4 µs:
+  electrode +1373 mW, accounted physical sources net **−615 mW** (wall + inelastic losses exceed the
+  electrode input), residual **+646 mW**, dE_total +30 mW → **47 % of the discharge's energy budget
+  was grid heating.** The sign change sits at 2.0–2.4 µs, exactly when the peak-node Δ/λ_D crossed
+  ≈ 3.2 (2.96 → 3.23 → 3.37 → 3.58 → 3.66–3.75 in the following segments), i.e. the Birdsall–Langdon
+  CIC finite-grid-instability threshold Δx/λ_D ≈ π; the accepted channel-only base plateau
+  (`pic2d_cft_steady_state_v2/results`, 3.2 transits) sat at Δ/λ_D = 3.17 at its peak (1.64e18 m⁻³,
+  T_e 7.4 eV, node (14, 286)) with a residual that stayed negative and closed to +0.4 % (last 0.4 µs:
+  electrode 1034 mW, residual +4 mW). **The declared 4.5 gate is therefore not protective; the two
+  runs bracket the heating onset at Δ/λ_D ≈ 3.2 at the peak.** Corroborating signatures over 3.78 →
+  4.98 µs (0.2 µs block means): T_e,dense 9.3 → 10.4 eV (+15.5 %), T_e at the peak 10.2 → 11.4 eV,
+  mean electron energy K_e/N_e 13.3 → 14.3 eV **while the electrode power fell 22 % (I_d 5.58 →
+  4.40 mA)**; the specific ionisation rate S/N_e stayed constant (3.77e10 s⁻¹ per macro-electron)
+  while S/(N_e n_g) rose 20 % — hotter electrons, not more neutrals (n_g fell 17 %). Trajectories:
+  N_e 2.51 → 3.13 M, N_i 2.53 → 3.17 M (+22 %/window, unchanged rate); I_d 5.58 → 4.40 mA (−30 %);
+  I_beam 1.06 → 1.46 mA (+30 %); **S 9.3 → 11.8e16 s⁻¹ (+25 %, accelerating)**; n_g 2.54 → 2.14e19
+  tracking its fixed point within 1 % (the 30 ns relaxation is not lagging — the fixed point itself
+  slides down as S runs up: gross utilisation 1.02 → 1.31 > 1, sustained only by wall-ion recycling
+  4.3 → 6.2e16 s⁻¹ = 73 % of the feed; effusion 4.1 → 3.5e16); peak n_e 3.08 → 3.54e18 at node
+  (13–14, 286–290) = r 0.65–0.70 mm, z 14.3–14.5 mm (between cusps 2 and 3, the same node as the
+  base plateau's peak at 2.1× its density; 98.2 % of the 4001 records; the other 72 put the argmax
+  at z 20.6–21.2 mm, r 0.55–0.65 mm, and those carry every Δ/λ_D > 4.0 reading, max 4.28); Δ/λ_D
+  3.70 → 3.75 at the z ≈ 14.4 mm peak (gate 4.5), ω_pe Δt 0.157 → 0.161 (max 0.184; gate 0.2), λ_D at
+  the peak 12.9–13.4 µm. Nothing flattens: I_d, S, n_g and N_e all drift faster than in attempt 7.
+  **No plateau criterion was met** (1.61 of 3 transits; trailing drifts I_d −29.8 %, N_e +21.9 %,
+  n_g −22.2 %; S +25.3 %, T_total +13.8 %, I_beam +30 %). **Usability: the v2.0.x results carry grid
+  heating from ≈ 2.4 µs, above 10 % of the electrode power from ≈ 3.2 µs; nothing after the trip —
+  and none of the attempt-8 trailing window — is usable for thrust; the attempt-7 development window
+  (3.0–3.6 µs, residual 6–15 % of the power) is contaminated at the 10 % level and stays
+  non-quotable.** **Why the plume-domain discharge runs at ~6 mA where the channel-only plateau
+  gave 3.44 mA:** the data support the cathode closure, not the neutral inventory or the anode
+  fall. The base run injected a fixed 3.00 mA at the exit plane of which 1.84 mA left again through
+  that plane (net 1.16 mA into the channel); the v2.0 cathode emits the discharge current itself
+  (continuity rule, 4.4–6.3 mA) on the channel flux tube, so the electron supply is uncapped and
+  4–5× larger, N_e 1.5–3.1 M vs 1.0 M, S 6.6–12e16 vs 3.9e16 s⁻¹. Before the heating onset (2.0–2.4
+  µs, residual −0.5 %) I_d was already 6.0 mA with S 6.6e16 (1.7× base) and N_e 1.46 M, so the ~6 mA
+  level is physical and belongs to the closure; n_g was lower, not higher (2.8e19 then, 2.1–2.5e19
+  later, vs 2.97e19) and φ_max − U_a is +25 V here vs +40 V in the base run (both runs carry a
+  potential hump above the anode; no evidence that a lower anode fall drives the difference). The S
+  rise beyond ≈ 7e16 s⁻¹ from 2.4 µs on is partly heating-fed.
+  **Development thrust / plume numbers (trailing 20 %, mean ± block SE; NOT usable, see above)**:
+  T_flux 23.3 ± 0.3 µN + cold gas 1.47 → T_total 24.8 ± 0.3 µN (+13.8 %/window; window maps 4.38–
+  4.98 µs: 25.4 µN); −F_on_thruster 17.1 ± 0.4 µN → **closure +0.24 (window +0.28; attempt 7:
+  −0.08)** — the momentum balance no longer closes (stored-momentum rate −6.8 µN, far-field
+  electrostatic force −2.2 µN); Maxwell-stress force on the solids 1.5 µN; I_beam 1.29 ± 0.03 mA
+  (+30 %; 1.278 mA through z = 36 mm, 0.083 mA through r = 12 mm; 85 002 crossings in the window);
+  IEDF mean 143 eV, peak 101 eV, 10/50/90 % 70/117/271 eV (attempt 7: 184/133; 119/168/289 —
+  slower); half-angles 50/90/95 % = 8°/23°/55°; Isp 139 s; anode efficiency 1.2 % at 1.43 W;
+  φ_exit(axis) 72 ± 1 V (−18 %); acceleration 90 → 10 % z = 4.5 → 35.9 mm; axis n_i 9.6e17 at the
+  exit → 1.6e18 at z 26.9 mm → 50 % at 33.65 mm → **26 % of the exit value at the far plane**
+  (attempt 7: 14.6 % — the box keeps filling; 10 %/1 % contours still outside). Window far-field
+  max |n_i − n_e| / peak = 0.076 over 122 resolved nodes (v2.0.2 statistic computed offline from
+  `maps.npz`; the run's v2.0.1 gate stayed inert: 0 resolved nodes in every record, raw max 0.64).
+  Record: `results-attempt8-grid-heating-triad-stop/` (copy of `results/`; tracked: summary,
+  run_state, maps/series npz, checkpoint-final.json, status.jsonl + sidecars); video (renderer
+  v0.2, `--cusps 0.006028 0.012 0.017972`, auto K = 10 frames = 300 ns, median resolved node 38.5
+  events, 6.5 % of the plasma nodes resolved carrying 73 % of S, 88 % in the last frame) in its
+  `video/`: `pic2d-results-attempt8-grid-heating-triad-stop-{n_e_per_m3,n_i_per_m3,phi_v,t_e_ev,
+  ionization_rate_per_m3_s}.mp4` + `…-timeseries.html` (untracked).
+  **Resolution decision (v2.1 NOT launched).** From the attempt-8 peak (max record n 3.69e18, T_e
+  11.1 eV → λ_D 12.9 µm, ω_pe 1.08e11 s⁻¹; trailing mean 3.33e18 / 10.9 eV → 13.4 µm): the declared
+  gate with a 20 % margin (Δ/λ_D ≤ 3.6) only asks Δ ≤ 46 µm — the run already heats at 3.4–3.8, so
+  the gate must move to the CIC threshold, Δ/λ_D ≤ π; with 20 % margin (≤ 2.51) **Δ ≤ 32.4 µm**
+  (33.7 at the trailing mean); Δ ≤ λ_D would need 12.9 µm. ω_pe Δt ≤ 0.16 (20 % under 0.2) needs
+  **Δt ≤ 1.48 ps** (1.5 ps gives 0.163 at the max record — marginal; 1.4 ps → 0.152; ω_ce Δt 0.186 →
+  0.174; electron Courant 0.36 → 0.53 at 33 µm). Cost with the v2.1 spec model (ms/step = fixed(grid)
+  + 0.733 ms per M particles, fixed = 2(n_r+1) launches × 5 µs + inverse-block reads at 1.6 TB/s +
+  node kernels; reproduces the 8.2 / 7.08 ms anchors to 1 %; particles × (50 µm/Δ)² at fixed
+  particles per cell from the attempt-8 end load 6.43 M; 3 transits; GPU ≈ 5.4 GB + blocks + 0.35
+  GB/M particles): v2.1 48 × 12 mm at 50 µm 9.7 ms/step → 20.5 h, 9.5 GB (heats); **at 40 µm
+  (Δ/λ_D 3.10 = π, no margin) 300 × 1200, 15.2 ms → 32.2 h, 3.5 GB of blocks, 12.5 GB; at 33.3 µm
+  (Δ/λ_D 2.59) 360 × 1440, 22.4 ms/step → 47.5 h (50.9 h at Δt 1.4 ps), 6.0 GB of blocks, ~61 min
+  factorisation, 16.6 GB GPU; at 25 µm (1.94) 480 × 1920, 42.7 ms → 90 h, 14.2 GB of blocks, 28.8
+  GB GPU.** v2.0 36 × 12 at 33.3 µm: 18.8 ms → 32.4 h, 13.8 GB. Channel-only 3 × 24 mm (5.1 M
+  particles assumed) at 33.3 µm: 90 × 720, 9.8 ms → 13.1 h (14.0 h at 1.4 ps), 9.8 GB; at 25 µm
+  17.3 ms → 23.1 h, 13.4 GB. Options: (a) smaller Δt alone does not touch Δ/λ_D (ω_pe Δt is within
+  its gate); (b) Δ = 33 µm is the resolved choice, Δ = 40 µm has no margin; (c) lower W changes
+  statistics only: the finite-grid instability is a property of the grid aliasing, not of the
+  particle count (more particles per cell reduce only the shot-noise part of the heating); (d) an implicit or energy-conserving scheme is **not available** in this code (explicit
+  Boris + momentum-conserving bilinear deposit only); (e) a lower operating point keeps the 50 µm
+  grid inside the threshold if the peak density stays ≤ 1.4e18 m⁻³ at T_e 10 eV (Δ/λ_D ≤ 2.51),
+  e.g. a current-limited cathode (clamp the continuity rule at ~3 mA like the base injection) or a
+  lower mass flow — a physical trade, not the v2/v3 operating point. **Every combined (v2.1 domain +
+  resolved Δ) option exceeds the 30 h budget, so nothing was launched.** Recommendation: first
+  recalibrate the peak-Debye gate (hard Δ/λ_D ≤ π, soft 2.5) and add a windowed residual-power gate
+  (segment residual ≥ 5 % of the electrode work over the trailing window → stop; the cumulative
+  ratio lags by ~1 µs); then run the cheapest resolved case — the channel-only box at 33 µm / 1.4 ps
+  (≈ 6–14 h depending on the particle load) as the grid-refinement check of the accepted 3.44 mA
+  plateau — or the plume box at 50 µm at a lower operating point (option e), whose peak density
+  must be verified against the recalibrated gate before any thrust number is read.
 
 ## Time-series frames and video
 
