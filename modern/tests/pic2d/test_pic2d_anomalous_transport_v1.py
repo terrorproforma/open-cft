@@ -9,13 +9,18 @@
 * the per-case assessment classifies synthetic outcomes (plateau_clean / plateau_heating / no_plateau) with the shift table and the
   per-cusp report; the series assessment yields trend_confirmed / trend_not_confirmed / inconclusive by the predeclared rule;
 * the launch discipline (lock, dirty worktree, wrong commit, drifted protocol, --require-mps);
-* a tiny CPU end-to-end run of a shrunk case through the shared runner -> finalize -> assess (the hook is live in the runner path).
+* a tiny CPU end-to-end run of a shrunk case through the shared runner -> finalize -> assess (the hook is live in the runner path);
+* AMENDMENT 1 (2026-09-05): the model v2.1.1 drift-member arming latch + the v2.0 ignition gate in every sealed case (identities unchanged),
+  the amendment's genealogy (pre-amendment sealed hashes = the blobs at the preregistration commit 057841cf), and - once the alpha-1over16
+  launch-1 record is checked out - the amended gates' reading of that extinguished run (ignition gate fails at 1.0 us; the latch never arms).
 """
 
 from __future__ import annotations
 
 import copy
+import hashlib
 import json
+import subprocess
 from math import pi
 from pathlib import Path
 
@@ -59,8 +64,16 @@ def test_case_protocols_are_the_v4_template_with_exactly_the_declared_changes():
         stop, v4stop = p["stopping_rule"], v4["stopping_rule"]
         for key in ("plateau", "plateau_threshold", "plateau_window_fraction", "min_transit_times", "ignition_check"):
             assert stop[key] == v4stop[key], key
-        triad = {k: v for k, v in stop["grid_heating_triad"].items() if k != "note"}
+        # amendment 1: the triad block is v4's plus the v2.1.1 arming latch; the v2.0 ignition gate is declared beside it (both outside config_sha256)
+        triad = {k: v for k, v in stop["grid_heating_triad"].items() if k not in ("note", "drift_members_arming")}
         assert triad == {k: v for k, v in v4stop["grid_heating_triad"].items() if k != "note"}
+        assert stop["grid_heating_triad"]["enforced_after_transit_times"] == 1.0 and "SUPERSEDED by drift_members_arming" in stop["grid_heating_triad"]["note"]
+        assert stop["grid_heating_triad"]["drift_members_arming"] == pm.DRIFT_MEMBERS_ARMING and stop["ignition_gate"] == pm.IGNITION_GATE
+        arming = stop["grid_heating_triad"]["drift_members_arming"]
+        assert (arming["min_transit_times"], arming["settle_quantity"], arming["settle_drift_max"]) == (2.0, "discharge_current", stop["plateau_threshold"])
+        assert arming["settle_check_cadence_steps"] == num["checkpoint_every_steps"] == 40_000
+        assert [c["time_s"] for c in stop["ignition_gate"]["checks"]] == [1.0e-6, 2.0e-6] and "ignition_gate" not in v4stop
+        assert "AMENDMENT 1" in stop["fail_closed"] and any(change.startswith("AMENDMENT 1") for change in p["campaign"]["changes"])
         config = runner.build_config(p, backend="warp-cuda")
         assert config.anomalous == AnomalousCollisionConfig(meta["alpha"], model=ANOMALOUS_MODEL_ROTATION) and config.moment_sample_interval == 5
         assert config.peak_debye_gate.min_accumulated_macro_particle_steps_at_peak == 64000 and config.peak_debye_gate.max_cells_per_debye == pi
@@ -88,13 +101,90 @@ def test_sealed_files_equal_their_recomposition_and_the_campaign_hashes(monkeypa
         assert on_disk == canonical_bytes(sealed) + b"\n" and campaign["sealed_protocols"][key] == pm.protocol_sha256(sealed)
     assert campaign["design"]["closure"]["series"] == {"alpha-1over64": 1 / 64, "alpha-1over16": 1 / 16, "alpha-0.345": 0.345, "alpha-0": 0.0}
     assert campaign["design"]["closure"]["d_perp_over_kt_e_by_eb"]["alpha-0.345"] == pytest.approx(0.345 / (1 + 0.345**2))
-    assert campaign["amendments"] == [] and campaign["acceptance"] == pm.load_case_protocol("alpha-1over16")["stopping_rule"]["acceptance"]
+    assert campaign["amendments"] == pm.AMENDMENTS and campaign["acceptance"] == pm.load_case_protocol("alpha-1over16")["stopping_rule"]["acceptance"]
+    amendment = campaign["amendments"][0]
+    assert amendment["id"] == 1 and amendment["pre_amendment_sealed_sha256"] == pm.PRE_AMENDMENT_SEALED_SHA256
+    assert set(amendment["pre_amendment_sealed_sha256"]) == set(pm.CASES) and all(len(v) == 64 for v in amendment["pre_amendment_sealed_sha256"].values())
+    # the amendment re-sealed every case: no sealed hash equals its pre-amendment value, and the change list names both new stopping-rule keys
+    for case in pm.CASES:
+        assert campaign["sealed_protocols"][f"modern/experiments/pic2d_anomalous_transport_v1/protocols/{case}.json"] != pm.PRE_AMENDMENT_SEALED_SHA256[case]
+    assert any("drift_members_arming" in c for c in amendment["changes"]) and any("ignition_gate" in c for c in amendment["changes"])
+    assert "NOT relaunched" in amendment["launch_1_disposition"]
     # a tampered sealed file is refused (fail closed) - via a copy, never touching the tracked file
     tampered = copy.deepcopy(pm.load_case_protocol("alpha-1over16"))
     tampered["numerics"]["anomalous_collisions"]["alpha"] = 0.07
     monkeypatch.setattr(at, "load_case_protocol", lambda case: tampered)
     with pytest.raises(PIC2DValidationError, match="differs from its recomposition"):
         at.verify_sealed("alpha-1over16")
+
+
+PREREG_COMMIT = "057841cfcd72d24d09608143319079fc9f750e99"
+LAUNCH1_RESULTS = pm.HERE / "results" / "alpha-1over16"
+
+
+def _git_blob_sha256(commit: str, path: str) -> str | None:
+    try:
+        out = subprocess.run(["git", "show", f"{commit}:{path}"], capture_output=True, cwd=pm.MODERN, check=False)
+    except OSError:
+        return None
+    return hashlib.sha256(out.stdout).hexdigest() if out.returncode == 0 else None
+
+
+def test_amendment_1_genealogy_binds_the_pre_amendment_seals_to_the_preregistration_commit():
+    campaign = pm.load_campaign()
+    amendment = campaign["amendments"][0]
+    assert amendment["preregistration_commit"] == PREREG_COMMIT[:8]
+    seen = 0
+    for case, recorded in pm.PRE_AMENDMENT_SEALED_SHA256.items():
+        blob = _git_blob_sha256(PREREG_COMMIT, f"modern/experiments/pic2d_anomalous_transport_v1/protocols/{case}.json")
+        if blob is None:
+            continue
+        seen += 1
+        assert blob == recorded, case            # the recorded genealogy IS the sealed file at 057841cf
+    if seen == 0:
+        pytest.skip("preregistration commit not reachable in this checkout")
+    # the launch-1 record (if checked out) was executed under the pre-amendment 1/16 seal
+    if (LAUNCH1_RESULTS / "summary.json").is_file():
+        summary = json.loads((LAUNCH1_RESULTS / "summary.json").read_text(encoding="utf-8"))
+        assert summary["protocol_sha256"] == pm.PRE_AMENDMENT_SEALED_SHA256["alpha-1over16"]
+        assert summary["stop_reason"] == "grid_heating_triad_gate_stopped_run" and summary["git_head"].startswith(PREREG_COMMIT[:12])
+
+
+@pytest.mark.skipif(not (LAUNCH1_RESULTS / "series.npz").is_file(), reason="alpha-1over16 launch-1 record not checked out")
+def test_amended_gates_read_the_extinguished_launch_1_as_no_ignition_and_never_arm_the_drift_members():
+    """The recorded 1/16 launch (stopped at 1.0033 transits by the S / T_e,dense drift members): under the amended protocol the ignition
+    gate stops it at the first checkpoint past 1.0 us on N_e (0.45 < 0.6), the latch never closes (I_d drift -0.5 ... -0.7), the residual
+    member never fires (+1.15 % at the stop) - the record's own numbers, re-read with the amended rule."""
+
+    protocol = pm.load_case_protocol("alpha-1over16")
+    rule = protocol["stopping_rule"]
+    series = np.load(LAUNCH1_RESULTS / "series.npz")
+    arrays = {key: np.asarray(series[key], dtype=np.float64) for key in series.files}
+    transit = float(runner.protocol_budget(protocol)["ion_transit_time_s"])
+    assert arrays["step"][-1] == 1_720_000 and arrays["time_s"][-1] == pytest.approx(2.408e-6, rel=1e-6)
+    # ignition gate at the checkpoints: passes nothing after 1.0 us
+    first_fail = None
+    for n in range(1, arrays["step"].size + 1):
+        if int(arrays["step"][n - 1]) % 40_000 != 0:
+            continue
+        ignition = runner.evaluate_ignition({k: v[:n] for k, v in arrays.items()}, rule)
+        if ignition["failed"]:
+            first_fail = (float(arrays["time_s"][n - 1]), ignition)
+            break
+    assert first_fail is not None
+    t_stop, ignition = first_fail
+    assert 1.0e-6 <= t_stop <= 1.06e-6 and ignition["checks"][0]["electron_ratio"] < 0.6 and "no ignition" in ignition["reason"]
+    # the amended triad at the recorded stop: unarmed drift members (no latch), the same drift readings, no residual failure
+    triad = runner.evaluate_triad(arrays, rule, transit)
+    arming = triad["drift_members_arming"]
+    assert arming["latched"] is False and arming["armed"] is False and arming["current_settle_drift"] < -0.4
+    assert triad["ionisation_rate_drift"] == pytest.approx(-0.618, abs=0.002) and triad["t_e_dense_drift"] == pytest.approx(0.366, abs=0.002)
+    assert triad["hard_failures"] == [] and 0.0 < triad["windowed_energy_residual_over_electrode_work"] < 0.02
+    # under the recorded (pre-amendment) rule the same series trips both drift members at this record - the recorded stop reproduced
+    legacy = copy.deepcopy(rule)
+    del legacy["grid_heating_triad"]["drift_members_arming"]
+    recorded = runner.evaluate_triad(arrays, legacy, transit)
+    assert recorded["enforced"] is True and len(recorded["hard_failures"]) == 2 and all("drift" in f for f in recorded["hard_failures"])
 
 
 @pytest.mark.skipif(not V4_HAS_RESULTS, reason="ss-v4 artifacts not checked out")
