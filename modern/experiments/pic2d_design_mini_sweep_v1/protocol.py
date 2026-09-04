@@ -268,6 +268,7 @@ def build_protocol(design_id: str, domain: str, *, built: BuiltDesign | None = N
     if dt_s is not None:
         protocol["numerics"]["dt_s"] = float(dt_s)
     budget_keys = [key for key in protocol if key.startswith("budget")]
+    template_budget = protocol[budget_keys[0]] if budget_keys else {}
     for key in budget_keys + ["field_authority", "field_plume_extension", "lineage", "v2_reference", "validation_v1_observable", "reference_run", "preregistration"]:
         protocol.pop(key, None)
     protocol["schema_version"] = "cft.pic2d.design-mini-sweep.run-protocol/1.0.0" if preregistered else "cft.pic2d.design-mini-sweep.run-protocol/0.1.0-draft"
@@ -389,6 +390,12 @@ def build_protocol(design_id: str, domain: str, *, built: BuiltDesign | None = N
     else:
         rule["plateau"] = rule["plateau"].split(";")[0] + f"; may only be declared after >= 3 ion transit times (3 x {transit_s*1e6:.2f} us); the grid-heating triad must be inside its soft bounds"
     protocol["budget_design_mini_sweep"] = {
+        # the runner's summary.budget_check reads these two from the (single) budget block: the template's a-priori design ceiling
+        # (= numerics.stability_reference density, the same for every design) and the reference's projected equilibrium density
+        "n_max_per_m3": float(template_budget.get("n_max_per_m3", protocol["numerics"]["stability_reference"]["density_per_m3"])),
+        "n_eq_projected_per_m3": float(template_budget.get("n_eq_projected_per_m3", protocol["numerics"]["stability_reference"]["density_per_m3"])),
+        "n_max_note": "template values (reference design): n_max = the a-priori design ceiling used by the stability reference; n_eq_projected = the reference's "
+                      "projected fixed-point density; for the other designs they are the REFERENCE numbers the ratios in summary.budget_check are formed against",
         "ion_transit_time_s": transit_s,
         "ion_transit_note": "2.4 us x L_channel / 24 mm (measured reference residence scaled with the channel length) + L_plume / 17 km/s; replaced by the measured N_i / L residence at the first checkpoint past 1 us when the run reports it",
         "particles_projected_m": cost["particles_projected_m"], "ms_per_step_projected": cost["ms_per_step"], "ms_per_step_rtx5090_model": cost["ms_per_step_rtx5090_model"],
