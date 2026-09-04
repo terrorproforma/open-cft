@@ -172,8 +172,15 @@ peak as a witness; `simulation.py` / `warp_backend.py` changed (one reduction sl
 physics untouched. The branch is linear, so the launch commit contains it; the protocol's declared
 gates are unchanged (v2.0.3 window-mode peak-Debye + windowed residual-power), the configuration
 identity is unchanged, and launch 1 had read the raw statistic at 0.06–0.08 anyway. So that the
-shakedown exercises the code the execution runs, the H100 shakedown was **re-run at the launch
-commit** and `shakedown.json` replaced again (numbers in the launch log below and in the record).
+shakedown exercises the code the execution runs, the H100 shakedown was **re-run at `4d32e89c`**
+(12:03–12:16 UTC, again beside the three sweep runs and a transient ext-val client) and
+`shakedown.json` replaced: 100 000 steps, 800 s, **7.92 ms/step**, 50 frames, peak window enforced
+301/500 (max 0.39), residual window complete 280 (−11.7 %), `no_plateau`, reference consistency
+7/7 + 7/7, `v1_4_options.omega_pe_dt_gate = {statistic: resolved_node_single_step_peak,
+min_macro_particles: 32, limit: 0.2}` recorded. Final counts 982 052 e⁻ / 1 072 788 Xe⁺ — **bitwise
+the a529b457 shakedown's** (same box, v2.0.4 physics untouched); only the float-atomic window
+maximum differs in its last digit (0.39050975731513027 vs …301), the MPS/solo pattern already seen
+in the mini-sweep replay.
 
 ## Commands (from `modern/`)
 
