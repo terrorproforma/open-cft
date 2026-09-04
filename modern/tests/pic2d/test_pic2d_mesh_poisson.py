@@ -124,8 +124,13 @@ def test_discrete_gauss_law_with_volume_and_surface_charge():
     anode, exit_plane = induced_electrode_charge_c(masks, phi)
     total = float(source.sum())
     assert anode + exit_plane == pytest.approx(-total, rel=1e-9)
-    # A phi reproduces the source on every unknown node
-    assert np.allclose(apply_operator(masks, phi)[masks.unknown_node], source[masks.unknown_node], rtol=1e-9, atol=1e-30)
+    # A phi reproduces the source on every unknown node. The residual is round-off of the direct solve, so
+    # the bound is scale-aware: 1e-9 of the largest source entry, not 1e-9 of each entry (a node whose source
+    # is 700x smaller than the peak sits at ~1e-9 relative on Linux/OpenBLAS-Haswell while the absolute
+    # residual is 5e-27; the per-entry form passed on Windows only because of summation order).
+    unknown_source = source[masks.unknown_node]
+    residual = apply_operator(masks, phi)[masks.unknown_node] - unknown_source
+    assert np.abs(residual).max() <= 1e-9 * np.abs(unknown_source).max()
     assert field_energy_j(masks, phi) > 0.0
 
 
