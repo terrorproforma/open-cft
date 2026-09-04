@@ -406,14 +406,15 @@ def test_see_off_reproduces_the_v2_0_6_identity_ledger_and_tallies():
         assert {key: int(c[key]) for key in tallies} == tallies, backend
         assert sorted(c) == sorted(empty_cumulative()) + ["anomalous"] or sorted(c) == sorted([*empty_cumulative(), "anomalous"])
     # the seed streams of MCC / injection / anomalous scattering / ion-neutral MCC (columns 0-3) are unchanged by the SEE
-    # column (4 = stream id 5): the table row is read per column, so a wider row leaves every earlier column's seeds as they were
+    # column (4 = stream id 5) and the v2.4.0 Coulomb column (5 = stream id 6): the table row is read per column, so a wider
+    # row leaves every earlier column's seeds as they were
     try:
         from cft_revival.pic2d.warp_backend import SEED_STREAM_IDS, SEED_STREAMS, stream_seed
         from cft_revival.pic2d.warp_see import SEE_STREAM
     except ImportError:  # pragma: no cover
         return
-    assert SEED_STREAMS == 5 and SEED_STREAM_IDS == (1, 2, 3, 4, 5) and SEE_STREAM == 4
-    assert len({stream_seed(3, 17, s) for s in SEED_STREAM_IDS}) == 5
+    assert SEED_STREAMS == 6 and SEED_STREAM_IDS == (1, 2, 3, 4, 5, 6) and SEE_STREAM == 4
+    assert len({stream_seed(3, 17, s) for s in SEED_STREAM_IDS}) == 6
 
 
 # -- Warp: graph bitwise with SEE on; parity with the numpy reference ---------------------------------------------------------

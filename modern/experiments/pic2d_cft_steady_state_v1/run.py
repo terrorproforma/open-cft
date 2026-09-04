@@ -65,6 +65,7 @@ from cft_revival.pic2d.models import (
     PoissonConfig2D,
     StabilityLimits,
 )
+from cft_revival.pic2d.coulomb import CoulombConfig
 from cft_revival.pic2d.neutrals import NEUTRAL_LEDGER_KEYS, NeutralInventoryConfig
 from cft_revival.pic2d.see import SEEConfig
 from cft_revival.pic2d.sensitivity import AnomalousCollisionConfig
@@ -110,6 +111,15 @@ MOMENTUM_OPTIONAL_SCALARS_V23 = (
     "ion_collision_momentum_rate_n", "fast_neutral_exit_momentum_rate_n", "fast_neutral_wall_momentum_rate_n", "gas_momentum_rate_n",
     "fast_neutral_thrust_n", "fast_neutral_exit_power_w",
 )
+# v2.4.0 (coulomb_v1): the relativistic pair-energy tally of the Coulomb operator per interval (~0; absent -> NaN) and the
+# Coulomb sample (records with the operator on only; see Simulation._coulomb_record)
+LEDGER_SCALARS_V24 = ("interval_coulomb_ke_j",)
+COULOMB_SCALARS = (
+    "nu_ee_mean_per_s", "nu_ei_mean_per_s", "nu_ii_mean_per_s", "mean_s_ee", "mean_s_ei", "mean_s_ii", "fraction_large_s_ee",
+    "fraction_large_s_ei", "mean_coulomb_log_ee", "mean_coulomb_log_ei", "interval_ee_pairs", "interval_ei_pairs", "interval_ii_pairs",
+    "interval_cycles", "interval_pz_coulomb_kg_m_s", "interval_ke_coulomb_j", "nu_en_elastic_mean_per_s", "nu_ee_over_nu_en",
+)
+MOMENTUM_OPTIONAL_SCALARS_V24 = ("coulomb_momentum_rate_n",)
 # v2.2.0 SEE sample (records of an emitting wall only; see Simulation._see_record)
 SEE_SCALARS = (
     "interval_impacts", "interval_emitted", "interval_ion_induced_emitted", "interval_effective_yield", "interval_mean_yield",
@@ -293,6 +303,11 @@ def build_config(protocol: dict[str, Any], *, backend: str = "warp-cuda") -> PIC
     see = None
     if numerics.get("see") is not None:
         see = SEEConfig(**{k: v for k, v in numerics["see"].items() if not k.endswith("_note")})
+    # v2.4.0: Coulomb collisions (numerics.coulomb = CoulombConfig fields; absent = collisionless charged species and an
+    # unchanged config identity)
+    coulomb = None
+    if numerics.get("coulomb") is not None:
+        coulomb = CoulombConfig(**{k: v for k, v in numerics["coulomb"].items() if not k.endswith("_note")})
     # v2.0: a cathode emission region in the plume replaces the exit-plane injection (kept as the legacy option)
     cathode = None
     injection = None
@@ -337,6 +352,7 @@ def build_config(protocol: dict[str, Any], *, backend: str = "warp-cuda") -> PIC
         peak_debye_gate=peak_gate,
         anomalous=anomalous,
         see=see,
+        coulomb=coulomb,
         moment_sample_interval=moment_sample_interval,
     )
 
@@ -669,7 +685,7 @@ def evaluate_peak_debye_window(arrays: dict[str, np.ndarray], config: PIC2DConfi
 # -- records ----------------------------------------------------------------
 
 def records_to_arrays(records: list[dict[str, Any]]) -> dict[str, np.ndarray]:
-    arrays: dict[str, list[float]] = {key: [] for key in SERIES_SCALARS + LEDGER_SCALARS + LEDGER_SCALARS_V206 + LEDGER_SCALARS_V23}
+    arrays: dict[str, list[float]] = {key: [] for key in SERIES_SCALARS + LEDGER_SCALARS + LEDGER_SCALARS_V206 + LEDGER_SCALARS_V23 + LEDGER_SCALARS_V24}
     current_keys = sorted(records[0]["currents_a"]) if records else []
     for key in current_keys:
         arrays[f"current_{key}"] = []
@@ -690,7 +706,7 @@ def records_to_arrays(records: list[dict[str, Any]]) -> dict[str, np.ndarray]:
     with_momentum = bool(records) and records[0].get("momentum") is not None
     with_plume = bool(records) and records[0].get("plume") is not None
     if with_momentum:
-        for key in MOMENTUM_SCALARS + MOMENTUM_OPTIONAL_SCALARS + MOMENTUM_OPTIONAL_SCALARS_V23:
+        for key in MOMENTUM_SCALARS + MOMENTUM_OPTIONAL_SCALARS + MOMENTUM_OPTIONAL_SCALARS_V23 + MOMENTUM_OPTIONAL_SCALARS_V24:
             arrays[f"momentum_{key}"] = []
     if with_plume:
         for key in PLUME_SCALARS:
@@ -699,12 +715,16 @@ def records_to_arrays(records: list[dict[str, Any]]) -> dict[str, np.ndarray]:
     if with_see:
         for key in SEE_SCALARS:
             arrays[f"see_{key}"] = []
+    with_coulomb = bool(records) and records[0].get("coulomb") is not None     # v2.4.0: Coulomb operator on
+    if with_coulomb:
+        for key in COULOMB_SCALARS:
+            arrays[f"coulomb_{key}"] = []
     for record in records:
         for key in SERIES_SCALARS:
             arrays[key].append(float(record[key]))
         for key in LEDGER_SCALARS:
             arrays[key].append(float(record["ledger"][key]))
-        for key in LEDGER_SCALARS_V206 + LEDGER_SCALARS_V23:
+        for key in LEDGER_SCALARS_V206 + LEDGER_SCALARS_V23 + LEDGER_SCALARS_V24:
             arrays[key].append(float(record["ledger"].get(key, float("nan"))))
         for key in current_keys:
             arrays[f"current_{key}"].append(float(record["currents_a"][key]))
@@ -731,7 +751,7 @@ def records_to_arrays(records: list[dict[str, Any]]) -> dict[str, np.ndarray]:
             momentum = record["momentum"]
             for key in MOMENTUM_SCALARS:
                 arrays[f"momentum_{key}"].append(float(momentum[key]))
-            for key in MOMENTUM_OPTIONAL_SCALARS + MOMENTUM_OPTIONAL_SCALARS_V23:   # continuity-rule cathode / v2.3.0 ion MCC only
+            for key in MOMENTUM_OPTIONAL_SCALARS + MOMENTUM_OPTIONAL_SCALARS_V23 + MOMENTUM_OPTIONAL_SCALARS_V24:   # cathode / ion MCC / Coulomb only
                 value = momentum.get(key)
                 arrays[f"momentum_{key}"].append(float("nan") if value is None else float(value))
         if with_plume:
@@ -744,6 +764,11 @@ def records_to_arrays(records: list[dict[str, Any]]) -> dict[str, np.ndarray]:
             for key in SEE_SCALARS:
                 value = see.get(key)
                 arrays[f"see_{key}"].append(float("nan") if value is None else float(value))
+        if with_coulomb:
+            coulomb = record.get("coulomb") or {}
+            for key in COULOMB_SCALARS:
+                value = coulomb.get(key)
+                arrays[f"coulomb_{key}"].append(float("nan") if value is None else float(value))
     return {key: np.asarray(values, dtype=np.float64) for key, values in arrays.items()}
 
 

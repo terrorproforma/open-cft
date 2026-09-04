@@ -7,8 +7,10 @@ Step ``n`` (positions ``x^n``, velocities ``v^(n-1/2)``):
 3. gather ``E^n``, ``B`` at ``x^n``; Boris push to ``v^(n+1/2)``; advance to ``x^(n+1)``;
 4. classify boundaries: anode/exit absorption (counted currents), dielectric
    wall absorption with surface-charge deposition, Courant violations fail closed;
-5. null-collision MCC on electrons; ionisation products appended;
-6. inject exit-plane electrons; ``t <- t + dt``.
+4b. (v2.4.0, every ``coulomb.cycle_steps`` steps) Coulomb collisions of the pushed populations (``coulomb.py``);
+5. ion-neutral MCC (v2.3.0), anomalous scattering (v1.4 / v2.1.0), null-collision MCC on electrons; ionisation
+   products appended;
+6. inject exit-plane / cathode electrons; SEE secondaries join (v2.2.0); ``t <- t + dt``.
 
 Diagnostics are accumulated at ``x^n`` inside the configured averaging window.
 The CPU backend is the numerical reference; ``warp_backend.WarpBackend`` must
@@ -25,6 +27,7 @@ from typing import Any, Literal, Mapping
 import numpy as np
 
 from . import kernels
+from .coulomb import COULOMB_KEYS, COULOMB_RNG_STREAM, CoulombConfig, CoulombOperator, cell_maps_to_nodes, coulomb_frequencies
 from .fields import MagneticFieldMap
 from .ion_mcc import ION_MCC_KEYS, IonNullCollisionMCC
 from .mcc import MCCConfig, NullCollisionMCC, XenonCrossSections, maxwellian_velocity
@@ -203,6 +206,8 @@ class PIC2DConfig:
     anomalous: "AnomalousCollisionConfig | None" = None
     # v2.2.0: secondary electron emission from the dielectric wall (see.py); None = the v2.0.x wall (absorbing).
     see: "SEEConfig | None" = None
+    # v2.4.0: Coulomb collisions (coulomb.py); None = collisionless charged species (every earlier identity).
+    coulomb: CoulombConfig | None = None
     # v2.0: cathode emission region in the plume (replaces the exit-plane ``injection``, which stays
     # as the legacy A/B option); requires a plume geometry.
     cathode: "CathodeConfig | None" = None
@@ -233,6 +238,8 @@ class PIC2DConfig:
                 raise PIC2DValidationError("the cathode annulus must lie inside the plume box")
         if self.see is not None and not isinstance(self.see, SEEConfig):
             raise PIC2DValidationError("see must be a SEEConfig")
+        if self.coulomb is not None and not isinstance(self.coulomb, CoulombConfig):
+            raise PIC2DValidationError("coulomb must be a CoulombConfig")
         if self.neutral_inventory is not None and (self.mcc is None or self.mcc.neutral_density_per_m3 <= 0.0):
             raise PIC2DValidationError("neutral_inventory requires an MCC configuration with a positive neutral density")
         if not isfinite(self.macro_weight) or self.macro_weight <= 0.0:
@@ -280,6 +287,7 @@ class PIC2DConfig:
           | ({} if self.peak_debye_gate is None else {"peak_debye_gate": self.peak_debye_gate.to_dict()}) \
           | ({} if self.anomalous is None else {"anomalous": self.anomalous.to_dict()}) \
           | ({} if self.see is None else {"see": self.see.to_dict()}) \
+          | ({} if self.coulomb is None else {"coulomb": self.coulomb.to_dict()}) \
           | ({} if self.cathode is None else {"cathode": self.cathode.to_dict()}) \
           | ({} if self.plume_boundary_gate is None else {"plume_boundary_gate": self.plume_boundary_gate.to_dict()}) \
           | ({} if self.moment_sample_interval == 1 else {"moment_sample_interval": self.moment_sample_interval})
@@ -291,6 +299,17 @@ class PIC2DConfig:
         """v2.2.0: the dielectric wall emits (an ``SEEConfig`` with ``enabled``)."""
 
         return self.see is not None and self.see.enabled
+
+    @property
+    def coulomb_active(self) -> bool:
+        """v2.4.0: the Coulomb operator runs (a ``CoulombConfig`` with ``enabled``)."""
+
+        return self.coulomb is not None and self.coulomb.enabled
+
+    def coulomb_step(self, step: int) -> bool:
+        """v2.4.0: the Coulomb cycle runs at the end of step ``step`` (every ``cycle_steps`` steps, like the ion subcycle rule)."""
+
+        return self.coulomb_active and (step + 1) % self.coulomb.cycle_steps == 0   # type: ignore[union-attr]
 
     @property
     def emission_peak_current_a(self) -> float:
@@ -639,7 +658,7 @@ def peak_node_debye(
 class DiagnosticAccumulator:
     """Time-window sums of node maps and boundary fluxes (CPU numpy)."""
 
-    def __init__(self, masks: MeshMasks, iedf_max_ev: float = 450.0, see: bool = False) -> None:
+    def __init__(self, masks: MeshMasks, iedf_max_ev: float = 450.0, see: bool = False, coulomb: bool = False) -> None:
         self.masks = masks
         shape = masks.grid.node_shape
         nz = masks.grid.axial_cells
@@ -650,6 +669,14 @@ class DiagnosticAccumulator:
         self.see = bool(see)
         self.wall_see_electrons = np.zeros(nz)
         self.wall_see_energy_j = np.zeros(nz)
+        # v2.4.0: Coulomb window sums per CELL, stored in the node layout (cell (i, j) at node index (i, j); last row and
+        # column zero - coulomb.cell_maps_to_nodes) so frames / maps carry them unchanged; present only with the operator on
+        self.coulomb = bool(coulomb)
+        self.coulomb_ee_s = np.zeros(shape)
+        self.coulomb_ee_pairs = np.zeros(shape)
+        self.coulomb_ei_s = np.zeros(shape)
+        self.coulomb_ei_pairs = np.zeros(shape)
+        self.coulomb_electron_seconds = np.zeros(shape)
         # v2.0.5: number of steps at which the electron moments (e_weight, e_v*, e_v2) were deposited; equals
         # ``steps`` for moment_sample_interval = 1.  The moment maps are ratios (v2 / w etc.), so they need no
         # normalisation; the occupancy ``e_weight / moment_samples`` is the mean macro-electron count per node.
@@ -678,7 +705,7 @@ class DiagnosticAccumulator:
         self.iedf_max_ev = float(iedf_max_ev)
 
     def reset(self) -> None:
-        self.__init__(self.masks, self.iedf_max_ev, self.see)
+        self.__init__(self.masks, self.iedf_max_ev, self.see, self.coulomb)
 
     # v2.0 frame recorder: the raw window sums, so that an interval [a, b] inside the window is
     # recovered exactly as the difference of two cumulative snapshots (sums are additive)
@@ -689,12 +716,21 @@ class DiagnosticAccumulator:
     )
     # v2.2.0: optional SEE sums (present in raw_sums / frames only when the wall emits)
     SEE_SUM_KEYS = ("wall_see_electrons", "wall_see_energy_j")
+    # v2.4.0: optional Coulomb sums (present only when the operator is on): per-cell sum of the pair deflection parameter s
+    # and pair count for e-e and e-i, and the electron-seconds sum_cycles N_e dt_c (nu_ee = 2 sum s / electron-seconds)
+    COULOMB_SUM_KEYS = ("coulomb_ee_s", "coulomb_ee_pairs", "coulomb_ei_s", "coulomb_ei_pairs", "coulomb_electron_seconds")
 
     # additive scalar counters that ride along with the sums (differenced like them by the frame recorder)
     COUNT_KEYS = ("steps", "moment_samples")
 
+    @classmethod
+    def optional_sum_keys(cls) -> tuple[str, ...]:
+        """Every optional sum key (SEE, Coulomb) a snapshot may carry; a consumer keeps those present."""
+
+        return cls.SEE_SUM_KEYS + cls.COULOMB_SUM_KEYS
+
     def sum_keys(self) -> tuple[str, ...]:
-        return self.SUM_KEYS + (self.SEE_SUM_KEYS if self.see else ())
+        return self.SUM_KEYS + (self.SEE_SUM_KEYS if self.see else ()) + (self.COULOMB_SUM_KEYS if self.coulomb else ())
 
     def raw_sums(self) -> dict[str, np.ndarray]:
         out = {key: np.asarray(getattr(self, key)).copy() for key in self.sum_keys()}
@@ -704,7 +740,8 @@ class DiagnosticAccumulator:
 
     @classmethod
     def from_sums(cls, masks: MeshMasks, sums: Mapping[str, np.ndarray], iedf_max_ev: float = 450.0) -> "DiagnosticAccumulator":
-        acc = cls(masks, iedf_max_ev, see=all(key in sums for key in cls.SEE_SUM_KEYS))
+        acc = cls(masks, iedf_max_ev, see=all(key in sums for key in cls.SEE_SUM_KEYS),
+                  coulomb=all(key in sums for key in cls.COULOMB_SUM_KEYS))
         for key in acc.sum_keys():
             setattr(acc, key, np.asarray(sums[key], dtype=np.float64).copy())
         acc.steps = int(np.asarray(sums["steps"]).reshape(-1)[0])
@@ -769,6 +806,19 @@ class DiagnosticAccumulator:
                     self.wall_see_energy_j / np.maximum(self.wall_see_electrons, 1) / (electron_weight * EV_J), 0.0,
                 ),
             }
+        coulomb_maps: dict[str, np.ndarray] = {}
+        if self.coulomb:
+            # v2.4.0: window-mean Coulomb frequencies per cell (node layout, see __init__): nu_ee = 2 sum s_ee / electron-seconds
+            # (each pair gives both electrons s), nu_ei = sum s_ei / electron-seconds; the mean s per e-e pair (the per-cycle
+            # deflection parameter the method assumes small)
+            with np.errstate(invalid="ignore", divide="ignore"):
+                seconds = self.coulomb_electron_seconds
+                coulomb_maps = {
+                    "coulomb_nu_ee_per_s": np.where(seconds > 0.0, 2.0 * self.coulomb_ee_s / np.where(seconds > 0.0, seconds, 1.0), 0.0),
+                    "coulomb_nu_ei_per_s": np.where(seconds > 0.0, self.coulomb_ei_s / np.where(seconds > 0.0, seconds, 1.0), 0.0),
+                    "coulomb_mean_s_ee": np.where(self.coulomb_ee_pairs > 0.0, self.coulomb_ee_s / np.maximum(self.coulomb_ee_pairs, 1.0), 0.0),
+                    "coulomb_electron_seconds": seconds.copy(),
+                }
         return {
             "n_e_per_m3": self.n_e / steps,
             "side_ion_current_density_a_per_m2": self.side_ions * electron_weight * ELEMENTARY_CHARGE_C / (side_area * window_s),
@@ -799,7 +849,7 @@ class DiagnosticAccumulator:
             "window_steps": np.array([self.steps]),
             # v2.0.5: steps at which the electron moments were sampled (sample_count_e / moment_samples = mean occupancy)
             "moment_samples": np.array([self.moment_samples]),
-        } | see_maps
+        } | see_maps | coulomb_maps
 
 
 def instantaneous_maps(config: PIC2DConfig, masks: MeshMasks, state: SimulationState) -> dict[str, np.ndarray]:
@@ -857,8 +907,12 @@ class CPUBackend:
                 raise PIC2DValidationError("MCC requires cross sections")
             self.mcc = NullCollisionMCC(cross_sections, config.mcc, self.ion)
             self.ion_mcc = build_ion_mcc(config, self.ion, masks)
+        # v2.4.0: Coulomb collision operator (numpy reference; None when off)
+        self.coulomb: CoulombOperator | None = None
+        if config.coulomb_active:
+            self.coulomb = CoulombOperator(config.coulomb, masks.grid, masks, config.macro_weight, ion_mass_kg=self.ion.mass_kg)  # type: ignore[arg-type]
         self.state: SimulationState | None = None
-        self.diagnostics = DiagnosticAccumulator(masks, iedf_max_ev=iedf_max_ev(config), see=config.see_active)
+        self.diagnostics = DiagnosticAccumulator(masks, iedf_max_ev=iedf_max_ev(config), see=config.see_active, coulomb=config.coulomb_active)
         self.diagnostic_generation = 0     # v2.0.2: incremented by every reset_diagnostics (window bridging)
         self.quantum_c = ELEMENTARY_CHARGE_C * config.macro_weight
         # v2.2.0: SEE emission of the current step (electron- and ion-induced passes share one RNG stream, 4)
@@ -878,6 +932,9 @@ class CPUBackend:
         if self.config.see_active:
             # v2.2.0: the SEE ledger keys exist from the first record of an emitting wall (extra keys; absent otherwise)
             for key in SEE_KEYS:
+                self.state.cumulative.setdefault(key, 0.0)
+        if self.config.coulomb_active:
+            for key in COULOMB_KEYS:      # v2.4.0: likewise for the Coulomb tallies
                 self.state.cumulative.setdefault(key, 0.0)
 
     def export_state(self) -> SimulationState:
@@ -1025,6 +1082,22 @@ class CPUBackend:
             else:
                 ions = moved.select(keep)
         state.cumulative["field_work_j"] += field_work
+
+        if self.coulomb is not None and config.coulomb_step(state.step) and (electrons.count + ions.count):
+            # v2.4.0: Coulomb collisions on the pushed populations (before the ion MCC / anomalous / MCC stages and this
+            # step's births), every cycle_steps steps with dt_c = cycle_steps x dt; RNG stream 6
+            rng_c = np.random.default_rng([config.seed, state.step, COULOMB_RNG_STREAM])
+            collided = self.coulomb.apply(electrons, ions, dt * config.coulomb.cycle_steps, rng_c)  # type: ignore[union-attr]
+            electrons, ions = collided.electrons, collided.ions
+            for key, value in collided.tally.to_cumulative().items():
+                add(key, value)
+            if accumulate:
+                shape = grid.node_shape
+                self.diagnostics.coulomb_ee_s += cell_maps_to_nodes(collided.cell_ee_s, shape)
+                self.diagnostics.coulomb_ee_pairs += cell_maps_to_nodes(collided.cell_ee_pairs, shape)
+                self.diagnostics.coulomb_ei_s += cell_maps_to_nodes(collided.cell_ei_s, shape)
+                self.diagnostics.coulomb_ei_pairs += cell_maps_to_nodes(collided.cell_ei_pairs, shape)
+                self.diagnostics.coulomb_electron_seconds += cell_maps_to_nodes(collided.cell_electron_seconds, shape)
 
         if self.ion_mcc is not None and ion_step and ions.count:
             # v2.3.0: Xe+ - Xe CEX / MEX on the pushed ions (before this step's births join), RNG stream 4
@@ -1430,6 +1503,8 @@ class SeriesRecord:
     peak_omega_pe_dt_raw: float | None = None
     # v2.2.0: SEE interval sample (emitting walls only): effective yield, emission current, wall potential
     see: dict[str, Any] | None = None
+    # v2.4.0: Coulomb interval sample (operator on only): mean nu_ee / nu_ei / nu_ii, mean s, ln Lambda, nu_ee / nu_en
+    coulomb: dict[str, Any] | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -1444,7 +1519,8 @@ class SeriesRecord:
         } | ({} if self.momentum is None else {"momentum": dict(self.momentum)}) \
           | ({} if self.plume is None else {"plume": dict(self.plume)}) \
           | ({} if self.peak_omega_pe_dt_raw is None else {"peak_omega_pe_dt_raw": self.peak_omega_pe_dt_raw}) \
-          | ({} if self.see is None else {"see": dict(self.see)})
+          | ({} if self.see is None else {"see": dict(self.see)}) \
+          | ({} if self.coulomb is None else {"coulomb": dict(self.coulomb)})
 
 
 # v2.0.2 plume-boundary gate: trailing window of ACCUMULATED steps over which the far-field charge statistic is
@@ -2133,11 +2209,15 @@ class Simulation:
         total = k_e + k_i + u_e
         # v2.2.0: the kinetic energy of the wall's secondary electrons is an injected term (zero without SEE: the key is absent)
         see_emitted_j = extra("ke_see_emitted_j")
+        # v2.4.0: the relativistic kinetic-energy change of the Coulomb pairs (elastic in the classical sense; O(v^2/c^2) of the
+        # redistributed energy) is booked so the identity closes to round-off; zero without the operator (key absent)
+        coulomb_ke_j = extra("ke_coulomb_j")
         sources = (
             delta["ke_injected_j"] - delta["ke_absorbed_anode_j"] - delta["ke_absorbed_exit_j"]
             - delta["ke_absorbed_wall_j"] - delta["inelastic_loss_j"] + delta["ke_born_ions_j"] + electrode_work
             - ion_neutral_loss       # v2.3.0: kinetic energy the ions hand to the neutrals in CEX / MEX (0 when off)
             + see_emitted_j          # v2.2.0: kinetic energy of the wall's secondary electrons (0 when off)
+            + coulomb_ke_j           # v2.4.0: relativistic pair energy change of the Coulomb operator (~0; 0 when off)
         )
         residual = 0.0 if self._last_energy is None else (total - self._last_energy) - sources
         ledger = {
@@ -2157,12 +2237,19 @@ class Simulation:
             ledger["interval_ke_fast_neutral_exit_j"] = extra("ke_fast_neutral_exit_j")
         if config.see_active:
             ledger["interval_see_emitted_j"] = see_emitted_j
+        if config.coulomb_active:
+            ledger["interval_coulomb_ke_j"] = coulomb_ke_j
         plasma_phi = phi[masks.plasma_node]
         see_sample: dict[str, Any] | None = None
         if config.see_active:
             see_sample = self._see_record(extra, delta, interval, current_unit, phi, plasma_phi)
             currents["see_emission_a"] = see_sample["emission_current_a"]
             currents["see_effective_yield"] = see_sample["interval_effective_yield"]
+        coulomb_sample: dict[str, Any] | None = None
+        if config.coulomb_active:
+            coulomb_sample = self._coulomb_record(extra, delta, interval, int(sample["electrons"]))
+            currents["coulomb_nu_ee_mean_per_s"] = coulomb_sample["nu_ee_mean_per_s"]
+            currents["coulomb_nu_ei_mean_per_s"] = coulomb_sample["nu_ei_mean_per_s"]
         neutral: dict[str, Any] | None = None
         if self.neutrals is not None and self.neutral_state is not None:
             # v1.3: advance the inventory with the ionisation measured over this interval,
@@ -2233,7 +2320,7 @@ class Simulation:
                 float(plasma_phi.mean()), float(plasma_phi.min()), float(plasma_phi.max()),
                 k_e, k_i, u_e, float(sample["surface_charge_c"]), tally.max_omega_pe_dt,
                 tally.poisson_iterations, currents, ledger, neutral, peak_node, momentum, plume, tally.max_omega_pe_dt_raw,
-                see_sample,
+                see_sample, coulomb_sample,
             )
         )
         self._last_cumulative = dict(cumulative)
@@ -2292,6 +2379,30 @@ class Simulation:
             "at_or_above_space_charge_limit": bool(impacts > 0 and emitted / impacts >= self.config.see.space_charge_limit_yield),
         }
 
+    # -- v2.4.0 Coulomb block ------------------------------------------------------------
+    def _coulomb_record(self, extra: Any, delta: Mapping[str, float], interval: float, electrons: int) -> dict[str, Any]:
+        """Interval Coulomb sample: mean e-e / e-i / i-i collision frequencies (``coulomb.coulomb_frequencies``), the mean and
+        large-s fraction of the per-pair deflection parameter (the ``nu dt_c << 1`` check), the mean Coulomb logarithm, the
+        electron-neutral elastic frequency of the same interval and the ratio ``nu_ee / nu_en`` the audit estimates, the
+        (round-off) momentum and relativistic-energy tallies."""
+
+        config = self.config
+        assert config.coulomb is not None
+        dt_c = config.dt_s * config.coulomb.cycle_steps
+        keys = COULOMB_KEYS
+        diff = {key: extra(key) for key in keys}
+        record: dict[str, Any] = coulomb_frequencies(diff, dt_c)
+        record["cycle_dt_s"] = dt_c
+        record["interval_cycles"] = diff["coulomb_cycles"]
+        record["interval_pz_coulomb_kg_m_s"] = diff["pz_coulomb"]
+        record["interval_ke_coulomb_j"] = diff["ke_coulomb_j"]
+        # electron-neutral elastic frequency over the interval from the MCC tally (macro events per electron per second) and
+        # the ratio the audit's gap (d) estimate is about
+        nu_en = delta["elastic"] / (max(electrons, 1) * interval) if self.config.mcc is not None else 0.0
+        record["nu_en_elastic_mean_per_s"] = nu_en
+        record["nu_ee_over_nu_en"] = record["nu_ee_mean_per_s"] / nu_en if nu_en > 0.0 else None
+        return record
+
     # -- v2.0 plume block ---------------------------------------------------------
     def _momentum_record(self, sample: Mapping[str, Any], extra: Any, interval: float, neutral: Mapping[str, Any] | None) -> dict[str, Any]:
         """Interval momentum ledger, momentum-flux thrust and momentum-balance thrust with the closure check.
@@ -2325,8 +2436,10 @@ class Simulation:
         # v2.3.0: the ions' momentum change in CEX / MEX (handed to the neutral population) enters the plasma ledger; the
         # fast neutrals carry part of it out through the exit (thrust) or onto the thruster body (force); 0 when off
         ion_collisions = extra("pz_ion_collisions")
+        # v2.4.0: the Coulomb pairs conserve momentum exactly, so pz_coulomb is round-off (booked so the identity is complete)
+        coulomb_pz = extra("pz_coulomb")
         residual = 0.0 if first else d_p - (extra("pz_impulse") + extra("pz_collisions") + ion_collisions + extra("pz_born") + extra("pz_injected")
-                                            + extra("pz_see_emitted")
+                                            + extra("pz_see_emitted") + coulomb_pz
                                             - extra("pz_exit_electrons") - extra("pz_exit_ions") - extra("pz_wall_electrons")
                                             - extra("pz_wall_ions") - extra("pz_anode_electrons") - extra("pz_anode_ions"))
         cold_gas = 0.0
@@ -2352,6 +2465,8 @@ class Simulation:
                 "fast_neutral_thrust_n": fast_neutral_exit,
                 "fast_neutral_exit_power_w": extra("ke_fast_neutral_exit_j") / interval,
             }
+        if self.config.coulomb_active:
+            record_v23["coulomb_momentum_rate_n"] = coulomb_pz / interval     # v2.4.0: 0 by construction (pairwise conservation)
         return {
             "momentum_z_kg_m_s": p_now,
             "interval_dp_kg_m_s": d_p,
@@ -2528,6 +2643,9 @@ class Simulation:
             # v2.3.0: Xe+ - Xe CEX / MEX operator, its tables and the fast-neutral contract
             record["ion_mcc"] = self.backend.ion_mcc.to_dict()
             record["ion_mcc"]["ledger_keys"] = list(ION_MCC_KEYS)
+        if getattr(self.backend, "coulomb", None) is not None:
+            # v2.4.0: Coulomb collision operator (method, ledger keys, pairing on the device)
+            record["coulomb"] = self.backend.coulomb.to_dict()
         if self.neutrals is not None:
             record["neutral_inventory"] = self.neutrals.to_dict()
         inventory = self.config.neutral_inventory
@@ -2544,6 +2662,7 @@ class Simulation:
                                  "limit": self.config.limits.max_omega_pe_dt},
             "anomalous": None if self.config.anomalous is None else self.config.anomalous.to_dict(),
             "see": None if self.config.see is None else self.config.see.to_dict(),
+            "coulomb": None if self.config.coulomb is None else self.config.coulomb.to_dict(),
             # True once a step graph has been captured, "lazy" when graphs are enabled but none is captured yet (the
             # capture happens on the first step, so the launch-time provenance line used to read False), False when off
             "step_graph": self.step_graph_state(),
@@ -2571,6 +2690,7 @@ class Simulation:
 
 __all__ = [
     "CATHODE_RATE_KEY",
+    "COULOMB_KEYS",
     "CPUBackend",
     "CUMULATIVE_KEYS",
     "INELASTIC_LOSS_PER_WEIGHT_KEY",

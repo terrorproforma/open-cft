@@ -50,6 +50,7 @@ from .poisson import Poisson2D, apply_operator, boundary_potential_array
 from .see import see_birth_bound
 from .simulation import (
     CATHODE_RATE_KEY,
+    COULOMB_KEYS,
     IEDF_BINS,
     INELASTIC_LOSS_PER_WEIGHT_KEY,
     PEAK_WINDOW_SUM_KEYS,
@@ -80,10 +81,11 @@ PARTICLE_BLOCK = 256
 # compiles a module for one block width, so this equals PARTICLE_BLOCK.
 THOMAS_LANES = PARTICLE_BLOCK
 # Per-step RNG streams read from the device seed table (v1.4): 0 = MCC, 1 = injection,
-# 2 = anomalous scattering, 3 = ion-neutral MCC (v2.3.0), 4 = SEE (v2.2.0); the seeds of streams 0-2 are unchanged, so
-# every earlier run replays bitwise (stream_seed(seed, step, id) per table column).  Row = steps since the last host sync.
-SEED_STREAMS = 5
-SEED_STREAM_IDS = (1, 2, 3, 4, 5)       # stream_seed(seed, step, id) per table column
+# 2 = anomalous scattering, 3 = ion-neutral MCC (v2.3.0), 4 = SEE (v2.2.0), 5 = Coulomb collisions (v2.4.0); the seeds of
+# streams 0-4 are unchanged, so every earlier run replays bitwise (stream_seed(seed, step, id) per table column).
+# Row = steps since the last host sync.
+SEED_STREAMS = 6
+SEED_STREAM_IDS = (1, 2, 3, 4, 5, 6)    # stream_seed(seed, step, id) per table column
 
 # Interval statistics slots (float64 device array, read once per host sync).
 STATS_WORK = 0
@@ -1697,6 +1699,14 @@ class WarpBackend:
 
             body = grid.geometry.body_dielectric_radius_m if masks.has_plume else None
             self.see_params = see_params_array(config.see, body, dev)  # type: ignore[arg-type]
+        # v2.4.0 Coulomb stage (warp_coulomb.py): its cell-sort scratch follows the particle capacity (_ensure_scratch); its
+        # statistics and window sums live in the stage (read at the sync / with the diagnostics); seed-table column 5
+        self.coulomb = None
+        if config.coulomb_active:
+            from .warp_coulomb import WarpCoulombStage
+
+            self.coulomb = WarpCoulombStage(config.coulomb, grid, masks, config.macro_weight, dev, electron=self.electron, ion=self.ion,  # type: ignore[arg-type]
+                                            seed_streams=SEED_STREAMS)
         self.diag_steps = 0
         self.diagnostic_generation = 0     # v2.0.2: incremented by every reset_diagnostics (window bridging)
         self._far_flat = np.flatnonzero(masks.far_field_node.ravel())   # v2.0.2: far-field node rows of the window sums
@@ -1773,6 +1783,8 @@ class WarpBackend:
         self.see_hit_i = wp.zeros(capacity, dtype=wp.int32, device=dev)
         self.see_count = wp.zeros(capacity, dtype=wp.int32, device=dev)
         self.see_offsets = wp.zeros(capacity, dtype=wp.int32, device=dev)
+        if self.coulomb is not None:
+            self.coulomb.ensure_scratch(capacity)      # v2.4.0: cell / rank / sorted-permutation arrays per slot
 
     def _grow(self, species: DeviceSpecies, minimum: int) -> DeviceSpecies:
         """Reallocate (at a sync) so that ``capacity >= minimum``; copies ``bound`` slots."""
@@ -1929,6 +1941,10 @@ class WarpBackend:
         if self.see_active:
             for key in SEE_KEYS:      # v2.2.0: SEE ledger keys exist from the first record (as the CPU reference)
                 self.state_meta["cumulative"].setdefault(key, 0.0)
+        if self.coulomb is not None:
+            for key in COULOMB_KEYS:  # v2.4.0: likewise for the Coulomb tallies
+                self.state_meta["cumulative"].setdefault(key, 0.0)
+            self.coulomb.stats.zero_()
         self.stats.zero_()
         self.steps_since_sync = 0
         self.injected_since_sync = 0
@@ -1991,11 +2007,12 @@ class WarpBackend:
         # v2.0.5: electron moments every K-th accumulated step (K = 1: every step, the v1.4-v2.0.4 behaviour);
         # the phase is anchored on the window's accumulated-step count, so a window reset restarts it
         moments = bool(accumulate) and self.diag_steps % self.moment_sample_interval == 0
+        coulomb_step = config.coulomb_step(step_index)      # v2.4.0: every cycle_steps steps (False when off)
 
         if self.step_graph:
-            self._step_graph_launch(ion_step, redo_ions, accumulate, moments)
+            self._step_graph_launch(ion_step, redo_ions, accumulate, moments, coulomb_step)
         else:
-            self._launch_step(ion_step, redo_ions, accumulate, moments=moments, fixed_shape=False)
+            self._launch_step(ion_step, redo_ions, accumulate, moments=moments, fixed_shape=False, coulomb_step=coulomb_step)
         if self.device_direct is not None and self.steps_since_sync + 1 >= self.sync_interval:
             self.device_direct.queue_residual_check()  # read and enforced in _sync (outside the captured step)
 
@@ -2020,12 +2037,12 @@ class WarpBackend:
             return self._sync()
         return None
 
-    def _step_graph_launch(self, ion_step: bool, redo_ions: bool, accumulate: bool, moments: bool) -> None:
+    def _step_graph_launch(self, ion_step: bool, redo_ions: bool, accumulate: bool, moments: bool, coulomb_step: bool = False) -> None:
         """Replay (capturing on first use) the CUDA graph of this step variant for the current particle arrays."""
 
         electrons = self.species["e"]
         ions = self.species["i"]
-        key = (ion_step, redo_ions, accumulate, moments, electrons.r.ptr, ions.r.ptr, electrons.capacity, ions.capacity)
+        key = (ion_step, redo_ions, accumulate, moments, coulomb_step, electrons.r.ptr, ions.r.ptr, electrons.capacity, ions.capacity)
         graph = self.step_graphs.get(key)
         if graph is None:
             if not self.step_graphs:
@@ -2038,10 +2055,14 @@ class WarpBackend:
                     from . import warp_see
 
                     wp.load_module(module=warp_see, device=self.device)
+                if self.coulomb is not None:
+                    from . import warp_coulomb
+
+                    wp.load_module(module=warp_coulomb, device=self.device)
             profile, self.profile = self.profile, None
             try:
                 with wp.ScopedCapture(device=self.device) as capture:
-                    self._launch_step(ion_step, redo_ions, accumulate, moments=moments, fixed_shape=True)
+                    self._launch_step(ion_step, redo_ions, accumulate, moments=moments, fixed_shape=True, coulomb_step=coulomb_step)
             finally:
                 self.profile = profile
             graph = capture.graph
@@ -2051,7 +2072,8 @@ class WarpBackend:
         wp.capture_launch(graph)
         self._mark("graph-step")
 
-    def _launch_step(self, ion_step: bool, redo_ions: bool, accumulate: bool, *, moments: bool | None = None, fixed_shape: bool) -> None:
+    def _launch_step(self, ion_step: bool, redo_ions: bool, accumulate: bool, *, moments: bool | None = None, fixed_shape: bool,
+                     coulomb_step: bool = False) -> None:
         """Issue every device operation of one step.
 
         With ``fixed_shape`` the launch dimensions are the array capacities and nothing
@@ -2168,6 +2190,14 @@ class WarpBackend:
         wp.launch(wall_int_to_charge_kernel, dim=self.node_count,
                   inputs=[self.acc_wall, ELEMENTARY_CHARGE_C * config.macro_weight / FIXED_POINT_SCALE, self.surface], device=dev)
         self._mark("push")
+
+        if self.coulomb is not None and coulomb_step and (e_dim or i_dim):
+            # v2.4.0: Coulomb collisions of the pushed populations (as the CPU reference: before the ion MCC / anomalous / MCC
+            # stages and this step's births); velocities only, so the frozen ion charge stays valid; pairing through a per-cycle
+            # cell-sorted slot permutation (no particle is moved); seed-table column 5
+            self.coulomb.launch(electrons, ions, self.slots, self.seed_table, self.step_counter, e_dim, i_dim,
+                                dt * config.coulomb.cycle_steps, accumulate)  # type: ignore[union-attr]
+            self._mark("coulomb")
 
         if self.ion_mcc is not None and ion_step and i_dim:
             # v2.3.0: Xe+ - Xe CEX / MEX on the pushed ions (velocities only: the frozen ion charge stays valid), before
@@ -2363,6 +2393,10 @@ class WarpBackend:
             add("see_yield_clamped", stats[STATS_SEE_CLAMPED])
             add("ke_see_emitted_j", stats[STATS_SEE_KE])
             add("pz_see_emitted", stats[STATS_SEE_PZ])
+        if self.coulomb is not None:
+            # v2.4.0: Coulomb tallies (pair counts exact; s / lnL / energy / momentum sums are float atomics)
+            for key, value in self.coulomb.sync_tallies().items():
+                add(key, value)
         absorbed_e = int(stats[STATS_E_COUNTS] + stats[STATS_E_COUNTS + 1] + stats[STATS_E_COUNTS + 2])
         absorbed_i = int(stats[STATS_I_COUNTS] + stats[STATS_I_COUNTS + 1] + stats[STATS_I_COUNTS + 2])
         expected_e = electrons.alive + n_ion + self.injected_since_sync - absorbed_e + n_see
@@ -2497,12 +2531,15 @@ class WarpBackend:
     def _host_accumulator(self) -> DiagnosticAccumulator:
         wp.synchronize_device(self.device)
         shape = self.masks.grid.node_shape
-        acc = DiagnosticAccumulator(self.masks, self.iedf_max_ev, see=self.see_active)
+        acc = DiagnosticAccumulator(self.masks, self.iedf_max_ev, see=self.see_active, coulomb=self.coulomb is not None)
         acc.steps = self.diag_steps
         acc.moment_samples = self.moment_samples
         if self.see_active:
             acc.wall_see_electrons = self.d_see_e.numpy()
             acc.wall_see_energy_j = self.d_see_energy.numpy()
+        if self.coulomb is not None:
+            for key, value in self.coulomb.window_sums().items():     # v2.4.0: per-cell sums in the node layout
+                setattr(acc, key, value)
         acc.side_electrons = self.d_side_e.numpy()
         acc.side_ions = self.d_side_i.numpy()
         acc.theta_ions = self.d_theta_i.numpy()
@@ -2529,6 +2566,8 @@ class WarpBackend:
                       self.d_wall_e, self.d_wall_i, self.d_wall_e_energy, self.d_wall_i_energy, self.d_exit_e, self.d_exit_i,
                       self.d_side_e, self.d_side_i, self.d_theta_i, self.d_iedf_i, self.d_see_e, self.d_see_energy):
             array.zero_()
+        if self.coulomb is not None:
+            self.coulomb.reset_window()
         self.diag_steps = 0
         self.moment_samples = 0
         self.diagnostic_generation += 1

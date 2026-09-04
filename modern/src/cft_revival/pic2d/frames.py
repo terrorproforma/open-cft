@@ -42,6 +42,8 @@ PRECISIONS = {"float32": np.float32, "float16": np.float16}
 
 # maps stored per frame (the plume histograms and fluxes ride along at negligible size)
 MAP_KEYS = ("n_e_per_m3", "n_i_per_m3", "phi_v", "t_e_ev", "ionization_rate_per_m3_s", "sample_count_e")
+# v2.4.0 (additive, present only with the Coulomb operator on): window-mean Coulomb frequencies per cell (node layout)
+COULOMB_MAP_KEYS = ("coulomb_nu_ee_per_s", "coulomb_nu_ei_per_s", "coulomb_mean_s_ee")
 PROFILE_KEYS = (
     "wall_ion_flux_per_m2_s", "wall_electron_flux_per_m2_s", "exit_ion_current_density_a_per_m2",
     "exit_electron_current_density_a_per_m2", "side_ion_current_density_a_per_m2", "side_electron_current_density_a_per_m2",
@@ -104,9 +106,10 @@ def interval_maps(sums_end: Mapping[str, np.ndarray], sums_start: Mapping[str, n
     """Exact interval average between two cumulative snapshots of the window sums."""
 
     diff: dict[str, np.ndarray] = {}
-    # v2.2.0: the SEE sums travel with the others when the wall emits (absent otherwise: nothing added to the frame)
-    see_keys = tuple(key for key in DiagnosticAccumulator.SEE_SUM_KEYS if key in sums_end)
-    for key in DiagnosticAccumulator.SUM_KEYS + see_keys + ("steps",):
+    # v2.2.0 / v2.4.0: the optional SEE and Coulomb sums travel with the others when their option is on (absent otherwise:
+    # nothing added to the frame)
+    optional_keys = tuple(key for key in DiagnosticAccumulator.optional_sum_keys() if key in sums_end)
+    for key in DiagnosticAccumulator.SUM_KEYS + optional_keys + ("steps",):
         end = np.asarray(sums_end[key])
         diff[key] = end.copy() if sums_start is None else end - np.asarray(sums_start[key])
     # v2.0.5: the moment sample count is additive like the sums (absent in pre-v2.0.5 snapshots: one sample per step)
@@ -231,7 +234,7 @@ class FrameRecorder:
             "scalars_json": np.array([json.dumps(frame_scalars(record), sort_keys=True, separators=(",", ":"), allow_nan=False)]),
             "surface_charge_c": np.asarray(self.sim.surface_charge_map(), dtype=dtype),
         }
-        for key in MAP_KEYS + PROFILE_KEYS:
+        for key in MAP_KEYS + PROFILE_KEYS + COULOMB_MAP_KEYS:
             if key in maps:
                 payload[key] = np.asarray(maps[key], dtype=dtype)
         if int(maps["window_steps"][0]) != step - self._previous_step:
@@ -294,7 +297,7 @@ def load_frames(results: Path) -> FrameSet:
             surface.append(np.asarray(data["surface_charge_c"], dtype=np.float32))
             for key in MAP_KEYS:
                 maps[key].append(np.asarray(data[key], dtype=np.float32))
-            for key in PROFILE_KEYS:
+            for key in PROFILE_KEYS + COULOMB_MAP_KEYS:      # optional (SEE / Coulomb) arrays load when present
                 if key in data:
                     profiles.setdefault(key, []).append(np.asarray(data[key], dtype=np.float32))
     for a, b in zip(ends, starts[1:]):
@@ -324,6 +327,7 @@ __all__ = [
     "FrameRecorder",
     "FrameRecorderConfig",
     "FrameSet",
+    "COULOMB_MAP_KEYS",
     "MAP_KEYS",
     "PROFILE_KEYS",
     "SCALAR_KEYS",
