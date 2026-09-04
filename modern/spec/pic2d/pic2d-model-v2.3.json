@@ -1,0 +1,160 @@
+{
+ "model_level": "L3-development",
+ "package": "cft_revival.pic2d",
+ "prepared_utc": "2026-09-05",
+ "roadmap_item": "R3 (R3a four excitation levels + R3b Xe+ - Xe CEX / MEX with the fast-neutral thrust tally) of modern/docs/pic2d-physics-completeness-audit.md section 5; gaps e1 and e4 of section 4.e",
+ "schema": "cft.pic2d.model.v2.3",
+ "status": "code-and-tests-complete; shakedown-only; no preregistered run; physics not validated",
+ "supersedes": "modern/spec/pic2d/pic2d-model-v2.1.json and the v2.0.6 entries of pic2d-model-v2.0.json (every v2.0.x / v2.1 physics, gate, time-step, checkpoint and artifact contract is kept; this file adds ONE selectable physics option, the xenon collision set xe_collision_set_v2, and the ledger / inventory terms it needs). v2.2 is reserved for the SEE stream (R2).",
+ "unchanged_from_v2_1": "domain, field, time step, Boris push, ion subcycling, fixed-point deposition, bilinear gather, dielectric surface-charge closure, wall-ion recycling, cathode models, gates (v2.0.3 / v2.0.4 / v2.0.6 floors), energy ledger W convention (v2.0.6), momentum ledger keys of v2.0, Poisson solvers (block-Thomas / device-mg), frame recorder, checkpoint binding (the neutral array gains one entry only when the ion MCC is on)",
+ "version": "2.3.0",
+ "what_changed": [
+  "e-Xe excitation: the lumped 8.32 eV channel (v1 set, Szabo 2001 convention) is replaced by the four Biagi-v7.1 effective levels 8.315 / 9.447 / 9.917 / 11.7 eV, each with its own threshold = the energy removed per event; the total excitation frequency is the v1 one (the four levels ARE the constituents of the lumped sum: max relative deviation of the summed levels vs the lumped table 0.24 % above 10 eV, 4.9e-23 m2 absolute, interpolation across the sharp onsets only), so a plateau change under this set is attributable to the per-event energy loss (mean loss per event 9.4 eV at 12 eV, 9.8 eV at 20 eV, 10.0-10.1 eV at 50-100 eV vs 8.32 eV).",
+  "e-Xe elastic and ionisation tables: byte-identical to the v1 set (same database, same extract bytes, same builder functions).",
+  "Xe+ - Xe: two new processes on the ion population, resonant charge exchange (Miller et al. 2002 fit) and momentum transfer (Phelps isotropic component), as a null-collision operator per ion sub-step (dt_i = ion_subcycle x dt) against the local neutral density (0-D inventory scale x plume cone shape) with a Maxwellian atom velocity sampled at the gas temperature; energy argument E = 1/2 M |v_i - v_n|^2.",
+  "Ledgers: energy gains the sink ion_neutral_loss_j (W-scaled kinetic energy the ions hand to the neutrals in CEX / MEX); momentum gains pz_ion_collisions (the ions' axial momentum change) plus the fast-neutral terms pz_fast_neutral_exit / pz_fast_neutral_wall / ke_fast_neutral_exit_j; thrust_total_n = flux thrust + cold-gas thrust + fast-neutral exit momentum rate; force_on_thruster_n includes the fast neutrals that hit the body.",
+  "Neutral inventory (0-D): sixth ledger term fast_neutral_exit and the sink F in V dn_g/dt = Q_in + R - S - F - c n_g (CEX fast neutrals that leave the channel through the exit aperture); carried only when the ion MCC is on, so v1.3 / v1.4 states and checkpoints are byte-identical.",
+  "Identity: MCCConfig.collision_set (name, electron file + payload sha256 + process list with thresholds, ion-neutral file + payload sha256 + processes + grid + speed-threshold factor) enters MCCConfig.to_dict and therefore config_sha256; absent = the legacy set with collisionless ions and an unchanged identity.",
+  "Runner: operating_point.collision_set = {name: xe_collision_set_v2, ion_neutral: true | false | {options}} selects the set; load_inputs loads the declared electron file; records_to_arrays carries the new currents, ledger, neutral and momentum scalars (NaN / 0 on older records).",
+  "Warp backend: mcc_kernel takes the per-level thresholds as a device array (n_exc = 1 reproduces the v2.0.6 arithmetic bitwise: 0.0 + x, one level, same threshold value), per-level counts through device atomics when n_exc > 1; a fourth RNG stream (ion MCC) appended to the seed table without changing streams 0-2; new kernel module warp_ion_mcc (ion_mcc_kernel) launched after the ion push on ion sub-steps; 16 + 8 new statistics slots."
+ ],
+ "xe_collision_set_v2": {
+  "electron_set": {
+   "builder": "modern/spec/pic2d/build_xenon_cross_sections_v2.py (reuses build_xenon_cross_sections.py; --verify-upstream re-downloaded the pinned LXCat export 2026-09-04T16:18:21Z: sha256 7019dd0bdffe85c782684bddbc8433babd5e0a567166a05e3e1a6713006d1698 unchanged, extract byte-identical)",
+   "database": "Biagi-v7.1 (Magboltz version 7.1, June 2004) on LXCat; export generated 21 May 2023; bytes from https://raw.githubusercontent.com/lanl/ThunderBoltz/bdd3013da1954440ed68eec30611d6dad479b6b3/lxcat/assortment.txt (retrieved 2026-09-02T15:35:58Z, re-verified 2026-09-04T16:18:21Z)",
+   "extract": "sources/lxcat_biagi-v7.1_xe_extract.txt sha256 af8c3c1fb1003abda458ebbdd567c9030e9041089fb902db76f03caedb79f7a3",
+   "file": "xenon-cross-sections-v2.json",
+   "file_sha256": "ffcd6b3989915a20e46e567c41b52b9c5160e7c9b497eec7e92a3d714c2e58db",
+   "kinematics": "per event: isotropic redirection with the level's threshold removed; level chosen by the null-collision selector's position inside the excitation band split by the per-level frequencies (equivalent to sigma_k / sum sigma_k at the electron's energy)",
+   "level_choice": "the audit's four levels are the Biagi-v7.1 levels; the other e/Xe sets in the same LXCat export are not four-level sets (Biagi/Magboltz-8.9 lineage 33 levels summing ~2x lower above 20 eV; Hayashi 6 partial levels ~1/3; Morgan one lumped total ~1.3x; BSR 47 levels to 80-400 eV) - their summed excitation at 10-300 eV is recorded in the file's provenance; Biagi-v7.1 keeps elastic, excitation and ionisation in one self-consistent swarm-validated database (Bordage et al. 2013, doi:10.1088/0022-3727/46/33/334003)",
+   "lumped_reference": {
+    "file": "xenon-cross-sections-v1.json",
+    "lumped_peak_m2": 2.95e-20,
+    "max_absolute_deviation_m2": 4.94e-23,
+    "max_relative_deviation_above_10_ev": 0.00239,
+    "payload_sha256": "4d37732ce6972058c9dd06db805a7ae1db5a572d290a298b334de1aa6789cbf4"
+   },
+   "payload_sha256": "9b39858afc4aa5e94e66c90f46772ca011674cb4c5ca93bb7c2930fec5698228",
+   "processes": [
+    {
+     "id": "elastic",
+     "kind": "elastic",
+     "source": "LXCat Biagi-v7.1 (Magboltz 7.1) e/Xe set; LXCat export of 21 May 2023 mirrored in lanl/ThunderBoltz (momentum transfer; byte-identical to v1)",
+     "threshold_ev": 0.0
+    },
+    {
+     "id": "excitation_8p315",
+     "kind": "excitation",
+     "source": "LXCat Biagi-v7.1 (Magboltz 7.1) e/Xe set; LXCat export of 21 May 2023 mirrored in lanl/ThunderBoltz, block 'Xe -> Xe*(8.315eV)'",
+     "threshold_ev": 8.315
+    },
+    {
+     "id": "excitation_9p447",
+     "kind": "excitation",
+     "source": "LXCat Biagi-v7.1 (Magboltz 7.1) e/Xe set; LXCat export of 21 May 2023 mirrored in lanl/ThunderBoltz, block 'Xe -> Xe*(9.447eV)'",
+     "threshold_ev": 9.447
+    },
+    {
+     "id": "excitation_9p917",
+     "kind": "excitation",
+     "source": "LXCat Biagi-v7.1 (Magboltz 7.1) e/Xe set; LXCat export of 21 May 2023 mirrored in lanl/ThunderBoltz, block 'Xe -> Xe*(9.917eV)'",
+     "threshold_ev": 9.917
+    },
+    {
+     "id": "excitation_11p7",
+     "kind": "excitation",
+     "source": "LXCat Biagi-v7.1 (Magboltz 7.1) e/Xe set; LXCat export of 21 May 2023 mirrored in lanl/ThunderBoltz, block 'Xe -> Xe*(11.7eV)'",
+     "threshold_ev": 11.7
+    },
+    {
+     "id": "ionization",
+     "kind": "ionization",
+     "source": "LXCat Biagi-v7.1 (Magboltz 7.1) e/Xe set; LXCat export of 21 May 2023 mirrored in lanl/ThunderBoltz (byte-identical to v1)",
+     "threshold_ev": 12.13
+    }
+   ]
+  },
+  "fast_neutral_contract": {
+   "cases": {
+    "fast_neutral_exit_channel": "born in the channel, reaches the exit plane inside the exit aperture before touching a wall: leaves the channel as thrust-carrying neutral flux; the inventory loses the atom (sink F); its axial momentum -> pz_fast_neutral_exit (thrust_total_n), its kinetic energy -> ke_fast_neutral_exit_j",
+    "fast_neutral_exit_plume": "born downstream of the exit plane (plume domains): leaves the box; the plume gas is the effusion cone, not the inventory (like ionizations_plume)",
+    "fast_neutral_thermal": "speed below fast_neutral_speed_threshold_factor x sqrt(k T_g / M) (4 x 138 m/s at 300 K): a thermal atom; stays in the inventory; no ledger term",
+    "fast_neutral_wall": "dielectric wall, cone, anode, outer box, or an unresolved march (fast_neutral_unresolved, counted): thermalises on the wall and returns to the inventory as a thermal atom (no inventory change); its axial momentum -> pz_fast_neutral_wall (force on the thruster)"
+   },
+   "energy_ledger": "sources gain - ion_neutral_loss_j = - W sum_events 1/2 M (|v_i|^2 - |v_i'|^2) over CEX and MEX (the energy handed to the neutral population: fast neutrals + MEX recoils - thermal atoms taken up); the particle-side identity dKE = field work + injected - absorbed + born - W sum n_k E_k - ion_neutral_loss closes to round-off (tests, both backends)",
+   "inventory_sink": "fast_neutral_exit_channel",
+   "momentum_ledger": "dP_plasma = impulse + pz_collisions (electrons) + pz_ion_collisions + born + injected - exit - wall - anode (residual round-off); gas_momentum_rate_n = -pz_ion_collisions - pz_fast_neutral_exit - pz_fast_neutral_wall (thermal atoms taken up, MEX recoils, slow CEX neutrals: stays in the 0-D gas, assumed thermalised with the walls)",
+   "no_double_counting": "each atom is tracked once: inventory -> (ionised -> ion particle | effused | CEX fast neutral out); ion particle -> (beam | wall / anode recycled -> inventory); the slow CEX ion is an ordinary ion afterwards",
+   "statement": "A CEX event turns an inventory atom into the (slow) ion and the ion into a FAST NEUTRAL that is not a particle of this code. Its fate is decided at the event by a straight-line flight through the cell mask in 0.5 min(dr, dz) steps (the same free-molecular assumption the 0-D inventory makes for thermal atoms), identical arithmetic on both backends."
+  },
+  "identity": {
+   "a_different_set_is_a_different_config_sha256": true,
+   "bitwise_replay_verified": "2026-09-05: the same legacy configuration (12 x 96 CFT grid, 300 V, injection 50 mA, n_g 1e21 with a recycling inventory, ion_subcycle 4, 300 steps) run on the 0901138a tree and on this tree gives identical sha256 digests of (electrons, ions, phi, surface charge) AND of the full cumulative ledger (including the float sums) and the neutral state on the numpy backend (4e512742...) and on the Warp CPU backend (6b775d91...); the CUDA replay is part of the box shakedown",
+   "cross_section_binding": "Simulation refuses a cross-section object whose payload hash or process list differs from the declared set, and refuses an undeclared multi-level set; checkpoints keep binding cross_section_sha256 (the electron payload) and config_sha256 (which now carries the ion payload hash)",
+   "enters_config_sha256": true,
+   "how": "MCCConfig.to_dict()['collision_set'] = CollisionSetConfig.to_dict() (name, electron_file, electron_payload_sha256, electron_processes[id, kind, threshold_ev], ion_neutral{file, payload_sha256, processes, energy_step_ev, energy_max_ev, fast_neutral_speed_threshold_factor, kinematics}); present only when declared",
+   "legacy": "MCCConfig without collision_set = xenon-cross-sections-v1.json + collisionless ions: MCCConfig.to_dict unchanged, every recorded config_sha256 unchanged; NullCollisionMCC / mcc_kernel with one excitation level consume the same random numbers and evaluate the same arithmetic as v2.0.6 (0.0 + x == x; the threshold read from a one-element device array); SEED_STREAMS 3 -> 4 appends the ion stream without changing streams 0-2"
+  },
+  "ion_neutral_set": {
+   "builder": "modern/spec/pic2d/build_xenon_ion_neutral_cross_sections.py (--refresh-source downloaded the pinned WarpX tables 2026-09-04T16:21Z and wrote sources/warpx_phelps_xe_ion_extract.txt sha256 7bab80addce401c7c22959ac7c38944bfedb1f5bf0a6f6d9240309b0c548f085)",
+   "cross_check_not_a_process": "Phelps' backscatter component (ion_back_scatter.dat sha256 1d47da856088f69d6682c55e00a010883803e83f954e8ea3399d2a3212c2cb3b), the charge-transfer half-sphere of his model: 1.17x (10 eV) to 1.41x (300 eV) the Miller fit - recorded in the file as the data uncertainty of the CEX rate",
+   "energy_convention": "E = 1/2 M_Xe |v_ion - v_atom|^2 (the ion's kinetic energy for a stationary atom = the laboratory energy of Miller's beam data and of Phelps' compilations; the CM energy of the symmetric pair is E/2; WarpX evaluates its copies at the CM energy - a documented factor-2 difference in the argument worth <= 10 % of sigma on these log-slow curves)",
+   "file": "xenon-ion-neutral-cross-sections-v1.json",
+   "file_sha256": "ec482a14566f5932bbc41a2707492c557c07ef19215fe0886373b8a6c72a7e20",
+   "null_collision": "nu_max = n_g0 max_E sum_k sigma_k(E) sqrt(2E/M) over the uniform table (0.05 eV steps to 2000 eV); the ceiling is set by the 2000 eV end because sigma_CEX falls only logarithmically; a candidate whose sum_k nu_k exceeds nu_max is counted (ion_mcc_ceiling_violations) and the run fails closed at the next series record; the instantaneous density is the inventory scale x plume shape (device-resident, graph-safe)",
+   "options": {
+    "energy_max_ev": 2000.0,
+    "energy_step_ev": 0.05,
+    "fast_neutral_speed_threshold_factor": 4.0
+   },
+   "payload_sha256": "6f259ba9abdf17c317dc67f535b25d23e14ab44f88667c4667392642bac079cb",
+   "processes": [
+    {
+     "id": "cex",
+     "kind": "charge_exchange",
+     "kinematics": "velocity swap with the sampled thermal atom (= pi backscatter in the CM for equal masses); the atom leaves as a fast neutral with the ion's velocity",
+     "source": "Miller, Pullins, Levandier, Chiu, Dressler, J. Appl. Phys. 91, 984 (2002), doi:10.1063/1.1426246, Eq. (4): sigma = (87.3 - 13.6 log10 E/eV) A^2, measured 1-300 eV, held at its 0.1 eV value below 0.1 eV, used as the published fit to 2000 eV",
+     "values_a2": {
+      "1": 87.3,
+      "10": 73.7,
+      "100": 60.1,
+      "1000": 46.5,
+      "300": 53.6
+     }
+    },
+    {
+     "id": "mex",
+     "kind": "momentum_transfer",
+     "kinematics": "isotropic redirection of the relative velocity in the centre of mass, both partners keep their CM speeds; the atom's recoil is handed to the 0-D gas",
+     "source": "Phelps database (www.lxcat.net/Phelps), Xe+ / Xe isotropic elastic component from Piscitelli, Phelps, de Urquijo, Basurto, Pitchford, Phys. Rev. E 68, 046408 (2003), doi:10.1103/PhysRevE.68.046408; bytes from BLAST-WarpX/warpx-data MCC_cross_sections/Xe/ion_scattering.dat @ c42f106f96fe6415c7cc89dd31d1027ff5c8c68e (sha256 5f196141e10b5986b2dc1ad017dd4f3c3d417eb6c17ee1189863e668fce874ab); the rows follow 3.39e-19 E^-1/2 m2 (polarisation form), extended with that power law 750-2000 eV",
+     "values_a2": {
+      "1": 33.9,
+      "10": 10.7,
+      "100": 3.39,
+      "300": 1.96
+     }
+    }
+   ],
+   "thermal_atom": "Maxwellian at MCCConfig.neutral_temperature_k (the gas / feed temperature; with wall recycling the gas is a two-temperature mixture - the wall-temperature population is not sampled separately: declared simplification)"
+  },
+  "name": "xe_collision_set_v2",
+  "out_of_scope_here": [
+   "e2 metastables / stepwise ionisation (0-D metastable pool, xenon-metastable-cross-sections; audit R5b) - not trivial, not attempted",
+   "e3 Xe2+ (second ion species; audit R6) - not attempted",
+   "spatial neutrals (R5a): the ion MCC reads the 0-D scale x plume shape; the per-particle density hook (density_shape) is the place where a per-node density plugs in",
+   "the two-temperature (feed + wall-recycled) atom population in the CEX sampling; sputtering by fast neutrals hitting the wall (their energy is booked, not their sputter yield)"
+  ],
+  "predeclared_expectations": {
+   "discharge_current": "I_d ~ unchanged (< 5 %); the four levels raise the inelastic power ~15 % and lower T_e 3-5 % and S 3-5 % (R3a); CEX / MEX leave I_d, S nearly unchanged (R3b)",
+   "energy_ledger": "residual-power gate behaviour unchanged (the new sink is booked, so no bias appears); ion_neutral_loss_j positive of order the CEX rate x mean ion energy",
+   "iedf_low_energy_population": "the exit-plane IEDF gains a low-energy population of 15-30 % of the exit ions (lambda_CEX ~ 62 mm at 3e19 vs 12-24 mm flight paths: 1 - exp(-L/lambda) = 0.18-0.32); early CEX / MEX event rates of the shakedown are to be compared with n_g sigma v N_i",
+   "ion_thrust_redistribution": "ion beam thrust (pz_exit_ions) DOWN by the exchanged fraction; fast_neutral_thrust_n takes it; total (ion + fast neutral + cold gas) ~ unchanged; anode ion current UP (slow CEX ions); divergence UP (MEX)",
+   "ionization_rate": "S down 3-5 % (R3a); gross utilisation follows; the n_g fixed point moves with S and with the new sink F (F/S ~ the exchanged fraction of the beam, 15-30 % x the exit fraction)",
+   "not_expected": "no change of the electron elastic / ionisation rates at fixed T_e (byte-identical tables); no change of the total excitation frequency at fixed EEDF",
+   "reference": "ss-v4 33 um channel-only plateau 0d228ad2 (I_d 3.80 mA, S 3.60e16 /s, n_g 3.19e19, peak n_e 1.29e18, T_e,peak 5.58 eV, IEDF at the exit plane); all statements are directions and rough magnitudes from the audit (sections 4.e, 5, 9) - a result of the opposite sign is a finding, not a tuning target"
+  },
+  "selection": "MCCConfig(..., collision_set=CollisionSetConfig.xe_collision_set_v2(ion_neutral=True | False)) or the protocol block operating_point.collision_set; CollisionSetConfig.from_protocol never reads hashes from the protocol - the named set is loaded from the spec files and its recomputed payload hashes are what enter the identity",
+  "shakedown": "experiments/pic2d_xe_collision_set_v2_shakedown/ (the ss-v4 33 um protocol with operating_point.collision_set = xe_collision_set_v2, 100 000 steps through finalize + assess on the Lambda H100 as an extra MPS client; NOT a result; report early CEX / MEX rates and the exit IEDF shape against the legacy set)",
+  "tests": "tests/pic2d/test_pic2d_xe_collision_set_v2.py: data binding + reproducibility + spot values vs the sources (e-Xe levels vs the LXCat rows, Miller fit values, Phelps rows), total excitation vs lumped, multi-level rates / per-level losses / ledger, legacy operator + identity unchanged, collision set in config_sha256 + fail-closed binding, Maxwellian sampling moments, CEX conservation (weight, momentum, energy, fast-neutral booking, Bernoulli rate), MEX isotropy in the CM (E'/E uniform), rate test in a uniform box with the real tables, fast-neutral fate cases, slow / plume-born neutrals, energy + atom ledgers on cpu / warp-cpu / warp-cuda, legacy records without new keys, cpu-vs-warp statistics, CUDA graph-vs-direct bitwise, checkpoint round trip with the v2 neutral layout + bitwise resume, inventory sink, plume-domain momentum terms, runner protocol block + arrays, this spec entry"
+ }
+}
