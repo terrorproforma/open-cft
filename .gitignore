@@ -141,6 +141,9 @@ modern/experiments/pic2d_cft_steady_state_v2/results*/*.log
 modern/experiments/pic2d_cft_steady_state_v2/results*/*.err
 # PIC-2D steady-state v3 (model v1.4): results stay untracked until the run ends
 modern/experiments/pic2d_cft_steady_state_v3/results*/
+# PIC-2D steady-state v4 (preregistered 33 um refinement): results stay untracked until the run ends
+# (results-only commit adds the negations); the non-evidentiary shakedown directory is never tracked
+modern/experiments/pic2d_cft_steady_state_v4/results*/
 # PIC-2D plume development run v1 (model v2.0): results stay untracked until the run ends;
 # attempt 3 (no ignition) is kept as a development record: summary (with the frames manifest),
 # run state, status/series/maps, final checkpoint metadata; the frames, the videos, the
