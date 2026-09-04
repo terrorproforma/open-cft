@@ -157,6 +157,9 @@ modern/experiments/pic2d_cft_steady_state_v4/results/series.jsonl
 modern/experiments/pic2d_cft_steady_state_v4/results/*.pid
 modern/experiments/pic2d_cft_steady_state_v4/results/*.log
 modern/experiments/pic2d_cft_steady_state_v4/results/*.err
+# PIC-2D steady-state v5 (preregistered 25 um ladder point): results stay untracked until the run ends
+# (results-only commit adds the negations); the non-evidentiary shakedown directory is never tracked
+modern/experiments/pic2d_cft_steady_state_v5/results*/
 # PIC-2D design mini-sweep v1 (preregistered channel-33um option): per-design results/<design>-<option>/ stay untracked
 # until a run ends (results-only commit adds the negations); the shakedown and MPS-replay scratch directories are never tracked
 modern/experiments/pic2d_design_mini_sweep_v1/results*/
