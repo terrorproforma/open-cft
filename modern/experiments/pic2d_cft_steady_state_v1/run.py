@@ -66,6 +66,7 @@ from cft_revival.pic2d.models import (
     StabilityLimits,
 )
 from cft_revival.pic2d.neutrals import NEUTRAL_LEDGER_KEYS, NeutralInventoryConfig
+from cft_revival.pic2d.see import SEEConfig
 from cft_revival.pic2d.sensitivity import AnomalousCollisionConfig
 from cft_revival.pic2d.simulation import (
     CathodeConfig,
@@ -108,6 +109,12 @@ NEUTRAL_LEDGER_KEYS_V23 = ("fast_neutral_exit",)
 MOMENTUM_OPTIONAL_SCALARS_V23 = (
     "ion_collision_momentum_rate_n", "fast_neutral_exit_momentum_rate_n", "fast_neutral_wall_momentum_rate_n", "gas_momentum_rate_n",
     "fast_neutral_thrust_n", "fast_neutral_exit_power_w",
+# v2.2.0 SEE sample (records of an emitting wall only; see Simulation._see_record)
+SEE_SCALARS = (
+    "interval_impacts", "interval_emitted", "interval_ion_induced_emitted", "interval_effective_yield", "interval_mean_yield",
+    "interval_clamped_impacts", "cumulative_effective_yield", "emission_current_a", "wall_impact_current_a", "backscattered_fraction",
+    "mean_emitted_energy_ev", "emitted_power_w", "wall_potential_mean_v", "wall_potential_min_v", "wall_potential_max_v",
+    "plasma_minus_wall_mean_v",
 )
 NEUTRAL_SCALARS = (
     "density_per_m3", "fixed_point_per_m3", "scale", "ionization_rate_per_s", "effusion_rate_per_s",
@@ -280,6 +287,11 @@ def build_config(protocol: dict[str, Any], *, backend: str = "warp-cuda") -> PIC
     anomalous = None
     if numerics.get("anomalous_collisions") is not None:
         anomalous = AnomalousCollisionConfig(**{k: v for k, v in numerics["anomalous_collisions"].items() if not k.endswith("_note")})
+    # v2.2.0: secondary electron emission from the dielectric wall (numerics.see = SEEConfig fields; absent = the v2.0.x
+    # absorbing wall and an unchanged config identity)
+    see = None
+    if numerics.get("see") is not None:
+        see = SEEConfig(**{k: v for k, v in numerics["see"].items() if not k.endswith("_note")})
     # v2.0: a cathode emission region in the plume replaces the exit-plane injection (kept as the legacy option)
     cathode = None
     injection = None
@@ -323,6 +335,7 @@ def build_config(protocol: dict[str, Any], *, backend: str = "warp-cuda") -> PIC
         neutral_inventory=inventory,
         peak_debye_gate=peak_gate,
         anomalous=anomalous,
+        see=see,
         moment_sample_interval=moment_sample_interval,
     )
 
@@ -681,6 +694,10 @@ def records_to_arrays(records: list[dict[str, Any]]) -> dict[str, np.ndarray]:
     if with_plume:
         for key in PLUME_SCALARS:
             arrays[f"plume_{key}"] = []
+    with_see = bool(records) and records[0].get("see") is not None     # v2.2.0: emitting wall
+    if with_see:
+        for key in SEE_SCALARS:
+            arrays[f"see_{key}"] = []
     for record in records:
         for key in SERIES_SCALARS:
             arrays[key].append(float(record[key]))
@@ -721,6 +738,11 @@ def records_to_arrays(records: list[dict[str, Any]]) -> dict[str, np.ndarray]:
             for key in PLUME_SCALARS:
                 value = plume.get(key)
                 arrays[f"plume_{key}"].append(float("nan") if value is None else float(value))
+        if with_see:
+            see = record.get("see") or {}
+            for key in SEE_SCALARS:
+                value = see.get(key)
+                arrays[f"see_{key}"].append(float("nan") if value is None else float(value))
     return {key: np.asarray(values, dtype=np.float64) for key, values in arrays.items()}
 
 

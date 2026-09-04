@@ -46,6 +46,8 @@ PROFILE_KEYS = (
     "wall_ion_flux_per_m2_s", "wall_electron_flux_per_m2_s", "exit_ion_current_density_a_per_m2",
     "exit_electron_current_density_a_per_m2", "side_ion_current_density_a_per_m2", "side_electron_current_density_a_per_m2",
     "plume_ion_current_per_sr_a", "iedf_ion_counts",
+    # v2.2.0 (additive, present only when the wall emits): SEE flux, effective yield and mean emitted energy per wall cell
+    "wall_see_flux_per_m2_s", "wall_see_effective_yield", "wall_see_mean_energy_ev",
 )
 SCALAR_KEYS = (
     "step", "time_s", "electrons", "ions", "discharge_a", "exit_ion_beam_a", "ionization_rate_per_s", "neutral_density_per_m3",
@@ -102,7 +104,9 @@ def interval_maps(sums_end: Mapping[str, np.ndarray], sums_start: Mapping[str, n
     """Exact interval average between two cumulative snapshots of the window sums."""
 
     diff: dict[str, np.ndarray] = {}
-    for key in DiagnosticAccumulator.SUM_KEYS + ("steps",):
+    # v2.2.0: the SEE sums travel with the others when the wall emits (absent otherwise: nothing added to the frame)
+    see_keys = tuple(key for key in DiagnosticAccumulator.SEE_SUM_KEYS if key in sums_end)
+    for key in DiagnosticAccumulator.SUM_KEYS + see_keys + ("steps",):
         end = np.asarray(sums_end[key])
         diff[key] = end.copy() if sums_start is None else end - np.asarray(sums_start[key])
     # v2.0.5: the moment sample count is additive like the sums (absent in pre-v2.0.5 snapshots: one sample per step)

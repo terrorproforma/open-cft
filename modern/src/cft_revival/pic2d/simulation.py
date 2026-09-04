@@ -49,7 +49,8 @@ from .models import (
     xenon_ion_species,
 )
 from .poisson import Poisson2D, apply_operator, electric_field_nodes, field_energy_j, induced_electrode_charge_c
-from .sensitivity import AnomalousCollisionConfig, SEEConfig, apply_anomalous_scattering
+from .see import SEEConfig, SEEEmission, emit_secondaries
+from .sensitivity import AnomalousCollisionConfig, apply_anomalous_scattering
 
 BackendName = Literal["cpu", "warp-cpu", "warp-cuda"]
 
@@ -198,8 +199,9 @@ class PIC2DConfig:
     # v1.4: fail-closed runtime gate on cells per Debye length at the peak-density node
     # (evaluated at every series record); None = recorded only when a gate is absent.
     peak_debye_gate: "PeakDebyeGateConfig | None" = None
-    # v1.4 sensitivity hooks (default OFF): Bohm-type anomalous scattering and the SEE scaffold.
+    # v1.4 sensitivity hook (default OFF): Bohm-type anomalous scattering.
     anomalous: "AnomalousCollisionConfig | None" = None
+    # v2.2.0: secondary electron emission from the dielectric wall (see.py); None = the v2.0.x wall (absorbing).
     see: "SEEConfig | None" = None
     # v2.0: cathode emission region in the plume (replaces the exit-plane ``injection``, which stays
     # as the legacy A/B option); requires a plume geometry.
@@ -229,10 +231,8 @@ class PIC2DConfig:
             if not (geometry.z_max_m <= self.cathode.z_start_m and self.cathode.z_end_m <= geometry.domain_z_max_m
                     and self.cathode.r_outer_m <= geometry.max_radius_m):
                 raise PIC2DValidationError("the cathode annulus must lie inside the plume box")
-        if self.see is not None and self.see.enabled:
-            raise PIC2DValidationError(
-                "SEE emission is a v1.4 scaffold (yield model + wall diagnostics only); enabled=True is not implemented - fail closed"
-            )
+        if self.see is not None and not isinstance(self.see, SEEConfig):
+            raise PIC2DValidationError("see must be a SEEConfig")
         if self.neutral_inventory is not None and (self.mcc is None or self.mcc.neutral_density_per_m3 <= 0.0):
             raise PIC2DValidationError("neutral_inventory requires an MCC configuration with a positive neutral density")
         if not isfinite(self.macro_weight) or self.macro_weight <= 0.0:
@@ -285,6 +285,12 @@ class PIC2DConfig:
           | ({} if self.moment_sample_interval == 1 else {"moment_sample_interval": self.moment_sample_interval})
         # (each key is present only when its option is on, so v1.0-v1.3 config identities are unchanged;
         #  v2.0.5: K = 1 keeps every v2.0.x identity, K != 1 is part of the identity)
+
+    @property
+    def see_active(self) -> bool:
+        """v2.2.0: the dielectric wall emits (an ``SEEConfig`` with ``enabled``)."""
+
+        return self.see is not None and self.see.enabled
 
     @property
     def emission_peak_current_a(self) -> float:
@@ -379,6 +385,19 @@ MOMENTUM_KEYS = (
 )
 # v2.0: the continuity-rule emission rate is dynamical state (checkpointed as an extra ledger scalar)
 CATHODE_RATE_KEY = "cathode_rate_per_step"
+# v2.2.0 SEE ledger (extra keys, present only when the wall emits; see see.py):
+#   see_impacts                 electron impacts on the emitting (dielectric) wall
+#   see_electrons               emitted macro-electrons (electron-induced)
+#   see_ion_induced_electrons   emitted macro-electrons (ion-induced, yield gamma_i)
+#   see_backscattered           elastic + inelastic among the emitted
+#   see_yield_sum               sum of delta over the electron impacts (expected emitted count)
+#   see_yield_clamped           electron impacts whose yield exceeded max_emitted_per_impact
+#   ke_see_emitted_j            W-scaled kinetic energy of the emitted electrons (an INJECTED energy term)
+#   pz_see_emitted              W-scaled axial momentum of the emitted electrons
+SEE_KEYS = (
+    "see_impacts", "see_electrons", "see_ion_induced_electrons", "see_backscattered", "see_yield_sum", "see_yield_clamped",
+    "ke_see_emitted_j", "pz_see_emitted",
+)
 # v2.0 plume histograms: ion current per solid angle in 1 degree bins from the exit-aperture centre and
 # the ion energy distribution at the far-field boundary (256 bins over [0, iedf_max_ev])
 THETA_BINS = 90
@@ -389,6 +408,16 @@ def momentum_z_kg_m_s(species: Species2D, particles: ParticleArrays) -> float:
     """Represented axial momentum ``sum W m v_z`` (classical; the ledger tallies the same quantity)."""
 
     return float(np.sum(particles.vz_m_per_s)) * species.mass_kg * species.macro_weight
+
+
+def dielectric_wall_nodes(masks: MeshMasks) -> np.ndarray:
+    """v2.2.0: the floating (dielectric) wall nodes for the SEE wall-potential diagnostic: the stair-step wall nodes plus
+    the unknown nodes of the outer grid row (a straight bore's wall lies ON the outer grid line, which ``wall_node`` -
+    "adjacent to a solid cell" - does not flag; Dirichlet far-field / conductor nodes are excluded by ``unknown_node``)."""
+
+    outer = np.zeros_like(masks.plasma_node)
+    outer[-1, :] = True
+    return masks.wall_node | (masks.unknown_node & outer)
 
 
 @dataclass(slots=True)
@@ -610,12 +639,17 @@ def peak_node_debye(
 class DiagnosticAccumulator:
     """Time-window sums of node maps and boundary fluxes (CPU numpy)."""
 
-    def __init__(self, masks: MeshMasks, iedf_max_ev: float = 450.0) -> None:
+    def __init__(self, masks: MeshMasks, iedf_max_ev: float = 450.0, see: bool = False) -> None:
         self.masks = masks
         shape = masks.grid.node_shape
         nz = masks.grid.axial_cells
         nr = masks.grid.radial_cells
         self.steps = 0
+        # v2.2.0: the SEE profiles (emitted count and W-scaled energy per axial wall cell) exist only when the wall
+        # emits, so the sums / maps / frames of a configuration without SEE are unchanged
+        self.see = bool(see)
+        self.wall_see_electrons = np.zeros(nz)
+        self.wall_see_energy_j = np.zeros(nz)
         # v2.0.5: number of steps at which the electron moments (e_weight, e_v*, e_v2) were deposited; equals
         # ``steps`` for moment_sample_interval = 1.  The moment maps are ratios (v2 / w etc.), so they need no
         # normalisation; the occupancy ``e_weight / moment_samples`` is the mean macro-electron count per node.
@@ -644,7 +678,7 @@ class DiagnosticAccumulator:
         self.iedf_max_ev = float(iedf_max_ev)
 
     def reset(self) -> None:
-        self.__init__(self.masks, self.iedf_max_ev)
+        self.__init__(self.masks, self.iedf_max_ev, self.see)
 
     # v2.0 frame recorder: the raw window sums, so that an interval [a, b] inside the window is
     # recovered exactly as the difference of two cumulative snapshots (sums are additive)
@@ -653,20 +687,25 @@ class DiagnosticAccumulator:
         "wall_electron_energy_j", "wall_ion_energy_j", "exit_ions", "exit_electrons", "side_ions", "side_electrons",
         "theta_ions", "iedf_ions",
     )
+    # v2.2.0: optional SEE sums (present in raw_sums / frames only when the wall emits)
+    SEE_SUM_KEYS = ("wall_see_electrons", "wall_see_energy_j")
 
     # additive scalar counters that ride along with the sums (differenced like them by the frame recorder)
     COUNT_KEYS = ("steps", "moment_samples")
 
+    def sum_keys(self) -> tuple[str, ...]:
+        return self.SUM_KEYS + (self.SEE_SUM_KEYS if self.see else ())
+
     def raw_sums(self) -> dict[str, np.ndarray]:
-        out = {key: np.asarray(getattr(self, key)).copy() for key in self.SUM_KEYS}
+        out = {key: np.asarray(getattr(self, key)).copy() for key in self.sum_keys()}
         out["steps"] = np.array([self.steps], dtype=np.int64)
         out["moment_samples"] = np.array([self.moment_samples], dtype=np.int64)
         return out
 
     @classmethod
     def from_sums(cls, masks: MeshMasks, sums: Mapping[str, np.ndarray], iedf_max_ev: float = 450.0) -> "DiagnosticAccumulator":
-        acc = cls(masks, iedf_max_ev)
-        for key in cls.SUM_KEYS:
+        acc = cls(masks, iedf_max_ev, see=all(key in sums for key in cls.SEE_SUM_KEYS))
+        for key in acc.sum_keys():
             setattr(acc, key, np.asarray(sums[key], dtype=np.float64).copy())
         acc.steps = int(np.asarray(sums["steps"]).reshape(-1)[0])
         # sums recorded before v2.0.5 carry no sample count: the moments were deposited at every accumulated step
@@ -718,6 +757,18 @@ class DiagnosticAccumulator:
         theta_edges = np.radians(np.linspace(0.0, 90.0, THETA_BINS + 1))
         solid_angle = 2.0 * pi * (np.cos(theta_edges[:-1]) - np.cos(theta_edges[1:]))
         iedf_edges = np.linspace(0.0, self.iedf_max_ev, IEDF_BINS + 1)
+        see_maps: dict[str, np.ndarray] = {}
+        if self.see:
+            # v2.2.0: emitted flux per wall cell, the effective yield (emitted / impacting per cell; the regime diagnostic
+            # against the Hobbs-Wesson limit) and the mean emitted energy
+            see_maps = {
+                "wall_see_flux_per_m2_s": self.wall_see_electrons * electron_weight / (wall_area * window_s),
+                "wall_see_effective_yield": np.where(self.wall_electrons > 0, self.wall_see_electrons / np.maximum(self.wall_electrons, 1), 0.0),
+                "wall_see_mean_energy_ev": np.where(
+                    self.wall_see_electrons > 0,
+                    self.wall_see_energy_j / np.maximum(self.wall_see_electrons, 1) / (electron_weight * EV_J), 0.0,
+                ),
+            }
         return {
             "n_e_per_m3": self.n_e / steps,
             "side_ion_current_density_a_per_m2": self.side_ions * electron_weight * ELEMENTARY_CHARGE_C / (side_area * window_s),
@@ -748,7 +799,7 @@ class DiagnosticAccumulator:
             "window_steps": np.array([self.steps]),
             # v2.0.5: steps at which the electron moments were sampled (sample_count_e / moment_samples = mean occupancy)
             "moment_samples": np.array([self.moment_samples]),
-        }
+        } | see_maps
 
 
 def instantaneous_maps(config: PIC2DConfig, masks: MeshMasks, state: SimulationState) -> dict[str, np.ndarray]:
@@ -807,9 +858,12 @@ class CPUBackend:
             self.mcc = NullCollisionMCC(cross_sections, config.mcc, self.ion)
             self.ion_mcc = build_ion_mcc(config, self.ion, masks)
         self.state: SimulationState | None = None
-        self.diagnostics = DiagnosticAccumulator(masks, iedf_max_ev=iedf_max_ev(config))
+        self.diagnostics = DiagnosticAccumulator(masks, iedf_max_ev=iedf_max_ev(config), see=config.see_active)
         self.diagnostic_generation = 0     # v2.0.2: incremented by every reset_diagnostics (window bridging)
         self.quantum_c = ELEMENTARY_CHARGE_C * config.macro_weight
+        # v2.2.0: SEE emission of the current step (electron- and ion-induced passes share one RNG stream, 4)
+        self._see_rng: np.random.Generator | None = None
+        self._see_emitted: list[ParticleArrays] = []
         self.last_tally: StepTally | None = None
         self._last_charge_maps: tuple[np.ndarray, np.ndarray] | None = None
         # v2.0: two-zone neutral density shape (1 in the channel, free-molecular cone in the plume)
@@ -821,6 +875,10 @@ class CPUBackend:
         self.state = state.copy()
         self._last_charge_maps = None
         self.emission_rate_per_step = float(state.cumulative.get(CATHODE_RATE_KEY, self.config.initial_emission_rate_per_step))
+        if self.config.see_active:
+            # v2.2.0: the SEE ledger keys exist from the first record of an emitting wall (extra keys; absent otherwise)
+            for key in SEE_KEYS:
+                self.state.cumulative.setdefault(key, 0.0)
 
     def export_state(self) -> SimulationState:
         assert self.state is not None
@@ -930,6 +988,9 @@ class CPUBackend:
         field_work = 0.0
         cumulative = state.cumulative
         add = lambda key, value: cumulative.__setitem__(key, cumulative.get(key, 0.0) + float(value))  # noqa: E731
+        # v2.2.0: one SEE random stream per step (stream 5; 1-4 are MCC, injection, anomalous scattering, ion-neutral MCC)
+        self._see_rng = np.random.default_rng([config.seed, state.step, 5]) if config.see_active else None
+        self._see_emitted = []
         for species, particles, is_electron in ((self.electron, electrons, True), (self.ion, ions, False)):
             if particles.count == 0 or (not is_electron and not ion_step):
                 continue
@@ -957,7 +1018,7 @@ class CPUBackend:
             codes = kernels.classify_boundary(masks, moved.r_m, moved.z_m)
             if np.any(codes == kernels.BOUNDARY_INVALID):
                 raise PIC2DStabilityError("a particle crossed more than one cell in a step (Courant violation)")
-            self._absorb(species, moved, codes, is_electron, accumulate)
+            self._absorb(species, particles, moved, codes, is_electron, accumulate)
             keep = codes == kernels.BOUNDARY_INSIDE
             if is_electron:
                 electrons = moved.select(keep)
@@ -1030,6 +1091,13 @@ class CPUBackend:
                 state.cumulative["ke_injected_j"] += kernels.kinetic_energy_j(self.electron, injected)
                 add("pz_injected", momentum_z_kg_m_s(self.electron, injected))
 
+        # v2.2.0: the wall's secondary electrons join the population last (after MCC and injection, like the
+        # injected electrons): their ledger terms were booked in _absorb; they are first pushed next step
+        for emitted in self._see_emitted:
+            if emitted.count:
+                electrons = electrons.append(emitted)
+        self._see_emitted = []
+
         state.electrons = electrons
         state.ions = ions
         state.phi_v = phi
@@ -1064,7 +1132,8 @@ class CPUBackend:
             diag.e_vz += kernels.deposit_node_moment(masks, electrons, electrons.vz_m_per_s)
             diag.e_v2 += kernels.deposit_node_moment(masks, electrons, electrons.speed_squared())
 
-    def _absorb(self, species: Species2D, moved: ParticleArrays, codes: np.ndarray, is_electron: bool, accumulate: bool) -> None:
+    def _absorb(self, species: Species2D, before: ParticleArrays, moved: ParticleArrays, codes: np.ndarray, is_electron: bool,
+                accumulate: bool) -> None:
         assert self.state is not None
         state = self.state
         grid = self.masks.grid
@@ -1088,6 +1157,11 @@ class CPUBackend:
             state.cumulative[momentum_key] = state.cumulative.get(momentum_key, 0.0) + mass_weight * float(moved.vz_m_per_s[mask].sum())
             if code == kernels.BOUNDARY_WALL:
                 charge = np.full(count, species.charge_c * species.macro_weight)
+                if self.config.see_active:
+                    # v2.2.0: the impact is absorbed (booked above); the wall emits n secondaries per impact, each
+                    # leaving +e W on the wall, so the net surface deposit is (q + n e W) at the impact stencil
+                    emission = self._emit_secondaries(before.select(mask), moved.select(mask), ke[mask], is_electron, accumulate)
+                    charge = charge + emission.emitted_per_impact * self.quantum_c
                 state.surface_charge_c += kernels.wall_surface_deposit(
                     self.masks, moved.r_m[mask], moved.z_m[mask], charge,
                     fixed_point=self.config.fixed_point_deposition, quantum_c=self.quantum_c,
@@ -1105,6 +1179,48 @@ class CPUBackend:
                     np.add.at(energy_target, j, ke[mask])
             elif code == kernels.BOUNDARY_EXIT and accumulate:
                 self.diagnostics.record_exit(is_electron, moved.r_m[mask], moved.z_m[mask], ke[mask] / (species.macro_weight * EV_J))
+
+    def _emit_secondaries(self, before: ParticleArrays, hit: ParticleArrays, impact_ke_j: np.ndarray, is_electron: bool,
+                          accumulate: bool) -> SEEEmission:
+        """v2.2.0: SEE for the wall impacts of one species this step (CPU reference ``see.emit_secondaries``).
+
+        Books the ledger (``SEE_KEYS``) and the per-column window profiles; the emitted electrons are queued and
+        appended to the population at the end of the step.  Hits on the grounded front-face conductor of a plume
+        geometry (``r >= body_dielectric_radius_m``) do not emit.
+        """
+
+        assert self.state is not None and self.config.see is not None and self._see_rng is not None
+        config = self.config
+        grid = self.masks.grid
+        geometry = grid.geometry
+        emitting = None
+        if self.masks.has_plume:
+            emitting = hit.r_m < float(geometry.body_dielectric_radius_m)
+        emission = emit_secondaries(
+            config.see, grid, self.masks.plasma_cell, is_electron=is_electron, old=before, hit=hit, impact_kinetic_energy_j=impact_ke_j,
+            macro_weight=config.macro_weight, rng=self._see_rng, emitting=emitting,
+        )
+        cumulative = self.state.cumulative
+
+        def add(key: str, value: float) -> None:
+            cumulative[key] = cumulative.get(key, 0.0) + float(value)
+
+        if is_electron:
+            add("see_impacts", emission.impacts)
+            add("see_electrons", emission.emitted)
+            add("see_yield_sum", emission.yield_sum)
+            add("see_yield_clamped", emission.clamped)
+        else:
+            add("see_ion_induced_electrons", emission.emitted)
+        add("see_backscattered", emission.backscattered)
+        add("ke_see_emitted_j", emission.kinetic_energy_j)
+        add("pz_see_emitted", emission.momentum_z)
+        if accumulate and emission.emitted:
+            np.add.at(self.diagnostics.wall_see_electrons, emission.column, 1.0)
+            np.add.at(self.diagnostics.wall_see_energy_j, emission.column, emission.column_energy_j)
+        if emission.emitted:
+            self._see_emitted.append(emission.particles)
+        return emission
 
     def _inject(self, step: int, carry: float) -> tuple[ParticleArrays, float]:
         config = self.config
@@ -1312,6 +1428,8 @@ class SeriesRecord:
     plume: dict[str, Any] | None = None
     # v2.0.4: the unfloored single-step peak omega_pe dt (peak_omega_pe_dt is the resolved-node gate statistic); None for pre-v2.0.4 records
     peak_omega_pe_dt_raw: float | None = None
+    # v2.2.0: SEE interval sample (emitting walls only): effective yield, emission current, wall potential
+    see: dict[str, Any] | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -1325,7 +1443,8 @@ class SeriesRecord:
             "peak_node": None if self.peak_node is None else dict(self.peak_node),
         } | ({} if self.momentum is None else {"momentum": dict(self.momentum)}) \
           | ({} if self.plume is None else {"plume": dict(self.plume)}) \
-          | ({} if self.peak_omega_pe_dt_raw is None else {"peak_omega_pe_dt_raw": self.peak_omega_pe_dt_raw})
+          | ({} if self.peak_omega_pe_dt_raw is None else {"peak_omega_pe_dt_raw": self.peak_omega_pe_dt_raw}) \
+          | ({} if self.see is None else {"see": dict(self.see)})
 
 
 # v2.0.2 plume-boundary gate: trailing window of ACCUMULATED steps over which the far-field charge statistic is
@@ -2012,10 +2131,13 @@ class Simulation:
                     "(an ion's relative energy is above the table / the neutral density above the ceiling)"
                 )
         total = k_e + k_i + u_e
+        # v2.2.0: the kinetic energy of the wall's secondary electrons is an injected term (zero without SEE: the key is absent)
+        see_emitted_j = extra("ke_see_emitted_j")
         sources = (
             delta["ke_injected_j"] - delta["ke_absorbed_anode_j"] - delta["ke_absorbed_exit_j"]
             - delta["ke_absorbed_wall_j"] - delta["inelastic_loss_j"] + delta["ke_born_ions_j"] + electrode_work
             - ion_neutral_loss       # v2.3.0: kinetic energy the ions hand to the neutrals in CEX / MEX (0 when off)
+            + see_emitted_j          # v2.2.0: kinetic energy of the wall's secondary electrons (0 when off)
         )
         residual = 0.0 if self._last_energy is None else (total - self._last_energy) - sources
         ledger = {
@@ -2033,7 +2155,14 @@ class Simulation:
         if self.ion_mcc_on:
             ledger["interval_ion_neutral_loss_j"] = ion_neutral_loss
             ledger["interval_ke_fast_neutral_exit_j"] = extra("ke_fast_neutral_exit_j")
+        if config.see_active:
+            ledger["interval_see_emitted_j"] = see_emitted_j
         plasma_phi = phi[masks.plasma_node]
+        see_sample: dict[str, Any] | None = None
+        if config.see_active:
+            see_sample = self._see_record(extra, delta, interval, current_unit, phi, plasma_phi)
+            currents["see_emission_a"] = see_sample["emission_current_a"]
+            currents["see_effective_yield"] = see_sample["interval_effective_yield"]
         neutral: dict[str, Any] | None = None
         if self.neutrals is not None and self.neutral_state is not None:
             # v1.3: advance the inventory with the ionisation measured over this interval,
@@ -2104,6 +2233,7 @@ class Simulation:
                 float(plasma_phi.mean()), float(plasma_phi.min()), float(plasma_phi.max()),
                 k_e, k_i, u_e, float(sample["surface_charge_c"]), tally.max_omega_pe_dt,
                 tally.poisson_iterations, currents, ledger, neutral, peak_node, momentum, plume, tally.max_omega_pe_dt_raw,
+                see_sample,
             )
         )
         self._last_cumulative = dict(cumulative)
@@ -2124,6 +2254,43 @@ class Simulation:
                 f"averaged over {window_peak['window_steps']} steps (<n_e> {window_peak['n_e_peak_per_m3']:.3g} m^-3, "
                 f"T_e {window_peak['t_e_peak_ev']:.3g} eV) exceeds {gate.max_cells_per_debye}"
             )
+
+    # -- v2.2.0 SEE block ----------------------------------------------------------
+    def _see_record(self, extra: Any, delta: Mapping[str, float], interval: float, current_unit: float, phi: np.ndarray,
+                    plasma_phi: np.ndarray) -> dict[str, Any]:
+        """Interval SEE sample: effective yield (emitted / impacting), emission current, backscattered share, mean emitted
+        energy, and the wall potential relative to the plasma (the space-charge-limit regime is diagnosed, not imposed:
+        an effective yield at or above ``space_charge_limit_yield`` with a wall drop near 1 T_e is the Hobbs-Wesson state)."""
+
+        assert self.config.see is not None
+        impacts = extra("see_impacts")
+        emitted = extra("see_electrons")
+        ion_induced = extra("see_ion_induced_electrons")
+        backscattered = extra("see_backscattered")
+        energy = extra("ke_see_emitted_j")
+        wall_phi = phi[dielectric_wall_nodes(self.masks)]
+        cumulative_impacts = float(self._last_cumulative.get("see_impacts", 0.0) + impacts)
+        cumulative_emitted = float(self._last_cumulative.get("see_electrons", 0.0) + emitted)
+        return {
+            "interval_impacts": impacts,
+            "interval_emitted": emitted,
+            "interval_ion_induced_emitted": ion_induced,
+            "interval_effective_yield": emitted / impacts if impacts > 0 else 0.0,
+            "interval_mean_yield": extra("see_yield_sum") / impacts if impacts > 0 else 0.0,
+            "interval_clamped_impacts": extra("see_yield_clamped"),
+            "cumulative_effective_yield": cumulative_emitted / cumulative_impacts if cumulative_impacts > 0 else 0.0,
+            "emission_current_a": (emitted + ion_induced) * current_unit,
+            "wall_impact_current_a": delta["wall_electrons"] * current_unit,
+            "backscattered_fraction": backscattered / (emitted + ion_induced) if emitted + ion_induced > 0 else 0.0,
+            "mean_emitted_energy_ev": energy / ((emitted + ion_induced) * self.config.macro_weight * EV_J) if emitted + ion_induced > 0 else 0.0,
+            "emitted_power_w": energy / interval,
+            "wall_potential_mean_v": float(wall_phi.mean()) if wall_phi.size else 0.0,
+            "wall_potential_min_v": float(wall_phi.min()) if wall_phi.size else 0.0,
+            "wall_potential_max_v": float(wall_phi.max()) if wall_phi.size else 0.0,
+            "plasma_minus_wall_mean_v": float(plasma_phi.mean() - wall_phi.mean()) if wall_phi.size else 0.0,
+            "space_charge_limit_yield": self.config.see.space_charge_limit_yield,
+            "at_or_above_space_charge_limit": bool(impacts > 0 and emitted / impacts >= self.config.see.space_charge_limit_yield),
+        }
 
     # -- v2.0 plume block ---------------------------------------------------------
     def _momentum_record(self, sample: Mapping[str, Any], extra: Any, interval: float, neutral: Mapping[str, Any] | None) -> dict[str, Any]:
@@ -2146,7 +2313,10 @@ class Simulation:
         first = self._last_momentum is None
         self._last_momentum = p_now
         exit_rate = rate("pz_exit_electrons") + rate("pz_exit_ions")
-        absorbed_rate = rate("pz_wall_electrons") + rate("pz_wall_ions") + rate("pz_anode_electrons") + rate("pz_anode_ions")
+        # v2.2.0: the momentum of the wall's secondary electrons is momentum the dielectric hands to the plasma, so the
+        # NET momentum deposited on the walls is absorbed - emitted (zero without SEE: the key is absent)
+        see_rate = rate("pz_see_emitted")
+        absorbed_rate = rate("pz_wall_electrons") + rate("pz_wall_ions") + rate("pz_anode_electrons") + rate("pz_anode_ions") - see_rate
         impulse_rate = rate("pz_impulse")
         electric_rate = rate("pz_impulse_electric")
         collisions_rate = rate("pz_collisions")
@@ -2156,6 +2326,7 @@ class Simulation:
         # fast neutrals carry part of it out through the exit (thrust) or onto the thruster body (force); 0 when off
         ion_collisions = extra("pz_ion_collisions")
         residual = 0.0 if first else d_p - (extra("pz_impulse") + extra("pz_collisions") + ion_collisions + extra("pz_born") + extra("pz_injected")
+                                            + extra("pz_see_emitted")
                                             - extra("pz_exit_electrons") - extra("pz_exit_ions") - extra("pz_wall_electrons")
                                             - extra("pz_wall_ions") - extra("pz_anode_electrons") - extra("pz_anode_ions"))
         cold_gas = 0.0
@@ -2417,6 +2588,7 @@ __all__ = [
     "PeakDebyeGateConfig",
     "PeakDebyeWindow",
     "PlumeBoundaryGateConfig",
+    "SEE_KEYS",
     "SeedPlasmaConfig",
     "SeriesRecord",
     "Simulation",
@@ -2425,6 +2597,7 @@ __all__ = [
     "THETA_BINS",
     "boundary_forces_n",
     "cathode_sample",
+    "dielectric_wall_nodes",
     "empty_cumulative",
     "iedf_max_ev",
     "instantaneous_maps",

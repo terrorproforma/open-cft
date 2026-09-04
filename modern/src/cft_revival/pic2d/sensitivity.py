@@ -42,15 +42,14 @@ MCC, which is statistically equivalent to a joint budget to ``O(nu_an dt x nu_mc
 (``nu_an dt <= 0.03`` at 0.3 T / 1.4 ps / alpha 0.345; ``nu_mcc dt ~ 1e-5``) and keeps the
 ``alpha = 0`` path bitwise identical to the model without the hook.
 
-**Secondary electron emission scaffold** -- ``SEEConfig``: the Vaughan (1989) yield curve with
-the boron-nitride parameter set the review points at (Dunaevsky, Raitses and Fisch 2003; Tondu,
-Belhaj and Inguimbert 2011 measured HET-grade BN/Al2O3 ceramics; the numbers below are the
-usual Hall-thruster PIC values for BN and are marked *provisional* until digitised from those
-papers), plus the Hobbs-Wesson (1967) space-charge limit ``delta -> 1`` as a fail-closed check.
-``enabled=True`` is refused by ``PIC2DConfig`` (emission is not implemented in v1.4); the
-scaffold computes the *virtual* yield the wall would have at the observed electron impact
-energies, per wall column, so the campaign can report where the cusp sheaths would go
-space-charge-limited (Campanell, Khrabrov and Kaganovich 2012) before emission is switched on.
+**Secondary electron emission** -- ``SEEConfig`` (model v2.2.0 ``see_dielectric_v1``, implemented
+in ``see.py`` / ``warp_see.py`` and re-exported here): the v1.4 scaffold refused ``enabled=True``;
+since v2.2.0 emission is implemented on both backends (Vaughan yield with the Villemant 2019 BN
+fit, Sydorenko 2006 component split, cosine emission, integer yield sampling, surface-charge
+update).  ``virtual_wall_yield`` below stays as the map-based diagnostic of the yield the wall
+would have at the observed impact energies, per wall column, so a run without emission can still
+report where the cusp sheaths would go space-charge-limited (Campanell, Khrabrov and Kaganovich
+2012; Hobbs and Wesson 1967).
 """
 
 from __future__ import annotations
@@ -62,6 +61,7 @@ from typing import Any
 import numpy as np
 
 from .models import ELECTRON_MASS_KG, ELEMENTARY_CHARGE_C, PIC2DValidationError
+from .see import SEEConfig, first_crossover_ev, vaughan_yield
 
 BOHM_ALPHA_BRACKET = (1.0 / 64.0, 1.0 / 16.0)
 # v2.1.0 alpha-series (physics audit section 4.c / roadmap R1): classical Bohm 1/16, a quarter of it, and Brandt 2016's
@@ -200,86 +200,10 @@ def apply_anomalous_scattering(
     return apply_bohm_scattering(config.alpha, vr, vt, vz, np.hypot(b_r, b_z), dt_s, rng)
 
 
-# Vaughan (1989) parameters for hexagonal boron nitride as used in Hall-thruster PIC.
-# PROVISIONAL: to be digitised from Dunaevsky et al. 2003 (Fig. yields of BN) and Tondu et al.
-# 2011 before any SEE-on case; the first crossover implied here is ~35 eV.
+# v1.4 scaffold constants kept for reference: the Hall-thruster PIC "usual" BN Vaughan set (Dawson-like maximum,
+# Vaughan default threshold).  Model v2.2.0 (see.py) replaces them with the Villemant 2019 fit; the scaffold's
+# SEEConfig / vaughan_yield / first_crossover_ev now live in see.py and are re-exported here.
 BN_VAUGHAN: dict[str, float] = {"delta_max": 2.9, "energy_max_ev": 350.0, "energy_threshold_ev": 12.5}
-
-
-@dataclass(frozen=True, slots=True)
-class SEEConfig:
-    """SEE scaffold: Vaughan yield for a declared material; emission itself is not implemented (fail closed when enabled)."""
-
-    enabled: bool = False
-    material: str = "BN"
-    delta_max: float = BN_VAUGHAN["delta_max"]
-    energy_max_ev: float = BN_VAUGHAN["energy_max_ev"]
-    energy_threshold_ev: float = BN_VAUGHAN["energy_threshold_ev"]
-    emission_temperature_ev: float = 2.0
-    space_charge_limit_yield: float = 1.0      # Hobbs-Wesson 1967: the classical sheath ceases to exist at delta -> 1
-
-    def __post_init__(self) -> None:
-        if not isinstance(self.enabled, bool):
-            raise PIC2DValidationError("see.enabled must be a bool")
-        for name in ("delta_max", "energy_max_ev", "energy_threshold_ev", "emission_temperature_ev", "space_charge_limit_yield"):
-            value = getattr(self, name)
-            if not isfinite(value) or value <= 0.0:
-                raise PIC2DValidationError(f"see.{name} must be positive")
-        if self.energy_threshold_ev >= self.energy_max_ev:
-            raise PIC2DValidationError("see.energy_threshold_ev must be below energy_max_ev")
-
-    def to_dict(self) -> dict[str, Any]:
-        return {
-            "enabled": self.enabled, "material": self.material, "yield_model": "vaughan_1989",
-            "delta_max": self.delta_max, "energy_max_ev": self.energy_max_ev, "energy_threshold_ev": self.energy_threshold_ev,
-            "emission_temperature_ev": self.emission_temperature_ev, "space_charge_limit_yield": self.space_charge_limit_yield,
-            "parameter_status": "provisional (Hall-thruster PIC values for BN; digitise Dunaevsky 2003 / Tondu 2011 before use)",
-        }
-
-    def yield_at(self, energy_ev: np.ndarray | float, incidence_angle_rad: np.ndarray | float = 0.0) -> np.ndarray:
-        return vaughan_yield(energy_ev, incidence_angle_rad, delta_max=self.delta_max, energy_max_ev=self.energy_max_ev,
-                             energy_threshold_ev=self.energy_threshold_ev)
-
-
-def vaughan_yield(
-    energy_ev: np.ndarray | float, incidence_angle_rad: np.ndarray | float = 0.0, *,
-    delta_max: float, energy_max_ev: float, energy_threshold_ev: float, smoothness: float = 1.0,
-) -> np.ndarray:
-    """Vaughan 1989 secondary-electron yield ``delta(E, theta)``.
-
-    ``v = (E - E_0) / (E_max(theta) - E_0)``; ``delta = delta_max(theta) (v e^(1-v))^k`` with
-    ``k = 0.56`` for ``v < 1`` and ``k = 0.25`` for ``1 <= v <= 3.6``; beyond ``v = 3.6`` the
-    ``1.125 / v^0.35`` tail; zero below the threshold ``E_0``.  Angular dependence:
-    ``E_max(theta) = E_max (1 + k_s theta^2 / (2 pi))``, ``delta_max(theta) = delta_max
-    (1 + k_s theta^2 / pi)`` with the surface-smoothness factor ``k_s`` (1 = typical).
-    """
-
-    energy = np.asarray(energy_ev, dtype=np.float64)
-    theta = np.asarray(incidence_angle_rad, dtype=np.float64)
-    e_max = energy_max_ev * (1.0 + smoothness * theta**2 / (2.0 * np.pi))
-    d_max = delta_max * (1.0 + smoothness * theta**2 / np.pi)
-    with np.errstate(invalid="ignore", divide="ignore"):
-        v = (energy - energy_threshold_ev) / (e_max - energy_threshold_ev)
-        k = np.where(v < 1.0, 0.56, 0.25)
-        core = d_max * np.power(np.maximum(v, 0.0) * np.exp(1.0 - np.maximum(v, 0.0)), k)
-        tail = d_max * 1.125 / np.power(np.maximum(v, 1e-300), 0.35)
-        out = np.where(v <= 3.6, core, tail)
-    return np.where(energy > energy_threshold_ev, out, 0.0)
-
-
-def first_crossover_ev(config: SEEConfig) -> float:
-    """Energy where ``delta = 1`` on the rising branch (bisection on the Vaughan curve)."""
-
-    if config.delta_max <= 1.0:
-        return float("inf")
-    lo, hi = config.energy_threshold_ev, config.energy_max_ev
-    for _ in range(200):
-        mid = 0.5 * (lo + hi)
-        if float(config.yield_at(mid)) < 1.0:
-            lo = mid
-        else:
-            hi = mid
-    return 0.5 * (lo + hi)
 
 
 def virtual_wall_yield(
@@ -305,7 +229,8 @@ def virtual_wall_yield(
         "flux_weighted_yield": float(np.sum(delta * flux) / total) if total > 0.0 else None,
         "columns_above_space_charge_limit": int(np.sum((delta >= config.space_charge_limit_yield) & (flux > 0.0))),
         "first_crossover_ev": first_crossover_ev(config),
-        "note": "virtual yield: emission is OFF (scaffold); columns at or above the limit would need the Hobbs-Wesson cap",
+        "note": ("virtual yield at the column-mean impact energy (map diagnostic); columns at or above the Hobbs-Wesson "
+                 "limit are where an emitting wall goes space-charge-limited (v2.2.0 lets the PIC form the virtual cathode itself)"),
     }
 
 

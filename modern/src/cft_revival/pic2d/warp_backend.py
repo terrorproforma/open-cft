@@ -47,11 +47,13 @@ from .models import (
     xenon_ion_species,
 )
 from .poisson import Poisson2D, apply_operator, boundary_potential_array
+from .see import see_birth_bound
 from .simulation import (
     CATHODE_RATE_KEY,
     IEDF_BINS,
     INELASTIC_LOSS_PER_WEIGHT_KEY,
     PEAK_WINDOW_SUM_KEYS,
+    SEE_KEYS,
     THETA_BINS,
     DiagnosticAccumulator,
     PIC2DConfig,
@@ -78,10 +80,10 @@ PARTICLE_BLOCK = 256
 # compiles a module for one block width, so this equals PARTICLE_BLOCK.
 THOMAS_LANES = PARTICLE_BLOCK
 # Per-step RNG streams read from the device seed table (v1.4): 0 = MCC, 1 = injection,
-# 2 = anomalous scattering, 3 = ion-neutral MCC (v2.3.0; the seeds of streams 0-2 are unchanged, so every
-# earlier run replays bitwise).  Row = steps since the last host sync.
-SEED_STREAMS = 4
-SEED_STREAM_IDS = (1, 2, 3, 4)       # stream_seed(seed, step, id) per table column
+# 2 = anomalous scattering, 3 = ion-neutral MCC (v2.3.0), 4 = SEE (v2.2.0); the seeds of streams 0-2 are unchanged, so
+# every earlier run replays bitwise (stream_seed(seed, step, id) per table column).  Row = steps since the last host sync.
+SEED_STREAMS = 5
+SEED_STREAM_IDS = (1, 2, 3, 4, 5)       # stream_seed(seed, step, id) per table column
 
 # Interval statistics slots (float64 device array, read once per host sync).
 STATS_WORK = 0
@@ -114,7 +116,16 @@ STATS_PEAK_DENSITY_RESOLVED = 41   # v2.0.4: single-step peak electron density o
 # v2.3.0 (xe_collision_set_v2): ion-neutral MCC block (warp_ion_mcc.ION_STATS_* offsets) and per-level excitation counts
 STATS_ION_MCC = 42
 STATS_EXC_LEVELS = STATS_ION_MCC + warp_ion_mcc.ION_STATS_COUNT
-STATS_SIZE = STATS_EXC_LEVELS + MAX_EXCITATION_LEVELS
+# v2.2.0 SEE stage (warp_see.py): tallies of the wall's secondary emission per sync interval (after the v2.3.0 blocks)
+STATS_SEE_IMPACTS = STATS_EXC_LEVELS + MAX_EXCITATION_LEVELS   # electron impacts on the emitting wall
+STATS_SEE_EMITTED = STATS_SEE_IMPACTS + 1                        # emitted macro-electrons (electron-induced)
+STATS_SEE_ION_EMITTED = STATS_SEE_IMPACTS + 2                    # emitted macro-electrons (ion-induced)
+STATS_SEE_BACKSCATTERED = STATS_SEE_IMPACTS + 3                  # elastic + inelastic among the emitted
+STATS_SEE_KE = STATS_SEE_IMPACTS + 4                             # W-scaled emitted kinetic energy
+STATS_SEE_PZ = STATS_SEE_IMPACTS + 5                             # W-scaled emitted axial momentum
+STATS_SEE_YIELD_SUM = STATS_SEE_IMPACTS + 6                      # sum of delta over the electron impacts
+STATS_SEE_CLAMPED = STATS_SEE_IMPACTS + 7                        # impacts whose yield exceeded the per-impact cap
+STATS_SIZE = STATS_SEE_CLAMPED + 1
 
 
 def padded_dim(count: int, block: int) -> int:
@@ -526,6 +537,9 @@ if wp is not None:
         has_plume: int, z_exit: F64, r_outer: F64, r_exit: F64, pz_slot: int, body_slot: int, is_ion: int,
         side_bins: wp.array(dtype=F64), theta_bins: wp.array(dtype=F64), iedf_bins: wp.array(dtype=F64), iedf_scale: F64,
         theta_scale: F64,
+        # v2.2.0: per-slot wall-impact flag consumed by the SEE stage (warp_see.py) at the end of the step; the dead
+        # slot keeps its pre-push arrays, from which the stage reconstructs the impact
+        wall_hit: wp.array(dtype=wp.int32),
     ):
         # stats layout (see WarpBackend.STATS): counts at count_slot+code-1, energies at
         # energy_slot+code-1, momenta at pz_slot+code-1, work at 0, max speed^2 at 1, invalid at 2,
@@ -653,6 +667,7 @@ if wp is not None:
                         if total <= F64(0.0):
                             wp.atomic_add(stats, 2, F64(1.0))
                         else:
+                            wall_hit[p] = 1
                             wp.atomic_add(wall_accumulator, m00, wp.int64(wp.rint(a00 / total * scale)) * charge_sign)
                             wp.atomic_add(wall_accumulator, m10, wp.int64(wp.rint(a10 / total * scale)) * charge_sign)
                             wp.atomic_add(wall_accumulator, m01, wp.int64(wp.rint(a01 / total * scale)) * charge_sign)
@@ -1670,6 +1685,18 @@ class WarpBackend:
         self.d_wall_i_energy = wp.zeros(self.nz, dtype=wp.float64, device=dev)
         self.d_exit_e = wp.zeros(self.nr, dtype=wp.float64, device=dev)
         self.d_exit_i = wp.zeros(self.nr, dtype=wp.float64, device=dev)
+        # v2.2.0 SEE stage (warp_see.py): device constants, per-column emitted count / energy window sums; the per-slot
+        # flag / count / offset scratch is allocated with the particle scratch (_ensure_scratch)
+        self.see_active = bool(config.see_active)
+        self.see_ion_induced = self.see_active and config.see is not None and config.see.ion_induced_yield > 0.0
+        self.d_see_e = wp.zeros(self.nz, dtype=wp.float64, device=dev)
+        self.d_see_energy = wp.zeros(self.nz, dtype=wp.float64, device=dev)
+        self.see_params = None
+        if self.see_active:
+            from .warp_see import see_params_array
+
+            body = grid.geometry.body_dielectric_radius_m if masks.has_plume else None
+            self.see_params = see_params_array(config.see, body, dev)  # type: ignore[arg-type]
         self.diag_steps = 0
         self.diagnostic_generation = 0     # v2.0.2: incremented by every reset_diagnostics (window bridging)
         self._far_flat = np.flatnonzero(masks.far_field_node.ravel())   # v2.0.2: far-field node rows of the window sums
@@ -1740,6 +1767,12 @@ class WarpBackend:
         self.tmp = [wp.zeros(capacity, dtype=wp.float64, device=dev) for _ in range(5)]
         self.tmp_alive = wp.zeros(capacity, dtype=wp.int32, device=dev)
         self.partial_particles = wp.zeros(REDUCTION_THREADS, dtype=wp.float64, device=dev)
+        # v2.2.0: wall-impact flags per species slot (written by push_kernel, consumed by the SEE stage; all zero between
+        # steps), integer yield per slot and its exclusive scan (int32 x capacity each)
+        self.see_hit_e = wp.zeros(capacity, dtype=wp.int32, device=dev)
+        self.see_hit_i = wp.zeros(capacity, dtype=wp.int32, device=dev)
+        self.see_count = wp.zeros(capacity, dtype=wp.int32, device=dev)
+        self.see_offsets = wp.zeros(capacity, dtype=wp.int32, device=dev)
 
     def _grow(self, species: DeviceSpecies, minimum: int) -> DeviceSpecies:
         """Reallocate (at a sync) so that ``capacity >= minimum``; copies ``bound`` slots."""
@@ -1826,8 +1859,10 @@ class WarpBackend:
         electrons = self.species["e"].bound if "e" in self.species else bound
         for _ in range(steps):
             births = birth_bound(electrons, self.probability) if self.mcc is not None else 0
-            electrons += births + injected_per_step
-            bound += births + (injected_per_step if is_electron else 0)
+            # v2.2.0: the wall's secondaries are electrons (fail-closed overflow at the sync if the reservation is exceeded)
+            secondaries = see_birth_bound(electrons) if self.see_active else 0
+            electrons += births + injected_per_step + secondaries
+            bound += births + ((injected_per_step + secondaries) if is_electron else 0)
         return bound
 
     # ------------------------------------------------------------------ state exchange
@@ -1891,6 +1926,9 @@ class WarpBackend:
             "step": int(state.step), "time_s": float(state.time_s),
             "injection_carry": float(state.injection_carry), "cumulative": dict(state.cumulative),
         }
+        if self.see_active:
+            for key in SEE_KEYS:      # v2.2.0: SEE ledger keys exist from the first record (as the CPU reference)
+                self.state_meta["cumulative"].setdefault(key, 0.0)
         self.stats.zero_()
         self.steps_since_sync = 0
         self.injected_since_sync = 0
@@ -1969,6 +2007,8 @@ class WarpBackend:
             ions.bound = min(ions.bound + births, ions.capacity)
         if self.emission_enabled:
             electrons.bound = min(electrons.bound + self.max_inject_per_step, electrons.capacity)
+        if self.see_active:
+            electrons.bound = min(electrons.bound + see_birth_bound(n_bound), electrons.capacity)
         meta["step"] = step_index + 1
         meta["time_s"] = meta["step"] * config.dt_s
         if accumulate:
@@ -1994,6 +2034,10 @@ class WarpBackend:
                 wp.load_module(module=sys.modules[__name__], device=self.device)   # no module loads inside a capture
                 if self.ion_mcc is not None:
                     wp.load_module(module=warp_ion_mcc, device=self.device)
+                if self.see_active:
+                    from . import warp_see
+
+                    wp.load_module(module=warp_see, device=self.device)
             profile, self.profile = self.profile, None
             try:
                 with wp.ScopedCapture(device=self.device) as capture:
@@ -2117,7 +2161,8 @@ class WarpBackend:
                         1 if self.has_plume else 0, geometry.z_max_m, geometry.max_radius_m, geometry.exit_radius_m,
                         STATS_E_PZ if is_electron else STATS_I_PZ, STATS_BODY_FACE_E if is_electron else STATS_BODY_FACE_I,
                         0 if is_electron else 1, self.d_side_e if is_electron else self.d_side_i, self.d_theta_i, self.d_iedf_i,
-                        IEDF_BINS / self.iedf_max_ev, THETA_BINS / 90.0],
+                        IEDF_BINS / self.iedf_max_ev, THETA_BINS / 90.0,
+                        self.see_hit_e if is_electron else self.see_hit_i],
                 device=dev,
             )
         wp.launch(wall_int_to_charge_kernel, dim=self.node_count,
@@ -2209,6 +2254,19 @@ class WarpBackend:
                       device=dev)
             wp.launch(add_injected_slots_kernel, dim=1, inputs=[self.slots, self.inject_ctrl], device=dev)
             wp.launch(carry_kernel, dim=1, inputs=[self.inject_ctrl, self.stats, STATS_CARRY], device=dev)
+        if self.see_active:
+            # v2.2.0: the wall's secondaries join last (as the CPU reference appends them after MCC and injection); the
+            # stage reads the pre-push arrays of the flagged dead slots (untouched by every kernel above) and this
+            # step's e_r / e_z, then the emitted +n e W units join the surface charge (the accumulator was zeroed after
+            # the push conversion, so this second conversion adds exactly the emission)
+            from .warp_see import launch_see_stage
+
+            launch_see_stage(self, electrons, 0, e_dim, is_ion=False, accumulate=accumulate, species_dt=dt)
+            if self.see_ion_induced and ion_step and i_dim:
+                launch_see_stage(self, ions, 1, i_dim, is_ion=True, accumulate=accumulate, species_dt=dt * config.ion_subcycle)
+            wp.launch(wall_int_to_charge_kernel, dim=self.node_count,
+                      inputs=[self.acc_wall, ELEMENTARY_CHARGE_C * config.macro_weight / FIXED_POINT_SCALE, self.surface], device=dev)
+            self._mark("see")
         wp.launch(tick_kernel, dim=1, inputs=[self.step_counter], device=dev)
         self._mark("inject")
 
@@ -2293,9 +2351,21 @@ class WarpBackend:
             # v2.3.0: ion-neutral tallies (counts exact; energy / momentum sums are float atomics)
             for offset, key in enumerate(warp_ion_mcc.ION_STATS_KEYS):
                 add(key, stats[STATS_ION_MCC + offset])
+        n_see = 0
+        if self.see_active:
+            # v2.2.0: SEE ledger (extra keys, as the CPU reference); the emitted electrons enter the particle-count identity
+            n_see = int(stats[STATS_SEE_EMITTED] + stats[STATS_SEE_ION_EMITTED])
+            add("see_impacts", stats[STATS_SEE_IMPACTS])
+            add("see_electrons", stats[STATS_SEE_EMITTED])
+            add("see_ion_induced_electrons", stats[STATS_SEE_ION_EMITTED])
+            add("see_backscattered", stats[STATS_SEE_BACKSCATTERED])
+            add("see_yield_sum", stats[STATS_SEE_YIELD_SUM])
+            add("see_yield_clamped", stats[STATS_SEE_CLAMPED])
+            add("ke_see_emitted_j", stats[STATS_SEE_KE])
+            add("pz_see_emitted", stats[STATS_SEE_PZ])
         absorbed_e = int(stats[STATS_E_COUNTS] + stats[STATS_E_COUNTS + 1] + stats[STATS_E_COUNTS + 2])
         absorbed_i = int(stats[STATS_I_COUNTS] + stats[STATS_I_COUNTS + 1] + stats[STATS_I_COUNTS + 2])
-        expected_e = electrons.alive + n_ion + self.injected_since_sync - absorbed_e
+        expected_e = electrons.alive + n_ion + self.injected_since_sync - absorbed_e + n_see
         expected_i = ions.alive + n_ion - absorbed_i
         self._compact(electrons, 0, int(slots[0]), expected_e)
         self._compact(ions, 1, int(slots[1]), expected_i)
@@ -2427,9 +2497,12 @@ class WarpBackend:
     def _host_accumulator(self) -> DiagnosticAccumulator:
         wp.synchronize_device(self.device)
         shape = self.masks.grid.node_shape
-        acc = DiagnosticAccumulator(self.masks, self.iedf_max_ev)
+        acc = DiagnosticAccumulator(self.masks, self.iedf_max_ev, see=self.see_active)
         acc.steps = self.diag_steps
         acc.moment_samples = self.moment_samples
+        if self.see_active:
+            acc.wall_see_electrons = self.d_see_e.numpy()
+            acc.wall_see_energy_j = self.d_see_energy.numpy()
         acc.side_electrons = self.d_side_e.numpy()
         acc.side_ions = self.d_side_i.numpy()
         acc.theta_ions = self.d_theta_i.numpy()
@@ -2454,7 +2527,7 @@ class WarpBackend:
     def reset_diagnostics(self) -> None:
         for array in (self.d_n_e, self.d_n_i, self.d_phi, self.d_w, self.d_vr, self.d_vt, self.d_vz, self.d_v2, self.d_ion,
                       self.d_wall_e, self.d_wall_i, self.d_wall_e_energy, self.d_wall_i_energy, self.d_exit_e, self.d_exit_i,
-                      self.d_side_e, self.d_side_i, self.d_theta_i, self.d_iedf_i):
+                      self.d_side_e, self.d_side_i, self.d_theta_i, self.d_iedf_i, self.d_see_e, self.d_see_energy):
             array.zero_()
         self.diag_steps = 0
         self.moment_samples = 0

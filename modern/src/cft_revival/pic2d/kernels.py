@@ -206,7 +206,9 @@ def wall_surface_deposit(
     """Deposit absorbed charge onto plasma-side wall nodes with renormalised bilinear weights.
 
     ``quantum_c`` is the fixed-point unit (``|q| W / 2**40``); ``charge_c`` must
-    be an integer multiple of it in magnitude for the fixed-point path.
+    be an integer multiple of it for the fixed-point path (``+-1`` for an absorbed
+    macro-particle; ``-1 + n`` / ``+1 + n`` for a v2.2.0 impact that emitted ``n``
+    secondaries - the integer multiple scales the rounded bilinear counts exactly).
     """
 
     grid = masks.grid
@@ -232,9 +234,9 @@ def wall_surface_deposit(
         raise PIC2DValidationError("wall impact cell has no plasma node (particle jumped more than one cell)")
     if fixed_point:
         accumulator = np.zeros(grid.node_shape, dtype=np.int64)
-        signs = np.sign(charge_c).astype(np.int64)
+        units = np.rint(np.asarray(charge_c, dtype=np.float64) / quantum_c).astype(np.int64)   # +-1 (absorbed), +-1 + n (SEE)
         for di, dj, w in masked:
-            counts = np.rint(w / total * FIXED_POINT_SCALE).astype(np.int64) * signs
+            counts = np.rint(w / total * FIXED_POINT_SCALE).astype(np.int64) * units
             np.add.at(accumulator, (i + di, j + dj), counts)
         return accumulator.astype(np.float64) * (quantum_c / FIXED_POINT_SCALE)
     for di, dj, w in masked:

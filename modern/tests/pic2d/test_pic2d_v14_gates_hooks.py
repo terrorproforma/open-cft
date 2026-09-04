@@ -225,11 +225,15 @@ def test_bohm_hook_in_the_simulation_is_off_by_default_and_tallied_when_on(tmp_p
     assert abs(on.series[-1].ledger["interval_residual_j"]) < 1e-3 * abs(on.series[-1].ledger["total_energy_j"])
 
 
-def test_see_scaffold_vaughan_yield_and_fail_closed_enable():
-    see = SEEConfig()
+def test_see_scaffold_vaughan_yield_and_virtual_wall_diagnostic():
+    """v1.4 scaffold behaviour kept under model v2.2.0: the Vaughan curve shape (with the v1.4 BN constants as explicit
+    overrides), the first crossover, the angular factor and the virtual per-column yield diagnostic.  ``enabled=True``
+    is no longer refused (emission is implemented: tests/pic2d/test_pic2d_v22_see.py)."""
+
+    see = SEEConfig(enabled=False, material="BN", overrides={**BN_VAUGHAN, "low_energy_elastic_peak": 0.0, "k_rise": 0.56})
     assert see.enabled is False and see.material == "BN"
-    assert float(see.yield_at(5.0)) == 0.0                                       # below threshold
-    assert float(see.yield_at(BN_VAUGHAN["energy_max_ev"])) == pytest.approx(BN_VAUGHAN["delta_max"])
+    assert float(see.yield_at(5.0)) == 0.0                                       # below the (overridden) threshold
+    assert float(see.yield_at(BN_VAUGHAN["energy_max_ev"])) == pytest.approx(BN_VAUGHAN["delta_max"])   # the component shares are inside the total
     e = np.linspace(13.0, 2000.0, 400)
     d = see.yield_at(e)
     assert np.all(np.diff(d[e < BN_VAUGHAN["energy_max_ev"]]) > 0.0)              # rising branch
@@ -250,7 +254,6 @@ def test_see_scaffold_vaughan_yield_and_fail_closed_enable():
     grid = Grid2D(CFT_GEOMETRY, 12, 96)
     assert _config(grid, see=see).to_dict()["see"]["enabled"] is False
     assert "see" not in _config(grid).to_dict()
-    with pytest.raises(PIC2DValidationError, match="fail closed"):
-        _config(grid, see=SEEConfig(enabled=True))
+    assert _config(grid, see=SEEConfig(enabled=True)).see_active is True
     with pytest.raises(PIC2DValidationError):
-        SEEConfig(energy_threshold_ev=400.0)
+        SEEConfig(overrides={"energy_threshold_ev": 400.0})
