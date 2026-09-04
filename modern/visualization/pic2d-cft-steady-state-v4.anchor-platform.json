@@ -1,6 +1,6 @@
 {
  "html_file": "pic2d-cft-steady-state-v4.html",
- "html_sha256": "786e12038fae54f8244989978236c3226cfc98b31ff054051ffc0cc3917402a6",
+ "html_sha256": "972bff977631b5a876522406342a1c0e35a421c145d4d87cbb34e0d3630b5406",
  "platform": {
   "blas": {
    "build_configuration": "OpenBLAS 0.3.34.0.0  USE64BITINT DYNAMIC_ARCH NO_AFFINITY SkylakeX MAX_THREADS=24",

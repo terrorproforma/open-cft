@@ -11,6 +11,13 @@ artifacts; the windowed residual power is recomputed from the series and must re
 No timestamps or runtime measurements are added, so identical inputs give identical bytes on the anchor
 platform (``<name>.anchor-platform.json``); the page is self-contained (no network access) and states the
 claim boundary and the verdict on the first screen.
+
+Energy-ledger correction (model v2.0.6, post hoc): every embedded case carries its ``ledger-corrected.json`` sidecar
+(bound to the case's series hash; the corrected windowed residual is recomputed here from the series with
+``cft_revival.pic2d.ledger_recompute`` and must reproduce the sidecar's end value), and the refined run's post-hoc
+re-read ``assessment-corrected-ledger.json`` (bound to the sidecar, the recorded assessment, the summary and the
+protocol) is embedded beside the recorded assessment.  The page shows BOTH readings, clearly labelled: the recorded
+verdict stands as recorded; on the corrected ledger acceptance (b) fails (+2.46 % > +2 %).
 """
 
 from __future__ import annotations
@@ -38,6 +45,8 @@ from cft_revival.pic2d.artifacts import (
     read_canonical_json,
     read_npz,
 )
+from cft_revival.pic2d.ledger_recompute import SIDECAR_NAME as LEDGER_SIDECAR_NAME
+from cft_revival.pic2d.ledger_recompute import corrected_residual, windowed_ratios
 
 EXPERIMENT = MODERN / "experiments" / "pic2d_cft_steady_state_v4"
 RESULTS = EXPERIMENT / "results"
@@ -45,9 +54,13 @@ PROTOCOL = EXPERIMENT / "protocol.json"
 REFERENCE_EXPERIMENT = MODERN / "experiments" / "pic2d_cft_steady_state_v2"
 REFERENCE_PROTOCOL = REFERENCE_EXPERIMENT / "protocol.json"
 DEFAULT_OUTPUT = Path(__file__).with_name("pic2d-cft-steady-state-v4.html")
-SCHEMA = "cft-pic2d-cft-steady-state-v4-visualization/0.1.0"
+SCHEMA = "cft-pic2d-cft-steady-state-v4-visualization/0.2.0"
 STATUS = "preregistered_resolution_convergence_study_not_validated"
 VERDICTS = ("converged", "resolution_limited", "refinement_heating", "no_plateau")
+REREAD_NAME = "assessment-corrected-ledger.json"
+REREAD_SCHEMA = "cft-revival.pic2d-cft-steady-state-v4.assessment-corrected-ledger/1.0.0"
+LEDGER_SIDECAR_SCHEMA = "cft.pic2d.ledger-corrected/1.0.0"
+ACCEPTANCE_B_BOUND = 0.02
 STOP_REASONS = {"plateau_reached_after_min_transit_times", "wall_clock_budget_reached"}
 # the 50 um cases embedded beside the refined run: (results directory name, label, role)
 REFERENCE_CASES = (("results", "50 µm base (v2, reference)", "reference"), ("results-seed-b", "50 µm seed-b (band)", "band"),
@@ -155,6 +168,54 @@ def _lambda_d(n: float, t_ev: float) -> float:
     return sqrt(EPS0 * t_ev * E_CHARGE / (n * E_CHARGE**2))
 
 
+def corrected_windowed_residual(series: Mapping[str, np.ndarray], window_steps: int = RESIDUAL_WINDOW_STEPS) -> np.ndarray:
+    """The v2.0.6 CORRECTED trailing-window residual / electrode work per record (NaN while the window is incomplete).
+
+    Corrected residual per record = H = field work + dU - electrode work (``cft_revival.pic2d.ledger_recompute``); the
+    trailing window is the runner's (records with step > last - window, complete once a record precedes the window).
+    """
+
+    corrected, _h, _resume_first = corrected_residual(series)
+    ratios = windowed_ratios(np.asarray(series["step"], dtype=np.float64), corrected, np.asarray(series["interval_electrode_work_j"], dtype=np.float64), window_steps)
+    return np.where(ratios["complete"], ratios["ratio"], np.nan)
+
+
+def ledger_sidecar_digest(results: Path, *, series_sha: str, recorded_last: float | None, corrected_last: float | None) -> dict[str, Any]:
+    """Hash-verified digest of ``ledger-corrected.json`` bound to the case's series and checked against the recomputation."""
+
+    path = results / LEDGER_SIDECAR_NAME
+    if not path.is_file():
+        raise ValueError(f"{results.name}: {LEDGER_SIDECAR_NAME} is missing - run `python -m cft_revival.pic2d.ledger_recompute {results}`")
+    sidecar_sha = _verify_sidecar(path)
+    sidecar = read_canonical_json(path)
+    if sidecar.get("schema") != LEDGER_SIDECAR_SCHEMA:
+        raise ValueError(f"{results.name}: {LEDGER_SIDECAR_NAME} has schema {sidecar.get('schema')!r}")
+    if sidecar["inputs"]["series"]["sha256"] != series_sha:
+        raise ValueError(f"{results.name}: {LEDGER_SIDECAR_NAME} describes another series ({sidecar['inputs']['series']['sha256'][:12]} vs {series_sha[:12]})")
+    end = sidecar["end_state_window"]
+    for name, mine, theirs in (("recorded", recorded_last, end["recorded_ratio"]), ("corrected", corrected_last, end["corrected_ratio"])):
+        if mine is None or theirs is None or abs(mine - theirs) > 1e-9 * max(abs(theirs), 1e-12):
+            raise ValueError(f"{results.name}: the {name} windowed residual recomputed here ({mine}) differs from the sidecar's ({theirs})")
+    if end.get("recorded_ratio_matches_summary") is False:      # None: the run's summary has no gate reading (v1.3 runs)
+        raise ValueError(f"{results.name}: the sidecar's recorded reading does not match the run's summary")
+    gate = sidecar["threshold_crossings"]["0.05"]
+    bound = sidecar["threshold_crossings"]["0.02"]
+    return {
+        "sidecar_sha256": sidecar_sha, "generated_by": sidecar.get("generated_by"), "macro_weight": sidecar["parameters"]["macro_weight"],
+        "window_steps": int(sidecar["parameters"]["window_steps"]), "records": int(sidecar["records"]), "last_time_s": float(sidecar["last_time_s"]),
+        "recorded_windowed": end["recorded_ratio"], "corrected_windowed": end["corrected_ratio"], "omitted_windowed": end["omitted_ratio"],
+        "recorded_cumulative": sidecar["cumulative"]["recorded_over_electrode"], "corrected_cumulative": sidecar["cumulative"]["corrected_over_electrode"],
+        "electrode_work_in_window_j": end["electrode_work_j"], "corrected_residual_in_window_j": end["corrected_residual_j"],
+        "max_corrected_over_complete_windows": sidecar["max_over_complete_windows"]["corrected"],
+        "corrected_first_checkpoint_at_or_above_0p02_time_s": None if bound["corrected_first_crossing_at_checkpoint"] is None else bound["corrected_first_crossing_at_checkpoint"]["time_s"],
+        "recorded_gate_0p05_first_checkpoint_time_s": None if gate["recorded_first_crossing_at_checkpoint"] is None else gate["recorded_first_crossing_at_checkpoint"]["time_s"],
+        "corrected_gate_0p05_first_checkpoint_time_s": None if gate["corrected_first_crossing_at_checkpoint"] is None else gate["corrected_first_crossing_at_checkpoint"]["time_s"],
+        "acceptance_b_recorded_passes": None if end["recorded_ratio"] is None else bool(end["recorded_ratio"] < ACCEPTANCE_B_BOUND),
+        "acceptance_b_corrected_passes": None if end["corrected_ratio"] is None else bool(end["corrected_ratio"] < ACCEPTANCE_B_BOUND),
+        "cross_check_relative_difference": (sidecar.get("cross_check_vs_final_counts") or {}).get("relative_difference"),
+    }
+
+
 def build_case(results: Path, protocol_path: Path, *, label: str, role: str) -> dict[str, Any]:
     """Hash-verified digest of one steady-state results directory (summary, series, maps; protocol bound)."""
 
@@ -181,6 +242,10 @@ def build_case(results: Path, protocol_path: Path, *, label: str, role: str) -> 
     residual_series = windowed_residual(series)
     decimated["windowed_residual_over_electrode_work"] = _round(_decimate(residual_series, stride), 5)
     residual_last = float(residual_series[-1]) if residual_series.size and isfinite(float(residual_series[-1])) else None
+    corrected_series = corrected_windowed_residual(series)
+    decimated["windowed_residual_corrected_over_electrode_work"] = _round(_decimate(corrected_series, stride), 5)
+    corrected_last = float(corrected_series[-1]) if corrected_series.size and isfinite(float(corrected_series[-1])) else None
+    ledger_corrected = ledger_sidecar_digest(results, series_sha=series_sha, recorded_last=residual_last, corrected_last=corrected_last)
     triad = summary.get("grid_heating_triad") or {}
     n_e = np.asarray(maps["n_e_per_m3"], dtype=np.float64)
     t_e = np.asarray(maps["t_e_ev"], dtype=np.float64)
@@ -216,6 +281,8 @@ def build_case(results: Path, protocol_path: Path, *, label: str, role: str) -> 
         "peak": {"node": peak["node"], "r_m": float(node_r[i_peak]), "z_m": float(node_z[j_peak]), "lambda_d_m": lam, "cells_per_debye": dz / lam,
                  "omega_pe_dt": sqrt(peak["peak_n_e_window_per_m3"] * E_CHARGE**2 / (EPS0 * M_E)) * float(summary["provenance"]["config"]["dt_s"])},
         "windowed_residual_recomputed": residual_last,
+        "windowed_residual_corrected_recomputed": corrected_last,
+        "ledger_corrected": ledger_corrected,
         "series_stride": stride, "series": decimated,
         "profiles": {"z_m": _round(node_z, 6), "axial_peak_n_e_per_m3": _round(np.where(np.isfinite(axial_peak_n), axial_peak_n, np.nan), 5),
                      "axial_peak_t_e_ev": _round(axial_peak_t, 5), "r_m": _round(node_r, 6),
@@ -252,8 +319,12 @@ def build_comparison(refined: Mapping[str, Any], reference: Mapping[str, Any], b
     residuals = {
         "refined_windowed": refined["grid_heating_triad"]["windowed_energy_residual_over_electrode_work"], "refined_cumulative": refined["ledger"]["cumulative_residual_over_electrode_work"],
         "reference_windowed_recomputed": reference["windowed_residual_recomputed"], "reference_cumulative": reference["ledger"]["cumulative_residual_over_electrode_work"],
-        "bands": [{"label": b["label"], "windowed_recomputed": b["windowed_residual_recomputed"], "cumulative": b["ledger"]["cumulative_residual_over_electrode_work"]} for b in bands],
+        "bands": [{"label": b["label"], "windowed_recomputed": b["windowed_residual_recomputed"], "cumulative": b["ledger"]["cumulative_residual_over_electrode_work"],
+                   "windowed_corrected": b["ledger_corrected"]["corrected_windowed"], "cumulative_corrected": b["ledger_corrected"]["corrected_cumulative"]} for b in bands],
+        "refined_windowed_corrected": refined["ledger_corrected"]["corrected_windowed"], "refined_cumulative_corrected": refined["ledger_corrected"]["corrected_cumulative"],
+        "reference_windowed_corrected": reference["ledger_corrected"]["corrected_windowed"], "reference_cumulative_corrected": reference["ledger_corrected"]["corrected_cumulative"],
         "acceptance_bound": assessment["b_residual_power"]["bound"], "gate": 0.05, "one_sided": True,
+        "statistic_note": "recorded = the pre-v2.0.6 ledger (H - L_inel, biased negative by the inelastic power); corrected = H (model v2.0.6 sidecar); same window, same bound",
     }
     return {"rows": rows, "all_within": bool(assessment["c_convergence"]["all_within"]), "debye": debye, "residuals": residuals,
             "failed": [r["key"] for r in rows if not r["within"]]}
@@ -295,12 +366,21 @@ def build_payload(results: Path = RESULTS, protocol_path: Path = PROTOCOL, refer
         raise ValueError("assessment verdict is not the one its own (a)-(c) outcomes imply")
     acceptance = protocol["stopping_rule"]["acceptance"]
     budget = protocol["budget_v1_3"]
+    corrected_ledger = build_corrected_ledger(results, assessment_sha=assessment_sha, protocol_sha=_file_sha256(protocol_path), cases=cases, assessment=assessment,
+                                              all_within=comparison["all_within"])
+    reread = corrected_ledger["reread"]
     statement = (
         f"Preregistered grid-refinement check (33.3 µm / 1.4 ps / W 2.667e4) of the development PIC-MCC 50 µm plateau under the same v1.3 closure and "
-        f"operating point; one execution at commit {lock['commit'][:8]}; verdict {assessment['verdict'].replace('_', ' ')} at the predeclared tolerances "
-        f"(10 % I_d / S / utilisation / n_g / I_beam, 20 % peak n_e / T_e,peak). Single seed, one refined grid and one weight (grid and particle-weight "
-        f"effects entangled); not validated against experiment; not a thruster performance prediction; the neutral transient is artificial and only the "
-        f"fixed point is physical."
+        f"operating point; one execution at commit {lock['commit'][:8]}; recorded verdict {assessment['verdict'].replace('_', ' ')} at the predeclared tolerances "
+        f"(10 % I_d / S / utilisation / n_g / I_beam, 20 % peak n_e / T_e,peak). Energy-ledger correction (model v2.0.6, post hoc): the recorded ledger "
+        f"residuals lacked the macro weight on the inelastic sink; on the corrected ledger the 33 µm plateau heats at "
+        f"{100.0 * reread['b_residual_power']['corrected']['windowed_residual_over_electrode_work']:+.2f} % of the electrode work (acceptance (b) < +2 %: "
+        f"recorded {'PASS' if reread['b_residual_power']['recorded']['passed'] else 'FAIL'} → corrected {'PASS' if reread['b_residual_power']['corrected']['passed'] else 'FAIL'}; "
+        f"predeclared (d) tree on the corrected ledger → {reread['verdict_on_corrected_ledger'].replace('_', ' ')}) and the 50 µm base at "
+        f"{100.0 * cases[1]['ledger_corrected']['corrected_windowed']:+.1f} %; the recorded verdict stands as recorded, the 33 µm plateau is not a clean "
+        f"(energy-conserving) reference and neither grid may be called converged before the 25 µm ladder point reports. Single seed, one refined grid and one "
+        f"weight (grid and particle-weight effects entangled); not validated against experiment; not a thruster performance prediction; the neutral transient "
+        f"is artificial and only the fixed point is physical."
     )
     return {
         "schema": SCHEMA, "experiment_id": protocol["experiment_id"], "status": STATUS, "verdict": assessment["verdict"],
@@ -322,13 +402,53 @@ def build_payload(results: Path = RESULTS, protocol_path: Path = PROTOCOL, refer
             "reference_consistency": assessment["reference_consistency"],
         },
         "execution": {"lock": lock, "run_state": run_state},
-        "comparison": comparison, "cases": cases,
+        "comparison": comparison, "cases": cases, "corrected_ledger": corrected_ledger,
+    }
+
+
+def build_corrected_ledger(results: Path, *, assessment_sha: str, protocol_sha: str, cases: list[Mapping[str, Any]], assessment: Mapping[str, Any],
+                           all_within: bool) -> dict[str, Any]:
+    """The post-hoc re-read (``assessment-corrected-ledger.json``) bound to the embedded artifacts, plus every case's sidecar reading."""
+
+    path = results / REREAD_NAME
+    if not path.is_file():
+        raise ValueError(f"{REREAD_NAME} is missing - run `python -m experiments.pic2d_cft_steady_state_v4.assess_corrected_ledger`")
+    reread_sha = _verify_sidecar(path)
+    reread = read_canonical_json(path)
+    refined = cases[0]
+    if reread.get("schema_version") != REREAD_SCHEMA:
+        raise ValueError(f"{REREAD_NAME}: unexpected schema {reread.get('schema_version')!r}")
+    inputs = reread["inputs"]
+    if inputs["assessment"]["sha256"] != assessment_sha:
+        raise ValueError(f"{REREAD_NAME} does not bind the embedded assessment.json")
+    if inputs["ledger_corrected"]["sha256"] != refined["ledger_corrected"]["sidecar_sha256"]:
+        raise ValueError(f"{REREAD_NAME} does not bind the embedded {LEDGER_SIDECAR_NAME}")
+    if inputs["summary"]["sha256"] != refined["summary_sha256"] or inputs["protocol"]["sha256"] != protocol_sha:
+        raise ValueError(f"{REREAD_NAME} does not bind the embedded summary / protocol")
+    if reread["verdict_recorded"] != assessment["verdict"]:
+        raise ValueError(f"{REREAD_NAME} records another recorded verdict than assessment.json")
+    b = reread["b_residual_power"]
+    if abs(b["corrected"]["windowed_residual_over_electrode_work"] - refined["ledger_corrected"]["corrected_windowed"]) > 1e-12 * abs(refined["ledger_corrected"]["corrected_windowed"]):
+        raise ValueError(f"{REREAD_NAME}: corrected (b) value is not the sidecar's")
+    if not all(bool(v) for v in inputs["binding_checks"].values()):
+        raise ValueError(f"{REREAD_NAME}: a recorded binding check failed")
+    return {
+        "reread": {
+            "file": REREAD_NAME, "sha256": reread_sha, "utc": reread["utc"], "generated_by": reread["generated_by"], "kind": reread["kind"],
+            "model_version_note": reread["model_version_note"], "verdict_recorded": reread["verdict_recorded"],
+            "verdict_on_corrected_ledger": reread["verdict_on_corrected_ledger"], "verdict_statement": reread["verdict_statement"],
+            "b_residual_power": b, "d_reclassification": reread["d_reclassification"], "disallowed_wording": reread["disallowed_wording"],
+            "binding_checks": inputs["binding_checks"], "all_within_c": bool(all_within),
+        },
+        "cases": [{"id": c["id"], "label": c["label"], "role": c["role"], "results_dir": c["results_dir"], **c["ledger_corrected"]} for c in cases],
+        "spec": "spec/pic2d/pic2d-model-v2.0.json#gates_v2_0.energy_ledger_correction_v2_0_6 / gate_recalibration_v2_0_6",
+        "thresholds": {"acceptance_b": ACCEPTANCE_B_BOUND, "hard_gate": 0.05, "kept": "5 % hard gate and 2 % acceptance bound are KEPT (not loosened) on the corrected statistic"},
     }
 
 
 def validate_payload(payload: Mapping[str, Any]) -> None:
     required = {"schema", "experiment_id", "status", "verdict", "model_version", "claim_boundary", "claim_statement", "simplifications", "protocol",
-                "assessment", "execution", "comparison", "cases"}
+                "assessment", "execution", "comparison", "cases", "corrected_ledger"}
     if set(payload) != required:
         raise ValueError("payload keys do not match the closed schema")
     if payload["schema"] != SCHEMA or payload["status"] != STATUS:
@@ -338,6 +458,8 @@ def validate_payload(payload: Mapping[str, Any]) -> None:
     statement = payload["claim_statement"].lower()
     if not payload["simplifications"] or "not validated" not in statement or "preregistered" not in statement or payload["verdict"].replace("_", " ") not in statement:
         raise ValueError("claim boundary must be explicit and carry the verdict")
+    if "corrected ledger" not in statement or "energy-ledger correction" not in statement:
+        raise ValueError("claim boundary must disclose the energy-ledger correction and the corrected reading")
     for key in ("file_sha256", "reference_protocol_sha256"):
         if not isinstance(payload["protocol"][key], str) or len(payload["protocol"][key]) != 64:
             raise ValueError(f"protocol {key} must be a SHA-256")
@@ -381,6 +503,53 @@ def validate_payload(payload: Mapping[str, Any]) -> None:
         raise ValueError("execution lock does not bind the refined case")
     if not payload["execution"]["run_state"]["finished"]:
         raise ValueError("the refined run must be finished")
+    _validate_corrected_ledger(payload, a, comparison)
+
+
+def _validate_corrected_ledger(payload: Mapping[str, Any], assessment: Mapping[str, Any], comparison: Mapping[str, Any]) -> None:
+    """Both readings must be present, hash-bound and mutually consistent; the corrected (b) follows from the corrected value and the bound."""
+
+    block = payload["corrected_ledger"]
+    if set(block) != {"reread", "cases", "spec", "thresholds"}:
+        raise ValueError("corrected_ledger keys do not match the closed schema")
+    reread = block["reread"]
+    if reread["verdict_recorded"] != payload["verdict"] or reread["verdict_on_corrected_ledger"] not in VERDICTS:
+        raise ValueError("corrected-ledger re-read must name the recorded verdict and a declared outcome")
+    if not isinstance(reread["sha256"], str) or len(reread["sha256"]) != 64 or not all(bool(v) for v in reread["binding_checks"].values()):
+        raise ValueError("corrected-ledger re-read must be hash-bound with every binding check passed")
+    b = reread["b_residual_power"]
+    bound = block["thresholds"]["acceptance_b"]
+    if bound != ACCEPTANCE_B_BOUND or b["bound"] != ACCEPTANCE_B_BOUND or block["thresholds"]["hard_gate"] != 0.05:
+        raise ValueError("the acceptance bound and the hard gate may not be changed")
+    corrected_value = b["corrected"]["windowed_residual_over_electrode_work"]
+    if not isfinite(corrected_value) or b["corrected"]["passed"] != (bool(b["corrected"]["window_complete"]) and corrected_value < bound) or b["passed"] != b["corrected"]["passed"]:
+        raise ValueError("corrected (b) does not follow from the corrected value and the bound")
+    if b["recorded"]["passed"] != assessment["b_residual_power"]["passed"] or abs(b["recorded"]["windowed_residual_over_electrode_work"] - assessment["b_residual_power"]["windowed_residual_over_electrode_work"]) > 1e-12:
+        raise ValueError("recorded (b) in the re-read must be the recorded assessment's")
+    expected = ("converged" if assessment["a_plateau"]["passed"] and b["corrected"]["passed"] and comparison["all_within"]
+                else "resolution_limited" if assessment["a_plateau"]["passed"] and b["corrected"]["passed"] else "refinement_heating" if assessment["a_plateau"]["passed"] else "no_plateau")
+    if reread["verdict_on_corrected_ledger"] != expected:
+        raise ValueError("verdict on the corrected ledger does not follow from (a), the corrected (b) and (c)")
+    words = reread["verdict_statement"]
+    if "corrected ledger" not in words or ("FAILED" in words) == bool(b["corrected"]["passed"]):
+        raise ValueError("verdict statement must name the corrected-ledger outcome of (b)")
+    if [c["id"] for c in block["cases"]] != [c["id"] for c in payload["cases"]]:
+        raise ValueError("corrected-ledger case rows must cover the embedded cases in order")
+    for row, case in zip(block["cases"], payload["cases"], strict=True):
+        if row["sidecar_sha256"] != case["ledger_corrected"]["sidecar_sha256"] or len(row["sidecar_sha256"]) != 64:
+            raise ValueError(f"{case['id']}: corrected-ledger row is not the case's sidecar")
+        for key in ("recorded_windowed", "corrected_windowed", "recorded_cumulative", "corrected_cumulative"):
+            if row[key] is None or not isfinite(row[key]) or row[key] != case["ledger_corrected"][key]:
+                raise ValueError(f"{case['id']}: corrected-ledger {key} is not finite or not the case's")
+        if row["acceptance_b_corrected_passes"] != (row["corrected_windowed"] < bound) or row["acceptance_b_recorded_passes"] != (row["recorded_windowed"] < bound):
+            raise ValueError(f"{case['id']}: acceptance (b) flags do not follow from the values")
+        if case["windowed_residual_corrected_recomputed"] is None or abs(case["windowed_residual_corrected_recomputed"] - row["corrected_windowed"]) > 1e-9 * max(abs(row["corrected_windowed"]), 1e-12):
+            raise ValueError(f"{case['id']}: recomputed corrected residual differs from the sidecar")
+        if "windowed_residual_corrected_over_electrode_work" not in case["series"]:
+            raise ValueError(f"{case['id']}: corrected residual series missing")
+    refined_row = block["cases"][0]
+    if abs(refined_row["corrected_windowed"] - corrected_value) > 1e-12 * abs(corrected_value):
+        raise ValueError("the re-read's corrected (b) value is not the refined case's sidecar value")
 
 
 HTML_TEMPLATE = r"""<!doctype html>
@@ -395,7 +564,8 @@ HTML_TEMPLATE = r"""<!doctype html>
 button,select{font:inherit;color:var(--text);background:var(--panel2);border:1px solid var(--line);border-radius:.55rem;padding:.48rem .7rem}button:hover,select:hover{border-color:var(--accent)}button:focus-visible,select:focus-visible,canvas:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 header,main,footer{width:min(1500px,calc(100% - 2rem));margin:auto}header{padding:2rem 0 1rem}.eyebrow{color:var(--accent);font-weight:750;letter-spacing:.14em;text-transform:uppercase}h1{font-size:clamp(1.9rem,4.5vw,3.6rem);line-height:.98;margin:.2rem 0 .8rem;max-width:1000px}h2{margin:.1rem 0 .8rem;font-size:1.1rem}h3{font-size:.95rem;margin:.8rem 0 .3rem}p{margin:.35rem 0}
 .claim{border:1px solid #8b681c;background:#513d1438;color:var(--warn);padding:.8rem 1rem;border-radius:.65rem;font-weight:650}.claim ul{margin:.4rem 0 0 1.1rem;font-weight:500;color:var(--text)}
-.verdict{display:flex;gap:.8rem;flex-wrap:wrap;align-items:center;margin:.8rem 0}.verdict .pill{font-size:1.3rem;font-weight:800;padding:.4rem 1rem;border-radius:999px;border:2px solid}.pill.limited{color:var(--warn);border-color:var(--warn)}.pill.converged{color:var(--accent);border-color:var(--accent)}.pill.heating,.pill.none{color:var(--red);border-color:var(--red)}
+.reread{border:1px solid var(--red);background:#5a1e1e38;padding:.8rem 1rem;border-radius:.65rem;margin:.8rem 0}.reread b{color:var(--red)}
+.verdict{display:flex;gap:.8rem;flex-wrap:wrap;align-items:center;margin:.8rem 0}.verdict .pill{font-size:1.3rem;font-weight:800;padding:.4rem 1rem;border-radius:999px;border:2px solid}.verdict .pill small{display:block;font-size:.7rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;opacity:.85}.pill.limited{color:var(--warn);border-color:var(--warn)}.pill.converged{color:var(--accent);border-color:var(--accent)}.pill.heating,.pill.none{color:var(--red);border-color:var(--red)}
 .chips{display:flex;gap:.4rem;flex-wrap:wrap}.chip{border:1px solid var(--line);border-radius:999px;padding:.15rem .6rem;color:var(--muted);font-size:.85rem}.chip b{color:var(--text)}
 .controls{display:flex;gap:.6rem;flex-wrap:wrap;align-items:end;margin:1rem 0}.control{display:grid;gap:.25rem}.control label{color:var(--muted);font-size:.8rem}
 .panel{background:linear-gradient(145deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:.9rem;padding:1rem;box-shadow:0 12px 30px var(--shadow);min-width:0;margin:1rem 0}
@@ -408,14 +578,16 @@ table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}th{t
 </style>
 </head>
 <body>
-<header><div class="eyebrow">PIC-MCC · axisymmetric (r,z) · preregistered grid-refinement check · model v1.3 closure · v2.0.3 gates</div>
+<header><div class="eyebrow">PIC-MCC · axisymmetric (r,z) · preregistered grid-refinement check · model v1.3 closure · v2.0.3 gates · v2.0.6 ledger correction (post hoc)</div>
 <h1>Steady-state v4: is the 50 µm channel plateau resolution-converged? The 33.3 µm refinement answers</h1>
 <div class="verdict" id="verdict"></div>
+<div id="reread" class="reread" role="note"></div>
 <div id="claim" class="claim" role="note"></div>
 <div class="controls"><div class="control"><label for="tscale">Time-series x axis</label><select id="tscale"><option value="us">time (µs)</option><option value="transits">ion transits (2.4 µs)</option></select></div><button id="theme" type="button" aria-pressed="false">Light theme</button></div>
 <p class="small">Shaded bands on the time series: the trailing-20 % plateau windows of the refined run (teal) and of the 50 µm base (blue); dotted vertical: the 3-transit floor. Dashed horizontals: the declared gates / tolerances. Toggle cases with the legend checkboxes.</p></header>
 <main>
-<section class="panel"><h2>Predeclared acceptance (a)–(d) — <code>results/assessment.json</code></h2><div id="acceptance"></div></section>
+<section class="panel"><h2>Predeclared acceptance (a)–(d) — recorded (<code>results/assessment.json</code>) and on the corrected ledger (<code>results/assessment-corrected-ledger.json</code>)</h2><div id="acceptance"></div></section>
+<section class="panel"><h2>Energy-ledger correction (model v2.0.6, post hoc): recorded vs corrected residual power per run</h2><div id="ledger"></div></section>
 <section class="panel"><h2>Convergence comparison: 50 µm base vs 33.3 µm refinement, with the 50 µm particle-resolution band</h2><div id="comparison"></div></section>
 <section class="panel"><h2>Plateau time series</h2><div class="legend" id="legend" aria-label="Case toggles"></div>
 <div class="plots" style="margin-top:.8rem">
@@ -424,7 +596,7 @@ table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}th{t
 <div class="panel"><h2>Ionisation rate S</h2><canvas class="plot" id="p_s" role="img" aria-label="Ionisation rate versus time"></canvas></div>
 <div class="panel"><h2>Neutral density n_g</h2><canvas class="plot" id="p_ng" role="img" aria-label="Neutral density versus time"></canvas></div>
 <div class="panel"><h2>Macro-electron count N_e</h2><canvas class="plot" id="p_ne" role="img" aria-label="Macro-electron count versus time"></canvas></div>
-<div class="panel"><h2>Windowed ledger residual / electrode work (v2.0.3 statistic, recomputed for every case)</h2><canvas class="plot" id="p_res" role="img" aria-label="Trailing-window energy residual over electrode work versus time with the 5 percent gate and 2 percent acceptance bound"></canvas></div>
+<div class="panel"><h2>Windowed ledger residual / electrode work — recorded (solid, pre-v2.0.6) and corrected (dashed, v2.0.6), recomputed for every case</h2><canvas class="plot" id="p_res" role="img" aria-label="Trailing-window energy residual over electrode work versus time, recorded and corrected ledger, with the 5 percent gate and 2 percent acceptance bound"></canvas></div>
 <div class="panel"><h2>Peak Δ/λ_D (refined run: window gate statistic and single-step witness)</h2><canvas class="plot" id="p_deb" role="img" aria-label="Cells per Debye length at the peak node versus time with the soft and hard gates"></canvas></div>
 <div class="panel"><h2>Peak ω_pe Δt</h2><canvas class="plot" id="p_wpe" role="img" aria-label="Peak plasma frequency times time step versus time"></canvas></div>
 <div class="panel"><h2>Axial profile of max_r n_e(z) (window maps)</h2><canvas class="plot" id="p_axn" role="img" aria-label="Radial maximum of the window-averaged electron density versus axial position for both grids"></canvas></div>
@@ -434,7 +606,7 @@ table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}th{t
 </div></section>
 <section class="panel"><h2>Run records (hash-verified)</h2><div id="records"></div></section>
 <section class="panel"><h2>Simplifications, protocol and identity</h2><div id="identity"></div></section>
-</main><footer>Self-contained offline dashboard generated by <code>modern/visualization/generate_pic2d_cft_steady_state_v4.py</code>. Preregistered resolution-convergence study of a development model: not validated, not a performance prediction.</footer>
+</main><footer>Self-contained offline dashboard generated by <code>modern/visualization/generate_pic2d_cft_steady_state_v4.py</code>. Preregistered resolution-convergence study of a development model: not validated, not a performance prediction. Recorded and corrected-ledger (model v2.0.6, post hoc) readings are shown side by side; the recorded files are unchanged.</footer>
 <script id="pic2d-data" type="application/json">__DATA__</script>
 <script>
 "use strict";
@@ -445,24 +617,29 @@ const fmt=(v,n=4)=>v==null||!isFinite(v)?"–":Number(v).toLocaleString(undefine
 const sci=(v,n=3)=>v==null||!isFinite(v)?"–":Number(v).toExponential(n-1);
 const pct=(v,n=3,sign=false)=>v==null||!isFinite(v)?"–":(sign&&v>0?"+":"")+fmt(v*100,n)+" %";
 const themeColor=name=>getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-const A=DATA.assessment,C=DATA.comparison,R=DATA.cases[0],B0=DATA.cases[1],T=DATA.protocol.ion_transit_time_s;
-const verdictClass={converged:"converged",resolution_limited:"limited",refinement_heating:"heating",no_plateau:"none"}[DATA.verdict];
-$("verdict").innerHTML=`<span class="pill ${verdictClass}">verdict: ${DATA.verdict.replaceAll("_"," ")}</span><div class="chips"><span class="chip">50 µm base → <b>${DATA.verdict==="resolution_limited"?"RESOLUTION-LIMITED":DATA.verdict==="converged"?"resolution-converged":"not classified"}</b></span><span class="chip">(a) plateau <b>${A.a_plateau.passed?"pass":"fail"}</b> · ${fmt(A.a_plateau.ion_transit_times,4)} transits</span><span class="chip">(b) windowed residual <b>${pct(A.b_residual_power.windowed_residual_over_electrode_work,3,true)}</b> &lt; +2 % → ${A.b_residual_power.passed?"pass":"fail"}</span><span class="chip">(c) within tolerance <b>${C.rows.filter(r=>r.within).length}/${C.rows.length}</b>${C.failed.length?" · exceeded: "+C.failed.join(", "):""}</span><span class="chip">Δ/λ_D at the peak <b>${fmt(C.debye.refined_window_gate_last,3)}</b> (soft 2.5 ${C.debye.soft_ok?"held":"exceeded"}; base ${fmt(C.debye.reference_cells_per_debye_at_peak,3)})</span><span class="chip">prereg <b>${DATA.protocol.preregistration_commit.slice(0,8)}</b> · one execution</span></div>`;
+const A=DATA.assessment,C=DATA.comparison,R=DATA.cases[0],B0=DATA.cases[1],T=DATA.protocol.ion_transit_time_s,CL=DATA.corrected_ledger,RR=CL.reread,RB=RR.b_residual_power;
+const verdictClassOf=v=>({converged:"converged",resolution_limited:"limited",refinement_heating:"heating",no_plateau:"none"}[v]);
+const verdictClass=verdictClassOf(DATA.verdict),correctedClass=verdictClassOf(RR.verdict_on_corrected_ledger);
+$("verdict").innerHTML=`<span class="pill ${verdictClass}"><small>recorded verdict (assessment.json)</small>${DATA.verdict.replaceAll("_"," ")}</span><span class="pill ${correctedClass}"><small>corrected ledger, v2.0.6 post hoc (b) ${RB.corrected.passed?"pass":"FAIL"} ${pct(RB.corrected.windowed_residual_over_electrode_work,3,true)}</small>${RR.verdict_on_corrected_ledger.replaceAll("_"," ")}</span><div class="chips"><span class="chip">50 µm base → <b>${DATA.verdict==="resolution_limited"?"RESOLUTION-LIMITED":DATA.verdict==="converged"?"resolution-converged":"not classified"}</b> (as recorded; base heats at <b>${pct(B0.ledger_corrected.corrected_windowed,3,true)}</b> corrected)</span><span class="chip">(a) plateau <b>${A.a_plateau.passed?"pass":"fail"}</b> · ${fmt(A.a_plateau.ion_transit_times,4)} transits</span><span class="chip">(b) windowed residual recorded <b>${pct(A.b_residual_power.windowed_residual_over_electrode_work,3,true)}</b> → corrected <b>${pct(RB.corrected.windowed_residual_over_electrode_work,3,true)}</b> &lt; +2 %: ${A.b_residual_power.passed?"PASS":"FAIL"} → <b class="${RB.corrected.passed?"ok":"bad"}">${RB.corrected.passed?"PASS":"FAIL"}</b></span><span class="chip">(c) within tolerance <b>${C.rows.filter(r=>r.within).length}/${C.rows.length}</b>${C.failed.length?" · exceeded: "+C.failed.join(", "):""}</span><span class="chip">Δ/λ_D at the peak <b>${fmt(C.debye.refined_window_gate_last,3)}</b> (soft 2.5 ${C.debye.soft_ok?"held":"exceeded"}; base ${fmt(C.debye.reference_cells_per_debye_at_peak,3)})</span><span class="chip">prereg <b>${DATA.protocol.preregistration_commit.slice(0,8)}</b> · one execution</span></div>`;
+$("reread").innerHTML=`<strong>Corrected-ledger re-read (post hoc, <code>${RR.file}</code>):</strong> ${RR.verdict_statement}<br><span class="small">${RR.model_version_note}. The recorded verdict stands as the recorded outcome; the predeclared (d) tree applied with the corrected (b) gives <b>${RR.verdict_on_corrected_ledger.replaceAll("_"," ")}</b>. Bounds kept: ${CL.thresholds.kept}. Disallowed wording: ${RR.disallowed_wording.join("; ")}.</span>`;
 $("claim").innerHTML=`<strong>Claim boundary:</strong> ${DATA.claim_statement}<ul>${DATA.simplifications.map(s=>`<li>${s}</li>`).join("")}</ul>`;
 const okSpan=(ok,txt)=>`<span class="${ok?"ok":"bad"}">${txt}</span>`;
 function renderAcceptance(){const a=A.a_plateau,b=A.b_residual_power,pl=a.plateau||{};const drift=v=>v==null?"–":`<span class="${Math.abs(v)<.04?"ok":Math.abs(v)<.05?"marginal":"bad"}">${pct(v,3,true)}</span>`;
-const rows=[["(a) plateau",`${okSpan(a.passed,a.passed?"PASS":"FAIL")} — stop <code>${a.stop_reason}</code> at ${fmt(a.ion_transit_times,4)} transits (floor ${DATA.protocol.min_transit_times}; transit = ${sci(T,2)} s: ${DATA.protocol.ion_transit_note}); trailing-20 % drifts I_d ${drift(pl.discharge_current_drift)}, N_e ${drift(pl.electron_count_drift)}, n_g ${drift(pl.neutral_density_drift)} (threshold ${pct(pl.threshold,2)}); triad soft ${okSpan(pl.triad_soft_ok,pl.triad_soft_ok?"ok":"exceeded")}; peak-Debye soft margin ${okSpan(pl.peak_debye_soft_ok,pl.peak_debye_soft_ok?"held":"exceeded")}<br><span class="small">${a.rule}</span>`],
-["(b) residual power",`${okSpan(b.passed,b.passed?"PASS":"FAIL")} — trailing-400 000-step ledger residual / electrode work <b>${pct(b.windowed_residual_over_electrode_work,3,true)}</b> (bound &lt; ${pct(b.bound,2,true)}, one-sided; window complete ${b.window_complete}); cumulative witness ${pct(b.cumulative_witness,3,true)}<br><span class="small">${b.rule}</span>`],
-["(c) convergence",`${okSpan(C.all_within,C.all_within?"ALL WITHIN":"EXCEEDED: "+C.failed.join(", "))} — see the table below<br><span class="small">${A.c_convergence.rule}</span>`],
-["(d) re-classification",`<b>${A.d_reclassification}</b>`],
-["reference consistency",`${Object.values(A.reference_consistency).every(v=>v.agree)?'<span class="ok">7/7</span>':'<span class="bad">disagreement</span>'} — the pinned <code>protocol.reference_run.quantities</code> were re-derived from the v2 base artifacts on disk by the assess stage and again by this generator`]];
-$("acceptance").innerHTML=`<table aria-label="Predeclared acceptance"><tbody>${rows.map(([k,v])=>`<tr><th style="white-space:nowrap">${k}</th><td>${v}</td></tr>`).join("")}</tbody></table><p class="small">Assessed ${A.utc} (<code>assessment.json</code> SHA-256 <code>${A.sha256.slice(0,16)}…</code>) with the frozen protocol of the preregistration commit <code>${DATA.protocol.preregistration_commit.slice(0,12)}</code>. Outcome values: ${Object.entries(DATA.protocol.acceptance.d_reclassification).map(([k,v])=>`<b>${k}</b>: ${v}`).join(" · ")}</p>`}
+const rows=[["(a) plateau",`${okSpan(a.passed,a.passed?"PASS":"FAIL")} — stop <code>${a.stop_reason}</code> at ${fmt(a.ion_transit_times,4)} transits (floor ${DATA.protocol.min_transit_times}; transit = ${sci(T,2)} s: ${DATA.protocol.ion_transit_note}); trailing-20 % drifts I_d ${drift(pl.discharge_current_drift)}, N_e ${drift(pl.electron_count_drift)}, n_g ${drift(pl.neutral_density_drift)} (threshold ${pct(pl.threshold,2)}); triad soft ${okSpan(pl.triad_soft_ok,pl.triad_soft_ok?"ok":"exceeded")}; peak-Debye soft margin ${okSpan(pl.peak_debye_soft_ok,pl.peak_debye_soft_ok?"held":"exceeded")}<br><span class="small">${a.rule}</span>`,`${okSpan(a.passed,a.passed?"PASS":"FAIL")} — unchanged (not a ledger quantity)`],
+["(b) residual power",`${okSpan(b.passed,b.passed?"PASS":"FAIL")} — trailing-400 000-step ledger residual / electrode work <b>${pct(b.windowed_residual_over_electrode_work,3,true)}</b> (bound &lt; ${pct(b.bound,2,true)}, one-sided; window complete ${b.window_complete}); cumulative witness ${pct(b.cumulative_witness,3,true)}<br><span class="small">${b.rule}</span><br><span class="small">recorded statistic: ${RB.recorded.statistic}</span>`,`${okSpan(RB.corrected.passed,RB.corrected.passed?"PASS":"FAIL")} — <b>${pct(RB.corrected.windowed_residual_over_electrode_work,3,true)}</b> (same window, same bound &lt; ${pct(RB.bound,2,true)}); cumulative ${pct(RB.corrected.cumulative_witness,3,true)}; omitted inelastic power in the window ${pct(RB.corrected.omitted_inelastic_over_electrode_work_in_window,3,true)}; maximum over complete windows ${pct(RB.corrected.max_over_complete_windows.ratio,3,true)} at ${fmt(RB.corrected.max_over_complete_windows.time_s*1e6,3)} µs; first checkpoint ≥ 2 %: ${RB.corrected.first_checkpoint_at_or_above_bound?fmt(RB.corrected.first_checkpoint_at_or_above_bound.time_s*1e6,3)+" µs":"never"}; 5 % hard gate ${RB.corrected.hard_gate_0p05_would_have_fired?"<b class=\"bad\">would have fired</b>":"never fires"}; ${fmt(RB.corrected.numerical_heating_power_w_in_window*1e3,3)} mW of numerical heating on ${fmt(RB.corrected.electrode_power_w_in_window,3)} W of electrode power<br><span class="small">${RB.corrected.statistic}</span><br><b>${RB.status_change}</b>`],
+["(c) convergence",`${okSpan(C.all_within,C.all_within?"ALL WITHIN":"EXCEEDED: "+C.failed.join(", "))} — see the table below<br><span class="small">${A.c_convergence.rule}</span>`,`unchanged (not a ledger quantity); the 50 µm reference itself reads <b>${pct(B0.ledger_corrected.corrected_windowed,3,true)}</b> corrected (recorded ${pct(B0.ledger_corrected.recorded_windowed,3,true)}): it was heating; the 5 % gate would have stopped it at ${B0.ledger_corrected.corrected_gate_0p05_first_checkpoint_time_s!=null?fmt(B0.ledger_corrected.corrected_gate_0p05_first_checkpoint_time_s*1e6,3)+" µs":"never"}`],
+["(d) re-classification",`<b>${DATA.verdict.replaceAll("_"," ")}</b> — ${A.d_reclassification}`,`<b>${RR.verdict_on_corrected_ledger.replaceAll("_"," ")}</b> (predeclared tree with the corrected (b)) — ${RR.d_reclassification.corrected_text}<br><span class="small">${RR.d_reclassification.what_stands}</span>`],
+["reference consistency",`${Object.values(A.reference_consistency).every(v=>v.agree)?'<span class="ok">7/7</span>':'<span class="bad">disagreement</span>'} — the pinned <code>protocol.reference_run.quantities</code> were re-derived from the v2 base artifacts on disk by the assess stage and again by this generator`,`binding checks ${Object.values(RR.binding_checks).filter(Boolean).length}/${Object.keys(RR.binding_checks).length} — the re-read binds the sidecar, the recorded assessment, the summary and the protocol by byte hash`]];
+$("acceptance").innerHTML=`<table aria-label="Predeclared acceptance, recorded and on the corrected ledger"><thead><tr><th></th><th>recorded (<code>assessment.json</code>, ${A.utc})</th><th>corrected ledger (<code>${RR.file}</code>, ${RR.utc})</th></tr></thead><tbody>${rows.map(([k,v,w])=>`<tr><th style="white-space:nowrap">${k}</th><td>${v}</td><td>${w}</td></tr>`).join("")}</tbody></table><p class="small">Assessed ${A.utc} (<code>assessment.json</code> SHA-256 <code>${A.sha256.slice(0,16)}…</code>) with the frozen protocol of the preregistration commit <code>${DATA.protocol.preregistration_commit.slice(0,12)}</code>; re-read ${RR.utc} (<code>${RR.file}</code> SHA-256 <code>${RR.sha256.slice(0,16)}…</code>, <code>${RR.generated_by}</code>). Outcome values: ${Object.entries(DATA.protocol.acceptance.d_reclassification).map(([k,v])=>`<b>${k}</b>: ${v}`).join(" · ")}</p>`}
+function renderLedger(){const rows=CL.cases.map(c=>`<tr><td>${c.label}<br><code>${c.results_dir}</code></td><td class="num">${fmt(c.last_time_s*1e6,4)} µs</td><td class="num">${pct(c.recorded_windowed,3,true)}</td><td class="num"><b class="${c.corrected_windowed<CL.thresholds.acceptance_b?"ok":"bad"}">${pct(c.corrected_windowed,3,true)}</b></td><td class="num">${pct(c.omitted_windowed,3,true)}</td><td class="num">${pct(c.recorded_cumulative,3,true)} → ${pct(c.corrected_cumulative,3,true)}</td><td class="num">${pct(c.max_corrected_over_complete_windows.ratio,3,true)} @ ${fmt(c.max_corrected_over_complete_windows.time_s*1e6,3)} µs</td><td class="num">${c.recorded_gate_0p05_first_checkpoint_time_s==null?"never":fmt(c.recorded_gate_0p05_first_checkpoint_time_s*1e6,3)+" µs"} → ${c.corrected_gate_0p05_first_checkpoint_time_s==null?"never":"<b class=\"bad\">"+fmt(c.corrected_gate_0p05_first_checkpoint_time_s*1e6,3)+" µs</b>"}</td><td>${c.acceptance_b_recorded_passes?"pass":"FAIL"} → <b class="${c.acceptance_b_corrected_passes?"ok":"bad"}">${c.acceptance_b_corrected_passes?"pass":"FAIL"}</b></td><td><code>${c.sidecar_sha256.slice(0,12)}…</code></td></tr>`).join("");
+$("ledger").innerHTML=`<table aria-label="Energy-ledger correction per run"><thead><tr><th>run</th><th class="num">end</th><th class="num">recorded windowed</th><th class="num">corrected windowed</th><th class="num">omitted inelastic</th><th class="num">cumulative recorded → corrected</th><th class="num">max corrected (complete windows)</th><th class="num">5 % gate fires recorded → corrected</th><th>(b) &lt; +2 % recorded → corrected</th><th>sidecar</th></tr></thead><tbody>${rows}</tbody></table><p class="small">${C.residuals.statistic_note}. Up to model v2.0.5 the ledger's <code>inelastic_loss_j</code> counted macro-events × threshold energy without the macro weight W, so every recorded interval residual was H − L_inel, biased negative by the inelastic power; the sidecars (<code>ledger-corrected.json</code>, <code>python -m cft_revival.pic2d.ledger_recompute</code>) rebuild H = field work + ΔU − electrode work from the recorded series and this generator recomputes the corrected windowed statistic from the same series (it refuses a sidecar it cannot reproduce). Recorded files are unchanged. The three accepted 50 µm plateaus were heating numerically at +7…+13 % of the electrode power (the v2.0.3 5 % gate would have stopped them before their plateau declarations); the 33 µm plateau heats at ${pct(R.ledger_corrected.corrected_windowed,3,true)}, above the 2 % acceptance bound and below the 5 % hard gate. Spec: <code>${CL.spec}</code>.</p>`}
 function renderComparison(){const bands=DATA.cases.slice(2);const head=`<tr><th>quantity</th><th class="num">50 µm base</th>${bands.map(b=>`<th class="num">${b.label}</th>`).join("")}<th class="num">33.3 µm v4</th><th class="num">Δ vs base</th><th class="num">tolerance</th><th>within</th></tr>`;
 const val=(v,r)=>r.unit==="mA"?fmt(v*r.display_scale,4)+" mA":r.unit==="eV"?fmt(v,4)+" eV":r.unit===""?fmt(v,4):sci(v,4)+" "+r.unit;
 const body=C.rows.map(r=>`<tr><td>${r.quantity}</td><td class="num">${val(r.reference,r)}</td>${r.bands.map(b=>`<td class="num">${val(b.value,r)}<br><span class="small">${pct(b.relative_difference,2,true)}</span></td>`).join("")}<td class="num"><b>${val(r.refined,r)}</b></td><td class="num"><b class="${r.within?"ok":"bad"}">${pct(r.relative_difference,3,true)}</b></td><td class="num">±${pct(r.tolerance,2)}</td><td>${r.within?'<span class="ok">yes</span>':'<span class="bad">NO</span>'}</td></tr>`).join("");
 const D=C.debye,Rs=C.residuals;const extra=`<tr><td>Δ/λ_D at the peak (window maps; v4: gate statistic)</td><td class="num">${fmt(D.reference_cells_per_debye_at_peak,3)}</td>${D.bands.map(b=>`<td class="num">${fmt(b.cells_per_debye_at_peak,3)}</td>`).join("")}<td class="num"><b>${fmt(D.refined_window_gate_last,3)}</b> (trailing mean ${fmt(D.refined_window_gate_trailing_mean,3)}; maps ${fmt(D.refined_cells_per_debye_at_peak_maps,3)})</td><td class="num">–</td><td class="num">soft 2.5 · hard π</td><td>${D.soft_ok?'<span class="ok">soft held</span>':'<span class="bad">soft exceeded</span>'}</td></tr>
-<tr><td>windowed residual / electrode work (trailing 400 000 steps; v2 runs recomputed from their series)</td><td class="num">${pct(Rs.reference_windowed_recomputed,3,true)}</td>${Rs.bands.map(b=>`<td class="num">${pct(b.windowed_recomputed,3,true)}</td>`).join("")}<td class="num"><b>${pct(Rs.refined_windowed,3,true)}</b></td><td class="num">–</td><td class="num">&lt; +2 % (gate +5 %)</td><td>${Rs.refined_windowed<Rs.acceptance_bound?'<span class="ok">yes</span>':'<span class="bad">NO</span>'}</td></tr>
-<tr><td>cumulative residual / electrode work</td><td class="num">${pct(Rs.reference_cumulative,3,true)}</td>${Rs.bands.map(b=>`<td class="num">${pct(b.cumulative,3,true)}</td>`).join("")}<td class="num">${pct(Rs.refined_cumulative,3,true)}</td><td class="num">–</td><td class="num">witness</td><td>–</td></tr>
+<tr><td>windowed residual / electrode work, RECORDED ledger (trailing 400 000 steps; v2 runs recomputed from their series; pre-v2.0.6 statistic)</td><td class="num">${pct(Rs.reference_windowed_recomputed,3,true)}</td>${Rs.bands.map(b=>`<td class="num">${pct(b.windowed_recomputed,3,true)}</td>`).join("")}<td class="num"><b>${pct(Rs.refined_windowed,3,true)}</b></td><td class="num">–</td><td class="num">&lt; +2 % (gate +5 %)</td><td>${Rs.refined_windowed<Rs.acceptance_bound?'<span class="ok">yes (recorded)</span>':'<span class="bad">NO (recorded)</span>'}</td></tr>
+<tr><td>windowed residual / electrode work, CORRECTED ledger (model v2.0.6 sidecars; same window)</td><td class="num"><b class="${Rs.reference_windowed_corrected<Rs.acceptance_bound?"ok":"bad"}">${pct(Rs.reference_windowed_corrected,3,true)}</b></td>${Rs.bands.map(b=>`<td class="num"><b class="${b.windowed_corrected<Rs.acceptance_bound?"ok":"bad"}">${pct(b.windowed_corrected,3,true)}</b></td>`).join("")}<td class="num"><b class="${Rs.refined_windowed_corrected<Rs.acceptance_bound?"ok":"bad"}">${pct(Rs.refined_windowed_corrected,3,true)}</b></td><td class="num">–</td><td class="num">&lt; +2 % (gate +5 %)</td><td>${Rs.refined_windowed_corrected<Rs.acceptance_bound?'<span class="ok">yes (corrected)</span>':'<span class="bad">NO (corrected)</span>'}</td></tr>
+<tr><td>cumulative residual / electrode work, recorded → corrected</td><td class="num">${pct(Rs.reference_cumulative,3,true)} → ${pct(Rs.reference_cumulative_corrected,3,true)}</td>${Rs.bands.map(b=>`<td class="num">${pct(b.cumulative,3,true)} → ${pct(b.cumulative_corrected,3,true)}</td>`).join("")}<td class="num">${pct(Rs.refined_cumulative,3,true)} → ${pct(Rs.refined_cumulative_corrected,3,true)}</td><td class="num">–</td><td class="num">witness</td><td>–</td></tr>
 <tr><td>peak node (r, z)</td><td class="num">${fmt(B0.peak.r_m*1e3,3)} mm, ${fmt(B0.peak.z_m*1e3,4)} mm</td>${bands.map(b=>`<td class="num">${fmt(b.peak.r_m*1e3,3)}, ${fmt(b.peak.z_m*1e3,4)} mm</td>`).join("")}<td class="num">${fmt(R.peak.r_m*1e3,3)} mm, ${fmt(R.peak.z_m*1e3,4)} mm</td><td class="num">–</td><td class="num">–</td><td>–</td></tr>
 <tr><td>plateau: transits · steps · stop</td><td class="num">${fmt(B0.ion_transit_times,3)} · ${B0.steps_completed} · ${B0.stop_reason.replaceAll("_"," ")}</td>${bands.map(b=>`<td class="num">${fmt(b.ion_transit_times,3)} · ${b.steps_completed} · ${b.stop_reason.replaceAll("_"," ")}</td>`).join("")}<td class="num">${fmt(R.ion_transit_times,3)} · ${R.steps_completed} · ${R.stop_reason.replaceAll("_"," ")}</td><td class="num">–</td><td class="num">–</td><td>–</td></tr>
 <tr><td>grid · Δt · W · particles at the end (e⁻ + Xe⁺)</td><td class="num">${B0.grid.radial_cells}×${B0.grid.axial_cells} · ${fmt(B0.dt_s*1e12,3)} ps · ${sci(B0.macro_weight,3)} · ${B0.final_counts.electrons}+${B0.final_counts.ions}</td>${bands.map(b=>`<td class="num">${b.grid.radial_cells}×${b.grid.axial_cells} · ${fmt(b.dt_s*1e12,3)} ps · ${sci(b.macro_weight,3)} · ${b.final_counts.electrons}+${b.final_counts.ions}</td>`).join("")}<td class="num">${R.grid.radial_cells}×${R.grid.axial_cells} · ${fmt(R.dt_s*1e12,3)} ps · ${sci(R.macro_weight,3)} · ${R.final_counts.electrons}+${R.final_counts.ions}</td><td class="num">–</td><td class="num">–</td><td>–</td></tr>`;
@@ -487,7 +664,7 @@ drawPlot("p_ib",lines("current_exit_ion_beam_a",1e3),xl,"I_beam,i (mA)",false,{.
 drawPlot("p_s",lines("current_ionization_rate_per_s"),xl,"S (s⁻¹)",false,{...tm,robust:true});
 drawPlot("p_ng",lines("neutral_density_per_m3"),xl,"n_g (m⁻³)",false,{...tm,hlines:[{y:R.neutral_inventory.zero_ionization_density_per_m3,name:"n_g0 = Q_in/c",color:"#ffcf67"}]});
 drawPlot("p_ne",lines("electrons"),xl,"macro-electrons",false,tm);
-drawPlot("p_res",lines("windowed_residual_over_electrode_work",100),xl,"residual / electrode work (%)",false,{...tm,hlines:[{y:5,name:"v2.0.3 gate +5 %",color:"#ff6b6b"},{y:2,name:"acceptance (b) +2 %",color:"#ffcf67"},{y:0,name:"0",color:themeColor("--muted")}],ymin:-20,ymax:8});
+drawPlot("p_res",[...lines("windowed_residual_over_electrode_work",100).map(q=>q&&{...q,name:q.name+" (recorded)"}),...lines("windowed_residual_corrected_over_electrode_work",100).map(q=>q&&{...q,name:q.name+" (corrected, v2.0.6)",dash:[6,4]})],xl,"residual / electrode work (%)",false,{...tm,hlines:[{y:5,name:"v2.0.3 gate +5 %",color:"#ff6b6b"},{y:2,name:"acceptance (b) +2 %",color:"#ffcf67"},{y:0,name:"0",color:themeColor("--muted")}],ymin:-20,ymax:16});
 drawPlot("p_deb",[visible[0]&&R.series.peak_node_window_cells_per_debye?{x:tx(R),y:R.series.peak_node_window_cells_per_debye,name:"window gate statistic (400 000-step interval average)",color:COLORS[0],width:1.8}:null,visible[0]&&R.series.peak_node_cells_per_debye?{x:tx(R),y:R.series.peak_node_cells_per_debye,name:"single-step witness",color:"#9bb8b0",width:.8}:null],xl,"Δ/λ_D at the peak",false,{...tm,hlines:[{y:Math.PI,name:"hard π",color:"#ff6b6b"},{y:2.5,name:"soft 2.5",color:"#ffcf67"},{y:C.debye.reference_cells_per_debye_at_peak,name:"50 µm base at its peak (3.17)",color:COLORS[1]}],ymin:0,ymax:3.5});
 drawPlot("p_wpe",lines("peak_omega_pe_dt"),xl,"peak ω_pe Δt",false,{...tm,hlines:[{y:.2,name:"gate 0.2",color:"#ff6b6b"}],ymin:0,ymax:.22});
 const prof=(key,xkey,scale=1)=>DATA.cases.map((c,i)=>visible[i]?{x:c.profiles[xkey].map(v=>v*1e3),y:c.profiles[key].map(v=>v==null?null:v*scale),name:c.label,color:COLORS[i],width:i===0?1.8:1.1}:null);
@@ -499,7 +676,7 @@ drawPlot("p_rt",prof("radial_t_e_at_peak_z_ev","r_m"),"r (mm)","T_e at z_peak (e
 function renderLegend(){$("legend").innerHTML=DATA.cases.map((c,i)=>`<label><input type="checkbox" data-i="${i}" ${visible[i]?"checked":""}> <span class="sw" style="background:${COLORS[i]}"></span>${c.label} — ${c.grid.radial_cells}×${c.grid.axial_cells}, W ${sci(c.macro_weight,3)}, seed ${c.seed}</label>`).join("");$("legend").querySelectorAll("input").forEach(el=>el.onchange=()=>{visible[Number(el.dataset.i)]=el.checked;schedule()})}
 function drawAll(){drawSeries()}
 function schedule(){cancelAnimationFrame(raf);raf=requestAnimationFrame(drawAll)}
-renderAcceptance();renderComparison();renderRecords();renderIdentity();renderLegend();
+renderAcceptance();renderLedger();renderComparison();renderRecords();renderIdentity();renderLegend();
 $("tscale").onchange=e=>{xMode=e.target.value;schedule()};
 $("theme").onclick=()=>{const light=document.documentElement.dataset.theme!=="light";document.documentElement.dataset.theme=light?"light":"dark";$("theme").textContent=light?"Dark theme":"Light theme";$("theme").setAttribute("aria-pressed",light);schedule()};
 new ResizeObserver(schedule).observe(document.querySelector("main"));window.addEventListener("pageshow",schedule);drawAll();

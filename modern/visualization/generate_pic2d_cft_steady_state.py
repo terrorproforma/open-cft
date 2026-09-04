@@ -11,17 +11,25 @@ steady-state predecessors (v1 no-ignition reference, v1.3 attempt 1), the snapsh
 growth cases and the snapshot v1 fail-closed cases.  No timestamps or runtime
 measurements are added, so identical inputs give identical bytes; the page is
 self-contained (no network access) and states its claim boundary on every view.
+
+Energy-ledger correction (model v2.0.6, post hoc): every embedded case carries its
+``ledger-corrected.json`` sidecar (bound to the case's series hash) and the corrected
+trailing-window residual recomputed here from the recorded series; the page shows the
+recorded (pre-v2.0.6) and the corrected readings side by side - the three 50 um plateaus
+were heating numerically at +7..+13 % of the electrode power.  Recorded files unchanged.
 """
 
 from __future__ import annotations
 
 import argparse
-from hashlib import sha256
 import json
+import sys
+from collections.abc import Mapping
+from hashlib import sha256
+from itertools import pairwise
 from math import isfinite, pi, sqrt
 from pathlib import Path
-import sys
-from typing import Any, Mapping
+from typing import Any
 
 import numpy as np
 
@@ -32,9 +40,15 @@ if str(SRC) not in sys.path:
 if str(MODERN) not in sys.path:
     sys.path.insert(0, str(MODERN))
 
-from cft_revival.pic2d.artifacts import platform_fingerprint, read_canonical_json, read_npz  # noqa: E402
-from cft_revival.pic2d.mesh import build_mesh_masks  # noqa: E402
-from cft_revival.pic2d.models import ChannelGeometry, Grid2D  # noqa: E402
+from cft_revival.pic2d.artifacts import (
+    platform_fingerprint,
+    read_canonical_json,
+    read_npz,
+)
+from cft_revival.pic2d.ledger_recompute import SIDECAR_NAME as LEDGER_SIDECAR_NAME
+from cft_revival.pic2d.ledger_recompute import corrected_residual, windowed_ratios
+from cft_revival.pic2d.mesh import build_mesh_masks
+from cft_revival.pic2d.models import ChannelGeometry, Grid2D
 
 
 def _load_snapshot_generator():
@@ -58,7 +72,11 @@ VARIANTS = EXPERIMENT / "variants.json"
 REFERENCE_V1 = MODERN / "experiments" / "pic2d_cft_steady_state_v1"
 SNAPSHOT_V2 = MODERN / "experiments" / "pic2d_cft_snapshot_v2"
 DEFAULT_OUTPUT = Path(__file__).with_name("pic2d-cft-steady-state.html")
-SCHEMA = "cft-pic2d-cft-steady-state-visualization/0.1.0"
+SCHEMA = "cft-pic2d-cft-steady-state-visualization/0.2.0"
+LEDGER_SIDECAR_SCHEMA = "cft.pic2d.ledger-corrected/1.0.0"
+RESIDUAL_WINDOW_STEPS = 400_000          # the v2.0.3 residual-power window, applied post hoc to these v1.3 runs
+RESIDUAL_ACCEPTANCE_BOUND = 0.02         # the later (v4) acceptance (b) bound, one-sided
+RESIDUAL_HARD_GATE = 0.05                # the v2.0.3 hard gate, one-sided
 STOP_REASONS = {
     "plateau_reached_after_min_transit_times", "wall_clock_budget_reached", "runtime_stability_gate_stopped_run",
     "finalized_no_ignition_reference_after_3_transit_times", "stopped_no_ignition_attempt1_after_1us",
@@ -97,6 +115,51 @@ def _decimate(values: np.ndarray, stride: int) -> np.ndarray:
     return out
 
 
+def windowed_residuals(series: Mapping[str, np.ndarray], window_steps: int = RESIDUAL_WINDOW_STEPS) -> tuple[np.ndarray, np.ndarray]:
+    """Recorded (pre-v2.0.6) and corrected (v2.0.6, H = field work + dU - electrode work) trailing-window residual /
+    electrode work per record with the runner's window semantics; NaN while the window is incomplete."""
+
+    steps = np.asarray(series["step"], dtype=np.float64)
+    electrode = np.asarray(series["interval_electrode_work_j"], dtype=np.float64)
+    recorded = windowed_ratios(steps, np.asarray(series["interval_residual_j"], dtype=np.float64), electrode, window_steps)
+    corrected, _h, _resume_first = corrected_residual(series)
+    fixed = windowed_ratios(steps, corrected, electrode, window_steps)
+    return np.where(recorded["complete"], recorded["ratio"], np.nan), np.where(fixed["complete"], fixed["ratio"], np.nan)
+
+
+def ledger_sidecar_digest(case_dir: Path, *, series_sha: str, recorded_last: float | None, corrected_last: float | None) -> dict[str, Any]:
+    """Hash-verified digest of ``ledger-corrected.json`` bound to the case's series and checked against the recomputation."""
+
+    path = case_dir / LEDGER_SIDECAR_NAME
+    if not path.is_file():
+        raise ValueError(f"{case_dir.name}: {LEDGER_SIDECAR_NAME} is missing - run `python -m cft_revival.pic2d.ledger_recompute {case_dir}`")
+    sidecar_sha = _verify_sidecar(path)
+    sidecar = read_canonical_json(path)
+    if sidecar.get("schema") != LEDGER_SIDECAR_SCHEMA:
+        raise ValueError(f"{case_dir.name}: {LEDGER_SIDECAR_NAME} has schema {sidecar.get('schema')!r}")
+    if sidecar["inputs"]["series"]["sha256"] != series_sha:
+        raise ValueError(f"{case_dir.name}: {LEDGER_SIDECAR_NAME} describes another series")
+    end = sidecar["end_state_window"]
+    for name, mine, theirs in (("recorded", recorded_last, end["recorded_ratio"]), ("corrected", corrected_last, end["corrected_ratio"])):
+        if mine is None or theirs is None or abs(mine - theirs) > 1e-9 * max(abs(theirs), 1e-12):
+            raise ValueError(f"{case_dir.name}: the {name} windowed residual recomputed here ({mine}) differs from the sidecar's ({theirs})")
+    gate = sidecar["threshold_crossings"][f"{RESIDUAL_HARD_GATE:.2f}"]["corrected_first_crossing_at_checkpoint"]
+    bound = sidecar["threshold_crossings"][f"{RESIDUAL_ACCEPTANCE_BOUND:.2f}"]["corrected_first_crossing_at_checkpoint"]
+    return {
+        "sidecar_sha256": sidecar_sha, "generated_by": sidecar.get("generated_by"), "macro_weight": sidecar["parameters"]["macro_weight"],
+        "window_steps": int(sidecar["parameters"]["window_steps"]), "last_time_s": float(sidecar["last_time_s"]),
+        "recorded_windowed": end["recorded_ratio"], "corrected_windowed": end["corrected_ratio"], "omitted_windowed": end["omitted_ratio"],
+        "recorded_cumulative": sidecar["cumulative"]["recorded_over_electrode"], "corrected_cumulative": sidecar["cumulative"]["corrected_over_electrode"],
+        "omitted_inelastic_j": sidecar["cumulative"]["omitted_inelastic_j"], "electrode_work_j": sidecar["cumulative"]["electrode_work_j"],
+        "max_corrected_over_complete_windows": sidecar["max_over_complete_windows"]["corrected"],
+        "corrected_first_checkpoint_at_or_above_bound_time_s": None if bound is None else bound["time_s"],
+        "corrected_hard_gate_first_checkpoint_time_s": None if gate is None else gate["time_s"],
+        "recorded_below_bound": None if end["recorded_ratio"] is None else bool(end["recorded_ratio"] < RESIDUAL_ACCEPTANCE_BOUND),
+        "corrected_below_bound": None if end["corrected_ratio"] is None else bool(end["corrected_ratio"] < RESIDUAL_ACCEPTANCE_BOUND),
+        "cross_check_relative_difference": (sidecar.get("cross_check_vs_final_counts") or {}).get("relative_difference"),
+    }
+
+
 def _grid(summary: Mapping[str, Any]) -> tuple[Grid2D, dict[str, Any]]:
     grid = summary["provenance"]["config"]["grid"]
     geometry = grid["geometry"]
@@ -128,7 +191,7 @@ def cusp_positions(maps: Mapping[str, np.ndarray], grid: Grid2D, grid_dict: Mapp
         # magnet mid-planes: local minima of |B_r| on the bore wall between cusps
         mids: list[float] = []
         bounds = [z[0], *[0.5 * (z[i] + z[i + 1]) for i in flips], z[-1]]
-        for lo, hi in zip(bounds[:-1], bounds[1:]):
+        for lo, hi in pairwise(bounds):
             sel = np.where((z >= lo) & (z <= hi))[0]
             if sel.size:
                 mids.append(float(f"{z[sel[int(np.argmin(b_r_wall[sel]))]]:.6g}"))
@@ -138,16 +201,21 @@ def cusp_positions(maps: Mapping[str, np.ndarray], grid: Grid2D, grid_dict: Mapp
         return {"source": "B_z sign change on the axis of the sampled P2 field map", "cusp_z_m": cusps, "magnet_midplane_z_m": mids,
                 "field_map_sha256": field.sha256, "field_source_sha256": field.source_sha256,
                 "source_identity_sha256": evaluated["source_identity_sha256"], "checkpoint_file_sha256": evaluated["checkpoint_file_sha256"]}
-    except Exception as exc:  # pragma: no cover - only without the P2 checkpoint
+    except Exception as exc:  # noqa: BLE001 - pragma: no cover - only without the P2 checkpoint (any loader error means "no field map")
         return {"source": f"field map unavailable ({type(exc).__name__}); cusps not marked", "cusp_z_m": [], "magnet_midplane_z_m": []}
 
 
+LEDGER_SERIES_KEYS = ("step", "interval_residual_j", "interval_electrode_work_j", "interval_field_work_j", "field_energy_j")
+
+
 def build_case(case_dir: Path, protocol_path: Path, *, label: str, role: str, protocol_sha_expected: str | None = None,
-               raw_out: dict[str, Any] | None = None) -> dict[str, Any]:
+               raw_out: dict[str, Any] | None = None, ledger_sidecar: str = "optional") -> dict[str, Any]:
     """Hash-verified digest of one finished steady-state case directory (maps + series embedded).
 
     ``raw_out`` (if given) receives the full-resolution ``series``/``maps`` arrays and the
-    plasma mask for the between-case comparison; they are not embedded.
+    plasma mask for the between-case comparison; they are not embedded.  ``ledger_sidecar``
+    ``"required"`` makes the v2.0.6 ``ledger-corrected.json`` mandatory (the steady-state v2
+    dashboard); ``"optional"`` embeds it when present (other dashboards reusing this digest).
     """
 
     summary_path = case_dir / "summary.json"
@@ -184,6 +252,21 @@ def build_case(case_dir: Path, protocol_path: Path, *, label: str, role: str, pr
     n_samples = int(series["time_s"].shape[0])
     series_stride = max(1, -(-n_samples // MAX_SERIES_POINTS))
     embedded_series = {key: _round(_decimate(series[key], series_stride)) for key in SERIES_KEYS if key in series}
+    if ledger_sidecar not in ("required", "optional"):
+        raise ValueError(f"ledger_sidecar must be 'required' or 'optional', not {ledger_sidecar!r}")
+    ledger_corrected: dict[str, Any] | None = None
+    recorded_last: float | None = None
+    corrected_last: float | None = None
+    if all(key in series for key in LEDGER_SERIES_KEYS):
+        recorded_w, corrected_w = windowed_residuals(series)
+        embedded_series["windowed_residual_recorded_over_electrode_work"] = _round(_decimate(recorded_w, series_stride))
+        embedded_series["windowed_residual_corrected_over_electrode_work"] = _round(_decimate(corrected_w, series_stride))
+        recorded_last = float(recorded_w[-1]) if recorded_w.size and isfinite(float(recorded_w[-1])) else None
+        corrected_last = float(corrected_w[-1]) if corrected_w.size and isfinite(float(corrected_w[-1])) else None
+        if ledger_sidecar == "required" or (case_dir / LEDGER_SIDECAR_NAME).is_file():
+            ledger_corrected = ledger_sidecar_digest(case_dir, series_sha=series_sha, recorded_last=recorded_last, corrected_last=corrected_last)
+    elif ledger_sidecar == "required":
+        raise ValueError(f"{case_dir.name}: the series lacks the ledger arrays {LEDGER_SERIES_KEYS} needed for the v2.0.6 correction")
     window = summary.get("averaging_window_step_range")
     w_summary = summary["window_maps_summary"]
     t_e_ref = w_summary.get("t_e_density_weighted_mean_ev") or 8.0
@@ -220,6 +303,9 @@ def build_case(case_dir: Path, protocol_path: Path, *, label: str, role: str, pr
         "stability_gate_message": summary.get("stability_gate_message"),
         "plateau": summary.get("plateau"),
         "ledger": summary.get("ledger"),
+        "ledger_corrected": ledger_corrected,
+        "windowed_residual_recorded_recomputed": recorded_last,
+        "windowed_residual_corrected_recomputed": corrected_last,
         "neutral_inventory": neutral,
         "window_currents_a": summary.get("window_currents_a"),
         "window_maps_summary": w_summary,
@@ -529,7 +615,7 @@ def build_payload(results: Path = RESULTS, protocol_path: Path = PROTOCOL, varia
     protocol = json.loads(protocol_path.read_text(encoding="utf-8"))
     protocol_sha = _file_sha256(protocol_path)
     raw_headline: dict[str, Any] = {}
-    headline = build_case(results, protocol_path, label="v1.3 plateau (attempt 2)", role="headline", raw_out=raw_headline)
+    headline = build_case(results, protocol_path, label="v1.3 plateau (attempt 2)", role="headline", raw_out=raw_headline, ledger_sidecar="required")
     cases = [headline]
     comparisons: list[dict[str, Any]] = []
     variants: dict[str, Any] = {}
@@ -545,7 +631,8 @@ def build_payload(results: Path = RESULTS, protocol_path: Path = PROTOCOL, varia
                      "state": "finished" if finished else ("running_or_pending" if case_dir.is_dir() else "not_started")}
             if finished:
                 raw_variant: dict[str, Any] = {}
-                case = build_case(case_dir, protocol_path, label=f"variant {name}", role="variant", protocol_sha_expected=protocol_sha, raw_out=raw_variant)
+                case = build_case(case_dir, protocol_path, label=f"variant {name}", role="variant", protocol_sha_expected=protocol_sha, raw_out=raw_variant,
+                                  ledger_sidecar="required")
                 cases.append(case)
                 comparisons.append(build_comparison(raw_headline, raw_variant, headline, case))
                 entry["reached_plateau"] = bool((case["plateau"] or {}).get("reached"))
@@ -584,6 +671,9 @@ def build_payload(results: Path = RESULTS, protocol_path: Path = PROTOCOL, varia
     neutral = headline["neutral_inventory"] or {}
     op = protocol["operating_point"]
     feed = neutral.get("feed_atoms_per_s", op["neutral_inventory"]["feed_atoms_per_s"])
+    ledger_correction = build_ledger_correction(cases)
+    corrected = [c["ledger_corrected"]["corrected_windowed"] for c in cases]
+    per_case = ", ".join(f"{c['label']} {100.0 * c['ledger_corrected']['corrected_windowed']:+.1f} %" for c in cases)
     payload = {
         "schema": SCHEMA,
         "experiment_id": protocol["experiment_id"],
@@ -600,8 +690,14 @@ def build_payload(results: Path = RESULTS, protocol_path: Path = PROTOCOL, varia
             "electron-count drift at 4.98 % - marginal, reported as such. The window peak density is 4.1 x the a-priori "
             "resolvability ceiling n_max (dz = 3.0 lambda_D at the peak node, omega_pe dt up to 0.118 against the 0.2 gate): the "
             "peak region between the 12.0 and 17.95 mm cusps is under-resolved and the mean density (0.93 x the projected "
-            "0-D equilibrium) is the quantity inside the budget. The neutral transient is artificial; only its fixed point is physical. "
-            "Numerics verified by the tests in modern/tests/pic2d; physics simplified as listed."
+            "0-D equilibrium) is the quantity inside the budget. Energy-ledger correction (model v2.0.6, post hoc): the recorded "
+            "ledger residuals lacked the macro weight on the inelastic sink; on the corrected ledger the 50 um plateaus were "
+            f"HEATING numerically at {100.0 * min(corrected):+.1f} to {100.0 * max(corrected):+.1f} % of the electrode power "
+            f"(trailing 400 000-step window at the last record: {per_case}; "
+            "the later 5 % hard gate would have stopped every one of them before its plateau declaration) - resolution-limited per "
+            "pic2d_cft_steady_state_v4 (Delta/lambda_D 3.17 on the CIC threshold), so every plateau value is a heated-grid value "
+            "and no energy-conserving or converged wording applies; the recorded files are unchanged. The neutral transient is "
+            "artificial; only its fixed point is physical. Numerics verified by the tests in modern/tests/pic2d; physics simplified as listed."
         ),
         "simplifications": protocol["simplifications"],
         "protocol": {
@@ -632,6 +728,7 @@ def build_payload(results: Path = RESULTS, protocol_path: Path = PROTOCOL, varia
         "comparisons": comparisons,
         "variants": variant_status,
         "cases": cases,
+        "ledger_correction": ledger_correction,
         "history": {
             "steady_state": history_rows,
             "snapshot_v2": snapshot_v2_digest,
@@ -651,10 +748,32 @@ def build_payload(results: Path = RESULTS, protocol_path: Path = PROTOCOL, varia
     return payload
 
 
+def build_ledger_correction(cases: list[Mapping[str, Any]]) -> dict[str, Any]:
+    """The v2.0.6 correction across the embedded cases: per-run recorded vs corrected readings and the quotable statement."""
+
+    rows = [{"id": c["id"], "label": c["label"], "role": c["role"], "results_dir": c["results_dir"], "ion_transit_times": c["ion_transit_times"],
+             "stop_reason": c["stop_reason"], **c["ledger_corrected"]} for c in cases]
+    values = [row["corrected_windowed"] for row in rows]
+    return {
+        "spec": "spec/pic2d/pic2d-model-v2.0.json#gates_v2_0.energy_ledger_correction_v2_0_6 / gate_recalibration_v2_0_6",
+        "tool": "python -m cft_revival.pic2d.ledger_recompute <results-dir>",
+        "window_steps": RESIDUAL_WINDOW_STEPS, "acceptance_bound": RESIDUAL_ACCEPTANCE_BOUND, "hard_gate": RESIDUAL_HARD_GATE,
+        "finding": ("up to model v2.0.5 the ledger's inelastic_loss_j counted macro-events x threshold energy WITHOUT the macro weight W, so every "
+                    "recorded interval residual was H - L_inel (biased negative by the inelastic power); the corrected residual is "
+                    "H = field work + dU - electrode work, rebuilt from the recorded series (recorded files unchanged)"),
+        "statement": (f"the 50 um plateaus were heating numerically at {100.0 * min(values):+.1f} to {100.0 * max(values):+.1f} % of the electrode "
+                      "power (trailing 400 000-step window at the last record); resolution-limited (pic2d_cft_steady_state_v4); every plateau value "
+                      "is a heated-grid value; the later 5 % hard gate would have stopped every run before its plateau declaration"),
+        "these_runs_had_no_residual_acceptance": ("model v1.3 development runs: no runtime residual gate and no predeclared residual acceptance existed; "
+                                                   "the 2 % bound and the 5 % gate are the later v2.0.3 / v4 standards applied post hoc for the reading"),
+        "cases": rows,
+    }
+
+
 def validate_payload(payload: Mapping[str, Any]) -> None:
     required = {
         "schema", "experiment_id", "model_version", "status", "claim_boundary", "claim_statement", "simplifications", "protocol",
-        "budget", "operating_point_summary", "convergence", "comparisons", "variants", "cases", "history",
+        "budget", "operating_point_summary", "convergence", "comparisons", "variants", "cases", "history", "ledger_correction",
     }
     if set(payload) != required:
         raise ValueError("payload keys do not match the closed schema")
@@ -665,6 +784,9 @@ def validate_payload(payload: Mapping[str, Any]) -> None:
     statement = payload["claim_statement"].lower()
     if not payload["simplifications"] or "not preregistered" not in statement or "not validated" not in statement:
         raise ValueError("claim boundary must be explicit")
+    if "energy-ledger correction" not in statement or "heating numerically" not in statement or "heated-grid value" not in statement:
+        raise ValueError("claim boundary must disclose the energy-ledger correction: the 50 um plateaus were heating")
+    _validate_ledger_correction(payload)
     if not payload["cases"] or payload["cases"][0]["role"] != "headline":
         raise ValueError("payload must contain the headline case first")
     if not isinstance(payload["protocol"]["file_sha256"], str) or len(payload["protocol"]["file_sha256"]) != 64:
@@ -705,6 +827,41 @@ def validate_payload(payload: Mapping[str, Any]) -> None:
             raise ValueError("comparison ids must reference embedded cases")
         if not comparison["windows"] or not comparison["windows"][0]["rows"]:
             raise ValueError("comparison must carry the common-window rows")
+
+
+def _validate_ledger_correction(payload: Mapping[str, Any]) -> None:
+    """Every case carries a hash-bound sidecar reading, the recomputed series reproduces it, and the rows / statement follow."""
+
+    block = payload["ledger_correction"]
+    if set(block) != {"spec", "tool", "window_steps", "acceptance_bound", "hard_gate", "finding", "statement", "these_runs_had_no_residual_acceptance", "cases"}:
+        raise ValueError("ledger_correction keys do not match the closed schema")
+    if block["acceptance_bound"] != RESIDUAL_ACCEPTANCE_BOUND or block["hard_gate"] != RESIDUAL_HARD_GATE or block["window_steps"] != RESIDUAL_WINDOW_STEPS:
+        raise ValueError("the residual bound, gate and window may not be changed")
+    if [row["id"] for row in block["cases"]] != [case["id"] for case in payload["cases"]]:
+        raise ValueError("ledger-correction rows must cover the embedded cases in order")
+    values = []
+    for row, case in zip(block["cases"], payload["cases"], strict=True):
+        lc = case["ledger_corrected"]
+        if lc is None:
+            raise ValueError(f"{case['id']}: every steady-state case must carry its ledger-corrected sidecar reading")
+        if not isinstance(lc["sidecar_sha256"], str) or len(lc["sidecar_sha256"]) != 64 or row["sidecar_sha256"] != lc["sidecar_sha256"]:
+            raise ValueError(f"{case['id']}: ledger sidecar hash missing or not the row's")
+        for key in ("recorded_windowed", "corrected_windowed", "recorded_cumulative", "corrected_cumulative"):
+            if lc[key] is None or not isfinite(lc[key]) or row[key] != lc[key]:
+                raise ValueError(f"{case['id']}: ledger {key} is not finite or not the row's")
+        if row["corrected_below_bound"] != (row["corrected_windowed"] < block["acceptance_bound"]) or row["recorded_below_bound"] != (row["recorded_windowed"] < block["acceptance_bound"]):
+            raise ValueError(f"{case['id']}: bound flags do not follow from the values")
+        if case["windowed_residual_corrected_recomputed"] is None or abs(case["windowed_residual_corrected_recomputed"] - lc["corrected_windowed"]) > 1e-9 * max(abs(lc["corrected_windowed"]), 1e-12):
+            raise ValueError(f"{case['id']}: recomputed corrected residual differs from the sidecar")
+        if case["windowed_residual_recorded_recomputed"] is None or abs(case["windowed_residual_recorded_recomputed"] - lc["recorded_windowed"]) > 1e-9 * max(abs(lc["recorded_windowed"]), 1e-12):
+            raise ValueError(f"{case['id']}: recomputed recorded residual differs from the sidecar")
+        for key in ("windowed_residual_recorded_over_electrode_work", "windowed_residual_corrected_over_electrode_work"):
+            if key not in case["series"]:
+                raise ValueError(f"{case['id']}: {key} series missing")
+        values.append(row["corrected_windowed"])
+    statement = block["statement"]
+    if f"{100.0 * min(values):+.1f} to {100.0 * max(values):+.1f} %" not in statement or "heating numerically" not in statement:
+        raise ValueError("ledger-correction statement must quote the corrected range and name the heating")
 
 
 HTML_TEMPLATE = r"""<!doctype html>
@@ -752,13 +909,15 @@ __MAP_CONTROLS__
 <div class="panel"><h2>Neutral density vs analytic fixed point</h2><canvas class="plot" id="neutral" role="img" aria-label="Neutral density and the analytic fixed point (Q_in - S)/c versus time"></canvas><p class="small">n_g relaxes toward n_g* = (Q_in − S)/c with the artificial τ_g = 30 ns (the physical V/c is 221 µs): the transient is a numerical device, only the fixed point is physical. The dashed line is the zero-ionisation ceiling n_g0 = Q_in/c.</p></div>
 <div class="panel"><h2>Atom rates and utilisation</h2><canvas class="plot" id="rates" role="img" aria-label="Ionisation, effusion and artificial atom rates versus time"></canvas></div>
 <div class="panel"><h2>Potential range</h2><canvas class="plot" id="phi" role="img" aria-label="Minimum, mean and maximum potential versus time"></canvas></div>
-<div class="panel"><h2>Energy ledger</h2><canvas class="plot" id="energy" role="img" aria-label="Kinetic, field and total energy with the electrode work and the interval ledger residual"></canvas><p class="small">Residual = Δ(K+U) − (injected − absorbed − inelastic + born-ion kinetic energy + electrode work) per interval, where electrode work = Σ V_k (ΔQ_induced,k − q_absorbed,k) is the energy the 300 V supply delivers. What remains is the momentum-conserving scheme's numerical non-conservation (grid heating / self-force with finite particles per cell); it is reported, not hidden.</p></div>
+<div class="panel"><h2>Energy ledger</h2><canvas class="plot" id="energy" role="img" aria-label="Kinetic, field and total energy with the electrode work and the interval ledger residual"></canvas><p class="small">Residual = Δ(K+U) − (injected − absorbed − inelastic + born-ion kinetic energy + electrode work) per interval, where electrode work = Σ V_k (ΔQ_induced,k − q_absorbed,k) is the energy the 300 V supply delivers. What remains is the momentum-conserving scheme's numerical non-conservation (grid heating / self-force with finite particles per cell); it is reported, not hidden. <strong>Model v2.0.6 correction:</strong> the recorded interval residual lacked the macro weight on the inelastic term (it read H − L_inel); the corrected residual H is shown in the panel below.</p></div>
+<div class="panel"><h2>Windowed ledger residual / electrode work — recorded (pre-v2.0.6) vs corrected (v2.0.6)</h2><canvas class="plot" id="residual" role="img" aria-label="Trailing 400000-step energy residual over electrode work versus time, recorded and corrected ledger, with the later 5 percent gate and 2 percent bound"></canvas><p class="small" id="residualCaption"></p></div>
 <div class="panel"><h2>Wall impact flux along the dielectric</h2><canvas class="plot" id="wall" role="img" aria-label="Electron and ion wall flux versus axial position with cusp planes"></canvas></div>
 <div class="panel"><h2>Axial ion current density at the exit plane</h2><canvas class="plot" id="exit" role="img" aria-label="Exit-plane ion current density versus radius"></canvas></div>
 <div class="panel"><h2>Axial profile of the radial-maximum density vs cusps</h2><canvas class="plot" id="axial" role="img" aria-label="Radial maximum of the electron density versus axial position with cusp planes"></canvas></div>
 <div class="panel"><h2>Stability metric</h2><canvas class="plot" id="wpe" role="img" aria-label="Peak plasma-frequency times timestep versus time"></canvas></div>
 <div class="panel wide"><h2>Convergence pair and statistical variance</h2><div id="convergence"></div></div>
 </section>
+<section class="panel" style="margin:1rem 0"><h2>Energy-ledger correction (model v2.0.6, post hoc): the 50 µm plateaus were heating</h2><div id="ledger"></div></section>
 <section class="panel" style="margin:1rem 0"><h2>Neutral ledger and operating-point budget</h2><div id="budget"></div></section>
 <section class="panel" style="margin:1rem 0"><h2>Development history: how the plateau was reached</h2><div id="history"></div></section>
 <section class="panel" style="margin:1rem 0"><h2>Simplifications (model v1.3) and identity</h2><div id="identity"></div></section>
@@ -779,9 +938,9 @@ function color(t,signed){t=Math.max(0,Math.min(1,t));if(signed){if(t<.5){const q
 __MAP_VIEW_JS__
 function windowOf(c){const t0=c.series.time_s[0],t1=c.simulated_time_s,f=c.plateau&&c.plateau.window_fraction!=null?c.plateau.window_fraction:.2;return {start:(t1-f*(t1-t0))*1e6,end:t1*1e6,transit3:DATA.operating_point_summary.ion_transit_time_s?3*DATA.operating_point_summary.ion_transit_time_s*1e6:null}}
 function drift(v){return v==null?"–":`<span class="${Math.abs(v)<.04?"ok":Math.abs(v)<.05?"marginal":"bad"}">${fmt(v*100,3)} %</span>`}
-function renderMetrics(){const root=$("metrics");root.textContent="";DATA.cases.forEach((c,i)=>{const w=c.window_maps_summary,card=document.createElement("article");card.className="metric-card"+(i===selected?" active":"");card.tabIndex=0;card.setAttribute("role","button");card.setAttribute("aria-pressed",i===selected);const pl=c.plateau||{},lg=c.ledger||{},wc=c.window_currents_a||{},ni=c.neutral_inventory||{};card.innerHTML=`<h3>${c.label}</h3><div class="kv"><span>role</span><span>${c.role} · seed ${c.case.seed} · W ${sci(c.config.macro_weight,2)}</span><span>steps / time</span><span>${c.steps_completed} · ${fmt(c.simulated_time_s*1e6,3)} µs (${fmt(c.ion_transit_times,3)} τ_i)</span><span>stop</span><span>${c.stop_reason.replaceAll("_"," ")}</span><span>plateau drifts I_d / N_e / n_g</span><span>${drift(pl.discharge_current_drift)} / ${drift(pl.electron_count_drift)} / ${drift(pl.neutral_density_drift)}</span><span>I_d · I_beam,i (window)</span><span>${fmt(wc.discharge_a*1e3,3)} · ${fmt(wc.exit_ion_beam_a*1e3,3)} mA</span><span>S · utilisation S/Q_in</span><span>${sci(wc.ionization_rate_per_s,3)} s⁻¹ · ${pct(ni.propellant_utilisation_trailing,3)}</span><span>n_g (window) / fixed point</span><span>${sci(ni.trailing_20pct_mean_density_per_m3,4)} / ${sci(ni.trailing_20pct_analytic_fixed_point_per_m3,4)}</span><span>peak / mean n_e</span><span>${sci(w.n_e_peak_per_m3)} / ${sci(w.n_e_mean_per_m3)} m⁻³</span><span>⟨T_e⟩_n · φ range</span><span>${fmt(w.t_e_density_weighted_mean_ev,3)} eV · ${fmt(w.phi_min_v,3)}…${fmt(w.phi_max_v,3)} V</span><span>ledger residual / electrode work</span><span>${pct(lg.cumulative_residual_over_electrode_work,3)}</span><span>wall / throughput</span><span>${fmt(c.wall_seconds_total/3600,3)} h · ${fmt(c.ms_per_step_last_session,3)} ms/step</span></div>`;card.onclick=()=>select(i);card.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();select(i)}};root.append(card)})}
+function renderMetrics(){const root=$("metrics");root.textContent="";DATA.cases.forEach((c,i)=>{const w=c.window_maps_summary,card=document.createElement("article");card.className="metric-card"+(i===selected?" active":"");card.tabIndex=0;card.setAttribute("role","button");card.setAttribute("aria-pressed",i===selected);const pl=c.plateau||{},lg=c.ledger||{},wc=c.window_currents_a||{},ni=c.neutral_inventory||{};card.innerHTML=`<h3>${c.label}</h3><div class="kv"><span>role</span><span>${c.role} · seed ${c.case.seed} · W ${sci(c.config.macro_weight,2)}</span><span>steps / time</span><span>${c.steps_completed} · ${fmt(c.simulated_time_s*1e6,3)} µs (${fmt(c.ion_transit_times,3)} τ_i)</span><span>stop</span><span>${c.stop_reason.replaceAll("_"," ")}</span><span>plateau drifts I_d / N_e / n_g</span><span>${drift(pl.discharge_current_drift)} / ${drift(pl.electron_count_drift)} / ${drift(pl.neutral_density_drift)}</span><span>I_d · I_beam,i (window)</span><span>${fmt(wc.discharge_a*1e3,3)} · ${fmt(wc.exit_ion_beam_a*1e3,3)} mA</span><span>S · utilisation S/Q_in</span><span>${sci(wc.ionization_rate_per_s,3)} s⁻¹ · ${pct(ni.propellant_utilisation_trailing,3)}</span><span>n_g (window) / fixed point</span><span>${sci(ni.trailing_20pct_mean_density_per_m3,4)} / ${sci(ni.trailing_20pct_analytic_fixed_point_per_m3,4)}</span><span>peak / mean n_e</span><span>${sci(w.n_e_peak_per_m3)} / ${sci(w.n_e_mean_per_m3)} m⁻³</span><span>⟨T_e⟩_n · φ range</span><span>${fmt(w.t_e_density_weighted_mean_ev,3)} eV · ${fmt(w.phi_min_v,3)}…${fmt(w.phi_max_v,3)} V</span><span>ledger residual / electrode work (cumulative, recorded)</span><span>${pct(lg.cumulative_residual_over_electrode_work,3)}</span><span>windowed residual recorded → <b>corrected (v2.0.6)</b></span><span>${pct(c.ledger_corrected.recorded_windowed,3)} → <b class="${c.ledger_corrected.corrected_windowed<DATA.ledger_correction.hard_gate?(c.ledger_corrected.corrected_windowed<DATA.ledger_correction.acceptance_bound?"ok":"marginal"):"bad"}">${pct(c.ledger_corrected.corrected_windowed,3)}</b> (heating)</span><span>wall / throughput</span><span>${fmt(c.wall_seconds_total/3600,3)} h · ${fmt(c.ms_per_step_last_session,3)} ms/step</span></div>`;card.onclick=()=>select(i);card.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();select(i)}};root.append(card)})}
 function renderVerification(){const c=DATA.cases[selected],pl=c.plateau||{},wc=c.window_currents_a||{},ni=c.neutral_inventory||{},w=c.window_maps_summary,lg=c.ledger||{},rs=c.resolvability_at_peak,ops=DATA.operating_point_summary,pk=c.peak_density_node,cusps=c.cusps.cusp_z_m;
-const rows=[["ion transit times elapsed (floor 3)",`${fmt(pl.transit_times_elapsed,3)} ${pl.transit_times_elapsed>=3?'<span class="ok">≥ 3</span>':'<span class="bad">&lt; 3</span>'}`],["trailing-20 % drift I_d (threshold 5 %)",drift(pl.discharge_current_drift)],["trailing-20 % drift N_e",drift(pl.electron_count_drift)],["trailing-20 % drift n_g",drift(pl.neutral_density_drift)],["plateau declared",pl.reached?'<span class="ok">yes</span>':'<span class="bad">no</span>'],["averaging window (steps · duration)",c.averaging_window_step_range?`${c.averaging_window_step_range[0]}–${c.averaging_window_step_range[1]} (${c.averaging_window_steps} steps · ${duration(c.sampling.window_s)})`:"–"],["I_d (anode e⁻ − anode Xe⁺)",`${fmt(wc.discharge_a*1e3,4)} mA`],["I_beam,i (exit plane)",`${fmt(wc.exit_ion_beam_a*1e3,4)} mA = ${pct(ops.beam_fraction_of_discharge,3)} of I_d`],["wall Xe⁺ / wall e⁻ / exit e⁻ / injected",`${fmt(wc.wall_ion_a*1e3,3)} / ${fmt(wc.wall_electron_a*1e3,3)} / ${fmt(wc.exit_electron_a*1e3,3)} / ${fmt(wc.injected_electron_a*1e3,3)} mA`],["S (ionisation rate)",`${sci(wc.ionization_rate_per_s,4)} s⁻¹ = ${fmt(wc.ionization_rate_per_s*1.602176634e-19*1e3,3)} mA equivalent; ${fmt(ops.ionisations_per_injected_electron,3)} ionisations per injected electron`],["utilisation S / Q_in",pct(ni.propellant_utilisation_trailing,3)],["n_g window mean / analytic fixed point (Q_in − S)/c",`${sci(ni.trailing_20pct_mean_density_per_m3,4)} / ${sci(ni.trailing_20pct_analytic_fixed_point_per_m3,4)} m⁻³ (distance ${pct((ni.trailing_20pct_mean_density_per_m3-ni.trailing_20pct_analytic_fixed_point_per_m3)/ni.trailing_20pct_mean_density_per_m3,2)}; n_g/n_g0 = ${fmt(ni.trailing_20pct_mean_density_per_m3/ni.zero_ionization_density_per_m3,3)})`],["peak / mean n_e (window maps)",`${sci(w.n_e_peak_per_m3,4)} / ${sci(w.n_e_mean_per_m3,4)} m⁻³ (peak = ${fmt(rs.n_e_peak_over_n_max,3)} × n_max; mean = ${fmt(c.budget_check?c.budget_check.n_e_mean_over_projected_n_eq:null,3)} × projected 0-D n_eq)`],["⟨T_e⟩ (density-weighted) · T_e max",`${fmt(w.t_e_density_weighted_mean_ev,3)} eV · ${fmt(w.t_e_max_ev,3)} eV`],["φ range (window map)",`${fmt(w.phi_min_v,4)} … ${fmt(w.phi_max_v,4)} V (anode ${c.config.potentials.anode_v} V)`],["energy-ledger residual (cumulative, with electrode work)",`${sci(lg.cumulative_residual_j,3)} J = ${pct(lg.cumulative_residual_over_electrode_work,3)} of the electrode work ${sci(lg.cumulative_electrode_work_j,3)} J; interval RMS ${sci(lg.interval_residual_rms_j,3)} J`],["neutral-ledger closure",`${sci(ni.cumulative_ledger_closure_atoms,3)} atoms = ${sci(ni.cumulative_ledger_closure_relative_to_inventory,2)} of the inventory; max interval residual ${sci(ni.max_interval_ledger_residual_atoms,2)} atoms`],["peak n_e node",`z = ${fmt(pk.z_m*1e3,4)} mm, r = ${fmt(pk.r_m*1e3,3)} mm; cusp planes at z = ${cusps.map(v=>fmt(v*1e3,4)).join(", ")} mm (magnet mid-planes ${c.cusps.magnet_midplane_z_m.map(v=>fmt(v*1e3,3)).join(", ")} mm)`],["resolvability at the peak node",`<span class="${rs.dz_over_lambda_d_at_peak>2?"bad":"ok"}">Δz/λ_D = ${fmt(rs.dz_over_lambda_d_at_peak,3)}, Δr/λ_D = ${fmt(rs.dr_over_lambda_d_at_peak,3)}</span> (λ_D = ${fmt(rs.lambda_d_at_peak_m*1e6,3)} µm at ⟨T_e⟩); ω_pe Δt at the peak ${fmt(rs.omega_pe_dt_at_peak,3)}, max observed ${fmt(rs.max_observed_omega_pe_dt,3)} (gate 0.2)`],["particles (final e⁻ / Xe⁺; peak)",`${c.final_counts.electrons} / ${c.final_counts.ions}; peak ${c.peak_counts?c.peak_counts.electrons+" / "+c.peak_counts.ions:"–"}`],["wall time · throughput",`${fmt(c.wall_seconds_total,5)} s (${fmt(c.wall_seconds_total/3600,3)} h) · ${fmt(c.ms_per_step_last_session,3)} ms/step (last session) · ${c.sessions?c.sessions.length:"–"} session(s)`]];
+const rows=[["ion transit times elapsed (floor 3)",`${fmt(pl.transit_times_elapsed,3)} ${pl.transit_times_elapsed>=3?'<span class="ok">≥ 3</span>':'<span class="bad">&lt; 3</span>'}`],["trailing-20 % drift I_d (threshold 5 %)",drift(pl.discharge_current_drift)],["trailing-20 % drift N_e",drift(pl.electron_count_drift)],["trailing-20 % drift n_g",drift(pl.neutral_density_drift)],["plateau declared",pl.reached?'<span class="ok">yes</span>':'<span class="bad">no</span>'],["averaging window (steps · duration)",c.averaging_window_step_range?`${c.averaging_window_step_range[0]}–${c.averaging_window_step_range[1]} (${c.averaging_window_steps} steps · ${duration(c.sampling.window_s)})`:"–"],["I_d (anode e⁻ − anode Xe⁺)",`${fmt(wc.discharge_a*1e3,4)} mA`],["I_beam,i (exit plane)",`${fmt(wc.exit_ion_beam_a*1e3,4)} mA = ${pct(ops.beam_fraction_of_discharge,3)} of I_d`],["wall Xe⁺ / wall e⁻ / exit e⁻ / injected",`${fmt(wc.wall_ion_a*1e3,3)} / ${fmt(wc.wall_electron_a*1e3,3)} / ${fmt(wc.exit_electron_a*1e3,3)} / ${fmt(wc.injected_electron_a*1e3,3)} mA`],["S (ionisation rate)",`${sci(wc.ionization_rate_per_s,4)} s⁻¹ = ${fmt(wc.ionization_rate_per_s*1.602176634e-19*1e3,3)} mA equivalent; ${fmt(ops.ionisations_per_injected_electron,3)} ionisations per injected electron`],["utilisation S / Q_in",pct(ni.propellant_utilisation_trailing,3)],["n_g window mean / analytic fixed point (Q_in − S)/c",`${sci(ni.trailing_20pct_mean_density_per_m3,4)} / ${sci(ni.trailing_20pct_analytic_fixed_point_per_m3,4)} m⁻³ (distance ${pct((ni.trailing_20pct_mean_density_per_m3-ni.trailing_20pct_analytic_fixed_point_per_m3)/ni.trailing_20pct_mean_density_per_m3,2)}; n_g/n_g0 = ${fmt(ni.trailing_20pct_mean_density_per_m3/ni.zero_ionization_density_per_m3,3)})`],["peak / mean n_e (window maps)",`${sci(w.n_e_peak_per_m3,4)} / ${sci(w.n_e_mean_per_m3,4)} m⁻³ (peak = ${fmt(rs.n_e_peak_over_n_max,3)} × n_max; mean = ${fmt(c.budget_check?c.budget_check.n_e_mean_over_projected_n_eq:null,3)} × projected 0-D n_eq)`],["⟨T_e⟩ (density-weighted) · T_e max",`${fmt(w.t_e_density_weighted_mean_ev,3)} eV · ${fmt(w.t_e_max_ev,3)} eV`],["φ range (window map)",`${fmt(w.phi_min_v,4)} … ${fmt(w.phi_max_v,4)} V (anode ${c.config.potentials.anode_v} V)`],["energy-ledger residual (cumulative, with electrode work) — RECORDED pre-v2.0.6 statistic",`${sci(lg.cumulative_residual_j,3)} J = ${pct(lg.cumulative_residual_over_electrode_work,3)} of the electrode work ${sci(lg.cumulative_electrode_work_j,3)} J; interval RMS ${sci(lg.interval_residual_rms_j,3)} J`],["energy-ledger residual — CORRECTED (model v2.0.6, post hoc sidecar)",`cumulative <b>${pct(c.ledger_corrected.corrected_cumulative,3)}</b> (recorded ${pct(c.ledger_corrected.recorded_cumulative,3)}; omitted inelastic energy ${sci(c.ledger_corrected.omitted_inelastic_j,3)} J); trailing 400 000-step window at the last record <b class="bad">${pct(c.ledger_corrected.corrected_windowed,3)}</b> (recorded ${pct(c.ledger_corrected.recorded_windowed,3)}): <b>heating numerically</b>; the later 5 % gate would have fired at ${c.ledger_corrected.corrected_hard_gate_first_checkpoint_time_s==null?"never":fmt(c.ledger_corrected.corrected_hard_gate_first_checkpoint_time_s*1e6,3)+" µs"}`],["neutral-ledger closure",`${sci(ni.cumulative_ledger_closure_atoms,3)} atoms = ${sci(ni.cumulative_ledger_closure_relative_to_inventory,2)} of the inventory; max interval residual ${sci(ni.max_interval_ledger_residual_atoms,2)} atoms`],["peak n_e node",`z = ${fmt(pk.z_m*1e3,4)} mm, r = ${fmt(pk.r_m*1e3,3)} mm; cusp planes at z = ${cusps.map(v=>fmt(v*1e3,4)).join(", ")} mm (magnet mid-planes ${c.cusps.magnet_midplane_z_m.map(v=>fmt(v*1e3,3)).join(", ")} mm)`],["resolvability at the peak node",`<span class="${rs.dz_over_lambda_d_at_peak>2?"bad":"ok"}">Δz/λ_D = ${fmt(rs.dz_over_lambda_d_at_peak,3)}, Δr/λ_D = ${fmt(rs.dr_over_lambda_d_at_peak,3)}</span> (λ_D = ${fmt(rs.lambda_d_at_peak_m*1e6,3)} µm at ⟨T_e⟩); ω_pe Δt at the peak ${fmt(rs.omega_pe_dt_at_peak,3)}, max observed ${fmt(rs.max_observed_omega_pe_dt,3)} (gate 0.2)`],["particles (final e⁻ / Xe⁺; peak)",`${c.final_counts.electrons} / ${c.final_counts.ions}; peak ${c.peak_counts?c.peak_counts.electrons+" / "+c.peak_counts.ions:"–"}`],["wall time · throughput",`${fmt(c.wall_seconds_total,5)} s (${fmt(c.wall_seconds_total/3600,3)} h) · ${fmt(c.ms_per_step_last_session,3)} ms/step (last session) · ${c.sessions?c.sessions.length:"–"} session(s)`]];
 $("verification").innerHTML=`<table aria-label="Plateau verification and final state"><tbody>${rows.map(([k,v])=>`<tr><th>${k}</th><td>${v}</td></tr>`).join("")}</tbody></table><p class="small">Drift = linear-fit slope × window / |mean| over the trailing 20 % of the simulated time, computed from the full-resolution series (the embedded series is decimated ×${c.series_stride} for display). Green &lt; 4 %, amber 4–5 % (passed but marginal), red ≥ 5 %.</p>`}
 function renderDetails(){const c=DATA.cases[selected],g=c.stability_gate,op=DATA.protocol.operating_point,ops=DATA.operating_point_summary;let html=`<div class="kv"><span>backend</span><span>${c.backend}</span><span>Δr × Δz</span><span>${fmt(c.config.grid.dr_m*1e6,3)} × ${fmt(c.config.grid.dz_m*1e6,3)} µm</span><span>grid</span><span>${c.config.grid.radial_cells}×${c.config.grid.axial_cells}</span><span>Δt · ion subcycle</span><span>${sci(c.config.dt_s,3)} s · k = ${DATA.protocol.numerics.ion_subcycle}</span><span>macro weight · seed</span><span>${sci(c.config.macro_weight,2)} · ${c.case.seed}</span><span>anode / exit</span><span>${c.config.potentials.anode_v} / ${c.config.potentials.exit_v} V</span><span>e⁻ injection</span><span>${op.electron_injection_current_a*1e3} mA @ ${op.electron_injection_temperature_ev} eV</span><span>seed plasma</span><span>${sci(op.seed_plasma_density_per_m3,2)} m⁻³ @ ${op.seed_electron_temperature_ev} eV</span><span>n_g0 = Q_in / c</span><span>${sci(ops.zero_ionization_density_per_m3,2)} m⁻³</span><span>Q_in (feed)</span><span>${sci(ops.feed_atoms_per_s,3)} s⁻¹ = ${fmt(ops.mass_flow_mg_per_s,4)} mg/s</span><span>c = v̄ A_exit / 4</span><span>${sci(ops.effusion_coefficient_m3_per_s,4)} m³/s</span><span>τ_g (artificial) · V/c</span><span>${sci(ops.relaxation_time_s,2)} s · ${sci(ops.physical_time_constant_s,3)} s</span><span>ion transit time</span><span>${sci(ops.ion_transit_time_s,2)} s</span><span>GPU wall</span><span>${fmt(c.wall_seconds_total,5)} s</span><span>maps kind</span><span>${c.maps_kind||"–"}</span></div>`;
 html+=`<h2 style="margin-top:1rem">Stability gate (configured reference)</h2><div class="kv"><span>ω_pe Δt</span><span>${fmt(g.omega_pe_dt,3)}</span><span>Ω_ce Δt</span><span>${fmt(g.omega_ce_dt,3)}</span><span>cell / λ_D</span><span>${fmt(g.cell_debye_ratio,3)}</span><span>Courant</span><span>${fmt(g.particle_courant,3)}</span><span>P_coll</span><span>${sci(g.max_collision_probability,2)}</span><span>max |B| on nodes</span><span>${fmt(g.max_b_t*1e3,4)} mT</span></div>`;
@@ -797,6 +956,7 @@ const H=DATA.history;let hh=`<p class="small">${H.lesson}</p>`;if(H.steady_state
 if(H.snapshot_v2){hh+=`<h3 style="margin:.8rem 0 .3rem">Snapshot v2 (model v1.1, static neutrals): growth without saturation</h3><p class="small">${H.snapshot_v2.lesson} Hash-verified from <code>${H.snapshot_v2.experiment_id}</code> (manifest <code>${H.snapshot_v2.manifest_sha256}</code>).</p><table aria-label="Snapshot v2 cases"><thead><tr><th>case</th><th>grid</th><th>W</th><th>steps</th><th>t (µs) · τ_i</th><th>window peak n_e</th><th>window I_d (mA)</th><th>N_e drift</th><th>stop</th></tr></thead><tbody>${H.snapshot_v2.cases.map(h=>`<tr><td>${h.id}</td><td>${h.grid}</td><td>${sci(h.macro_weight,2)}</td><td>${h.steps_completed}</td><td>${fmt(h.simulated_time_s*1e6,3)} · ${fmt(h.ion_transit_times,3)}</td><td>${sci(h.n_e_peak_per_m3,3)}</td><td>${fmt(h.window_discharge_a*1e3,3)}</td><td>${pct(h.electron_count_drift,3)}</td><td>${h.stop_reason.replaceAll("_"," ")}</td></tr>`).join("")}</tbody></table>`}
 const S1=H.snapshot_v1;if(S1){hh+=`<h3 style="margin:.8rem 0 .3rem">Snapshot v1 (fail-closed)</h3><p class="small">${S1.lesson}</p><table aria-label="Snapshot v1 fail-closed cases"><thead><tr><th>case</th><th>grid</th><th>weight</th><th>steps</th><th>t (ns)</th><th>window peak n_e</th><th>final I_d (mA)</th><th>stop</th></tr></thead><tbody>${S1.cases.map(h=>`<tr><td>${h.id}</td><td>${h.grid}</td><td>${sci(h.macro_weight,2)}</td><td>${h.steps_completed}</td><td>${fmt(h.simulated_time_s*1e9,3)}</td><td>${sci(h.n_e_peak_per_m3,3)}</td><td>${fmt(h.final_discharge_a*1e3,3)}</td><td>${h.stop_reason.replaceAll("_"," ")}</td></tr>`).join("")}</tbody></table>`}
 $("history").innerHTML=hh;
+const LC=DATA.ledger_correction;$("ledger").innerHTML=`<p class="small"><strong>Finding:</strong> ${LC.finding} (<code>${LC.spec}</code>; sidecars written by <code>${LC.tool}</code>). ${LC.these_runs_had_no_residual_acceptance}.</p><table aria-label="Energy-ledger correction per run"><thead><tr><th>run</th><th>end · τ_i · stop</th><th>recorded windowed</th><th>corrected windowed</th><th>omitted inelastic (window)</th><th>cumulative recorded → corrected</th><th>max corrected (complete windows)</th><th>first ≥ 2 % · 5 % gate (corrected)</th><th>sidecar</th></tr></thead><tbody>${LC.cases.map(r=>`<tr><td>${r.label}<br><code>${r.results_dir}</code></td><td>${fmt(r.last_time_s*1e6,4)} µs · ${fmt(r.ion_transit_times,3)} · ${r.stop_reason.replaceAll("_"," ")}</td><td>${pct(r.recorded_windowed,3)}</td><td><b class="${r.corrected_windowed<LC.hard_gate?(r.corrected_below_bound?"ok":"marginal"):"bad"}">${pct(r.corrected_windowed,3)}</b></td><td>${pct(r.omitted_windowed,3)}</td><td>${pct(r.recorded_cumulative,3)} → ${pct(r.corrected_cumulative,3)}</td><td>${pct(r.max_corrected_over_complete_windows.ratio,3)} @ ${fmt(r.max_corrected_over_complete_windows.time_s*1e6,3)} µs</td><td>${r.corrected_first_checkpoint_at_or_above_bound_time_s==null?"never":fmt(r.corrected_first_checkpoint_at_or_above_bound_time_s*1e6,3)+" µs"} · ${r.corrected_hard_gate_first_checkpoint_time_s==null?"never":"<b class=\"bad\">"+fmt(r.corrected_hard_gate_first_checkpoint_time_s*1e6,3)+" µs</b>"}</td><td><code>${r.sidecar_sha256.slice(0,12)}…</code></td></tr>`).join("")}</tbody></table><p><strong>Quotable statement:</strong> ${LC.statement}.</p>`;
 $("identity").innerHTML=`<p><span class="badge">status</span> ${DATA.status.replaceAll("_"," ")}</p><p><span class="badge">model</span> ${DATA.model_version} (${DATA.protocol.model_spec||"–"})</p><p><span class="badge">protocol SHA-256</span> <code>${DATA.protocol.file_sha256}</code> (frozen; every embedded case recorded this hash)</p><p><span class="badge">variants SHA-256</span> <code>${DATA.protocol.variants_file_sha256||"–"}</code></p><p><span class="badge">case summary SHA-256</span> <code>${c.summary_sha256}</code></p><p><span class="badge">maps npz SHA-256</span> <code>${c.maps_npz_sha256}</code></p><p><span class="badge">series npz SHA-256</span> <code>${c.series_npz_sha256}</code></p><p><span class="badge">git HEAD at run</span> <code>${c.git_head||"–"}</code></p><p><span class="badge">P2 field map SHA-256</span> <code>${c.field.field_map_sha256}</code> (design ${c.field.provenance.design_id}, checkpoint <code>${c.field.provenance.checkpoint_file_sha256}</code>)</p><p><span class="badge">cross sections</span> ${c.cross_sections?c.cross_sections.provenance_status+" · payload <code>"+c.cross_sections.payload_sha256+"</code>":"–"}</p><p><span class="badge">cusp planes</span> ${c.cusps.source}</p>`}
 function bounds(w,h){return {l:58,t:18,r:w-78,b:h-46}}
 function mapPoint(z,r,c,b){const zs=c.grid_z_m,rs=c.grid_r_m;return [b.l+(z-zs[0])/(zs.at(-1)-zs[0])*(b.r-b.l),b.b-(r-rs[0])/(rs.at(-1)-rs[0])*(b.b-b.t)]}
@@ -821,7 +981,9 @@ drawPlot("currents",[{x:t,y:cur("discharge_a").map(v=>v*1e3),name:"discharge (an
 drawPlot("neutral",[{x:t,y:S.neutral_fixed_point_per_m3,name:"analytic fixed point (Q_in − S)/c from the interval S (noisy)",color:"#ff6b6b",width:1},{x:t,y:S.neutral_density_per_m3,name:"n_g(t) (τ_g-relaxed, lags 30 ns)",color:"#5ad6c0",width:1.4}],"t (µs)","n_g (m⁻³)",false,{...tm,hlines:[{y:ops.zero_ionization_density_per_m3,name:"n_g0 = Q_in/c",color:"#ffcf67"}]});
 drawPlot("rates",[{x:t,y:S.neutral_ionization_rate_per_s,name:"S ionisation",color:"#ff6b6b"},{x:t,y:S.neutral_effusion_rate_per_s,name:"c·n_g effusion",color:"#58a8ff"},{x:t,y:(S.neutral_artificial_rate_per_s||[]).map(Math.abs),name:"|artificial relaxation|",color:"#c58bff"}],"t (µs)","atoms/s",true,{...tm,hlines:[{y:ops.feed_atoms_per_s,name:"Q_in feed",color:"#ffcf67"}]});
 drawPlot("phi",[{x:t,y:S.phi_max_v,name:"max φ",color:"#ff6b6b"},{x:t,y:S.phi_mean_v,name:"mean φ (plasma nodes)",color:"#5ad6c0"},{x:t,y:S.phi_min_v,name:"min φ",color:"#58a8ff"}],"t (µs)","φ (V)",false,tm);
-drawPlot("energy",[{x:t,y:S.total_energy_j,name:"K+U total",color:"#eef7f4"},{x:t,y:S.kinetic_electron_j,name:"K electrons",color:"#5ad6c0"},{x:t,y:S.kinetic_ion_j,name:"K ions",color:"#ff6b6b"},{x:t,y:S.field_energy_j,name:"U field",color:"#58a8ff"},{x:t,y:(S.interval_electrode_work_j||[]).map(Math.abs),name:"|electrode work| per interval",color:"#c58bff"},{x:t,y:S.interval_residual_j.map(Math.abs),name:"|interval residual|",color:"#ffcf67"}],"t (µs)","energy (J)",true,tm);
+drawPlot("energy",[{x:t,y:S.total_energy_j,name:"K+U total",color:"#eef7f4"},{x:t,y:S.kinetic_electron_j,name:"K electrons",color:"#5ad6c0"},{x:t,y:S.kinetic_ion_j,name:"K ions",color:"#ff6b6b"},{x:t,y:S.field_energy_j,name:"U field",color:"#58a8ff"},{x:t,y:(S.interval_electrode_work_j||[]).map(Math.abs),name:"|electrode work| per interval",color:"#c58bff"},{x:t,y:S.interval_residual_j.map(Math.abs),name:"|interval residual| (recorded, pre-v2.0.6)",color:"#ffcf67"}],"t (µs)","energy (J)",true,tm);
+const LCc=c.ledger_corrected,LCd=DATA.ledger_correction;drawPlot("residual",[{x:t,y:(S.windowed_residual_recorded_over_electrode_work||[]).map(v=>v==null?null:v*100),name:"recorded ledger (H − L_inel, pre-v2.0.6)",color:"#9bb8b0"},{x:t,y:(S.windowed_residual_corrected_over_electrode_work||[]).map(v=>v==null?null:v*100),name:"corrected ledger (H, model v2.0.6)",color:"#ff6b6b",width:2}],"t (µs)","residual / electrode work (%)",false,{...tm,hlines:[{y:100*LCd.hard_gate,name:"v2.0.3 hard gate +5 %",color:"#ff6b6b"},{y:100*LCd.acceptance_bound,name:"acceptance (b) +2 % (v4 standard)",color:"#ffcf67"},{y:0,name:"0",color:themeColor("--muted")}]});
+$("residualCaption").innerHTML=`Trailing ${LCd.window_steps.toLocaleString()}-step window (the v2.0.3 statistic applied post hoc; this v1.3 run had no runtime residual gate). At the last record: recorded ${pct(LCc.recorded_windowed,3)} → corrected <b>${pct(LCc.corrected_windowed,3)}</b> of the electrode work (omitted inelastic power ${pct(LCc.omitted_windowed,3)}); the 5 % gate on the corrected statistic would have fired at ${LCc.corrected_hard_gate_first_checkpoint_time_s==null?"never":fmt(LCc.corrected_hard_gate_first_checkpoint_time_s*1e6,3)+" µs"}. Sidecar <code>${LCc.sidecar_sha256.slice(0,12)}…</code>, recomputed here from the embedded series.`;
 const wz=c.wall_z_m.map(v=>v*1e3);drawPlot("wall",[{x:wz,y:c.wall.wall_electron_flux_per_m2_s,name:"electron flux (m⁻² s⁻¹)",color:"#5ad6c0"},{x:wz,y:c.wall.wall_ion_flux_per_m2_s,name:"ion flux (m⁻² s⁻¹)",color:"#ff6b6b"}],"z (mm)","flux",true,{vlines:cz});
 drawPlot("exit",[{x:c.exit_r_m.map(v=>v*1e3),y:c.exit.exit_ion_current_density_a_per_m2,name:"ion j_z (A m⁻²)",color:"#ff6b6b"},{x:c.exit_r_m.map(v=>v*1e3),y:c.exit.exit_electron_current_density_a_per_m2,name:"electron j_z (A m⁻²)",color:"#5ad6c0"}],"r (mm)","A/m²");
 drawPlot("axial",[{x:c.grid_z_m.map(v=>v*1e3),y:c.axial_peak_n_e_per_m3,name:"max_r n_e(z) (m⁻³)",color:"#5ad6c0",width:2}],"z (mm)","n_e (m⁻³)",false,{vlines:cz,hlines:[{y:DATA.budget?DATA.budget.n_max_per_m3:null,name:"n_max budget",color:"#ffcf67"}]});

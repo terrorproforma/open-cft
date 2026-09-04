@@ -2,20 +2,20 @@
 
 from __future__ import annotations
 
-from copy import deepcopy
-from hashlib import sha256
 import importlib.util
 import json
-from math import floor, isfinite, log10
-from pathlib import Path
 import re
 import shutil
 import subprocess
+from copy import deepcopy
+from hashlib import sha256
+from math import floor, isfinite, log10
+from pathlib import Path
 from typing import Any
 
 import pytest
 
-from cft_revival.pic2d.artifacts import platform_fingerprint
+from cft_revival.pic2d.artifacts import platform_fingerprint, write_canonical_json
 
 MODERN = Path(__file__).resolve().parents[2]
 GENERATOR_PATH = MODERN / "visualization" / "generate_pic2d_cft_steady_state.py"
@@ -101,6 +101,37 @@ def test_seed_b_is_compared_to_the_headline_over_a_common_window(payload) -> Non
     assert 0 < maps["n_e"]["relative_l2_diff"] < 0.5
     html = GENERATOR.render_html(payload)
     assert '"other_label":"variant seed-b"' in html and "vs headline" in html and "shot-noise" in html
+
+
+def test_ledger_correction_is_embedded_hash_bound_and_says_the_plateaus_were_heating(payload) -> None:
+    block = payload["ledger_correction"]
+    assert block["acceptance_bound"] == 0.02 and block["hard_gate"] == 0.05 and block["window_steps"] == 400_000
+    assert "heating numerically at +7.2 to +13.0 %" in block["statement"] and "heated-grid value" in block["statement"]
+    statement = payload["claim_statement"]
+    assert "Energy-ledger correction (model v2.0.6, post hoc)" in statement and "HEATING numerically at +7.2 to +13.0 %" in statement
+    assert "heated-grid value" in statement and "no energy-conserving or converged wording" in statement
+    expected = {"results": (0.0037, 0.1301, 2.70e-6), "results-seed-b": (-0.0136, 0.1111, 2.76e-6), "results-w-0.7": (-0.0406, 0.0716, 4.50e-6)}
+    assert [row["results_dir"] for row in block["cases"]] == list(expected)
+    for row, case in zip(block["cases"], payload["cases"], strict=True):
+        sidecar_path = EXPERIMENT / case["results_dir"] / "ledger-corrected.json"
+        assert row["sidecar_sha256"] == sha256(sidecar_path.read_bytes()).hexdigest() == case["ledger_corrected"]["sidecar_sha256"]
+        assert json.loads(sidecar_path.read_text(encoding="utf-8"))["inputs"]["series"]["sha256"] == case["series_npz_sha256"]
+        recorded, corrected, gate = expected[case["results_dir"]]
+        assert row["recorded_windowed"] == pytest.approx(recorded, abs=1e-3) and row["corrected_windowed"] == pytest.approx(corrected, abs=1e-3), case["label"]
+        assert row["corrected_hard_gate_first_checkpoint_time_s"] == pytest.approx(gate, abs=2e-8)                  # every 50 um run would have been stopped
+        assert row["recorded_below_bound"] is True and row["corrected_below_bound"] is False                       # (b) < 2 % PASS -> FAIL on all three
+        assert row["corrected_windowed"] > block["hard_gate"] > block["acceptance_bound"]
+        # the corrected windowed residual recomputed from the embedded series reproduces the sidecar; both series are embedded
+        assert case["windowed_residual_corrected_recomputed"] == pytest.approx(row["corrected_windowed"], rel=1e-9)
+        assert case["windowed_residual_recorded_recomputed"] == pytest.approx(row["recorded_windowed"], rel=1e-9)
+        series = case["series"]
+        assert len(series["windowed_residual_corrected_over_electrode_work"]) == len(series["time_s"]) == len(series["windowed_residual_recorded_over_electrode_work"])
+        assert series["windowed_residual_corrected_over_electrode_work"][-1] == pytest.approx(row["corrected_windowed"], rel=1e-4)
+        assert series["windowed_residual_corrected_over_electrode_work"][0] is None                                # incomplete window at the start
+    html = GENERATOR.render_html(payload)
+    for fragment in ('id="ledger"', 'id="residual"', 'id="residualCaption"', "the 50 µm plateaus were heating", "corrected ledger (H, model v2.0.6)",
+                     "recorded (pre-v2.0.6) vs corrected (v2.0.6)", "Quotable statement"):
+        assert fragment in html, fragment
 
 
 def test_history_panels_keep_predecessors(payload) -> None:
@@ -262,8 +293,8 @@ def test_html_is_self_contained_offline(payload) -> None:
     assert '<script id="pic2d-data" type="application/json">' in html
     for forbidden in ("fetch(", "xmlhttprequest", "websocket", "cdn"):
         assert forbidden not in lowered
-    assert not re.search(r"""(?:src|href)\s*=\s*["'](?:[a-z]+:)?//""", html, re.I)
-    assert not re.search(r"\bhttps?://", html, re.I)
+    assert not re.search(r"""(?:src|href)\s*=\s*["'](?:[a-z]+:)?//""", html, re.IGNORECASE)
+    assert not re.search(r"\bhttps?://", html, re.IGNORECASE)
     assert not re.search(r"\b[A-Za-z]:[\\/](?:Users|home)[\\/]", html)
 
 
@@ -313,6 +344,16 @@ def test_tampered_payload_is_rejected(payload) -> None:
         lambda p: p["history"]["steady_state"][0].__setitem__("stop_reason", "converged"),
         lambda p: p["variants"][0].__setitem__("state", "done"),
         lambda p: p.__setitem__("claim_statement", "validated steady state"),
+        # the ledger correction: present, hash-bound, values consistent, bound / gate unchanged, statement honest
+        lambda p: p.pop("ledger_correction"),
+        lambda p: p["ledger_correction"].__setitem__("acceptance_bound", 0.05),
+        lambda p: p["ledger_correction"]["cases"][0].__setitem__("corrected_windowed", 0.01),
+        lambda p: p["ledger_correction"]["cases"][0].__setitem__("corrected_below_bound", True),
+        lambda p: p["ledger_correction"]["cases"][1].__setitem__("sidecar_sha256", "0" * 64),
+        lambda p: p["ledger_correction"].__setitem__("statement", "the 50 um plateaus were fine"),
+        lambda p: p["cases"][0].__setitem__("windowed_residual_corrected_recomputed", 0.0),
+        lambda p: p["cases"][0]["series"].pop("windowed_residual_corrected_over_electrode_work"),
+        lambda p: p.__setitem__("claim_statement", p["claim_statement"].replace("heated-grid value", "grid value")),
     ):
         changed = deepcopy(payload)
         mutate(changed)
@@ -335,6 +376,25 @@ def test_protocol_drift_and_tampered_results_are_rejected(tmp_path: Path) -> Non
     GENERATOR.build_payload(experiment / "results", protocol, experiment / "variants.json")
     # a tampered summary is rejected by its sidecar
     summary = experiment / "results" / "summary.json"
+    original_summary = summary.read_bytes()
     summary.write_text(summary.read_text(encoding="utf-8") + " ", encoding="utf-8")
     with pytest.raises(ValueError, match="SHA-256"):
+        GENERATOR.build_payload(experiment / "results", protocol, experiment / "variants.json")
+    summary.write_bytes(original_summary)
+    # the ledger-corrected sidecar must describe the embedded series and reproduce from it; it is required
+    sidecar = experiment / "results" / "ledger-corrected.json"
+    original_sidecar = sidecar.read_bytes()
+    tampered = json.loads(original_sidecar.decode("utf-8"))
+    tampered["inputs"]["series"]["sha256"] = "0" * 64
+    write_canonical_json(sidecar, tampered)
+    with pytest.raises(ValueError, match="describes another series"):
+        GENERATOR.build_payload(experiment / "results", protocol, experiment / "variants.json")
+    tampered = json.loads(original_sidecar.decode("utf-8"))
+    tampered["end_state_window"]["corrected_ratio"] = 0.0
+    write_canonical_json(sidecar, tampered)
+    with pytest.raises(ValueError, match="corrected windowed residual recomputed here"):
+        GENERATOR.build_payload(experiment / "results", protocol, experiment / "variants.json")
+    sidecar.unlink()
+    sidecar.with_name(sidecar.name + ".sha256.json").unlink()
+    with pytest.raises(ValueError, match="ledger-corrected.json is missing"):
         GENERATOR.build_payload(experiment / "results", protocol, experiment / "variants.json")
