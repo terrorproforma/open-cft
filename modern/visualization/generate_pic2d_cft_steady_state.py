@@ -32,7 +32,7 @@ if str(SRC) not in sys.path:
 if str(MODERN) not in sys.path:
     sys.path.insert(0, str(MODERN))
 
-from cft_revival.pic2d.artifacts import read_canonical_json, read_npz  # noqa: E402
+from cft_revival.pic2d.artifacts import platform_fingerprint, read_canonical_json, read_npz  # noqa: E402
 from cft_revival.pic2d.mesh import build_mesh_masks  # noqa: E402
 from cft_revival.pic2d.models import ChannelGeometry, Grid2D  # noqa: E402
 
@@ -132,8 +132,12 @@ def cusp_positions(maps: Mapping[str, np.ndarray], grid: Grid2D, grid_dict: Mapp
             sel = np.where((z >= lo) & (z <= hi))[0]
             if sel.size:
                 mids.append(float(f"{z[sel[int(np.argmin(b_r_wall[sel]))]]:.6g}"))
+        # field_map_sha256 is the content hash of the map RE-SAMPLED at generation time: bitwise identity on the generating
+        # platform only (provenance); the platform-independent identity of the source is source_identity_sha256 / the
+        # P2 checkpoint's file-byte hash
         return {"source": "B_z sign change on the axis of the sampled P2 field map", "cusp_z_m": cusps, "magnet_midplane_z_m": mids,
-                "field_map_sha256": field.sha256}
+                "field_map_sha256": field.sha256, "field_source_sha256": field.source_sha256,
+                "source_identity_sha256": evaluated["source_identity_sha256"], "checkpoint_file_sha256": evaluated["checkpoint_file_sha256"]}
     except Exception as exc:  # pragma: no cover - only without the P2 checkpoint
         return {"source": f"field map unavailable ({type(exc).__name__}); cusps not marked", "cusp_z_m": [], "magnet_midplane_z_m": []}
 
@@ -839,9 +843,40 @@ def render_html(payload: Mapping[str, Any]) -> str:
     return snapshot_dashboard.fill_template(HTML_TEMPLATE, payload)
 
 
+def anchor_platform_path(output_path: Path = DEFAULT_OUTPUT) -> Path:
+    """The platform-fingerprint sidecar written next to the HTML (``<name>.anchor-platform.json``)."""
+
+    return output_path.with_name(output_path.stem + ".anchor-platform.json")
+
+
+def write_anchor_platform(output_path: Path, html: str) -> Path:
+    """Record WHERE the checked-in bytes were generated.
+
+    Byte-exact regeneration of the dashboard is expected only on this platform fingerprint (numpy wheel, SIMD
+    dispatch, BLAS kernel, OS): the payload's reductions (window means, L2 differences) and the re-sampled P2
+    field map hash differ in their last digits elsewhere, where the structural / tolerance comparison of the tests
+    applies instead.  The sidecar binds the HTML bytes it describes.
+    """
+
+    record = {
+        "schema": "cft-pic2d-dashboard-anchor-platform/1.0.0",
+        "html_file": output_path.name,
+        "html_sha256": sha256(html.encode("utf-8")).hexdigest(),
+        "platform": platform_fingerprint(),
+        "policy": "byte-exact replay of the checked-in HTML is asserted only under the same platform fingerprint_sha256; elsewhere the embedded "
+                  "payload must agree structurally with numeric leaves within one unit in their last recorded significant digit (rel 1e-9 floor) "
+                  "and derived-map hashes (cusps.field_map_sha256) are provenance, not identity",
+    }
+    path = anchor_platform_path(output_path)
+    path.write_bytes(json.dumps(record, indent=1, sort_keys=True, allow_nan=False).encode("utf-8") + b"\n")
+    return path
+
+
 def generate(output_path: Path = DEFAULT_OUTPUT, results: Path = RESULTS, protocol_path: Path = PROTOCOL) -> Path:
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_path.write_text(render_html(build_payload(results, protocol_path)), encoding="utf-8", newline="\n")
+    html = render_html(build_payload(results, protocol_path))
+    output_path.write_text(html, encoding="utf-8", newline="\n")
+    write_anchor_platform(output_path, html)
     return output_path
 
 

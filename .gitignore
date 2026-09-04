@@ -211,6 +211,10 @@ modern/experiments/pic2d_cft_plume_v1/results-attempt8-grid-heating-triad-stop/*
 # pic2d design mini-sweep v1: the per-design P2 field checkpoints (Git LFS) live under fields/, not results/
 !modern/experiments/pic2d_design_mini_sweep_v1/fields/**/*.json.arrays.npz
 
+# pic2d cross-platform test anchors: node field arrays sampled on the anchor platform (~70 KB, hash-bound by
+# their .anchor.json); non-anchor platforms are gated by allclose against them, not by the content hash
+!modern/tests/pic2d/anchors/*.npz
+
 # git worktrees for agents live INSIDE the repo, never beside it
 .worktrees/
 

@@ -1,0 +1,57 @@
+{
+ "arrays_file": "p2-plume-field-v1-coarse-60x72.npz",
+ "arrays_sha256": "eee321839fba813de6a1aea533cbfe7ef08ba1d65938419e642e8c5ba0ce9dc7",
+ "description": "v2.0 plume field (p2-field-plume-extension-v1, direct P2 node sample) on the coarse 60 x 72 grid of the real geometry (dr 0.2 mm, dz 0.5 mm, 12 mm plume box), sampled on the anchor platform below; the cross-platform test gate is np.allclose against these arrays under fields.FIELD_REPLAY_RTOL / FIELD_REPLAY_ATOL_OVER_MAX_B",
+ "field_map_sha256": "d30d2d24c9d0d8d6f126f11cdb678fec056cfbb01cad9efe68d2ecae1c6479e0",
+ "field_source_sha256": "577943ec73d0f233cdf56d4725bfee07878977a7035ee7224a964b6f0650790b",
+ "grid": {
+  "axial_cells": 72,
+  "dr_m": 0.0002,
+  "dz_m": 0.0005,
+  "geometry": {
+   "body_dielectric_radius_m": 0.0044,
+   "bore_radius_m": 0.002,
+   "cone_start_z_m": 0.018,
+   "exit_radius_m": 0.003,
+   "plume_length_m": 0.012,
+   "plume_radius_m": 0.012,
+   "z_max_m": 0.024,
+   "z_min_m": 0.0
+  },
+  "layout": "radial-major; values[r_index][z_index]",
+  "radial_cells": 60
+ },
+ "max_b_t": 0.7045556315175137,
+ "platform": {
+  "blas": {
+   "build_configuration": "OpenBLAS 0.3.34.0.0  USE64BITINT DYNAMIC_ARCH NO_AFFINITY SkylakeX MAX_THREADS=24",
+   "name": "scipy-openblas",
+   "runtime_corename": "Haswell",
+   "version": "0.3.34.0.0"
+  },
+  "cpu_model": "Intel(R) Core(TM) Ultra 9 285K",
+  "fingerprint_sha256": "f554af1cd1e62602c4782aa2bccf28ca2c4d36ea2e88b92f8fafde6142dda3f0",
+  "libc": [
+   "",
+   ""
+  ],
+  "machine": "AMD64",
+  "numpy": "2.5.2",
+  "numpy_c_compiler": {
+   "name": "msvc",
+   "version": "19.44.35228"
+  },
+  "os": "Windows",
+  "os_release": "11",
+  "python": "3.12.10",
+  "schema": "cft.pic2d.platform-fingerprint.v1",
+  "simd_baseline": [
+   "X86_V2"
+  ],
+  "simd_dispatch_enabled": [
+   "X86_V3"
+  ]
+ },
+ "produced_by": "p2_plume_field_map(REPOSITORY_ROOT, Grid2D(ChannelGeometry(2 mm bore, 24 mm channel, cone from 18 mm to 3 mm, plume 12 x 12 mm, body dielectric 4.4 mm), 60, 72)); arrays written with artifacts.write_npz",
+ "schema": "cft.pic2d.test-anchor.field-map/1.0.0"
+}

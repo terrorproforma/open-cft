@@ -21,6 +21,7 @@ from cft_revival.pic2d.fieldlines import annulus_connectivity, channel_connected
 from cft_revival.pic2d.fields import (
     DEFAULT_PLUME_EXTENSION_PATH,
     PLUME_EXTENSION_V2_PATH,
+    compare_field_arrays,
     load_plume_extension,
     p2_plume_field_map,
     uniform_field_map,
@@ -65,8 +66,19 @@ def v202_protocol(protocol: dict) -> dict:
     stripped["numerics"]["peak_debye_gate"]["max_cells_per_debye"] = 4.5
     return stripped
 # v2.0 field identity (p2-field-plume-extension-v1, direct node sample) on the coarse 60 x 72 grid of the real
-# geometry (dr 0.2 mm, dz 0.5 mm), computed on the pre-v2.1 code: the v1 provenance must stay bit-for-bit
+# geometry (dr 0.2 mm, dz 0.5 mm), computed on the pre-v2.1 code: the v1 provenance must stay bit-for-bit.
+# The content hash covers the SAMPLED arrays and is a bitwise identity on the anchor platform only (Windows / numpy
+# 2.5.2 msvc / X86_V3 / scipy-openblas Haswell, tests/pic2d/anchors/p2-plume-field-v1-coarse-60x72.anchor.json).
+# Evidence (2026-09-04, Lambda H100 box, Ubuntu 22.04, Python 3.12.14, numpy 2.5.2 gcc wheel, scipy-openblas Haswell
+# DYNAMIC_ARCH): the same code produced 1f124047... - ULP-level differences of the P2 element evaluation (FMA
+# contraction of the gcc build), no physics.  Elsewhere the gate is np.allclose against the anchor arrays under the
+# declared FIELD_REPLAY_RTOL / FIELD_REPLAY_ATOL_OVER_MAX_B, while the platform-independent source identity
+# (V20_COARSE_FIELD_SOURCE_SHA256: P2 bundle file hashes + grid + extension provenance) must match everywhere.
 V20_COARSE_FIELD_SHA256 = "d30d2d24c9d0d8d6f126f11cdb678fec056cfbb01cad9efe68d2ecae1c6479e0"
+V20_COARSE_FIELD_SOURCE_SHA256 = "577943ec73d0f233cdf56d4725bfee07878977a7035ee7224a964b6f0650790b"
+V20_COARSE_FIELD_LINUX_SHA256_PREFIX = "1f124047"
+ANCHORS = Path(__file__).resolve().parent / "anchors"
+V20_COARSE_FIELD_ANCHOR = ANCHORS / "p2-plume-field-v1-coarse-60x72.anchor.json"
 
 PRODUCTION = dict(bore_radius_m=0.002, z_min_m=0.0, z_max_m=0.024, cone_start_z_m=0.018, exit_radius_m=0.003)
 
@@ -310,7 +322,16 @@ def test_v2_field_extension_serves_the_48_mm_box_and_agrees_with_the_qualified_c
     with pytest.raises(PIC2DValidationError, match="exceeds the declared P2 plume-extension bounding box"):
         p2_plume_field_map(REPOSITORY_ROOT, v21)
     old = p2_plume_field_map(REPOSITORY_ROOT, v20)
-    assert old.sha256 == V20_COARSE_FIELD_SHA256
+    # platform-independent binding everywhere; bitwise content hash on the anchor platform; ULP-scale replay elsewhere
+    assert old.source_sha256 == V20_COARSE_FIELD_SOURCE_SHA256
+    anchor = json.loads(V20_COARSE_FIELD_ANCHOR.read_text(encoding="utf-8"))
+    assert anchor["field_map_sha256"] == V20_COARSE_FIELD_SHA256 and anchor["field_source_sha256"] == V20_COARSE_FIELD_SOURCE_SHA256
+    anchor_arrays = artifacts.read_npz(ANCHORS / anchor["arrays_file"], expected_sha256=anchor["arrays_sha256"])
+    replay = compare_field_arrays(old, anchor_arrays["b_r_t"], anchor_arrays["b_z_t"])
+    assert replay["within_tolerance"], replay
+    assert replay["max_abs_diff_t"] <= 1e-12 * old.max_b_t and replay["max_rel_diff"] <= 1e-12
+    if anchor["platform"]["fingerprint_sha256"] == artifacts.platform_fingerprint()["fingerprint_sha256"]:
+        assert old.sha256 == V20_COARSE_FIELD_SHA256 and replay["bitwise"], "the anchor platform must replay the v2.0 identity bitwise"
     assert "field_source" not in old.provenance and old.provenance["bounding_box"]["z_max_m"] == 0.036
     new = p2_plume_field_map(REPOSITORY_ROOT, v21, extension_path=PLUME_EXTENSION_V2_PATH)
     assert new.provenance["field_source"] == "plume-extension-v2" and new.provenance["plume_extension_path"] == "p2-field-plume-extension-v2.json"
