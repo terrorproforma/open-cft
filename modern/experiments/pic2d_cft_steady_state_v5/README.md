@@ -276,3 +276,34 @@ predeclared tolerances and nothing more; no experimental validation, no thruster
   the H100 (one execution on one GPU model for the record; no cross-GPU resume). Local GPU after
   the stop: `nvidia-smi --query-compute-apps` lists no python / Warp process (only desktop
   applications hold memory).
+* **Launch 2 (2026-09-04 22:51:44 AEST = 12:51:44 UTC, PID 32709, NVIDIA H100 80GB HBM3, CUDA
+  MPS, 4 clients)** — the one execution that counts, a FRESH start (step 0) on the Lambda box
+  `68-209-75-2` (gpu_1x_h100_sxm5, driver 580.105.08, Warp 1.14.0 cu12.9, Python 3.12.14) through
+  `tools/cloud/schedule.py launch --only ss25-base` (jobs.yaml `31003e3b`): detached worktree
+  `<WORK>/jobs/ss25-base/tree` at the v5.1 records commit **`351257f2`** (= amendment `a529b457` +
+  model v2.0.4 `79e6a670` + re-run shakedown), `launch --expect-commit 351257f2…`, clean worktree
+  attested, protocol SHA-256 `858189d1…` (the amended protocol), configuration identity
+  `efb9bb09…` (unchanged since the preregistration), `results/execution-lock.json` acquired at
+  12:51:44 UTC, scheduler prereg check `frozen` / ancestor-of-HEAD, Warp `cuda:0` UUID
+  `GPU-a800b021…` cross-checked against nvidia-smi, tmux `pic-ss25-base`, `CUDA_VISIBLE_DEVICES=0`,
+  6 BLAS threads. **Slot sequencing (disclosed):** the four MPS slots were held by the three
+  remaining mini-sweep runs (reference 19764, 009 20189; 047 20079 until its 3-transit plateau
+  stop at 12:49:44 UTC) and, from 12:26:51 UTC, the external-validation v0 job (31588, launched by
+  the other agent into the slot design 056 had freed at 10:52 UTC); the scheduler refused a fifth
+  slot at 12:26 (`no free GPU slot (1 GPUs x 4 slots)`), so a watcher waited for 047's exit
+  (12:50:02 UTC) and launched into that slot at 12:50:18 UTC — the box stays at **four PIC clients**
+  (reference, 009, ext-val v0, this), never five; no `Xid` since the 16:00 AEST incident, MPS server
+  log clean. First readings (0.022 µs, 22 400 steps, 112 records): **6.6 ms/step at the seed load**
+  (0.96 M e⁻ + 1.15 M Xe⁺; the withdrawn 5090 launch read 9.2–9.8 contended / 8.8–9.5 solo at
+  1.3 M + 1.3 M), GPU pool 1 930 MiB; I_d 2.1 → 0.76 mA and I_beam 0.26 → 0.47 mA (the seed dump), S
+  1.5–1.6e16 s⁻¹, n_g 5.5 → 4.97e19 falling toward its fixed point, single-step peak 0.33–0.43
+  cells/λ_D, window statistic 0.37 (not yet enforced), ω_pe Δt (v2.0.4 resolved-node statistic)
+  0.018–0.019 — the v2 / v4 / launch-1 ignition pattern. Expectation: at the contended plateau-load
+  preflight cost (10.82 ms/step) 3 transits (7 200 000 steps) fall 21.6 h after the launch →
+  **plateau verdict ≈ 20:30 AEST 2026-09-05 (10:30 UTC)**; the two sweep runs end within ~1–3 h
+  (reference 2.6/3 transits at 12:54 UTC) and the run then shares the GPU with the ext-val job
+  only, so the verdict is more likely **≈ 14:00–17:00 AEST 5 Sep**; **budget end (117 000 s of
+  stepping) ≈ 07:20 AEST 2026-09-06 (21:20 UTC 5 Sep)**. Watch `<WORK>/jobs/ss25-base/run.log`,
+  `…/tree/modern/experiments/pic2d_cft_steady_state_v5/results/status.jsonl` and
+  `schedule.py status`; the results-only commit (results/, `assessment.json`, .gitignore
+  negations) is made from the job worktree after the stop, not by the launching agent.
