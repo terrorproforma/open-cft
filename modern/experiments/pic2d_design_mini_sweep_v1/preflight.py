@@ -17,7 +17,11 @@ commit.  Per design and domain option, in order and each recorded even when a la
                    (the runner's gate, run here so a failure is known before any launch);
 8. cost          - the projection row (ms/step, transit, hours, device GB).
 
-Output: ``preflight-<domain>.json`` with per-design gate results and ``all_passed``.
+Output: ``preflight-<domain>.json`` (50 um) or ``preflight-<domain>-<grid>.json`` (``preflight-channel-33um.json`` for the
+preregistered option) with per-design gate results and ``all_passed``.  The field-map gate records the platform-independent
+``field_source_sha256`` next to the platform's ``field_map_sha256``; the protocol gate records the composed dt (the design's
+dt admissibility at its own map maximum), the parity macro weight and the wall budget; the run refuses to start unless the
+preflight of ITS option passed on the launch box (PLAN.md s.6.5: derived-float gates are re-run where the launch happens).
 """
 
 from __future__ import annotations
@@ -35,15 +39,16 @@ from cft_revival.pic2d.models import StabilityLimits, stability_report
 from . import cost as cost_module
 from . import designs as design_module
 from . import fields as field_module
-from .protocol import build_protocol
+from .protocol import GRID_VARIANTS, build_protocol, option_tag
 
 EXPERIMENT = Path(__file__).resolve().parent
 
 
-def preflight_design(design_id: str, domain: str, *, log=print) -> dict[str, Any]:
+def preflight_design(design_id: str, domain: str, *, grid: str = "50um", log=print) -> dict[str, Any]:
     started = time.perf_counter()
     gates: dict[str, dict[str, Any]] = {}
-    record: dict[str, Any] = {"design_id": design_id, "domain": domain, "gates": gates}
+    record: dict[str, Any] = {"design_id": design_id, "domain": domain, "grid": grid, "option": option_tag(domain, grid), "gates": gates}
+    target_cell_m, dt_override = GRID_VARIANTS[grid]
 
     def gate(name: str, fn):
         try:
@@ -72,8 +77,8 @@ def preflight_design(design_id: str, domain: str, *, log=print) -> dict[str, Any
                 "rho_under_iron": (value.get("topology_under_iron") or {}).get("min_rho_conservative"),
                 "cusps_under_iron": [c["z_c_m"] for c in (value.get("topology_under_iron") or {}).get("wall_cusps", [])]}
 
-    def grid():
-        mapping = design_module.pic_geometry(state["built"], domain)
+    def grid_gate():
+        mapping = design_module.pic_geometry(state["built"], domain) if target_cell_m is None else design_module.pic_geometry(state["built"], domain, target_cell_m=target_cell_m)
         state["mapping"] = mapping
         worst = max((abs(v["error_m"]) / (mapping.grid.dr_m if "radius" in k else mapping.grid.dz_m)) for k, v in mapping.snaps.items() if isinstance(v, dict))
         return {"passed": worst <= 0.5 + 1e-9, "node_shape": list(mapping.grid.node_shape), "dr_m": mapping.grid.dr_m, "dz_m": mapping.grid.dz_m,
@@ -83,7 +88,7 @@ def preflight_design(design_id: str, domain: str, *, log=print) -> dict[str, Any
         mapping = state["mapping"]
         fm = field_module.design_field_map(mapping, state["binding"])
         state["field_map"] = fm
-        protocol, _ = build_protocol(design_id, domain, built=state["built"], field_map=fm)
+        protocol, _ = build_protocol(design_id, domain, built=state["built"], field_map=fm, target_cell_m=target_cell_m, dt_s=dt_override, grid=grid)
         state["protocol"] = protocol
         numerics = protocol["numerics"]
         limits = StabilityLimits(**numerics["stability_limits"])
@@ -93,8 +98,11 @@ def preflight_design(design_id: str, domain: str, *, log=print) -> dict[str, Any
                                   max_electron_energy_ev=float(reference["max_electron_energy_ev"]), limits=limits)
         # field_map_sha256 = content hash of the sampled arrays (this platform's bitwise identity, provenance only);
         # field_source_sha256 = the platform-independent binding (checkpoint bundle hashes + grid + scale)
-        return {"passed": report.stable, "field_map_sha256": fm.sha256, "field_source_sha256": fm.source_sha256, "max_b_t": fm.max_b_t, "stability": report.to_dict(),
-                "dt_s": float(numerics["dt_s"]), "dt_policy": numerics.get("dt_policy"), "cathode_placement": protocol["operating_point"].get("cathode", {}).get("placement_search_note"),
+        omega_ce_dt = 1.602176634e-19 * float(fm.max_b_t) / 9.1093837139e-31 * float(numerics["dt_s"])
+        return {"passed": report.stable and omega_ce_dt <= float(limits.max_omega_ce_dt), "field_map_sha256": fm.sha256, "field_source_sha256": fm.source_sha256,
+                "max_b_t": fm.max_b_t, "stability": report.to_dict(), "dt_s": float(numerics["dt_s"]), "dt_template_s": dt_override, "dt_policy": numerics.get("dt_policy"),
+                "dt_admissibility": {"omega_ce_dt_at_composed_dt": omega_ce_dt, "limit": float(limits.max_omega_ce_dt), "reduced_from_template": bool(dt_override is not None and float(numerics["dt_s"]) < float(dt_override))},
+                "cathode_placement": (protocol["operating_point"].get("cathode") or {}).get("placement_search_note"),
                 "provenance_kind": fm.provenance.get("kind"), "plasma_nodes_sampled": fm.provenance.get("plasma_nodes_sampled")}
 
     def masks():
@@ -115,8 +123,20 @@ def preflight_design(design_id: str, domain: str, *, log=print) -> dict[str, Any
         protocol = state["protocol"]
         config = runner.build_config(protocol, backend="cpu")
         budget = runner.protocol_budget(protocol)
-        return {"passed": True, "case_id": protocol["case"]["id"], "macro_weight": config.macro_weight, "wall_budget_seconds": protocol["stopping_rule"]["wall_budget_seconds"],
-                "ion_transit_time_s": budget["ion_transit_time_s"], "feed_atoms_per_s": protocol["operating_point"]["neutral_inventory"]["feed_atoms_per_s"]}
+        peak_gate = protocol["numerics"].get("peak_debye_gate") or {}
+        triad = protocol["stopping_rule"].get("grid_heating_triad") or {}
+        return {"passed": True, "case_id": protocol["case"]["id"], "status": protocol["status"], "template": protocol["template_protocol"]["path"],
+                "model_version": protocol.get("model_version"), "macro_weight": config.macro_weight, "macro_weight_parity": budget.get("macro_weight_parity"),
+                "macro_weight_policy": protocol["case"]["macro_weight_policy"], "dt_s": config.dt_s, "cells": [config.grid.radial_cells, config.grid.axial_cells],
+                "wall_budget_seconds": protocol["stopping_rule"]["wall_budget_seconds"], "wall_budget_hours": protocol["stopping_rule"]["wall_budget_seconds"] / 3600.0,
+                "ion_transit_time_s": budget["ion_transit_time_s"], "steps_to_3_transits": budget["steps_to_3_transits"], "platform": budget.get("platform"),
+                "ms_per_step_projected": budget["ms_per_step_projected"], "hours_to_3_transits_projected": budget["hours_to_3_transits_projected"],
+                "particles_projected_m": budget["particles_projected_m"]["total_m"], "feed_atoms_per_s": protocol["operating_point"]["neutral_inventory"]["feed_atoms_per_s"],
+                "wall_recycling": bool((protocol["operating_point"].get("neutral_inventory") or {}).get("wall_recycling", False)),
+                "frame_recorder": protocol["numerics"].get("frame_recorder"),
+                "gates_v2_0_3": {"peak_debye_window_mode": peak_gate.get("window_steps") is not None, "peak_debye_hard": peak_gate.get("max_cells_per_debye"),
+                                 "peak_debye_soft": peak_gate.get("soft_cells_per_debye"), "windowed_residual_power_max": triad.get("windowed_energy_residual_over_electrode_work_max"),
+                                 "residual_window_steps": triad.get("residual_window_steps")}}
 
     def connectivity():
         from experiments.pic2d_cft_steady_state_v1 import run as runner
@@ -127,11 +147,14 @@ def preflight_design(design_id: str, domain: str, *, log=print) -> dict[str, Any
         return {"passed": True, **(summary or {})}
 
     def cost():
-        return {"passed": True, **cost_module.design_cost(state["mapping"])}
+        budget = state["protocol"]["budget_design_mini_sweep"] if "protocol" in state else {}
+        return {"passed": True, **cost_module.design_cost(state["mapping"], dt_s=float(budget.get("dt_s", cost_module.DT_S)),
+                                                          macro_weight=float(budget.get("macro_weight", cost_module.MACRO_WEIGHT_REFERENCE)),
+                                                          platform=str(budget.get("platform", "rtx5090")))}
 
     ok = gate("identity", identity)
     ok = gate("field_binding", binding) and ok
-    ok = gate("grid", grid) and ok if "built" in state else False
+    ok = gate("grid", grid_gate) and ok if "built" in state else False
     if "mapping" in state and "binding" in state:
         ok = gate("field_map", field_map) and ok
         ok = gate("mesh_masks", masks) and ok
@@ -144,16 +167,44 @@ def preflight_design(design_id: str, domain: str, *, log=print) -> dict[str, Any
     return record
 
 
-def preflight_all(domain: str, *, design_ids: tuple[str, ...] | None = None, log=print) -> dict[str, Any]:
+def _platform_record() -> dict[str, Any]:
+    import platform as platform_module
+    import socket
+
+    import numpy as np
+
+    record: dict[str, Any] = {"host": socket.gethostname(), "system": platform_module.system(), "release": platform_module.release(), "machine": platform_module.machine(),
+                              "python": platform_module.python_version(), "numpy": np.__version__}
+    try:
+        import subprocess
+
+        out = subprocess.run(["nvidia-smi", "--query-gpu=name,driver_version,memory.total", "--format=csv,noheader"], capture_output=True, text=True, timeout=10, check=False)
+        record["gpus"] = [line.strip() for line in out.stdout.splitlines() if line.strip()] if out.returncode == 0 else None
+    except Exception:  # noqa: BLE001 - telemetry only
+        record["gpus"] = None
+    import os
+
+    record["cuda_mps_pipe_directory"] = os.environ.get("CUDA_MPS_PIPE_DIRECTORY")
+    return record
+
+
+def preflight_all(domain: str, *, grid: str = "50um", design_ids: tuple[str, ...] | None = None, log=print) -> dict[str, Any]:
     ids = design_module.design_ids() if design_ids is None else design_ids
     started = time.perf_counter()
-    records = [preflight_design(design_id, domain, log=log) for design_id in ids]
+    records = [preflight_design(design_id, domain, grid=grid, log=log) for design_id in ids]
+    from .protocol import PREREGISTERED_OPTION
+
+    preregistered = (domain, grid) == PREREGISTERED_OPTION
     return {
-        "schema_version": "cft.pic2d.design-mini-sweep.preflight/0.1.0-draft",
+        "schema_version": "cft.pic2d.design-mini-sweep.preflight/1.0.0" if preregistered else "cft.pic2d.design-mini-sweep.preflight/0.1.0-draft",
         "experiment_id": "pic2d-design-mini-sweep-v1",
-        "status": "whole-set preflight of a DRAFT (not preregistered) sweep",
+        "status": ("whole-set preflight of the PREREGISTERED option (non-evidentiary: derived-float gates re-run on the launch platform)" if preregistered
+                   else "whole-set preflight of a DRAFT (not preregistered) option"),
         "domain": domain,
+        "grid": grid,
+        "option": option_tag(domain, grid),
         "generated_utc": datetime.now(timezone.utc).isoformat(),
+        "platform": _platform_record(),
         "design_count": len(records),
         "all_passed": all(r["passed"] for r in records),
         "designs": records,
@@ -161,13 +212,13 @@ def preflight_all(domain: str, *, design_ids: tuple[str, ...] | None = None, log
     }
 
 
-def preflight_path(domain: str) -> Path:
-    return EXPERIMENT / f"preflight-{domain}.json"
+def preflight_path(domain: str, grid: str = "50um") -> Path:
+    return EXPERIMENT / f"preflight-{option_tag(domain, grid)}.json"
 
 
-def write_preflight(domain: str, *, design_ids: tuple[str, ...] | None = None, log=print) -> tuple[Path, dict[str, Any]]:
-    report = preflight_all(domain, design_ids=design_ids, log=log)
-    path = preflight_path(domain)
+def write_preflight(domain: str, *, grid: str = "50um", design_ids: tuple[str, ...] | None = None, log=print) -> tuple[Path, dict[str, Any]]:
+    report = preflight_all(domain, grid=grid, design_ids=design_ids, log=log)
+    path = preflight_path(domain, grid)
     path.write_bytes(json.dumps(report, indent=1, sort_keys=True, allow_nan=False, default=_plain).encode("utf-8") + b"\n")
     return path, report
 

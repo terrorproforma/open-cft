@@ -1,5 +1,6 @@
-"""PIC design mini-sweep v1 (DRAFT): design list, catalogue identity, PIC mapping, field bindings, protocol composition,
-cost anchors, closure-target extraction and the whole-set preflight.  No GPU, no stepping."""
+"""PIC design mini-sweep v1: design list, catalogue identity, PIC mapping, field bindings, protocol composition (the draft 50 um
+option and the PREREGISTERED channel-33um option on the steady-state v4 template), cost anchors (5090 model + H100 MPS-4),
+closure-target extraction, the whole-set preflight and the launch guards.  No GPU, no stepping."""
 
 from __future__ import annotations
 
@@ -23,6 +24,30 @@ def _bindings_present() -> bool:
 
 
 needs_bindings = pytest.mark.skipif(not _bindings_present(), reason="field bindings not produced (run `fields`)")
+needs_sealed = pytest.mark.skipif(not (sweep_run.MPS_REPLAY_PATH.is_file() and protocol.PROTOCOLS_DIR.is_dir()),
+                                  reason="the channel-33um option is not sealed in this checkout (compose + records missing)")
+
+
+def _approx_json(a, b, *, rtol: float = 1e-9, path: str = "") -> list[str]:
+    """Structural JSON comparison with a relative tolerance on floats (cross-platform: CPU-derived floats differ at ULP level)."""
+
+    problems: list[str] = []
+    if isinstance(a, dict) and isinstance(b, dict):
+        if set(a) != set(b):
+            problems.append(f"{path}: keys {sorted(set(a) ^ set(b))}")
+        for key in set(a) & set(b):
+            problems += _approx_json(a[key], b[key], rtol=rtol, path=f"{path}/{key}")
+    elif isinstance(a, list) and isinstance(b, list):
+        if len(a) != len(b):
+            problems.append(f"{path}: length {len(a)} != {len(b)}")
+        for index, (x, y) in enumerate(zip(a, b)):
+            problems += _approx_json(x, y, rtol=rtol, path=f"{path}[{index}]")
+    elif isinstance(a, float) and isinstance(b, (int, float)) or isinstance(b, float) and isinstance(a, (int, float)):
+        if not (a == b or abs(float(a) - float(b)) <= rtol * max(abs(float(a)), abs(float(b)))):
+            problems.append(f"{path}: {a} != {b}")
+    elif a != b:
+        problems.append(f"{path}: {a!r} != {b!r}")
+    return problems
 
 
 # -- design list and catalogue numbers -------------------------------------------------------------------------------
@@ -171,14 +196,112 @@ def test_per_design_protocol_reproduces_the_reference_and_scales_the_feed():
     assert weight == pytest.approx(60000.0 * 12.0 / 8.0)
 
 
-def test_draft_protocol_document_on_disk_matches_the_generator_and_is_marked_draft():
-    document = protocol.draft_protocol_document()
-    assert "DRAFT" in document["status"] and "NOT preregistered" in document["preregistration"]["state"]
+# -- the preregistered channel-33um option --------------------------------------------------------------------------
+
+
+def test_channel_33um_option_is_the_v4_configuration_with_the_v2_0_3_gates_and_parity_weight():
+    reference, mapping = protocol.build_protocol(designs.REFERENCE_DESIGN_ID, "channel", grid="33um")
+    v4 = json.loads(protocol.REFINED_CHANNEL_TEMPLATE.read_text(encoding="utf-8"))
+    assert reference["status"] == protocol.STATUS_PREREGISTERED and reference["option"] == "channel-33um"
+    assert reference["template_protocol"]["path"].endswith("pic2d_cft_steady_state_v4/protocol.json") and reference["template_protocol"]["model_version"] == v4["model_version"]
+    # the reference reproduces steady-state v4 exactly: grid, dt, W, seed, operating point
+    assert (reference["case"]["radial_cells"], reference["case"]["axial_cells"]) == (90, 720) == (v4["case"]["radial_cells"], v4["case"]["axial_cells"])
+    assert mapping.grid.dr_m == pytest.approx(0.002 / 60) and mapping.grid.dz_m == pytest.approx(0.024 / 720)
+    assert reference["case"]["macro_weight"] == 26666.7 == v4["case"]["macro_weight"]
+    assert reference["numerics"]["dt_s"] == 1.4e-12 == v4["numerics"]["dt_s"] and reference["case"]["seed"] == v4["case"]["seed"] == 20260903
+    for key in ("anode_potential_v", "exit_plane_potential_v", "neutral_density_per_m3", "electron_injection_current_a", "electron_injection_temperature_ev", "seed_plasma_density_per_m3"):
+        assert reference["operating_point"][key] == v4["operating_point"][key], key
+    assert reference["operating_point"]["neutral_inventory"]["feed_atoms_per_s"] == pytest.approx(v4["operating_point"]["neutral_inventory"]["feed_atoms_per_s"], rel=1e-12)
+    assert not reference["operating_point"]["neutral_inventory"].get("wall_recycling", False)          # v1.3 closure: no recycling
+    # v2.0.3 gates and the plateau preconditions, verbatim from v4
+    gate = reference["numerics"]["peak_debye_gate"]
+    assert gate["max_cells_per_debye"] == pi and gate["soft_cells_per_debye"] == 2.5 and gate["window_steps"] == 400000 and gate["window_snapshot_steps"] == 40000
+    triad = reference["stopping_rule"]["grid_heating_triad"]
+    assert triad["residual_window_steps"] == 400000 and triad["windowed_energy_residual_over_electrode_work_max"] == 0.05 and triad["hard_drift_max"] == 0.25
+    assert reference["numerics"]["frame_recorder"] == {"cadence_steps": 20000, "precision": "float32"}
+    assert reference["stopping_rule"]["min_transit_times"] == 3 and reference["stopping_rule"]["plateau_threshold"] == 0.05
+    assert "peak_debye_soft_ok" in reference["stopping_rule"]["plateau"] and "5 142 858" not in reference["stopping_rule"]["plateau"]
+    # sweep acceptance replaces the v4 convergence acceptance; the v4 verdict is cited as a caveat
+    acceptance = reference["stopping_rule"]["acceptance"]
+    assert set(acceptance) == {"declared", "a_plateau", "b_residual_power", "c_closure_targets", "d_verdicts", "e_design_effect", "f_convergence_caveat", "g_design_specific"}
+    assert set(acceptance["d_verdicts"]) == {"closure_quotable", "plateau_with_heating", "no_plateau"}
+    assert "392129e5" in acceptance["f_convergence_caveat"] and "PENDING" in acceptance["f_convergence_caveat"]
+    assert "reference_run" not in reference and "preregistration" not in reference and sum(1 for k in reference if k.startswith("budget")) == 1
+    budget = reference["budget_design_mini_sweep"]
+    assert budget["platform"] == "h100-mps4" and budget["ms_per_step_projected"] == pytest.approx(8.71, rel=1e-3) and budget["wall_budget_factor"] == 1.5
+    assert budget["particles_projected_m"]["total_m"] == pytest.approx(4.5, rel=1e-3) and budget["steps_to_3_transits"] == pytest.approx(3 * 2.4e-6 / 1.4e-12)
+    assert reference["stopping_rule"]["wall_budget_seconds"] >= 1.5 * budget["hours_to_3_transits_projected"] * 3600.0
+    assert reference["stopping_rule"]["wall_budget_seconds"] % 600.0 == 0.0
+    assert reference["execution"]["gpu"]["model"] == "NVIDIA H100 80GB HBM3" and "MPS" in reference["execution"]["gpu"]["concurrency"]
+    config = runner.build_config(reference, backend="cpu")
+    assert config.macro_weight == 26666.7 and config.peak_debye_gate.window_steps == 400000
+    # every primary design: parity weight within 1 % of 6e4 / 2.25, 1.4 ps, budget on the MPS-4 rate, 047's disclosure carried
+    for design in PRIMARY:
+        composed, m = protocol.build_protocol(design.design_id, "channel", grid="33um")
+        assert abs(composed["case"]["macro_weight"] / (60000.0 / 2.25) - 1.0) < 0.01, design.design_id
+        assert composed["case"]["macro_weight"] == cost.parity_macro_weight(m) and composed["case"]["macro_weight_policy"].startswith("W = 6e4 x dr dz")
+        assert composed["numerics"]["dt_s"] == 1.4e-12 and composed["budget_design_mini_sweep"]["platform"] == "h100-mps4"
+        assert abs(m.grid.dr_m - 0.024 / 720) <= 0.02 * 0.024 / 720 and abs(m.grid.dz_m - 0.024 / 720) <= 0.02 * 0.024 / 720
+        assert composed["budget_design_mini_sweep"]["particles_projected_m"]["total_m"] <= protocol.MAX_PROJECTED_PARTICLES_M_H100
+        runner.build_config(composed, backend="cpu")
+        specific = composed["stopping_rule"]["acceptance"]["g_design_specific"]
+        assert ("anode-edge" in specific) == (design.design_id == "l1a-gs-v2-047-e3196a8aa5")
+    replicate, _ = protocol.build_protocol("l1a-gs-v3-056-effcbc8686", "channel", grid="33um", case="seed-replicate")
+    assert replicate["case"]["seed"] == 20260904 and replicate["case"]["id"].endswith("-seed-replicate")
+    assert protocol.composed_protocol_path("l1a-gs-v3-056-effcbc8686", case="seed-replicate").name == "l1a-gs-v3-056-effcbc8686-channel-33um-seed-replicate.json"
+    with pytest.raises(ValueError):
+        protocol.build_protocol(designs.REFERENCE_DESIGN_ID, "channel", grid="33um", case="nope")
+
+
+def test_admissible_dt_records_platform_stable_floats_and_reduces_only_above_the_margin():
+    dt, policy = protocol.admissible_dt(1.4e-12, 0.2913456789123456, 0.2)
+    assert dt == 1.4e-12 and policy["max_b_t"] == float(f"{0.2913456789123456:.9g}") and policy["rule"].startswith("template dt kept")
+    dt2, policy2 = protocol.admissible_dt(1.5e-12, 0.821, 0.2)
+    assert dt2 == pytest.approx(1.3e-12) and policy2["omega_ce_dt"] <= 0.95 * 0.2 and policy2["rule"].startswith("dt reduced")
+
+
+@needs_sealed
+def test_experiment_protocol_document_on_disk_matches_the_generator_and_is_preregistered():
+    document = protocol.experiment_protocol_document()
+    assert document["status"] == protocol.STATUS_PREREGISTERED and "PREREGISTERED" in document["preregistration"]["state"]
+    assert document["preregistration"]["option"] == "channel-33um" and document["preregistration"]["launch_set"] == [d.design_id for d in PRIMARY]
     assert [d["design_id"] for d in document["designs"]] == list(designs.design_ids())
     assert len(document["closure_targets"]) >= 15
+    assert set(document["launch_projection"]) == set(document["preregistration"]["launch_set"])
     on_disk = json.loads(protocol.DRAFT_PROTOCOL_PATH.read_text(encoding="utf-8"))
-    for key in ("designs", "operating_point_policy", "grid_policy", "stopping_rule", "replication_policy", "closure_targets", "cost_table_hours_to_3_transits", "recommended_schedule"):
-        assert on_disk[key] == document[key], key
+    for key in ("status", "designs", "operating_point_policy", "grid_policy", "stopping_rule", "replication_policy", "closure_targets", "cost_table_hours_to_3_transits",
+                "recommended_schedule", "refined_grid_schedule", "launch_projection", "h100_mps4_anchor", "domain_options"):
+        problems = _approx_json(on_disk[key], document[key])
+        assert not problems, (key, problems[:5])
+    for key in ("state", "option", "launch_set", "decisions", "convergence_caveat", "records", "sealed_run_protocols"):
+        problems = _approx_json(on_disk["preregistration"][key], document["preregistration"][key])
+        assert not problems, (key, problems[:5])
+    # the records the launch requires are bound by hash in the experiment protocol
+    records = on_disk["preregistration"]["records"]
+    for name in ("preflight", "shakedown", "mps_replay"):
+        assert records.get(name) is not None and len(records[name]["sha256"]) == 64, name
+        assert (protocol.REPOSITORY / records[name]["path"]).is_file(), name
+    assert set(on_disk["preregistration"]["sealed_run_protocols"]) >= {protocol.composed_protocol_path(d.design_id).relative_to(protocol.REPOSITORY).as_posix() for d in designs.SWEEP_DESIGNS}
+
+
+@needs_bindings
+@needs_sealed
+def test_sealed_run_protocols_match_the_recomposition_on_the_design_fields():
+    """The launch enforces byte equality on the launch platform; here (any platform) structural equality with a float tolerance."""
+
+    on_disk_document = json.loads(protocol.DRAFT_PROTOCOL_PATH.read_text(encoding="utf-8"))
+    sealed = on_disk_document["preregistration"]["sealed_run_protocols"]
+    assert sealed, "no sealed run protocols recorded"
+    for relative, digest in sealed.items():
+        path = protocol.REPOSITORY / relative
+        assert path.is_file(), relative
+        assert __import__("hashlib").sha256(path.read_bytes()).hexdigest() == digest, relative
+    for design in PRIMARY:
+        path = protocol.composed_protocol_path(design.design_id)
+        recomposed, _, _ = protocol.compose_run_protocol(design.design_id, "channel", "33um", "base")
+        problems = _approx_json(json.loads(path.read_text(encoding="utf-8")), recomposed)
+        assert not problems, (design.design_id, problems[:8])
+        assert recomposed["numerics"]["dt_s"] == 1.4e-12 and "dt_policy" in recomposed["numerics"]
 
 
 # -- cost model ----------------------------------------------------------------------------------------------------
@@ -197,6 +320,17 @@ def test_cost_model_reproduces_the_measured_anchors_and_the_v21_spec_row():
     table = cost.cost_table([designs.build_design(d.design_id) for d in designs.SWEEP_DESIGNS])
     schedule = cost.serial_schedule(table, option="channel", replicate_design_ids=("l1a-gs-v3-056-effcbc8686",), extra=((designs.REFERENCE_DESIGN_ID, "plume-24mm"),))
     assert len(schedule["items"]) == 7 and schedule["total_hours"] == pytest.approx(sum(i["wall_hours"] for i in schedule["items"]))
+    # the H100 / MPS-4 anchor: the v4 configuration (91 x 721, 4.5 M at parity W) costs exactly the measured 8.71 ms/step per process
+    refined = {row["design_id"]: row for row in table[cost.REFINED_CHANNEL_KEY]}
+    reference_33 = refined[designs.REFERENCE_DESIGN_ID]
+    assert reference_33["nodes"] == [91, 721] and reference_33["macro_weight"] == 26666.7 and reference_33["platform"] == "h100-mps4"
+    assert reference_33["particles_projected_m"]["total_m"] == pytest.approx(4.5, rel=1e-3) and reference_33["ms_per_step"] == pytest.approx(8.71, rel=1e-3)
+    assert reference_33["ms_per_step_h100_mps4_per_process"] == reference_33["ms_per_step"] and reference_33["ms_per_step_rtx5090_model"] < reference_33["ms_per_step"]
+    assert cost.h100_mps4_ms_per_step((91, 721), 4.5) == pytest.approx(8.71) and cost.parity_macro_weight(designs.pic_geometry(built, "channel", target_cell_m=cost.REFINED_CHANNEL_CELL_M)) == 26666.7
+    assert cost.parity_macro_weight(designs.pic_geometry(built, "channel")) == 60000.0
+    assert cost.projected_particles_m(designs.pic_geometry(built, "channel"), macro_weight=30000.0)["total_m"] == pytest.approx(4.0, rel=1e-3)
+    with pytest.raises(ValueError):
+        cost.platform_ms_per_step((91, 721), 4.5, "tpu")
 
 
 # -- closure targets -----------------------------------------------------------------------------------------------
@@ -248,6 +382,12 @@ def test_closure_target_extraction_recovers_a_synthetic_plateau():
     shares = [c["ionisation_share"] for c in out["cells"]]
     assert sum(shares) == pytest.approx(1.0) and all(0.0 < s < 1.0 for s in shares)
     assert out["diffuse_non_cusp_electron_wall_current_a"] == 0.0
+    assert out["anode_edge_band_m"] == 2.5e-4 and out["anode_edge_electron_wall_current_a"] == 0.0
+    wall_e_edge = wall_e.copy()
+    wall_e_edge[z_cells <= 2.5e-4] = 4.0e22           # electrons lost at the anode-edge band (the 047 boundary-cusp disclosure) are visible, not cusp-counted
+    edge = closure.extract_targets({**maps, "wall_electron_flux_per_m2_s": wall_e_edge}, mapping, cusps, cells, injected_electron_current_a=3.0e-3)
+    assert edge["anode_edge_electron_wall_current_a"] > 0.0 and edge["anode_edge_electron_wall_current_a"] == pytest.approx(edge["diffuse_non_cusp_electron_wall_current_a"])
+    assert [c["electron_wall_current_a"] for c in edge["cusps"]] == [c["electron_wall_current_a"] for c in out["cusps"]]
     chain = out["kornfeld_chain"]["cusps_exit_to_anode"]
     assert [round(row["z_c_m"], 6) for row in chain] == [0.018, 0.012, 0.006]
     je = 3.0e-3 + out["cells"][3]["ionisation_current_a"]
@@ -274,6 +414,57 @@ def test_whole_set_preflight_over_every_design_passes_for_the_channel_option():
         assert record["gates"]["field_map"]["stability"]["omega_ce_dt"] <= 0.2
 
 
+@needs_bindings
+def test_whole_set_preflight_over_every_design_passes_for_the_preregistered_channel_33um_option():
+    report = preflight.preflight_all("channel", grid="33um", log=lambda text: None)
+    failures = {r["design_id"]: {k: v for k, v in r["gates"].items() if not v["passed"]} for r in report["designs"] if not r["passed"]}
+    assert report["all_passed"], failures
+    assert report["option"] == "channel-33um" and report["schema_version"].endswith("/1.0.0") and report["platform"]["numpy"]
+    for record in report["designs"]:
+        gates = record["gates"]
+        assert gates["field_map"]["dt_s"] == 1.4e-12 and not gates["field_map"]["dt_admissibility"]["reduced_from_template"], record["design_id"]
+        assert gates["field_map"]["dt_admissibility"]["omega_ce_dt_at_composed_dt"] <= 0.2 and len(gates["field_map"]["field_source_sha256"]) == 64
+        if record["design_id"] in {d.design_id for d in PRIMARY}:
+            assert abs(gates["protocol"]["macro_weight"] / (60000.0 / 2.25) - 1.0) < 0.01 and gates["protocol"]["particles_projected_m"] <= protocol.MAX_PROJECTED_PARTICLES_M_H100
+        else:   # the optional four-cusp design projects 13.9 M particles at parity: the 12 M cap scales W (disclosed)
+            assert gates["protocol"]["macro_weight"] > 60000.0 / 2.25 and gates["protocol"]["macro_weight_policy"].startswith("W scaled from the parity value")
+            assert gates["protocol"]["particles_projected_m"] == pytest.approx(protocol.MAX_PROJECTED_PARTICLES_M_H100, rel=1e-4)
+        assert gates["protocol"]["platform"] == "h100-mps4"
+        assert gates["protocol"]["gates_v2_0_3"] == {"peak_debye_window_mode": True, "peak_debye_hard": pi, "peak_debye_soft": 2.5, "windowed_residual_power_max": 0.05, "residual_window_steps": 400000}
+        assert gates["protocol"]["frame_recorder"] == {"cadence_steps": 20000, "precision": "float32"} and not gates["protocol"]["wall_recycling"]
+        assert gates["cathode_connectivity"]["skipped"].startswith("channel-only")
+        assert gates["cost"]["platform"] == "h100-mps4" and gates["cost"]["macro_weight"] == gates["protocol"]["macro_weight"]
+    reference = next(r for r in report["designs"] if r["design_id"] == designs.REFERENCE_DESIGN_ID)
+    assert reference["gates"]["protocol"]["cells"] == [90, 720] and reference["gates"]["protocol"]["macro_weight"] == 26666.7
+    assert preflight.preflight_path("channel", "33um").name == "preflight-channel-33um.json"
+
+
 def test_run_refuses_to_launch_without_the_draft_flag(capsys):
     assert sweep_run.main(["run", "--design", designs.REFERENCE_DESIGN_ID, "--domain", "channel"]) == 2
     assert "REFUSED" in capsys.readouterr().err
+    assert sweep_run.main(["run", "--design", designs.REFERENCE_DESIGN_ID, "--domain", "channel", "--grid", "33um"]) == 2
+    assert "REFUSED" in capsys.readouterr().err
+
+
+def test_launch_refuses_an_unexpected_commit_and_a_non_preregistered_option():
+    with pytest.raises(PIC2DValidationError, match="not the preregistration commit"):
+        sweep_run.launch(designs.REFERENCE_DESIGN_ID, "channel", "33um", expect_commit="0000000000000000000000000000000000000000")
+    with pytest.raises(PIC2DValidationError, match="only the preregistered option|not clean"):
+        sweep_run.launch(designs.REFERENCE_DESIGN_ID, "channel", "50um", allow_dirty=False)
+    with pytest.raises(PIC2DValidationError, match="only the preregistered option"):
+        sweep_run.launch(designs.REFERENCE_DESIGN_ID, "channel", "50um", allow_dirty=True)
+    assert sweep_run.results_dir("l1a-gs-v3-056-effcbc8686", "channel", "33um", "seed-replicate").name == "l1a-gs-v3-056-effcbc8686-channel-33um-seed-replicate"
+    assert sweep_run.results_dir(designs.REFERENCE_DESIGN_ID, "channel", "33um").name == "divergent-exit-stack-channel-33um"
+
+
+def test_shrunk_protocol_keeps_grid_dt_weight_and_gate_thresholds():
+    full, _ = protocol.build_protocol(designs.REFERENCE_DESIGN_ID, "channel", grid="33um")
+    shrunk = sweep_run.shrunk_protocol(full, "shakedown")
+    assert shrunk["numerics"]["checkpoint_every_steps"] == 4000 and shrunk["numerics"]["averaging_window_steps"] == 40000
+    assert shrunk["numerics"]["peak_debye_gate"]["window_steps"] == 40000 and shrunk["stopping_rule"]["grid_heating_triad"]["residual_window_steps"] == 40000
+    assert shrunk["numerics"]["frame_recorder"]["cadence_steps"] == 2000 and "non_evidentiary" in shrunk["status"]
+    for key in ("dt_s", "stability_limits"):
+        assert shrunk["numerics"][key] == full["numerics"][key]
+    assert shrunk["case"]["macro_weight"] == full["case"]["macro_weight"] and shrunk["numerics"]["peak_debye_gate"]["max_cells_per_debye"] == pi
+    runner.build_config(shrunk, backend="cpu")
+    assert sweep_run.steady_state_v4_verdict()["status"] in ("available", "pending")

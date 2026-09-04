@@ -148,8 +148,15 @@ def extract_targets(
     injected_electron_current_a: float | None = None,
     cusp_half_width_m: float | None = None,
     near_wall_band_m: float = 5.0e-4,
+    anode_edge_band_m: float = 2.5e-4,
 ) -> dict[str, Any]:
-    """Per-cusp / per-cell closure targets from the window-averaged maps of one finished run (pure numpy)."""
+    """Per-cusp / per-cell closure targets from the window-averaged maps of one finished run (pure numpy).
+
+    ``anode_edge_band_m``: the wall electron current within this distance of the anode plane is reported separately
+    (``anode_edge_electron_wall_current_a``) - the v3.1 boundary-ambiguity tolerance (0.25 mm); design 047's disclosed
+    anode-edge boundary cusp (separatrix at the wall 0.073 mm from the anode under iron) falls in this band, so its
+    electron loss is visible without being counted as an interior cusp.
+    """
 
     grid = mapping.grid
     geometry = grid.geometry
@@ -214,6 +221,8 @@ def extract_targets(
     for z in ordered:
         cusp_mask_total |= (z_cells >= z - half_width) & (z_cells <= z + half_width)
     diffuse_e = float(current_e[~cusp_mask_total].sum())
+    anode_edge_mask = (z_cells <= geometry.z_min_m + anode_edge_band_m) & ~cusp_mask_total
+    anode_edge_e = float(current_e[anode_edge_mask].sum())
 
     cell_rows = []
     ordered_cells = sorted(cells, key=lambda c: float(c["z_start_m"]))
@@ -269,6 +278,9 @@ def extract_targets(
         "cusps": cusps, "cells": cell_rows, "potential_steps_v": steps,
         "total_wall_electron_current_a": float(current_e.sum()), "total_wall_ion_current_a": float(current_i.sum()),
         "diffuse_non_cusp_electron_wall_current_a": diffuse_e, "total_ionisation_rate_per_s": total_ionisation,
+        "anode_edge_band_m": anode_edge_band_m, "anode_edge_electron_wall_current_a": anode_edge_e,
+        "anode_edge_note": "wall electron current within anode_edge_band_m of the anode plane outside every cusp window (part of the diffuse current); "
+                           "the disclosed 047 anode-edge boundary cusp lives here",
         "kornfeld_chain": chain, "kornfeld_mapping": kornfeld_mapping(ordered, cells),
         "phi_max_v": float(phi.max()), "phi_min_v": float(phi.min()),
     }

@@ -51,6 +51,15 @@ ANCHORS = (
     {"case": "plume attempt 8 (241 x 721)", "nodes": (241, 721), "particles_m": 4.45, "ms_per_step_measured": 7.08},
 )
 
+# Lambda H100 80GB SXM under CUDA MPS with FOUR concurrent PIC processes (modern/tools/cloud/bench.sh, bench-mps, 2026-09-04):
+# the steady-state v4 configuration (91 x 721 nodes, ~4.5 M macro-particles at the re-seeded production load) stepped at
+# 3.37 ms/step alone, 8.71 ms/step per process with N = 4 (aggregate 1.54x).  Every per-process H100/MPS projection below is
+# the 5090 cost model scaled by 8.71 / model(91 x 721, 4.5 M): the model's grid and particle dependence, the box's measured level.
+H100_MPS4_ANCHOR = {"gpu": "NVIDIA H100 80GB HBM3", "mps_slots": 4, "nodes": (91, 721), "particles_m": 4.5, "ms_per_step_per_process": 8.71,
+                    "ms_per_step_solo": 3.37, "source": "modern/tools/cloud/bench.sh channel-33um production load, bench-mps N=4 (2026-09-04 14:35 AEST)"}
+PLATFORMS = ("rtx5090", "h100-mps4")
+MACRO_WEIGHT_REFERENCE = 6.0e4                   # the macro weight of every 50 um anchor (particle counts scale with 6e4 / W)
+
 
 def fixed_ms_per_step(node_shape: tuple[int, int]) -> dict[str, float]:
     nr1, nz1 = int(node_shape[0]), int(node_shape[1])
@@ -66,6 +75,21 @@ def ms_per_step(node_shape: tuple[int, int], particles_m: float) -> float:
     return fixed_ms_per_step(node_shape)["fixed_ms"] + PARTICLE_SLOPE_MS_PER_M * particles_m
 
 
+def h100_mps4_ms_per_step(node_shape: tuple[int, int], particles_m: float) -> float:
+    """Per-process ms/step on the H100 with four MPS slots busy: the 5090 model scaled to the measured N = 4 anchor."""
+
+    anchor = H100_MPS4_ANCHOR
+    return ms_per_step(node_shape, particles_m) * anchor["ms_per_step_per_process"] / ms_per_step(anchor["nodes"], anchor["particles_m"])
+
+
+def platform_ms_per_step(node_shape: tuple[int, int], particles_m: float, platform: str) -> float:
+    if platform == "rtx5090":
+        return ms_per_step(node_shape, particles_m)
+    if platform == "h100-mps4":
+        return h100_mps4_ms_per_step(node_shape, particles_m)
+    raise ValueError(f"unknown platform {platform!r}; known {PLATFORMS}")
+
+
 def anchor_residuals() -> list[dict[str, Any]]:
     rows = []
     for anchor in ANCHORS:
@@ -74,16 +98,20 @@ def anchor_residuals() -> list[dict[str, Any]]:
     return rows
 
 
-def projected_particles_m(mapping: PicMapping) -> dict[str, float]:
+def projected_particles_m(mapping: PicMapping, *, macro_weight: float = MACRO_WEIGHT_REFERENCE) -> dict[str, float]:
+    """Macro-particle count at the reference plateau's mean density, scaled with the channel volume and with 6e4 / W."""
+
     volume_ratio = channel_volume_m3(mapping) / REFERENCE_CHANNEL_VOLUME_M3
-    channel = REFERENCE_CHANNEL_PARTICLES_M * volume_ratio
+    weight_ratio = MACRO_WEIGHT_REFERENCE / float(macro_weight)
+    channel = REFERENCE_CHANNEL_PARTICLES_M * volume_ratio * weight_ratio
     plume = 0.0
     geometry = mapping.geometry
     if geometry.has_plume:
         channel *= PLUME_MODEL_CHANNEL_DENSITY_FACTOR
         length_mm = float(geometry.plume_length_m) * 1e3
-        plume = (REFERENCE_PLUME_12MM_PARTICLES_M + PLUME_PARTICLES_PER_12MM_M * max(0.0, (length_mm - 12.0) / 12.0)) * volume_ratio
-    return {"channel_m": channel, "plume_m": plume, "total_m": channel + plume, "channel_volume_ratio": volume_ratio}
+        plume = (REFERENCE_PLUME_12MM_PARTICLES_M + PLUME_PARTICLES_PER_12MM_M * max(0.0, (length_mm - 12.0) / 12.0)) * volume_ratio * weight_ratio
+    return {"channel_m": channel, "plume_m": plume, "total_m": channel + plume, "channel_volume_ratio": volume_ratio, "macro_weight": float(macro_weight),
+            "weight_ratio_6e4_over_w": weight_ratio}
 
 
 def transit_time_s(mapping: PicMapping) -> float:
@@ -93,11 +121,20 @@ def transit_time_s(mapping: PicMapping) -> float:
     return residence + plume
 
 
-def design_cost(mapping: PicMapping, *, transits: float = 3.0, dt_s: float = DT_S) -> dict[str, Any]:
+def design_cost(mapping: PicMapping, *, transits: float = 3.0, dt_s: float = DT_S, macro_weight: float = MACRO_WEIGHT_REFERENCE,
+                platform: str = "rtx5090") -> dict[str, Any]:
+    """Projected cost of one design run: ms/step (5090 model, and the H100/MPS-4 per-process level), steps and hours to ``transits``.
+
+    ``macro_weight`` scales the projected particle count (6e4 / W); ``platform`` selects which ms/step the hours are formed with
+    (``rtx5090`` = the anchored model; ``h100-mps4`` = one of four MPS slots on the H100).  Both ms/step values are recorded.
+    """
+
     nodes = mapping.grid.node_shape
     fixed = fixed_ms_per_step(nodes)
-    particles = projected_particles_m(mapping)
-    ms = fixed["fixed_ms"] + PARTICLE_SLOPE_MS_PER_M * particles["total_m"]
+    particles = projected_particles_m(mapping, macro_weight=macro_weight)
+    ms_5090 = fixed["fixed_ms"] + PARTICLE_SLOPE_MS_PER_M * particles["total_m"]
+    ms_h100 = h100_mps4_ms_per_step(nodes, particles["total_m"])
+    ms = platform_ms_per_step(nodes, particles["total_m"], platform)
     transit = transit_time_s(mapping)
     steps = transits * transit / dt_s
     factorisation_s = FACTORISATION_REFERENCE_S * (nodes[0] * nodes[1] ** 3) / FACTORISATION_REFERENCE_ROWS_M3
@@ -105,8 +142,8 @@ def design_cost(mapping: PicMapping, *, transits: float = 3.0, dt_s: float = DT_
     stepping_h = steps * ms / 3.6e6
     return {
         "design_id": mapping.design_id, "domain": mapping.domain, "nodes": [nodes[0], nodes[1]], "cells": [mapping.grid.radial_cells, mapping.grid.axial_cells],
-        "dr_um": mapping.grid.dr_m * 1e6, "dz_um": mapping.grid.dz_m * 1e6, "dt_s": dt_s,
-        **fixed, "particles_projected_m": particles, "ms_per_step": ms,
+        "dr_um": mapping.grid.dr_m * 1e6, "dz_um": mapping.grid.dz_m * 1e6, "dt_s": dt_s, "macro_weight": float(macro_weight), "platform": platform,
+        **fixed, "particles_projected_m": particles, "ms_per_step": ms, "ms_per_step_rtx5090_model": ms_5090, "ms_per_step_h100_mps4_per_process": ms_h100,
         "transit_s": transit, "transits": transits, "steps_to_transits": steps,
         "factorisation_s": factorisation_s, "field_map_s": field_map_s,
         "stepping_hours": stepping_h, "wall_hours": stepping_h + (factorisation_s + field_map_s) / 3600.0,
@@ -114,19 +151,35 @@ def design_cost(mapping: PicMapping, *, transits: float = 3.0, dt_s: float = DT_
     }
 
 
-REFINED_CHANNEL_CELL_M = 3.33e-5     # attempt-8 verdict (ac248e05): Delta <= 32.4 um keeps Delta/lambda_D <= 0.8 pi at the recorded peak; dt <= 1.48 ps
+# The refined channel grid = the preregistered steady-state v4 grid (392129e5): target 24 mm / 720 = 33.333 um so that the reference
+# design reproduces v4's 90 x 720 cells EXACTLY (dr = 2 mm / 60, dz = 24 mm / 720; the draft's 3.33e-5 gave 90 x 721).  Attempt-8
+# verdict (ac248e05): Delta <= 32.4 um keeps Delta/lambda_D <= 0.8 pi at the recorded peak; dt <= 1.48 ps.
+REFINED_CHANNEL_CELL_M = 0.024 / 720.0
 REFINED_CHANNEL_DT_S = 1.4e-12
 REFINED_CHANNEL_KEY = "channel-33um-1.4ps"
 
 
+def parity_macro_weight(mapping: PicMapping, *, reference_weight: float = MACRO_WEIGHT_REFERENCE, reference_cell_m: float = 5.0e-5) -> float:
+    """W with the SAME macro-particles per cell as the 50 um / W 6e4 runs at equal density: W = 6e4 x (dr dz) / (50 um)^2, to 0.1.
+
+    The steady-state v4 rule (W = 6e4 / 2.25 = 26 666.7 on 33.33 um): the reference design reproduces v4's value exactly; the other
+    designs' snapped dr / dz give W within +-1 % of it.
+    """
+
+    return round(reference_weight * (mapping.grid.dr_m * mapping.grid.dz_m) / (reference_cell_m * reference_cell_m), 1)
+
+
 def cost_table(built_designs: list[BuiltDesign], *, transits: float = 3.0) -> dict[str, list[dict[str, Any]]]:
-    """Rows per domain option at the 50 um / 1.5 ps grid, plus the grid-refinement channel variant of the attempt-8 verdict."""
+    """Rows per domain option at the 50 um / 1.5 ps grid (W 6e4, 5090 model), plus the refined channel variant at the v4 grid
+    with particles-per-cell parity (W = 6e4 / 2.25) costed for one of four H100 MPS slots (the preregistered option)."""
 
     table = {domain: [design_cost(pic_geometry(built, domain), transits=transits) for built in built_designs] for domain in DOMAIN_OPTIONS}
-    table[REFINED_CHANNEL_KEY] = [
-        {**design_cost(pic_geometry(built, "channel", target_cell_m=REFINED_CHANNEL_CELL_M), transits=transits, dt_s=REFINED_CHANNEL_DT_S), "domain": REFINED_CHANNEL_KEY}
-        for built in built_designs
-    ]
+    refined = []
+    for built in built_designs:
+        mapping = pic_geometry(built, "channel", target_cell_m=REFINED_CHANNEL_CELL_M)
+        refined.append({**design_cost(mapping, transits=transits, dt_s=REFINED_CHANNEL_DT_S, macro_weight=parity_macro_weight(mapping), platform="h100-mps4"),
+                        "domain": REFINED_CHANNEL_KEY})
+    table[REFINED_CHANNEL_KEY] = refined
     return table
 
 
@@ -154,5 +207,6 @@ def serial_schedule(table: dict[str, list[dict[str, Any]]], *, option: str, repl
                     "budgets should be set at 1.25x the projected wall so the plateau rule can be evaluated past 3 transits"}
 
 
-__all__ = ["ANCHORS", "PARTICLE_SLOPE_MS_PER_M", "REFINED_CHANNEL_CELL_M", "REFINED_CHANNEL_DT_S", "REFINED_CHANNEL_KEY", "anchor_residuals", "cost_table",
-           "design_cost", "fixed_ms_per_step", "ms_per_step", "projected_particles_m", "serial_schedule", "transit_time_s"]
+__all__ = ["ANCHORS", "H100_MPS4_ANCHOR", "MACRO_WEIGHT_REFERENCE", "PARTICLE_SLOPE_MS_PER_M", "PLATFORMS", "REFINED_CHANNEL_CELL_M", "REFINED_CHANNEL_DT_S",
+           "REFINED_CHANNEL_KEY", "anchor_residuals", "cost_table", "design_cost", "fixed_ms_per_step", "h100_mps4_ms_per_step", "ms_per_step",
+           "parity_macro_weight", "platform_ms_per_step", "projected_particles_m", "serial_schedule", "transit_time_s"]
