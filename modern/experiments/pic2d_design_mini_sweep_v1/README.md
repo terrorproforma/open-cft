@@ -417,3 +417,29 @@ preflight for both channel options, run / launch guards, shrunk-cadence protocol
   round-off, MPS-neutral), six run protocols sealed; two composer defects found and fixed by the shakedown /
   replay before the freeze (budget keys the runner's finalization reads; the replay criterion). Xid-31 event from
   an interrupted shakedown recorded (section 8.3).
+* **2026-09-04 15:52-15:56 AEST (05:52-05:56 UTC) - LAUNCH 1 of the four primary designs**, preregistration commit
+  `291a9227` (launch config `9c426f90`: `tools/cloud/jobs.yaml` slots_per_gpu 4, MPS client variables), Lambda
+  `gpu_1x_h100_sxm5` `ubuntu@68.209.75.2`, GPU 0 = NVIDIA H100 80GB HBM3 `GPU-a800b021-6364-473f-5177-cd6ae7ce0005`,
+  driver 580.105.08, CUDA MPS daemon PID 14340 / server 14519, 6 BLAS threads per job. Launched by
+  `tools/cloud/schedule.py launch --only sweep-reference sweep-056 sweep-047 sweep-009`: each job in its own detached
+  worktree at `291a9227` under `/lambda/nfs/h100-files/cft/jobs/<id>/tree` (LFS smudged, ~80 s each), Warp `cuda:0`
+  UUID cross-checked (`gpu_uuid_match true` in every `state.json`), `launch --expect-commit 291a9227 --require-mps`
+  passed every check (clean worktree, blobs == HEAD, recomposition == sealed bytes, records present) and acquired the
+  O_EXCL `execution-lock.json` (commit `291a9227`, MPS pipe `/tmp/nvidia-mps`, GPU recorded):
+
+  | job | design | PID (wrapper) | started UTC | lock protocol / config | early ms/step (seed load, 4 active) | projected MPS-4 ms/step at plateau load | steps to 3 transits | hours to 3 transits (MPS-4 rate) | budget |
+  | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+  | `sweep-reference` | `divergent-exit-stack` | 19764 (19709) | 05:52:03 | `ec8baa2aa38d` / `fc788b7eac22` | 4.46 | 8.71 | 5 142 857 | 12.5 h | 18.8 h |
+  | `sweep-056` | `l1a-gs-v3-056-effcbc8686` | 19913 (19866) | 05:53:26 | `35760e9b5bcd` / `3d247f1ea3f6` | 5.58 | 16.6 | 3 653 784 | 16.8 h | 25.3 h |
+  | `sweep-047` | `l1a-gs-v2-047-e3196a8aa5` | 20079 (20024) | 05:54:47 | `b23b66da579a` / `43709022227a` | 3.69 | 5.7 | 5 553 645 | 8.8 h | 13.3 h |
+  | `sweep-009` | `l1a-gs-v3-009-d0c686b4aa` | 20189 (20176) | 05:56:09 | `eb54049c6d84` / `fba041575d99` | 4.46 | 11.3 | 4 883 555 | 15.3 h | 23.0 h |
+
+  At 05:57 UTC: GPU 100 % busy, 5.0 GB used (1.07-1.42 GB per process at the seed load; projected 5-15 GB each at the
+  plateau loads), no new Xid. Every run ignited from the seed as the reference does (I_d 1.3-2.2 mA, S 1-3e16 /s, n_g
+  falling from 5.5e19 within the first 0.15 us). The per-process step will rise toward the projected MPS-4 rates as
+  the particle counts grow to their plateau loads, and fall again as slots empty: expected 3-transit times from the
+  MPS-4 projection are 047 ~01:00, reference ~04:30, 009 ~07:00, 056 ~08:40 AEST 2026-09-05 (upper bounds; the plateau
+  rule may declare later, up to the budgets). Monitoring: `tools/cloud/schedule.py status` on the box; the runner's
+  `gpu=100%` samples are whole-GPU readings under MPS. Do NOT kill a process (section 8.3, Xid 31). When a job stops:
+  `run.py assess --design ID --grid 33um` and `run.py targets ...` from its worktree; results-only commit from the
+  worktree on a `results/<id>` branch; cite the ss-v4 verdict (pending at launch) per design.
