@@ -1,4 +1,4 @@
-"""Run protocols of external validation v0, composed on the steady-state v4 template (DRAFT; nothing here is preregistered).
+"""Run protocols of external validation v0, composed on the steady-state v4 template (PREREGISTERED option ``channel-20um`` for the Lambda H100).
 
 Template: ``pic2d_cft_steady_state_v4/protocol.json`` (model v1.3 closure: v1.2 runner physics, NO wall-ion recycling; v2.0.3 gates: window-mode
 peak-Debye gate hard pi / soft 2.5, one-sided windowed residual-power gate 5 %; frame recorder ON; the accepted plateau rule).  Only the blocks the
@@ -41,8 +41,34 @@ EXPERIMENT_DIR = Path(__file__).resolve().parent
 MODERN = EXPERIMENT_DIR.parents[1]
 REPOSITORY = MODERN.parent
 TEMPLATE_PATH = MODERN / "experiments" / "pic2d_cft_steady_state_v4" / "protocol.json"
-STATUS = "DRAFT_NOT_PREREGISTERED_NOT_LAUNCHED_external_validation_v0_code_to_code_brandt2016"
+STATUS = "preregistered_external_validation_v0_channel_20um_h100_mps4_code_to_code_brandt2016_not_validated"
+RUN_PROTOCOL_SCHEMA = "cft.pic2d.external-validation-v0.run-protocol/1.0.0"
+EXPERIMENT_PROTOCOL_SCHEMA = "cft.pic2d.external-validation-v0.protocol/1.0.0"
 PROTOCOLS_DIR = EXPERIMENT_DIR / "protocols"
+PREFLIGHT_RECORD = EXPERIMENT_DIR / "preflight-channel-20um.json"
+SHAKEDOWN_RECORD = EXPERIMENT_DIR / "shakedown-channel-20um.json"
+
+# the launch box (recorded in every sealed run protocol under `execution`; the mini-sweep's record for the same box)
+LAUNCH_BOX = {
+    "gpu": "NVIDIA H100 80GB HBM3",
+    "instance": "Lambda gpu_1x_h100_sxm5 (us-southeast-1), ubuntu@68.209.75.2, driver 580.105.08 (CUDA 13.0), 26 vCPU, 221 GiB RAM",
+    "software": "Python 3.12.14, warp-lang 1.14.0 (PyPI CUDA 12.9 build, sm_90 JIT), numpy 2.5.2 (scipy-openblas 0.3.34 Haswell DYNAMIC_ARCH), Ubuntu 22.04",
+    "concurrency": ("CUDA MPS (nvidia-cuda-mps-control -d; CUDA_MPS_PIPE_DIRECTORY=/tmp/nvidia-mps, CUDA_MPS_LOG_DIRECTORY=/tmp/nvidia-log): this run takes ONE of the four "
+                    "MPS slots of tools/cloud/jobs.yaml (slots_per_gpu 4) beside the preregistered design mini-sweep v1 runs (291a9227) that are still executing at launch; "
+                    "benchmark anchor 3.37 ms/step alone -> 8.71 ms/step per process at N = 4 for the v4 configuration (aggregate 1.54x)"),
+    "determinism": ("MPS does not change a process's own kernel order: the mini-sweep's replay on this box (mps-replay.json, 291a9227) showed the physics state bitwise between "
+                    "concurrent MPS processes and solo processes, float-atomic diagnostic accumulators at <= 2.2e-13 - the same pattern solo-vs-solo"),
+    "provenance_caveats": [
+        "the runner's gpu_utilisation_percent_samples (nvidia-smi, 300 s) read the WHOLE GPU under MPS - shared-GPU readings, not per process",
+        ("ms/step per process under MPS depends on how many slots are busy: the measured launch-box rate below was taken with the sweep runs active and the run "
+         "speeds up as they finish; wall-clock projections are per-slot upper bounds, the budget is a cap, not a cost"),
+        "same-seed replay across the RTX 5090 (sm_120) and the H100 (sm_90) is numerical, never bitwise (tools/cloud/PLAN.md s.6)",
+    ],
+}
+# ms/step measured on the launch box by `preflight --gpu-timing` (>= 2000 production steps at the seed load and at the projected plateau
+# load, under the MPS contention present at the time); None until the box preflight has run. When set, the wall budget is derived
+# from max(cost-model MPS-4 rate, measured plateau-load rate) so a slower-than-modelled box can never starve the 3-transit plateau rule.
+LAUNCH_BOX_TIMING: dict[str, Any] | None = None
 EXPERIMENT_PROTOCOL_PATH = EXPERIMENT_DIR / "protocol.json"
 COMPARISON_SPEC_PATH = EXPERIMENT_DIR / "comparison-spec.json"
 
@@ -209,6 +235,30 @@ def cost_row(mapping: PicMapping, *, dt_s: float, macro_weight: float, projected
             "cost_model": "experiments.pic2d_design_mini_sweep_v1.cost (5090 anchors; H100 MPS-4 anchor 8.71 ms/step for the v4 configuration; solo anchor 3.37) scaled by nodes and particles"}
 
 
+def budget_basis_hours(cost: dict[str, Any], timing: dict[str, Any] | None = None) -> tuple[float, dict[str, Any]]:
+    """Hours to 3 transits the wall budget is derived from: the cost-model MPS-4 rate, or the measured launch-box plateau-load rate when it is slower.
+
+    The measured rate (``LAUNCH_BOX_TIMING``, from ``preflight --gpu-timing`` on the box under the MPS contention present at the time) can only
+    RAISE the budget: the run speeds up as sweep slots free, so the faster of the two would understate the wall the plateau rule needs.
+    """
+
+    timing = LAUNCH_BOX_TIMING if timing is None else timing
+    model_ms = float(cost["ms_per_step_h100_mps4_per_process"])
+    overhead_h = (float(cost["factorisation_s"]) + float(cost["field_map_s"])) / 3600.0
+    steps = float(cost["steps_to_3_transits"])
+    measured_ms = None if not timing else timing.get("ms_per_step_at_plateau_load")
+    if measured_ms is not None and float(measured_ms) > model_ms:
+        ms = float(measured_ms)
+        basis = {"basis": "measured launch-box plateau-load rate (slower than the cost model)", "ms_per_step": ms, "cost_model_ms_per_step": model_ms,
+                 "measured_ms_per_step_at_plateau_load": float(measured_ms), "concurrent_mps_clients_at_measurement": timing.get("concurrent_mps_clients")}
+    else:
+        ms = model_ms
+        basis = {"basis": "cost model (H100 MPS-4 anchor scaled by nodes + particles)", "ms_per_step": ms, "cost_model_ms_per_step": model_ms,
+                 "measured_ms_per_step_at_plateau_load": None if measured_ms is None else float(measured_ms),
+                 "concurrent_mps_clients_at_measurement": None if not timing else timing.get("concurrent_mps_clients")}
+    return steps * ms / 3.6e6 + overhead_h, basis
+
+
 # --------------------------------------------------------------------------------------------------------------------------
 # composition
 # --------------------------------------------------------------------------------------------------------------------------
@@ -226,10 +276,10 @@ def build_protocol(variant: str = PRIMARY_VARIANT, grid: str = PRIMARY_GRID, *, 
     budget_keys = [key for key in protocol if key.startswith("budget")]
     for key in budget_keys + ["field_authority", "reference_run", "preregistration", "design_id"]:
         protocol.pop(key, None)
-    protocol["schema_version"] = "cft.pic2d.external-validation-v0.run-protocol/0.1.0-draft"
+    protocol["schema_version"] = RUN_PROTOCOL_SCHEMA
     protocol["experiment_id"] = EXPERIMENT_ID
     protocol["status"] = STATUS
-    protocol["classification"] = "axisymmetric_electrostatic_pic_mcc_code_to_code_comparison_channel_only_static_neutrals_v1_3_closure_v2_0_3_gates_not_validated_draft"
+    protocol["classification"] = "axisymmetric_electrostatic_pic_mcc_code_to_code_comparison_channel_only_static_neutrals_v1_3_closure_v2_0_3_gates_not_validated"
     protocol["model_version"] = ("pic2d v1.3 runner with a STATIC neutral background (the inventory removed = the v1.2 static-background mode; NO wall-ion recycling, no SEE, no anomalous "
                                  "transport unless the variant switches the v1.4 Bohm hook on) with the v2.0.3 gates (window-mode peak-Debye gate, windowed residual-power gate)")
     protocol["option"] = option_tag(variant, grid)
@@ -310,7 +360,7 @@ def build_protocol(variant: str = PRIMARY_VARIANT, grid: str = PRIMARY_GRID, *, 
     # case
     projected_m = weight_policy["projected_total_m"]
     protocol["case"] = {
-        "id": f"{CONFIG_ID}-{option_tag(variant, grid)}-w{weight:.6g}-ng2e20-static-inj1.8mA-1eV-v1.3-closure-v2.0.3-gates-draft",
+        "id": f"{CONFIG_ID}-{option_tag(variant, grid)}-w{weight:.6g}-ng2e20-static-inj1.8mA-1eV-v1.3-closure-v2.0.3-gates",
         "radial_cells": int(mapping.grid.radial_cells), "axial_cells": int(mapping.grid.axial_cells), "macro_weight": weight, "macro_weight_policy": weight_policy, "seed": SEED,
         "grid_policy": {"target_cell_m": cell_m, "dt_s": float(numerics["dt_s"]), "source": f"grid option {grid}: " + ("the published resolution" if grid == "20um" else "see grid_argument")},
         "grid_note": f"dr {mapping.grid.dr_m*1e6:.3f} um x dz {mapping.grid.dz_m*1e6:.3f} um: {mapping.grid.radial_cells} x {mapping.grid.axial_cells} cells, nodes {list(mapping.grid.node_shape)}",
@@ -318,9 +368,12 @@ def build_protocol(variant: str = PRIMARY_VARIANT, grid: str = PRIMARY_GRID, *, 
     # stopping rule / acceptance / budget
     cost = cost_row(mapping, dt_s=float(numerics["dt_s"]), macro_weight=weight, projected_total_m=projected_m)
     rule = protocol["stopping_rule"]
-    wall_budget = max(3600.0, math.ceil(BUDGET_FACTOR * cost["hours_to_3_transits_mps4"] * 3600.0 / 600.0) * 600.0)
+    budget_hours, budget_basis = budget_basis_hours(cost)
+    wall_budget = max(3600.0, math.ceil(BUDGET_FACTOR * budget_hours * 3600.0 / 600.0) * 600.0)
     rule["wall_budget_seconds"] = float(wall_budget)
-    rule["wall_budget_note"] = (f"{BUDGET_FACTOR} x the projected wall to 3 transits at one of four H100 CUDA-MPS slots ({cost['hours_to_3_transits_mps4']:.1f} h at {cost['ms_per_step_h100_mps4_per_process']:.1f} ms/step; "
+    rule["wall_budget_basis"] = budget_basis
+    rule["wall_budget_note"] = (f"{BUDGET_FACTOR} x the projected wall to 3 transits at one of four H100 CUDA-MPS slots ({budget_hours:.1f} h at {budget_basis['ms_per_step']:.1f} ms/step, basis "
+                                f"'{budget_basis['basis']}'; cost model {cost['hours_to_3_transits_mps4']:.1f} h at {cost['ms_per_step_h100_mps4_per_process']:.1f} ms/step; "
                                 f"{cost['steps_to_3_transits']/1e6:.2f} M steps; solo-H100 equivalent {cost['hours_to_3_transits_h100_solo_equivalent']:.1f} h), rounded up to 10 min; cumulative over resumes. "
                                 f"The reference's 76 us would cost {cost['hours_to_reference_time_mps4']:.0f} h at this rate - not budgeted; the plateau rule decides")
     rule["plateau"] = (f"relative drift < 5 % over the trailing 20 % of the elapsed simulated time for the discharge current AND the plasma electron count (linear fit, drift = slope x window / |mean|; "
@@ -352,6 +405,18 @@ def build_protocol(variant: str = PRIMARY_VARIANT, grid: str = PRIMARY_GRID, *, 
         "ion_transit_time_s": TRANSIT_S, "ion_transit_note": "2.4 us x 14 mm / 24 mm (the measured reference residence scaled with the channel length); superseded by the measured N_i / L residence",
         "expected_mean_density_per_m3": EXPECTED_MEAN_DENSITY_PER_M3, "particles_projected_m": projected_m, "macro_weight": weight, "macro_weight_parity": weight_policy["parity_weight"],
         "dr_m": mapping.grid.dr_m, "dz_m": mapping.grid.dz_m, "dt_s": float(numerics["dt_s"]), "wall_budget_factor": BUDGET_FACTOR, **{k: v for k, v in cost.items() if k not in ("nodes", "cells", "dt_s", "macro_weight")},
+        "launch_box_timing": LAUNCH_BOX_TIMING,
+    }
+    protocol["execution"] = {
+        **LAUNCH_BOX,
+        "launch_box_timing": LAUNCH_BOX_TIMING,
+        "scheduler": ("modern/tools/cloud/schedule.py (tmux, detached worktree at the preregistration commit, per-job results directory, Warp cuda:0 UUID cross-check, prereg "
+                      "ancestor + byte-identical protocol checks) with slots_per_gpu 4 and the MPS variables exported; job `ext-val-v0-channel-20um` in tools/cloud/jobs.yaml"),
+        "launch_discipline": ("run.py launch --expect-commit <prereg sha> --require-mps: HEAD == prereg commit, clean worktree, protocol.json and protocols/<option>.json blobs == HEAD, "
+                              "recomposed protocol == sealed file byte for byte, preflight-channel-20um.json (whole set passed + launch-box GPU timing passed) and "
+                              "shakedown-channel-20um.json (passed) present, O_EXCL execution-lock.json in results/<option>/, MPS pipe directory present"),
+        "one_execution": ("ONE detached launch from a worktree at the preregistration commit; a wall-budget stop may be resumed (--resume: new session, same identity, disclosed in "
+                          "run_state.sessions); no parameter change after the freeze; a non-ignition or a gate stop is a recorded outcome (comparison-spec inconclusive_conditions)"),
     }
     protocol["simplifications"] = [s for s in protocol.get("simplifications", []) if not s.startswith(("neutrals:", "3 mA injection", "single seed and a single refined grid", "preregistered resolution-convergence"))] + [
         "neutrals: STATIC uniform xenon background 2e20 m^-3 at 500 K (the reference's static DSMC mean); no depletion, no profile (the reference's drops 6e20 -> 1e20 along the channel)",
@@ -360,10 +425,12 @@ def build_protocol(variant: str = PRIMARY_VARIANT, grid: str = PRIMARY_GRID, *, 
         "no anomalous transport (primary) / isotropic Bohm scattering at alpha 0.4 (variant) versus the reference's perpendicular-rotation D_perp = 0.4 k T_e / e B; no SEE versus its 50 % / 90 % model",
         "reconstructed field: level-0 material-aware P2 of the thesis' magnet stack with approximations A1-A8, scaled to the published axis anchor; not P2-qualified",
         "one grid (the published 20 um) and one seed: the grid caveat is carried, not measured; the 15 um sibling and a seed replicate are the declared follow-ups",
-        "DRAFT: not preregistered, not launched; a code-to-code comparison of two development models, not a validation against hardware",
+        ("one preregistered execution on one of four CUDA-MPS slots of a shared H100 (the design mini-sweep runs beside it): a code-to-code comparison of two development models, "
+         "not a validation against hardware"),
     ]
     protocol["claim_boundary"] = {
-        "draft": "DRAFT protocol composed on the steady-state v4 template for a code-to-code comparison with Brandt et al. 2016; NOT preregistered; NOT launched; the coordinator launches from a preregistration commit",
+        "preregistration": ("PREREGISTERED protocol composed on the steady-state v4 template for a code-to-code comparison with Brandt et al. 2016; ONE execution from the preregistration "
+                            "commit (run.py launch --expect-commit, tools/cloud/schedule.py); the acceptance, the comparison spec and the inconclusiveness conditions are frozen here"),
         "comparison": f"cross-model (claim ceiling {comparison.CLAIM_CEILING}); every row conditional on the unpropagated inputs (B scale, neutral profile, effective source); opens no physics level",
         "geometry_approximation": "approximations A1-A9 of experiments/pic2d_external_validation_v0/geometry.py; field gates G1-G7 of fields.py",
     }
@@ -406,7 +473,35 @@ def _file_record(path: Path) -> dict[str, Any] | None:
     return {"path": path.relative_to(REPOSITORY).as_posix(), "sha256": hashlib.sha256(data).hexdigest(), "bytes": len(data)}
 
 
-def experiment_protocol_document(*, preflight_summary: dict[str, Any] | None = None, sealed: dict[str, str] | None = None, field_binding_summary: dict[str, Any] | None = None) -> dict[str, Any]:
+DECISIONS_VS_DRAFT: list[dict[str, str]] = [
+    {"item": "launch box / GPU model", "draft": "H100 MPS-4 assumed for the cost row only; no GPU recorded in the run protocol",
+     "preregistered": "NVIDIA H100 80GB HBM3 (Lambda gpu_1x_h100_sxm5, ubuntu@68.209.75.2, driver 580.105.08) under CUDA MPS, ONE of four slots, recorded in every sealed run "
+                      "protocol (`execution`) with the launch discipline and the scheduler job",
+     "why": "the mini-sweep record (291a9227) established that the GPU model, the MPS slot and the shared-GPU provenance caveats belong in the preregistration"},
+    {"item": "slot disclosure", "draft": "launch when design 047's slot frees (~01:00 AEST 5 Sep) or solo after the sweep",
+     "preregistered": "the run enters the slot design 056 freed when its run stopped on the grid-heating triad gate at 10:52 UTC 2026-09-04 (omega_pe dt drift 0.283 > 0.25 at 2.07 "
+                      "transits; the sweep is NOT assessed here); three sweep runs (reference, 047, 009) are active at launch and finish during this run, so the per-process "
+                      "rate rises from the measured MPS-4 value toward the solo rate",
+     "why": "a slot became free earlier than planned; the launch is still a four-client configuration (never a fifth client)"},
+    {"item": "shakedown GPU use", "draft": "a labelled shakedown on the launch box before the freeze (no slot named)",
+     "preregistered": "the shakedown ran as the FOURTH MPS client (056's freed slot) for ~10-20 min while three sweep runs executed; disclosed in the launch log",
+     "why": "the sweep's own preregistration budgets are MPS-4 upper bounds, so a fourth client costs them nothing beyond their declared configuration"},
+    {"item": "wall budget", "draft": "46.0 h = 1.5 x the cost-model MPS-4 projection (30.6 h at 18.3 ms/step)",
+     "preregistered": "1.5 x max(cost-model MPS-4 rate, MEASURED launch-box plateau-load rate) rounded up to 10 min (`stopping_rule.wall_budget_basis` names which one bound); "
+                      "the measured rate comes from `preflight --gpu-timing` (>= 2000 production steps at the seed load and at the projected 12 M-particle plateau load)",
+     "why": "a preflight timing at production load beats a cost-table extrapolation (v2.0.3 lesson); the measured rate may only raise the budget, never lower it"},
+    {"item": "seed", "draft": "20260903 (the template's)", "preregistered": "20260903 unchanged", "why": "one seed; the seed replicate is a declared follow-up"},
+    {"item": "frames", "draft": "ON, 40 000 steps = 28 ns", "preregistered": "unchanged", "why": "the qualitative rows of the comparison spec read the frames"},
+    {"item": "gates", "draft": "v2.0.3 verbatim", "preregistered": "unchanged", "why": "the accepted gate set; the grid argument was made against them"},
+    {"item": "comparison spec", "draft": "12 rows (10 channel-comparable), tolerances 20 % / +-5 V / 0.3 dex, u_D + u_num predicted, u_input declared not propagated",
+     "preregistered": "unchanged (comparison-spec.json byte-identical to the draft, see preregistration.records)", "why": "the estimands and tolerances were fixed before any run"},
+    {"item": "launch stages", "draft": "`run.py launch` REFUSED unconditionally", "preregistered": "`launch --expect-commit --require-mps` with the mini-sweep discipline; `shakedown` writes "
+     "shakedown-channel-20um.json (run -> assess -> compare -> re-finalize); `preflight --gpu-timing` records the launch-box rate", "why": "the v4 / mini-sweep preregistration discipline"},
+]
+
+
+def experiment_protocol_document(*, preflight_summary: dict[str, Any] | None = None, sealed: dict[str, str] | None = None, field_binding_summary: dict[str, Any] | None = None,
+                                 shakedown_summary: dict[str, Any] | None = None) -> dict[str, Any]:
     if sealed is None and PROTOCOLS_DIR.is_dir():
         sealed = {p.relative_to(REPOSITORY).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(PROTOCOLS_DIR.glob("*.json"))}
     rows = {}
@@ -419,14 +514,25 @@ def experiment_protocol_document(*, preflight_summary: dict[str, Any] | None = N
     plume_particles = plume_policy["projected_total_m"] * 1.75          # the v2.0 plume model's channel factor (mini-sweep cost)
     plume_cost = cost_row(plume, dt_s=GRIDS["20um"]["dt_s"], macro_weight=plume_weight, projected_total_m=min(plume_particles, MAX_PROJECTED_PARTICLES_M))
     return {
-        "schema_version": "cft.pic2d.external-validation-v0.protocol/0.1.0-draft",
+        "schema_version": EXPERIMENT_PROTOCOL_SCHEMA,
         "experiment_id": EXPERIMENT_ID,
         "status": STATUS,
-        "preregistration": {"state": "NOT preregistered. This file and protocols/*.json are a DRAFT; nothing is hash-bound to a run. The coordinator preregisters and launches from a commit after the "
-                                     "preflight and this record are reviewed; `run.py launch` refuses until then", "launch_set": [option_tag(*o) for o in LAUNCH_SET],
-                            "sealed_run_protocols_draft": sealed, "records": {"preflight": _file_record(EXPERIMENT_DIR / "preflight-channel-20um.json"),
-                                                                              "comparison_spec": _file_record(COMPARISON_SPEC_PATH),
-                                                                              "field_binding": _file_record(EXPERIMENT_DIR / "fields" / CONFIG_ID / "binding.json")}},
+        "preregistration": {
+            "state": ("PREREGISTERED: the launch set is sealed by this file (sha256 of every run protocol under protocols/, of the whole-set preflight with the launch-box GPU timing, of the "
+                      "shakedown record, of the comparison spec and of the field binding). ONE execution of `channel-20um` from the commit that carries this file, through "
+                      "`run.py launch --expect-commit <sha> --require-mps` (tools/cloud/schedule.py job `ext-val-v0-channel-20um`); the sensitivity variant and the 15 um follow-up are "
+                      "sealed, not launched"),
+            "launch_set": [option_tag(*o) for o in LAUNCH_SET],
+            "sealed_run_protocols": sealed,
+            "records": {"preflight": _file_record(PREFLIGHT_RECORD), "shakedown": _file_record(SHAKEDOWN_RECORD), "comparison_spec": _file_record(COMPARISON_SPEC_PATH),
+                        "field_binding": _file_record(EXPERIMENT_DIR / "fields" / CONFIG_ID / "binding.json")},
+            "launch_discipline": ("HEAD == --expect-commit; clean worktree; protocol.json and the sealed run protocol equal HEAD's blobs; the recomposition on this platform equals the sealed "
+                                  "bytes; the preflight passed every option and its launch-box timing passed (budget covers the measured 3-transit wall); the shakedown passed; "
+                                  "CUDA_MPS_PIPE_DIRECTORY present; O_EXCL execution-lock.json in results/channel-20um/"),
+            "decisions_vs_draft": DECISIONS_VS_DRAFT,
+        },
+        "execution": {**LAUNCH_BOX, "launch_box_timing": LAUNCH_BOX_TIMING},
+        "shakedown_summary": shakedown_summary,
         "reference": reference.reference_document(),
         "geometry_mapping": geometry_module.mapping_table(),
         "field_binding_summary": field_binding_summary,
@@ -458,8 +564,9 @@ def write_comparison_spec(path: Path = COMPARISON_SPEC_PATH) -> Path:
     return path
 
 
-__all__ = ["ANODE_POTENTIAL_V", "BUDGET_FACTOR", "COMPARISON_SPEC_PATH", "COMPOSED_OPTIONS", "EXPECTED_MEAN_DENSITY_PER_M3", "EXPECTED_PEAK_DENSITY_PER_M3", "EXPERIMENT_ID", "EXPERIMENT_PROTOCOL_PATH", "GRIDS",
-           "INJECTION_CURRENT_A", "INJECTION_TEMPERATURE_EV", "LAUNCH_SET", "MAX_PROJECTED_PARTICLES_M", "NEUTRAL_DENSITY_PER_M3", "NEUTRAL_TEMPERATURE_K", "PRIMARY_GRID", "PRIMARY_VARIANT",
-           "PROTOCOLS_DIR", "STABILITY_REFERENCE", "STATUS", "TEMPLATE_PATH", "TRANSIT_S", "VARIANTS", "admissible_dt", "build_protocol", "compose_all", "compose_run_protocol",
+__all__ = ["ANODE_POTENTIAL_V", "BUDGET_FACTOR", "COMPARISON_SPEC_PATH", "COMPOSED_OPTIONS", "DECISIONS_VS_DRAFT", "EXPECTED_MEAN_DENSITY_PER_M3", "EXPECTED_PEAK_DENSITY_PER_M3", "EXPERIMENT_ID",
+           "EXPERIMENT_PROTOCOL_PATH", "EXPERIMENT_PROTOCOL_SCHEMA", "GRIDS", "INJECTION_CURRENT_A", "INJECTION_TEMPERATURE_EV", "LAUNCH_BOX", "LAUNCH_BOX_TIMING", "LAUNCH_SET",
+           "MAX_PROJECTED_PARTICLES_M", "NEUTRAL_DENSITY_PER_M3", "NEUTRAL_TEMPERATURE_K", "PREFLIGHT_RECORD", "PRIMARY_GRID", "PRIMARY_VARIANT", "PROTOCOLS_DIR", "RUN_PROTOCOL_SCHEMA",
+           "SHAKEDOWN_RECORD", "STABILITY_REFERENCE", "STATUS", "TEMPLATE_PATH", "TRANSIT_S", "VARIANTS", "admissible_dt", "budget_basis_hours", "build_protocol", "compose_all", "compose_run_protocol",
            "composed_protocol_path", "cost_row", "debye_length_m", "density_at_cells_per_debye", "density_at_omega_pe_dt", "experiment_protocol_document", "grid_argument", "load_template",
            "macro_weight_policy", "omega_pe", "option_tag", "protocol_bytes", "write_comparison_spec", "write_experiment_protocol"]

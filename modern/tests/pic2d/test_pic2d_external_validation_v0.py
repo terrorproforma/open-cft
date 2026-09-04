@@ -200,7 +200,10 @@ def test_primary_protocol_is_the_v4_template_with_the_reference_operating_point(
     p, mapping = protocol.build_protocol("base", "20um")
     template = protocol.load_template()
     assert p["template_protocol"]["experiment_id"] == template["experiment_id"] == "pic2d-cft-steady-state-v4"
-    assert p["status"].startswith("DRAFT_NOT_PREREGISTERED") and "preregistration" not in p and "reference_run" not in p
+    assert p["status"].startswith("preregistered_external_validation_v0_channel_20um_h100_mps4") and "preregistration" not in p and "reference_run" not in p
+    assert p["schema_version"] == protocol.RUN_PROTOCOL_SCHEMA == "cft.pic2d.external-validation-v0.run-protocol/1.0.0" and not p["case"]["id"].endswith("-draft")
+    assert p["execution"]["gpu"] == "NVIDIA H100 80GB HBM3" and "ONE of the four" in p["execution"]["concurrency"] and "--expect-commit" in p["execution"]["launch_discipline"]
+    assert "preregistration" in p["claim_boundary"] and "draft" not in p["claim_boundary"]
     op = p["operating_point"]
     assert op["anode_potential_v"] == 400.0 and op["exit_plane_potential_v"] == 0.0 and op["neutral_density_per_m3"] == 2e20 and op["neutral_temperature_k"] == 500.0
     assert op["neutral_inventory"] is None and op["electron_injection_current_a"] == 1.8e-3 and op["electron_injection_temperature_ev"] == 1.0
@@ -221,6 +224,7 @@ def test_primary_protocol_is_the_v4_template_with_the_reference_operating_point(
     assert abs(p["budget_external_validation_v0"]["steps_to_3_transits"] - 6.0e6) < 1.0
     budget = p["stopping_rule"]["wall_budget_seconds"]
     assert budget % 600 == 0 and budget >= 1.5 * p["budget_external_validation_v0"]["hours_to_3_transits_mps4"] * 3600 - 600
+    assert p["stopping_rule"]["wall_budget_basis"]["ms_per_step"] >= p["budget_external_validation_v0"]["ms_per_step_h100_mps4_per_process"]
     # a-priori numbers: omega_pe dt gate density at 0.7 ps ~2.6e19; the hard Debye level on 20 um at 10 eV binds first, at 1.36e19 (= n_max of the budget block)
     assert 2.5e19 < protocol.density_at_omega_pe_dt(0.2, 0.7e-12) < 2.6e19
     hard = protocol.density_at_cells_per_debye(math.pi, 20e-6, 10.0)
@@ -363,10 +367,60 @@ def test_composed_protocol_with_field_keeps_dt_and_the_preflight_passes_the_laun
 
 
 def test_run_and_launch_guards(capsys):
-    assert ev_run.main(["launch"]) == 2
-    assert "REFUSED" in capsys.readouterr().err
+    # the preregistered launch needs --expect-commit (argparse) and refuses when HEAD is not that commit - before any file, lock or GPU is touched
+    with pytest.raises(SystemExit):
+        ev_run.main(["launch"])
+    assert ev_run.main(["launch", "--expect-commit", "0" * 40]) == 2
+    err = capsys.readouterr().err
+    assert "REFUSED" in err and "not the preregistration commit" in err
+    with pytest.raises(PIC2DValidationError, match="expect-commit"):
+        ev_run.launch("base", "20um", expect_commit="")
     assert ev_run.main(["run"]) == 2
     assert "allow-launch" in capsys.readouterr().err
+
+
+def test_launch_refuses_options_outside_the_launch_set_and_dirty_worktrees(monkeypatch):
+    head = ev_run.git("rev-parse", "HEAD")
+    monkeypatch.setattr(ev_run, "worktree_status", lambda cwd=None: [" M something.py"])
+    with pytest.raises(PIC2DValidationError, match="not clean"):
+        ev_run.launch("base", "20um", expect_commit=head[:12])
+    monkeypatch.setattr(ev_run, "worktree_status", lambda cwd=None: [])
+    with pytest.raises(PIC2DValidationError, match="launch set"):
+        ev_run.launch("bohm-0.4", "20um", expect_commit=head[:12])
+    with pytest.raises(PIC2DValidationError, match="launch set"):
+        ev_run.launch("base", "15um", expect_commit=head[:12])
+
+
+def test_shrunk_protocol_touches_only_cadences():
+    p, _ = protocol.build_protocol("base", "20um")
+    s = ev_run.shrunk_protocol(p, "shakedown")
+    assert s["status"] == "shakedown_non_evidentiary_shrunk_cadences" and s["experiment_id"] == p["experiment_id"] + "-shakedown"
+    num, snum = p["numerics"], s["numerics"]
+    assert snum["series_interval_steps"] == 200 and snum["checkpoint_every_steps"] == 4000 and snum["averaging_window_steps"] == 40000 and snum["frame_recorder"]["cadence_steps"] == 2000
+    assert snum["peak_debye_gate"]["window_steps"] == 40000 and s["stopping_rule"]["grid_heating_triad"]["residual_window_steps"] == 40000
+    for key in ("dt_s", "stability_limits", "stability_reference"):
+        assert snum[key] == num[key], key
+    assert snum["peak_debye_gate"]["max_cells_per_debye"] == num["peak_debye_gate"]["max_cells_per_debye"] and snum["peak_debye_gate"]["soft_cells_per_debye"] == num["peak_debye_gate"]["soft_cells_per_debye"]
+    for key in ("case", "operating_point", "geometry"):
+        assert json.dumps(s[key], sort_keys=True) == json.dumps(p[key], sort_keys=True), key
+    assert s["stopping_rule"]["wall_budget_seconds"] == p["stopping_rule"]["wall_budget_seconds"]
+
+
+def test_budget_basis_uses_the_measured_launch_box_rate_only_when_slower():
+    mapping = geometry.pic_mapping("channel")
+    cost = protocol.cost_row(mapping, dt_s=0.7e-12, macro_weight=82466.8, projected_total_m=12.0)
+    model_hours, model_basis = protocol.budget_basis_hours(cost, timing={})
+    assert model_basis["basis"].startswith("cost model") and abs(model_hours - cost["hours_to_3_transits_mps4"]) < 1e-9
+    faster_hours, faster_basis = protocol.budget_basis_hours(cost, timing={"ms_per_step_at_plateau_load": 0.5 * cost["ms_per_step_h100_mps4_per_process"], "concurrent_mps_clients": 3})
+    assert faster_basis["basis"].startswith("cost model") and faster_hours == model_hours and faster_basis["concurrent_mps_clients_at_measurement"] == 3
+    slower_hours, slower_basis = protocol.budget_basis_hours(cost, timing={"ms_per_step_at_plateau_load": 2.0 * cost["ms_per_step_h100_mps4_per_process"], "concurrent_mps_clients": 3})
+    assert slower_basis["basis"].startswith("measured") and slower_hours > 1.9 * model_hours
+    # timing_passed: the committed preflight must carry a passed >= 2000-step plateau-load timing
+    assert not preflight.timing_passed({"launch_box_timing": None})
+    assert not preflight.timing_passed({"launch_box_timing": {"passed": True, "timing_plateau_load": {"steps": 500}}})
+    assert preflight.timing_passed({"launch_box_timing": {"passed": True, "timing_plateau_load": {"steps": 2000}}})
+    with pytest.raises(ValueError):
+        preflight.gpu_timing(timing_steps=100)
 
 
 def test_sealed_protocols_equal_recomposition_when_present():

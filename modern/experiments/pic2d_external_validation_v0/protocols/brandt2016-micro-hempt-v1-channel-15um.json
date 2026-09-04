@@ -17,6 +17,7 @@
   "inverse_blocks_gb": 0.704863648,
   "ion_transit_note": "2.4 us x 14 mm / 24 mm (the measured reference residence scaled with the channel length); superseded by the measured N_i / L residence",
   "ion_transit_time_s": 1.3999999999999997e-06,
+  "launch_box_timing": null,
   "launches_ms": 1.01,
   "macro_weight": 82466.8,
   "macro_weight_parity": 5401.9,
@@ -44,7 +45,7 @@
    "source": "grid option 15um: see grid_argument",
    "target_cell_m": 1.5e-05
   },
-  "id": "brandt2016-micro-hempt-v1-channel-15um-w82466.8-ng2e20-static-inj1.8mA-1eV-v1.3-closure-v2.0.3-gates-draft",
+  "id": "brandt2016-micro-hempt-v1-channel-15um-w82466.8-ng2e20-static-inj1.8mA-1eV-v1.3-closure-v2.0.3-gates",
   "macro_weight": 82466.8,
   "macro_weight_policy": {
    "channel_volume_m3": 9.896016858807848e-08,
@@ -65,12 +66,28 @@
  },
  "claim_boundary": {
   "comparison": "cross-model (claim ceiling CROSS_MODEL_AGREEMENT); every row conditional on the unpropagated inputs (B scale, neutral profile, effective source); opens no physics level",
-  "draft": "DRAFT protocol composed on the steady-state v4 template for a code-to-code comparison with Brandt et al. 2016; NOT preregistered; NOT launched; the coordinator launches from a preregistration commit",
-  "geometry_approximation": "approximations A1-A9 of experiments/pic2d_external_validation_v0/geometry.py; field gates G1-G7 of fields.py"
+  "geometry_approximation": "approximations A1-A9 of experiments/pic2d_external_validation_v0/geometry.py; field gates G1-G7 of fields.py",
+  "preregistration": "PREREGISTERED protocol composed on the steady-state v4 template for a code-to-code comparison with Brandt et al. 2016; ONE execution from the preregistration commit (run.py launch --expect-commit, tools/cloud/schedule.py); the acceptance, the comparison spec and the inconclusiveness conditions are frozen here"
  },
- "classification": "axisymmetric_electrostatic_pic_mcc_code_to_code_comparison_channel_only_static_neutrals_v1_3_closure_v2_0_3_gates_not_validated_draft",
+ "classification": "axisymmetric_electrostatic_pic_mcc_code_to_code_comparison_channel_only_static_neutrals_v1_3_closure_v2_0_3_gates_not_validated",
  "cross_sections": "modern/spec/pic2d/xenon-cross-sections-v1.json",
  "design_id": "brandt2016-micro-hempt-v1",
+ "execution": {
+  "concurrency": "CUDA MPS (nvidia-cuda-mps-control -d; CUDA_MPS_PIPE_DIRECTORY=/tmp/nvidia-mps, CUDA_MPS_LOG_DIRECTORY=/tmp/nvidia-log): this run takes ONE of the four MPS slots of tools/cloud/jobs.yaml (slots_per_gpu 4) beside the preregistered design mini-sweep v1 runs (291a9227) that are still executing at launch; benchmark anchor 3.37 ms/step alone -> 8.71 ms/step per process at N = 4 for the v4 configuration (aggregate 1.54x)",
+  "determinism": "MPS does not change a process's own kernel order: the mini-sweep's replay on this box (mps-replay.json, 291a9227) showed the physics state bitwise between concurrent MPS processes and solo processes, float-atomic diagnostic accumulators at <= 2.2e-13 - the same pattern solo-vs-solo",
+  "gpu": "NVIDIA H100 80GB HBM3",
+  "instance": "Lambda gpu_1x_h100_sxm5 (us-southeast-1), ubuntu@68.209.75.2, driver 580.105.08 (CUDA 13.0), 26 vCPU, 221 GiB RAM",
+  "launch_box_timing": null,
+  "launch_discipline": "run.py launch --expect-commit <prereg sha> --require-mps: HEAD == prereg commit, clean worktree, protocol.json and protocols/<option>.json blobs == HEAD, recomposed protocol == sealed file byte for byte, preflight-channel-20um.json (whole set passed + launch-box GPU timing passed) and shakedown-channel-20um.json (passed) present, O_EXCL execution-lock.json in results/<option>/, MPS pipe directory present",
+  "one_execution": "ONE detached launch from a worktree at the preregistration commit; a wall-budget stop may be resumed (--resume: new session, same identity, disclosed in run_state.sessions); no parameter change after the freeze; a non-ignition or a gate stop is a recorded outcome (comparison-spec inconclusive_conditions)",
+  "provenance_caveats": [
+   "the runner's gpu_utilisation_percent_samples (nvidia-smi, 300 s) read the WHOLE GPU under MPS - shared-GPU readings, not per process",
+   "ms/step per process under MPS depends on how many slots are busy: the measured launch-box rate below was taken with the sweep runs active and the run speeds up as they finish; wall-clock projections are per-slot upper bounds, the budget is a cap, not a cost",
+   "same-seed replay across the RTX 5090 (sm_120) and the H100 (sm_90) is numerical, never bitwise (tools/cloud/PLAN.md s.6)"
+  ],
+  "scheduler": "modern/tools/cloud/schedule.py (tmux, detached worktree at the preregistration commit, per-job results directory, Warp cuda:0 UUID cross-check, prereg ancestor + byte-identical protocol checks) with slots_per_gpu 4 and the MPS variables exported; job `ext-val-v0-channel-20um` in tools/cloud/jobs.yaml",
+  "software": "Python 3.12.14, warp-lang 1.14.0 (PyPI CUDA 12.9 build, sm_90 JIT), numpy 2.5.2 (scipy-openblas 0.3.34 Haswell DYNAMIC_ARCH), Ubuntu 22.04"
+ },
  "experiment_id": "pic2d-external-validation-v0",
  "field_binding": "modern/experiments/pic2d_external_validation_v0/fields/brandt2016-micro-hempt-v1/binding.json",
  "field_source": "external-validation-v0 binding: direct node evaluation of the reconstructed micro-HEMPT's padded level-0 material-aware P2 checkpoint at z_FEM = z + 2.5 mm, scaled to the published axis anchor (source_strength_scale, gate G1)",
@@ -196,7 +213,7 @@
   "role": "published PIC-MCC model output (code-to-code); not hardware",
   "thesis_urn": "urn:nbn:de:gbv:8-diss-224024"
  },
- "schema_version": "cft.pic2d.external-validation-v0.run-protocol/0.1.0-draft",
+ "schema_version": "cft.pic2d.external-validation-v0.run-protocol/1.0.0",
  "simplifications": [
   "no ion-neutral collisions (elastic or charge exchange)",
   "electron-neutral: isotropic elastic without the 2 m_e/M energy loss, one lumped 8.32 eV excitation, single ionisation with Vahedi-Surendra secondary energy and isotropic emission",
@@ -215,9 +232,9 @@
   "no anomalous transport (primary) / isotropic Bohm scattering at alpha 0.4 (variant) versus the reference's perpendicular-rotation D_perp = 0.4 k T_e / e B; no SEE versus its 50 % / 90 % model",
   "reconstructed field: level-0 material-aware P2 of the thesis' magnet stack with approximations A1-A8, scaled to the published axis anchor; not P2-qualified",
   "one grid (the published 20 um) and one seed: the grid caveat is carried, not measured; the 15 um sibling and a seed replicate are the declared follow-ups",
-  "DRAFT: not preregistered, not launched; a code-to-code comparison of two development models, not a validation against hardware"
+  "one preregistered execution on one of four CUDA-MPS slots of a shared H100 (the design mini-sweep runs beside it): a code-to-code comparison of two development models, not a validation against hardware"
  ],
- "status": "DRAFT_NOT_PREREGISTERED_NOT_LAUNCHED_external_validation_v0_code_to_code_brandt2016",
+ "status": "preregistered_external_validation_v0_channel_20um_h100_mps4_code_to_code_brandt2016_not_validated",
  "stopping_rule": {
   "acceptance": {
    "a_plateau": "stop_reason == plateau_reached_after_min_transit_times under stopping_rule.plateau (>= 3 x 1.40 us, drifts of I_d and N_e < 5 %, triad soft, peak-Debye soft 2.5)",
@@ -247,7 +264,14 @@
   "plateau": "relative drift < 5 % over the trailing 20 % of the elapsed simulated time for the discharge current AND the plasma electron count (linear fit, drift = slope x window / |mean|; the neutral density is static and drops out of the rule), evaluated at every checkpoint; may only be declared after >= 3 ion transit times (3 x 1.40 us = 4.20 us = 8,400,000 steps); additionally the grid-heating triad must be inside its soft bounds AND the window-mode peak-Debye soft margin must hold (<= 2.5) - the ss-v4 rule verbatim",
   "plateau_threshold": 0.05,
   "plateau_window_fraction": 0.2,
-  "wall_budget_note": "1.5 x the projected wall to 3 transits at one of four H100 CUDA-MPS slots (46.3 h at 19.8 ms/step; 8.40 M steps; solo-H100 equivalent 18.0 h), rounded up to 10 min; cumulative over resumes. The reference's 76 us would cost 837 h at this rate - not budgeted; the plateau rule decides",
+  "wall_budget_basis": {
+   "basis": "cost model (H100 MPS-4 anchor scaled by nodes + particles)",
+   "concurrent_mps_clients_at_measurement": null,
+   "cost_model_ms_per_step": 19.795253050241538,
+   "measured_ms_per_step_at_plateau_load": null,
+   "ms_per_step": 19.795253050241538
+  },
+  "wall_budget_note": "1.5 x the projected wall to 3 transits at one of four H100 CUDA-MPS slots (46.3 h at 19.8 ms/step, basis 'cost model (H100 MPS-4 anchor scaled by nodes + particles)'; cost model 46.3 h at 19.8 ms/step; 8.40 M steps; solo-H100 equivalent 18.0 h), rounded up to 10 min; cumulative over resumes. The reference's 76 us would cost 837 h at this rate - not budgeted; the plateau rule decides",
   "wall_budget_seconds": 250200.0
  },
  "template_protocol": {

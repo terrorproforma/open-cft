@@ -139,6 +139,19 @@
    "transit_s": 1.3999999999999997e-06
   }
  },
+ "execution": {
+  "concurrency": "CUDA MPS (nvidia-cuda-mps-control -d; CUDA_MPS_PIPE_DIRECTORY=/tmp/nvidia-mps, CUDA_MPS_LOG_DIRECTORY=/tmp/nvidia-log): this run takes ONE of the four MPS slots of tools/cloud/jobs.yaml (slots_per_gpu 4) beside the preregistered design mini-sweep v1 runs (291a9227) that are still executing at launch; benchmark anchor 3.37 ms/step alone -> 8.71 ms/step per process at N = 4 for the v4 configuration (aggregate 1.54x)",
+  "determinism": "MPS does not change a process's own kernel order: the mini-sweep's replay on this box (mps-replay.json, 291a9227) showed the physics state bitwise between concurrent MPS processes and solo processes, float-atomic diagnostic accumulators at <= 2.2e-13 - the same pattern solo-vs-solo",
+  "gpu": "NVIDIA H100 80GB HBM3",
+  "instance": "Lambda gpu_1x_h100_sxm5 (us-southeast-1), ubuntu@68.209.75.2, driver 580.105.08 (CUDA 13.0), 26 vCPU, 221 GiB RAM",
+  "launch_box_timing": null,
+  "provenance_caveats": [
+   "the runner's gpu_utilisation_percent_samples (nvidia-smi, 300 s) read the WHOLE GPU under MPS - shared-GPU readings, not per process",
+   "ms/step per process under MPS depends on how many slots are busy: the measured launch-box rate below was taken with the sweep runs active and the run speeds up as they finish; wall-clock projections are per-slot upper bounds, the budget is a cap, not a cost",
+   "same-seed replay across the RTX 5090 (sm_120) and the H100 (sm_90) is numerical, never bitwise (tools/cloud/PLAN.md s.6)"
+  ],
+  "software": "Python 3.12.14, warp-lang 1.14.0 (PyPI CUDA 12.9 build, sm_90 JIT), numpy 2.5.2 (scipy-openblas 0.3.34 Haswell DYNAMIC_ARCH), Ubuntu 22.04"
+ },
  "experiment_id": "pic2d-external-validation-v0",
  "field_binding_summary": {
   "all_passed": true,
@@ -764,6 +777,63 @@
   }
  },
  "preregistration": {
+  "decisions_vs_draft": [
+   {
+    "draft": "H100 MPS-4 assumed for the cost row only; no GPU recorded in the run protocol",
+    "item": "launch box / GPU model",
+    "preregistered": "NVIDIA H100 80GB HBM3 (Lambda gpu_1x_h100_sxm5, ubuntu@68.209.75.2, driver 580.105.08) under CUDA MPS, ONE of four slots, recorded in every sealed run protocol (`execution`) with the launch discipline and the scheduler job",
+    "why": "the mini-sweep record (291a9227) established that the GPU model, the MPS slot and the shared-GPU provenance caveats belong in the preregistration"
+   },
+   {
+    "draft": "launch when design 047's slot frees (~01:00 AEST 5 Sep) or solo after the sweep",
+    "item": "slot disclosure",
+    "preregistered": "the run enters the slot design 056 freed when its run stopped on the grid-heating triad gate at 10:52 UTC 2026-09-04 (omega_pe dt drift 0.283 > 0.25 at 2.07 transits; the sweep is NOT assessed here); three sweep runs (reference, 047, 009) are active at launch and finish during this run, so the per-process rate rises from the measured MPS-4 value toward the solo rate",
+    "why": "a slot became free earlier than planned; the launch is still a four-client configuration (never a fifth client)"
+   },
+   {
+    "draft": "a labelled shakedown on the launch box before the freeze (no slot named)",
+    "item": "shakedown GPU use",
+    "preregistered": "the shakedown ran as the FOURTH MPS client (056's freed slot) for ~10-20 min while three sweep runs executed; disclosed in the launch log",
+    "why": "the sweep's own preregistration budgets are MPS-4 upper bounds, so a fourth client costs them nothing beyond their declared configuration"
+   },
+   {
+    "draft": "46.0 h = 1.5 x the cost-model MPS-4 projection (30.6 h at 18.3 ms/step)",
+    "item": "wall budget",
+    "preregistered": "1.5 x max(cost-model MPS-4 rate, MEASURED launch-box plateau-load rate) rounded up to 10 min (`stopping_rule.wall_budget_basis` names which one bound); the measured rate comes from `preflight --gpu-timing` (>= 2000 production steps at the seed load and at the projected 12 M-particle plateau load)",
+    "why": "a preflight timing at production load beats a cost-table extrapolation (v2.0.3 lesson); the measured rate may only raise the budget, never lower it"
+   },
+   {
+    "draft": "20260903 (the template's)",
+    "item": "seed",
+    "preregistered": "20260903 unchanged",
+    "why": "one seed; the seed replicate is a declared follow-up"
+   },
+   {
+    "draft": "ON, 40 000 steps = 28 ns",
+    "item": "frames",
+    "preregistered": "unchanged",
+    "why": "the qualitative rows of the comparison spec read the frames"
+   },
+   {
+    "draft": "v2.0.3 verbatim",
+    "item": "gates",
+    "preregistered": "unchanged",
+    "why": "the accepted gate set; the grid argument was made against them"
+   },
+   {
+    "draft": "12 rows (10 channel-comparable), tolerances 20 % / +-5 V / 0.3 dex, u_D + u_num predicted, u_input declared not propagated",
+    "item": "comparison spec",
+    "preregistered": "unchanged (comparison-spec.json byte-identical to the draft, see preregistration.records)",
+    "why": "the estimands and tolerances were fixed before any run"
+   },
+   {
+    "draft": "`run.py launch` REFUSED unconditionally",
+    "item": "launch stages",
+    "preregistered": "`launch --expect-commit --require-mps` with the mini-sweep discipline; `shakedown` writes shakedown-channel-20um.json (run -> assess -> compare -> re-finalize); `preflight --gpu-timing` records the launch-box rate",
+    "why": "the v4 / mini-sweep preregistration discipline"
+   }
+  ],
+  "launch_discipline": "HEAD == --expect-commit; clean worktree; protocol.json and the sealed run protocol equal HEAD's blobs; the recomposition on this platform equals the sealed bytes; the preflight passed every option and its launch-box timing passed (budget covers the measured 3-transit wall); the shakedown passed; CUDA_MPS_PIPE_DIRECTORY present; O_EXCL execution-lock.json in results/channel-20um/",
   "launch_set": [
    "channel-20um"
   ],
@@ -782,14 +852,15 @@
     "bytes": 38018,
     "path": "modern/experiments/pic2d_external_validation_v0/preflight-channel-20um.json",
     "sha256": "3312ca729e489e53e3e782da188beb53a70de2a539bcad2cdb4049a4bd0c6911"
-   }
+   },
+   "shakedown": null
   },
-  "sealed_run_protocols_draft": {
-   "modern/experiments/pic2d_external_validation_v0/protocols/brandt2016-micro-hempt-v1-channel-15um.json": "77afa105c8a05a8c18a762b68dbcc206197b6c8e64a46c0187df64abf537a436",
-   "modern/experiments/pic2d_external_validation_v0/protocols/brandt2016-micro-hempt-v1-channel-20um-bohm-0.4.json": "23c8392a773b0ffbdce37e3629c00d1acacd416d2722aaad4d321130b7f1b0e8",
-   "modern/experiments/pic2d_external_validation_v0/protocols/brandt2016-micro-hempt-v1-channel-20um.json": "41dbe84e0eee709ffd72c0a49fa47fa9b30e3af14ca4a7a40d6fede8666b25a1"
+  "sealed_run_protocols": {
+   "modern/experiments/pic2d_external_validation_v0/protocols/brandt2016-micro-hempt-v1-channel-15um.json": "f84f4b2c2848921899e3dc219063c9c0199c207d5d078932f296fe612037ce7e",
+   "modern/experiments/pic2d_external_validation_v0/protocols/brandt2016-micro-hempt-v1-channel-20um-bohm-0.4.json": "317fb46ce90a19dfe18e35d9d9e55cec3287466e00b94c715e737ca522b99db7",
+   "modern/experiments/pic2d_external_validation_v0/protocols/brandt2016-micro-hempt-v1-channel-20um.json": "9554ba4ea4b6c515aec7726d9acbe5205305d7e135f62da428d5d803adbb5f90"
   },
-  "state": "NOT preregistered. This file and protocols/*.json are a DRAFT; nothing is hash-bound to a run. The coordinator preregisters and launches from a commit after the preflight and this record are reviewed; `run.py launch` refuses until then"
+  "state": "PREREGISTERED: the launch set is sealed by this file (sha256 of every run protocol under protocols/, of the whole-set preflight with the launch-box GPU timing, of the shakedown record, of the comparison spec and of the field binding). ONE execution of `channel-20um` from the commit that carries this file, through `run.py launch --expect-commit <sha> --require-mps` (tools/cloud/schedule.py job `ext-val-v0-channel-20um`); the sensitivity variant and the 15 um follow-up are sealed, not launched"
  },
  "primary": {
   "grid": "20um",
@@ -1292,8 +1363,9 @@
   },
   "why_this_reference": "the only published HEMP PIC-MCC case near our scale (14 x 1.5 mm channel vs our 24 x 2 mm; 400 V vs 300 V; mA-class) whose full text is open access and which states its operating point, grid, time step, super-particle ratio, boundary conditions and SCALAR results in the text; the same code family (Greifswald PIC-MCC) as every other HEMP PIC paper; the companion thesis publishes the magnet stack so the field is reconstructable without author contact; and the case has a second published run (thesis chapter 7) that bounds the reference's own reproducibility. The cost of the case at device scale is affordable (section 'protocol')."
  },
- "schema_version": "cft.pic2d.external-validation-v0.protocol/0.1.0-draft",
- "status": "DRAFT_NOT_PREREGISTERED_NOT_LAUNCHED_external_validation_v0_code_to_code_brandt2016",
+ "schema_version": "cft.pic2d.external-validation-v0.protocol/1.0.0",
+ "shakedown_summary": null,
+ "status": "preregistered_external_validation_v0_channel_20um_h100_mps4_code_to_code_brandt2016_not_validated",
  "variants": {
   "base": {
    "anomalous_alpha": null,

@@ -1,4 +1,4 @@
-"""External validation v0 (DRAFT) - runner stages.
+"""External validation v0 - runner stages (code-to-code vs Brandt 2016; preregistered option ``channel-20um`` for the Lambda H100).
 
 From ``modern/`` (``$env:PYTHONPATH="$PWD\\src;$PWD"`` / ``PYTHONPATH=src:.``)::
 
@@ -7,16 +7,22 @@ From ``modern/`` (``$env:PYTHONPATH="$PWD\\src;$PWD"`` / ``PYTHONPATH=src:.``)::
     python -m experiments.pic2d_external_validation_v0.run regate                       # recompute the field gates from the bound checkpoint (no solve)
     python -m experiments.pic2d_external_validation_v0.run protocol [--variant V] [--grid G] [--with-field]   # print a composed run protocol
     python -m experiments.pic2d_external_validation_v0.run comparison                   # write comparison-spec.json (validated)
-    python -m experiments.pic2d_external_validation_v0.run compose                      # write protocols/*.json (draft, both variants) + protocol.json
-    python -m experiments.pic2d_external_validation_v0.run preflight                    # whole-set preflight -> preflight-channel-20um.json
+    python -m experiments.pic2d_external_validation_v0.run compose                      # seal protocols/*.json (primary, sensitivity, 15 um) + protocol.json
+    python -m experiments.pic2d_external_validation_v0.run preflight [--gpu-timing]     # whole-set preflight (+ launch-box GPU timing) -> preflight-channel-20um.json
     python -m experiments.pic2d_external_validation_v0.run cost                         # cost table (20 / 33 / 15 um, plume box)
-    python -m experiments.pic2d_external_validation_v0.run run --allow-launch ...       # labelled development / shakedown run through the shared runner (never evidence)
-    python -m experiments.pic2d_external_validation_v0.run launch ...                   # REFUSES: nothing here is preregistered
-    python -m experiments.pic2d_external_validation_v0.run assess|compare --results-dir DIR   # after a run: acceptance verdict; the comparison rows with E, u_val, statement
+    python -m experiments.pic2d_external_validation_v0.run shakedown                    # GPU: shrunk-cadence run -> assess -> compare -> re-finalize -> shakedown-channel-20um.json
+    python -m experiments.pic2d_external_validation_v0.run launch --expect-commit SHA [--require-mps] [--resume]   # PREREGISTERED execution (one)
+    python -m experiments.pic2d_external_validation_v0.run run --allow-launch ...       # labelled development run through the shared runner (never evidence)
+    python -m experiments.pic2d_external_validation_v0.run status|finalize|assess|compare [--results-dir DIR]
 
-``run`` steps with the shared steady-state runner (``experiments.pic2d_cft_steady_state_v1.run``) under the composed protocol with the reconstructed
-node field passed in directly; results go to ``results/<option>/``.  ``compare`` evaluates every channel-comparable row of the comparison spec with the
-run's trailing-window quantities (S) and writes ``comparison.json`` next to the run's ``summary.json``.
+``launch`` and ``run`` step with the shared steady-state runner (``experiments.pic2d_cft_steady_state_v1.run``) under the composed protocol with the
+reconstructed node field passed in directly; results go to ``results/<option>/``.  ``compare`` evaluates every channel-comparable row of the
+comparison spec with the run's trailing-window quantities (S) and writes ``comparison.json`` next to the run's ``summary.json``.
+
+Preregistration discipline of ``launch`` (the mini-sweep's, per option): HEAD == --expect-commit, clean worktree, the experiment ``protocol.json``
+and the sealed ``protocols/<option>.json`` blobs equal HEAD's, the recomposed protocol equals the sealed file byte for byte, the whole-set
+preflight (with a passed launch-box GPU timing) and the shakedown record present and passed, ``--require-mps`` -> the CUDA MPS pipe directory
+must exist, O_EXCL ``execution-lock.json`` in the results directory (``--resume`` continues only under the same commit + protocol).
 """
 
 from __future__ import annotations
@@ -27,7 +33,12 @@ import hashlib
 import itertools
 import json
 import math
+import os
+import shutil
+import socket
+import subprocess
 import sys
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -52,14 +63,49 @@ HERE = Path(__file__).resolve().parent
 MODERN = HERE.parents[1]
 REPOSITORY_ROOT = MODERN.parent
 RESULTS_ROOT = HERE / "results"
-ASSESSMENT_SCHEMA = "cft.pic2d.external-validation-v0.assessment/0.1.0-draft"
-COMPARISON_RESULT_SCHEMA = "cft.pic2d.external-validation-v0.comparison-result/0.1.0-draft"
+ASSESSMENT_SCHEMA = "cft.pic2d.external-validation-v0.assessment/1.0.0"
+COMPARISON_RESULT_SCHEMA = "cft.pic2d.external-validation-v0.comparison-result/1.0.0"
+SHAKEDOWN_SCHEMA = "cft.pic2d.external-validation-v0.shakedown/1.0.0"
+LOCK_NAME = "execution-lock.json"
+LOCK_SCHEMA = "cft.pic2d.external-validation-v0.execution-lock/1.0.0"
 SHRUNK_CADENCES = {"series_interval_steps": 200, "device_sync_steps": 200, "checkpoint_every_steps": 4000, "averaging_window_steps": 40000, "frame_cadence_steps": 2000,
                    "peak_debye_window_steps": 40000, "peak_debye_window_snapshot_steps": 4000, "residual_window_steps": 40000}
+SHAKEDOWN_MAX_STEPS = 100000
 
 
 def results_dir(variant: str, grid: str) -> Path:
     return RESULTS_ROOT / option_tag(variant, grid)
+
+
+def shakedown_path(variant: str = protocol_module.PRIMARY_VARIANT, grid: str = protocol_module.PRIMARY_GRID) -> Path:
+    return HERE / f"shakedown-{option_tag(variant, grid)}.json"
+
+
+def git(*args: str, cwd: Path = REPOSITORY_ROOT) -> str:
+    return subprocess.run(["git", *args], cwd=str(cwd), check=True, capture_output=True, text=True, encoding="utf-8").stdout.strip()
+
+
+def _gpu_inventory() -> list[str] | None:
+    try:
+        out = subprocess.run(["nvidia-smi", "--query-gpu=name,uuid,driver_version,memory.total", "--format=csv,noheader"], capture_output=True, text=True, timeout=10, check=False)
+    except Exception:  # noqa: BLE001
+        return None
+    return [line.strip() for line in out.stdout.splitlines() if line.strip()] if out.returncode == 0 else None
+
+
+def _write_json(path: Path, value: Any) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(json.dumps(value, indent=1, sort_keys=True, allow_nan=False, default=_plain).encode("utf-8") + b"\n")
+
+
+def _plain(value: Any) -> Any:
+    if isinstance(value, np.generic):
+        return value.item()
+    if isinstance(value, np.ndarray):
+        return value.tolist()
+    if isinstance(value, Path):
+        return str(value)
+    raise TypeError(f"not JSON serialisable: {type(value).__name__}")
 
 
 def utc_now() -> str:
@@ -142,18 +188,34 @@ def _binding_summary() -> dict[str, Any] | None:
             "no_ring_bracket": (binding.get("sensitivity_no_rings") or {}).get("bracket"), "genealogy_entries": len(gates.get("genealogy", []))}
 
 
+def _shakedown_summary() -> dict[str, Any] | None:
+    path = shakedown_path()
+    if not path.is_file():
+        return None
+    record = json.loads(path.read_text(encoding="utf-8"))
+    keys = ("utc", "git_head", "host", "option", "steps_completed", "stop_reason", "ms_per_step", "frames", "concurrent_mps_clients", "passed", "assessment", "comparison", "refinalize",
+            "gate_not_inert_check", "non_evidentiary")
+    return {k: record.get(k) for k in keys}
+
+
 def command_compose(args: argparse.Namespace) -> int:
     protocol_module.write_comparison_spec()
     sealed = protocol_module.compose_all()
-    out = protocol_module.write_experiment_protocol(preflight_summary=_preflight_summary(), sealed=sealed, field_binding_summary=_binding_summary())
-    print(f"[compose] {len(sealed)} draft run protocols under {protocol_module.PROTOCOLS_DIR}; experiment protocol -> {out} (sha256 {_sha256(out)[:12]})")
+    out = protocol_module.write_experiment_protocol(preflight_summary=_preflight_summary(), sealed=sealed, field_binding_summary=_binding_summary(), shakedown_summary=_shakedown_summary())
+    print(f"[compose] {len(sealed)} run protocols sealed under {protocol_module.PROTOCOLS_DIR}; experiment protocol -> {out} (sha256 {_sha256(out)[:12]})")
     return 0
 
 
 def command_preflight(args: argparse.Namespace) -> int:
-    path, report = preflight_module.write_preflight()
-    print(f"[preflight] all_passed={report['all_passed']} (launch set {report['launch_set_passed']}) over {report['option_count']} options -> {path}")
-    return 0 if report["all_passed"] else 1
+    timing = None
+    if args.gpu_timing:
+        timing = preflight_module.gpu_timing(backend=args.backend, timing_steps=args.timing_steps)
+    path, report = preflight_module.write_preflight(gpu_timing_record=timing)
+    print(f"[preflight] all_passed={report['all_passed']} (launch set {report['launch_set_passed']}) over {report['option_count']} options"
+          + (f"; launch-box timing {'PASS' if timing['passed'] else 'FAIL'}: seed {timing['timing_seed_load']['ms_per_step']:.2f} / plateau load {timing['timing_plateau_load']['ms_per_step']:.2f} ms/step "
+             f"with {timing['concurrent_mps_clients']} other MPS client(s)" if timing else "")
+          + f" -> {path}")
+    return 0 if report["all_passed"] and (timing is None or timing["passed"]) else 1
 
 
 def command_cost(args: argparse.Namespace) -> int:
@@ -217,10 +279,230 @@ def command_run(args: argparse.Namespace) -> int:
     return 0
 
 
+# -- shakedown ---------------------------------------------------------------------------------------------------------------------------
+
+
+def command_shakedown(args: argparse.Namespace) -> int:
+    """The primary option on its real field at shrunk cadences: run -> assess -> compare -> re-finalize path; NON-EVIDENTIARY record."""
+
+    runner = _runner()
+    protocol, _mapping, field_map = compose_run_protocol(args.variant, args.grid)
+    p = shrunk_protocol(protocol, "shakedown")
+    results = HERE / f"results-shakedown-{option_tag(args.variant, args.grid)}"
+    if results.exists():
+        shutil.rmtree(results)
+    results.mkdir(parents=True)
+    protocol_path = results / "protocol-shakedown.json"
+    protocol_path.write_bytes(protocol_bytes(p))
+    clients_before = preflight_module.compute_apps()
+    t0 = time.perf_counter()
+    summary_path = runner.run_steady_state(p, results, backend=args.backend, field_map=field_map, max_steps=args.max_steps, protocol_path=protocol_path)
+    run_seconds = time.perf_counter() - t0
+    summary = json.loads(summary_path.read_text(encoding="utf-8"))
+    assessment = assess_run(p, results)
+    comparison_record = compare_run(results, p)
+    assessment_sha, comparison_sha = _sha256(results / "assessment.json"), _sha256(results / "comparison.json")
+    # LAST: the externally-stopped path (re-finalize from the checkpoint) - it DOWNGRADES the maps to instantaneous ones by design, so it runs after assess / compare
+    t1 = time.perf_counter()
+    runner.finalize(p, results, backend=args.backend, field_map=field_map, stop_reason="shakedown_refinalize", protocol_path=protocol_path, allow_refinalize=True)
+    refinalize_seconds = time.perf_counter() - t1
+    refinalized = json.loads(summary_path.read_text(encoding="utf-8"))
+    samples = [s for s in runner._read_jsonl(results / "status.jsonl") if "event" not in s]
+    windows = [s["peak_node"]["window"] for s in samples if (s.get("peak_node") or {}).get("window") is not None]
+    enforced = [w for w in windows if w.get("gate_enforced")]
+    triads = [s["grid_heating_triad"] for s in samples if s.get("grid_heating_triad") is not None]
+    complete = [t for t in triads if t.get("windowed_energy_residual_window_complete")]
+    compared = [r for r in comparison_record["rows"] if r.get("compared")]
+    own = os.getpid()
+    others = [a for a in clients_before if a["pid"] != own and a["used_memory_mib"] > 200.0]
+    record = {
+        "schema_version": SHAKEDOWN_SCHEMA, "utc": utc_now(), "git_head": runner.git_head(), "non_evidentiary": True, "option": option_tag(args.variant, args.grid), "host": socket.gethostname(),
+        "gpu": _gpu_inventory(), "cuda_mps_pipe_directory": os.environ.get("CUDA_MPS_PIPE_DIRECTORY"), "concurrent_mps_clients": len(others), "concurrent_mps_client_pids": [a["pid"] for a in others],
+        "overrides": {**SHRUNK_CADENCES, "max_steps": args.max_steps}, "results_dir": results.name, "run_seconds": run_seconds,
+        "steps_completed": summary["steps_completed"], "stop_reason": summary["stop_reason"], "ms_per_step": summary["ms_per_step_this_session"], "final_counts": summary["final_counts"],
+        "frames": summary["artifacts"]["frames"]["count"] if summary["artifacts"].get("frames") else 0,
+        "field": {"sha256": field_map.sha256, "source_sha256": field_map.source_sha256, "max_b_t": field_map.max_b_t, "kind": field_map.provenance.get("kind")},
+        "protocol": {"case_id": p["case"]["id"], "cells": [p["case"]["radial_cells"], p["case"]["axial_cells"]], "macro_weight": p["case"]["macro_weight"], "dt_s": p["numerics"]["dt_s"],
+                     "wall_budget_seconds": protocol["stopping_rule"]["wall_budget_seconds"], "model_version": p.get("model_version"), "static_neutrals": p["operating_point"].get("neutral_inventory") is None},
+        "peak_debye_window": {"records": len(windows), "enforced_records": len(enforced), "last": windows[-1] if windows else None,
+                              "max_cells_per_debye_enforced": max((w["cells_per_debye"] for w in enforced), default=None)},
+        "windowed_residual": {"records_with_complete_window": len(complete),
+                              "last": None if not complete else {k: complete[-1][k] for k in complete[-1] if k.startswith("windowed") or k == "energy_residual_over_electrode_work"}},
+        "plateau_keys": sorted(summary["plateau"]) if summary.get("plateau") else None,
+        "summary_keys_present": {key: (summary.get(key) is not None) for key in ("plateau", "grid_heating_triad", "peak_node_debye", "neutral_inventory", "ledger", "window_currents_a")},
+        "assessment": {k: assessment[k] for k in ("verdict", "a_plateau", "b_residual_power")},
+        "comparison": {"rows_compared": len(compared), "rows_not_compared": [{"quantity_id": r["quantity_id"], "reason": r.get("reason")} for r in comparison_record["rows"] if not r.get("compared")],
+                       "verdicts": sorted({r["verdict"] for r in compared}), "s_values": comparison_record["s_values"], "quotable": comparison_record["quotable"],
+                       "note": "non-evidentiary numbers of a 0.07 us transient: the stage is exercised, the values mean nothing"},
+        "refinalize": {"seconds": refinalize_seconds, "stop_reason_after": refinalized.get("stop_reason"), "maps_kind_after": refinalized.get("maps_kind"),
+                       "maps_downgraded_to_instantaneous_as_designed": refinalized.get("maps_kind") == "instantaneous_checkpoint", "ran_after_assess_and_compare": True,
+                       "assessment_sha256_before": assessment_sha, "comparison_sha256_before": comparison_sha},
+        "artifacts": {k: summary["artifacts"][k] for k in ("maps_npz_sha256", "series_npz_sha256")},
+        "gate_not_inert_check": {"peak_window_enforced_at_least_once": bool(enforced), "peak_window_resolved_nodes_last": windows[-1].get("resolved_nodes") if windows else None,
+                                 "residual_window_completed_at_least_once": bool(complete)},
+    }
+    record["passed"] = bool(summary["stop_reason"] == "target_steps_reached" and summary["steps_completed"] == args.max_steps and enforced and complete and len(compared) >= 8
+                            and record["refinalize"]["maps_downgraded_to_instantaneous_as_designed"])
+    out = Path(args.output) if args.output else shakedown_path(args.variant, args.grid)
+    _write_json(out, record)
+    print(f"[shakedown] {record['option']}: {summary['steps_completed']} steps, {summary['stop_reason']}, {summary['ms_per_step_this_session']:.2f} ms/step with {len(others)} other MPS client(s), "
+          f"{record['frames']} frames, peak window enforced in {len(enforced)}/{len(windows)} records (max {record['peak_debye_window']['max_cells_per_debye_enforced']}), residual window complete in "
+          f"{len(complete)} records; assessment {assessment['verdict']}; {len(compared)} comparison rows formed; refinalize ok; {'PASS' if record['passed'] else 'FAIL'}; written {out}")
+    return 0 if record["passed"] else 1
+
+
+# -- preregistered launch -------------------------------------------------------------------------------------------------------------------
+
+
+def worktree_status(cwd: Path = REPOSITORY_ROOT) -> list[str]:
+    return [line for line in git("status", "--porcelain", "--untracked-files=normal", cwd=cwd).splitlines() if line.strip()]
+
+
+def acquire_lock(results: Path, payload: dict[str, Any]) -> Path:
+    """O_EXCL canonical lock in the results directory; refuses to overwrite (same-attempt / different-attempt classified)."""
+
+    from cft_revival.orbit_mc.artifacts import canonical_bytes
+    from cft_revival.pic2d.models import PIC2DValidationError
+
+    results.mkdir(parents=True, exist_ok=True)
+    path = results / LOCK_NAME
+    data = canonical_bytes(payload) + b"\n"
+    try:
+        fd = os.open(str(path), os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o444)
+    except FileExistsError:
+        existing = json.loads(path.read_text(encoding="utf-8"))
+        same = all(existing.get(k) == payload.get(k) for k in ("experiment_id", "option", "commit", "protocol_sha256"))
+        raise PIC2DValidationError(f"execution lock already exists at {path} ({'same-attempt' if same else 'different-attempt'}: commit {existing.get('commit', '?')[:12]}, "
+                                   f"acquired {existing.get('acquired_at_utc')}); refusing to launch")
+    with os.fdopen(fd, "wb") as handle:
+        handle.write(data)
+        handle.flush()
+        os.fsync(handle.fileno())
+    return path
+
+
+def _blob_matches_head(path: Path) -> bool:
+    relative = path.relative_to(REPOSITORY_ROOT).as_posix()
+    return git("rev-parse", f"HEAD:{relative}") == git("hash-object", "--", str(path))
+
+
+def launch(variant: str, grid: str, *, expect_commit: str, backend: str = "warp-cuda", resume: bool = False, allow_dirty: bool = False, require_mps: bool = False,
+           wall_budget_seconds: float | None = None, log=lambda text: print(text, flush=True)) -> Path:
+    """Preregistered execution of the launch-set option: clean worktree, expected commit, sealed protocol + records, exclusive lock, then the shared runner (blocking)."""
+
+    from cft_revival.pic2d import artifacts
+    from cft_revival.pic2d.models import PIC2DValidationError
+
+    runner = _runner()
+    if not expect_commit or len(expect_commit) < 7:
+        raise PIC2DValidationError("--expect-commit <preregistration sha> (>= 7 hex digits) is required for the preregistered launch")
+    head = git("rev-parse", "HEAD")
+    if not head.startswith(expect_commit):
+        raise PIC2DValidationError(f"HEAD {head[:12]} is not the preregistration commit {expect_commit}")
+    dirty = worktree_status()
+    if dirty and not allow_dirty:
+        raise PIC2DValidationError(f"worktree is not clean ({len(dirty)} entries, e.g. {dirty[0]!r}); the preregistered launch requires a clean checkout")
+    if (variant, grid) not in protocol_module.LAUNCH_SET:
+        raise PIC2DValidationError(f"only the launch set {[option_tag(*o) for o in protocol_module.LAUNCH_SET]} may be launched; {option_tag(variant, grid)} is sealed but not launched "
+                                   "(use `run --allow-launch` for a labelled development run)")
+    sealed_path = protocol_module.composed_protocol_path(variant, grid)
+    experiment_protocol = protocol_module.EXPERIMENT_PROTOCOL_PATH
+    for path in (sealed_path, experiment_protocol):
+        if not path.is_file():
+            raise PIC2DValidationError(f"{path} is missing: the option is not sealed (run `compose` and commit)")
+        if not _blob_matches_head(path):
+            raise PIC2DValidationError(f"{path.name} on disk differs from the committed blob at HEAD")
+    experiment_document = json.loads(experiment_protocol.read_text(encoding="utf-8"))
+    if not str(experiment_document.get("status", "")).startswith("preregistered"):
+        raise PIC2DValidationError(f"protocol.json status {experiment_document.get('status')!r} is not a preregistration")
+    required = [preflight_module.preflight_path(), shakedown_path(variant, grid)]
+    missing = [p.name for p in required if not p.is_file()]
+    if missing:
+        raise PIC2DValidationError(f"preregistration records missing: {missing} (the launch-box preflight and the shakedown must exist and be committed)")
+    for path in required:
+        if not _blob_matches_head(path):
+            raise PIC2DValidationError(f"{path.name} on disk differs from the committed blob at HEAD")
+    preflight_report = json.loads(required[0].read_text(encoding="utf-8"))
+    if not (preflight_report["all_passed"] and preflight_report["launch_set_passed"]):
+        raise PIC2DValidationError("the whole-set preflight did not pass every option")
+    if not preflight_module.timing_passed(preflight_report):
+        raise PIC2DValidationError("the preflight carries no passed launch-box GPU timing (preflight --gpu-timing on the launch box, >= 2000 steps, budget covering the measured 3-transit wall)")
+    shakedown_record = json.loads(required[1].read_text(encoding="utf-8"))
+    if not shakedown_record.get("passed"):
+        raise PIC2DValidationError("shakedown-channel-20um.json does not record a passed shakedown (run -> assess -> compare -> re-finalize)")
+    mps_pipe = os.environ.get("CUDA_MPS_PIPE_DIRECTORY")
+    if require_mps and not (mps_pipe and Path(mps_pipe).exists()):
+        raise PIC2DValidationError(f"--require-mps: CUDA_MPS_PIPE_DIRECTORY {mps_pipe!r} is not set or does not exist in this environment")
+    # the sealed protocol must be what this checkout composes on THIS platform (field-derived dt policy included)
+    protocol, _mapping, field_map = compose_run_protocol(variant, grid)
+    recomposed = protocol_bytes(protocol)
+    sealed_bytes = sealed_path.read_bytes()
+    if recomposed != sealed_bytes:
+        raise PIC2DValidationError(f"the recomposed protocol differs from the sealed {sealed_path.name} (code, template, binding or platform drift); refusing to launch")
+    protocol_sha = hashlib.sha256(sealed_bytes).hexdigest()
+    results = results_dir(variant, grid)
+    payload = {
+        "schema_version": LOCK_SCHEMA, "experiment_id": protocol["experiment_id"], "option": option_tag(variant, grid), "variant": variant, "grid": grid, "commit": head,
+        "protocol_sha256": protocol_sha, "sealed_protocol": sealed_path.relative_to(REPOSITORY_ROOT).as_posix(), "experiment_protocol_sha256": _sha256(experiment_protocol),
+        "preflight_sha256": _sha256(required[0]), "shakedown_sha256": _sha256(required[1]),
+        "config_sha256": artifacts.config_identity(runner.build_config(protocol, backend=backend)), "field_source_sha256": field_map.source_sha256, "field_map_sha256": field_map.sha256,
+        "backend": backend, "command": " ".join(sys.argv), "host": socket.gethostname(), "pid": os.getpid(), "acquired_at_utc": utc_now(),
+        "clean_worktree_attested": not dirty, "worktree": str(REPOSITORY_ROOT), "immutable": True,
+        "gpu": _gpu_inventory(), "cuda_visible_devices": os.environ.get("CUDA_VISIBLE_DEVICES"), "cuda_mps_pipe_directory": mps_pipe, "mps_required": require_mps,
+        "concurrent_compute_apps_at_launch": preflight_module.compute_apps(),
+    }
+    lock = results / LOCK_NAME
+    if resume:
+        if not lock.is_file():
+            raise PIC2DValidationError("--resume needs the execution lock of the first session")
+        existing = json.loads(lock.read_text(encoding="utf-8"))
+        if existing.get("commit") != head or existing.get("protocol_sha256") != protocol_sha:
+            raise PIC2DValidationError("--resume refused: the lock names a different commit / protocol")
+        if runner.find_checkpoint(results) is None:
+            raise PIC2DValidationError("--resume refused: no checkpoint to resume from")
+        log(f"[launch] {option_tag(variant, grid)}: resuming under the existing lock (commit {head[:12]}, acquired {existing.get('acquired_at_utc')})")
+    else:
+        if runner.find_checkpoint(results) is not None:
+            raise PIC2DValidationError(f"{results} already holds a checkpoint; use --resume for a new session under the same lock")
+        acquire_lock(results, payload)
+        log(f"[launch] {option_tag(variant, grid)}: execution lock acquired: commit {head[:12]}, protocol {protocol_sha[:12]}, clean worktree {not dirty}, MPS pipe {mps_pipe}, "
+            f"{len(payload['concurrent_compute_apps_at_launch'])} compute app(s) on the GPU at launch")
+    protocol_path = results / "protocol.json"
+    if not protocol_path.is_file():
+        protocol_path.write_bytes(sealed_bytes)
+    elif protocol_path.read_bytes() != sealed_bytes:
+        raise PIC2DValidationError("results/protocol.json differs from the sealed protocol")
+    return runner.run_steady_state(protocol, results, backend=backend, field_map=field_map, protocol_path=protocol_path, wall_budget_seconds=wall_budget_seconds, log=log)
+
+
 def command_launch(args: argparse.Namespace) -> int:
-    print("[launch] REFUSED: external validation v0 is a DRAFT - nothing is preregistered. The coordinator preregisters (protocol.json + protocols/ + preflight + shakedown records "
-          "committed) and launches from that commit; until then only `run --allow-launch` (labelled development) exists.", file=sys.stderr)
-    return 2
+    from cft_revival.pic2d.models import PIC2DValidationError
+
+    try:
+        launch(args.variant, args.grid, expect_commit=args.expect_commit, backend=args.backend, resume=args.resume, allow_dirty=args.allow_dirty, require_mps=args.require_mps,
+               wall_budget_seconds=args.wall_budget_seconds)
+    except PIC2DValidationError as error:
+        print(f"[launch] REFUSED: {error}", file=sys.stderr)
+        return 2
+    return 0
+
+
+# -- finalize / status ----------------------------------------------------------------------------------------------------------------------
+
+
+def command_finalize(args: argparse.Namespace) -> int:
+    protocol, _, field_map = compose_run_protocol(args.variant, args.grid)
+    results = Path(args.results_dir) if args.results_dir else results_dir(args.variant, args.grid)
+    on_disk = _run_protocol(results, args.variant, args.grid)
+    _runner().finalize(on_disk if on_disk else protocol, results, backend=args.backend, field_map=field_map, stop_reason=args.stop_reason, protocol_path=results / "protocol.json",
+                       allow_refinalize=args.allow_refinalize, recover_runner_stop=args.recover_runner_stop)
+    return 0
+
+
+def command_status(args: argparse.Namespace) -> int:
+    results = Path(args.results_dir) if args.results_dir else results_dir(args.variant, args.grid)
+    _print_json(_runner().status(results, _run_protocol(results, args.variant, args.grid)))
+    return 0
 
 
 # -- assessment and comparison ----------------------------------------------------------------------------------------------------------
@@ -387,7 +669,10 @@ def main(argv: list[str] | None = None) -> int:
     pr.add_argument("--with-field", action="store_true")
     add("comparison", command_comparison)
     add("compose", command_compose)
-    add("preflight", command_preflight)
+    pf = add("preflight", command_preflight)
+    pf.add_argument("--gpu-timing", action="store_true", help="launch box: time >= 2000 production steps of the primary option at the seed and plateau loads (records the MPS contention)")
+    pf.add_argument("--timing-steps", type=int, default=2000)
+    pf.add_argument("--backend", default="warp-cuda")
     add("cost", command_cost)
     r = add("run", command_run, option=True, results=True)
     r.add_argument("--backend", default="warp-cuda")
@@ -397,7 +682,23 @@ def main(argv: list[str] | None = None) -> int:
     r.add_argument("--shrunk-cadences", action="store_true")
     r.add_argument("--label", default=None)
     r.add_argument("--allow-launch", action="store_true")
-    add("launch", command_launch, option=True)
+    sh = add("shakedown", command_shakedown, option=True)
+    sh.add_argument("--backend", default="warp-cuda")
+    sh.add_argument("--max-steps", type=int, default=SHAKEDOWN_MAX_STEPS)
+    sh.add_argument("--output", default=None)
+    la = add("launch", command_launch, option=True)
+    la.add_argument("--backend", default="warp-cuda")
+    la.add_argument("--expect-commit", required=True, help="the preregistration commit (HEAD must be it)")
+    la.add_argument("--resume", action="store_true")
+    la.add_argument("--allow-dirty", action="store_true", help="development only; never for the preregistered execution")
+    la.add_argument("--require-mps", action="store_true", help="refuse unless CUDA_MPS_PIPE_DIRECTORY is set and exists (the four-slot H100 configuration)")
+    la.add_argument("--wall-budget-seconds", type=float, default=None)
+    fin = add("finalize", command_finalize, option=True, results=True)
+    fin.add_argument("--backend", default="warp-cuda")
+    fin.add_argument("--stop-reason", default="finalized_from_checkpoint")
+    fin.add_argument("--allow-refinalize", action="store_true")
+    fin.add_argument("--recover-runner-stop", action="store_true")
+    add("status", command_status, option=True, results=True)
     add("assess", command_assess, option=True, results=True)
     add("compare", command_compare, option=True, results=True)
     args = parser.parse_args(argv)
