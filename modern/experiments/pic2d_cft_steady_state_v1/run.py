@@ -685,11 +685,25 @@ def find_checkpoint(results: Path) -> Path | None:
 
 # -- shared setup -------------------------------------------------------------
 
-def load_inputs(config: PIC2DConfig, field_map: MagneticFieldMap | None, cross_sections: XenonCrossSections | None):
+def plume_extension_path(protocol: Mapping[str, Any] | None) -> Path | None:
+    """v2.1: ``protocol["field_plume_extension"]`` (repository-relative) names the plume field-extension declaration;
+    absent = the v2.0 default (spec/pic2d/p2-field-plume-extension-v1.json, the authority's checkpoint)."""
+
+    if protocol is None or protocol.get("field_plume_extension") is None:
+        return None
+    path = REPOSITORY_ROOT / str(protocol["field_plume_extension"])
+    if not path.is_file():
+        raise PIC2DValidationError(f"field_plume_extension {protocol['field_plume_extension']!r} is not a file")
+    return path
+
+
+def load_inputs(config: PIC2DConfig, field_map: MagneticFieldMap | None, cross_sections: XenonCrossSections | None, *,
+                protocol: Mapping[str, Any] | None = None):
     if field_map is None:
         if config.grid.geometry.has_plume:
-            # v2.0: direct P2 node evaluation over the L-shaped box (spec/pic2d/p2-field-plume-extension-v1.json)
-            field_map = p2_plume_field_map(REPOSITORY_ROOT, config.grid, role="primary")
+            # v2.0: direct P2 node evaluation over the L-shaped box (spec/pic2d/p2-field-plume-extension-v1.json);
+            # v2.1: the protocol may name an extension file with its own (larger-box) checkpoint declaration
+            field_map = p2_plume_field_map(REPOSITORY_ROOT, config.grid, role="primary", extension_path=plume_extension_path(protocol))
         else:
             psi_field, evidence = build_p2_psi_field(REPOSITORY_ROOT, role="primary")
             field_map = sample_field_map(psi_field, config.grid, evidence)
@@ -1067,7 +1081,7 @@ def run_steady_state(
     (results / "run.pid").write_text(f"{os.getpid()}\n", encoding="utf-8", newline="\n")
 
     t0 = time.perf_counter()
-    field_map, cross_sections = load_inputs(config, field_map, cross_sections)
+    field_map, cross_sections = load_inputs(config, field_map, cross_sections, protocol=protocol)
     xs_sha = cross_sections.payload_sha256 if cross_sections is not None else None
     setup_seconds = time.perf_counter() - t0
 
@@ -1329,7 +1343,7 @@ def finalize(
         checkpoint = results / "checkpoint-final.json"
     config = build_config(protocol, backend=backend)
     t0 = time.perf_counter()
-    field_map, cross_sections = load_inputs(config, field_map, cross_sections)
+    field_map, cross_sections = load_inputs(config, field_map, cross_sections, protocol=protocol)
     xs_sha = cross_sections.payload_sha256 if cross_sections is not None else None
     sim = Simulation(config, field_map, cross_sections=cross_sections, backend=backend, step_graph=step_graph_flag(protocol))
     state = artifacts.load_checkpoint(checkpoint, config, field_sha256=field_map.sha256, cross_section_sha256=xs_sha, require_same_code=False)

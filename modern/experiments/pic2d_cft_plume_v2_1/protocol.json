@@ -1,0 +1,213 @@
+{
+  "schema_version": "cft-revival.pic2d-cft-plume-v2-1.protocol/0.1.0",
+  "experiment_id": "pic2d-cft-plume-v2-1",
+  "status": "development_screening_not_preregistered_NOT_LAUNCHED",
+  "classification": "axisymmetric_electrostatic_pic_mcc_development_run_with_axially_extended_plume_domain_cathode_region_two_zone_neutrals_and_thrust_ledger_not_validated",
+  "model_version": "pic2d v2.1 (v2.0.2 + axially extended plume box 12 x 24 mm on the padded P2 field; fresh start, new configuration identity)",
+  "model_spec": "modern/spec/pic2d/pic2d-model-v2.1.json",
+  "design_id": "divergent-exit-stack",
+  "field_authority": "modern/spec/pic2d/p2-field-authority-v1.json (role primary, channel cross-check) + modern/spec/pic2d/p2-field-plume-extension-v2.json (domain-padding-1.5 P2 solution of the same design, direct node evaluation over the whole L-shaped box)",
+  "cross_sections": "modern/spec/pic2d/xenon-cross-sections-v1.json",
+  "geometry": {
+    "bore_radius_m": 0.002,
+    "z_min_m": 0.0,
+    "z_max_m": 0.024,
+    "cone_start_z_m": 0.018,
+    "exit_radius_m": 0.003,
+    "plume_radius_m": 0.012,
+    "plume_length_m": 0.024,
+    "body_dielectric_radius_m": 0.0044,
+    "source": "P2 mesh regions injector-zone/channel-straight/channel-divergent-exit of divergent-exit-stack.level-1; plume box over ambient-background",
+    "domain_justification": "L-shaped plasma region: channel r <= r_wall(z) for z < 24 mm plus the plume box r <= 12 mm, 24 <= z <= 48 mm. R_plume = 12 mm (4 r_exit, 6 r_bore, the return-yoke radius = the thruster's own envelope) is UNCHANGED; the side wall at the yoke radius is where the > 45 deg ion wings leave in every box size. L_plume = 24 mm = 1.0 L_channel (2x the v2.0 box) from the attempt-7 window maps (results-attempt7-wall-budget-no-plateau, window 3.0-3.6 us): the axis ion density peaks at 2.57e18 m^-3 at z = 27.45 mm (a focus past the axis null; 4.0x the exit value 6.4e17) and then falls with an e-folding length of 2.6-3.1 mm (exponential fits over 28-35.5 .. 32-35.5 mm, rms 0.04-0.14 in ln n) - still 14.6 % of the exit value on the v2.0 far plane. Extrapolated axis density: 10 % of the exit value at z = 37.1-38.6 mm (every fit window and both fit families agree within 1.5 mm), 1 % at z = 43.1-45 mm (exponential) or 46-58 mm (power law about a virtual origin at 21-27 mm, p = 2.4-4.4, the conical-beam limit); the last 0.5 mm before the Dirichlet far plane is a sheath and is excluded from the fits, and the extrapolation is a LOWER bound because the 0 V far plane at 36 mm is itself part of the acceleration region (10 % of the axis potential drop remained at z = 35.8 mm). The far plane at 48 mm therefore sits at or beyond the 1 % axis-density point of the exponential family and at 2-4 % under the conical one, where the window-averaged far-field charge fraction (0.035 at 36 mm, resolved nodes) is expected at ~0.01 - well under the 0.25 gate. Radial extent: the far-plane ion current of attempt 7 holds 50/90/95/99 % inside r = 1.4/4.0/5.6/9.3 mm at 12 mm behind the exit, i.e. cones of 6.7/18.4/25/37.8 deg about the aperture centre; at 24 mm behind the exit the 95 % cone reaches r = 11.2 mm (inside the 12 mm wall, marginal), the 99 % cone 18.6 mm (side crossing, as now). The recorded 95 % half-angle of 60 deg is NOT a far-plane criterion: 6.8 % of the far-field crossings leave at > 45 deg through the side wall at z < 31 mm (37 % of the side current within 3 mm of the front face); capturing that cone on a far plane would need r_far = (z_far - 24 mm) tan 60 deg = 24 / 35 / 42 mm at z_far = 38 / 44 / 48 mm and a 481-row solver for no physical gain, so the side wall stays at the envelope. Field: the v2.0 authority's FEM box ends at z = 36.25 mm; the whole v2.1 domain is evaluated from the domain-padding-1.5 P2 solution of the qualification chain (spec/pic2d/p2-field-plume-extension-v2.json: channel agreement with the qualified level-1 field 0.74 mT max, the level-1 far plume carried a 15 % truncation error at 36 mm). Brandt et al. 2016 used 1.4 L_channel x 3.3 r_channel; this box is 1.0 L_channel x 4 r_exit.",
+    "internal_boundaries": "channel dielectric wall and the stair-stepped divergent cone: internal masked solid nodes with accumulated surface charge (v1.x dielectric closure); anode z = 0: Dirichlet 300 V; thruster front face z = 24 mm: r in (3, 4.4] mm dielectric with surface charge (the BN wall's outer flange plus the 4.0-4.4 mm gap in front of the pole stack is closed as a dielectric face), r > 4.4 mm grounded conductor at the reference potential (the soft-iron pole faces / shield are metal and, in the tested devices, on the cathode/chamber reference: Kornfeld et al. 2007, Koch et al. 2011)",
+    "far_field": "Dirichlet 0 V (chamber / neutraliser reference) on r = 12 mm (z >= 24 mm) and z = 48 mm; particles crossing it are counted as the plume exit (beam) by species with their axial momentum, their angle about the aperture centre and (ions) their energy. The exit-plane, side/far-plane classification, cathode flux-tube tracing and far-field gate all follow geometry.domain_z_max_m (tests/pic2d/test_pic2d_v21_domain_extension.py)."
+  },
+  "operating_point": {
+    "anode_potential_v": 300.0,
+    "exit_plane_potential_v": 0.0,
+    "exit_plane_potential_note": "in v2.0 this is the far-field / front-face conductor reference potential; the exit plane itself (z = 24 mm, r <= 3 mm) is interior and its potential is self-consistent (reported as plume.exit_plane_axis_potential_v)",
+    "neutral_density_per_m3": 1.1e+20,
+    "neutral_density_role": "MCC null-collision ceiling = 2 x n_g0 (n_g0 = Q_in / c = 5.5e19 m^-3 is the initial channel density, neutral_inventory.initial_density_per_m3). Headroom for the seed-ion recycling transient: launch 1 of this run (2026-09-03 21:50 AEST) stopped fail-closed at 14 ns with the ceiling AT Q/c because the seeded ions (1.7e10, never fed) returned as atoms at R = 0.6e16 -> 2.0e16 /s while S stayed ~0.8e16 /s, and the artificial relaxation (tau = 30 ns) makes n_g TRACK the rate-based fixed point (Q + R - S)/c, which was 1.11 Q/c and rising. In steady state R <= S so n* <= Q/c; the transient overshoot is an artefact of the development relaxation (recorded as neutral_inventory.max_density_over_zero_ionization). A ceiling of 2 Q/c tolerates R - S up to Q at a null-collision probability of 1.3e-4 per step (negligible cost); the real collision probability is unchanged (scale n_g / ceiling <= 0.5 in the channel, x the plume shape factor <= 0.5 in the plume)",
+    "neutral_temperature_k": 300.0,
+    "neutral_inventory": {
+      "feed_atoms_per_s": 8.551102004120011e+16,
+      "relaxation_time_s": 3e-08,
+      "relaxation_suspension_note": "attempt 5+: the artificial relaxation is suspended in any interval where S > Q + R (no fixed point, n* < 0) and the inventory then follows the conservative balance only. Root cause of attempts 4 and 5 (found after attempt 5): the GPU step graph (v1.4) had baked the MCC neutral density into the captured kernels as a scalar, so the MCC ionised at the n_g of the last graph capture (a particle-array reallocation) instead of the inventory's n_g. Attempt 4 ignited (S 1.4e16 -> 7.3e16 /s, I_d 1.5 -> 7.0 mA, T_e 6.7 -> 12.9 eV in 0.39 us) with S unchecked by the falling n_g until S reached 1.26 x the feed; the relaxation toward the negative fixed point emptied the channel (n_g 5.5e19 -> 4.2e18) within one 30 ns interval; the MCC then kept the trough density (~7e17: S/(n_e n_g) x100 low at an unchanged T_e distribution) and the discharge could not recover when the inventory refilled (S 3e15 /s at n_g 5.9e19): the ignition gate stopped it at 0.75 us. Attempt 5 (suspension only) reproduced the crash (n_g 7.8e18 at 0.375 us, S stuck at 1.4e16) - the suspension is a guard, not the fix. Fixed 2026-09-04: the MCC density is device-resident (warp_backend.set_neutral_scale), regression test tests/pic2d/test_pic2d_neutral_inventory.py::test_cuda_graph_step_sees_every_neutral_density_update. The v1.3 records (steady-state v2 incl. W x 0.7, launched 17:05 AEST 2026-09-03 before the 19:05 graph commit) predate the graph and are unaffected; attempt 3's coupling diagnosis is unaffected (n_g stayed within 5.6-6.3e19).",
+      "wall_recycling": true,
+      "recombination_coefficient": 1.0,
+      "wall_temperature_k": 400.0,
+      "initial_density_per_m3": 5.5e+19,
+      "initial_density_note": "n_g(0) = Q_in / c (the zero-ionisation fixed point); with recycling the quasi-steady density is (Q_in + R - S)/c <= Q_in/c whenever R <= S, but while the seeded ions drain R exceeds S and, because the artificial relaxation tracks the rate-based fixed point, the inventory overshoots Q/c by (R - S)/Q (11 % at 14 ns in launch 1, still rising); the ceiling above carries 2x headroom for that transient (see neutral_density_role)",
+      "feed_justification": "as steady-state v2/v3: Q_in = c n_g0 with c = v_bar A_exit / 4 = 1.5547e-3 m^3/s and n_g0 = 5.5e19 m^-3: 8.55e16 atoms/s = 0.01864 mg/s at 300 V",
+      "two_zone_note": "v2.0: the 0-D inventory is the CHANNEL zone (volume 3.43e-7 m^3 of the channel plasma cells; wall/anode ions recycled as 400 K neutrals; ions on the front face are NOT recycled into the channel); the PLUME zone carries the free-molecular expansion of the effusing flux from the exit aperture as an analytic density shape n_g(r,z) = n_g,channel x f(r,z), f = cosine-law point-source cone from the aperture centre capped at 0.5 at the lip (half-space effusion), used only as the local MCC probability factor (spec pic2d-model-v2.0.json, neutrals). Ion-neutral collisions remain OFF (no CEX; the Miller et al. 2002 table is a later sensitivity flag)."
+    },
+    "cathode": {
+      "r_inner_m": 0.0005,
+      "r_outer_m": 0.002,
+      "z_start_m": 0.0243,
+      "z_end_m": 0.025,
+      "electron_temperature_ev": 2.0,
+      "current_a": 0.003,
+      "current_rule": "continuity",
+      "max_current_a": 0.015,
+      "continuity_relaxation_intervals": 4.0,
+      "require_channel_connected_fraction": 1.0,
+      "position_justification": "attempt 4 (revised after attempt 3, no ignition): the emission region r = 0.5-2.0 mm, z = 24.3-25.0 mm lies INSIDE the channel's exit flux tube in the plume. Event-aware field-line tracing on the run's own P2 node field (cft_revival.pic2d.fieldlines) shows the channel's field lines leave the aperture, balloon to r = 4.3 mm at the front face and close on the front face / exit pole within 1.5 mm of the exit plane (r band <= 2.9 mm at z = 24.9 mm, <= 1.6 mm at 25.3 mm; axis null at z = 25.45 mm): NO plume volume beyond z ~ 25.7 mm is magnetically connected to the bore. Attempt 3's annulus (r 4.5-6 mm, z 26-28 mm; the off-axis HEMP-T neutraliser position of Kornfeld, Koch and Harmann 2007 / Koch et al. 2011) sat on lines running from the pole face (r ~ 5.2 mm) to the far field: connected fraction 0 of 24 samples, and 95 % of the emitted 3 mA left through the far-field boundary, 16 % hit the body face, ~0 reached the anode (I_d -> 0, S 3e15 -> 2e14 /s, N_e decaying). In the electrostatic, collisionless-plume model electrons cannot cross from that flux tube to the channel's (no anomalous transport, n_g in the plume too low for collisional diffusion), whereas the real neutraliser electrons reach the beam through the null / weak-field region by collisions and instabilities the model excludes (review blocker 4d; Brandt et al. 2016 fed electrons from the far outer boundaries at 1 eV, Szabo 2001 / Charoy et al. 2019 inject at a cathode plane tied to the ion current). The region therefore represents the ARRIVAL of the neutraliser electrons into the channel-connected flux tube - a declared model choice, not a neutraliser position. Every sample of the region is connected (100 % of 48 samples: one half-line enters the channel, the other ends on the front face; |B| 19-64 mT; volume 8.3 mm^3); the runner re-traces at launch and refuses to start if the fraction drops below require_channel_connected_fraction. Electrons are born uniformly in the annulus volume with an isotropic 2 eV Maxwellian (the v1.x injection temperature); the half moving toward the exit plane replicates v1.3's proven exit-plane injection 0.3-1.0 mm downstream of it, the other half is lost to the dielectric flange and charges it.",
+      "current_rule_justification": "current continuity (review blocker 4d variant (c)): the emitted current follows the discharge (anode) current of the previous series interval, relaxed over 4 intervals (800 steps = 1.2 ns) and clamped to [3 mA (floor = the v1.x injection current, ignition), 15 mA (5 x the v1.3 discharge current, against the seed dump transient)]. Charge conservation then makes the far-field boundary current-free in steady state (I_cathode = I_d + (I_e - I_i)_far). Fixed-current emission remains available (current_rule fixed) and the exit-plane injection stays as the legacy A/B option (electron_injection_current_a)."
+    },
+    "electron_injection_current_a": null,
+    "electron_injection_temperature_ev": null,
+    "seed_plasma_density_per_m3": 5e+16,
+    "seed_electron_temperature_ev": 5.0,
+    "seed_ion_temperature_ev": 0.0,
+    "seed_region": "channel",
+    "seed_justification": "the v1.3/v1.4 ignition seed (5e16 m^-3, 5 eV) in the CHANNEL only; the plume starts empty and fills from the beam and the cathode (a plume seed would be 5.4e-6 m^3 x 5e16 / 6e4 = 4.5 M unphysical macro-particles)"
+  },
+  "numerics": {
+    "dt_s": 1.5e-12,
+    "dt_justification": "as v1.x: omega_pe dt = 0.054 at the design ceiling n_max = 4e17; omega_ce dt = 0.186 at the plume's max |B| = 0.705 T (the pole faces on the front, plasma-side value) against the 0.2 gate - Boris is stable there and few electrons reach the pole faces; the channel max is 0.291 T",
+    "ion_subcycle": 8,
+    "poisson": "device block-Thomas direct on the masked L-shaped operator (blocks = axial rows, 241 blocks of 961 nodes; exact to round-off, true-residual contract 1e-10 |rhs| verified at every host sync); the Schur-complement factorisation on the host scales as rows x m^3: projected ~12 min per launch/resume (5 min measured at 721 nodes per row), 1.78 GB of inverse blocks on the device (1.0 GB at v2.0); host peak ~1.9 GB during the factorisation - run it sequentially, never concurrently with another factorisation (BLAS oversubscription lesson)",
+    "device_sync_steps": 200,
+    "series_interval_steps": 200,
+    "deposition": "bilinear, fixed-point 2^-40 integer accumulation",
+    "stability_limits": {
+      "max_omega_pe_dt": 0.2,
+      "max_omega_ce_dt": 0.2,
+      "max_cell_debye_ratio": 2.0,
+      "max_particle_courant": 1.0,
+      "max_collision_probability": 0.1
+    },
+    "stability_reference": {
+      "density_per_m3": 4e+17,
+      "electron_temperature_ev": 8.0,
+      "max_electron_energy_ev": 400.0
+    },
+    "averaging_window_steps": 400000,
+    "averaging_window_note": "consecutive 400000-step (0.6 us) windows; maps, plume histograms (j_i(theta), IEDF) and the electron sample counts are window accumulations; the reported maps are the last completed window (or the current one if at least half full)",
+    "checkpoint_every_steps": 40000,
+    "frame_recorder": {
+      "cadence_steps": 20000,
+      "precision": "float32",
+      "note": "as v2.0 (cadence 20000 steps = 30 ns, float32, exact interval averages of the full-domain node maps + boundary profiles + histograms + scalar record; cadence divides checkpoint and window). Size: 241 x 961 nodes x float32 x 7 arrays = 6.5 MB/frame uncompressed (4.9 MB at v2.0); 3 transits = 11.4 us = 380 frames = 2.5 GB uncompressed, 0.7-1.2 GB at the measured 2-4:1 compression - inside the 1-2 GB envelope; hash-bound in summary.json artifacts.frames"
+    },
+    "peak_debye_gate": {
+      "max_cells_per_debye": 4.5,
+      "min_macro_particles_at_peak": 32,
+      "dense_fraction": 0.5,
+      "max_cells_per_debye_note": "v1.4 gate over the WHOLE domain (channel + plume): max(dr, dz) / lambda_D at the densest node holding >= 32 macro-electrons must stay <= 4.5; the channel peak is the expected location"
+    },
+    "plume_boundary_gate": {
+      "max_charge_fraction": 0.25,
+      "enforce_after_s": 3.8e-06,
+      "window_steps": 400000,
+      "min_accumulated_macro_particles_per_node": 64000,
+      "max_charge_fraction_note": "v2.0.2 fail-closed gate (window-averaged statistic from the far-field accumulators, floor 64000 accumulated macro-particle-steps, threshold 25 % of the peak electron density): no sheath may form on the box boundary (Brandt et al. 2016). v2.1: enforced after ONE ION TRANSIT of the new box (3.8 us = 2.4 us channel residence + 24 mm / 17 km/s), so the seed dump cannot trip it (v2.0 used the 2.4 us channel residence with a 12 mm box); the far-field node set (721 nodes: the 241-node far plane at z = 48 mm plus 480 side nodes) follows the geometry",
+      "window_steps_note": "v2.0.2 semantics unchanged (see spec/pic2d/pic2d-model-v2.0.json gates_v2_0): trailing >= 400000 accumulated steps (0.6 us = the averaging window = 20 frames), read at every series record from the device window accumulators, bridged across the runner's window resets, enforced only when armed AND the window is complete; the first 0.6 us after a resume are recorded, not gated (disclosed). Expected reading on the 48 mm far plane from the attempt-7 decay: axis n_i ~1-3 % of the exit value (6e15-2e16 m^-3), i.e. a gate quantity of order 0.005-0.01 against 0.25; resolved-node count expected ~200-400 of 721 (accumulated weight (n_e + n_i) V_node steps / W >= 64000 for r >= ~0.15 mm at 6e15 m^-3 over the 400000-step window) - a run whose resolved-node count stays at 0 has a gate that cannot fire (attempt-7 lesson) and must say so in its record",
+      "min_accumulated_macro_particles_per_node_note": "as v2.0.2: a far-field node is resolved when (sum_t n_e + sum_t n_i) V_node / W >= 64000 macro-particle-steps = 32 beam-ion crossings x 2000 steps per 50 um node at 15 km/s (attempt-7 flux-weighted <v_z> 14.8 km/s); unchanged for v2.1 - the far-plane ions are slightly faster (the remaining 10 % of the axis potential drop is now inside the box) so the floor is, if anything, conservative"
+    },
+    "step_graph": true,
+    "anomalous_collisions": null
+  },
+  "case": {
+    "id": "plume-12x24mm-uniform50um-w6e4-ng0-5.5e19-seed5e16-channel-cathode-continuity-v2.1",
+    "radial_cells": 240,
+    "axial_cells": 960,
+    "macro_weight": 60000.0,
+    "seed": 20260903,
+    "grid_note": "uniform 50 x 50 um over the 12 x 48 mm box (the solver has no graded spacing: Grid2D carries scalar dr/dz, the Warp deposit/gather/push kernels take dr, dz as scalars, the device block-Thomas stores one dense (nz+1)^2 block per radial row): 240 x 960 = 230,400 cells, 135,540 plasma cells (channel 20,340 + plume 115,200), 135,828 unknowns, 231,601 nodes (v2.0: 172,800 cells, 77,940 plasma cells, 78,228 unknowns, 173,761 nodes). Cost projection anchored on attempt 8 (7.0-7.15 ms/step at ~4.4 M particles) and the 2026-09-03 measurement (4.22 ms/step at 0.55 M): the per-step fixed cost 3.8 ms = 482 sequential row-block launches (~2.4 ms) + 2.0 GB of inverse-block reads per solve (~1.25 ms) + node kernels; at 961 nodes per row the block reads grow to 3.6 GB (+1.0 ms) and the node kernels by 33 % -> 8.2 ms/step at 4.6 M particles (+16 %); the added 12 mm of plume holds ~13k macro-particles per mm (I_beam 0.87 mA at 15 km/s: 6.5k macro-ions/mm plus their electrons) = +0.16 M (+3.6 %). Exit-plane column found by index (mesh.py v2.1): 0.044 m / 880 and 0.06 m / 1200 put node 480 at 0.024 - 7e-14 dz, which the v2.0 coordinate comparison classified as a channel column; 0.048 m / 960 is exact, but the index rule holds for every length.",
+    "seed_note": "seed a of the v2/v3 base cases and of plume attempts 6-8 (a new configuration identity: the dynamics do not replay them)"
+  },
+  "stopping_rule": {
+    "plateau": "relative drift < 5 % over the trailing 20 % of the elapsed simulated time for the discharge current, the plasma electron count AND the channel neutral density (linear fit; drift = slope x window / |mean|), evaluated at every checkpoint; may only be declared after >= 3 ion transit times (3 x 3.8 us = 11.4 us); the grid-heating triad must be inside its soft bounds",
+    "plateau_threshold": 0.05,
+    "plateau_window_fraction": 0.2,
+    "min_transit_times": 3,
+    "wall_budget_seconds": 79200,
+    "wall_budget_note": "22 h cumulative over resumes (run_state.json): 3 transits = 11.4 us = 7.6 M steps x 8.2 ms/step = 17.4 h at the projected step cost, +2 h if the particle count keeps growing at attempt 8's +0.6 M ions/us (N ~6.5 M at 11 us -> ~9.7 ms/step), + ~12 min factorisation per session; the budget lets the plateau rule be evaluated past 3 transits (3.3-3.5 transits). NOT LAUNCHED: v2.1 is prepared, not scheduled; the GPU carries attempt 8 (PID 51256, v2.0.1) until ~20:00 AEST 2026-09-04 and any v2.1 run must wait for it",
+    "fail_closed": "cathode field-line connectivity at launch (re-traced on the padded field over the 48 mm box), ignition gate (no_ignition), runtime omega_pe dt gate, peak-node Debye gate (4.5 cells per lambda_D, whole domain), grid-heating triad hard bounds after one transit, plume-boundary charge pile-up gate after 3.8 us (v2.0.2 window statistic), one-cell Courant crossing, Poisson residual contract, neutral inventory exhaustion or ceiling violation: the run ends with the artifacts written",
+    "ignition_check": "after ~15 minutes (the first ~12 min are the host factorisation): S growing, N_e rising, cathode current relaxing from the 15 mA ceiling toward I_d, ions crossing the far field only after ~1.6 us (24 mm at 15 km/s: I_beam is ZERO for the first plume crossing - not a fault), thrust ledger residual at round-off, exit-plane axis potential settling below 300 V, q_far ~ 0 with a resolved-node count > 0 once the beam arrives",
+    "ignition_gate": {
+      "reference_window_s": [
+        5e-08,
+        2e-07
+      ],
+      "check_window_s": 1.5e-07,
+      "checks": [
+        {
+          "time_s": 7.5e-07,
+          "min_s_ratio": 0.8,
+          "min_electron_ratio": 1.1
+        },
+        {
+          "time_s": 1.5e-06,
+          "min_s_ratio": 1.2,
+          "min_electron_ratio": 1.4
+        }
+      ],
+      "note": "fail-closed stop_reason no_ignition, evaluated at every checkpoint from the series: trailing 0.15 us means of S and N_e over their 0.05-0.2 us reference means (after the seed dump). Calibration: v1.3 attempt 2 (ignited; seed-b identical) S ratio 1.07 / 1.41 and N_e ratio 1.29 / 1.76 at 0.75 / 1.5 us; v1.3 attempt 1 (failed) S 0.59, N_e 1.03 at 0.75 us; plume attempt 3 (cathode not channel-connected) S 0.23, N_e 0.83 at 0.75 us. The suggested 'x3 within 0.75 us' would have rejected the ignited v1.3 run (its S e-fold in the first 2 us was ~2.8 us; the 1.1 us e-fold belongs to the later N_e growth), so the thresholds sit between the ignited and the failed runs with ~25 % margin on S and ~15 % on N_e at 0.75 us. A failed gate costs <= 0.75 us = 0.5 M steps = ~40 min at 4.3 ms/step; the ignition transient (< 1.5 us) is excluded from any plateau window by the >= 3 transit-time rule."
+    },
+    "grid_heating_triad": {
+      "energy_residual_over_electrode_work_max": 0.1,
+      "soft_drift_max": 0.05,
+      "hard_drift_max": 0.25,
+      "enforced_after_transit_times": 1.0
+    }
+  },
+  "simplifications": [
+    "plume box 12 x 24 mm (1.0 L_channel axially, on the padded P2 field): Brandt et al. 2016 found a 1.4 L_channel box still too small for plume current ratios, so the divergence, j_i(theta) and the beam/electron currents at the far field remain box-size dependent development numbers; the charge pile-up gate (v2.0.2, live) is the declared check and the attempt-7 decay fit the declared sizing basis",
+    "far field: Dirichlet 0 V chamber reference on the box boundary (no open/absorbing boundary condition); the thruster front face is dielectric to 4.4 mm and grounded metal beyond",
+    "static B from the domain-padding-1.5 P2 solution (level-0 FEM resolution, not the NUMERICAL_P2_QUALIFIED level-1 map): channel agreement with the qualified field 0.74 mT max (gated at 20 mT), pole-face corner nodes differ by up to 170 mT at |B| ~0.56 T (mesh-resolution difference at a permeable corner; recorded, not gated)",
+    "cathode: volumetric electron source in an annulus with an isotropic 2 eV Maxwellian at the previous interval's discharge current (no cathode physics, no keeper, no neutral flow from the cathode); unchanged position r 0.5-2.0 mm, z 24.3-25.0 mm",
+    "neutrals: 0-D channel inventory with wall-ion recycling (v1.4) plus an analytic free-molecular cone in the plume used only as the MCC probability factor; no neutral flow field, no CEX / ion-neutral collisions, no plume ionisation feedback on the channel inventory beyond the tally",
+    "electron-neutral: isotropic elastic without the 2 m_e/M energy loss, one lumped 8.32 eV excitation, single ionisation with Vahedi-Surendra secondary energy and isotropic emission",
+    "dielectric wall and front-face flange: perfectly absorbing with accumulated surface charge, zero field in the dielectric backing (perfect insulator: homogeneous Neumann), no secondary electron emission, no sputtering",
+    "anode and grounded front face: perfectly absorbing conductors at fixed potential",
+    "cone wall as a one-cell stair-step of the plasma cell mask",
+    "prescribed static B (direct node evaluation over the whole L-shaped box; no plasma-induced field)",
+    "ions pushed every 8 steps with 8 dt",
+    "electrostatic only, azimuthally symmetric: no azimuthal instabilities / anomalous transport (Bohm hook OFF)",
+    "momentum-conserving bilinear scheme: energy is not exactly conserved (ledger reported); the axial momentum ledger closes to round-off and the thrust closure (momentum flux vs -force on the thruster) is reported, not enforced",
+    "uniform 50 um grid: the channel radial spacing is 50 um (v1.x: 33 um); the peak is resolved at 3-4 cells per lambda_D (declared, gated at 4.5); no graded plume mesh (the solver and kernels are uniform-spacing only)",
+    "single grid, weight and seed; development/screening run: not preregistered, no experimental validation, not a performance prediction; 22 h budget sized for 3 transits"
+  ],
+  "claim_boundary": "development/screening PIC-MCC run of the channel plus a 12 x 24 mm plume box with a cathode emission region and a two-zone neutral closure on the padded P2 field; not preregistered; not launched; not validated against experiment; thrust, Isp, anode efficiency, divergence and the IEDF are development numbers bound to this box and closure; the artificial neutral transient is not physical",
+  "literature_basis": "modern/docs/literature/pic-mcc-blockers.md (blockers 1-5, 4a, 4d plume block D; Brandt et al. 2016 analogue; Koch et al. 2011 ion-energy peak ~ Ua - 15 V as the validation-v1 observable)",
+  "validation_v1_observable": "IEDF peak energy at the far field vs U_a: Koch et al. 2011 report the ion-energy peak ~ U_a - 15 V for HEMP-T 3050; reported as plume.iedf_peak_minus_anode_v (model-to-experiment context, not a validation claim at this closure)",
+  "field_plume_extension": "modern/spec/pic2d/p2-field-plume-extension-v2.json",
+  "lineage": "v2.0.1 records: results-attempt7-wall-budget-no-plateau (24ea2f65) and attempt 8 (its resume, PID 51256) of experiments/pic2d_cft_plume_v1; v2.1 is a FRESH START (the plume length, axial cell count and field source are in the configuration identity, so no v2.0.x checkpoint can be resumed under it)",
+  "budget_v2_1": {
+    "n_max_per_m3": 4e+17,
+    "n_eq_projected_per_m3": 2.9e+17,
+    "n_eq_projected_note": "channel fixed point as v1.4 / v2.0; attempt 7 measured peak n_e 2.95e18 (3.64 cells/lambda_D), N_e 2.2 M, N_i 2.23 M with 21 % of the ions in the 12 mm plume; the 24 mm plume adds ~0.08 M ions (constant-current beam: N/mm = I_beam / (e v_z W) = 6.5k macro-ions per mm at 0.87 mA, 15 km/s, W 6e4)",
+    "t_e_for_lambda_d_ev": 8.0,
+    "lambda_d_min_m": 3.32e-05,
+    "omega_pe_max_rad_per_s": 35700000000.0,
+    "omega_pe_dt": 0.0535,
+    "b_max_t": 0.705,
+    "b_max_note": "the padded field's pole-face maximum differs from the level-1 value (0.705 T) at single corner nodes by up to 0.17 T; the omega_ce dt gate (0.2) is re-evaluated at launch from the run's own field map and fails closed",
+    "b_max_channel_t": 0.2914,
+    "omega_ce_dt_at_b_max": 0.186,
+    "dr_m": 5e-05,
+    "dz_m": 5e-05,
+    "cell_over_lambda_d_min": 1.5,
+    "macro_weight": 60000.0,
+    "particles_projected": "4.6 M at the attempt-8 state (channel 3.5 M + plume 1.1 M) rising with attempt 8's +0.6 M ions/us trend to ~6.5 M by 11 us if no plateau forms; capacity headroom on the 32 GB card is not the constraint (~9 GB projected footprint)",
+    "ion_transit_time_s": 3.8e-06,
+    "ion_transit_note": "channel residence 2.4 us (measured, v2 fine cases) + plume crossing 24 mm at ~1.7e4 m/s (200 eV Xe+) = 1.4 us (v2.0: 12 mm, 0.7 us, 3.1 us total)",
+    "ms_per_step_measured_v2_0": "4.22 at 0.55 M (2026-09-03); 7.0-7.15 at ~4.4 M (attempt 8, 2026-09-04)",
+    "ms_per_step_projected": "8.2 at 4.6 M particles (fixed 4.8 ms: 482 launches 2.4 + 3.6 GB inverse-block reads 2.2 + node kernels 0.2; 0.73 ms per M particles); 9.7 at 6.5 M",
+    "host_factorisation_projected": "~12 min per launch/resume (2.37x the measured 5 min: (961/721)^3), peak host ~1.9 GB; 1.78 GB of inverse blocks on the device",
+    "gpu_memory_projected_gb": 8.8,
+    "gpu_memory_note": "attempt 8 footprint 8.0 GB + 0.78 GB inverse blocks + ~25 MB node arrays + particle growth; the 32 GB card also carries ~5 GB of desktop applications",
+    "expected_duration": "3 transits = 11.4 us = 7.6 M steps: 17.4 h at 8.2 ms/step, ~19.5 h with the particle-count trend; + ~12 min factorisation per session; 22 h budget",
+    "cost_table_alternatives": {
+      "44x12_mm": "L_plume 20 mm: 116,160 plasma cells, 640 far-field nodes, 1.50 GB blocks, ~9 min factorisation, 7.8 ms/step, transit 3.58 us, 3 transits 7.15 M steps = 15.5 h; far plane at the 10 % axis point + 6 mm, short of the exponential 1 % point (43-45 mm)",
+      "48x16_mm": "r_far 16 mm (321 rows): 173,940 plasma cells, 801 far-field nodes, 2.37 GB blocks, ~16 min factorisation, 9.9 ms/step (642 sequential launches), 3 transits 20.9 h; only if the 95 % far-plane radius (11.2 mm at 48 mm) must clear the side wall",
+      "60x12_mm": "L_plume 36 mm: 193,140 plasma cells, 2.78 GB blocks, ~23 min factorisation, 9.6 ms/step, transit 4.52 us, 3 transits 9.0 M steps = 24 h; reaches the conical 1 % point (58 mm)",
+      "60x24_mm": "481 rows x 1201 nodes: 365,940 plasma cells, 5.55 GB blocks, ~46 min factorisation, 15.9 ms/step (962 launches, 11 GB block reads per solve), 3 transits 40 h - prohibitive on this solver"
+    },
+    "thrust_expectation": "beam ~2.3-3.5 mA of Xe+ at ~250 eV (v = 1.9e4 m/s): T_ions = I m v / e = 2.3e-3 x 2.18e-25 x 1.9e4 / 1.6e-19 = 60-90 uN; cold gas: Q_out m (pi/4) v_bar ~ 5e16 x 2.18e-25 x 173 = 1.9 uN; Isp = T / (m_dot g0) = 75e-6 / (1.864e-8 x 9.81) ~ 400 s at 0.0186 mg/s (low utilisation and a 300 V, 3 mA point); anode efficiency T^2 / (2 m_dot P) ~ (75e-6)^2 / (2 x 1.864e-8 x 1.0) ~ 15 % - development numbers, not predictions",
+    "brandt_2016_context": "Brandt et al. 2016 (Greifswald, static neutrals, Bohm + SEE, 20 x 5 mm plume): anode 4.3 mA vs 4.5 measured, beam 2.5 mA, net ionisation 24 %; model-to-model context labelled by closure, never validation"
+  }
+}

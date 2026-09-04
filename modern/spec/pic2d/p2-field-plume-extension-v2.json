@@ -1,0 +1,53 @@
+{
+  "schema": "cft.pic2d.p2-field-plume-extension.v2",
+  "extends": "modern/spec/pic2d/p2-field-authority-v1.json",
+  "supersedes": "modern/spec/pic2d/p2-field-plume-extension-v1.json for model v2.1 plume boxes only; v1 stays the declaration of every v2.0.x field identity (attempts 3-8) and is not modified",
+  "purpose": "pic2d model v2.1 (axially extended plume box): evaluate a hash-bound P2 A_phi solution of the SAME design (divergent-exit-stack) over an L-shaped PIC box whose far plane lies beyond the v2.0 authority's FEM domain (z <= 36.25 mm). The v2.0 authority checkpoint (level-1) cannot serve a box longer than 12 mm; this file binds the qualification chain's domain-padding-1.5 solve, whose FEM box reaches z = 60.75 mm, r = 48.75 mm.",
+  "map": {
+    "checkpoint_path": "modern/examples/fem_reference/artifacts/third-level/divergent-exit-stack/checkpoints/divergent-exit-stack.domain-padding-1.5.json",
+    "checkpoint_file_sha256": "ee3f92e98c0497c683fc8cbc9915a656c6ab0dae7bbfc706f9c2a5a0cc52b3c2",
+    "checkpoint_payload_sha256": "776462f8f1545126df0124116cbc5f3ab419ec898d6f6c3fc20bc5b5754f0edf",
+    "mesh_sha256": "85c0ce4bd106881a9ec5d65eaafa00ac73c78cba5c5ef4e15f0ec38b539631a3",
+    "run_sha256": "e429e3e33e91dd546f558ab4730d0464e1f0fbdf6a6b589d96a8957f87fbb6b5",
+    "sidecar_file_sha256": "70ee6338bfd7e2af3c3fd9b6398074c7eb91be778d93ea9b755a1fbae743249b",
+    "fem_level": 0,
+    "domain_study": {"padding_factor": 1.5},
+    "classification": "independent_numerical_reference_not_hardware_validation",
+    "source_note": "the phase-matched domain-expansion study of the fem_reference qualification chain (examples/fem_reference/run_reference_campaign.py, _run_domain_studies: padding factors 0.5 / 1.0 / 1.5 at the level-0 resolution); committed and hash-bound like the level-1 checkpoint; NOT itself the NUMERICAL_P2_QUALIFIED map - its use for the plume is declared here and gated by the channel cross-check below"
+  },
+  "map_justification": "Measured 2026-09-04 (direct A_phi element evaluation, both solutions): (a) on the channel plasma lattice r <= 2 mm, z 0.5-23.5 mm the padding-1.5 field differs from the qualified level-1 field by max 0.74 mT / rms 0.35 mT (median relative 0.2 %; max |B| 226 mT) and on the cone/exit lattice r <= 3 mm, z 18-24 mm by max 0.95 mT - 27x inside the authority's 0.02 T component gate that p2_plume_field_map enforces on the channel plasma nodes; (b) on the v2.0 plume box z 30-36 mm the two differ by up to 2.4 mT at |B| = 16.5 mT (15 % on the far plane z = 36 mm), while padding-1.0 and padding-1.5 agree there to 0.38 mT (3 %): the v2.0 far-plume field carries the level-1 FEM truncation (its boundary sits 0.25 mm behind the PIC far plane) and the padded solution is the better far field, so ONE solution is used over the whole L-shaped domain (no seam); (c) on the front face at the pole/yoke corners (|B| up to 564 mT) the level-0 and level-1 meshes differ by up to 170 mT at single nodes (median relative 2 % over the near plume z 24-30 mm) - a mesh-resolution difference at a permeable corner that both solutions approximate; recorded, not gated, because the bilinear gather averages it over one 50 um cell and few electrons reach the pole faces. The far plume field beyond 36 mm is not negligible for the electrons: axis |B_z| 14.2 mT at 36 mm, 4.3 mT at 44 mm, 2.6 mT at 48 mm, 0.86 mT at 60 mm (power law (z - 24 mm)^-2.63 over 36-60 mm); a zero-field or dipole extrapolation beyond the v1 box would have changed the electron transport on the very nodes whose charge the plume-boundary gate reads.",
+  "bounding_box": {
+    "r_min_m": 0.0,
+    "r_max_m": 0.04875,
+    "z_min_m": -0.03725,
+    "z_max_m": 0.06075
+  },
+  "bounding_box_justification": "The padding-1.5 FEM mesh extent (61,674 vertices, 122,250 P2 triangles): r in [0, 48.75 mm], z in [-37.25, 60.75 mm]. The PIC box must lie inside it; the tighter supported_pic_box below keeps the PIC far plane and side wall at least 0.75 mm inside the FEM boundary, where the FEM's own truncation error lives.",
+  "supported_pic_box": {
+    "r_max_m": 0.048,
+    "z_max_m": 0.060,
+    "note": "model v2.1 proposal: z_far = 48 mm (L_plume = 24 mm = 1.0 L_channel), r_far = 12 mm; alternatives 44 x 12 and 48 x 16 mm; every box up to 60 x 48 mm is servable from this checkpoint without a new FEM solve (cost table: spec/pic2d/pic2d-model-v2.1.json)"
+  },
+  "sampling": "direct-p2-node-evaluation",
+  "sampling_justification": "as v1: the quadratic A_phi elements are evaluated directly at every plasma node of the PIC grid (~0.15 ms per node; 231,601 nodes of the 240 x 960 box take ~30 s), body-face nodes 1 nm inside the plume; the cross-check against the qualified channel bicubic on the channel plasma nodes is recorded (channel_cross_check) and must stay under the authority's 0.02 T component bound - with the padding-1.5 source it is 1.06 mT (rms 0.45 mT) over the 565 channel plasma nodes of the 60 x 96 coarse test grid (dr 0.2 mm, dz 0.5 mm; the v1 source reads 0.81 mT there).",
+  "plasma_regions": [
+    "injector-zone",
+    "channel-straight",
+    "channel-divergent-exit",
+    "dielectric-straight",
+    "dielectric-divergent-exit",
+    "ambient-background"
+  ],
+  "plasma_regions_justification": "as v1: the five channel regions plus ambient-background (the mu_0 region that fills z > 24 mm and the 4.0-4.4 mm gap in front of the pole stack); identical region ids in the padding-1.5 mesh.",
+  "solid_regions_sampled": [
+    "anode",
+    "magnet-01", "magnet-02", "magnet-03", "magnet-04",
+    "pole-01", "pole-02", "pole-03",
+    "shield-shell",
+    "return-yoke"
+  ],
+  "solid_regions_note": "as v1: listed so a plasma node on a material interface (front face z = 24 mm, r > 4.4 mm) is not rejected; evaluated 1 nm inside the plume (plasma-side limit); nodes strictly inside solids are never evaluated.",
+  "front_face_note": "as v1: plasma nodes on the thruster front face z = 24 mm, r > 4.4 mm carry the plasma-side (ambient) value of the P2 field; the pole faces are grounded perfect conductors electrostatically; the static B is the P2 solution without plasma-induced fields.",
+  "field_convention": "as the authority: B_r = -dA_phi/dz, B_z = A_phi/r + dA_phi/dr (2 dA_phi/dr on the axis)",
+  "identity_note": "p2_plume_field_map records field_source = plume-extension-v2, this file's SHA-256, the map declaration and the supported box in the field provenance, so a v2.1 field_sha256 never equals a v2.0 one; a v1 extension file produces the v2.0 provenance keys and values bit-for-bit (tests/pic2d/test_pic2d_v21_domain_extension.py pins the coarse-grid v2.0 field identity)."
+}

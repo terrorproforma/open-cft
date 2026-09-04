@@ -26,6 +26,8 @@ from .p2_field import BoundP2Evaluator, file_sha256
 SPEC_DIR = Path(__file__).resolve().parents[3] / "spec" / "pic2d"
 DEFAULT_AUTHORITY_PATH = SPEC_DIR / "p2-field-authority-v1.json"
 DEFAULT_PLUME_EXTENSION_PATH = SPEC_DIR / "p2-field-plume-extension-v1.json"
+# v2.1: the same design's domain-padding-1.5 P2 solution (FEM box z <= 60.75 mm) for axially extended plume boxes
+PLUME_EXTENSION_V2_PATH = SPEC_DIR / "p2-field-plume-extension-v2.json"
 
 
 @dataclass(frozen=True, slots=True)
@@ -215,10 +217,26 @@ def p2_field_map(repository_root: Path, grid: Grid2D, *, role: str = "primary") 
 
 # -- v2.0 plume domain: direct P2 node sampling ---------------------------------
 
+PLUME_EXTENSION_SCHEMAS = ("cft.pic2d.p2-field-plume-extension.v1", "cft.pic2d.p2-field-plume-extension.v2")
+
+
 def load_plume_extension(path: Path = DEFAULT_PLUME_EXTENSION_PATH) -> dict[str, Any]:
+    """Load a plume field-extension declaration (v1: the authority's checkpoint over the FEM box z <= 36.25 mm;
+    v2 (model v2.1): its own hash-bound checkpoint declaration under ``map`` for an axially extended box).
+
+    Fails closed on an unknown schema or a v2 file without its map / box declarations.
+    """
+
     extension = json.loads(path.read_text(encoding="utf-8"))
-    if extension.get("schema") != "cft.pic2d.p2-field-plume-extension.v1":
+    if extension.get("schema") not in PLUME_EXTENSION_SCHEMAS:
         raise PIC2DValidationError("unsupported P2 field plume extension schema")
+    if extension["schema"] == "cft.pic2d.p2-field-plume-extension.v2":
+        for key in ("map", "bounding_box", "plasma_regions", "solid_regions_sampled", "supported_pic_box"):
+            if key not in extension:
+                raise PIC2DValidationError(f"plume extension v2 lacks the '{key}' block")
+        for key in ("checkpoint_path", "checkpoint_file_sha256", "checkpoint_payload_sha256", "mesh_sha256", "run_sha256", "sidecar_file_sha256"):
+            if key not in extension["map"]:
+                raise PIC2DValidationError(f"plume extension v2 map lacks '{key}'")
     return extension
 
 
@@ -229,6 +247,7 @@ def p2_plume_field_map(
     role: str = "primary",
     authority: Mapping[str, Any] | None = None,
     extension: Mapping[str, Any] | None = None,
+    extension_path: Path | None = None,
     cross_check: bool = True,
 ) -> MagneticFieldMap:
     """Bound P2 field on the plasma nodes of an L-shaped (channel + plume) PIC grid.
@@ -246,6 +265,15 @@ def p2_plume_field_map(
     channel authority file and the v1.x field identities are untouched.  With
     ``cross_check`` the direct sample is compared on the channel plasma nodes with the
     qualified channel bicubic of the authority (evidence ``channel_cross_check``).
+
+    v2.1 (``extension`` schema v2, ``extension_path`` = the declaring file): the same
+    direct node evaluation of a DIFFERENT hash-bound P2 solution of the same design,
+    declared under ``extension["map"]`` - the domain-padding-1.5 solve of the
+    qualification chain whose FEM box (z <= 60.75 mm, r <= 48.75 mm) contains the
+    axially extended plume boxes the v2.0 authority (z <= 36.25 mm) cannot.  Every
+    v2.1 map records ``field_source = "plume-extension-v2"`` and the extension file's
+    hash, so its identity can never collide with a v2.0 map; a v1 extension keeps the
+    v2.0 provenance keys and values bit-for-bit.
     """
 
     from .mesh import build_mesh_masks
@@ -254,12 +282,24 @@ def p2_plume_field_map(
     if not geometry.has_plume:
         raise PIC2DValidationError("p2_plume_field_map needs a plume geometry; use p2_field_map for the channel box")
     authority = dict(load_authority() if authority is None else authority)
-    extension = dict(load_plume_extension() if extension is None else extension)
-    declaration = authority["maps"][role]
+    extension_file = Path(DEFAULT_PLUME_EXTENSION_PATH if extension_path is None else extension_path)
+    extension = dict(load_plume_extension(extension_file) if extension is None else extension)
+    if extension.get("schema") not in PLUME_EXTENSION_SCHEMAS:
+        raise PIC2DValidationError("unsupported P2 field plume extension schema")
+    extended = extension["schema"] == "cft.pic2d.p2-field-plume-extension.v2"
+    declaration = dict(extension["map"]) if extended else authority["maps"][role]
     bounds = extension["bounding_box"]
     if geometry.max_radius_m > bounds["r_max_m"] + 1e-12 or geometry.domain_z_max_m > bounds["z_max_m"] + 1e-12 \
             or geometry.z_min_m < bounds["z_min_m"] - 1e-12:
         raise PIC2DValidationError("the PIC plume box exceeds the declared P2 plume-extension bounding box")
+    if extended:
+        # the declared supported box is tighter than the FEM box: the outermost FEM elements carry the truncation error
+        supported = extension["supported_pic_box"]
+        if geometry.max_radius_m > supported["r_max_m"] + 1e-12 or geometry.domain_z_max_m > supported["z_max_m"] + 1e-12:
+            raise PIC2DValidationError(
+                f"the PIC plume box (r <= {geometry.max_radius_m}, z <= {geometry.domain_z_max_m}) exceeds the supported box of the "
+                f"plume extension v2 (r <= {supported['r_max_m']}, z <= {supported['z_max_m']})"
+            )
     allowed = set(extension["plasma_regions"]) | set(extension["solid_regions_sampled"])
     evaluator = BoundP2Evaluator(Path(repository_root) / declaration["checkpoint_path"], declaration, allowed_regions=allowed, bounds=bounds)
     masks = build_mesh_masks(grid)
@@ -290,7 +330,7 @@ def p2_plume_field_map(
         "mesh_sha256": declaration["mesh_sha256"],
         "run_sha256": declaration["run_sha256"],
         "authority_file_sha256": file_sha256(DEFAULT_AUTHORITY_PATH),
-        "plume_extension_file_sha256": file_sha256(DEFAULT_PLUME_EXTENSION_PATH),
+        "plume_extension_file_sha256": file_sha256(extension_file),
         "p2_classification": evaluator.classification,
         "kind": "p2-direct-node-sample-plume-domain",
         "node_sampling": "direct quadratic A_phi evaluation on the plasma nodes of the L-shaped domain (plasma-side limit on the "
@@ -301,6 +341,14 @@ def p2_plume_field_map(
         "bounding_box_justification": extension["bounding_box_justification"],
         "front_face_note": extension["front_face_note"],
     }
+    if extended:
+        # v2.1 only (a v1 extension must keep the v2.0 evidence keys verbatim: they are part of field_sha256)
+        evidence["field_source"] = "plume-extension-v2"
+        evidence["plume_extension_schema"] = extension["schema"]
+        evidence["plume_extension_path"] = str(Path(extension_file).name)
+        evidence["supported_pic_box"] = dict(extension["supported_pic_box"])
+        evidence["map_declaration"] = {key: declaration[key] for key in sorted(declaration) if not key.endswith("_note")}
+        evidence["source_justification"] = extension.get("map_justification")
     if cross_check:
         channel_grid = Grid2D(
             ChannelGeometry(geometry.bore_radius_m, geometry.z_min_m, geometry.z_max_m, geometry.cone_start_z_m, geometry.exit_radius_m),
@@ -347,6 +395,9 @@ def zero_field_map(grid: Grid2D) -> MagneticFieldMap:
 
 __all__ = [
     "DEFAULT_AUTHORITY_PATH",
+    "DEFAULT_PLUME_EXTENSION_PATH",
+    "PLUME_EXTENSION_SCHEMAS",
+    "PLUME_EXTENSION_V2_PATH",
     "MagneticFieldMap",
     "build_p2_psi_field",
     "linear_psi_field_map",

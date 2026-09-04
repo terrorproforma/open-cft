@@ -102,6 +102,14 @@ def build_mesh_masks(grid: Grid2D) -> MeshMasks:
     dr = grid.dr_m
     dz = grid.dz_m
     wall_at_cell_low_z = grid.geometry.wall_radius_m(z[:-1])  # (nz,)
+    if grid.geometry.has_plume:
+        # v2.1: the exit-plane column is found by INDEX (Grid2D has verified it lies on a grid line), not by
+        # comparing the floating-point node coordinate with z_max_m: ``length_m / axial_cells`` is not exact
+        # in binary for every box length (0.044 m / 880 puts node 480 at 0.024 - 7e-14 dz, so the first plume
+        # column would have been classified as a channel column of the exit radius).  The v2.0 box
+        # (0.036 m / 720) happened to round the other way and is unchanged.
+        j_exit = int(round(grid.geometry.channel_length_m / dz))
+        wall_at_cell_low_z[j_exit:] = float(grid.geometry.plume_radius_m)
     outer_radius = r[1:]  # (nr,)
     tolerance = 1.0e-9 * dr
     plasma_cell = outer_radius[:, None] <= wall_at_cell_low_z[None, :] + tolerance
