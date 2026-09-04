@@ -344,7 +344,12 @@ EXT_VAL_PREREG_COMMIT = "3dc12cf6d3a299c7c3702a1b2c349d69ffe1ddde"
 # (2026-09-04): design 056 ended on its triad gate at 10:52 UTC and design 047 reaches 3 transits ~12:50 UTC, so the two
 # newcomers (ss25-base, ext-val-v0-channel-20um) enter one after the other; `launch` plans only jobs whose state is "not launched".
 SS25_JOB = "ss25-base"
-FINISHED_SWEEP_JOBS = ["sweep-056"]
+# design 056 launch 1 stopped on its triad gate (raw omega_pe dt statistic) at 10:52 UTC; design 047 finished on the plateau rule at
+# 12:49 UTC. Launch 2 of 056 (amendment 1: model v2.0.4 gate reading, protocol.json amendments[0]) is its own job whose commit is
+# the AMENDMENT commit (read from jobs.yaml, a full SHA after the prereg commit) and whose sealed protocol carries the
+# omega_pe_dt_gate_reading block; it enters the slot the reference or 009 frees.
+FINISHED_SWEEP_JOBS = ["sweep-056", "sweep-047"]
+SWEEP_056_LAUNCH2_JOB = "sweep-056-launch2"
 
 
 def test_shipped_jobs_yaml_is_the_single_h100_mps_configuration_with_the_preregistered_sweep_enabled() -> None:
@@ -355,12 +360,29 @@ def test_shipped_jobs_yaml_is_the_single_h100_mps_configuration_with_the_preregi
     assert plan.gpus == [0] and plan.defaults.slots_per_gpu == 4
     assert plan.defaults.env["CUDA_MPS_PIPE_DIRECTORY"] == "/tmp/nvidia-mps" and plan.defaults.env["CUDA_MPS_LOG_DIRECTORY"] == "/tmp/nvidia-log"
     enabled = [j for j in plan.jobs if j.enabled]
-    # steady-state v5 (section ii of the file), the four sweep designs (056 finished on its triad gate at 10:52 UTC 2026-09-04)
-    # and external validation v0
-    assert [j.id for j in enabled] == [SS25_JOB] + SWEEP_JOBS + [EXT_VAL_JOB]
+    # steady-state v5 (section ii of the file), the four sweep designs (056 finished on its triad gate at 10:52 UTC 2026-09-04,
+    # 047 on the plateau rule at 12:49 UTC), the 056 launch-2 job (amendment 1) and external validation v0
+    assert [j.id for j in enabled] == [SS25_JOB, "sweep-reference", SWEEP_056_LAUNCH2_JOB, "sweep-047", "sweep-009", EXT_VAL_JOB]
     for job in plan.jobs:
         assert job.checkout == "worktree"
-        if job.id.startswith("sweep-"):
+        if job.id == "sweep-056":
+            # launch 1 of design 056: finished (triad stop) and superseded by the amendment - disabled, still names the prereg commit,
+            # and its sealed protocol is NO LONGER frozen against HEAD (amendment 1 re-sealed it) - pinned so nobody relaunches it
+            assert not job.enabled and job.commit == SWEEP_PREREG_COMMIT and job.preregistered is True
+            check = schedule.prereg_check(REPOSITORY, job.commit, job.protocol)
+            assert check["ok"] is False and any("differs between" in p for p in check["problems"])
+        elif job.id == SWEEP_056_LAUNCH2_JOB:
+            # launch 2 of design 056: the amendment commit (after the prereg commit), the SAME sealed protocol path as sweep-056
+            # (re-sealed with the gate-reading block), the canonical results directory, --expect-commit == commit
+            sweep_056 = next(j for j in plan.jobs if j.id == "sweep-056")
+            assert job.enabled and job.preregistered is True and len(job.commit) == 40 and job.commit != SWEEP_PREREG_COMMIT
+            assert schedule.is_ancestor(REPOSITORY, SWEEP_PREREG_COMMIT, job.commit)
+            assert job.protocol == sweep_056.protocol and job.results == sweep_056.results and job.transit_time_s == sweep_056.transit_time_s
+            assert job.args == ["launch", "--design", "l1a-gs-v3-056-effcbc8686", "--domain", "channel", "--grid", "33um", "--expect-commit", job.commit, "--require-mps"]
+            sealed = json.loads((REPOSITORY / job.protocol).read_text(encoding="utf-8"))
+            assert sealed["omega_pe_dt_gate_reading"]["statistic"] == "resolved_node_single_step_peak" and sealed["omega_pe_dt_gate_reading"]["min_macro_particles"] == 32
+            assert job.gpu_memory_gib and job.expected_ms_per_step
+        elif job.id.startswith("sweep-"):
             # every sealed mini-sweep slot (launched or not) names the preregistration commit and its own sealed run protocol
             assert job.commit == SWEEP_PREREG_COMMIT and job.preregistered is True and (REPOSITORY / job.protocol).is_file(), job.id
             assert job.args[:1] == ["launch"] and "--require-mps" in job.args and job.args[job.args.index("--expect-commit") + 1] == SWEEP_PREREG_COMMIT
@@ -386,17 +408,24 @@ def test_shipped_jobs_yaml_is_the_single_h100_mps_configuration_with_the_preregi
     for job in enabled:
         check = schedule.prereg_check(REPOSITORY, job.commit, job.protocol)
         assert check["ok"] is True, (job.id, check["problems"])
-    # four MPS slots: the three sweep runs still executing + ONE newcomer (v5 in 056's slot, then external validation in 047's)
-    # fit; the three sweep runs + both newcomers (five) do not, nor do all enabled jobs - `launch` plans only "not launched" jobs
-    running_sweep = [j for j in enabled if j.id.startswith("sweep-") and j.id not in FINISHED_SWEEP_JOBS]
+    # four MPS slots (2026-09-04 evening): the two sweep runs still executing (reference, 009) + the two newcomers that took the
+    # slots 056 and 047 freed (v5, external validation) are the four clients; the 056 launch-2 job is a FIFTH job that fits only
+    # once the reference or 009 frees a slot - `launch` plans only "not launched" jobs, so `--only sweep-056-launch2` is refused
+    # while four clients run and accepted with three
+    running_sweep = [j for j in enabled if j.id.startswith("sweep-") and j.id not in FINISHED_SWEEP_JOBS + [SWEEP_056_LAUNCH2_JOB]]
     newcomers = [j for j in enabled if j.id in (EXT_VAL_JOB, SS25_JOB)]
-    assert len(running_sweep) == 3 and len(newcomers) == 2
-    for newcomer in newcomers:
-        concurrent = running_sweep + [newcomer]
-        assert len(concurrent) == plan.defaults.slots_per_gpu and schedule.assign_gpus(plan, concurrent) == {j.id: 0 for j in concurrent}
+    launch2 = next(j for j in enabled if j.id == SWEEP_056_LAUNCH2_JOB)
+    assert len(running_sweep) == 2 and len(newcomers) == 2
+    four = running_sweep + newcomers
+    assert len(four) == plan.defaults.slots_per_gpu and schedule.assign_gpus(plan, four) == {j.id: 0 for j in four}
     with pytest.raises(schedule.ScheduleError):        # a fifth concurrent job would exceed the four MPS slots
-        schedule.assign_gpus(plan, running_sweep + newcomers)
+        schedule.assign_gpus(plan, four + [launch2])
     with pytest.raises(schedule.ScheduleError):
         schedule.assign_gpus(plan, enabled)
-    # once design 047 has finished, the two remaining sweep runs + both newcomers are the four clients
-    assert schedule.assign_gpus(plan, running_sweep[:2] + newcomers) == {j.id: 0 for j in running_sweep[:2] + newcomers}
+    # once the reference or 009 has finished, launch 2 of 056 takes the freed slot (four clients again)
+    for finished in running_sweep:
+        remaining = [j for j in four if j is not finished] + [launch2]
+        assert schedule.assign_gpus(plan, remaining) == {j.id: 0 for j in remaining}
+    # and the scheduler's own busy-slot accounting refuses it while four jobs are running
+    with pytest.raises(schedule.ScheduleError):
+        schedule.assign_gpus(plan, [launch2], busy={0: [j.id for j in four]})

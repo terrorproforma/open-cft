@@ -147,7 +147,7 @@ jobs:
     transit_time_s: 2.4e-6
     enabled: true
   - id: sweep-056
-    note: design 2 of 4 - l1a-gs-v3-056-effcbc8686 (HEMP-like, rho 2.36); 115 x 512 cells, W 26566.8, 10.2 M particles projected, 3.65 M steps to 3 transits (1.705 us)
+    note: design 2 of 4 - l1a-gs-v3-056-effcbc8686 (HEMP-like, rho 2.36); 115 x 512 cells, W 26566.8, 10.2 M particles projected, 3.65 M steps to 3 transits (1.705 us). LAUNCH 1 - FINISHED 10:52 UTC 2026-09-04 on the triad gate (raw omega_pe dt statistic, shot-noise artefact; record ccee5c60); superseded by sweep-056-launch2
     module: experiments.pic2d_design_mini_sweep_v1.run
     args: [launch, --design, l1a-gs-v3-056-effcbc8686, --domain, channel, --grid, 33um, --expect-commit, "291a9227669c8927ea5cf7a6de2eed23fe6f73de", --require-mps]
     gpu: auto
@@ -158,6 +158,30 @@ jobs:
     checkout: worktree
     gpu_memory_gib: 15
     expected_ms_per_step: 16.6
+    transit_time_s: 1.7051e-6
+    enabled: false                # finished (launch 1, state.json kept); its sealed protocol is re-sealed at HEAD by amendment 1, so the
+                                  # frozen-protocol check against HEAD no longer holds for THIS commit - by design; never re-launch it
+  # design 056 LAUNCH 2 - protocol AMENDMENT 1 (protocol.json amendments[0], README section 8.5, commit ee35bc84): launch 1
+  # (sweep-056 above, PID 19913, 291a9227) was stopped at 2.07 transits by the triad member omega_pe_dt_drift reading the RAW
+  # single-node omega_pe dt statistic (+0.283 > 0.25) - diagnosed as a shot-noise artefact of 1-3-macro-electron axis nodes
+  # (resolved-node member +0.0165; record ccee5c60). Launch 2 is a FRESH start under model v2.0.4 (79e6a670: the gate and the
+  # member read the >= 32-macro-electron resolved-node peak) with the same seed / W / grid / dt / operating point / gates /
+  # budget; the sealed 056 base protocol differs from launch 1 by the one documentary block omega_pe_dt_gate_reading
+  # (35760e9b5bcd -> 8b876b31eb14). `commit` / `--expect-commit` = the amendment commit. It enters the slot the reference or 009
+  # frees (never a fifth client). Memory / rate from launch 1 as measured (2.5 M particles, 7.1 ms/step mean under MPS-4; the
+  # 10.2 M / 16.6 ms/step projection was 4x too high).
+  - id: sweep-056-launch2
+    note: design 2 of 4, LAUNCH 2 (amendment 1, v2.0.4 gate reading) - l1a-gs-v3-056-effcbc8686 (HEMP-like, rho 2.36); 115 x 512 cells, W 26566.8, 2.5 M particles measured in launch 1, 3.65 M steps to 3 transits (1.705 us)
+    module: experiments.pic2d_design_mini_sweep_v1.run
+    args: [launch, --design, l1a-gs-v3-056-effcbc8686, --domain, channel, --grid, 33um, --expect-commit, "ee35bc847dd5d80fc51346fd3b2b6abfd2c5c032", --require-mps]
+    gpu: auto
+    commit: ee35bc847dd5d80fc51346fd3b2b6abfd2c5c032
+    preregistered: true
+    protocol: modern/experiments/pic2d_design_mini_sweep_v1/protocols/l1a-gs-v3-056-effcbc8686-channel-33um.json
+    results: modern/experiments/pic2d_design_mini_sweep_v1/results/l1a-gs-v3-056-effcbc8686-channel-33um
+    checkout: worktree
+    gpu_memory_gib: 5
+    expected_ms_per_step: 7.1
     transit_time_s: 1.7051e-6
     enabled: true
   - id: sweep-047
