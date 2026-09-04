@@ -330,3 +330,24 @@ launch guards incl. the launch-set and clean-worktree refusals; the shrunk-caden
   (`preflight --gpu-timing`, `shakedown`, `launch`, `status`, `finalize`) landed; the first box preflight exposed the omega_pe dt shot-noise
   defect -> model v2.0.4 (`79e6a670`); the records of section 9.2 produced (preflight + timing, shakedown, compose) on the box in the slot
   design 056 had freed, as the fourth MPS client (other agents' GPU jobs made it the fifth or sixth at times; disclosed).
+* **2026-09-04 22:26:44 AEST (12:26:44 UTC) - LAUNCH 1 of `channel-20um`**, preregistration commit **`3dc12cf6d3a299c7c3702a1b2c349d69ffe1ddde`**
+  (launch config `7697ce9f`: `tools/cloud/jobs.yaml` job `ext-val-v0-channel-20um`, slots_per_gpu 4, MPS client variables), Lambda
+  `gpu_1x_h100_sxm5` `ubuntu@68.209.75.2`, GPU 0 = NVIDIA H100 80GB HBM3 `GPU-a800b021-6364-473f-5177-cd6ae7ce0005`, driver 580.105.08, CUDA MPS
+  server 14519, 6 BLAS threads. Launched by `tools/cloud/schedule.py launch --only ext-val-v0-channel-20um` (`plan` clean: prereg commit an
+  ancestor of HEAD `7697ce9f`, sealed protocol frozen) into the slot design 056 freed: detached worktree at `3dc12cf6` under
+  `/lambda/nfs/h100-files/cft/jobs/ext-val-v0-channel-20um/tree` (LFS smudged), Warp `cuda:0` UUID == nvidia-smi (`gpu_uuid_match true`),
+  `launch --expect-commit 3dc12cf6d3a299c7c3702a1b2c349d69ffe1ddde --require-mps` passed every check of section 9.1 and acquired the O_EXCL
+  `execution-lock.json` (commit `3dc12cf6d3a2`, protocol `3ec0d405520f`, clean worktree, MPS pipe `/tmp/nvidia-mps`, 4 compute apps on the GPU
+  at launch = the MPS server + the three sweep runs). **PID 31588** (wrapper tmux `pic-ext-val-v0-channel-20um`), stepping at **4.1-4.3 ms/step**
+  at the seed load with the three sweep runs active (reference PID 19764 at 2.45 transits, 047 PID 20079 at 2.85, 009 PID 20189 at 2.52),
+  970 MiB GPU memory at 0.07 us (projected ~17 GB at the 12 M-particle plateau load), whole GPU 100 %. Ignition from the 5e16 seed under the
+  static 2e20 background and the 1.8 mA injection: N_e 48 000 -> 70 000 and S 2.8e16 -> 6.7e16 /s over 0.01 -> 0.07 us, I_d 1.0-2.1 mA,
+  windowed residual -11 to -14 % (cooling side), resolved omega_pe dt 0.000 (no node at the 32-macro-electron floor yet; raw single-node peak
+  0.7-1.1e19 = the shot-noise extreme the v2.0.4 statistic no longer gates on). No Xid. Expected wall: 6.0 M steps to 3 transits (4.2 us) at
+  the seed-load rate would be ~7 h; at the measured 12 M-particle rate under 4-5 clients (12.5-13.1 ms/step) ~21-22 h; the step cost grows with
+  the particle count toward the cap and falls as the sweep slots empty (047 within the hour, reference and 009 within ~2 h -> then solo, ~7
+  ms/step by the model), so the 3-transit / plateau verdict is expected between ~06:00 and ~20:00 AEST 2026-09-05 (the plateau rule may
+  declare later, up to the budget); budget end = 46.0 h cumulative = ~20:30 AEST 2026-09-06 if never resumed. Monitoring:
+  `tools/cloud/schedule.py status` on the box (`gpu` samples are whole-GPU readings under MPS); do NOT kill the process (Xid-31 lesson).
+  When it stops: from the job worktree `run.py assess` then `run.py compare` (results/channel-20um), a results-only record commit
+  (`chore(pic2d)`), the comparison table into section 10 of this README and the roadmap canvas row `validation-v0-v2`.
