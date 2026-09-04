@@ -214,6 +214,31 @@ jobs:
     transit_time_s: 2.0184e-6
     enabled: false
 
+  # ---------------------------------------------------------------- (v) external validation v0 - PREREGISTERED channel-20um (code-to-code vs Brandt 2016)
+  # modern/experiments/pic2d_external_validation_v0/: the Brandt 2016 micro-HEMPT reconstruction (14 x 1.5 mm channel, thesis magnet stack,
+  # material-aware P2 field scaled to the 0.6 T anchor) on the steady-state v4 template with STATIC neutrals at the reference's operating
+  # point (400 V, Xe 2e20 / 500 K, 1.8 mA / 1 eV exit-plane injection), the PUBLISHED 20 um grid (75 x 700), dt 0.7 ps, W 82 466.8 (the
+  # 12 M-particle cap), v2.0.3 gates + the v2.0.4 omega_pe dt statistic, frames ON, seed 20260903. ONE of the four MPS slots: it enters the
+  # slot design 056 freed (triad-gate stop 10:52 UTC) beside the three sweep runs still executing. `protocol` = the sealed run protocol
+  # (byte-bound between the prereg commit and HEAD); `launch` recomposes it on the reconstructed field and refuses on any difference,
+  # requires the launch-box preflight (GPU timing passed) + shakedown records, --require-mps, O_EXCL lock in results/channel-20um/.
+  # ms/step = the launch-box plateau-load measurement (12.5-13.1 with 4-5 other MPS clients; the cost model's MPS-4 projection is 18.3);
+  # budget 46.0 h = 1.5 x the cost-model 3-transit wall (30.6 h). The comparison (`assess` / `compare`) runs from the job worktree afterwards.
+  - id: ext-val-v0-channel-20um
+    note: external validation v0 - brandt2016-micro-hempt-v1 channel-only 75 x 700 at 20 um, dt 0.7 ps, W 82466.8, 12 M particles projected, 6.0 M steps to 3 transits (1.4 us), budget 46.0 h
+    module: experiments.pic2d_external_validation_v0.run
+    args: [launch, --expect-commit, "3dc12cf6d3a299c7c3702a1b2c349d69ffe1ddde", --require-mps]
+    gpu: auto
+    commit: 3dc12cf6d3a299c7c3702a1b2c349d69ffe1ddde
+    preregistered: true
+    protocol: modern/experiments/pic2d_external_validation_v0/protocols/brandt2016-micro-hempt-v1-channel-20um.json
+    results: modern/experiments/pic2d_external_validation_v0/results/channel-20um
+    checkout: worktree
+    gpu_memory_gib: 18
+    expected_ms_per_step: 12.5
+    transit_time_s: 1.4e-6
+    enabled: true
+
   # ---------------------------------------------------------------- (iv) plume runs (development)
   - id: plume-v2.1-33um
     note: >

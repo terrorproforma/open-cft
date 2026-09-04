@@ -337,6 +337,8 @@ def test_launch_records_a_nonzero_exit_code(repo: dict[str, object], tmp_path: P
 # ------------------------------------------------------------------------------------------ shipped jobs.yaml
 SWEEP_PREREG_COMMIT = "291a9227669c8927ea5cf7a6de2eed23fe6f73de"
 SWEEP_JOBS = ["sweep-reference", "sweep-056", "sweep-047", "sweep-009"]
+EXT_VAL_JOB = "ext-val-v0-channel-20um"
+EXT_VAL_PREREG_COMMIT = "3dc12cf6d3a299c7c3702a1b2c349d69ffe1ddde"
 
 
 def test_shipped_jobs_yaml_is_the_single_h100_mps_configuration_with_the_preregistered_sweep_enabled() -> None:
@@ -347,7 +349,8 @@ def test_shipped_jobs_yaml_is_the_single_h100_mps_configuration_with_the_preregi
     assert plan.gpus == [0] and plan.defaults.slots_per_gpu == 4
     assert plan.defaults.env["CUDA_MPS_PIPE_DIRECTORY"] == "/tmp/nvidia-mps" and plan.defaults.env["CUDA_MPS_LOG_DIRECTORY"] == "/tmp/nvidia-log"
     enabled = [j for j in plan.jobs if j.enabled]
-    assert [j.id for j in enabled] == SWEEP_JOBS
+    # the four sweep designs (056 finished on its triad gate at 10:52 UTC 2026-09-04) and external validation v0 in the slot 056 freed
+    assert [j.id for j in enabled] == SWEEP_JOBS + [EXT_VAL_JOB]
     for job in plan.jobs:
         assert job.checkout == "worktree"
         if job.id.startswith("sweep-"):
@@ -355,15 +358,22 @@ def test_shipped_jobs_yaml_is_the_single_h100_mps_configuration_with_the_preregi
             assert job.commit == SWEEP_PREREG_COMMIT and job.preregistered is True and (REPOSITORY / job.protocol).is_file(), job.id
             assert job.args[:1] == ["launch"] and "--require-mps" in job.args and job.args[job.args.index("--expect-commit") + 1] == SWEEP_PREREG_COMMIT
             assert job.protocol.startswith("modern/experiments/pic2d_design_mini_sweep_v1/protocols/") and job.transit_time_s and job.gpu_memory_gib
+        elif job.id == EXT_VAL_JOB:
+            assert job.commit == EXT_VAL_PREREG_COMMIT and job.preregistered is True and (REPOSITORY / job.protocol).is_file()
+            assert job.args == ["launch", "--expect-commit", EXT_VAL_PREREG_COMMIT, "--require-mps"]
+            assert job.protocol == "modern/experiments/pic2d_external_validation_v0/protocols/brandt2016-micro-hempt-v1-channel-20um.json"
+            assert job.results == "modern/experiments/pic2d_external_validation_v0/results/channel-20um" and job.transit_time_s == 1.4e-6 and job.gpu_memory_gib >= 17
         elif job.id == "shakedown-ss-v3-graph":
             assert not job.enabled and job.preregistered is False and job.commit   # never relabelled; disabled so `launch` takes no slot
         else:
             assert not job.enabled and job.commit is None, f"{job.id}: disabled placeholder slots must not name a commit yet"
-    # the four launched jobs fit the memory rule and the prereg check holds for each (commit reachable, sealed protocol frozen)
+    # the enabled jobs fit the memory rule and the prereg check holds for each (commit reachable, sealed protocol frozen)
     assert sum(j.gpu_memory_gib for j in enabled) <= 0.9 * plan.defaults.gpu_memory_gib
     for job in enabled:
         check = schedule.prereg_check(REPOSITORY, job.commit, job.protocol)
         assert check["ok"] is True, (job.id, check["problems"])
-    assert schedule.assign_gpus(plan, enabled) == {j.id: 0 for j in enabled}
+    # four concurrent processes = the four MPS slots: the three sweep runs still executing + external validation in 056's slot
+    concurrent = [j for j in enabled if j.id != "sweep-056"]
+    assert len(concurrent) == 4 and schedule.assign_gpus(plan, concurrent) == {j.id: 0 for j in concurrent}
     with pytest.raises(schedule.ScheduleError):        # a fifth concurrent job would exceed the four MPS slots
-        schedule.assign_gpus(plan, enabled + [next(j for j in plan.jobs if j.id == "sweep-106")])
+        schedule.assign_gpus(plan, enabled)
