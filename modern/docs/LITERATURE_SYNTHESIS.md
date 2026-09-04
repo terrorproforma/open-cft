@@ -13,7 +13,16 @@ recommendations into one decision table and one ordered roadmap:
 | Reduced-model, cusp-loss and topology blockers | `modern/docs/literature/reduced-models-cusp-topology-blockers.md` | `66879e00` | 72 |
 | Surrogate, MDO and external-validation blockers | `modern/docs/literature/surrogate-mdo-validation-blockers.md` | `b6bb6215` | 157 |
 
-345 verified references in total. Every decision below cites the review row it answers; the
+345 verified references in total. Later reviews indexed here but not reconciled into the
+decision tables below (each carries its own recommendation table): `twt-ppm-physics-for-hemp.md`
+(`beb4772c`, 51 references, TWT/PPM focusing physics and a read-only field check) and
+`pic-acceleration-methods.md` (2026-09-04, 147 references: how the `cft_revival.pic2d` PIC-MCC
+could be made 5-10x faster - energy-conserving / semi-implicit / implicit schemes, similarity
+scaling, time acceleration, Poisson solvers, kernel engineering, variance reduction - with the
+speed-up, claim-risk and verification protocol per method in its section 8; it extends
+`pic-mcc-blockers.md` blockers 1 and 2).
+
+Every decision below cites the review row it answers; the
 effort and risk columns are the reviews' own words, not re-estimates. Repository facts are
 read from `modern/docs/ROADMAP_AUDIT.md`, `modern/docs/workstreams/pic2d-campaign-v1-proposal.md`,
 `modern/docs/workstreams/pic2d-devlog.md` (phase 4), the recorded bundles named in the
