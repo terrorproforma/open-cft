@@ -364,6 +364,9 @@ AT_WAITING_JOBS = ["at-alpha-1over64", "at-alpha-0.345"]
 # physics effects v1 (R2 + R3): prereg 79a7c87a; wait in the chained pe-queue behind the r1-queue
 PE_PREREG_COMMIT = "79a7c87a2fd1807180958f085f9dc36939488029"
 PE_JOBS = ["pe-see-bn", "pe-xe-set-v2", "pe-see-bn+xe-set-v2"]
+# full physics v1 (R4 + R5 + R1-R5 combined): prereg b45f6728; wait in the chained fp-queue behind the pe-queue, in the sustain-first order
+FP_PREREG_COMMIT = "b45f672802fdb39dac7b427f4df6436694695fb0"
+FP_JOBS = ["fp-full-physics-alpha0.345", "fp-full-physics-alpha0", "fp-neutrals-spatial", "fp-full-physics-alpha1over16", "fp-coulomb", "fp-neutrals-spatial-F10"]
 PLUME_PLACEHOLDERS = ["plume-v2.1-33um", "plume-v2.1-50um-3mA"]
 SUPERSEDED_LAUNCH1_JOBS = ["sweep-056", AT_LAUNCH1_JOB]
 # the four CUDA-MPS clients on the box at 19:35 UTC 2026-09-04 (the r1-queue's next launch, at-alpha-1over64, waits for one of them)
@@ -383,7 +386,7 @@ def test_shipped_jobs_yaml_is_the_single_h100_mps_configuration_under_the_queue_
     assert plan.defaults.env["CUDA_MPS_PIPE_DIRECTORY"] == "/tmp/nvidia-mps" and plan.defaults.env["CUDA_MPS_LOG_DIRECTORY"] == "/tmp/nvidia-log"
     by_id = {j.id: j for j in plan.jobs}
     assert len(by_id) == len(plan.jobs)
-    for name in SWEEP_JOBS + [EXT_VAL_JOB, EXT_VAL_BOHM_JOB, SS25_JOB, SWEEP_056_LAUNCH2_JOB, SS33_FAST_JOB, AT_LAUNCH1_JOB, *AT_WAITING_JOBS, *PE_JOBS, *PLUME_PLACEHOLDERS]:
+    for name in SWEEP_JOBS + [EXT_VAL_JOB, EXT_VAL_BOHM_JOB, SS25_JOB, SWEEP_056_LAUNCH2_JOB, SS33_FAST_JOB, AT_LAUNCH1_JOB, *AT_WAITING_JOBS, *PE_JOBS, *FP_JOBS, *PLUME_PLACEHOLDERS]:
         assert name in by_id, name
 
     # -- every job: detached worktree; every SCHEDULED preregistered job names a full reachable SHA, passes it as --expect-commit and has
@@ -402,7 +405,7 @@ def test_shipped_jobs_yaml_is_the_single_h100_mps_configuration_under_the_queue_
     assert by_id["shakedown-ss-v3-graph"].commit and not by_id["shakedown-ss-v3-graph"].preregistered and not by_id["shakedown-ss-v3-graph"].enabled
 
     # -- waiting preregistered jobs: disabled AND prereg_check ok at HEAD (the slot-waiter's `launch --only` ignores `enabled`)
-    for name in AT_WAITING_JOBS + PE_JOBS:
+    for name in AT_WAITING_JOBS + PE_JOBS + FP_JOBS:
         job = by_id[name]
         assert not job.enabled and job.preregistered, name
         check = schedule.prereg_check(REPOSITORY, job.commit, job.protocol)
@@ -418,7 +421,7 @@ def test_shipped_jobs_yaml_is_the_single_h100_mps_configuration_under_the_queue_
     enabled = [j for j in plan.jobs if j.enabled]
     assert enabled and all(j.preregistered for j in enabled)
     assert {SS25_JOB, SS33_FAST_JOB, SWEEP_056_LAUNCH2_JOB, EXT_VAL_BOHM_JOB} <= {j.id for j in enabled}     # the four live clients
-    assert not ({AT_LAUNCH1_JOB, *AT_WAITING_JOBS, *PE_JOBS, "sweep-056"} & {j.id for j in enabled})
+    assert not ({AT_LAUNCH1_JOB, *AT_WAITING_JOBS, *PE_JOBS, *FP_JOBS, "sweep-056"} & {j.id for j in enabled})
 
     # -- the sweep (prereg 291a9227): launch 1 of 056 superseded by launch 2 at the amendment commit with the same sealed path
     for name in SWEEP_JOBS:
@@ -480,6 +483,26 @@ def test_shipped_jobs_yaml_is_the_single_h100_mps_configuration_under_the_queue_
         case = name.removeprefix("pe-")
         assert job.commit == PE_PREREG_COMMIT and job.args == ["launch", "--case", case, "--expect-commit", PE_PREREG_COMMIT, "--require-mps"], name
         assert job.protocol == f"modern/experiments/pic2d_physics_effects_v1/protocols/{case}.json"
+
+    # -- full physics v1 (chained fp-queue after the pe-queue): six cases at the prereg commit in the sustain-first order, case args, sealed protocols with the
+    #    v2.1.1 arming latch + ignition gate; the spatial cases carry the MCC ceiling above the Knudsen anode density and no 0-D inventory; the F pair differs in F only
+    for name in FP_JOBS:
+        job = by_id[name]
+        case = name.removeprefix("fp-")
+        assert job.commit == FP_PREREG_COMMIT and job.args == ["launch", "--case", case, "--expect-commit", FP_PREREG_COMMIT, "--require-mps"], name
+        assert job.protocol == f"modern/experiments/pic2d_full_physics_v1/protocols/{case}.json" and job.results.endswith(f"/results/{case}") and job.transit_time_s == pytest.approx(2.4e-6)
+        sealed = _sealed(job)
+        assert sealed["stopping_rule"]["grid_heating_triad"]["drift_members_arming"]["min_transit_times"] == 2.0
+        assert [c["time_s"] for c in sealed["stopping_rule"]["ignition_gate"]["checks"]] == [1.0e-6, 2.0e-6]
+        assert sealed["campaign"]["launch_priority"] == [n.removeprefix("fp-") for n in FP_JOBS]
+        op = sealed["operating_point"]
+        if "neutrals" in op:
+            assert "neutral_inventory" not in op and op["neutral_density_per_m3"] > 5.45e20 and op["neutrals"]["metastables"]["model"] == "metastables_v1"
+            assert op["neutrals"]["time_acceleration"] == (10.0 if case.endswith("F10") else 1.0)
+        else:
+            assert case == "coulomb" and sealed["numerics"]["coulomb"]["cycle_steps"] == 10
+    assert _sealed(by_id["fp-full-physics-alpha0.345"])["numerics"]["anomalous_collisions"]["alpha"] == pytest.approx(0.345)
+    assert "anomalous_collisions" not in _sealed(by_id["fp-full-physics-alpha0"])["numerics"]
 
     # -- four-slot accounting: the r1-queue's next launch is refused while the four live clients hold the slots and accepted once one frees;
     #    the chained pe-queue's first job behaves the same; two waiting jobs never share a freed slot

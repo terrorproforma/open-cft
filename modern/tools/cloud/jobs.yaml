@@ -287,6 +287,123 @@ jobs:
     transit_time_s: 2.4e-6
     enabled: false                # launched by the pe-queue slot-waiter after pe-xe-set-v2
 
+  # ---------------------------------------------------------------- (ii-e) full physics v1 - PREREGISTERED R4 / R5 / R1-R5-combined campaign (models v2.1.0-v2.5.0)
+  # modern/experiments/pic2d_full_physics_v1/: the ss-v4 33 um protocol (90 x 720, dt 1.4 ps, W 26666.7, seed 20260903, frames ON) + the v2.0.6 accumulated-floor Debye
+  # gate (64 000) + K = 5 + the model v2.1.1 drift-member ARMING LATCH + the v2.0 IGNITION GATE (both from the alpha-series amendment 1, stopping rules outside the
+  # identity) and per case: coulomb (numerics.coulomb e-e + e-i, cycle 10, i-i off; everything else legacy), neutrals-spatial (operating_point.neutrals =
+  # neutrals_spatial_v1 + metastables_v1 at F = 1 REPLACING the 0-D inventory, with xe_collision_set_v2 - the level-resolved metastable branching requires it - and the MCC
+  # ceiling 1.5e21 above the Knudsen anode density 5.45e20), neutrals-spatial-F10 (the same at time acceleration F = 10: the qualification twin), full-physics-alpha0 /
+  # -alpha1over16 / -alpha0.345 (SEE(BN) + set v2 + Coulomb + the spatial gas, + the Bohm rotation closure at alpha 1/16 / 0.345). Every case is read against the RECORDED
+  # ss-v4 plateau (0d228ad2, (b) FAIL at +2.46 % corrected - stated); the alpha cases' KEY hypothesis is 'sustains' (ignition gate + plateau): a Bohm-leaky discharge
+  # EXTINGUISHED at the dilute 0-D gas (at-alpha-1over16, 0916a4f8) - does the Knudsen gas (channel mean 2.5e20) sustain it? An extinction (stop_reason no_ignition) is a
+  # recorded outcome, never relaunched. Identities 49b30f51 / 66cb501c / e7a2d9b1 / 7587b0f3 / 198fb4c6 / 98cc5cbc. Box preflights 21:55-22:02 UTC 2026-09-04 as the
+  # 5th MPS client (4 PIC clients running): 7.16 (coulomb) / 7.02-7.18 (R5 cases) / 8.51-8.68 (full physics) ms/step at 4.5 M particles, 8.46 / 10.85-11.12 at 7.7 M
+  # (the spatial cases' budget basis: their peak density is expected to rise) -> budgets 55 800 / 65 400 / 65 400 / 84 000 / 86 400 / 85 800 s = 1.5x; device pool
+  # 1.6 GB (coulomb) / 2.5-2.7 GB at 4.5 M and 3.2-3.5 GB at 7.7 M (spatial; the neutral particles + per-cell fields ~0.9 GB). `commit` / `--expect-commit` = the
+  # PREREG commit; `--require-mps`. Launch ORDER (the sustain question first): fp-full-physics-alpha0.345 -> fp-full-physics-alpha0 -> fp-neutrals-spatial ->
+  # fp-full-physics-alpha1over16 -> fp-coulomb -> fp-neutrals-spatial-F10, one MPS slot each AFTER the physics-effects queue: all six stay `enabled: false` (a plain
+  # `launch` must not abort on 'no free slot' while they wait); the box's CHAINED slot-waiter (tmux `fp-queue`, tools/cloud/slot_queue.sh fp-queue --after
+  # $WORK/pe-queue/queue.log -> $WORK/fp-queue/queue.log) only starts calling `launch --only <id>` (which ignores `enabled`) after $WORK/pe-queue/queue.log carries
+  # 'queue done', in that order, retrying every 10 min only on the no-free-slot refusal, never --force; flip the flag in each launch-log commit.
+  - id: fp-full-physics-alpha0.345
+    note: >
+      pic2d_full_physics_v1 case full-physics-alpha0.345 (SEE(BN) + xe_collision_set_v2 + coulomb_v1 + neutrals_spatial_v1 / metastables_v1 at F = 1 + the Bohm
+      perpendicular-rotation closure at Brandt's alpha 0.345): 90 x 720 at 33 um, dt 1.4 ps, W 26666.7, 5.14 M steps to 3 transits (2.4 us); preflight 8.68 ms/step
+      at 4.5 M / 11.08 at 7.7 M particles (5th client) -> 12.4-15.8 h; budget 85,800 s (23.8 h). Launch 1 of the campaign (the sustain question at the strongest leak).
+    module: experiments.pic2d_full_physics_v1.run
+    args: [launch, --case, full-physics-alpha0.345, --expect-commit, "b45f672802fdb39dac7b427f4df6436694695fb0", --require-mps]
+    gpu: auto
+    commit: b45f672802fdb39dac7b427f4df6436694695fb0
+    preregistered: true
+    protocol: modern/experiments/pic2d_full_physics_v1/protocols/full-physics-alpha0.345.json
+    results: modern/experiments/pic2d_full_physics_v1/results/full-physics-alpha0.345
+    checkout: worktree
+    gpu_memory_gib: 4
+    expected_ms_per_step: 8.7
+    transit_time_s: 2.4e-6
+    enabled: false                # launched by the fp-queue slot-waiter after the pe-queue; flip in the launch-log commit
+  - id: fp-full-physics-alpha0
+    note: >
+      pic2d_full_physics_v1 case full-physics-alpha0 (every R2-R5 effect together, no anomalous transport): same grid / dt / W / seed; preflight 8.51 ms/step at
+      4.5 M / 10.85 at 7.7 M -> 12.2-15.5 h; budget 84,000 s (23.3 h). Launch 2 (the full model's alpha = 0 point; additivity combined case; alpha-trend reference).
+    module: experiments.pic2d_full_physics_v1.run
+    args: [launch, --case, full-physics-alpha0, --expect-commit, "b45f672802fdb39dac7b427f4df6436694695fb0", --require-mps]
+    gpu: auto
+    commit: b45f672802fdb39dac7b427f4df6436694695fb0
+    preregistered: true
+    protocol: modern/experiments/pic2d_full_physics_v1/protocols/full-physics-alpha0.json
+    results: modern/experiments/pic2d_full_physics_v1/results/full-physics-alpha0
+    checkout: worktree
+    gpu_memory_gib: 4
+    expected_ms_per_step: 8.5
+    transit_time_s: 2.4e-6
+    enabled: false                # launched by the fp-queue slot-waiter after fp-full-physics-alpha0.345
+  - id: fp-neutrals-spatial
+    note: >
+      pic2d_full_physics_v1 case neutrals-spatial (R5: neutrals_spatial_v1 + metastables_v1 at PHYSICAL neutral time F = 1, with xe_collision_set_v2; SEE / Coulomb off,
+      alpha 0): same grid / dt / W / seed; preflight 7.02 ms/step at 4.5 M / 8.46 at 7.7 M -> 10.0-12.1 h; budget 65,400 s (18.2 h). Launch 3 (the operating-point change).
+    module: experiments.pic2d_full_physics_v1.run
+    args: [launch, --case, neutrals-spatial, --expect-commit, "b45f672802fdb39dac7b427f4df6436694695fb0", --require-mps]
+    gpu: auto
+    commit: b45f672802fdb39dac7b427f4df6436694695fb0
+    preregistered: true
+    protocol: modern/experiments/pic2d_full_physics_v1/protocols/neutrals-spatial.json
+    results: modern/experiments/pic2d_full_physics_v1/results/neutrals-spatial
+    checkout: worktree
+    gpu_memory_gib: 4
+    expected_ms_per_step: 7.0
+    transit_time_s: 2.4e-6
+    enabled: false                # launched by the fp-queue slot-waiter after fp-full-physics-alpha0
+  - id: fp-full-physics-alpha1over16
+    note: >
+      pic2d_full_physics_v1 case full-physics-alpha1over16 (the full model with the classical Bohm closure nu_an = omega_ce / 16 that EXTINGUISHED the discharge at the
+      dilute 0-D gas): same grid / dt / W / seed; preflight 8.60 ms/step at 4.5 M / 11.12 at 7.7 M -> 12.3-15.9 h; budget 86,400 s (24.0 h). Launch 4.
+    module: experiments.pic2d_full_physics_v1.run
+    args: [launch, --case, full-physics-alpha1over16, --expect-commit, "b45f672802fdb39dac7b427f4df6436694695fb0", --require-mps]
+    gpu: auto
+    commit: b45f672802fdb39dac7b427f4df6436694695fb0
+    preregistered: true
+    protocol: modern/experiments/pic2d_full_physics_v1/protocols/full-physics-alpha1over16.json
+    results: modern/experiments/pic2d_full_physics_v1/results/full-physics-alpha1over16
+    checkout: worktree
+    gpu_memory_gib: 4
+    expected_ms_per_step: 8.6
+    transit_time_s: 2.4e-6
+    enabled: false                # launched by the fp-queue slot-waiter after fp-neutrals-spatial
+  - id: fp-coulomb
+    note: >
+      pic2d_full_physics_v1 case coulomb (R4 alone: e-e + e-i Coulomb collisions every 10 steps on the legacy set, the 0-D inventory, the absorbing wall, alpha 0):
+      same grid / dt / W / seed; preflight 7.16 ms/step at 4.5 M -> 10.2 h; budget 55,800 s (15.5 h); ~1.6 GB device pool. Launch 5.
+    module: experiments.pic2d_full_physics_v1.run
+    args: [launch, --case, coulomb, --expect-commit, "b45f672802fdb39dac7b427f4df6436694695fb0", --require-mps]
+    gpu: auto
+    commit: b45f672802fdb39dac7b427f4df6436694695fb0
+    preregistered: true
+    protocol: modern/experiments/pic2d_full_physics_v1/protocols/coulomb.json
+    results: modern/experiments/pic2d_full_physics_v1/results/coulomb
+    checkout: worktree
+    gpu_memory_gib: 2
+    expected_ms_per_step: 7.2
+    transit_time_s: 2.4e-6
+    enabled: false                # launched by the fp-queue slot-waiter after fp-full-physics-alpha1over16
+  - id: fp-neutrals-spatial-F10
+    note: >
+      pic2d_full_physics_v1 case neutrals-spatial-F10 (the time-acceleration QUALIFICATION twin of neutrals-spatial: F = 10, otherwise identical; acceptance = every
+      plateau scalar inside the particle band of the F = 1 member): same grid / dt / W / seed; preflight 7.18 ms/step at 4.5 M / 8.46 at 7.7 M -> 10.3-12.1 h;
+      budget 65,400 s (18.2 h). Launch 6 (last: its verdict needs the F = 1 record).
+    module: experiments.pic2d_full_physics_v1.run
+    args: [launch, --case, neutrals-spatial-F10, --expect-commit, "b45f672802fdb39dac7b427f4df6436694695fb0", --require-mps]
+    gpu: auto
+    commit: b45f672802fdb39dac7b427f4df6436694695fb0
+    preregistered: true
+    protocol: modern/experiments/pic2d_full_physics_v1/protocols/neutrals-spatial-F10.json
+    results: modern/experiments/pic2d_full_physics_v1/results/neutrals-spatial-F10
+    checkout: worktree
+    gpu_memory_gib: 4
+    expected_ms_per_step: 7.2
+    transit_time_s: 2.4e-6
+    enabled: false                # launched by the fp-queue slot-waiter after fp-coulomb
+
   # ---------------------------------------------------------------- (iii) PIC design mini-sweep v1 (4 primary designs) - PREREGISTERED channel-33um option
   # modern/experiments/pic2d_design_mini_sweep_v1/: the steady-state v4 template (model v1.3 closure + v2.0.3 gates), 33.33 um / 1.4 ps,
   # W = 6e4 x dr dz / (50 um)^2 (particles-per-cell parity; 26 666.7 for the reference = v4), wall budgets 1.5x the projected
