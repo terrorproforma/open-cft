@@ -139,8 +139,8 @@
     "plateau_threshold": 0.05,
     "plateau_window_fraction": 0.2,
     "min_transit_times": 3,
-    "wall_budget_seconds": 172800,
-    "wall_budget_note": "48 h cumulative over resumes (run_state.json). Preflight (this machine, RTX 5090, CUDA-graph step, 2026-09-04 19:00 AEST) measured 9.71 ms/step at the seed load (2.1 M particles) and 17.43 ms/step at the synthetic 8.0 M-particle plateau load -> 34.9 h to 3 transits (7 200 000 steps) - but it was timed while ELEVEN CUDA processes of another campaign (hybrid_l2_v2) shared the GPU at 100 % utilisation (the nvidia-smi snapshot timed out at 5 s under that load; 1.34 ms per M particles vs the v4 solo 0.565 -> a ~2.4x contention factor), so it is an upper bound; the solo estimate from the v4-calibrated per-particle cost is 7.3-7.8 ms/step = 14.6-15.6 h. 48 h = 1.4x the fully-contended projection and 3.2x the solo estimate; the run stops at the plateau (v4: 3.03 transits), so the budget is a cap, not a duration. A budget stop without a plateau is a recorded outcome (resumable, but a resume is a new session under the same identity, disclosed)",
+    "wall_budget_seconds": 117000,
+    "wall_budget_note": "AMENDMENT v5.1 (2026-09-04 21:5x AEST, see `amendments`): 117,000 s = 32.5 h cumulative over resumes (run_state.json), re-derived for launch 2 on the Lambda H100 80GB HBM3 under CUDA MPS from the box preflight (preflight.json, 11:37 UTC, a0235676, the 4th MPS client beside the three running mini-sweep processes 19764 / 20079 / 20189): 6.99 ms/step at the seed load (0.99 M e- + 1.15 M Xe+) and 10.82 ms/step at the synthetic 8.0 M-particle plateau load (0.668 ms per M particles) -> 21.6 h to 3 transits (7,200,000 steps) at the plateau load, 14.0 h at the seed load; 117,000 s = 1.5 x the contended plateau-load projection (the required margin). The contention is not constant: the mini-sweep processes end over the next ~12 h (the run speeds up toward the solo rate) while the external-validation v0 job is expected to take a freed slot (a heavier 4th client), so the 1.5x margin covers a mix, not a fixed rate. The run stops at the plateau (v4: 3.03 transits), so the budget is a cap; a budget stop without a plateau is a recorded outcome (resumable on the SAME GPU model, new session under the same identity, disclosed). ORIGINAL (launch 1, withdrawn): 172,800 s = 48 h cumulative over resumes (run_state.json). Preflight (this machine, RTX 5090, CUDA-graph step, 2026-09-04 19:00 AEST) measured 9.71 ms/step at the seed load (2.1 M particles) and 17.43 ms/step at the synthetic 8.0 M-particle plateau load -> 34.9 h to 3 transits (7 200 000 steps) - but it was timed while ELEVEN CUDA processes of another campaign (hybrid_l2_v2) shared the GPU at 100 % utilisation (the nvidia-smi snapshot timed out at 5 s under that load; 1.34 ms per M particles vs the v4 solo 0.565 -> a ~2.4x contention factor), so it is an upper bound; the solo estimate from the v4-calibrated per-particle cost is 7.3-7.8 ms/step = 14.6-15.6 h. 48 h = 1.4x the fully-contended projection and 3.2x the solo estimate; the run stops at the plateau (v4: 3.03 transits), so the budget is a cap, not a duration. A budget stop without a plateau is a recorded outcome (resumable, but a resume is a new session under the same identity, disclosed)",
     "fail_closed": "runtime omega_pe dt gate (0.2), v2.0.3 window-mode peak-node Debye gate (hard pi cells per lambda_D on the 400000-step interval-averaged peak, once the window is complete), grid-heating triad hard drift bounds (S, T_e,dense, omega_pe dt drifts >= 0.25 after one transit) and the v2.0.3 windowed residual-power bound (trailing-400000-step ledger residual >= 5 % of the electrode work, one-sided, from the first complete window), one-cell Courant crossing, Poisson residual contract, neutral inventory exhaustion or ceiling violation: PIC2DStabilityError / triad stop ends the run with the artifacts written",
     "ignition_check": "the seed and injection are the ones that ignited v2 attempt 2, seed-b, w-0.7 and v4: S growing and N_e rising by ~1 us with n_g heading toward ~3.2e19; NO adjustment is allowed under this preregistration - a non-ignition is a recorded outcome of the ladder point, not a reason to relaunch",
     "grid_heating_triad": {
@@ -249,8 +249,41 @@
     "protocol": "this file is frozen at the preregistration commit; summary.json records protocol_sha256 and git_head; run.py launch refuses a dirty worktree, a HEAD that is not the recorded preregistration commit, or an existing execution lock",
     "preflight": "preflight.json (real P2 field on the 120 x 960 grid, mesh, factorisation, memory, ms/step over >= 2000 steps at the seed load and at a synthetic ~8 M-particle load) - non-evidentiary; the wall budget is derived from it before the freeze",
     "shakedown": "shakedown.json: a short real-input run (results-shakedown/, a few checkpoints and one completed window) through run -> finalize artifacts -> assess, so the assessment / export stages have executed on real data before the freeze - non-evidentiary, its results directory is not committed",
-    "one_execution": "one detached launch from the dedicated worktree at the preregistration commit; a wall-budget stop may be resumed (new session, same identity, disclosed in run_state.sessions); no parameter is changed after the freeze",
+    "one_execution": "one detached launch from the dedicated worktree at the preregistration commit; a wall-budget stop may be resumed (new session, same identity, disclosed in run_state.sessions); no parameter is changed after the freeze. AMENDED v5.1 (see `amendments` / `launch_platform`): launch 1 (RTX 5090, PID 43572, lock at 69ff435d) was WITHDRAWN by the user at 0.800 us / step 800,000 with no terminal state (not a result, not a failure; record in results-launch1-withdrawn/); the one execution that counts is launch 2, a FRESH start on the Lambda H100 from the v5.1 amendment commit (`launch --expect-commit <v5.1 sha>`) - the launch-1 checkpoint is history and is NOT resumed across GPU models",
     "ladder": "v2 base 50 um (24ab82f4) -> v4 33.3 um (0d228ad2, resolution_limited vs the base) -> v5 25 um (this); each rung is judged against the previous one by the same rule; the ladder stops at the first 'converged' rung or when a 'resolution_limited' rung hands over to the W-only / operating-point follow-up"
+  },
+  "amendments": [
+    {
+      "version": "v5.1",
+      "kind": "launch_platform_and_wall_budget",
+      "utc": "2026-09-04T12:00:00Z",
+      "reason": "USER DIRECTIVE (2026-09-04 21:23 AEST): the full PIC run must execute on the Lambda H100, not on the local PC (the RTX 5090 run made the user's machine unusable). Launch 1 (RTX 5090, PID 43572, lock at the preregistration commit 69ff435d, 19:29:53 AEST) was WITHDRAWN at 21:26:48 AEST at the checkpoint boundary step 800,000 / 0.800 us (1.83 h of stepping, healthy v2/v4 ignition pattern, window Delta/lambda_D 0.70, windowed residual -14.2 %): no terminal state, not a result, not a failure; its record is results-launch1-withdrawn/ (commit a0235676). Launch 2 is a FRESH start on the H100: one execution on one GPU model for the record, no cross-GPU resume.",
+      "changes": [
+        "launch_platform block added (GPU model, sharing mode, scheduler job)",
+        "stopping_rule.wall_budget_seconds 172800 -> 117000 (1.5 x the H100 MPS-contended plateau-load projection of 21.6 h from the box preflight; the original derivation is kept in wall_budget_note)",
+        "preregistration.one_execution: the withdrawn launch 1 and the fresh launch 2 recorded"
+      ],
+      "unchanged": "grid (120 x 960, 25 um), dt 1.0 ps, W 1.5e4, operating point, v1.3 closure, seed, v2.0.3 gates and cadences, plateau rule, acceptance (a)-(d), tolerances, primary (v4) and secondary (v2) references, claim boundary: the configuration identity efb9bb09c2d28fdfee02f7bb19f0fdd3ec12ff3a6b573659c7d17656bc9ad5b0 (which excludes the stopping rule) is byte-for-byte the preregistered one; the preflight and the shakedown were re-run on the launch box (H100, MPS) before the launch-2 commit and replace the RTX 5090 records in preflight.json / shakedown.json (the 5090 numbers stay quoted in README.md)",
+      "not_changed_because": "the physics, the numerics and the acceptance rule are what the preregistration protects; the GPU model was never a declared parameter (the 5090 appears only in the cost model and the budget derivation), and the same-seed physics replays bitwise under MPS (mini-sweep mps-replay record)"
+    }
+  ],
+  "launch_platform": {
+    "gpu": "NVIDIA H100 80GB HBM3 (Lambda gpu_1x_h100_sxm5, us-southeast-1, driver 580.105.08, CUDA 13.0 driver / Warp 1.14.0 cu12.9 wheel, Python 3.12.14, Linux)",
+    "sharing": "CUDA MPS client (CUDA_MPS_PIPE_DIRECTORY=/tmp/nvidia-mps) beside the running pic2d_design_mini_sweep_v1 processes: 4 clients at the launch (3 sweep + this; the sweep's 056 slot had freed at 10:52 UTC), the external-validation v0 job expected on the slot design 047 frees; under MPS the physics state replays bitwise and only float-atomic diagnostic accumulators differ at <= 2e-13 (mini-sweep mps-replay.json)",
+    "scheduler": "modern/tools/cloud/schedule.py job ss25-base (jobs.yaml): detached worktree at the v5.1 commit under <WORK>/jobs/ss25-base/tree, tmux, CUDA_VISIBLE_DEVICES=0, BLAS threads per slot; `launch --expect-commit <v5.1 sha>` with the same clean-worktree / protocol-blob / lock discipline as launch 1",
+    "withdrawn_launch_1": {
+      "gpu": "NVIDIA GeForce RTX 5090 (Windows, host DESKTOP-31AD96J)",
+      "pid": 43572,
+      "lock_commit": "69ff435d5c08dbd710890d340fb9ac586706b9dc",
+      "lock_utc": "2026-09-04T09:29:54Z",
+      "withdrawn_utc": "2026-09-04T11:26:48Z",
+      "last_checkpoint_step": 800000,
+      "last_checkpoint_time_s": 8e-07,
+      "stepping_wall_seconds": 6600,
+      "terminal_state": null,
+      "record": "modern/experiments/pic2d_cft_steady_state_v5/results-launch1-withdrawn/ (commit a0235676)",
+      "disposition": "withdrawn by the user (compute moved to the cloud); not a result, not a failure; checkpoint kept as history, not resumed"
+    }
   },
   "secondary_reference_run": {
     "experiment": "modern/experiments/pic2d_cft_steady_state_v2",

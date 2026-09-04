@@ -94,6 +94,55 @@ artifacts on disk) and the 50 µm column reported beside it (re-derived from the
 Early dynamics match the v2 / v4 ignition (I_d 0.7 → 1.3 mA, S 1.5–1.7e16 s⁻¹, n_g 5.5 → 4.6e19 by
 0.06 µs, single-step peak 0.3–0.4 cells/λ_D).
 
+## Amendment v5.1 — launch platform moved to the Lambda H100 (2026-09-04 ~22:00 AEST)
+
+**Why.** User directive (21:23 AEST): the full PIC run must execute on the Lambda H100, not on the
+local PC. Launch 1 (RTX 5090) was withdrawn at 0.800 µs (launch log below; record
+`results-launch1-withdrawn/`, commit `a0235676`). Launch 2 is a **fresh start** on the H100 — one
+execution on one GPU model for the record; the launch-1 checkpoint is history and is not resumed
+across GPU models (a cross-platform resume would also be a `numerical`, not a bitwise, continuation).
+
+**What changed in `protocol.json`** (block `amendments[0]`, `launch_platform`): the wall budget
+(`stopping_rule.wall_budget_seconds` 172 800 → **117 000 s = 32.5 h**, re-derived below, original
+derivation kept in the note), `preregistration.one_execution` (the withdrawn launch and the fresh
+launch recorded), and the new `launch_platform` block (GPU model, MPS sharing, scheduler job,
+withdrawn-launch record). **Nothing else**: grid, Δt, W, operating point, closure, seed, gates,
+cadences, plateau rule, acceptance (a)–(d), tolerances, references and claim boundary are untouched
+— the configuration identity `efb9bb09…` (which excludes the stopping rule) is byte-for-byte the
+preregistered one, and `tests/pic2d/test_pic2d_steady_state_v5.py` still pins it (5/5). The GPU
+model was never a declared parameter (the 5090 appears only in the cost model and the budget
+derivation); the physics state replays bitwise under MPS (mini-sweep `mps-replay.json`).
+
+### Preflight on the launch box (`preflight.json`, 11:37 UTC, H100 80GB HBM3, CUDA MPS; non-evidentiary)
+
+Run from a scratch worktree at `a0235676` as the **4th MPS client** beside the three running
+mini-sweep processes (PIDs 19764 reference / 20079 design 047 / 20189 design 009; design 056 had
+ended on its triad gate at 10:52 UTC and freed its slot; GPU 100 % utilised, 3 819 MiB used before
+this process). It replaces the RTX 5090 record of 19:00 AEST (kept above for comparison).
+
+* Field: direct P2 sample on the 121 × 961 nodes in 4.0 s, max |B| 0.291 T (the CPU-derived map
+  hash differs from the Windows anchor — `8098cab8…` vs `2ff82110…` — as the cross-platform
+  binding `0ac8d9b8` predicts; the source identity is what the checkpoints bind). Mesh 81 480 plasma
+  cells / 82 359 unknowns, unchanged. Host factorisation **3.1 s** (365 s on the Windows PC).
+* **ms/step under MPS-4 (production step, accumulation on, 2 000 timed steps after a 200-step
+  warm-up): 6.99 ms at the seed load** (0.99 M e⁻ + 1.15 M Xe⁺) and **10.82 ms at the synthetic
+  8.0 M-particle plateau load** (4.02 M + 4.02 M), 0.668 ms per M particles. For comparison the
+  withdrawn 5090 launch ran 8.8–9.5 ms/step solo at 1.3 M + 1.3 M, so the contended H100 slot is at
+  least as fast as the solo 5090 for this grid (latency-bound small kernels; see the H100 benchmark).
+* Projection: 3 transits (7 200 000 steps) = **21.6 h at the contended plateau load** (14.0 h at the
+  seed load; 21.9 h to the 7.28 µs v4 verdict time). **Wall budget 117 000 s = 32.5 h = 1.5× the
+  contended plateau-load projection.** The contention will change during the run (the sweep
+  processes end over the next ~12 h → faster; the external-validation v0 job takes a freed slot →
+  a heavier 4th client), so the margin covers a mix, not a fixed rate; the run stops at the plateau,
+  so the budget is a cap. Disclosed cost to the sweep: the 4th MPS client shares the saturated
+  aggregate (N=4 1.54×, N=8 1.58× of one process), i.e. the three running sweep jobs lose roughly
+  a quarter of their per-process speed while this run is the 4th client — the same 4-slot design
+  the sweep was launched under.
+* Memory: device pool +1.48 GB (seed run) / +2.66 GB (loaded run) of 79 GiB; host peak working set
+  1.49 GB. Expected gate readings unchanged (Δ/λ_D 1.62 at the v4 peak, ω_pe Δt 0.064).
+* The a-priori stability gate is identical to the 5090 preflight (ω_pe Δt 0.036, ω_ce Δt 0.051,
+  Δ/λ_D 0.75, Courant 0.47).
+
 ## Commands (from `modern/`)
 
 ```powershell
