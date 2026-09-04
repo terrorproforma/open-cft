@@ -81,12 +81,32 @@ direction over α (reversals inside the band are ties), no monotone quantity con
 every I_d / peak n_e shift inside the band. No α is "chosen": α stays a declared closure parameter (audit §6) until an r–θ / z–θ
 companion campaign supplies the mobility.
 
-## 5. Launch-box preflight and shakedown (non-evidentiary)
+## 5. Launch-box preflight and shakedown (non-evidentiary; H100, 16:48–16:57 UTC 2026-09-04, code `c1508c06`, as the 4th CUDA-MPS client beside ss25-base, sweep-056-launch2 and ss33-fast)
 
-Filled in at the preregistration commit (§7): `preflight-<case>.json` (H100, CUDA MPS client; field, mesh, factorisation, ms/step at
-the seed and at a synthetic 4.5 M-particle load, the anomalous event counts, the budget derivation) and `shakedown-alpha-1over16.json`
-(100 000 steps of the real case with shrunk cadences through run → assess (case + series) → re-finalize; the peak-Debye window
-enforced with the accumulated floor, the residual window complete, anomalous events non-zero).
+`preflight-<case>.json` (`preflight --case … --gpu-timing`, 2000 timed steps after 200 warm-up, block-Thomas + CUDA-graph step):
+
+| case | α | factorisation | seed load (645 k e⁻) | plateau load (2.26 M e⁻ + 2.26 M i) | ν_an Δt at 0.291 T | device pool | 3 transits at the plateau load | budget (× 1.5, 10-min ceiling) |
+|---|---|---|---|---|---|---|---|---|
+| alpha-1over16 | 1/16 | 1.7 s | 3.70 ms/step | 4.77 ms/step | 0.0045 | 1.32 GB | 6.81 h | **37 200 s (10.3 h)** |
+| alpha-1over64 | 1/64 | 1.7 s | 3.69 ms/step | 4.77 ms/step | 0.0011 | 1.32 GB | 6.82 h | **37 200 s (10.3 h)** |
+| alpha-0.345 | 0.345 | 1.7 s | 3.46 ms/step | 4.78 ms/step | 0.0248 | 1.32 GB | 6.83 h | **37 200 s (10.3 h)** |
+
+The Bohm kernel's cost is invisible at this contention (the three plateau-load rates agree to 0.2 %); the seed-load run at α = 0.345
+recorded 15.6 M anomalous events over 2200 steps (1/16: 2.9 M; 1/64: 0.72 M) — the rate scales with α as declared. Field
+`abf26c5c4fa6` (max |B| 0.291 T), 45 810 plasma cells, ω_ce Δt 0.072, ω_pe Δt 0.050 at the reference density. The rates are 4-client
+rates (the preflight itself was the fourth client) and faster than the mini-sweep reference's 6.19 ms/step (pre-v2.0.5 code) — the budget
+is the declared 1.5 × measured rule; a wall-budget stop is resumable (new session, same identity, disclosed).
+
+`shakedown-alpha-1over16.json` (`shakedown --case alpha-1over16`; 100 000 steps of the real case with shrunk cadences — series /
+sync 200, checkpoint 4000, window 40 000, frames 2000; every gate, the grid, Δt, W, α, field and seed the real ones): 3.81 ms/step,
+387 s, 50 frames, `target_steps_reached` at 0.140 µs, 448 764 e⁻ / 551 830 Xe⁺, **110.8 M anomalous events** (rate 1.98e19 /s at the
+end); the **v2.0.6 accumulated-floor peak-Debye window was enforced in 301 of 500 records** (max 0.355 cells/λ_D; the resolved set
+37 147 nodes where the mean-occupancy floor resolved 0 — the floor is live, not inert); the windowed residual-power window completed
+in 280 records (last −0.49 %, cooling side, on the W-corrected ledger); `assess --case` → `no_plateau` (a False, b True) with the shift
+table and the per-cusp report formed against the α = 0 reference (reference consistency 7/7 recomputed from the v4 artifacts);
+`assess --series` → `inconclusive` (only α = 0 reached); re-finalize from the checkpoint 5.6 s. The 0.14 µs transient values are not
+physics and are not quoted. The shakedown ran on the a-priori-budget composition (50 400 s); the sealed protocols differ from it only in
+`stopping_rule.wall_budget_seconds` / `_note` (outside `config_sha256`; identities unchanged).
 
 ## 6. Commands (from `modern/`, `PYTHONPATH=src:.`)
 
@@ -105,7 +125,12 @@ Launch order (one H100 MPS slot each, as the scheduler frees them): `alpha-1over
 
 ## 7. Preregistration and launch log
 
-- Draft: code + package + tests (this README's §1–4, §6), no preflight / shakedown records, no launch.
+- Draft `2dcaebbc` (model v2.1.0 code `f1255832`): code + package + tests, no preflight / shakedown records, no launch.
+- **PREREGISTERED** at the commit carrying this README, the sealed `protocols/*.json` with the measured budgets (sha256
+  `33acb08a…` 1/64, `b59b4402…` 1/16, `a9519acb…` 0.345; campaign `protocol.json`), the three preflight records and the 1/16
+  shakedown record (§5). Launch order alpha-1over16 → alpha-1over64 → alpha-0.345, one H100 MPS slot each via
+  `tools/cloud/schedule.py` jobs `at-alpha-1over16` / `at-alpha-1over64` / `at-alpha-0.345` (jobs.yaml commit after this one); the
+  ext-val `bohm-0.4` launch 2 takes the slot after the first α job.
 
 ## 8. Claim boundary
 
