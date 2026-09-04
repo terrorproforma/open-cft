@@ -398,7 +398,7 @@ class PoissonConfig2D:
     max_iterations: int = 20_000
     preconditioner: Literal["jacobi"] = "jacobi"
     # device-mg (poisson_gmg_v1) parameters; ignored (and absent from the identity) for other methods
-    mg_cycles: int = 12
+    mg_cycles: int = 14
     mg_pre_sweeps: int = 2
     mg_post_sweeps: int = 2
     mg_omega: float = 0.8

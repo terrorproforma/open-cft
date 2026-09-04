@@ -186,6 +186,34 @@ def protocol_budget(protocol: dict[str, Any]) -> dict[str, Any]:
     return protocol[keys[0]]
 
 
+def poisson_config(numerics: Mapping[str, Any], *, backend: str) -> PoissonConfig2D:
+    """Field-solve selection (part of ``config_sha256``).
+
+    Default (every protocol up to v2.0.4, whose ``numerics.poisson`` is a descriptive string): the exact block-Thomas
+    solve - on the device for ``warp-cuda``, on the host otherwise - at the 1e-10 relative residual contract; identity
+    unchanged.  poisson_gmg_v1: a ``numerics.poisson`` OBJECT ``{"method": "device-mg", "cycles": 14, "pre_sweeps": 2,
+    "post_sweeps": 2, "omega": 0.8, "coarsest_max_unknowns": 1024}`` selects the fixed-cycle geometric multigrid
+    (``cft_revival.pic2d.warp_poisson_mg``; the CPU backends run the same cycles in numpy).  A protocol naming a
+    different solver is a different configuration identity, so a checkpoint never crosses solvers silently.
+    """
+
+    block = numerics.get("poisson")
+    if not isinstance(block, Mapping) or "method" not in block:
+        return PoissonConfig2D(method="device-direct" if backend == "warp-cuda" else "direct", relative_tolerance=1.0e-10)
+    method = str(block["method"])
+    if method == "device-direct" and backend != "warp-cuda":
+        method = "direct"
+    return PoissonConfig2D(
+        method=method,   # type: ignore[arg-type]
+        relative_tolerance=float(block.get("relative_tolerance", 1.0e-10)),
+        mg_cycles=int(block.get("cycles", 14)),
+        mg_pre_sweeps=int(block.get("pre_sweeps", 2)),
+        mg_post_sweeps=int(block.get("post_sweeps", 2)),
+        mg_omega=float(block.get("omega", 0.8)),
+        mg_coarsest_max_unknowns=int(block.get("coarsest_max_unknowns", 1024)),
+    )
+
+
 def build_config(protocol: dict[str, Any], *, backend: str = "warp-cuda") -> PIC2DConfig:
     geometry = protocol["geometry"]
     case = protocol["case"]
@@ -259,7 +287,7 @@ def build_config(protocol: dict[str, Any], *, backend: str = "warp-cuda") -> PIC
             region=operating.get("seed_region", "all"),   # v2.0: "channel" leaves the plume empty at t = 0
         ),
         mcc=mcc,
-        poisson=PoissonConfig2D(method="device-direct" if backend == "warp-cuda" else "direct", relative_tolerance=1.0e-10),
+        poisson=poisson_config(numerics, backend=backend),
         limits=StabilityLimits(**numerics["stability_limits"]),
         reference_density_per_m3=numerics["stability_reference"]["density_per_m3"],
         reference_electron_temperature_ev=numerics["stability_reference"]["electron_temperature_ev"],

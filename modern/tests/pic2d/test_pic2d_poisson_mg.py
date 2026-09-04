@@ -220,9 +220,10 @@ def test_multigrid_fails_closed_when_the_fixed_cycle_count_misses_the_contract()
 
 @pytest.mark.parametrize("label, geometry, nr, nz, path", REAL_MAPS, ids=[case[0] for case in REAL_MAPS])
 def test_fixed_cycle_count_meets_the_contract_on_the_production_masks_with_real_charge_maps(label, geometry, nr, nz, path):
-    """The default 12 V(2,2) cycles reach the 1e-10 contract from a ZERO start on the real charge of the accepted
-    v4 33 um plateau and of the plume-50 attempts 7/8 (window-averaged n_i - n_e), with a uniform contraction
-    (no slow mode at the stair-stepped cone: the measured factor stays <= 0.2 on every cycle)."""
+    """The default 14 V(2,2) cycles reach the 1e-10 contract from a ZERO start on the real charge of the accepted
+    v4 33 um plateau and of the plume-50 attempts 7/8 (window-averaged n_i - n_e) with a wide margin, and the
+    contraction is uniform (no slow mode at the stair-stepped cone: the measured factor stays <= 0.2 on every
+    cycle; 12 cycles already meet the contract)."""
 
     if not path.is_file():
         pytest.skip(f"{path} is not available")
@@ -233,9 +234,8 @@ def test_fixed_cycle_count_meets_the_contract_on_the_production_masks_with_real_
     phi, history, rhs_norm = solver.run_cycles(source, POTENTIALS)
     relative = np.asarray(history) / rhs_norm
     factors = relative[1:] / relative[:-1]
-    assert relative[-1] <= 1e-10, relative.tolist()
-    assert relative[-1] <= 0.25e-10, "the default cycle count must keep a margin under the contract"
-    assert np.all(factors <= 0.2), factors.tolist()
+    assert relative[12] <= 1e-10 and relative[-1] <= 0.01e-10, relative.tolist()   # 12 cycles meet it; 14 keep >= 100x margin
+    assert np.all(factors[:12] <= 0.2), factors.tolist()      # the last cycles approach the round-off floor (~1e-13)
     # warm start from the (pessimistic: window-averaged) recorded potential still meets the contract
     _, warm, _ = solver.run_cycles(source, POTENTIALS, initial_phi_v=phi_maps)
     assert warm[-1] / rhs_norm <= 1e-10
@@ -247,16 +247,45 @@ def test_fixed_cycle_count_meets_the_contract_on_the_production_masks_with_real_
 def test_solver_selection_is_part_of_the_configuration_identity_and_legacy_identities_are_unchanged():
     legacy = PoissonConfig2D(method="device-direct").to_dict()
     assert "multigrid" not in legacy and set(legacy) == {"method", "relative_tolerance", "absolute_tolerance", "max_iterations", "preconditioner"}
-    record = PoissonConfig2D(method="device-mg", mg_cycles=12).to_dict()
-    assert record["multigrid"] == {"cycles": 12, "pre_sweeps": 2, "post_sweeps": 2, "omega": 0.8, "coarsest_max_unknowns": 1024}
+    record = PoissonConfig2D(method="device-mg").to_dict()
+    assert record["multigrid"] == {"cycles": 14, "pre_sweeps": 2, "post_sweeps": 2, "omega": 0.8, "coarsest_max_unknowns": 1024}
     assert artifacts.content_hash(legacy) != artifacts.content_hash(record)
-    assert artifacts.content_hash(record) != artifacts.content_hash(PoissonConfig2D(method="device-mg", mg_cycles=14).to_dict())
+    assert artifacts.content_hash(record) != artifacts.content_hash(PoissonConfig2D(method="device-mg", mg_cycles=16).to_dict())
     with pytest.raises(PIC2DValidationError):
         PoissonConfig2D(method="device-mg", mg_omega=1.5)
     with pytest.raises(PIC2DValidationError):
         PoissonConfig2D(method="device-mg", mg_pre_sweeps=0, mg_post_sweeps=0)
     with pytest.raises(PIC2DValidationError):
         PoissonConfig2D(method="gmg")
+
+
+def test_runner_selects_the_solver_from_the_protocol_and_keeps_the_legacy_identity():
+    """The shared runner's ``numerics.poisson`` object (poisson_gmg_v1) selects device-mg; the descriptive string every
+    recorded protocol carries (or an absent key) builds the block-Thomas configuration, so recorded identities are
+    unchanged."""
+
+    import json
+
+    from experiments.pic2d_cft_steady_state_v1 import run as runner
+
+    protocol = json.loads((EXPERIMENTS / "pic2d_cft_plume_v1" / "protocol.json").read_text(encoding="utf-8"))
+    assert isinstance(protocol["numerics"]["poisson"], str)          # v2.0: a description, not a selection
+    legacy_gpu = runner.build_config(protocol, backend="warp-cuda")
+    absent = json.loads(json.dumps(protocol))
+    del absent["numerics"]["poisson"]
+    assert artifacts.config_identity(runner.build_config(absent, backend="warp-cuda")) == artifacts.config_identity(legacy_gpu)
+    legacy_cpu = runner.build_config(protocol, backend="cpu")
+    assert legacy_gpu.poisson.method == "device-direct" and legacy_cpu.poisson.method == "direct"
+    assert "multigrid" not in legacy_gpu.poisson.to_dict()
+    variant = json.loads(json.dumps(protocol))
+    variant["numerics"]["poisson"] = {"method": "device-mg", "cycles": 14}
+    mg_gpu = runner.build_config(variant, backend="warp-cuda")
+    mg_cpu = runner.build_config(variant, backend="warp-cpu")
+    assert mg_gpu.poisson.method == mg_cpu.poisson.method == "device-mg" and mg_gpu.poisson.mg_cycles == 14
+    assert artifacts.config_identity(mg_gpu) != artifacts.config_identity(legacy_gpu)
+    assert artifacts.config_identity(mg_gpu) == artifacts.config_identity(mg_cpu)
+    variant["numerics"]["poisson"] = {"method": "device-direct"}
+    assert artifacts.config_identity(runner.build_config(variant, backend="warp-cuda")) == artifacts.config_identity(legacy_gpu)
 
 
 # ----------------------------------------------------------------------------- Warp
@@ -309,7 +338,7 @@ def test_warp_multigrid_matches_the_numpy_multigrid_and_the_block_thomas_solve(d
     solver, phi_device = _device_solve(masks, MG, device, parts, use_graph=(device != "cpu"))
     true_residual, tolerance = solver.verify()
     assert true_residual <= tolerance and 0.0 < solver.last_worst_ratio <= 1.0
-    assert solver.launches_per_solve == 12 + 12 * ((len(solver.levels) - 1) * 6 + 1)
+    assert solver.launches_per_solve == 12 + solver.cycles * ((len(solver.levels) - 1) * 6 + 1) and solver.cycles == 14
     assert solver.host_memory_bytes <= 1024**2 * 8 and solver.device_memory_bytes < 64 * 1024**2
     host = MultigridPoisson2D(masks, MG).solve(source, POTENTIALS).phi_v          # same cycles, zero start
     reference = BlockTridiagonalSolver(masks).solve(source, POTENTIALS).phi_v
