@@ -1,0 +1,262 @@
+{
+ "budget_design_mini_sweep": {
+  "cost_model": "experiments.pic2d_design_mini_sweep_v1.cost (anchors: steady-state v2 base / W x 0.7, plume attempt 8; H100 MPS-4 anchor 8.71 ms/step for the v4 configuration)",
+  "device_gb_projected": 17.4655048212418,
+  "dr_m": 3.335231662557765e-05,
+  "dt_s": 1.4e-12,
+  "dz_m": 3.330623970217221e-05,
+  "factorisation_s_projected": 92.10562976917407,
+  "hours_to_3_transits_projected": 23.34557173133103,
+  "ion_transit_note": "2.4 us x L_channel / 24 mm (measured reference residence scaled with the channel length) + L_plume / 17 km/s; replaced by the measured N_i / L residence at the first checkpoint past 1 us when the run reports it",
+  "ion_transit_time_s": 2.0183581259516356e-06,
+  "macro_weight": 30877.1,
+  "macro_weight_parity": 26660.2,
+  "ms_per_step_h100_mps4_per_process": 19.40800724001404,
+  "ms_per_step_projected": 19.40800724001404,
+  "ms_per_step_rtx5090_model": 10.557854139334612,
+  "n_eq_projected_per_m3": 2.3e+17,
+  "n_max_note": "template values (reference design): n_max = the a-priori design ceiling used by the stability reference; n_eq_projected = the reference's projected fixed-point density; for the other designs they are the REFERENCE numbers the ratios in summary.budget_check are formed against",
+  "n_max_per_m3": 4e+17,
+  "particles_projected_m": {
+   "channel_m": 12.000002625570616,
+   "channel_volume_ratio": 3.087710675583387,
+   "macro_weight": 30877.1,
+   "plume_m": 0.0,
+   "total_m": 12.000002625570616,
+   "weight_ratio_6e4_over_w": 1.9431876698265058
+  },
+  "platform": "h100-mps4",
+  "steps_to_3_transits": 4325053.127039219,
+  "wall_budget_factor": 1.5
+ },
+ "case": {
+  "axial_cells": 606,
+  "case": "base",
+  "grid_note": "dr 33.352 um x dz 33.306 um: 123 x 606 cells, nodes (124, 607); bore 123 cells",
+  "grid_policy": {
+   "dt_s": 1.4e-12,
+   "source": "the preregistered steady-state v4 grid (392129e5): target 24 mm / 720 = 33.333 um, dt 1.4 ps (attempt-8 verdict ac248e05: Delta <= 32.4 um, dt <= 1.48 ps); the reference design reproduces v4's 90 x 720 cells exactly",
+   "target_cell_m": 3.3333333333333335e-05
+  },
+  "id": "l1a-gs-v3-106-ccec1c8b2f-channel-33um-w30877.1-ng0-5.5e+19-seed5e16-v1.3-closure-v2.0.3-gates",
+  "macro_weight": 30877.1,
+  "macro_weight_policy": "W scaled from the parity value 26660.2 to cap the projected particle count at 12 M (disclosed: 13.90 M projected at parity; the W x 0.7 pair bounds the W sensitivity at <= 5.7 % on I_d)",
+  "radial_cells": 123,
+  "seed": 20260903
+ },
+ "claim_boundary": {
+  "field": "material-aware level-0 P2 field of the design (linear iron), scaled by the L1a source_strength_scale; not P2-qualified for these designs",
+  "geometry_approximation": "catalogue radii snapped to the 33.33 um grid (geometry.snaps); the clearance gap between the dielectric tube and the magnets is treated as dielectric front face",
+  "preregistered": "preregistered channel-only 33.33 um / 1.4 ps PIC-MCC run of ONE catalogue design under the sweep's operating-point policy, model v1.3 closure with the v2.0.3 gates, on a Lambda H100 80GB (CUDA MPS, four slots); yields the design's closure targets for plasma-network v2 under the predeclared acceptance; not validated against experiment; not a thruster performance prediction; the neutral transient is artificial and only the fixed point is physical",
+  "template_claim_boundary": "preregistered grid-refinement (33.3 um / 1.4 ps / W 2.667e4) check of the development PIC-MCC steady-state plateau of pic2d_cft_steady_state_v2 under the same v1.3 closure and operating point; the outcome classifies the 50 um plateau as resolution-converged or resolution-limited at the predeclared tolerances; not validated against experiment; not a thruster performance prediction; the neutral transient is artificial and only the fixed point is physical"
+ },
+ "classification": "axisymmetric_electrostatic_pic_mcc_preregistered_design_sweep_channel_only_33um_v1_3_closure_v2_0_3_gates_not_validated",
+ "cross_sections": "modern/spec/pic2d/xenon-cross-sections-v1.json",
+ "design": {
+  "design_id": "l1a-gs-v3-106-ccec1c8b2f",
+  "note": "5 stages, 4 cusps / 5 cells (the five-stage four-cusp HEMP-like class), no exit taper, rho 2.56 (L1a) -> 2.93 (L1b iron), wall |B| 0.31 T under iron",
+  "optional": true,
+  "priority": 5,
+  "role": "hemp-like-four-cusp",
+  "source": "sobol_v3"
+ },
+ "design_id": "l1a-gs-v3-106-ccec1c8b2f",
+ "design_identity": {
+  "case_sha256": "583348c7c5e8ae2e94844a5064024b484f9befdf04503b6dcd46b9c32f6d6d56",
+  "config_sha256": "ada417c1e3fe7f3cccd1a968c62fed1430f20b770ed143f552ec376573f971ad",
+  "geometry_sha256": "3d0bc7f6337e3557225611ef34bce3c59cb03736400e04ced64c332ef85d7014",
+  "identity_basis": "sweep-v3 Sobol (seed, index) rebuild; hashes equal the sealed sweep-v3 design authorities",
+  "identity_checks": {
+   "case_sha256": true,
+   "config_sha256": true,
+   "geometry_sha256": true,
+   "source_sha256": true
+  },
+  "sampling_design_id": "ccec1c8b2f0d14c7b644f9bfde37bcca93a053043c48fe843e9a11cfb382d5e7",
+  "source_sha256": "57ca7cd86055c4db927b74ecaa464eb3b975ee4778385ba90c293db3fdd7acd7"
+ },
+ "execution": {
+  "gpu": {
+   "concurrency": "CUDA MPS (nvidia-cuda-mps-control -d; CUDA_MPS_PIPE_DIRECTORY=/tmp/nvidia-mps, CUDA_MPS_LOG_DIRECTORY=/tmp/nvidia-log) with four PIC processes on the one GPU (tools/cloud/jobs.yaml slots_per_gpu 4); benchmark: 3.37 ms/step alone -> 8.71 ms/step per process at N = 4 (aggregate 1.54x) for the v4 configuration at the production load",
+   "determinism": "MPS time-slices the GPU between processes; each process's own kernel order is unchanged, so a same-seed run replays bitwise under MPS - VERIFIED on this box before the freeze (mps-replay.json: two concurrent processes and one solo process, series / status records and the final checkpoint arrays compared bitwise)",
+   "instance": "Lambda gpu_1x_h100_sxm5 (us-southeast-1), ubuntu@68.209.75.2, driver 580.105.08 (CUDA 13.0), 26 vCPU, 221 GiB RAM",
+   "model": "NVIDIA H100 80GB HBM3",
+   "provenance_caveats": [
+    "the runner's gpu_utilisation_percent_samples (nvidia-smi, 300 s) read the WHOLE GPU under MPS - shared-GPU readings, not per process",
+    "ms/step per process under MPS depends on how many slots are busy (8.71 at N = 4, 3.37 alone): wall-clock projections are per-slot upper bounds, the budget is a cap, not a cost",
+    "same-seed replay across the RTX 5090 (sm_120) and the H100 (sm_90) is numerical, never bitwise (tools/cloud/PLAN.md s.6); the reference design's sweep run is a numerical replication of steady-state v4 (same grid, dt, W, seed, operating point; different experiment / case ids, frame cadence identical) on a different GPU"
+   ],
+   "software": "Python 3.12.14, warp-lang 1.14.0 (PyPI CUDA 12.9 build, sm_90 JIT), numpy 2.5.2 (scipy-openblas 0.3.34 Haswell DYNAMIC_ARCH), Ubuntu 22.04"
+  },
+  "launch_discipline": "run.py launch --design ID --grid 33um --expect-commit <prereg sha> --require-mps: HEAD == prereg commit, clean worktree, protocol.json and protocols/<design>-channel-33um.json blobs == HEAD, recomposed protocol == sealed file byte for byte, preflight-channel-33um.json + shakedown-channel-33um.json + mps-replay.json present, O_EXCL execution-lock.json in the results directory, MPS pipe directory present",
+  "one_execution": "one detached launch per design (and per declared case) from its own worktree at the preregistration commit; a wall-budget stop may be resumed (--resume: new session, same identity, disclosed in run_state.sessions); no parameter changes after the freeze",
+  "scheduler": "modern/tools/cloud/schedule.py (tmux, detached worktree at the preregistration commit, per-job results directory, Warp cuda:0 UUID cross-check, prereg ancestor + byte-identical protocol checks) with slots_per_gpu 4 and the MPS variables exported"
+ },
+ "experiment_id": "pic2d-design-mini-sweep-v1",
+ "field_binding": "modern/experiments/pic2d_design_mini_sweep_v1/fields/l1a-gs-v3-106-ccec1c8b2f/binding.json",
+ "field_source": "design-mini-sweep binding: direct node evaluation of the design's padded level-0 material-aware P2 checkpoint, scaled by source_strength_scale",
+ "geometry": {
+  "bore_radius_m": 0.004102334944946051,
+  "cone_start_z_m": 0.02018358125951636,
+  "exit_radius_m": 0.004102334944946051,
+  "snaps": {
+   "bore_cells": 123,
+   "channel_cells": 606,
+   "cone_start": {
+    "cells": 606,
+    "error_m": 0.0,
+    "snapped_m": 0.02018358125951636,
+    "value_m": 0.02018358125951636
+   },
+   "dr_m": 3.335231662557765e-05,
+   "dz_m": 3.330623970217221e-05,
+   "exit_radius": {
+    "cells": 123,
+    "error_m": 0.0,
+    "snapped_m": 0.004102334944946051,
+    "value_m": 0.004102334944946051
+   },
+   "target_cell_m": 3.3333333333333335e-05
+  },
+  "source": "catalogue design l1a-gs-v3-106-ccec1c8b2f mapped onto the PIC straight-bore + cone (+ plume) representation; snaps recorded",
+  "z_max_m": 0.02018358125951636,
+  "z_min_m": 0.0
+ },
+ "model_spec": "modern/spec/pic2d/pic2d-model-v1.3.json (physics) + modern/spec/pic2d/pic2d-model-v2.0.json gates_v2_0 (v2.0.3 gates)",
+ "model_version": "pic2d v1.3 closure (v1.2 runner + quasi-steady 0-D neutral inventory, NO wall-ion recycling: bit-for-bit the v2 base physics) with the v2.0.3 gates (window-mode peak-Debye gate, windowed residual-power gate)",
+ "numerics": {
+  "averaging_window_note": "consecutive 400000-step (0.56 us at 1.4 ps) windows; the reported maps are the last completed window (or the current one if at least half full); the v2.0.3 gates read the same 400000-step window",
+  "averaging_window_steps": 400000,
+  "checkpoint_every_steps": 40000,
+  "checkpoint_note": "checkpoint-latest.{json,npz} rewritten atomically every 40000 steps (56 ns); n_g and the atom ledgers are in the checkpoint arrays; series.jsonl / status.jsonl appended at every 200-step sync",
+  "deposition": "bilinear, fixed-point 2^-40 integer accumulation",
+  "device_sync_steps": 200,
+  "dt_justification": "1.4 ps = the steady-state v4 time step (omega_pe dt 0.101 at the v2 window peak 1.64e18; attempt-8 analysis dt <= 1.48 ps), reduced only where the design's own channel field would put omega_ce dt above 0.95 x 0.2 (numerics.dt_policy; none of the four primary channel-only maps needs it: the 1.3 ps requirement of design 056 belongs to the 24 mm plume box's 0.821 T pole faces)",
+  "dt_policy": {
+   "max_b_t": 0.307196505,
+   "omega_ce_dt_at_template": 0.0756424704,
+   "rule": "template dt kept: omega_ce dt 0.076 <= 0.95 x 0.2",
+   "template_dt_s": 1.4e-12
+  },
+  "dt_s": 1.4e-12,
+  "frame_recorder": {
+   "cadence_steps": 20000,
+   "precision": "float32"
+  },
+  "frame_recorder_note": "frame recorder ON: 20000-step frames = 28.0 ns exact interval averages from the window accumulators (float32), for the per-design ionisation structure at the cusp planes and a video; frames are diagnostics, not gates",
+  "ion_subcycle": 8,
+  "neutral_update_note": "the inventory is advanced at every series interval (= sync interval) with the ionisations tallied over that interval",
+  "peak_debye_gate": {
+   "dense_fraction": 0.5,
+   "max_cells_per_debye": 3.141592653589793,
+   "max_cells_per_debye_note": "v2.0.3 window-mode gate (spec/pic2d/pic2d-model-v2.0.json gates_v2_0.peak_debye_gate_v2_0_3): the gated statistic is max(dr, dz) / lambda_D at the densest node of the trailing 400000-step interval average among nodes with mean occupancy >= 32 macro-electrons, with the window's moment T_e. HARD pi (Birdsall-Langdon CIC threshold; plume attempt 8 heated from ~3.2), fail-closed once the window is complete. SOFT 2.5 is a plateau precondition (plateau.peak_debye_soft_ok), never a stop. Expected at the reference's v2 peak (1.64e18 / 7.39 eV) on 33.33 um: 2.11; the HEMP-like designs may read higher - a plateau above 2.5 is recorded as 'resolution margin not met' (acceptance (a) fails, run continues to the budget), a legitimate outcome of the design, not a defect",
+   "min_macro_particles_at_peak": 32,
+   "min_macro_particles_at_peak_note": "mean occupancy over the window; with particles-per-cell parity the dense off-axis nodes hold ~300 macro-electrons as in the 50 um runs; axis nodes stay below the floor",
+   "soft_cells_per_debye": 2.5,
+   "window_snapshot_steps": 40000,
+   "window_steps": 400000
+  },
+  "poisson": "device block-Thomas direct (exact to round-off, true-residual contract 1e-10 |rhs| verified at every host sync)",
+  "series_interval_steps": 200,
+  "stability_limits": {
+   "max_cell_debye_ratio": 2.0,
+   "max_collision_probability": 0.1,
+   "max_omega_ce_dt": 0.2,
+   "max_omega_pe_dt": 0.2,
+   "max_particle_courant": 1.0
+  },
+  "stability_reference": {
+   "density_per_m3": 4e+17,
+   "electron_temperature_ev": 8.0,
+   "max_electron_energy_ev": 400.0
+  },
+  "step_graph": true,
+  "step_graph_note": "v1.4 CUDA-graph step (bitwise-identical to the direct launches; tests/pic2d/test_pic2d_warp_parity.py)"
+ },
+ "operating_point": {
+  "anode_potential_v": 300.0,
+  "electron_injection_current_a": 0.003,
+  "electron_injection_justification": "kept from v1.2: v2 ignited from this injection at 1e20 and the v1.2 reference did not at 1.5e19 (beam mirrored back); attempt 1 at 5e19 with the 1e16 seed also did not ignite (91-96 % of the beam returned), so attempt 2 changes the seed, not the injection",
+  "electron_injection_temperature_ev": 2.0,
+  "exit_plane_potential_v": 0.0,
+  "neutral_density_per_m3": 5.5e+19,
+  "neutral_density_role": "initial density AND MCC null-collision ceiling n_g0 (= Q_in / c, the zero-ionisation fixed point); the instantaneous n_g(t) is the inventory state",
+  "neutral_inventory": {
+   "feed_atoms_per_s": 1.598975504437045e+17,
+   "feed_justification": "Q_in = c n_g0 with c = v_bar A_exit / 4 (xenon 300 K), A_exit = pi (4.102 mm)^2 = 5.2870e-05 m^2, n_g0 = 5.50e+19 m^-3 -> 1.5990e+17 atoms/s (equal initial neutral density for every design; the reference's 8.551e16 /s reproduced)",
+   "relaxation_justification": "tau_g = 30 ns is artificial: << ion transit 2.4 us (n_g quasi-steady on plasma time scales), << physical effusion time V/c = 221 us, = 100 series intervals (averages the interval shot noise of S). Only the fixed point is physical; the artificial term has its own ledger so the atom balance closes to round-off",
+   "relaxation_time_s": 3e-08
+  },
+  "neutral_temperature_k": 300.0,
+  "seed_electron_temperature_ev": 5.0,
+  "seed_ion_temperature_ev": 0.0,
+  "seed_justification": "ATTEMPT 2: the seed used by the v1 and v2 snapshots (5e16 m^-3, 5 eV; 286 k macro-particles per species at W = 6e4), which ignited at 1e20 with the beam fully absorbed from the first 100 ns (exit return 0.9 -> 0.26 mA, anode 3.2-3.6 mA, nu_iz 2.8-4.2e6 s^-1, T_e rising 8 -> 10 eV). Attempt 1 used 1e16 and the seed cooled (T_e 7.9 -> 5.0 eV) with nu_iz falling 1.16e6 -> 5.6e5 s^-1 and 91-96 % of the beam mirroring back; a 5x denser seed builds the plasma potential structure that traps the beam electrons (the beam-transmission jump between 5e19 and 1e20 was 23x in ionisations per injected electron, far more than the 2x in collisionality, pointing at the potential structure rather than the collision rate). The seed is a documented initial condition, not a sustained source: it is not replenished",
+  "seed_plasma_density_per_m3": 5e+16,
+  "unchanged_note": "operating-point POLICY of the sweep: anode 300 V, exit plane 0 V, n_g0 5.5e19 m^-3 (initial density and MCC ceiling), tau_g 30 ns, exit-plane injection 3 mA @ 2 eV, seed plasma 5e16 m^-3 @ 5 eV, cold ions - every key bit-for-bit the accepted v2 attempt-2 / v4 value; ONLY the neutral feed changes with the design (Q_in = c n_g0 at the design's exit area). Equal n_g0 and equal injection current, NOT equal mass flow or current density, is the declared comparison"
+ },
+ "option": "channel-33um",
+ "schema_version": "cft.pic2d.design-mini-sweep.run-protocol/1.0.0",
+ "simplifications": [
+  "neutrals: 0-D quasi-steady inventory, uniform in space (no neutral flow field, no local depletion where the ionisation is, no wall accommodation); feed prescribed, exit-plane thermal effusion at 300 K; the transient toward the fixed point is artificial (tau_g = 30 ns vs the physical 221 us) and only the fixed point is physical",
+  "no ion-neutral collisions (elastic or charge exchange)",
+  "electron-neutral: isotropic elastic without the 2 m_e/M energy loss, one lumped 8.32 eV excitation, single ionisation with Vahedi-Surendra secondary energy and isotropic emission",
+  "dielectric wall: perfectly absorbing with accumulated surface charge, zero field in the dielectric backing (perfect insulator), no secondary electron emission, no sputtering",
+  "exit plane: Dirichlet 0 V cathode/neutraliser reference; electrons injected there as a flux-weighted half-Maxwellian at fixed current",
+  "anode: perfectly absorbing conductor at fixed potential",
+  "cone wall represented as a one-cell stair-step of the plasma cell mask",
+  "prescribed static B from the P2 solution (no plasma-induced field); bilinear node interpolation of the C1 bicubic psi field",
+  "ions pushed every 8 steps with 8 dt (frozen in between; births added to the ion charge immediately)",
+  "electrostatic only, azimuthally symmetric: no azimuthal instabilities/anomalous transport",
+  "momentum-conserving bilinear scheme: energy is not exactly conserved; the ledger (with electrode work) residual is reported; a resume restarts the interval ledger",
+  "3 mA injection at 0.017 mg/s feed: a real CFT runs at 0.1-1 A and 0.1-1 mg/s; the self-consistent fixed point of the ionisation-depletion balance, not the absolute current or flow, is the object of this run",
+  "development/screening run: not preregistered, no experimental validation, not a performance prediction",
+  "one grid per design (33.33 um / 1.4 ps, particles-per-cell parity with the 50 um runs): no per-design convergence study; the reference's 50 -> 33 um verdict (steady-state v4, pending at the freeze) is the only grid statement and is cited per design (stopping_rule.acceptance.f_convergence_caveat)",
+  "catalogue geometry snapped to the grid (geometry.snaps, <= half a cell); the dielectric tube / magnet clearance gap is not represented in the channel-only box",
+  "material-aware level-0 P2 field of the design (linear iron), scaled by the L1a source_strength_scale; not P2-qualified for these designs (fields/<id>/binding.json gates)",
+  "equal n_g0 and equal 3 mA / 2 eV exit-plane injection across designs (operating-point policy), not equal mass flow, mass-flow density or current density",
+  "four processes share one H100 through CUDA MPS: ms/step and gpu_utilisation samples are shared-GPU readings; the physics of each process is single-process deterministic (mps-replay.json)",
+  "preregistered design sweep of a development model: no experimental validation, not a performance prediction; the closure targets calibrate plasma-network v2 under the declared closure and are properties of that closure"
+ ],
+ "status": "preregistered_design_mini_sweep_v1_channel_33um_h100_mps4_not_validated",
+ "stopping_rule": {
+  "acceptance": {
+   "a_plateau": "stop_reason == plateau_reached_after_min_transit_times under stopping_rule.plateau (>= 3 design transits = 3 x 2.018 us, trailing-20 % drifts of I_d, N_e and n_g < 5 %, grid-heating triad soft bounds, window-mode peak-Debye soft margin 2.5)",
+   "b_residual_power": "summary.grid_heating_triad.windowed_energy_residual_over_electrode_work (the trailing 400000-step ratio at the stop) < +0.02, one-sided (positive = heating; the accepted 50 um runs read -0.2 / -1.5 / -4.2 %): the run is itself free of grid heating at the 2 % level",
+   "c_closure_targets": "every closure target of protocol.json closure_targets is extracted by `run.py targets` from the trailing-window maps.npz + summary.json (closure.extract_targets: cusp windows |z - z_c| <= min(1 mm, pitch / 4), near-wall band 0.5 mm, Kornfeld chain seeded with injected - returned exit electron current, anode-edge band 0.25 mm reported separately); a target is QUOTABLE only under (a) AND (b)",
+   "d_verdicts": {
+    "closure_quotable": "(a) AND (b): the design's closure targets enter plasma-network v2 as calibration / reproduction values with their block standard errors",
+    "no_plateau": "NOT (a): budget stop / gate stop / soft-margin block -> 'inconclusive within the budget' with the stop reason, the trailing drifts and the trailing-window quantities reported; a resume is a new session under the same identity (disclosed), never a re-preregistration",
+    "plateau_with_heating": "(a) but NOT (b): the plateau heats above 2 % of the electrode work; targets are reported, not quotable; a finer grid or a lower operating point is the follow-up for this design"
+   },
+   "declared": "predeclared before the launch; evaluated per design by `run.py assess --design ID --grid 33um`; the verdict is one of the d_verdicts values and is recorded in results/<design>-channel-33um/assessment.json (results-only commit)",
+   "e_design_effect": "a design effect between two designs is reported only if it exceeds BOTH the reference's seed-b / W x 0.7 spread (<= 1.1 % / <= 5.7 % on the plateau quantities) AND, when the 056 seed replicate has run, that replicate's spread; with four points the sweep tests a monotone trend of p_k and of the ion wall-loss fraction with rho (0.38 -> 0.61 -> 0.92 -> 2.36) and a qualitative change in the HEMP-like regime, nothing finer",
+   "f_convergence_caveat": "PREDECLARED PER-DESIGN CAVEAT: the 50 um -> 33 um grid-convergence verdict for the reference design is PENDING at this preregistration - pic2d_cft_steady_state_v4 (preregistered 392129e5, launch 1 PID 18068 at 13:11:55 AEST 2026-09-04 on the local RTX 5090, verdict expected 18:45-19:30 AEST 2026-09-04, budget end 13:15 AEST 2026-09-05) classifies the accepted 50 um plateau as converged / resolution_limited / refinement_heating / no_plateau.  Every sweep design runs at ONE grid (33.33 um / 1.4 ps, parity W), so no design carries a convergence statement of its own.  When the sweep is assessed (run.py assess) the v4 verdict MUST be cited per design: 'converged' -> the sweep's 33 um values are quoted with the v4 tolerances (10 % I_d / S / n_g / utilisation / I_beam, 20 % peak n_e / T_e,peak) as their grid band; 'resolution_limited' -> the sweep values are the resolved numbers but carry NO grid band (the 50 um numbers are superseded, the 33 um grid is not itself certified); 'refinement_heating' or 'no_plateau' -> the reference grid is not certified, every design's quotability rests on its own windowed residual-power and peak-Debye readings alone, and a design-to-design comparison is reported as 'at the 33 um grid, uncertified'.  The HEMP-like designs (0.27 T cusp fields) may reach denser peaks than the reference: their own peak-Debye window readings (soft 2.5 precondition, hard pi stop) are the per-design resolution statement, disclosed with the targets.",
+   "g_design_specific": "none"
+  },
+  "fail_closed": "runtime omega_pe dt gate (0.2), v2.0.3 window-mode peak-node Debye gate (hard pi cells per lambda_D on the 400000-step interval-averaged peak, once the window is complete), grid-heating triad hard drift bounds (S, T_e,dense, omega_pe dt drifts >= 0.25 after one transit) and the v2.0.3 windowed residual-power bound (trailing-400000-step ledger residual >= 5 % of the electrode work, one-sided, from the first complete window), one-cell Courant crossing, Poisson residual contract, neutral inventory exhaustion or ceiling violation: PIC2DStabilityError / triad stop ends the run with the artifacts written",
+  "grid_heating_triad": {
+   "energy_residual_over_electrode_work_max": 0.1,
+   "enforced_after_transit_times": 1.0,
+   "hard_drift_max": 0.25,
+   "note": "v1.4 triad drift members (soft 5 % = plateau precondition; hard 25 % after one transit) + v2.0.3 windowed residual-power hard gate (one-sided, 5 % of the electrode work over the trailing 400000 steps, from the first complete window); the cumulative ratio is recorded as the witness with its 10 % bound as a plateau precondition only. Calibration: the v2 base window ratios were -12.7 % (seed window) rising monotonically to -0.2 % at the plateau (max +0.37 %); seed-b -12.8 -> -1.5 %; w-0.7 -12.7 -> -4.2 %; attempt 8 crossed +5 % at ~3.1 us and reached +54.8 %",
+   "residual_window_steps": 400000,
+   "soft_drift_max": 0.05,
+   "windowed_energy_residual_over_electrode_work_max": 0.05
+  },
+  "ignition_check": "the seed and injection are the ones that ignited v2 attempt 2 (and seed-b, w-0.7, the v4 refinement); for the three L1a designs this is the FIRST PIC run on their fields: S growing and N_e rising by ~1 us with n_g heading toward its fixed point is expected, NOT guaranteed; a non-ignition is a recorded outcome of the design under this operating-point policy - NO adjustment is allowed under this preregistration",
+  "min_transit_times": 3,
+  "plateau": "relative drift < 5 % over the trailing 20 % of the elapsed simulated time for the discharge current, the plasma electron count AND the neutral density (linear fit, drift = slope x window / |mean|), evaluated at every checkpoint; may only be declared after >= 3 ion transit times (3 x 2.018 us = 6.055 us = 4,325,053 steps); additionally the grid-heating triad must be inside its soft bounds (plateau.triad_soft_ok) AND the window-mode peak-Debye soft margin must hold (plateau.peak_debye_soft_ok: trailing-window Delta/lambda_D at the peak <= 2.5) - the accepted v2 base rule plus the v2.0.3 preconditions, verbatim from steady-state v4",
+  "plateau_threshold": 0.05,
+  "plateau_window_fraction": 0.2,
+  "wall_budget_note": "1.5 x the projected wall to 3 transits (23.3 h at 19.41 ms/step on h100-mps4 = one of four CUDA-MPS slots of the H100 (8.71 ms/step anchor at N = 4), 4.33 M steps), rounded up to 10 min; cumulative over resumes; a budget stop without a plateau is a recorded outcome (resumable as a new session under the same identity, disclosed)",
+  "wall_budget_seconds": 126600.0
+ },
+ "template_protocol": {
+  "domain_option": "channel",
+  "experiment_id": "pic2d-cft-steady-state-v4",
+  "grid_variant": "33um",
+  "model_version": "pic2d v1.3 closure (v1.2 runner + quasi-steady 0-D neutral inventory, NO wall-ion recycling: bit-for-bit the v2 base physics) with the v2.0.3 gates (window-mode peak-Debye gate, windowed residual-power gate)",
+  "path": "modern/experiments/pic2d_cft_steady_state_v4/protocol.json",
+  "sha256": "82d3f2814de1596e5f92240b1b773b19b1f6893cfc02754b6c56210f8222c6cf"
+ }
+}

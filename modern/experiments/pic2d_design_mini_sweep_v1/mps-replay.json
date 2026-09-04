@@ -1,0 +1,344 @@
+{
+ "all_bitwise": false,
+ "concurrent": {
+  "exit_codes": {
+   "a": 0,
+   "b": 0
+  },
+  "wall_seconds": 24.109442367000156
+ },
+ "concurrent_pairs": {
+  "a-vs-b": {
+   "all_bitwise": false,
+   "checkpoint-final.npz": {
+    "bitwise_equal": false,
+    "bitwise_equal_keys": 13,
+    "diagnostic_differing_keys_max_rel": {
+     "cumulative": 2.7914951061720793e-16,
+     "cumulative_extra": 2.567596586893865e-16
+    },
+    "file_sha256_equal": false,
+    "keys": 15,
+    "physics_differing_keys": [],
+    "physics_keys_bitwise": true,
+    "present": true
+   },
+   "diagnostic_rtol": 1e-06,
+   "diagnostics_within_rtol": true,
+   "final_counts_equal": true,
+   "maps.npz": {
+    "bitwise_equal": false,
+    "bitwise_equal_keys": 18,
+    "diagnostic_differing_keys_max_rel": {
+     "sample_count_e": 7.769887100724712e-16,
+     "t_e_ev": 1.9814608174397116e-15,
+     "wall_electron_mean_energy_ev": 4.4126221599388323e-16
+    },
+    "file_sha256_equal": false,
+    "keys": 21,
+    "physics_differing_keys": [],
+    "physics_keys_bitwise": true,
+    "present": true
+   },
+   "ms_per_step": {
+    "a": 2.9065444773332274,
+    "b": 2.89212633699996
+   },
+   "passed": true,
+   "physics_bitwise": true,
+   "series.npz": {
+    "bitwise_equal": false,
+    "bitwise_equal_keys": 51,
+    "diagnostic_differing_keys_max_rel": {
+     "interval_field_work_j": 2.1640881266434215e-13,
+     "peak_node_cells_per_debye": 4.595236071850979e-16,
+     "peak_node_debye_length_m": 4.12872372500224e-16,
+     "peak_node_macro_particles_at_peak": 5.958720111379424e-16,
+     "peak_node_n_e_peak_per_m3": 4.917890841967116e-16,
+     "peak_node_t_e_dense_ev": 3.348339758195805e-16,
+     "peak_node_t_e_peak_ev": 1.0519281857543012e-15,
+     "peak_node_window_cells_per_debye": 4.543882715808857e-16,
+     "peak_node_window_mean_macro_particles_at_peak": 4.310461092436648e-16,
+     "peak_node_window_t_e_peak_ev": 7.545721852813109e-16
+    },
+    "file_sha256_equal": false,
+    "keys": 61,
+    "physics_differing_keys": [],
+    "physics_keys_bitwise": true,
+    "present": true
+   },
+   "series_records": {
+    "a": 30,
+    "b": 30,
+    "bitwise_equal": false,
+    "differing_keys_max_rel": {
+     "ledger/cumulative/field_work_j": 2.7914951061720793e-16,
+     "ledger/cumulative/pz_collisions": 3.8738617855616417e-16,
+     "ledger/cumulative/pz_impulse": 6.307860528918839e-16,
+     "ledger/cumulative/pz_impulse_electric": 1.9442893075744093e-15,
+     "ledger/cumulative/pz_wall_ions": 1.1595661903014086e-16,
+     "ledger/interval_field_work_j": 2.1640881266434215e-13,
+     "peak_node/cells_per_debye": 4.595236071850979e-16,
+     "peak_node/debye_length_m": 4.12872372500224e-16,
+     "peak_node/dr_per_debye": 4.595236071850979e-16,
+     "peak_node/dz_per_debye": 4.595236071850979e-16,
+     "peak_node/macro_particles_at_peak": 5.958720111379424e-16,
+     "peak_node/n_e_peak_per_m3": 4.917890841967116e-16,
+     "peak_node/t_e_dense_ev": 3.348339758195805e-16,
+     "peak_node/t_e_peak_ev": 1.0519281857543012e-15,
+     "peak_node/window/cells_per_debye": 4.543882715808857e-16,
+     "peak_node/window/debye_length_m": 3.973604592788493e-16,
+     "peak_node/window/mean_macro_particles_at_peak": 4.310461092436648e-16,
+     "peak_node/window/t_e_peak_ev": 7.545721852813109e-16
+    },
+    "identical_lines": 0,
+    "physics_differing_keys": [],
+    "physics_keys_bitwise": true
+   },
+   "steps_completed": {
+    "a": 6000,
+    "b": 6000
+   },
+   "window_currents_equal": true
+  }
+ },
+ "concurrent_processes": 2,
+ "cuda_mps_pipe_directory": "/tmp/nvidia-mps",
+ "cuda_visible_devices": "0",
+ "design_id": "divergent-exit-stack",
+ "diagnostic_keys_note": "float-atomic DIAGNOSTIC accumulators (window velocity moments -> T_e maps / peak-node statistics; energy-momentum ledger interval sums) are order-dependent device atomics and differ at round-off between ANY two runs on one GPU, solo or concurrent; the physics state (particles, fixed-point charge deposition, potential, densities, ionisation, wall fluxes, currents, counts, neutral inventory) must be bitwise",
+ "diagnostic_rtol": 1e-06,
+ "diagnostics_within_rtol": true,
+ "git_head": "7717062bf9195aab23b6f1fa2a35d7a6f2eb16c9",
+ "gpu": [
+  "NVIDIA H100 80GB HBM3, GPU-a800b021-6364-473f-5177-cd6ae7ce0005, 580.105.08, 81559 MiB"
+ ],
+ "host": "68-209-75-2",
+ "mps_neutral": true,
+ "mps_pipe_present": true,
+ "non_evidentiary": true,
+ "option": "channel-33um",
+ "passed": true,
+ "physics_bitwise": true,
+ "schema_version": "cft.pic2d.design-mini-sweep.mps-replay/1.0.0",
+ "shrunk_cadences": {
+  "averaging_window_steps": 40000,
+  "checkpoint_every_steps": 4000,
+  "device_sync_steps": 200,
+  "frame_cadence_steps": 2000,
+  "peak_debye_window_snapshot_steps": 4000,
+  "peak_debye_window_steps": 40000,
+  "residual_window_steps": 40000,
+  "series_interval_steps": 200
+ },
+ "solo": {
+  "exit_codes": {
+   "solo-1": 0,
+   "solo-2": 0
+  },
+  "runs": {
+   "solo-1": {
+    "wall_seconds": 18.406876773000477
+   },
+   "solo-2": {
+    "wall_seconds": 18.34284845500042
+   }
+  },
+  "solo-1_vs_concurrent_a": {
+   "all_bitwise": false,
+   "checkpoint-final.npz": {
+    "bitwise_equal": false,
+    "bitwise_equal_keys": 13,
+    "diagnostic_differing_keys_max_rel": {
+     "cumulative": 5.582990212344158e-16,
+     "cumulative_extra": 1.2837982934469328e-16
+    },
+    "file_sha256_equal": false,
+    "keys": 15,
+    "physics_differing_keys": [],
+    "physics_keys_bitwise": true,
+    "present": true
+   },
+   "diagnostic_rtol": 1e-06,
+   "diagnostics_within_rtol": true,
+   "final_counts_equal": true,
+   "maps.npz": {
+    "bitwise_equal": false,
+    "bitwise_equal_keys": 19,
+    "diagnostic_differing_keys_max_rel": {
+     "sample_count_e": 7.023478724038612e-16,
+     "t_e_ev": 1.940075036793308e-15
+    },
+    "file_sha256_equal": false,
+    "keys": 21,
+    "physics_differing_keys": [],
+    "physics_keys_bitwise": true,
+    "present": true
+   },
+   "ms_per_step": {
+    "a": 2.0776018093335247,
+    "b": 2.9065444773332274
+   },
+   "passed": true,
+   "physics_bitwise": true,
+   "series.npz": {
+    "bitwise_equal": false,
+    "bitwise_equal_keys": 49,
+    "diagnostic_differing_keys_max_rel": {
+     "interval_field_work_j": 2.3509672727724994e-14,
+     "interval_residual_j": 1.4617544448968875e-13,
+     "interval_sources_j": 5.424096872459616e-16,
+     "peak_node_cells_per_debye": 6.161942932656916e-16,
+     "peak_node_debye_length_m": 6.592901818209706e-16,
+     "peak_node_macro_particles_at_peak": 4.210412779064918e-16,
+     "peak_node_n_e_peak_per_m3": 3.501442963341671e-16,
+     "peak_node_t_e_dense_ev": 3.348339758195805e-16,
+     "peak_node_t_e_peak_ev": 8.415425486034411e-16,
+     "peak_node_window_cells_per_debye": 4.543882715808857e-16,
+     "peak_node_window_mean_macro_particles_at_peak": 2.2175573973942707e-16,
+     "peak_node_window_t_e_peak_ev": 7.849563947395954e-16
+    },
+    "file_sha256_equal": false,
+    "keys": 61,
+    "physics_differing_keys": [],
+    "physics_keys_bitwise": true,
+    "present": true
+   },
+   "series_records": {
+    "a": 30,
+    "b": 30,
+    "bitwise_equal": false,
+    "differing_keys_max_rel": {
+     "ledger/cumulative/field_work_j": 6.302221099519662e-16,
+     "ledger/cumulative/ke_absorbed_wall_j": 2.2031662430928009e-16,
+     "ledger/cumulative/pz_collisions": 2.596256686536426e-16,
+     "ledger/cumulative/pz_impulse": 3.228271292256884e-16,
+     "ledger/cumulative/pz_impulse_electric": 1.3366988989574048e-15,
+     "ledger/cumulative/pz_wall_ions": 1.1595661903014086e-16,
+     "ledger/interval_field_work_j": 2.3509672727724994e-14,
+     "ledger/interval_residual_j": 1.4617544448968875e-13,
+     "ledger/interval_sources_j": 5.424096872459616e-16,
+     "peak_node/cells_per_debye": 6.161942932656916e-16,
+     "peak_node/debye_length_m": 6.592901818209706e-16,
+     "peak_node/dr_per_debye": 6.161942932656916e-16,
+     "peak_node/dz_per_debye": 6.161942932656916e-16,
+     "peak_node/macro_particles_at_peak": 4.210412779064918e-16,
+     "peak_node/n_e_peak_per_m3": 3.501442963341671e-16,
+     "peak_node/t_e_dense_ev": 3.348339758195805e-16,
+     "peak_node/t_e_peak_ev": 8.415425486034411e-16,
+     "peak_node/window/cells_per_debye": 4.543882715808857e-16,
+     "peak_node/window/debye_length_m": 4.0668931892928884e-16,
+     "peak_node/window/mean_macro_particles_at_peak": 2.2175573973942707e-16,
+     "peak_node/window/t_e_peak_ev": 7.849563947395954e-16
+    },
+    "identical_lines": 0,
+    "physics_differing_keys": [],
+    "physics_keys_bitwise": true
+   },
+   "steps_completed": {
+    "a": 6000,
+    "b": 6000
+   },
+   "window_currents_equal": true
+  },
+  "solo-1_vs_solo-2": {
+   "all_bitwise": false,
+   "checkpoint-final.npz": {
+    "bitwise_equal": false,
+    "bitwise_equal_keys": 13,
+    "diagnostic_differing_keys_max_rel": {
+     "cumulative": 5.582990212344158e-16,
+     "cumulative_extra": 2.0512890346603827e-16
+    },
+    "file_sha256_equal": false,
+    "keys": 15,
+    "physics_differing_keys": [],
+    "physics_keys_bitwise": true,
+    "present": true
+   },
+   "diagnostic_rtol": 1e-06,
+   "diagnostics_within_rtol": true,
+   "final_counts_equal": true,
+   "maps.npz": {
+    "bitwise_equal": false,
+    "bitwise_equal_keys": 18,
+    "diagnostic_differing_keys_max_rel": {
+     "sample_count_e": 7.828359112223831e-16,
+     "t_e_ev": 2.22164871798519e-15,
+     "wall_electron_mean_energy_ev": 1.8670033967449952e-16
+    },
+    "file_sha256_equal": false,
+    "keys": 21,
+    "physics_differing_keys": [],
+    "physics_keys_bitwise": true,
+    "present": true
+   },
+   "ms_per_step": {
+    "a": 2.0776018093335247,
+    "b": 2.072994077166792
+   },
+   "passed": true,
+   "physics_bitwise": true,
+   "series.npz": {
+    "bitwise_equal": false,
+    "bitwise_equal_keys": 50,
+    "diagnostic_differing_keys_max_rel": {
+     "interval_field_work_j": 2.3509672727724994e-14,
+     "interval_sources_j": 2.5279005534702943e-16,
+     "peak_node_cells_per_debye": 4.373165760472513e-16,
+     "peak_node_debye_length_m": 4.12872372500224e-16,
+     "peak_node_macro_particles_at_peak": 3.788889661441932e-16,
+     "peak_node_n_e_peak_per_m3": 3.4993422792066247e-16,
+     "peak_node_t_e_dense_ev": 2.423922383632266e-16,
+     "peak_node_t_e_peak_ev": 5.17373827500381e-16,
+     "peak_node_window_cells_per_debye": 4.543882715808857e-16,
+     "peak_node_window_mean_macro_particles_at_peak": 4.310461092436648e-16,
+     "peak_node_window_t_e_peak_ev": 7.663909706861924e-16
+    },
+    "file_sha256_equal": false,
+    "keys": 61,
+    "physics_differing_keys": [],
+    "physics_keys_bitwise": true,
+    "present": true
+   },
+   "series_records": {
+    "a": 30,
+    "b": 30,
+    "bitwise_equal": false,
+    "differing_keys_max_rel": {
+     "ledger/cumulative/field_work_j": 6.302221099519662e-16,
+     "ledger/cumulative/ke_absorbed_wall_j": 1.4782759645147953e-16,
+     "ledger/cumulative/pz_collisions": 3.8738617855616417e-16,
+     "ledger/cumulative/pz_impulse": 3.982241930939645e-16,
+     "ledger/cumulative/pz_impulse_electric": 1.4276216279490865e-15,
+     "ledger/cumulative/pz_wall_electrons": 2.8065950827154373e-16,
+     "ledger/interval_field_work_j": 2.3509672727724994e-14,
+     "ledger/interval_sources_j": 2.5279005534702943e-16,
+     "peak_node/cells_per_debye": 4.373165760472513e-16,
+     "peak_node/debye_length_m": 4.12872372500224e-16,
+     "peak_node/dr_per_debye": 4.373165760472513e-16,
+     "peak_node/dz_per_debye": 4.373165760472513e-16,
+     "peak_node/macro_particles_at_peak": 3.788889661441932e-16,
+     "peak_node/n_e_peak_per_m3": 3.4993422792066247e-16,
+     "peak_node/t_e_dense_ev": 2.423922383632266e-16,
+     "peak_node/t_e_peak_ev": 5.17373827500381e-16,
+     "peak_node/window/cells_per_debye": 4.543882715808857e-16,
+     "peak_node/window/debye_length_m": 4.0286048585817044e-16,
+     "peak_node/window/mean_macro_particles_at_peak": 4.310461092436648e-16,
+     "peak_node/window/t_e_peak_ev": 7.663909706861924e-16
+    },
+    "identical_lines": 0,
+    "physics_differing_keys": [],
+    "physics_keys_bitwise": true
+   },
+   "steps_completed": {
+    "a": 6000,
+    "b": 6000
+   },
+   "window_currents_equal": true
+  }
+ },
+ "steps": 6000,
+ "utc": "2026-09-04T05:44:38.932975+00:00",
+ "verdict": "PHYSICS BITWISE under MPS: particle state, deposited fields / densities / fluxes, currents, counts and the neutral inventory replay bitwise between the concurrent MPS processes and the solo processes; only the float-atomic diagnostic accumulators differ, at round-off (<= 2.16e-13 relative), with the SAME key set solo-vs-solo (MPS-neutral) - MPS does not change a process's own kernel order"
+}

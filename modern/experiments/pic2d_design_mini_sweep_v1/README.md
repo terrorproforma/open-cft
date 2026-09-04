@@ -1,6 +1,14 @@
-# pic2d design mini-sweep v1 - DRAFT (not preregistered, no production launch)
+# pic2d design mini-sweep v1 - PREREGISTERED (channel-33um option on the Lambda H100, 2026-09-04)
 
-**Status: DRAFT / preparation only.** Nothing here is evidence. The preregistration commit follows the
+**Status: the `channel-33um` option is PREREGISTERED** (section 8: the sealed per-design run protocols under
+`protocols/`, the whole-set preflight, the MPS determinism replay and the one-design shakedown run on the launch box,
+all bound by hash in `protocol.json`; the four primary designs are launched from the preregistration commit through
+`tools/cloud/schedule.py` with four CUDA-MPS slots on one H100). No result exists yet; the closure targets of a design
+are quotable only under its predeclared acceptance (section 8.4). Sections 1-6 are the design, field, closure-target,
+cost and composition record of the DRAFT phase (2026-09-04 morning) and remain the description of what is being run;
+section 7 lists the decisions that closed the draft's open points, with reasons.
+
+**Draft-phase preamble (kept verbatim).** The preregistration commit follows the
 operating-point / grid decision that the plume attempt-8 verdict now forces: attempt 8 (PID 51256, model
 v2.0.1) was stopped by its grid-heating triad gate at 4.98 us with NO plateau (S drift 0.253; record
 `ac248e05`, 11:57 AEST 2026-09-04) - finite-grid heating from ~2.4 us once the peak-node Delta/lambda_D crossed
@@ -236,42 +244,166 @@ transit, dt reduced only where omega_ce dt would exceed 0.95 x 0.2, wall budget 
 plateau rule and frame recorder are the template's verbatim. `run.py run` refuses to start without
 `--allow-launch` and a green whole-set preflight of the option; results go to `results/<design>-<domain>/` (ignored).
 
-## 7. Open decisions (before the preregistration)
+## 7. Decisions that closed the draft's open points (2026-09-04, before the preregistration commit)
 
-1. Attempt 8's verdict is in (`ac248e05`): no plateau, finite-grid heating past Delta/lambda_D ~3.2. The sweep must
-   inherit the follow-up's grid / gate decision: the recalibrated peak-Debye gate (CIC threshold) + windowed
-   residual-power gate, and the 50 um vs 33 um / 1.4 ps choice, validated on the reference's channel-only
-   refinement run BEFORE the sweep is preregistered (HEMP-like designs with 0.27 T cusp fields may reach higher
-   peak densities than the reference; the runtime gates fail closed, but a design that trips them is a lost run).
-2. Channel-only (model v1.4, exit-plane injection) vs plume for the sweep runs - recommended channel-only; if the
-   verdict says the channel-only exit boundary distorts the cusp-loss estimands, the 24 mm option is ready (but
-   needs the resolved-peak operating point first).
-3. Design 047: keep with the disclosed anode-edge boundary cusp, or substitute 061.
-4. Operating-point policy: equal n_g0 (chosen) vs equal mass flow vs equal mass-flow density; equal injection
-   current (3 mA) vs current scaled with the exit area.
-5. Whether the 056 seed replicate is the right single replicate (alternative: a W x 0.7 replicate of 106).
-6. The estimand definitions (cusp window half-width min(1 mm, pitch/4); near-wall band 0.5 mm; the Kornfeld chain's
-   "entering current" = injected minus returned) must be frozen; a non-evidentiary shakedown on ONE real run
-   through `run -> finalize -> targets` before the prereg (the orbit v1-v3 / L1b lesson).
-7. Field level: level-0 padded solves (as the reference's padding-1.5 map) - a level-1 refinement is not needed by
-   the gates (1.5 mT vs the L1b level-1 map) but is the natural upgrade if the prereg wants P2-qualified fields.
+The draft listed seven open decisions. What was decided, and why (every item is also in `protocol.json`
+`preregistration.decisions`):
 
-## Commands (from `modern/`; CPU unless stated; never while another host factorisation runs)
+1. **Grid / gates: channel-only 33.33 um / 1.4 ps with the PIC model v2.0.3 gates.** Attempt 8's verdict
+   (`ac248e05`) retired 50 um for a dense peak; the refined grid is the steady-state v4 grid (`392129e5`, running
+   locally on the 5090 as the reference's convergence test). Grid target changed from the draft's 3.33e-5 m to
+   24 mm / 720 = 3.3333e-5 m so the reference design reproduces v4's 90 x 720 cells EXACTLY (the draft's target
+   gave 90 x 721). Gates: window-mode peak-Debye gate hard pi / soft 2.5 on the 400 000-step interval-averaged peak
+   (>= 32 macro-electrons), one-sided windowed residual-power gate >= 5 % of the electrode work, the v1.4 triad
+   drift members, omega_pe dt / Courant / Poisson / inventory gates. Plateau rule: the accepted steady-state rule
+   (>= 3 design transits, trailing-20 % drifts of I_d / N_e / n_g < 5 %) plus the v2.0.3 preconditions (triad soft,
+   peak-Debye soft 2.5). Frames ON (20 000-step = 28 ns interval averages).
+2. **Template / physics: the steady-state v4 protocol (model v1.3 closure, NO wall-ion recycling) - CHANGED from
+   the draft's v1.4 (recycling) channel template.** Reasons: (i) the sweep's reference run must be comparable with
+   the only 33 um reference run whose convergence verdict it has to cite (ss-v4: same physics, grid, dt, W, seed and
+   operating point - the sweep's reference run is a numerical replication of v4 on a different GPU); (ii) v1.4 has
+   no accepted plateau anywhere (steady-state v3 was never launched) and its recycled fixed point projects the
+   reference peak at Delta/lambda_D ~2.45 on this grid - on the 2.5 soft precondition - so every denser design
+   would risk "no plateau by soft margin"; the v1.3 peak projects 2.11; (iii) budgets and ignition expectations
+   anchor on the accepted v1.3 plateaus. Wall-ion recycling is a declared follow-up closure (under v1.3 gross = net
+   utilisation; recorded as such). Channel-only stays (the closure targets are channel quantities).
+3. **Design 047 KEPT with the disclosed anode-edge boundary cusp.** Boundary classification under the v3.1 0.25 mm
+   ambiguity tolerance; the three interior cusps match L1a within 0.30 mm of the 0.45 mm tolerance; the 73 um
+   separatrix foot sits inside the anode sheath (2 cells at 33 um). Its electron loss is reported separately as
+   `anode_edge_electron_wall_current_a` (closure.extract_targets, band 0.25 mm from the anode plane, all designs),
+   never as an interior cusp. Substitute 061 (rho 0.381) NOT taken: its 5.9 mm exit taper would confound the rho
+   ladder with a long cone the other three designs do not have.
+4. **Operating point: equal n_g0 (5.5e19, feed Q_in = c n_g0 at the design's exit area) and equal 3 mA / 2 eV
+   exit-plane injection** (the draft's choice, frozen; not equal mass flow, mass-flow density or current density).
+5. **Replicate: the 056 seed replicate (seed 20260904)** is sealed as its own run protocol
+   (`protocols/l1a-gs-v3-056-effcbc8686-channel-33um-seed-replicate.json`, `launch --case seed-replicate`); it is
+   NOT launched in the first campaign (a fifth MPS slot slows every process: N = 8 gave 17.1 ms/step per process).
+6. **Estimands frozen** as `closure.extract_targets` implements them: cusp window half-width min(1 mm, pitch / 4),
+   near-wall band 0.5 mm, Kornfeld chain seeded with (injected - returned) exit electron current, anode-edge band
+   0.25 mm; cusp planes and cells from the design's own material-aware topology (`binding.json`). The
+   non-evidentiary shakedown of ONE real design through run -> assess -> targets -> re-finalize path ran on the
+   launch box (section 8.3).
+7. **Field level: level-0 padded material-aware solves** (binding gates: mesh >= 5 deg, residual <= 2e-10, coverage,
+   topology within tolerance, |dB| vs L1b <= 1.5 mT); no level-1 refinement in this preregistration.
+
+Also decided (not in the draft's list): **macro weight** with particles-per-cell PARITY to the 50 um runs,
+W = 6e4 x dr dz / (50 um)^2 (26 666.7 for the reference = v4's value; 26 566.8 / 26 655.3 / 26 799.2 for 056 / 047 /
+009), cap 12 M projected particles (80 GB H100; only the optional 106 hits it: W 30 877) - the draft kept W = 6e4,
+i.e. 2.25x fewer particles per cell than the accepted runs; **budgets** 1.5x the projected 3-transit wall at the
+H100 CUDA-MPS four-slot per-process rate (cost model scaled to the measured 8.71 ms/step N = 4 anchor for the v4
+configuration), rounded up to 10 min, cumulative over resumes; **GPU model recorded** in every run protocol
+(`execution.gpu`: NVIDIA H100 80GB HBM3, driver 580.105.08, CUDA MPS four slots, the determinism finding below).
+
+## 8. Preregistration record (channel-33um, Lambda H100, 2026-09-04)
+
+### 8.1 What is sealed
+
+`protocol.json` (schema `cft.pic2d.design-mini-sweep.protocol/1.0.0`, status
+`preregistered_design_mini_sweep_v1_channel_33um_h100_mps4_not_validated`) binds by sha256: the six sealed run
+protocols under `protocols/` (four primary designs, the optional 106, the 056 seed replicate), the whole-set
+preflight `preflight-channel-33um.json`, the shakedown `shakedown-channel-33um.json` and the MPS determinism replay
+`mps-replay.json`. `run.py launch --design ID --grid 33um --expect-commit <prereg sha> --require-mps` refuses:
+HEAD != the commit, a dirty worktree, `protocol.json` or the design's sealed protocol differing from HEAD's blob, a
+recomposition (on the design's own node field, this platform) that differs from the sealed bytes, a missing or
+failed record, a missing MPS pipe directory, an existing `execution-lock.json` (O_EXCL, per results directory).
+
+### 8.2 Per-design protocol (the four launched designs; every value from `preflight-channel-33um.json` / `protocols/`)
+
+| design | role / rho (iron) | cells (dr x dz um) | dt | W (parity) | N projected | ms/step MPS-4 (5090 model) | transit | steps to 3 transits | hours to 3 transits at MPS-4 | wall budget | GPU GB | max B / omega_ce dt |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `divergent-exit-stack` | reference / 0.60 | 90 x 720 (33.33 x 33.33) = ss-v4 | 1.4 ps | 26 666.7 | 4.50 M | 8.71 (4.74) | 2.400 us | 5 142 857 | 12.5 h | 18.8 h (67 800 s) | 7.7 | 0.291 T / 0.072 |
+| `l1a-gs-v3-056-effcbc8686` | HEMP-like / 2.36 | 115 x 512 (33.23 x 33.30) | 1.4 ps | 26 566.8 | 10.23 M | 16.57 (9.01) | 1.705 us | 3 653 784 | 16.8 h | 25.3 h (91 200 s) | 15.0 | 0.321 T / 0.079 |
+| `l1a-gs-v2-047-e3196a8aa5` | low rho / 0.38 (+ anode-edge cusp disclosed) | 66 x 778 (33.31 x 33.32) | 1.4 ps | 26 655.3 | 2.68 M | 5.67 (3.09) | 2.592 us | 5 553 645 | 8.8 h | 13.3 h (48 000 s) | 5.3 | 0.254 T / 0.063 |
+| `l1a-gs-v3-009-d0c686b4aa` | mid rho / 0.92 | 80 x 684 (33.51 x 33.32) | 1.4 ps | 26 799.2 | 6.67 M | 11.26 (6.13) | 2.279 us | 4 883 555 | 15.3 h | 23.0 h (82 800 s) | 10.5 | 0.107 T / 0.026 |
+
+Sealed but not launched: `l1a-gs-v3-106-ccec1c8b2f` (123 x 606, W 30 877.1 at the 12 M cap, 19.4 ms/step, 4.33 M
+steps, 23.3 h, budget 35.2 h) and the 056 seed replicate (as 056, seed 20260904). dt: 1.4 ps for every design - the
+channel-only maps put omega_ce dt at 0.026-0.079; design 056's 1.3 ps requirement belongs to the 24 mm plume box's
+0.821 T pole faces, not to this option. Total projected: 43.3 GB of the 80 GB; the campaign wall time is the longest
+row plus its margin, not the sum (the four run concurrently; per-process speed improves as slots empty, so the
+MPS-4 hours are upper bounds).
+
+### 8.3 Records produced on the launch box (`ubuntu@68.209.75.2`, H100 80GB HBM3, driver 580.105.08, Python 3.12.14, numpy 2.5.2, warp-lang 1.14.0)
+
+* **Whole-set preflight** (`preflight-channel-33um.json`, 05:27 UTC, 16 s, all 5 designs PASS): identity, field
+  binding (file hashes re-verified; `field_source_sha256` per design recorded - the platform-independent binding),
+  grid snaps <= half a cell, field map + a-priori stability at the composed dt (omega_pe dt 0.050 at 4e17,
+  omega_ce dt <= 0.079, Courant 0.50), mesh masks, composed protocol accepted by `runner.build_config` (W, budget,
+  v2.0.3 gate keys, frames, no recycling recorded), cathode connectivity skipped (channel-only: exit-plane
+  injection, no cathode region - the 24/24 connectivity gate belongs to the plume options), cost row.
+* **Shakedown** (`shakedown-channel-33um.json`, design 056 on its real material-aware field, 100 000 steps at the
+  shrunk cadences 200 / 4000 / 40 000 / frames 2000, 283 s, 2.81 ms/step solo at 1.35 M e- + 1.43 M i): stop
+  `target_steps_reached`, 25 checkpoints, 50 frames; the window-mode peak-Debye gate ENFORCED in 301/500 records
+  (max 0.62 cells/lambda_D, 17 086 resolved nodes, mean occupancy 150 at the peak); the windowed residual-power
+  window complete in 280 records (last -12.4 %, cooling side, as the accepted plateaus' seed windows);
+  `assess` -> `no_plateau` (expected at 0.14 us; v4 verdict cited as pending); `targets` extracted every closure
+  target (Kornfeld chain p 0.136 / 0.096 / 0.071 at the 12.74 / 8.53 / 4.31 mm cusps, ionisation shares
+  0.07 / 0.22 / 0.29 / 0.42 anode -> exit, non-evidentiary numbers of a 0.14 us transient); THEN the externally-
+  stopped path (`finalize --allow-refinalize`) ran on the scratch directory (2.8 s; maps downgraded to
+  instantaneous as designed). The FIRST shakedown attempt died in the runner's finalization with
+  `KeyError: 'n_max_per_m3'` - the composed budget block lacked the two keys `summary.budget_check` reads (the
+  draft's composer had never reached a finalization); fixed in `8b21b868`, the shakedown re-run from scratch.
+* **MPS determinism replay** (`mps-replay.json`, reference design, 6000 steps at the shrunk cadences: two
+  concurrent processes under CUDA MPS + two solo processes, every pair compared): the PHYSICS state replays
+  BITWISE - particle positions / velocities, fixed-point charge deposition, potential, densities, ionisation and
+  wall FLUX maps, currents, counts, neutral inventory, `series.jsonl` physics blocks, `checkpoint-final` particle
+  arrays, `final_counts`, `window_currents_a` - between the concurrent MPS processes and the solo processes alike.
+  Only the float-atomic DIAGNOSTIC accumulators differ, at round-off (<= 2.2e-13 relative on the ledger interval
+  residual, ~1e-16 elsewhere): the window velocity moments (T_e maps, `sample_count_e`, the peak-node Debye
+  statistics), the energy / momentum ledger sums and the wall mean-energy maps. The solo-vs-solo pair shows the
+  SAME pattern, so MPS is neutral: it does not change a process's own kernel order; the round-off lives in the
+  device atomics of the v2.0.2 accumulators and exists without concurrency. Consequence recorded in
+  `mps-replay.json`: same-seed replays are bitwise on every quantity a gate reads EXCEPT the windowed T_e / Debye
+  and residual-power statistics, which agree to ~1e-13 - a gate decision could differ between two replays only in
+  a case marginal at that level. The FIRST replay attempt was hit by the fallout of the interrupted first shakedown
+  (below) and the second by the strict all-bitwise criterion (which the diagnostic atomics cannot meet); the
+  criterion was made explicit (physics bitwise, diagnostics within 1e-6, solo pair for the MPS-free pattern) in
+  `c51b6ea3` / `7717062b`, and the replay re-run.
+* **Operational finding (Xid 31 under MPS):** killing the first shakedown mid-step (`tmux kill-session` + `pkill`,
+  SIGTERM/SIGHUP; the runner has no signal handler) left an MMU fault (Xid 31, `FAULT_PDE`) attributed to the MPS
+  server; 105 s later the NEXT client to connect faulted at the same address, the server tore that client down and
+  reset its device context ("All clients belonging to error triggering process ... will be torn down"), and the
+  sibling process that connected 0.5 s later got a sticky `unspecified launch failure` at Warp init. Processes
+  started after the reset ran normally. Rule for the campaign: never kill a sweep process under MPS; the runs stop
+  themselves (plateau / budget / gate). If a stop is unavoidable, expect the server to reset on the next
+  connection and check `/tmp/nvidia-log/server.log` and `dmesg | grep Xid` before any relaunch. A SIGTERM handler
+  that checkpoints and stops cleanly is the follow-up change to the shared runner.
+
+### 8.4 Acceptance per design (verbatim in every sealed protocol, `stopping_rule.acceptance`)
+
+(a) plateau under the rule of section 7.1; (b) windowed residual power at the stop < +2 % (one-sided); (c) closure
+targets extracted from the trailing-window maps by `run.py targets`; verdicts `closure_quotable` ((a) AND (b)),
+`plateau_with_heating` ((a) not (b)), `no_plateau`; (e) a design effect counts only above the reference's seed-b /
+W x 0.7 spread and, once run, the 056 replicate's spread; (f) the **convergence caveat**: the 50 -> 33 um verdict of
+the reference (ss-v4, `392129e5`, running locally; verdict expected 18:45-19:30 AEST 2026-09-04) is PENDING at this
+preregistration and MUST be cited per design when the sweep is assessed - `converged` -> the 33 um values carry the
+v4 tolerances as their grid band; `resolution_limited` -> the values are the resolved numbers with NO grid band of
+their own; `refinement_heating` / `no_plateau` -> the reference grid is not certified and each design's quotability
+rests on its own residual-power and peak-Debye readings ("at 33 um, uncertified"); `run.py assess` reads the v4
+`assessment.json` when it exists and writes the applicable statement; (g) the 047 anode-edge disclosure.
+
+## Commands (from `modern/`; CPU unless stated; on the box `PYTHONPATH=src:.` with the MPS variables exported)
 
     $env:PYTHONPATH="$PWD\src;$PWD"; $env:OMP_NUM_THREADS='1'
-    python -m experiments.pic2d_design_mini_sweep_v1.run fields                      # 4 P2 solves, ~2-7 min each, RSS <= 0.5 GB
-    python -m experiments.pic2d_design_mini_sweep_v1.run preflight --domain channel
-    python -m experiments.pic2d_design_mini_sweep_v1.run preflight --domain plume-24mm
+    python -m experiments.pic2d_design_mini_sweep_v1.run fields                                  # 4 P2 solves, ~2-7 min each, RSS <= 0.5 GB
+    python -m experiments.pic2d_design_mini_sweep_v1.run preflight --domain channel --grid 33um  # whole-set preflight of the preregistered option
     python -m experiments.pic2d_design_mini_sweep_v1.run cost
-    python -m experiments.pic2d_design_mini_sweep_v1.run protocol --design l1a-gs-v3-056-effcbc8686 --domain channel
-    python -m experiments.pic2d_design_mini_sweep_v1.run draft-protocol
-    # GPU, after the preregistration only (DRAFT guard): run --design ID --domain channel --allow-launch
+    python -m experiments.pic2d_design_mini_sweep_v1.run protocol --design l1a-gs-v3-056-effcbc8686 --grid 33um [--with-field]
+    python -m experiments.pic2d_design_mini_sweep_v1.run compose --grid 33um                     # seal protocols/ + protocol.json (run on the launch box)
+    # GPU, launch box: mps-replay / shakedown (non-evidentiary records) and the preregistered launch
+    python -m experiments.pic2d_design_mini_sweep_v1.run mps-replay --design divergent-exit-stack --grid 33um
+    python -m experiments.pic2d_design_mini_sweep_v1.run shakedown --design l1a-gs-v3-056-effcbc8686 --grid 33um
+    python -m experiments.pic2d_design_mini_sweep_v1.run launch --design ID --grid 33um --expect-commit <prereg sha> --require-mps   # via tools/cloud/schedule.py
+    python -m experiments.pic2d_design_mini_sweep_v1.run status|assess|targets --design ID --grid 33um
+    # labelled development runs only (never evidence): run --design ID --grid 33um --allow-launch [--shrunk-cadences --max-steps N]
 
-Tests: `tests/pic2d/test_pic2d_design_mini_sweep.py` (13: design list and catalogue numbers, identity and PIC
+Tests: `tests/pic2d/test_pic2d_design_mini_sweep.py` (20: design list and catalogue numbers, identity and PIC
 mapping for every design and option, field bindings and their gates, node map hash / scale binding and fail-closed
-behaviour, reference pipeline, protocol composition reproducing the reference values and scaling the feed, draft
-protocol on disk = generator, cost anchors and the v2.1 spec row, Kornfeld mapping, closure extraction on a
-synthetic plateau, whole-set channel preflight, launch guard).
+behaviour, reference pipeline, 50 um protocol composition reproducing the reference values and scaling the feed,
+the channel-33um option = the v4 configuration with the v2.0.3 gates and parity W for every design, dt policy,
+experiment protocol on disk = generator, sealed protocols = recomposition (float-tolerant, any platform), cost
+anchors incl. the H100 MPS-4 anchor, Kornfeld mapping, closure extraction incl. the anode-edge band, whole-set
+preflight for both channel options, run / launch guards, shrunk-cadence protocol, replay comparison classifier).
 
 ## Launch log
 
@@ -279,3 +411,9 @@ synthetic plateau, whole-set channel preflight, launch guard).
   22 min total, peak RSS 503 MB, GPU untouched: attempt 8 PID 51256 was alive at 11:25 when this work started and
   ended on its own grid-heating triad gate at 4.98 us, recorded by `ac248e05` at 11:57); whole-set preflight green
   for the channel and 24 mm options; protocol.json draft; tests.
+* 2026-09-04 15:20-15:50 AEST (05:20-05:50 UTC), Lambda H100 `68.209.75.2`, code `412d240f` -> `7717062b`: the
+  channel-33um option composed and its records produced on the box - preflight 5/5 PASS (05:27 UTC), shakedown of
+  056 (100 000 steps, 283 s, 2.81 ms/step solo), MPS determinism replay (physics bitwise, diagnostics at
+  round-off, MPS-neutral), six run protocols sealed; two composer defects found and fixed by the shakedown /
+  replay before the freeze (budget keys the runner's finalization reads; the replay criterion). Xid-31 event from
+  an interrupted shakedown recorded (section 8.3).

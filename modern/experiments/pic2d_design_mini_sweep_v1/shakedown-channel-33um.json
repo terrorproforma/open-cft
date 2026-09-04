@@ -1,0 +1,240 @@
+{
+ "artifacts": {
+  "maps_npz_sha256": "6dd58b9f231babc1bd2d8a1f597deeeb3354e8ea63885cfbd97c51b115d019ea",
+  "series_npz_sha256": "f557360df7d73cce332e93839964f7c34611a3b09f2b952ea3a11689a859edf8"
+ },
+ "assessment": {
+  "a_plateau": {
+   "ion_transit_times": 0.08210665808846059,
+   "passed": false,
+   "plateau": {
+    "discharge_current_drift": -0.025567078735585256,
+    "drifts_within_threshold": true,
+    "electron_count_drift": 0.010374846552992235,
+    "min_transit_times": 3.0,
+    "neutral_density_drift": -0.020503578019384898,
+    "peak_debye_soft_ok": true,
+    "reached": false,
+    "threshold": 0.05,
+    "tracked": [
+     "discharge_current_drift",
+     "electron_count_drift",
+     "neutral_density_drift"
+    ],
+    "transit_times_elapsed": 0.08210665808846059,
+    "triad_soft_ok": false,
+    "window_fraction": 0.2
+   },
+   "rule": "stop_reason == plateau_reached_after_min_transit_times under stopping_rule.plateau (>= 3 design transits = 3 x 1.705 us, trailing-20 % drifts of I_d, N_e and n_g < 5 %, grid-heating triad soft bounds, window-mode peak-Debye soft margin 2.5)",
+   "stop_reason": "target_steps_reached"
+  },
+  "b_residual_power": {
+   "bound": 0.02,
+   "cumulative_witness": -0.10546378979742227,
+   "one_sided": true,
+   "passed": true,
+   "rule": "summary.grid_heating_triad.windowed_energy_residual_over_electrode_work (the trailing 400000-step ratio at the stop) < +0.02, one-sided (positive = heating; the accepted 50 um runs read -0.2 / -1.5 / -4.2 %): the run is itself free of grid heating at the 2 % level",
+   "window_complete": true,
+   "windowed_residual_over_electrode_work": -0.12516350859766892
+  },
+  "steady_state_v4_verdict": {
+   "note": "pic2d_cft_steady_state_v4 (392129e5) has not recorded its assessment in this checkout; the caveat applies in full",
+   "status": "pending",
+   "verdict": null
+  },
+  "verdict": "no_plateau"
+ },
+ "cuda_mps_pipe_directory": "/tmp/nvidia-mps",
+ "design_id": "l1a-gs-v3-056-effcbc8686",
+ "field": {
+  "kind": "p2-direct-node-sample-design-mini-sweep",
+  "max_b_t": 0.3211472119082221,
+  "sha256": "c28583932f020aa7267ec226b332ba16d90eb661270bd2ff8a3c0d2b26fa1646",
+  "source_sha256": "27314f44e0f6c8909fca0bded0366dedab5234cc4ff823d49e7f6563b169de59"
+ },
+ "final_counts": {
+  "electrons": 1352154,
+  "ions": 1428584
+ },
+ "frames": 50,
+ "gate_not_inert_check": {
+  "peak_window_enforced_at_least_once": true,
+  "peak_window_resolved_nodes_last": 17086,
+  "residual_window_completed_at_least_once": true
+ },
+ "git_head": "8b21b8687841972a82a6285f756cc3ccb1c20341",
+ "gpu": [
+  "NVIDIA H100 80GB HBM3, GPU-a800b021-6364-473f-5177-cd6ae7ce0005, 580.105.08, 81559 MiB"
+ ],
+ "host": "68-209-75-2",
+ "ms_per_step": 2.809238825779994,
+ "non_evidentiary": true,
+ "option": "channel-33um",
+ "overrides": {
+  "averaging_window_steps": 40000,
+  "checkpoint_every_steps": 4000,
+  "device_sync_steps": 200,
+  "frame_cadence_steps": 2000,
+  "max_steps": 100000,
+  "peak_debye_window_snapshot_steps": 4000,
+  "peak_debye_window_steps": 40000,
+  "residual_window_steps": 40000,
+  "series_interval_steps": 200
+ },
+ "peak_debye_window": {
+  "enforced_records": 301,
+  "last": {
+   "cells_per_debye": 0.6216824863477416,
+   "gate_enforced": true,
+   "mean_macro_particles_at_peak": 150.02147079554862,
+   "n_e_peak_per_m3": 1.7773205924702813e+17,
+   "node": [
+    97,
+    411
+   ],
+   "resolved_nodes": 17086,
+   "soft_exceeded": false,
+   "t_e_peak_ev": 9.228892104946473,
+   "window_complete": true,
+   "window_steps": 40000
+  },
+  "max_cells_per_debye_enforced": 0.6216824863477416,
+  "records": 500
+ },
+ "plateau_keys": [
+  "discharge_current_drift",
+  "drifts_within_threshold",
+  "electron_count_drift",
+  "min_transit_times",
+  "neutral_density_drift",
+  "peak_debye_soft_ok",
+  "reached",
+  "threshold",
+  "tracked",
+  "transit_times_elapsed",
+  "triad_soft_ok",
+  "window_fraction"
+ ],
+ "protocol": {
+  "case_id": "l1a-gs-v3-056-effcbc8686-channel-33um-w26566.8-ng0-5.5e+19-seed5e16-v1.3-closure-v2.0.3-gates",
+  "cells": [
+   115,
+   512
+  ],
+  "dt_s": 1.4e-12,
+  "macro_weight": 26566.8,
+  "model_version": "pic2d v1.3 closure (v1.2 runner + quasi-steady 0-D neutral inventory, NO wall-ion recycling: bit-for-bit the v2 base physics) with the v2.0.3 gates (window-mode peak-Debye gate, windowed residual-power gate)",
+  "wall_budget_seconds": 91200.0
+ },
+ "refinalize": {
+  "assessment_sha256_before": "dffdfdb60924801923726000ff50c0e4d18fa1181017d3b376978bcc12c95747",
+  "closure_targets_sha256_before": "626c005543d6b52f4762c54bbca3be85f9b22741258a454a550cb2069d5b7ccc",
+  "maps_downgraded_to_instantaneous_as_designed": true,
+  "maps_kind_after": "instantaneous_checkpoint",
+  "ran_after_assess_and_targets": true,
+  "seconds": 2.814387607999379,
+  "stop_reason_after": "shakedown_refinalize"
+ },
+ "results_dir": "results-shakedown-channel-33um",
+ "run_seconds": 283.10009786799856,
+ "schema_version": "cft.pic2d.design-mini-sweep.shakedown/1.0.0",
+ "steps_completed": 100000,
+ "stop_reason": "target_steps_reached",
+ "summary_keys_present": {
+  "grid_heating_triad": true,
+  "ledger": true,
+  "neutral_inventory": true,
+  "peak_node_debye": true,
+  "plateau": true,
+  "window_currents_a": true
+ },
+ "targets": {
+  "anode_edge_electron_wall_current_a": 1.2617395052187674e-05,
+  "cells": [
+   {
+    "cell_id": "cell-01",
+    "ion_wall_loss_fraction": 1.6524222439143266,
+    "ionisation_share": 0.06521939188162697
+   },
+   {
+    "cell_id": "cell-02",
+    "ion_wall_loss_fraction": 0.6388285628028094,
+    "ionisation_share": 0.22385272186151492
+   },
+   {
+    "cell_id": "cell-03",
+    "ion_wall_loss_fraction": 0.5020279774885884,
+    "ionisation_share": 0.29087196451149916
+   },
+   {
+    "cell_id": "cell-04",
+    "ion_wall_loss_fraction": 0.4252897481465117,
+    "ionisation_share": 0.420055921745359
+   }
+  ],
+  "cusps": [
+   {
+    "electron_wall_current_a": 0.0004306636166608154,
+    "ion_wall_current_a": 0.0005220257181832828,
+    "leak_width_fwhm_m": 0.0004995407918784167,
+    "sheath_drop_v": 96.80956168385478,
+    "z_c_m": 0.004313612482825282
+   },
+   {
+    "electron_wall_current_a": 0.0005094083231310952,
+    "ion_wall_current_a": 0.0005696069790427375,
+    "leak_width_fwhm_m": 0.00016651359729280557,
+    "sheath_drop_v": 118.54975503960003,
+    "z_c_m": 0.008525496423343368
+   },
+   {
+    "electron_wall_current_a": 0.0005776638698591948,
+    "ion_wall_current_a": 0.000786078913432078,
+    "leak_width_fwhm_m": 9.990815837568334e-05,
+    "sheath_drop_v": 188.09729571442685,
+    "z_c_m": 0.012737388759216041
+   }
+  ],
+  "diffuse_non_cusp_electron_wall_current_a": 0.0008128338716150299,
+  "kornfeld_chain": {
+   "cusps_exit_to_anode": [
+    {
+     "effective_loss_frequency_per_s": 367895.6259930885,
+     "electron_wall_current_a": 0.0005776638698591948,
+     "je_arriving_a": 0.004250105593227731,
+     "p_transit": 0.13591753362073283,
+     "z_c_m": 0.012737388759216041
+    },
+    {
+     "effective_loss_frequency_per_s": 359251.8617395468,
+     "electron_wall_current_a": 0.0005094083231310952,
+     "je_arriving_a": 0.005296387354086467,
+     "p_transit": 0.09618033747815997,
+     "z_c_m": 0.008525496423343368
+    },
+    {
+     "effective_loss_frequency_per_s": 290952.3971264392,
+     "electron_wall_current_a": 0.0004306636166608154,
+     "je_arriving_a": 0.006036754512761739,
+     "p_transit": 0.07134025671416482,
+     "z_c_m": 0.004313612482825282
+    }
+   ],
+   "electron_current_reaching_anode_cell_a": 0.0059702124320561755,
+   "entering_electron_current_a": 0.0019049226192646243,
+   "note": "Kornfeld per-transit probabilities from window currents: p_k = L_k / je_arriving,k; the model's je_k = je_{k-1}(1-p_k) + I_k"
+  }
+ },
+ "utc": "2026-09-04T05:32:29.789634+00:00",
+ "windowed_residual": {
+  "last": {
+   "energy_residual_over_electrode_work": -0.10448466540205224,
+   "windowed_energy_residual_electrode_work_j": 4.712913231251409e-08,
+   "windowed_energy_residual_j": -5.83480672537428e-09,
+   "windowed_energy_residual_over_electrode_work": -0.1238046711041395,
+   "windowed_energy_residual_window_complete": true,
+   "windowed_energy_residual_window_steps": 40000
+  },
+  "records_with_complete_window": 280
+ }
+}

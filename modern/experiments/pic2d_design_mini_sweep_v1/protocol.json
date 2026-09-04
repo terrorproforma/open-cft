@@ -202,11 +202,15 @@
     "design_id": "divergent-exit-stack",
     "device_gb_projected": 4.2127175329498865,
     "dt_s": 1.5e-12,
+    "macro_weight": 60000.0,
     "ms_per_step": 2.2423537327098977,
+    "ms_per_step_h100_mps4_per_process": 4.122013517592405,
+    "ms_per_step_rtx5090_model": 2.2423537327098977,
     "nodes": [
      61,
      481
     ],
+    "platform": "rtx5090",
     "steps_to_transits": 4800000.0,
     "transit_s": 2.4e-06,
     "wall_hours": 2.997290209571809
@@ -215,11 +219,15 @@
     "design_id": "l1a-gs-v3-056-effcbc8686",
     "device_gb_projected": 7.460356465683889,
     "dt_s": 1.5e-12,
+    "macro_weight": 60000.0,
     "ms_per_step": 4.202894281861132,
+    "ms_per_step_h100_mps4_per_process": 7.7259830998683645,
+    "ms_per_step_rtx5090_model": 4.202894281861132,
     "nodes": [
      77,
      342
     ],
+    "platform": "rtx5090",
     "steps_to_transits": 3410198.4725566576,
     "transit_s": 1.7050992362783289e-06,
     "wall_hours": 3.9852454355048867
@@ -228,11 +236,15 @@
     "design_id": "l1a-gs-v2-047-e3196a8aa5",
     "device_gb_projected": 3.148216872042367,
     "dt_s": 1.5e-12,
+    "macro_weight": 60000.0,
     "ms_per_step": 1.4660383685491636,
+    "ms_per_step_h100_mps4_per_process": 2.6949494561528127,
+    "ms_per_step_rtx5090_model": 1.4660383685491636,
     "nodes": [
      45,
      519
     ],
+    "platform": "rtx5090",
     "steps_to_transits": 5183402.778643232,
     "transit_s": 2.5917013893216162e-06,
     "wall_hours": 2.1176289416972858
@@ -241,11 +253,15 @@
     "design_id": "l1a-gs-v3-009-d0c686b4aa",
     "device_gb_projected": 5.463755292464858,
     "dt_s": 1.5e-12,
+    "macro_weight": 60000.0,
     "ms_per_step": 2.869699202969519,
+    "ms_per_step_h100_mps4_per_process": 5.275233221909715,
+    "ms_per_step_rtx5090_model": 2.869699202969519,
     "nodes": [
      55,
      457
     ],
+    "platform": "rtx5090",
     "steps_to_transits": 4557985.106657725,
     "transit_s": 2.2789925533288623e-06,
     "wall_hours": 3.639236385051749
@@ -254,11 +270,15 @@
     "design_id": "l1a-gs-v3-106-ccec1c8b2f",
     "device_gb_projected": 9.636960356516806,
     "dt_s": 1.5e-12,
+    "macro_weight": 60000.0,
     "ms_per_step": 5.5217429071599256,
+    "ms_per_step_h100_mps4_per_process": 10.150360566205922,
+    "ms_per_step_rtx5090_model": 5.5217429071599256,
     "nodes": [
      83,
      405
     ],
+    "platform": "rtx5090",
     "steps_to_transits": 4036716.2519032713,
     "transit_s": 2.0183581259516356e-06,
     "wall_hours": 6.198073285204639
@@ -267,68 +287,88 @@
   "channel-33um-1.4ps": [
    {
     "design_id": "divergent-exit-stack",
-    "device_gb_projected": 4.478849191377963,
+    "device_gb_projected": 7.728017007171295,
     "dt_s": 1.4e-12,
-    "ms_per_step": 2.9067220034533054,
+    "macro_weight": 26666.7,
+    "ms_per_step": 8.709557168344157,
+    "ms_per_step_h100_mps4_per_process": 8.709557168344157,
+    "ms_per_step_rtx5090_model": 4.737953416051346,
     "nodes": [
      91,
-     722
+     721
     ],
+    "platform": "h100-mps4",
     "steps_to_transits": 5142857.142857143,
     "transit_s": 2.4e-06,
-    "wall_hours": 4.186794810320593
+    "wall_hours": 12.476424431288926
    },
    {
     "design_id": "l1a-gs-v3-056-effcbc8686",
-    "device_gb_projected": 7.632527473683889,
+    "device_gb_projected": 15.042713631322211,
     "dt_s": 1.4e-12,
-    "ms_per_step": 4.836745653292926,
+    "macro_weight": 26566.8,
+    "ms_per_step": 16.571760183933122,
+    "ms_per_step_h100_mps4_per_process": 16.571760183933122,
+    "ms_per_step_rtx5090_model": 9.014950617561304,
     "nodes": [
      116,
      513
     ],
+    "platform": "h100-mps4",
     "steps_to_transits": 3653784.077739276,
     "transit_s": 1.7050992362783289e-06,
-    "wall_hours": 4.925934180206377
+    "wall_hours": 16.836270081343095
    },
    {
     "design_id": "l1a-gs-v2-047-e3196a8aa5",
-    "device_gb_projected": 3.3736687487979182,
+    "device_gb_projected": 5.31065686231961,
     "dt_s": 1.4e-12,
-    "ms_per_step": 1.9946998195490206,
+    "macro_weight": 26655.3,
+    "ms_per_step": 5.674435443117776,
+    "ms_per_step_h100_mps4_per_process": 5.674435443117776,
+    "ms_per_step_rtx5090_model": 3.0868631174039436,
     "nodes": [
      67,
      779
     ],
+    "platform": "h100-mps4",
     "steps_to_transits": 5553645.834260605,
     "transit_s": 2.5917013893216162e-06,
-    "wall_hours": 3.1085772198168113
+    "wall_hours": 8.785229557875969
    },
    {
     "design_id": "l1a-gs-v3-009-d0c686b4aa",
-    "device_gb_projected": 5.679673332464858,
+    "device_gb_projected": 10.472663726590774,
     "dt_s": 1.4e-12,
-    "ms_per_step": 3.436387862597111,
+    "macro_weight": 26799.2,
+    "ms_per_step": 11.260641750904917,
+    "ms_per_step_h100_mps4_per_process": 11.260641750904917,
+    "ms_per_step_rtx5090_model": 6.125730047969088,
     "nodes": [
-     82,
+     81,
      685
     ],
+    "platform": "h100-mps4",
     "steps_to_transits": 4883555.471418991,
     "transit_s": 2.2789925533288623e-06,
-    "wall_hours": 4.68826436154425
+    "wall_hours": 15.30187759223575
    },
    {
     "design_id": "l1a-gs-v3-106-ccec1c8b2f",
-    "device_gb_projected": 9.893549164516806,
+    "device_gb_projected": 19.932990226201227,
     "dt_s": 1.4e-12,
-    "ms_per_step": 6.2884360651965965,
+    "macro_weight": 26660.2,
+    "ms_per_step": 21.965535861436084,
+    "ms_per_step_h100_mps4_per_process": 21.965535861436084,
+    "ms_per_step_rtx5090_model": 11.949136294592503,
     "nodes": [
      124,
      607
     ],
+    "platform": "h100-mps4",
     "steps_to_transits": 4325053.127039219,
     "transit_s": 2.0183581259516356e-06,
-    "wall_hours": 7.583671082703866
+    "wall_hours": 26.418195942879287
    }
   ],
   "plume-12mm": [
@@ -336,11 +376,15 @@
     "design_id": "divergent-exit-stack",
     "device_gb_projected": 8.351833519137244,
     "dt_s": 1.5e-12,
+    "macro_weight": 60000.0,
     "ms_per_step": 7.111080034725846,
+    "ms_per_step_h100_mps4_per_process": 13.071964338292746,
+    "ms_per_step_rtx5090_model": 7.111080034725846,
     "nodes": [
      241,
      721
     ],
+    "platform": "rtx5090",
     "steps_to_transits": 6211764.705882352,
     "transit_s": 3.105882352941176e-06,
     "wall_hours": 12.360672258448517
@@ -349,11 +393,15 @@
     "design_id": "l1a-gs-v3-056-effcbc8686",
     "device_gb_projected": 15.350291185202794,
     "dt_s": 1.5e-12,
+    "macro_weight": 60000.0,
     "ms_per_step": 10.553741567822264,
+    "ms_per_step_h100_mps4_per_process": 19.400447293017866,
+    "ms_per_step_rtx5090_model": 10.553741567822264,
     "nodes": [
      222,
      582
     ],
+    "platform": "rtx5090",
     "steps_to_transits": 4822045.347515427,
     "transit_s": 2.411022673757713e-06,
     "wall_hours": 14.182042445349154
@@ -362,11 +410,15 @@
     "design_id": "l1a-gs-v2-047-e3196a8aa5",
     "device_gb_projected": 5.801509122100926,
     "dt_s": 1.5e-12,
+    "macro_weight": 60000.0,
     "ms_per_step": 4.8572609030672895,
+    "ms_per_step_h100_mps4_per_process": 8.928874516475206,
+    "ms_per_step_rtx5090_model": 4.8572609030672895,
     "nodes": [
      176,
      759
     ],
+    "platform": "rtx5090",
     "steps_to_transits": 6596094.88274768,
     "transit_s": 3.2980474413738397e-06,
     "wall_hours": 8.976271390476606
@@ -375,11 +427,15 @@
     "design_id": "l1a-gs-v3-009-d0c686b4aa",
     "device_gb_projected": 10.95011857804593,
     "dt_s": 1.5e-12,
+    "macro_weight": 60000.0,
     "ms_per_step": 7.849410198644301,
+    "ms_per_step_h100_mps4_per_process": 14.429201990730444,
+    "ms_per_step_rtx5090_model": 7.849410198644301,
     "nodes": [
      190,
      697
     ],
+    "platform": "rtx5090",
     "steps_to_transits": 5969126.0065517565,
     "transit_s": 2.9845630032758786e-06,
     "wall_hours": 13.079904555551831
@@ -388,11 +444,15 @@
     "design_id": "l1a-gs-v3-106-ccec1c8b2f",
     "device_gb_projected": 20.338578052162813,
     "dt_s": 1.5e-12,
+    "macro_weight": 60000.0,
     "ms_per_step": 13.613886146064699,
+    "ms_per_step_h100_mps4_per_process": 25.02576730087335,
+    "ms_per_step_rtx5090_model": 13.613886146064699,
     "nodes": [
      233,
      645
     ],
+    "platform": "rtx5090",
     "steps_to_transits": 5447333.4628188005,
     "transit_s": 2.7236667314094002e-06,
     "wall_hours": 20.663769736766834
@@ -403,11 +463,15 @@
     "design_id": "divergent-exit-stack",
     "device_gb_projected": 9.338113628333234,
     "dt_s": 1.5e-12,
+    "macro_weight": 60000.0,
     "ms_per_step": 8.251151067921832,
+    "ms_per_step_h100_mps4_per_process": 15.167703356315632,
+    "ms_per_step_rtx5090_model": 8.251151067921832,
     "nodes": [
      241,
      961
     ],
+    "platform": "rtx5090",
     "steps_to_transits": 7623529.411764705,
     "transit_s": 3.811764705882353e-06,
     "wall_hours": 17.680001292062478
@@ -416,11 +480,15 @@
     "design_id": "l1a-gs-v3-056-effcbc8686",
     "device_gb_projected": 16.419824093951544,
     "dt_s": 1.5e-12,
+    "macro_weight": 60000.0,
     "ms_per_step": 11.613410361670613,
+    "ms_per_step_h100_mps4_per_process": 21.34838665186961,
+    "ms_per_step_rtx5090_model": 11.613410361670613,
     "nodes": [
      222,
      822
     ],
+    "platform": "rtx5090",
     "steps_to_transits": 6233892.222474194,
     "transit_s": 3.116946111237097e-06,
     "wall_hours": 20.231564814016338
@@ -429,11 +497,15 @@
     "design_id": "l1a-gs-v2-047-e3196a8aa5",
     "device_gb_projected": 6.5197537570699176,
     "dt_s": 1.5e-12,
+    "macro_weight": 60000.0,
     "ms_per_step": 5.706323115884086,
+    "ms_per_step_h100_mps4_per_process": 10.489665692039718,
+    "ms_per_step_rtx5090_model": 5.706323115884086,
     "nodes": [
      176,
      999
     ],
+    "platform": "rtx5090",
     "steps_to_transits": 8008786.986852125,
     "transit_s": 4.004393493426063e-06,
     "wall_hours": 12.863856616675964
@@ -442,11 +514,15 @@
     "design_id": "l1a-gs-v3-009-d0c686b4aa",
     "device_gb_projected": 11.855676983715856,
     "dt_s": 1.5e-12,
+    "macro_weight": 60000.0,
     "ms_per_step": 8.808375017411272,
+    "ms_per_step_h100_mps4_per_process": 16.19202196341867,
+    "ms_per_step_rtx5090_model": 8.808375017411272,
     "nodes": [
      190,
      937
     ],
+    "platform": "rtx5090",
     "steps_to_transits": 7380266.906445788,
     "transit_s": 3.6901334532228948e-06,
     "wall_hours": 18.209440767480725
@@ -455,11 +531,15 @@
     "design_id": "l1a-gs-v3-106-ccec1c8b2f",
     "device_gb_projected": 21.664238629652832,
     "dt_s": 1.5e-12,
+    "macro_weight": 60000.0,
     "ms_per_step": 14.879273377297046,
+    "ms_per_step_h100_mps4_per_process": 27.351869198197583,
+    "ms_per_step_rtx5090_model": 14.879273377297046,
     "nodes": [
      233,
      885
     ],
+    "platform": "rtx5090",
     "steps_to_transits": 6857950.673734329,
     "transit_s": 3.4289753368671644e-06,
     "wall_hours": 28.50240220242459
@@ -470,6 +550,7 @@
   {
    "design_id": "divergent-exit-stack",
    "field_binding": "modern/experiments/pic2d_design_mini_sweep_v1/fields/divergent-exit-stack/binding.json",
+   "launched_in_this_campaign": true,
    "note": "every pic2d run so far; rho_cons 0.60-0.62 under the qualified P2 field; fields exist (authority level-1, padding-1.5)",
    "optional": false,
    "priority": 1,
@@ -479,6 +560,7 @@
   {
    "design_id": "l1a-gs-v3-056-effcbc8686",
    "field_binding": "modern/experiments/pic2d_design_mini_sweep_v1/fields/l1a-gs-v3-056-effcbc8686/binding.json",
+   "launched_in_this_campaign": true,
    "note": "3 cusps / 4 cells, no exit taper, rho 1.99 (L1a) -> 2.37 (L1b iron), wall |B| 0.21 T; L1b level-0 mesh 33.6 deg",
    "optional": false,
    "priority": 2,
@@ -488,6 +570,7 @@
   {
    "design_id": "l1a-gs-v2-047-e3196a8aa5",
    "field_binding": "modern/experiments/pic2d_design_mini_sweep_v1/fields/l1a-gs-v2-047-e3196a8aa5/binding.json",
+   "launched_in_this_campaign": true,
    "note": "4 stages, 3 cusps / 4 cells, rho 0.349 (L1a), r_w/L 0.24, 1.68 mm exit taper; screening-v2 P(wall) exists",
    "optional": false,
    "priority": 3,
@@ -497,6 +580,7 @@
   {
    "design_id": "l1a-gs-v3-009-d0c686b4aa",
    "field_binding": "modern/experiments/pic2d_design_mini_sweep_v1/fields/l1a-gs-v3-009-d0c686b4aa/binding.json",
+   "launched_in_this_campaign": true,
    "note": "4 stages, 3 cusps / 4 cells, no exit taper, rho 0.899 (L1a), r_w/L 0.47; no L1b / screening record (new P2 solve gives rho under iron)",
    "optional": false,
    "priority": 4,
@@ -506,6 +590,7 @@
   {
    "design_id": "l1a-gs-v3-106-ccec1c8b2f",
    "field_binding": "modern/experiments/pic2d_design_mini_sweep_v1/fields/l1a-gs-v3-106-ccec1c8b2f/binding.json",
+   "launched_in_this_campaign": false,
    "note": "5 stages, 4 cusps / 5 cells (the five-stage four-cusp HEMP-like class), no exit taper, rho 2.56 (L1a) -> 2.93 (L1b iron), wall |B| 0.31 T under iron",
    "optional": true,
    "priority": 5,
@@ -515,19 +600,27 @@
  ],
  "domain_options": {
   "channel": {
+   "status": "draft (costed, not launched)",
    "template": "modern/experiments/pic2d_cft_steady_state_v3/protocol.json"
   },
+  "channel-33um": {
+   "status": "PREREGISTERED",
+   "template": "modern/experiments/pic2d_cft_steady_state_v4/protocol.json"
+  },
   "plume-12mm": {
+   "status": "draft (costed, not launched)",
    "template": "modern/experiments/pic2d_cft_plume_v1/protocol.json"
   },
   "plume-24mm": {
+   "status": "draft (costed, not launched)",
    "template": "modern/experiments/pic2d_cft_plume_v2_1/protocol.json"
   }
  },
  "experiment_id": "pic2d-design-mini-sweep-v1",
  "grid_policy": {
-  "dr": "r_w / round(r_w / 50 um)",
-  "dz": "L / round(L / 50 um)",
+  "dr": "r_w / round(r_w / target)",
+  "dt_s_33um": 1.4e-12,
+  "dz": "L / round(L / target)",
   "snapped": [
    "exit radius",
    "cone start",
@@ -535,7 +628,50 @@
    "plume radius = return-yoke outer radius",
    "plume length"
   ],
-  "target_cell_m": 5e-05
+  "target_cell_m_33um": 3.3333333333333335e-05,
+  "target_cell_m_50um": 5e-05
+ },
+ "h100_mps4_anchor": {
+  "gpu": "NVIDIA H100 80GB HBM3",
+  "mps_slots": 4,
+  "ms_per_step_per_process": 8.71,
+  "ms_per_step_solo": 3.37,
+  "nodes": [
+   91,
+   721
+  ],
+  "particles_m": 4.5,
+  "source": "modern/tools/cloud/bench.sh channel-33um production load, bench-mps N=4 (2026-09-04 14:35 AEST)"
+ },
+ "launch_projection": {
+  "divergent-exit-stack": {
+   "device_gb_projected": 7.728017007171295,
+   "hours_to_3_transits_at_mps4_rate": 12.476424431288926,
+   "ms_per_step_h100_mps4": 8.709557168344157,
+   "particles_projected_m": 4.499671353208688,
+   "steps_to_3_transits": 5142857.142857143
+  },
+  "l1a-gs-v2-047-e3196a8aa5": {
+   "device_gb_projected": 5.31065686231961,
+   "hours_to_3_transits_at_mps4_rate": 8.785229557875969,
+   "ms_per_step_h100_mps4": 5.674435443117776,
+   "particles_projected_m": 2.6810692971689307,
+   "steps_to_3_transits": 5553645.834260605
+  },
+  "l1a-gs-v3-009-d0c686b4aa": {
+   "device_gb_projected": 10.472663726590774,
+   "hours_to_3_transits_at_mps4_rate": 15.30187759223575,
+   "ms_per_step_h100_mps4": 11.260641750904917,
+   "particles_projected_m": 6.668158405069826,
+   "steps_to_3_transits": 4883555.471418991
+  },
+  "l1a-gs-v3-056-effcbc8686": {
+   "device_gb_projected": 15.042713631322211,
+   "hours_to_3_transits_at_mps4_rate": 16.836270081343095,
+   "ms_per_step_h100_mps4": 16.571760183933122,
+   "particles_projected_m": 10.22960984563247,
+   "steps_to_3_transits": 3653784.077739276
+  }
  },
  "operating_point_policy": {
   "anode_potential_v": 300.0,
@@ -545,16 +681,26 @@
    "plume": "cathode annulus in the exit flux tube, continuity rule (v2.0 template)"
   },
   "feed_rule": "Q_in = c n_g0, c = v_bar A_exit / 4 at the design's exit area (equal initial neutral density)",
-  "macro_weight": 60000.0,
-  "macro_weight_cap_m_particles": 8.0,
+  "macro_weight_33um": "parity: 6e4 x dr dz / (50 um)^2 (26 666.7 for the reference)",
+  "macro_weight_50um": 60000.0,
+  "macro_weight_cap_m_particles": 12.0,
   "n_g0_per_m3": 5.5e+19,
-  "seed": 20260903
+  "seeds": {
+   "base": 20260903,
+   "seed-replicate": 20260904
+  }
  },
  "preflight_summary": {
   "all_passed": true,
   "design_count": 5,
   "designs": {
    "divergent-exit-stack": {
+    "cells": [
+     90,
+     720
+    ],
+    "dt_s": 1.4e-12,
+    "field_source_sha256": "49e32f490514d7a3b1947793157bfd8dc75ac3ceb147d0e3e8f0d422186789fa",
     "gates": {
      "cathode_connectivity": true,
      "cost": true,
@@ -565,9 +711,17 @@
      "mesh_masks": true,
      "protocol": true
     },
-    "passed": true
+    "macro_weight": 26666.7,
+    "passed": true,
+    "wall_budget_hours": 18.833333333333332
    },
    "l1a-gs-v2-047-e3196a8aa5": {
+    "cells": [
+     66,
+     778
+    ],
+    "dt_s": 1.4e-12,
+    "field_source_sha256": "9c151c384f590e15b888a9dac920893be75db22a7ec727736d82f9806e8e1f73",
     "gates": {
      "cathode_connectivity": true,
      "cost": true,
@@ -578,9 +732,17 @@
      "mesh_masks": true,
      "protocol": true
     },
-    "passed": true
+    "macro_weight": 26655.3,
+    "passed": true,
+    "wall_budget_hours": 13.333333333333334
    },
    "l1a-gs-v3-009-d0c686b4aa": {
+    "cells": [
+     80,
+     684
+    ],
+    "dt_s": 1.4e-12,
+    "field_source_sha256": "5222a5f534a78cd3c13c156b062a12e071c61f0ff459bedc1e8582f47d9a755f",
     "gates": {
      "cathode_connectivity": true,
      "cost": true,
@@ -591,9 +753,17 @@
      "mesh_masks": true,
      "protocol": true
     },
-    "passed": true
+    "macro_weight": 26799.2,
+    "passed": true,
+    "wall_budget_hours": 23.0
    },
    "l1a-gs-v3-056-effcbc8686": {
+    "cells": [
+     115,
+     512
+    ],
+    "dt_s": 1.4e-12,
+    "field_source_sha256": "27314f44e0f6c8909fca0bded0366dedab5234cc4ff823d49e7f6563b169de59",
     "gates": {
      "cathode_connectivity": true,
      "cost": true,
@@ -604,9 +774,17 @@
      "mesh_masks": true,
      "protocol": true
     },
-    "passed": true
+    "macro_weight": 26566.8,
+    "passed": true,
+    "wall_budget_hours": 25.333333333333332
    },
    "l1a-gs-v3-106-ccec1c8b2f": {
+    "cells": [
+     123,
+     606
+    ],
+    "dt_s": 1.4e-12,
+    "field_source_sha256": "55f87aead63f2fe0ef25bc3ff75b9d825ee9601c892a60e8a87a126d366a3c4e",
     "gates": {
      "cathode_connectivity": true,
      "cost": true,
@@ -617,27 +795,93 @@
      "mesh_masks": true,
      "protocol": true
     },
-    "passed": true
+    "macro_weight": 30877.1,
+    "passed": true,
+    "wall_budget_hours": 35.166666666666664
    }
   },
   "domain": "channel",
-  "generated_utc": "2026-09-04T02:22:22.224160+00:00"
+  "generated_utc": "2026-09-04T05:27:19.693549+00:00",
+  "grid": "33um",
+  "option": "channel-33um",
+  "platform": {
+   "cuda_mps_pipe_directory": "/tmp/nvidia-mps",
+   "gpus": [
+    "NVIDIA H100 80GB HBM3, 580.105.08, 81559 MiB"
+   ],
+   "host": "68-209-75-2",
+   "machine": "x86_64",
+   "numpy": "2.5.2",
+   "python": "3.12.14",
+   "release": "6.8.0-1046-nvidia",
+   "system": "Linux"
+  }
  },
  "preregistration": {
   "attempt_8_verdict": "recorded in ac248e05 (2026-09-04 11:57 AEST): grid-heating triad gate stop at 4.98 us (S drift 0.253), NO plateau; finite-grid heating from ~2.4 us once the peak-node Delta/lambda_D crossed ~3.2 (CIC threshold pi); the accepted channel-only plateau sat at 3.17 with a residual closing to +0.4 %; resolution decision Delta <= 32.4 um, dt <= 1.48 ps; v2.1 NOT launched",
-  "before_prereg": [
-   "whole-set preflight over every design (fields, mesh, connectivity, stability) - the L1b lesson",
-   "labelled non-evidentiary shakedown of one design on the real field through run/finalize/targets",
-   "decide the open decisions listed in the README",
-   "seal: protocol semantic hash, field bindings, template protocols, code hashes"
+  "before_prereg_done": [
+   "whole-set preflight of the channel-33um option over every design ON THE LAUNCH BOX (preflight-channel-33um.json: identity, field binding via file hashes + field_source_sha256, grid snaps, field map + a-priori stability at the composed dt, mesh masks, composed protocol accepted by the runner, cost)",
+   "MPS determinism replay on the launch box (mps-replay.json: two concurrent same-seed processes + one solo, bitwise series / status / checkpoint comparison)",
+   "labelled NON-EVIDENTIARY shakedown of ONE design on its real field through run -> finalize -> assess -> targets at shrunk cadences on the launch box (shakedown-channel-33um.json; results directory not committed)",
+   "sealed per-design run protocols (protocols/), their hashes below"
   ],
-  "blocked_on": "the operating-point / grid decision that follows the verdict: the channel-only 33 um / 1.4 ps grid-refinement run (or a lower operating point at 50 um) and the recalibrated peak-Debye / residual-power gates",
-  "state": "NOT preregistered; this file is a DRAFT and is not hash-bound to any run"
+  "convergence_caveat": "PREDECLARED PER-DESIGN CAVEAT: the 50 um -> 33 um grid-convergence verdict for the reference design is PENDING at this preregistration - pic2d_cft_steady_state_v4 (preregistered 392129e5, launch 1 PID 18068 at 13:11:55 AEST 2026-09-04 on the local RTX 5090, verdict expected 18:45-19:30 AEST 2026-09-04, budget end 13:15 AEST 2026-09-05) classifies the accepted 50 um plateau as converged / resolution_limited / refinement_heating / no_plateau.  Every sweep design runs at ONE grid (33.33 um / 1.4 ps, parity W), so no design carries a convergence statement of its own.  When the sweep is assessed (run.py assess) the v4 verdict MUST be cited per design: 'converged' -> the sweep's 33 um values are quoted with the v4 tolerances (10 % I_d / S / n_g / utilisation / I_beam, 20 % peak n_e / T_e,peak) as their grid band; 'resolution_limited' -> the sweep values are the resolved numbers but carry NO grid band (the 50 um numbers are superseded, the 33 um grid is not itself certified); 'refinement_heating' or 'no_plateau' -> the reference grid is not certified, every design's quotability rests on its own windowed residual-power and peak-Debye readings alone, and a design-to-design comparison is reported as 'at the 33 um grid, uncertified'.  The HEMP-like designs (0.27 T cusp fields) may reach denser peaks than the reference: their own peak-Debye window readings (soft 2.5 precondition, hard pi stop) are the per-design resolution statement, disclosed with the targets.",
+  "decisions": {
+   "budget": "1.5 x the projected wall to 3 transits at the H100 CUDA-MPS four-slot per-process rate (cost model scaled to the 8.71 ms/step N = 4 anchor), rounded up to 10 min; cumulative over resumes; the per-design hours are in refined_grid_schedule",
+   "design_047": "KEPT with the disclosed anode-edge boundary cusp (see stopping_rule.acceptance.g_design_specific of its run protocol): boundary classification under the v3.1 0.25 mm tolerance, interior cusps within tolerance, the 73 um separatrix foot sits in the anode sheath (2 cells); its electron loss is reported as anode_edge_electron_wall_current_a. Substitute 061 NOT taken: its 5.9 mm exit taper would confound the rho ladder",
+   "dt": "1.4 ps for every primary design (channel-only maps: omega_ce dt <= 0.08 at the maps' max |B|); design 056's 1.3 ps requirement is a property of the 24 mm plume box (0.821 T pole faces), not of the channel-only option (preflight-channel-33um.json dt_policy per design)",
+   "estimands": "closure.extract_targets as frozen: cusp window half-width min(1 mm, pitch / 4), near-wall band 0.5 mm, Kornfeld chain seeded with (injected - returned) exit electron current, anode-edge band 0.25 mm; cusp planes and cells from the design's own material-aware topology (binding.json)",
+   "field_level": "level-0 padded material-aware solves (binding.json gates: mesh >= 5 deg, residual <= 2e-10, coverage, topology within tolerance, |dB| vs L1b <= 1.5 mT); a level-1 refinement is not needed by the gates and is not part of this preregistration",
+   "gates": "PIC model v2.0.3: window-mode peak-Debye gate hard pi / soft 2.5 on the interval-averaged peak (>= 32 macro-electrons); one-sided windowed residual-power gate >= 5 % of the electrode work over the trailing 400000 steps; v1.4 triad drift members; omega_pe dt, Courant, Poisson, inventory gates",
+   "gpu": "NVIDIA H100 80GB HBM3 with CUDA MPS, four slots (execution.gpu of every run protocol)",
+   "grid": "channel-only 33.33 um / 1.4 ps (target 24 mm / 720 = the steady-state v4 grid; the reference reproduces v4's 90 x 720 exactly; the draft's 3.33e-5 m target gave 90 x 721) - the resolved grid of the attempt-8 verdict (ac248e05); 50 um retired for a dense peak",
+   "macro_weight": "particles-per-cell parity with the 50 um runs: W = 6e4 x dr dz / (50 um)^2 (26 666.7 for the reference = v4; within 1 % of it for the others; the draft kept W = 6e4, i.e. 2.25x fewer particles per cell); cap 12 M projected particles (H100 80 GB) - none of the four primary designs hits it",
+   "operating_point": "equal n_g0 5.5e19 (feed Q_in = c n_g0 at the design's exit area) and equal 3 mA / 2 eV exit-plane injection (the draft's choice, frozen)",
+   "plateau_rule": "the accepted steady-state rule (>= 3 design transits, trailing-20 % drifts of I_d / N_e / n_g < 5 %) + the v2.0.3 preconditions (triad soft, peak-Debye soft 2.5); frames ON (20000-step = 28 ns interval averages)",
+   "template_and_physics": "steady-state v4 protocol (392129e5): model v1.3 closure (NO wall-ion recycling; bit-for-bit the accepted v2 base physics) with the v2.0.3 gates - CHANGED from the draft's v1.4 (recycling) channel template. Reasons: (1) the sweep's reference run must be comparable with the only 33 um reference run whose convergence verdict it must cite (ss-v4, same physics, same grid / dt / W / seed); (2) v1.4 has no accepted plateau anywhere (steady-state v3 was never launched) and its recycled fixed point projects the reference peak at Delta/lambda_D ~2.45 on this grid - on the 2.5 soft precondition - so every denser design would risk 'no plateau by soft margin'; the v1.3 peak projects 2.11; (3) budgets and ignition expectations anchor on the accepted v1.3 plateaus. Wall-ion recycling stays a declared follow-up closure (gross = net utilisation under v1.3, recorded as such)"
+  },
+  "launch_set": [
+   "divergent-exit-stack",
+   "l1a-gs-v3-056-effcbc8686",
+   "l1a-gs-v2-047-e3196a8aa5",
+   "l1a-gs-v3-009-d0c686b4aa"
+  ],
+  "not_launched_in_this_campaign": {
+   "l1a-gs-v3-056-effcbc8686 seed-replicate": "the replication policy's single seed replicate (seed 20260904): composed and sealed, launched after the four primary designs free a slot; a design effect is reported only above its spread once it exists",
+   "l1a-gs-v3-106-ccec1c8b2f": "optional fifth design (four cusps, rho 2.93): composed and sealed, launched only if the budget allows after the four primary designs"
+  },
+  "option": "channel-33um",
+  "records": {
+   "mps_replay": {
+    "bytes": 12541,
+    "path": "modern/experiments/pic2d_design_mini_sweep_v1/mps-replay.json",
+    "sha256": "b98ae9e64a56caed332ab65e89bfb25c3e20f0939f2e333b80abdd21921bfadd"
+   },
+   "preflight": {
+    "bytes": 36515,
+    "path": "modern/experiments/pic2d_design_mini_sweep_v1/preflight-channel-33um.json",
+    "sha256": "0a8802f58be85ba3ada007dfa891ddb1fe64de144c6d6a5de8911307f9ecb36e"
+   },
+   "shakedown": {
+    "bytes": 8147,
+    "path": "modern/experiments/pic2d_design_mini_sweep_v1/shakedown-channel-33um.json",
+    "sha256": "c19ebe1344a2492ffcb95a2503e5528349643a0294df5b53d5059ea8154f04d2"
+   }
+  },
+  "sealed_run_protocols": {
+   "modern/experiments/pic2d_design_mini_sweep_v1/protocols/divergent-exit-stack-channel-33um.json": "ec8baa2aa38df0bb93d340c333d48a6f5c5784e0f129afbe7e3e94d2727260f6",
+   "modern/experiments/pic2d_design_mini_sweep_v1/protocols/l1a-gs-v2-047-e3196a8aa5-channel-33um.json": "b23b66da579aa64bd0f5cfd44c85cef71d286829034ed26166da03255736907b",
+   "modern/experiments/pic2d_design_mini_sweep_v1/protocols/l1a-gs-v3-009-d0c686b4aa-channel-33um.json": "eb54049c6d84f84388cd7f83cb1c657c87370fd80dab4ee9b445b7e581d25def",
+   "modern/experiments/pic2d_design_mini_sweep_v1/protocols/l1a-gs-v3-056-effcbc8686-channel-33um-seed-replicate.json": "eef171af348e3b621e518986b3c1afa540b7fe6d252187e34bd7457a6deb8ef4",
+   "modern/experiments/pic2d_design_mini_sweep_v1/protocols/l1a-gs-v3-056-effcbc8686-channel-33um.json": "35760e9b5bcd235676a5c64779d3e4f4c10f98c1bc9179dca22603a8830da742",
+   "modern/experiments/pic2d_design_mini_sweep_v1/protocols/l1a-gs-v3-106-ccec1c8b2f-channel-33um.json": "2fe6577b686557182edc183ef0059a0007898233c5524f85bc302bb7d91d7156"
+  },
+  "state": "PREREGISTERED at the commit that carries this file (the prereg commit); protocols/<design>-channel-33um[-seed-replicate].json are the sealed per-design run protocols (byte-bound at launch); run.py launch refuses a dirty worktree, an unexpected commit, a recomposition that differs from the sealed file, a missing preflight / shakedown / MPS-replay record, a missing MPS pipe directory (--require-mps) or an existing execution lock"
  },
  "recommended_option": {
-  "closure_runs": "channel",
-  "grid": "the grid the attempt-8 follow-up validates: 50 um / 1.5 ps if the recalibrated peak-Debye gate admits the design's peak, else the 33 um / 1.4 ps refinement variant (cost row channel-33um-1.4ps)",
-  "plume_run": "plume-24mm for the reference design only, and only at an operating point / grid that resolves the peak (attempt 8 did not)",
+  "closure_runs": "channel-33um",
+  "grid": "33.33 um / 1.4 ps (the steady-state v4 grid; attempt-8 verdict)",
+  "plume_run": "plume-24mm for the reference design only, and only at an operating point / grid that resolves the peak (attempt 8 did not); not part of this preregistration",
   "reason": "the closure targets are channel quantities (cusp losses, cell potentials, ionisation shares); the plume box costs 3.6-6x per transit and answers a different question (thrust, divergence); the accepted plateaus are channel-only"
  },
  "recommended_schedule": {
@@ -696,55 +940,57 @@
     "design_id": "divergent-exit-stack",
     "domain": "channel-33um-1.4ps",
     "kind": "base",
-    "wall_hours": 4.186794810320593
+    "wall_hours": 12.476424431288926
    },
    {
     "design_id": "l1a-gs-v3-056-effcbc8686",
     "domain": "channel-33um-1.4ps",
     "kind": "base",
-    "wall_hours": 4.925934180206377
+    "wall_hours": 16.836270081343095
    },
    {
     "design_id": "l1a-gs-v2-047-e3196a8aa5",
     "domain": "channel-33um-1.4ps",
     "kind": "base",
-    "wall_hours": 3.1085772198168113
+    "wall_hours": 8.785229557875969
    },
    {
     "design_id": "l1a-gs-v3-009-d0c686b4aa",
     "domain": "channel-33um-1.4ps",
     "kind": "base",
-    "wall_hours": 4.68826436154425
+    "wall_hours": 15.30187759223575
    },
    {
     "design_id": "l1a-gs-v3-106-ccec1c8b2f",
     "domain": "channel-33um-1.4ps",
     "kind": "base",
-    "wall_hours": 7.583671082703866
+    "wall_hours": 26.418195942879287
    },
    {
     "design_id": "l1a-gs-v3-056-effcbc8686",
     "domain": "channel-33um-1.4ps",
     "kind": "seed-replicate",
-    "wall_hours": 4.925934180206377
+    "wall_hours": 16.836270081343095
    }
   ],
-  "note": "serial on one RTX 5090; +~10 % if the particle count keeps growing past the projected plateau (attempt 8 added 0.6 M ions/us); budgets should be set at 1.25x the projected wall so the plateau rule can be evaluated past 3 transits",
+  "note": "per-process hours at the H100 CUDA-MPS four-slot rate (8.71 ms/step anchor for the v4 configuration); the four primary designs run CONCURRENTLY, so the campaign wall time is the longest row (+ its budget margin), not the sum; per-process speed improves as slots empty",
   "option": "channel-33um-1.4ps",
-  "total_days_at_24h": 1.2257989931165947,
-  "total_hours": 29.419175834798274
+  "total_days_at_24h": 4.027261153623589,
+  "total_hours": 96.65426768696612
  },
  "replication_policy": {
   "base": "one run per design (seed 20260903)",
   "decision_rule": "a design effect counts only if it exceeds the seed replicate spread AND the reference's seed/W spread",
-  "seed_replicate": "l1a-gs-v3-056-effcbc8686 (seed 20260904) - the HEMP-like design; the reference's seed-b / W x 0.7 pair exists (<= 1.1 % / <= 5.7 %)",
+  "seed_replicate": "l1a-gs-v3-056-effcbc8686 (seed 20260904) - the HEMP-like design; sealed as protocols/l1a-gs-v3-056-effcbc8686-channel-33um-seed-replicate.json; the reference's seed-b / W x 0.7 pair exists (<= 1.1 % / <= 5.7 %)",
   "w_replicate": "none in budget; the reference W x 0.7 record is the W-sensitivity statement"
  },
- "schema_version": "cft.pic2d.design-mini-sweep.protocol/0.1.0-draft",
- "status": "DRAFT_NOT_PREREGISTERED_NO_PRODUCTION_LAUNCH",
+ "schema_version": "cft.pic2d.design-mini-sweep.protocol/1.0.0",
+ "status": "preregistered_design_mini_sweep_v1_channel_33um_h100_mps4_not_validated",
  "stopping_rule": {
-  "plateau": "relative drift < 5 % over the trailing 20 % of elapsed simulated time for I_d, N_e and n_g (linear fit), evaluated at every checkpoint, only after >= 3 ion transits, triad inside soft bounds (the accepted steady-state rule, verbatim)",
+  "acceptance": "per design: (a) plateau, (b) windowed residual power < +2 %, (c) closure targets extracted, verdicts closure_quotable / plateau_with_heating / no_plateau, (e) design-effect rule, (f) the convergence caveat, (g) design-specific disclosures - stopping_rule.acceptance of every sealed run protocol",
+  "fail_closed": "omega_pe dt gate (0.2), v2.0.3 window-mode peak-Debye gate (hard pi), triad hard drifts (0.25 after one transit), windowed residual-power >= 5 % (one-sided, from the first complete window), Courant, Poisson residual contract, neutral inventory exhaustion / ceiling",
+  "plateau": "relative drift < 5 % over the trailing 20 % of elapsed simulated time for I_d, N_e and n_g (linear fit), evaluated at every checkpoint, only after >= 3 ion transits, triad inside soft bounds AND peak-Debye soft margin 2.5 (the accepted steady-state rule + the v2.0.3 preconditions, verbatim from steady-state v4)",
   "transit_rule": "2.4 us x L / 24 mm + L_plume / 17 km/s a priori; the measured N_i / L residence supersedes it",
-  "wall_budget": "1.25 x projected wall to 3 transits"
+  "wall_budget": "1.5 x projected wall to 3 transits at the H100 MPS-4 per-process rate (33 um option); 1.25 x the 5090 model (draft options)"
  }
 }
