@@ -36,6 +36,26 @@ block D").
   0.7 µs plume crossing). **The run is expected to stop on the wall budget before a plateau
   can be declared (≥ 3 transits ≈ 8–12 h cumulative); it is resumable.**
 
+## Energy-ledger correction (model v2.0.6, post hoc; recorded values unchanged)
+
+Up to model v2.0.5 the energy ledger's `inelastic_loss_j` lacked the macro weight W (found by the external-validation v0 launch-1 diagnosis, 036bd679), so every recorded interval residual was `H - L_inel` - biased NEGATIVE by the inelastic power - where `H = field work + dU - electrode work` is the true numerical energy creation. The sidecar(s) `ledger-corrected.json` (+ `.sha256.json`) were written by `python -m cft_revival.pic2d.ledger_recompute <results-dir>` from the recorded `series.npz` (corrected residual = H per record; `spec/pic2d/pic2d-model-v2.0.json#gates_v2_0.energy_ledger_correction_v2_0_6`); **the recorded series, maps and summaries are unchanged.** Values below: trailing-400 000-step residual / electrode work at the last record, recorded -> corrected.
+
+| attempt | sidecar | windowed recorded -> corrected | cumulative recorded -> corrected | 5 % gate at checkpoints: recorded -> corrected |
+|---|---|---|---|---|
+| 3 (no ignition) | `results-attempt3-no-ignition/ledger-corrected.json` | +8.5 % -> +17.0 % | +9.1 % -> +21.8 % | 0.66 -> 0.66 us |
+| 4 (neutral crash) | `results-attempt4-neutral-crash/ledger-corrected.json` | +12.8 % -> +24.1 % | +9.8 % -> +21.0 % | 0.72 -> 0.66 us |
+| 5 | results untracked (`results-attempt5-stale-scale/` never committed) | - | - | - |
+| 6 (gate shot noise) | `results-attempt6-gate-shot-noise/ledger-corrected.json` | -0.6 % -> **+11.0 %** | -3.4 % -> +9.0 % | never -> 0.66 us |
+| 7 (budget, no plateau) | `results-attempt7-wall-budget-no-plateau/ledger-corrected.json` | +12.1 % -> +28.1 % | +1.4 % -> +14.6 % | 3.24 -> 0.66 us |
+| 8 (heating triad stop) | `results-attempt8-grid-heating-triad-stop/ledger-corrected.json` | +41.7 % -> **+67.3 %** | +8.6 % -> +24.0 % | 3.24 -> 0.66 us |
+
+On the corrected statistic every 50 um plume attempt reads >= +11 % in its FIRST complete 400 000-step window (0.66 us: +111 mW of numerical
+heating on 856 mW of electrode power on attempt 6) and attempt 8 never reads below +4.1 %: the flux-tube cathode's dense cold emission cloud on
+the 50 um grid was never conservative, and the attempt-8 runaway (recorded +54.8 % per 0.4-us segment, corrected end window +67 %) is its
+continuation. The v2.0.3 residual-power gate would have stopped attempts 6-8 at 0.66 us instead of 3.24 us. Attempt 7's development thrust
+numbers stay non-quotable. Peak-Debye under the v2.0.6 accumulated floor on the final windows: attempt 7 3.509 -> 3.509 at (6, 437), attempt 8
+3.608 -> 3.608 at (14, 285) - both past pi under either floor (the runs themselves ran the v2.0.1 single-step gate at 4.5).
+
 ## Commands (from `modern/`)
 
 ```powershell
