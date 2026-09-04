@@ -319,10 +319,12 @@ def save_checkpoint(
     if state.neutral_particles is not None:
         # v2.5.0 (neutrals_spatial_v1): the neutral macro-particles, the per-cell carries / debts and the published fields
         neutral = state.neutral_particles
-        for name, values in zip(("r_m", "z_m", "vr_m_per_s", "vt_m_per_s", "vz_m_per_s", "weight", "state"), neutral.particles.arrays(), strict=True):
-            arrays[f"neutrals_{name}"] = np.asarray(values)
-        for name, values in zip(SpatialNeutralState.CELL_ARRAY_KEYS, neutral.cell_arrays(), strict=True):
-            arrays[f"neutrals_cell_{name}"] = np.asarray(values, dtype=np.float64)
+        # (loop variables must not shadow ``name``: the v2.5.0 loops did, so every spatial-neutrals checkpoint was written as
+        # ``thermal_speed.*`` - the last cell key - instead of ``<name>.*``; caught by the full-physics v1 box shakedown's refinalize)
+        for key, values in zip(("r_m", "z_m", "vr_m_per_s", "vt_m_per_s", "vz_m_per_s", "weight", "state"), neutral.particles.arrays(), strict=True):
+            arrays[f"neutrals_{key}"] = np.asarray(values)
+        for key, values in zip(SpatialNeutralState.CELL_ARRAY_KEYS, neutral.cell_arrays(), strict=True):
+            arrays[f"neutrals_cell_{key}"] = np.asarray(values, dtype=np.float64)
         spatial_meta = {
             "neutral_particle_count": neutral.particles.count,
             "spatial_neutral_cell_keys": list(SpatialNeutralState.CELL_ARRAY_KEYS),

@@ -537,8 +537,13 @@ def test_checkpoint_round_trip_and_bitwise_resume_with_spatial_neutrals(tmp_path
     sim.run(50)
     state = sim.state
     assert state.neutral_particles is not None and state.neutral_particles.particles.count > 1000
-    json_path, _ = artifacts.save_checkpoint(tmp_path, "ck", state, config, field_sha256=field.sha256, cross_section_sha256=xs.payload_sha256, backend="cpu")
+    json_path, npz_path = artifacts.save_checkpoint(tmp_path, "ck", state, config, field_sha256=field.sha256, cross_section_sha256=xs.payload_sha256, backend="cpu", field=field)
+    # the files carry the REQUESTED name (v2.5.0 wrote them as thermal_speed.* - the last neutral cell key shadowed ``name`` - so the runner's
+    # checkpoint-latest / checkpoint-final of a spatial run could never be found for a resume or a finalize; full-physics v1 box shakedown)
+    assert json_path == tmp_path / "ck.json" and npz_path == tmp_path / "ck.npz" and (tmp_path / "ck.field.npz").is_file()
+    assert sorted(p.name for p in tmp_path.iterdir() if p.suffix in (".json", ".npz") and not p.name.endswith(".sha256.json")) == ["ck.field.npz", "ck.json", "ck.npz"]
     metadata = artifacts.read_canonical_json(json_path)
+    assert metadata["arrays_file"] == "ck.npz" and metadata["field_anchor_file"] == "ck.field.npz"
     assert metadata["neutral_particle_count"] == state.neutral_particles.particles.count and "neutral_fed" in metadata["cumulative_extra_keys"]
     loaded = artifacts.load_checkpoint(json_path, config, field_sha256=field.sha256, cross_section_sha256=xs.payload_sha256)
     assert np.array_equal(loaded.neutral_particles.particles.weight, state.neutral_particles.particles.weight)
