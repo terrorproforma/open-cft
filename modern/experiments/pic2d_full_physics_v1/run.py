@@ -436,7 +436,8 @@ def shakedown(case: str, *, results: Path | None = None, backend: str = "warp-cu
                                  "neutral_ceiling_violation_fraction_max": (run.get("neutrals") or {}).get("ceiling_violation_fraction_max") if meta["neutrals"] else None},
     }
     artifacts.write_canonical_json(shakedown_path(case), record)
-    log(f"[shakedown] {case}: {summary['steps_completed']} steps, {summary['stop_reason']}, {summary['ms_per_step_this_session']:.2f} ms/step, {record['frames']} frames, "
+    ms_text = "n/a" if summary.get("ms_per_step_this_session") is None else f"{summary['ms_per_step_this_session']:.2f}"
+    log(f"[shakedown] {case}: {summary['steps_completed']} steps, {summary['stop_reason']}, {ms_text} ms/step, {record['frames']} frames, "
         f"events {record['effect_cumulative']}, peak window enforced {len(enforced)}/{len(windows)} (max {record['peak_debye_window']['max_cells_per_debye_enforced']}), "
         f"residual windows complete {len(complete)}; plateau {assessment['plateau_status']}, verdict {assessment['hypothesis_verdict']}; sustain {assessment['sustain']}; "
         f"written {shakedown_path(case)}")
@@ -740,8 +741,8 @@ def run_quantities(results: Path, grid=None, *, anode_v: float = 300.0, space_ch
         centroid = ionization_centroid_from_maps(maps, grid)
         out["ionization_centroid_detail"] = centroid
         out["ionization_centroid_z_m"] = None if centroid is None else centroid.get("centroid_z_m")
-    # v2.2.0 SEE readings (only when the wall emitted)
-    if "see_emission_a" in currents:
+    # v2.2.0 SEE readings (only when the wall emitted; a REFINALIZED summary - runner.finalize - carries None for the session rates: readings degrade, never crash)
+    if currents.get("see_emission_a") is not None:
         see: dict[str, Any] = {"window_emission_current_a": currents.get("see_emission_a"), "window_effective_yield": currents.get("see_effective_yield"),
                                "cumulative": {k: cumulative.get(k) for k in pe.SEE_CUMULATIVE_KEYS if k in cumulative}}
         if series is not None:
@@ -751,10 +752,11 @@ def run_quantities(results: Path, grid=None, *, anode_v: float = 300.0, space_ch
             see["cusp_effective_yields"] = [c.get("see_effective_yield") for c in out["per_cusp"]]
         out["see"] = see
     # v2.3.0 collision-set readings (only when the ion MCC ran)
-    if "cex_rate_per_s" in currents:
+    if "cex_rate_per_s" in currents and ("cex" in cumulative or currents.get("cex_rate_per_s") is not None):
         s_rate = float(out["ionization_rate_per_s"]) if out["ionization_rate_per_s"] else None
         collision: dict[str, Any] = {k: currents.get(k) for k in pe.XE_CURRENT_KEYS if k in currents}
-        collision["cex_over_ionization"] = (float(currents["cex_rate_per_s"]) / s_rate) if s_rate else None
+        cex_rate = currents.get("cex_rate_per_s")
+        collision["cex_over_ionization"] = (float(cex_rate) / s_rate) if (s_rate and cex_rate is not None) else None
         collision["cumulative"] = {k: cumulative.get(k) for k in pe.XE_CUMULATIVE_KEYS if k in cumulative}
         exc = [cumulative.get(f"excitations_level_{i}") for i in (1, 2, 3, 4)]
         total_exc = sum(float(x) for x in exc if x is not None)

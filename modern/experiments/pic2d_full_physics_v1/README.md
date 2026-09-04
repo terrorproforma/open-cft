@@ -1,7 +1,7 @@
 # PIC-2D full physics v1 — Coulomb (R4), the spatial Knudsen gas with metastables (R5) and every R1–R5 effect together (models v2.1.0–v2.5.0)
 
-**Status: DRAFT (composition, tests, README); the preregistration commit carries the six preflight and six shakedown records and the
-measured budgets — see §5 and §7.**
+**Status: PREREGISTERED (the commit carrying this README, the sealed `protocols/*.json` with the measured budgets, the six preflight and the six
+shakedown records); nothing launched at that commit — the launch log is §7.**
 
 Six one-shot executions of the reference design at 33 µm on the ss-v4 template (90 × 720, Δt 1.4 ps, W 26 666.7, seed 20260903, frames ON,
 the v2.0.6 gates with the accumulated-floor Debye gate 64 000, K = 5, the **model v2.1.1 drift-member arming latch** and the **ignition gate** of
@@ -26,7 +26,9 @@ Launch order (the sustain question decides the value of the rest): `full-physics
 The α-series' first launch (`pic2d_anomalous_transport_v1`, α = 1/16, `0916a4f8`) did not re-equilibrate — it **extinguished**: N_e decayed from
 the seed with an e-fold of 0.88 µs ≈ r_w²/4D⊥, I_d 3.1 → 0.06 mA, the injected 3 mA returned through the exit plane, S → 0 (residual +1.15 %,
 0.48 cells/λ_D: not heating). At the same time the external-validation launch 2 (`bohm-0.4`, α = 0.345) at Brandt's static gas 2e20 — 4× our
-0-D density — sustained a marginal discharge past 1.2 transits. And the R5 shakedown (`55092f4c`) showed that the 0-D inventory had equated the
+0-D density — sustained a marginal discharge past 1.2 transits (it was then stopped at 1.26 transits, 21:2x UTC 2026-09-04, by the v1.4-armed
+T_e,dense drift member −0.328 with the residual at +0.25 %, N_e 5.6e4 macro-electrons and I_d 1.71 mA: alive but marginal — its disposition is the
+ext-val campaign's, README §13 there). And the R5 shakedown (`55092f4c`) showed that the 0-D inventory had equated the
 whole channel to the EXIT density: the free-molecular closed-end (Knudsen) profile at the same feed is 5.45e20 at the anode → 7.0e19 at the exit,
 channel mean 2.49e20 = 4.5× the 0-D fixed point. Every plateau recorded so far sits at a different (too dilute) operating point than the spatial
 model gives. Hence the central hypothesis of this campaign: **a Bohm-leaky discharge needs the denser gas — the operating point, not the closure
@@ -119,10 +121,73 @@ centroid −1…−4 mm (upstream), IEDF low-energy fraction +0.15…0.40, anode
 **full-physics α cases**: sustains (key); vs α = 0: I_d up, S / utilisation / peak n_e / T_e,peak / I_beam down, cusp wall e⁻ current up, sheath drops
 down, n_g unchanged (frozen gas).
 
-## 5. Launch-box preflight and shakedown (non-evidentiary)
+## 5. Launch-box preflight and shakedown (non-evidentiary; H100 21:55–23:29 UTC 2026-09-04, box tree `$WORK/fp/tree`, as the 5th–6th CUDA-MPS client beside ss25-base, ss33-fast, sweep-056-launch2 and at-alpha-1over64)
 
-Filled at the preregistration commit from `preflight-<case>.json` / `shakedown-<case>.json` (Lambda H100 as an extra CUDA-MPS client beside the
-four production runs; the box tree `$WORK/fp/tree` at the draft commit).
+### 5.1 Preflight (`preflight-<case>.json`, code `1d223a6c`; real P2 field `abf26c5c`, 90 × 720 mesh, factorisation 1.5–2.4 s, 4 other clients)
+
+| case | seed ms/step | 4.5 M ms/step | 7.7 M ms/step | h to 3 transits (budget basis) | budget | device pool 4.5 M / 7.7 M |
+|---|---|---|---|---|---|---|
+| `full-physics-alpha0.345` | 6.16 | 8.68 | 11.08 | 15.8 h (7.7 M) | 85 800 s = 23.8 h | 2.66 / 3.53 GB |
+| `full-physics-alpha0` | 6.14 | 8.51 | 10.85 | 15.5 h (7.7 M) | 84 000 s = 23.3 h | 2.66 / 3.53 GB |
+| `neutrals-spatial` | 5.52 | 7.02 | 8.46 | 12.1 h (7.7 M) | 65 400 s = 18.2 h | 2.46 / 3.23 GB |
+| `full-physics-alpha1over16` | 5.90 | 8.60 | 11.12 | 15.9 h (7.7 M) | 86 400 s = 24.0 h | 2.66 / 3.53 GB |
+| `coulomb` | 5.48 | 7.16 | – | 10.2 h (4.5 M) | 55 800 s = 15.5 h | 1.59 / – GB |
+| `neutrals-spatial-F10` | 5.50 | 7.18 | 8.46 | 12.1 h (7.7 M) | 65 400 s = 18.2 h | 2.52 / 3.30 GB |
+
+Budgets = 1.5 × the larger measured plateau-load rate × 5 142 858 steps, rounded up to 10 min. At the 4.5 M load (the ss-v4 plateau's particle count) the
+3-transit walls are 10.2 (coulomb) / 10.0–10.3 (R5 cases) / 12.2–12.4 h (full physics). The neutral share of the device pool (spatial minus coulomb at
+4.5 M) is **~0.9 GB** (declared a priori ~0.5 GB; the difference is the 13 per-cell neutral fields, the capacity headroom and the collision-set tables).
+The MCC ceiling 1.5e21 > the Knudsen anode density 5.45e20 is checked in every spatial preflight (`neutral_ceiling_admissibility.passes`).
+
+### 5.2 Shakedown (`shakedown-<case>.json`, 100 000 steps = 0.14 µs each, cadences shrunk, every gate live, through finalize → assess case + campaign → refinalize; code `2ffbe0ea`)
+
+| case | ms/step (clients) | e⁻ / ions at 0.14 µs | residual (last 40k window) | peak-Debye gate enforced (max cells/λ_D; resolved nodes) | N_e last quarter / first quarter | I_d, S at 0.1 µs |
+|---|---|---|---|---|---|---|
+| `full-physics-alpha0.345` | 8.13 (5) | 555 753 / 616 890 | −0.57 % | 301/500 (0.72; 40 157) | **flat 0.99** (N_e 5.56e5 vs the 0.05–0.2 µs reference 5.66e5) | 3.69 mA, S/S_ref 1.18 |
+| `full-physics-alpha0` | 8.05 (5) | 755 786 / 804 840 | −0.06 % | 301/500 (1.06; 39 684) | rising 1.24 | 3.66 mA, 1.03 |
+| `neutrals-spatial` | 6.62 (5) | 866 175 / 941 739 | −0.02 % | 301/500 (1.12; 40 173) | rising 1.41 | 3.61 mA, 0.94 |
+| `full-physics-alpha1over16` | 6.45 (4) | 635 056 / 692 523 | −0.49 % | 301/500 (0.86; 40 795) | rising 1.09 | 3.70 mA, 1.13 |
+| `coulomb` | 7.23 (5) | 555 688 / 601 968 | +0.19 % | 301/500 (0.59; 38 329) | flat 1.02 | 1.28 mA, 0.98 |
+| `neutrals-spatial-F10` | 7.51 (5) | 865 421 / 940 803 | +0.04 % | 301/500 (1.12; 40 202) | rising 1.41 | 3.59 mA, 0.94 |
+
+Every run: `target_steps_reached`, 50 frames, `assess --case` → `no_plateau` / `inconclusive` (any 0.14 µs run), reference consistency vs the v4
+artifacts true, the v2.1.1 arming latch present in every triad record (unlatched at 0.056 transits), the ignition gate evaluated (pending: the 0.05–0.2 µs
+reference window is not complete at 0.14 µs), `assess --campaign` written (sustain table pending, additivity / F not_evaluable). `gate_not_inert_check`:
+SEE events, CEX events, four excitation levels, Coulomb e–e / e–i pairs, neutral sub-steps and the anomalous events are all non-zero where declared.
+
+**Do the α cases ignite in 100 000 steps?** The gate cannot fire before 1.0 µs, but the direction is recorded: at α = 0.345 N_e is FLAT (0.99 over the
+last quarter; I_d 3.7 mA; S/S_ref 1.18) and at α = 1/16 RISING (1.09), where the dilute-gas α = 1/16 launch had already lost 24 % of N_e by 0.1 µs
+(6.06e5 → 4.62e5). Neither full-physics α case decays in the seed transient; α = 0.345 is the marginal one. The anomalous rate per electron reads
+8.9e9 /s (0.345) and 1.5e9 /s (1/16) = α ω_ce at ⟨|B|⟩ ≈ 0.14–0.15 T — the hook at its declared rate.
+
+**R5 profile and metastable shares (window-mean, inner third of the radius):** anode 5.51e20 → 6 mm 4.18e20 → 12 mm 2.79e20 → 18 mm 1.35e20 → exit
+4.04e19 m⁻³ (anode/exit 13.6; the axis-cell reading is shot noise: 1.9e20 / 0.0 with 0.4–3 macro-neutrals per axis cell), channel mean 2.52e20 in
+every spatial case; depletion over 0.14 µs 0.7–1.7e-4 (F = 1) vs 1.4e-3 (F = 10); ceiling-violation fraction max 2.2e-5 (F = 1) / 8.7e-5 (F = 10) against
+the 1e-3 limit — the 2.75× ceiling gives a 46× / 11× margin (the Poisson estimate in §2 said ~5e-5). Metastables at F = 1: the pool is quantised at
+4.4e5 atoms per macro-metastable and only 31–1648 macro-metastables have spawned by 0.14 µs (fraction ≤ 6e-6, stepwise ≤ 2e-4 of S, production
+1.4–3.4e16 /s); at F = 10: 79 455 macro-metastables, fraction 3.5e-4, stepwise 0.64 % of S — the predeclared F distortion in the flesh. Atom-ledger
+identities close to ≤ 1.4 atoms per interval; `sink_consistency_atoms` = 0. Gross utilisation at 0.14 µs: 1.13 (R5 alone: > 1 as predeclared for the
+frozen gas), 0.56 (full physics α = 0), 0.24 (1/16), 0.11 (0.345).
+
+**Other effect readings at 0.14 µs (direction only):** SEE window effective yield 0.87–0.91, per-cusp 0.53–0.65 / 0.73–0.79 / 0.97–0.98, SCL cusps 0 (α
+cases) / 1 (α = 0: the exit cusp's near-wall drop −0.5 V); the cusp sheath drops read 17–52 V with SEE + the dense gas against 71–228 V (dense gas, no
+SEE) and 114–163 V (Coulomb case, legacy gas); CEX/S 0.06 (R5 alone) → 0.11 / 0.16 / 0.26 (α = 0 / 1/16 / 0.345; S falls with α while CEX follows the
+ions); excitation level shares 22/20–23/40–43/11–18 %; Spitzer ν_e/ν_en at the peak cell 0.031 (Coulomb, legacy gas) and 0.008–0.012 (full physics: the
+dense gas raises ν_en); ionisation centroid 13.3–13.7 mm (full physics) / 15.5 (R5 alone) / 14.2 (Coulomb) vs 14.5 (v4 plateau) — seed-transient
+positions, not the hypotheses' plateau reading.
+
+**What the shakedowns caught (three code defects, all fixed before the preregistration commit):** (i) `assess_case` indexed the per-cusp Coulomb reading by
+position where `column_frequency_profile` keys its planes by name (KeyError; `3e19d9b2`); (ii) `artifacts.save_checkpoint` (shared package, v2.5.0)
+shadowed its `name` parameter in the neutral-array loops, so EVERY checkpoint of a spatial-neutrals run was written as `thermal_speed.*` — the runner
+could never have resumed or finalized a spatial run (`2ffbe0ea`, with a regression test; the R5 shakedown never called `finalize`); (iii) the axis-cell
+profile reading is shot noise → the inner-third statistic (`b348f0ed`). The runner / physics code at the preregistration commit is `2ffbe0ea`'s
+(only `run.py` / `protocol.py` texts changed after the runs), so the records are the production path's.
+
+### 5.3 Sealed identities
+
+`config_sha256` (warp-cuda): coulomb `49b30f51`, neutrals-spatial `66cb501c`, neutrals-spatial-F10 `e7a2d9b1`, full-physics-alpha0 `7587b0f3`,
+full-physics-alpha1over16 `198fb4c6`, full-physics-alpha0.345 `98cc5cbc`. Sealed protocol hashes are listed in `protocol.json#sealed_protocols`; the
+sealed files were verified to equal their recomposition on the box (Linux) as well as on the composing Windows checkout.
 
 ## 6. Commands (from `modern/`, `PYTHONPATH=src:.`)
 
@@ -138,9 +203,13 @@ python -m pytest tests/pic2d/test_pic2d_full_physics_v1.py
 
 ## 7. Preregistration and launch log
 
-* DRAFT: composition + tests + README (this commit); six sealed protocols with the a-priori 15.0 h budgets.
-* PREREG: the experiment-dir-only commit carrying the box records and the measured budgets (§5).
-* jobs: `tools/cloud/jobs.yaml` entries `fp-*` (enabled false; `--expect-commit` = the prereg SHA), `fp-queue` chained after `pe-queue`.
+* DRAFT `1d223a6c` (composition + tests + README; a-priori 15.0 h budgets) → fixes `3e19d9b2` (assess), `2ffbe0ea` (shared `save_checkpoint` name
+  shadowing, regression test), `b348f0ed` (budgets sealed from the preflights; inner-third profile reading; metastable quantisation note), `9ab1182f`
+  (`shakedown --reuse-run` equivalence).
+* PREREG: this commit — experiment-dir only: README, `run.py` (None-tolerant readings for refinalized summaries), the six `preflight-*.json` and six
+  `shakedown-*.json` records with sidecars; the sealed protocols are `b348f0ed`'s (unchanged).
+* jobs: `tools/cloud/jobs.yaml` entries `fp-*` (enabled false; `--expect-commit` = the prereg SHA), `fp-queue` chained after `pe-queue`
+  (`slot_queue.sh fp-queue --after $WORK/pe-queue/queue.log …`); launch-log entries follow here as the queue fires.
 
 ## 8. Claim boundary
 
