@@ -700,6 +700,21 @@ if wp is not None:
         phi = F64(6.283185307179586) * u2
         return wp.vec3d(speed * sin_chi * wp.cos(phi), speed * sin_chi * wp.sin(phi), speed * cos_chi)
 
+    @wp.func
+    def rotate_about_field(vr: F64, vt: F64, vz: F64, br: F64, bz: F64, phi: F64):
+        # v2.1.0 perpendicular-rotation Bohm model: Rodrigues rotation of (v_r, v_theta, v_z) about the unit field
+        # b = (b_r, 0, b_z) / |B| by phi - v_parallel invariant, |v| preserved, gyro-phase reset (same operation
+        # order as sensitivity.rotate_about_field); |B| = 0 leaves the velocity unchanged
+        b_mag = wp.sqrt(br * br + bz * bz)
+        if b_mag <= F64(0.0):
+            return wp.vec3d(vr, vt, vz)
+        nr = br / b_mag
+        nz = bz / b_mag
+        c = wp.cos(phi)
+        s = wp.sin(phi)
+        k = (nr * vr + nz * vz) * (F64(1.0) - c)
+        return wp.vec3d(vr * c + (-nz * vt) * s + nr * k, vt * c + (nz * vr - nr * vz) * s, vz * c + (nr * vt) * s + nz * k)
+
     @wp.kernel
     def mcc_kernel(
         vr: wp.array(dtype=F64), vt: wp.array(dtype=F64), vz: wp.array(dtype=F64), alive: wp.array(dtype=wp.int32),
@@ -999,10 +1014,12 @@ if wp is not None:
         alive: wp.array(dtype=wp.int32), slots: wp.array(dtype=wp.int32),
         seed_table: wp.array(dtype=wp.int32), counter: wp.array(dtype=wp.int32),
         b_r: wp.array(dtype=F64), b_z: wp.array(dtype=F64), dr: F64, dz: F64, z_min: F64, nr: int, nz: int,
-        alpha_dt_e_over_m: F64, stats: wp.array(dtype=F64), tally_slot: int, mass_weight: F64,
+        alpha_dt_e_over_m: F64, stats: wp.array(dtype=F64), tally_slot: int, mass_weight: F64, mode: int,
     ):
-        # v1.4 sensitivity hook: isotropic speed-preserving redirection with probability
-        # 1 - exp(-alpha omega_ce dt) at the particle's |B| (same map as the CPU reference).
+        # v1.4 sensitivity hook: speed-preserving velocity change with probability 1 - exp(-alpha omega_ce dt) at
+        # the particle's |B| (same map as the CPU reference).  mode 0 = isotropic redirect (v1.4, also randomises
+        # v_parallel); mode 1 = v2.1.0 rotation of the perpendicular velocity about B by a uniform random angle
+        # (Brandt et al. 2016: v_parallel and |v| unchanged, gyro-centre shifted).
         p = wp.tid()
         hit = F64(0.0)
         dpz = F64(0.0)
@@ -1030,10 +1047,13 @@ if wp is not None:
             state = wp.rand_init(seed, p)
             u0 = F64(wp.randf(state))
             if u0 < probability:
-                speed = wp.sqrt(vr[p] * vr[p] + vt[p] * vt[p] + vz[p] * vz[p])
                 u1 = F64(wp.randf(state))
-                u2 = F64(wp.randf(state))
-                v = isotropic(speed, u1, u2)
+                if mode == 0:
+                    speed = wp.sqrt(vr[p] * vr[p] + vt[p] * vt[p] + vz[p] * vz[p])
+                    u2 = F64(wp.randf(state))
+                    v = isotropic(speed, u1, u2)
+                else:
+                    v = rotate_about_field(vr[p], vt[p], vz[p], bx, bz, F64(6.283185307179586) * u1)
                 dpz = mass_weight * (v[2] - vz[p])
                 vr[p] = v[0]
                 vt[p] = v[1]
@@ -2066,7 +2086,7 @@ class WarpBackend:
                 inputs=[electrons.r, electrons.z, electrons.vr, electrons.vt, electrons.vz, electrons.alive_flags, self.slots,
                         self.seed_table, self.step_counter, self.b_r, self.b_z, grid.dr_m, grid.dz_m, grid.geometry.z_min_m, self.nr, self.nz,
                         config.anomalous.alpha * dt * ELEMENTARY_CHARGE_C / ELECTRON_MASS_KG, self.stats, STATS_ANOMALOUS,
-                        ELECTRON_MASS_KG * config.macro_weight],
+                        ELECTRON_MASS_KG * config.macro_weight, 1 if config.anomalous.rotation else 0],
                 device=dev,
             )
 

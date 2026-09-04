@@ -48,7 +48,7 @@ from .models import (
     xenon_ion_species,
 )
 from .poisson import Poisson2D, apply_operator, electric_field_nodes, field_energy_j, induced_electrode_charge_c
-from .sensitivity import AnomalousCollisionConfig, SEEConfig, apply_bohm_scattering
+from .sensitivity import AnomalousCollisionConfig, SEEConfig, apply_anomalous_scattering
 
 BackendName = Literal["cpu", "warp-cpu", "warp-cuda"]
 
@@ -961,12 +961,13 @@ class CPUBackend:
         state.cumulative["field_work_j"] += field_work
 
         if config.anomalous is not None and electrons.count:
-            # v1.4 hook: Bohm-type isotropic scattering at nu_an = alpha omega_ce(x) (speed preserved)
+            # v1.4 hook: Bohm-type scattering at nu_an = alpha omega_ce(x) (speed preserved); v2.1.0: the event model is
+            # declared (isotropic redirect, or the perpendicular-velocity rotation of Brandt et al. 2016 that keeps v_parallel)
             br = kernels.gather_nodes(grid, self.field.b_r_t, electrons.r_m, electrons.z_m)
             bz = kernels.gather_nodes(grid, self.field.b_z_t, electrons.r_m, electrons.z_m)
             rng_an = np.random.default_rng([config.seed, state.step, 3])
-            vr_s, vt_s, vz_s, hits = apply_bohm_scattering(
-                config.anomalous.alpha, electrons.vr_m_per_s, electrons.vt_m_per_s, electrons.vz_m_per_s, np.hypot(br, bz), dt, rng_an,
+            vr_s, vt_s, vz_s, hits = apply_anomalous_scattering(
+                config.anomalous, electrons.vr_m_per_s, electrons.vt_m_per_s, electrons.vz_m_per_s, br, bz, dt, rng_an,
             )
             add("pz_collisions", self.electron.mass_kg * config.macro_weight * float(np.sum(vz_s - electrons.vz_m_per_s)))
             electrons = ParticleArrays(electrons.r_m, electrons.z_m, vr_s, vt_s, vz_s)

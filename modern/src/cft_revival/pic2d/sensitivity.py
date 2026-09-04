@@ -4,17 +4,43 @@ Both exist so that the preregistered campaign proposal can reference implemented
 switches (literature review ``pic-mcc-blockers.md``, sections 4.2 and 4.3).  Neither is part of
 the v1.4 development run.
 
-**Anomalous (Bohm) scattering** -- ``AnomalousCollisionConfig(alpha)``: every electron suffers an
-isotropic, speed-preserving velocity redirection with probability ``1 - exp(-alpha omega_ce dt)``
-per step, ``omega_ce = e |B| / m_e`` gathered at the particle position.  ``nu_an = alpha
-omega_ce`` is the Bohm-type effective collision frequency used as a transport bracket by Szabo
-2001 / Szabo et al. 2014 and Brandt et al. 2016 (who impose ``D = 0.4 kT_e / eB`` via velocity
-rotation) and inferred as ``nu_B ~ omega_c / 16`` for the cylindrical Hall thruster by Smirnov,
-Raitses and Fisch 2004.  The review recommends the bracket ``alpha in {1/64, 1/16}`` as a
-reported, non-binding sensitivity block: an axisymmetric electrostatic code excludes the
-azimuthal drift instability by construction, so this term is a bracket, not a model.  The
-scattering is a pure velocity rotation: kinetic energy is conserved to round-off and the
-energy ledger is untouched; the collision count is tallied (``cumulative["anomalous"]``).
+**Anomalous (Bohm) scattering** -- ``AnomalousCollisionConfig(alpha, model)``: every electron
+suffers a speed-preserving velocity change with probability ``1 - exp(-alpha omega_ce dt)`` per
+step, ``omega_ce = e |B| / m_e`` gathered at the particle position (an exact Poisson process
+with the effective collision frequency ``nu_an = alpha omega_ce``, applied wherever the electron
+is - the probability follows the local field, so it vanishes at the nulls and is largest at the
+cusps).  ``nu_an = alpha omega_ce`` is the Bohm-type effective collision frequency used as a
+transport bracket by Szabo 2001 / Szabo et al. 2014 and Brandt et al. 2016 and inferred as
+``nu_B ~ omega_c / 16`` for the cylindrical Hall thruster by Smirnov, Raitses and Fisch 2004.
+Two event models (``ANOMALOUS_MODELS``):
+
+* ``bohm_isotropic_scattering`` (v1.4): the velocity is redirected uniformly on the sphere
+  (the MCC isotropic map).  The parallel speed is randomised too, so beside the cross-field
+  step the event also scatters the pitch angle (mirror trapping / loss cone) - a bracket of
+  the literature model, not the model.
+* ``bohm_perpendicular_rotation`` (v2.1.0): the velocity is rotated about the local ``B``
+  direction by a uniformly random angle (Rodrigues), so ``|v|`` AND ``v_parallel`` are
+  unchanged to round-off and only the gyro-phase is reset - the guiding centre jumps by
+  ``2 r_L sin(phi / 2)`` in the plane perpendicular to ``B``.  This is the model Brandt et
+  al. 2016 (doi:10.2322/tastj.14.Pb_235, p. Pb_237) describe: "only the component of the
+  velocity vector perpendicular to the local magnetic field direction is rotated, to ensure
+  that the speed of the electrons along the magnetic field lines does not change", electrons
+  selected at random at a rate set by the local flux density.
+
+Both models give the same cross-field diffusion coefficient for a Maxwellian: the velocity
+autocorrelation of a gyrating electron whose gyro-phase is reset at Poisson rate ``nu`` is
+``<v_x^2> exp(-nu t) cos(omega_ce t)``, so ``D_perp = (kT_e / m_e) nu / (nu^2 + omega_ce^2) =
+(kT_e / eB) alpha / (1 + alpha^2)`` (Green-Kubo; the random-walk picture ``D = <step^2> nu / 4
+= r_L^2 nu / 2`` is its small-alpha limit).  ``alpha = 1/16`` is the classical Bohm value;
+Brandt's ``D_perp = 0.4 kT_e / eB`` read as ``nu = 0.4 omega_ce`` gives the exact factor 0.345.
+The event is elastic: kinetic energy is conserved to round-off, the energy ledger carries no
+term for it (correct for an elastic process), the axial momentum it hands to the "turbulent
+field" is tallied in ``pz_collisions`` like the MCC elastic events, and the event count is
+tallied (``cumulative["anomalous"]``).  It is NOT part of the MCC null-collision budget: it is
+a separate exact-Poisson process drawn from its own seed stream after the push and before the
+MCC, which is statistically equivalent to a joint budget to ``O(nu_an dt x nu_mcc dt)``
+(``nu_an dt <= 0.03`` at 0.3 T / 1.4 ps / alpha 0.345; ``nu_mcc dt ~ 1e-5``) and keeps the
+``alpha = 0`` path bitwise identical to the model without the hook.
 
 **Secondary electron emission scaffold** -- ``SEEConfig``: the Vaughan (1989) yield curve with
 the boron-nitride parameter set the review points at (Dunaevsky, Raitses and Fisch 2003; Tondu,
@@ -38,20 +64,43 @@ import numpy as np
 from .models import ELECTRON_MASS_KG, ELEMENTARY_CHARGE_C, PIC2DValidationError
 
 BOHM_ALPHA_BRACKET = (1.0 / 64.0, 1.0 / 16.0)
+# v2.1.0 alpha-series (physics audit section 4.c / roadmap R1): classical Bohm 1/16, a quarter of it, and Brandt 2016's
+# D_perp = 0.4 kT_e / eB expressed as the exact Green-Kubo factor alpha / (1 + alpha^2) = 0.345 of nu = 0.4 omega_ce
+BOHM_ALPHA_SERIES = (1.0 / 64.0, 1.0 / 16.0, 0.345)
+ANOMALOUS_MODEL_ISOTROPIC = "bohm_isotropic_scattering"
+ANOMALOUS_MODEL_ROTATION = "bohm_perpendicular_rotation"
+ANOMALOUS_MODELS = (ANOMALOUS_MODEL_ISOTROPIC, ANOMALOUS_MODEL_ROTATION)
 
 
 @dataclass(frozen=True, slots=True)
 class AnomalousCollisionConfig:
-    """Bohm-type anomalous scattering, ``nu_an = alpha omega_ce`` (0 < alpha <= 1)."""
+    """Bohm-type anomalous scattering, ``nu_an = alpha omega_ce`` (0 < alpha <= 1), event model in ``ANOMALOUS_MODELS``.
+
+    ``model`` defaults to the v1.4 isotropic redirect so every recorded identity (``to_dict``) is unchanged; the
+    v2.1.0 perpendicular-rotation model (Brandt et al. 2016) is selected explicitly and enters ``config_sha256``.
+    """
 
     alpha: float
+    model: str = ANOMALOUS_MODEL_ISOTROPIC
 
     def __post_init__(self) -> None:
         if not isfinite(self.alpha) or not 0.0 < self.alpha <= 1.0:
             raise PIC2DValidationError("anomalous alpha must be in (0, 1]")
+        if self.model not in ANOMALOUS_MODELS:
+            raise PIC2DValidationError(f"anomalous model must be one of {ANOMALOUS_MODELS}, got {self.model!r}")
+
+    @property
+    def rotation(self) -> bool:
+        return self.model == ANOMALOUS_MODEL_ROTATION
+
+    @property
+    def diffusion_factor(self) -> float:
+        """``D_perp / (kT_e / eB) = alpha / (1 + alpha^2)`` (Green-Kubo, Maxwellian; both event models)."""
+
+        return self.alpha / (1.0 + self.alpha**2)
 
     def to_dict(self) -> dict[str, Any]:
-        return {"model": "bohm_isotropic_scattering", "alpha": self.alpha}
+        return {"model": self.model, "alpha": self.alpha}
 
 
 def bohm_collision_probability(alpha: float, b_magnitude_t: np.ndarray | float, dt_s: float) -> np.ndarray:
@@ -59,6 +108,12 @@ def bohm_collision_probability(alpha: float, b_magnitude_t: np.ndarray | float, 
 
     omega_ce = ELEMENTARY_CHARGE_C * np.abs(np.asarray(b_magnitude_t, dtype=np.float64)) / ELECTRON_MASS_KG
     return -np.expm1(-alpha * omega_ce * dt_s)
+
+
+def bohm_diffusion_coefficient_m2_per_s(alpha: float, t_e_ev: float, b_t: float) -> float:
+    """``D_perp = (kT_e / eB) alpha / (1 + alpha^2)``: the cross-field diffusion coefficient both event models produce."""
+
+    return t_e_ev / abs(b_t) * alpha / (1.0 + alpha**2)      # kT_e / e in eV -> V; V / T = m^2 / s
 
 
 def isotropic_redirect(speed: np.ndarray, u1: np.ndarray, u2: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
@@ -70,10 +125,40 @@ def isotropic_redirect(speed: np.ndarray, u1: np.ndarray, u2: np.ndarray) -> tup
     return speed * sin_t * np.cos(phi), speed * sin_t * np.sin(phi), speed * cos_t
 
 
+def rotate_about_field(
+    vr: np.ndarray, vt: np.ndarray, vz: np.ndarray, b_r: np.ndarray, b_z: np.ndarray, phi: np.ndarray,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Rodrigues rotation of ``v = (v_r, v_theta, v_z)`` about the local unit field ``b = (b_r, 0, b_z) / |B|`` by ``phi``.
+
+    ``v' = v cos(phi) + (b x v) sin(phi) + b (b . v) (1 - cos(phi))``: the parallel component ``b . v`` is invariant
+    and the perpendicular component turns by ``phi`` (a gyro-phase reset); ``|v|`` is preserved to round-off.  Where
+    ``|B| = 0`` the direction is undefined and the velocity is returned unchanged (the selection probability is 0
+    there anyway).  The same formula, in the same operation order, is the Warp ``rotate_about_field`` device function.
+    """
+
+    b_mag = np.sqrt(b_r * b_r + b_z * b_z)
+    safe = b_mag > 0.0
+    denominator = np.where(safe, b_mag, 1.0)
+    nr = b_r / denominator
+    nz = b_z / denominator
+    c = np.cos(phi)
+    s = np.sin(phi)
+    dot = nr * vr + nz * vz
+    k = dot * (1.0 - c)
+    # b x v with b = (nr, 0, nz) in the right-handed (r, theta, z) triad
+    cr = -nz * vt
+    ct = nz * vr - nr * vz
+    cz = nr * vt
+    new_r = vr * c + cr * s + nr * k
+    new_t = vt * c + ct * s
+    new_z = vz * c + cz * s + nz * k
+    return np.where(safe, new_r, vr), np.where(safe, new_t, vt), np.where(safe, new_z, vz)
+
+
 def apply_bohm_scattering(
     alpha: float, vr: np.ndarray, vt: np.ndarray, vz: np.ndarray, b_magnitude_t: np.ndarray, dt_s: float, rng: np.random.Generator,
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray, int]:
-    """CPU reference: redirect the electrons selected with the local Bohm probability; returns (vr, vt, vz, count)."""
+    """CPU reference (isotropic model): redirect the electrons selected with the local Bohm probability; returns (vr, vt, vz, count)."""
 
     probability = bohm_collision_probability(alpha, b_magnitude_t, dt_s)
     hit = rng.random(vr.size) < probability
@@ -85,6 +170,34 @@ def apply_bohm_scattering(
     vr, vt, vz = vr.copy(), vt.copy(), vz.copy()
     vr[hit], vt[hit], vz[hit] = new_r, new_t, new_z
     return vr, vt, vz, count
+
+
+def apply_bohm_rotation(
+    alpha: float, vr: np.ndarray, vt: np.ndarray, vz: np.ndarray, b_r: np.ndarray, b_z: np.ndarray, dt_s: float, rng: np.random.Generator,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, int]:
+    """CPU reference (perpendicular-rotation model): gyro-phase reset of the electrons selected with the local Bohm probability."""
+
+    probability = bohm_collision_probability(alpha, np.hypot(b_r, b_z), dt_s)
+    hit = rng.random(vr.size) < probability
+    count = int(hit.sum())
+    if count == 0:
+        return vr, vt, vz, 0
+    phi = 2.0 * np.pi * rng.random(count)
+    new_r, new_t, new_z = rotate_about_field(vr[hit], vt[hit], vz[hit], b_r[hit], b_z[hit], phi)
+    vr, vt, vz = vr.copy(), vt.copy(), vz.copy()
+    vr[hit], vt[hit], vz[hit] = new_r, new_t, new_z
+    return vr, vt, vz, count
+
+
+def apply_anomalous_scattering(
+    config: AnomalousCollisionConfig, vr: np.ndarray, vt: np.ndarray, vz: np.ndarray, b_r: np.ndarray, b_z: np.ndarray, dt_s: float,
+    rng: np.random.Generator,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, int]:
+    """Dispatch on the declared event model (the isotropic path draws exactly as v1.4 did: recorded runs replay bitwise)."""
+
+    if config.rotation:
+        return apply_bohm_rotation(config.alpha, vr, vt, vz, b_r, b_z, dt_s, rng)
+    return apply_bohm_scattering(config.alpha, vr, vt, vz, np.hypot(b_r, b_z), dt_s, rng)
 
 
 # Vaughan (1989) parameters for hexagonal boron nitride as used in Hall-thruster PIC.
@@ -197,14 +310,22 @@ def virtual_wall_yield(
 
 
 __all__ = [
+    "ANOMALOUS_MODELS",
+    "ANOMALOUS_MODEL_ISOTROPIC",
+    "ANOMALOUS_MODEL_ROTATION",
     "BN_VAUGHAN",
     "BOHM_ALPHA_BRACKET",
+    "BOHM_ALPHA_SERIES",
     "AnomalousCollisionConfig",
     "SEEConfig",
+    "apply_anomalous_scattering",
+    "apply_bohm_rotation",
     "apply_bohm_scattering",
     "bohm_collision_probability",
+    "bohm_diffusion_coefficient_m2_per_s",
     "first_crossover_ev",
     "isotropic_redirect",
+    "rotate_about_field",
     "vaughan_yield",
     "virtual_wall_yield",
 ]
