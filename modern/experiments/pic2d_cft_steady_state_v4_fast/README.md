@@ -83,6 +83,26 @@ verdict is what lets a later preregistered protocol (the 33 µm plume run) name 
   (the corrected residual power outside the ±1 pp band around v4's +2.46 %, either side — the record says which).
   `no_plateau` = ¬(a) (budget / gate / soft-margin stop / non-ignition).
 
+### Corrected-ledger note (documentary, added 2026-09-05 after the launch; the sealed `protocol.json` is unchanged)
+
+The comparison target now carries a committed post-hoc re-read of its preregistered acceptance on the corrected ledger:
+`pic2d_cft_steady_state_v4/results/assessment-corrected-ledger.json` (+ `.sha256.json`; written by
+`pic2d_cft_steady_state_v4/assess_corrected_ledger.py`, hash-bound to the sidecar `ledger-corrected.json`, the recorded
+`assessment.json`, `summary.json` and `protocol.json`). Its content: v4's recorded verdict `resolution_limited` stands as
+recorded; **on the corrected ledger v4's acceptance (b) "< +2 %" FAILS at +2.46 %** (recorded PASS at −7.67 %) and the
+predeclared (d) tree gives `refinement_heating`; verdict wording *"plateau reached; convergence vs 50 µm as recorded
+(resolution_limited for 50 µm); residual precondition (b) FAILED on the corrected ledger → the 33 µm plateau is itself
+heating at +2.5 % of electrode work and is NOT a clean reference; 25 µm (v5) pending"*. Consequences for this campaign,
+all consistent with the sealed protocol: (i) (b) is evaluated on the **corrected** statistic — natively here (v2.0.6
+code), and `python -m cft_revival.pic2d.ledger_recompute <results> --dry-run` at assess time must report "already
+W-scaled record: corrected == recorded" as the ledger cross-check; (ii) `project_acceptance_b_below_0p02` is reported
+beside the replay criterion and is expected to read FAIL for a faithful replay, exactly as the target does; (iii) a
+`qualified` verdict qualifies the *solver* (device-mg + K = 5 reproduce v4 within the seed-b band) and does **not** upgrade
+the 33 µm plateau to a clean (energy-conserving) reference — every value quoted from this replay inherits v4's
+disclosure (+2.5 % numerical heating power; not converged; 25 µm pending); (iv) the 5 % hard gate and the project's 2 %
+acceptance bound are kept (`gate_recalibration_v2_0_6`). See also
+`pic2d_cft_steady_state_v4/NOTE-for-v4-fast-coordinator-corrected-ledger.md`.
+
 ## Preflight on the launch box (`preflight.json`, 14:34–14:36 UTC 2026-09-04, H100 80GB HBM3 `GPU-a800b021`, CUDA MPS; non-evidentiary)
 
 Run from a scratch worktree at `e1a24aec` (the pre-commit working tree; `git_head` in the record names it) as
