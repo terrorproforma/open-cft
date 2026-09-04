@@ -122,7 +122,7 @@ add them.**
 | neutrals | 0-D quasi-steady inventory `V dn_g/dt = Q_in + R - S - c n_g (- artificial relaxation)`, exact per-interval integration, five atom ledgers; wall-ion recycling R with gamma = 1 at T_w (v1.4); plume: analytic capped-cosine effusion shape as an MCC density factor only (`neutrals.py`; `simulation.py:1131-1167`); density in a device array so the CUDA graph sees it (`warp_backend.py:750-753`) | Szabo 2001 / Brandt 2016 recycling convention (spec v1.4) | 17 tests in `test_pic2d_neutral_inventory.py`; graph-staleness regression test |
 | dielectric wall (Poisson) | finite-volume Gauss law; no conductance into solid cells -> homogeneous Neumann (zero field inside the dielectric) + accumulated surface charge on the plasma-side wall nodes as a RHS source; wall nodes float (`poisson.py:1-11`, `mesh.py:161-203`, `simulation.py:869-871`) | - | Gauss law with volume + surface charge (`test_pic2d_mesh_poisson.py`, MG path) |
 | dielectric wall (particles) | absorbed, charge deposited, KE and p_z tallied; ions recycled into the inventory (`kernels.py:160-242`, `simulation.py:1016-1030`) | - | boundary classification tests |
-| SEE (electron-induced) | SCAFFOLD ONLY: Vaughan 1989 yield with provisional BN parameters (delta_max 2.9, E_max 350 eV, E_0 12.5 eV), Hobbs-Wesson limit as a check, virtual per-column yield diagnostic; `enabled=True` refused (`sensitivity.py:90-197`, `simulation.py:231-234`) | Dunaevsky 2003 / Tondu 2011 named, not digitised | `test_see_scaffold_vaughan_yield_and_fail_closed_enable` |
+| SEE (electron-induced) | at `0901138a` SCAFFOLD ONLY (Vaughan 1989 yield with provisional BN parameters, `enabled=True` refused); **IMPLEMENTED 2026-09-05 as model v2.2.0 `see_dielectric_v1`** (§10): Vaughan + Sydorenko component split, integer yield, cosine emission at the wall crossing, surface charge absorbed - emitted, ledger + per-cell effective yield, both backends (`see.py`, `warp_see.py`) | BN: Villemant 2019 fit (PICLas coefficients) cross-checked against Dunaevsky 2003; Al2O3 declared bracket | `test_pic2d_v22_see.py` (13 tests incl. the Hobbs-Wesson slab check) |
 | ion-induced SEE, sputtering, erosion | ABSENT | - | - |
 | anode / exit / far field | Dirichlet (anode V_a; exit or far plane V_exit = chamber reference); absorbing; I_d = e(anode_e - anode_i)/interval (`poisson.py:50-54`, `simulation.py:1856-1866`) | - | ledger tests |
 | cathode | v1.3: exit-plane fixed current, half-Maxwellian into the channel (`simulation.py:1040-1105`); v2.0: volumetric annulus in the channel-connected flux tube, `fixed` or `continuity` (rate follows I_d, clamped) (`:71-135, 2133-2156`); field-line connectivity gate (`fieldlines.py`) | Szabo 2001 quasineutrality injection; Charoy 2019 cathode plane | plume tests, fieldline tests |
@@ -155,7 +155,7 @@ define the standard for the instability physics an axisymmetric code cannot carr
 
 | # | physics | in our code | in SOTA HEMPT PIC | consequence for OUR claims (direction; rough size) | effort | cost / step | rank |
 |---|---|---|---|---|---|---|---|
-| a | SEE from the dielectric (BN / Al2O3) | scaffold, emission refused | Brandt 2016: 50 % re-emitted at 90 % energy (crude); Matyash 2010: wall contact confined to the cusps | cusp sheath drops -10 to -45 % (delta 0.3-0.9); wall electron power x1.5-2; T_e,peak -10 to -25 %; I_d +10 to +30 % (near-wall conductivity); ion wall energy down | M-L (3-5 d) | +2-4 % (wall kernel + emission spawn) | 2 |
+| a | SEE from the dielectric (BN / Al2O3) | scaffold, emission refused at `0901138a`; **implemented v2.2.0 (§10), runs pending** | Brandt 2016: 50 % re-emitted at 90 % energy (crude); Matyash 2010: wall contact confined to the cusps | cusp sheath drops -10 to -45 % (delta 0.3-0.9); wall electron power x1.5-2; T_e,peak -10 to -25 %; I_d +10 to +30 % (near-wall conductivity); ion wall energy down | M-L (3-5 d) | +2-4 % (wall kernel + emission spawn) | 2 |
 | b | dielectric permittivity + backing (floating capacitor vs Neumann) | Neumann + surface charge (zero field inside the solid) | Brandt 2016: epsilon_r in the solver, 1 mm dielectric, grounded elements behind | DC floating condition identical (Gamma_e = Gamma_i locally); differences are the charging transient (~0.1-1 ms with a backing, ~10-100 ns without) and tangential coupling near the exit lip / anode edge (~2 % of the sheath charge, estimate §9) | M (1-2 d) | ~0 (a few more conductances) | 9 |
 | c | anomalous cross-field transport (azimuthal ECDI) | Bohm hook OFF by default; `bohm-0.4` sealed, never run | every HEMPT PIC imposes it (Brandt 2016 D = 0.4 kT_e/eB "derived from a 3D simulation"; Szabo 2001/2014 Bohm bracket); 2D-theta / 3D benchmarks compute it | the central limitation: without it the ext-val point avalanches; with alpha in {1/64, 1/16, 0.345} expect I_d up (+20 to +60 %, closure-set), peak n_e and S down (-30 to -60 % at Brandt's point), cusp sheath drops down, per-cusp wall loss up; plateau existence becomes robust (a leak path bounds n_e) | S-M (hook exists; perpendicular-rotation variant 1 d; alpha-series protocol 1 d) | +1-2 % (one more per-electron kernel) | 1 |
 | d | Coulomb collisions (e-e, e-i) | ABSENT | Brandt 2016 include "coulomb" collisions; Tskhakaya 2007 method | nu_ee/nu_en = 0.15-0.4 at 1e18 m^-3 / 5-10 eV, 1.4-3.4 at 1e19 (estimate); tau_ee 0.06 us at 1e19 << transit: EEDF Maxwellianised, tail refilled -> S +5 to +20 % at our plateau, first-order at Brandt's point; T_e,peak -5 % | L (3-5 d: cell sort + Takizuka-Abe / Nanbu pairing, subcycled) | +15-30 % if every step; +2-3 % subcycled every 10-20 steps | 4 |
@@ -577,7 +577,7 @@ the purpose of stating them is that a result of the opposite sign is a finding, 
 |---|---|---|---|---|---|
 | R0 | ledger W fix + gate recalibration + post-hoc residual sidecars (v2.0.6) - **DONE** (`4b53012d`, `8c70cff0`, 2026-09-05 01:40) | S | 0 (post hoc) | none physical; recorded residuals shifted + by the inelastic power (7-14 % of electrode work); the corrected ss-v4 reads +2.46 % (acceptance (b) FAIL), the 50 um base +13.0 % | particle-side identity closes to round-off on three backends (v2.0.6 tests); physics bitwise |
 | R1 | anomalous transport: `bohm_rotation` variant + predeclared alpha-series {0, 1/64, 1/16, 0.345} on the ss-v4 template; then the sealed ext-val `bohm-0.4` channel-20um run - **code DONE, campaigns PREREGISTERED and launching** (model v2.1.0, `experiments/pic2d_anomalous_transport_v1`, ext-val amendment 1; 2026-09-05) | S-M | 3 channel-33 (15 GPU-h) + 1 channel-20um (12 h solo / 30 h slot) | I_d UP monotone in alpha (+20 to +60 % at 1/16); peak n_e DOWN (-15 to -40 % at ours, -30 to -60 % at Brandt's); S, utilisation DOWN; T_e,peak DOWN; cusp sheath drops DOWN; per-cusp wall electron loss UP; ext-val: plateau instead of avalanche, I_a toward 4.3 mA, n_i toward 1e19 | monotone series with the stated signs; ext-val rows inside V&V20 tolerance or a recorded miss; residual-power gate silent |
-| R2 | SEE from the dielectric: digitised BN and Al2O3 Vaughan yields, backscatter fraction, 2 eV secondaries, Hobbs-Wesson cap; `pic2d-model-v2.2` | M-L | 2 channel-33 (BN, Al2O3) at the R1-chosen alpha | cusp sheath drops DOWN 10-45 %; wall electron power UP x1.5-2; T_e,peak DOWN 10-25 %; I_d UP 10-30 %; peak n_e DOWN 5-15 %; wall ion energy DOWN; Al2O3 > BN in every effect | slab sheath drop vs analytic with delta; ledger closes with emission; on/off/material triad with stated signs |
+| R2 | SEE from the dielectric: BN (Villemant 2019 fit) and Al2O3 (declared) Vaughan yields, Sydorenko backscatter split, 2 eV secondaries, space-charge limit emergent (no cap); `pic2d-model-v2.2` - **CODE LANDED 2026-09-05 (§10), runs not scheduled** | M-L | 2 channel-33 (BN, Al2O3) at the R1-chosen alpha | cusp sheath drops DOWN 10-45 %; wall electron power UP x1.5-2; T_e,peak DOWN 10-25 %; I_d UP 10-30 %; peak n_e DOWN 5-15 %; wall ion energy DOWN; Al2O3 > BN in every effect | slab sheath drop vs analytic with delta; ledger closes with emission; on/off/material triad with stated signs |
 | R3a | four excitation levels | S | folded into R3b's run | T_e DOWN 3-5 %; S DOWN 3-5 %; inelastic power UP ~15 % | total excitation frequency unchanged; ledger |
 | R3b | Xe+ + Xe CEX + MEX with fast-neutral thrust tally; `xenon-ion-neutral-cross-sections-v1.json` | M | 1 channel-33 + 1 plume-v2.1 | I_d, S ~unchanged (< 5 %); IEDF gains a low-energy population 15-30 % of exit ions; anode ion current UP; divergence UP; ion thrust DOWN by the exchanged fraction, total (ion + fast neutral) ~unchanged | CEX fraction = 1 - exp(-L/lambda) on a slab; momentum ledger closes with the neutral term |
 | R4 | Coulomb collisions (Takizuka-Abe / Nanbu, cell sort, subcycled) | L | 1 channel-33; 1 ext-val (`bohm-0.4` + Coulomb + SEE = the like-for-like Brandt comparison) | S UP 5-20 % (more at 1e19); T_e,peak DOWN ~5 %; EEDF Maxwellian tail; I_d UP few % | bi-Maxwellian relaxation at the Trubnikov rate; pairwise conservation; on/off pair |
@@ -860,3 +860,41 @@ repository); constants e, m_e, m_Xe = 2.1801714e-25 kg, epsilon_0, mu_0.
   (n 1e18, v_B 1e4 m/s) the charging time is sigma/(e Gamma_i) ~ 0.2 ms. Tangential coupling ratio
   (epsilon_r epsilon_0 Delta V / L) / (epsilon_0 Delta V / lambda_D) = epsilon_r lambda_D / L = 9.8 x 10 um /
   6 mm ~ 2 %.
+## 10. Status update 2026-09-05 - gap (a) implemented as model v2.2.0 `see_dielectric_v1` (R2)
+
+*What landed* (`modern/spec/pic2d/pic2d-model-v2.2.json`, `cft_revival.pic2d.see` / `warp_see`,
+`tests/pic2d/test_pic2d_v22_see.py`). Electron impacts on the dielectric wall emit an integer number of
+macro-electrons (floor + Bernoulli of the total yield, same macro weight) from the Vaughan curve with the
+Sydorenko 2006 three-component split (elastic 3 % keeps the speed, inelastic 7 % uniform in energy, true
+secondaries as a flux half-Maxwellian at T_see = 2 eV), cosine emission about the inward normal of the crossed
+face, emitted at the wall crossing of the last plasma cell; ion-induced yield as a constant (default 0). The
+wall's accumulated surface charge - which the code has carried on the plasma-side wall nodes since v1.0 (§2,
+row "dielectric wall (Poisson)"), so gap (b)'s "Neumann with no surface charge" alternative did not apply -
+now changes by absorbed minus emitted charge. The emitted kinetic energy is an injected ledger term; the
+particle-side identity closes to round-off with emission on (cpu / warp-cpu / cuda), SEE off is bitwise v2.0.6,
+the CUDA graph replays the direct launches bitwise with SEE on. No Hobbs-Wesson cap: the virtual cathode is the
+PIC's. Per-cell effective yield (emitted / impacting) and the wall potential are recorded (maps, frames, series).
+
+*Constants* (supersede §9's provisional set). BN: Vaughan fit of the Villemant et al. 2019 BN yield as tabulated
+by PICLas (delta_max 2.016 at 299 eV, threshold 0, k 0.563) - it reproduces Dunaevsky et al. 2003 independently
+(first crossover 35.7 vs 35 eV; delta(10 eV) 0.51 vs sigma_0 0.54); flux-averaged 0.48 / 0.58 / 0.69 at T_e
+5 / 7 / 10 eV (not the 0.14 / 0.28 / 0.49 of the provisional set: the zero threshold carries the low-energy
+elastic floor); critical temperature 20.3 eV (Dunaevsky linear fit 19.3, Sydorenko 18.3). Al2O3: declared
+bracket (6.4 at 650 eV per Dawson 1966, threshold 12.5 eV, Sydorenko low-energy bump 0.5 at 7.5 eV): crossover
+16 eV, flux-averaged 0.63 / 0.82 / 1.09, critical temperature 8.7 eV; Tondu 2011 not digitised (their Al2O3
+yield falls with electron exposure). Furman-Pivi parameter sets exist for Cu / stainless steel only, hence the
+Sydorenko fractions.
+
+*Physics check* (afterglow slab, floating dielectric wall, constant yield with a 3 eV threshold, T_see 0.5 eV;
+declared tolerances in the test). Bulk-to-wall drop 11.09 / 9.83 / 7.41 / 3.61 / 3.11 V for delta 0 / 0.5 /
+0.9 / 1.5 / 3.0 at T_e(0) = 3.08 eV; the fall follows the Hobbs-Wesson factor T_e ln[1/(1 - delta_eff)] within
+0.04 / 0.17 T_e (delta_eff 0.36 / 0.64 = the wall-defined yield); at delta >= 1.5 the effective yield saturates
+at 0.89 / 0.95 < 1 and the drop is 1.17 / 1.01 T_e against the space-charge-limited 1.02 T_e. The ion-flux
+equilibrium value 5.27 T_e is not reached in 12 ns (it needs the ion transit) and is not the test.
+
+*Hypotheses for the R2 runs* (unchanged directions from §4.a, restated in the spec as predeclared): cusp
+sheath drops DOWN 10-45 %, wall electron power UP x1.5-2, T_e,peak DOWN 10-25 %, I_d UP 10-30 %, peak n_e DOWN
+5-15 %, wall ion energy DOWN, Al2O3 > BN in every effect; whether a cusp is classical, emitting or
+space-charge-limited is read from the recorded per-cell effective yield, not assumed. Gap (b) - permittivity
+and grounded backing - stays open (DC floating condition identical; charging transient and exit-lip coupling
+declared).
