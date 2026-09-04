@@ -307,8 +307,8 @@ def test_coulomb_off_reproduces_the_v2_2_0_identity_ledger_keys_and_tallies():
         from cft_revival.pic2d.warp_coulomb import COULOMB_STREAM
     except ImportError:  # pragma: no cover
         return
-    assert SEED_STREAMS == 6 and SEED_STREAM_IDS == (1, 2, 3, 4, 5, 6) and COULOMB_STREAM == 5 and COULOMB_RNG_STREAM == 6
-    assert len({stream_seed(3, 17, s) for s in SEED_STREAM_IDS}) == 6
+    assert SEED_STREAMS == 7 and SEED_STREAM_IDS == (1, 2, 3, 4, 5, 6, 7) and COULOMB_STREAM == 5 and COULOMB_RNG_STREAM == 6   # v2.5.0 appends the neutral column 6
+    assert len({stream_seed(3, 17, s) for s in SEED_STREAM_IDS}) == 7
 
 
 # -- relaxation physics (numpy reference and the Warp stage) --------------------------------------------------------------------
