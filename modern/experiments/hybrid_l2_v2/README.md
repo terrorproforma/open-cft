@@ -71,6 +71,37 @@ Each case writes `results/` (base) or `results-<case>/`: `series.jsonl` (untrack
   series to the checkpoint step) and the `sessions.json` entries record `git_head` and BLAS thread pins. The
   simulation code (`cft_revival.hybrid`) is unchanged since `386c9070`; `summary.json` records `git_head` at
   finalize time, which for sessions finalized after this commit is the runner commit, not `386c9070`.
+* **2026-09-04 20:57 AEST - PARKED (user cancelled; coordinator directive).** Status: development model, NOT
+  admitted. Record on `feat/hybrid-l2-v2` only (not merged into `feat/sota-foundation`).
+  - Comparison **FAIL**: 24 of 28 compared quantities outside the preregistered tolerance (`results/assessment.json`):
+    I_d 7.52 mA vs the PIC base 3.44 mA (+118 %; vs the PIC v4 refinement 3.80 mA: +98 %), anode ion fraction
+    0.155 vs 0.014, peak n_e 1.50e19 vs 1.64e18 m^-3 (x9), n_g 1.69e19 vs 2.97e19 m^-3 (-43 %), S +51 %,
+    gross utilisation 0.69 vs 0.46, cusp-2 near-wall drop -36 V vs +32 V (wrong sign). Within: cell-1 ion wall-loss
+    fraction, cell-2 / cell-3 T_e, potential step 1. Interface conservation passed (charge identity 3e-9).
+  - Resolution ladder incomplete: spatial 3/3 finished (coarse, base, fine) but temporal 2/3 (temporal-fine killed
+    at 7.28 us / 3.03 transits), statistical 0/2 (weight-half killed at ~6 us, seed-b finished but W-half missing),
+    closure sensitivity 0/4 (killed at ~5.3 us) - the remaining cases were killed by the coordinator at the user's
+    request at 20:5x AEST; GATE-L2 verdict therefore `not_evaluable` on the ladder and `code_comparison_passed: false`.
+  - Cost: PIC/L2 wall-clock ratio 1.66 (PIC base 10,141 s on the RTX 5090 vs L2 base 6,116 s on one contended CPU
+    core) - no speed advantage as run; the preregistered 10-100x target was not met.
+  - GPU contention disclosure: the coordinator observed ~11 CUDA processes at 100 % on the local RTX 5090 from 18:13
+    to 19:4x AEST while the preregistered PIC v5 (PID 43572) executed and attributed them to this campaign. The L2
+    runner is numpy-only and `nvidia-smi --query-compute-apps` listed none of the eleven L2 PIDs at 19:46 (0
+    GPU-minutes by that measure); the eleven processes did saturate the host CPU (94-96 % load) for ~93 minutes, which
+    contended the PIC v5 host thread and its preflight timing (its budget was set to 48 h for that reason). If the
+    coordinator's attribution stands, the GPU-minutes to disclose are ~11 x 93 min; we could not confirm it from the
+    host data. Recorded here as a disclosure either way.
+  - Committed here: code, tests, docs, protocol / preflight / shakedown, the base-case result (`results/`: summary,
+    maps, series, l2-targets, assessment, final checkpoint metadata + field anchor, sessions, lock; particle arrays,
+    `series.jsonl`, `checkpoint-latest.*` and raw logs untracked) and the summaries of the four other finished cases
+    (seed-b, spatial-coarse, spatial-fine, temporal-coarse), the dashboard `modern/visualization/hybrid-l2-v2.html` as-is.
+  - Diagnosis (best physics guess, untested): the discharge current is set by the cusp conductance closure G_k, which
+    was extracted from the PIC plateau as a *linear* conductance (cusp electron current / potential drop) and applied
+    at L2's own, higher cell densities and potentials; a Boltzmann-electron cell with a fixed G_k has no
+    sheath-limited (saturation) cusp current, so the anode-side cell (cell 0) draws whatever electron current the
+    358 V potential (vs 309 V in the PIC) pulls through the cusps, roughly doubling I_d, and the ions born from the
+    surplus ionisation leave through the anode (anode ion fraction 0.155 vs 0.014) instead of the walls. Leak
+    half-widths w_k (populated flux tubes) are the second suspect: too-wide tubes at cusp 2 flip the near-wall drop.
 * The `assess` stage gained the read-only `--pic-v4-results` option after the preregistration commit (the PIC
   33 um refinement `pic2d_cft_steady_state_v4` reached its plateau at 7.28 us / 5.2 M steps / 18,013 s while
   the L2 cases were running); it adds an INFORMATIONAL column and changes nothing in the model, the protocol
