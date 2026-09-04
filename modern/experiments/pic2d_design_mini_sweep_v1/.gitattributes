@@ -1,0 +1,2 @@
+fields/**/*.level-0.json filter=lfs diff=lfs merge=lfs -text
+fields/**/*.json.arrays.npz filter=lfs diff=lfs merge=lfs -text
