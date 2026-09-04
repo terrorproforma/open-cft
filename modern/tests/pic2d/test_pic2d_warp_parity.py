@@ -114,27 +114,30 @@ def test_l_shaped_plume_domain_with_cathode_parity(device: str):
     """v2.0 (tiny): L-shaped mask, internal walls / front face, far-field exits, cathode emission,
     momentum ledger and plume histograms agree between the numpy reference and the Warp backend."""
 
-    from cft_revival.pic2d.simulation import CathodeConfig
+    from cft_revival.pic2d.simulation import CathodeConfig, PlumeBoundaryGateConfig
 
     geometry = ChannelGeometry(2.0e-3, 0.0, 8.0e-3, 6.0e-3, 3.0e-3, plume_radius_m=6.0e-3, plume_length_m=4.0e-3,
                                body_dielectric_radius_m=4.0e-3)
     grid = Grid2D(geometry, 24, 48)
     field = uniform_field_map(grid, 0.02)
+    # v2.0.2: a recording-only gate (never armed) with a 20-step window and a one-particle-step floor so the window
+    # statistic read from each backend's accumulators is exercised and compared
+    gate = PlumeBoundaryGateConfig(0.25, enforce_after_s=1.0, window_steps=20, min_accumulated_macro_particles_per_node=1.0)
 
     def make(cathode: CathodeConfig | None) -> PIC2DConfig:
         return PIC2DConfig(
             grid=grid, potentials=BoundaryPotentials(300.0, 0.0), dt_s=5e-12, macro_weight=2e5, seed=5, cathode=cathode,
             seed_plasma=SeedPlasmaConfig(1e15, 5.0), poisson=PoissonConfig2D(), reference_density_per_m3=1e15,
             reference_electron_temperature_ev=5.0, limits=StabilityLimits(max_cell_debye_ratio=2.0), series_interval_steps=20,
-            runtime_stability_check_steps=20,
+            runtime_stability_check_steps=20, plume_boundary_gate=gate,
         )
 
     # (a) seed plasma only: the L-shaped mask, internal walls, front face and far-field exits are bitwise-comparable
     config = make(None)
     cpu = Simulation(config, field, backend="cpu")
     gpu = Simulation(config, field, backend=_backend_name(device), device=device)
-    cpu.run(40)
-    gpu.run(40)
+    cpu.run(40, accumulate_from_step=0)
+    gpu.run(40, accumulate_from_step=0)
     a, b = cpu.state, gpu.state
     assert a.electrons.count == b.electrons.count and a.ions.count == b.ions.count
     for key in ("anode_electrons", "exit_electrons", "wall_electrons", "anode_ions", "exit_ions", "wall_ions", "body_face_electrons"):
@@ -142,15 +145,26 @@ def test_l_shaped_plume_domain_with_cathode_parity(device: str):
     assert a.cumulative["exit_electrons"] > 0 and a.cumulative["body_face_electrons"] > 0
     assert np.max(np.abs(a.phi_v - b.phi_v)) < 1e-9 * 300.0
     da, db = cpu.diagnostic_arrays(), gpu.diagnostic_arrays()
-    for key in ("plume_ion_counts_per_theta", "iedf_ion_counts", "sample_count_e"):
+    for key in ("plume_ion_counts_per_theta", "iedf_ion_counts"):
         assert np.array_equal(da[key], db[key]), key
+    # the window is now accumulated (v2.0.2): the moment sums are device atomics and the densities a reciprocal-volume
+    # product on the device vs a division on the host -> round-off, not bitwise (the deposits themselves are bitwise)
+    assert int(da["window_steps"][0]) == int(db["window_steps"][0]) == 40
+    for key in ("sample_count_e", "n_e_per_m3", "n_i_per_m3"):
+        assert np.allclose(da[key], db[key], rtol=1e-12, atol=0.0), key
     ra, rb = cpu.series[-1], gpu.series[-1]
     assert ra.momentum is not None and rb.momentum is not None
     for key in ("thrust_flux_n", "force_on_thruster_n", "absorbed_momentum_rate_n", "electrostatic_force_thruster_n"):
         assert ra.momentum[key] == pytest.approx(rb.momentum[key], rel=1e-8, abs=1e-30), key
-    assert ra.plume["charge_fraction_of_peak"] == pytest.approx(rb.plume["charge_fraction_of_peak"], rel=1e-9, abs=1e-12)
-    assert ra.plume["charge_fraction_of_peak_raw"] == pytest.approx(rb.plume["charge_fraction_of_peak_raw"], rel=1e-9, abs=1e-12)
-    assert ra.plume["far_field_resolved_nodes"] == rb.plume["far_field_resolved_nodes"] and ra.plume["far_field_raw_max_node"] == rb.plume["far_field_raw_max_node"]
+    # v2.0.2: the window statistic comes from each backend's own accumulators (device sums on Warp) - same interval average
+    assert ra.plume["far_field_window_steps"] == rb.plume["far_field_window_steps"] == 20 and ra.plume["far_field_window_complete"]
+    assert ra.plume["far_field_resolved_nodes"] == rb.plume["far_field_resolved_nodes"] > 0
+    for key in ("charge_fraction_of_peak", "charge_fraction_of_peak_window_raw", "charge_fraction_of_peak_raw",
+                "far_field_accumulated_macro_particles_max", "peak_electron_density_window_per_m3"):
+        assert ra.plume[key] == pytest.approx(rb.plume[key], rel=1e-9, abs=1e-12), key
+    assert ra.plume["far_field_raw_max_node"] == rb.plume["far_field_raw_max_node"]
+    assert ra.plume["far_field_window_raw_max_node"] == rb.plume["far_field_window_raw_max_node"]
+    assert ra.plume["gate_armed"] is False and ra.plume["gate_enforced"] is False
     # (b) with the cathode: the emission samples use each backend's RNG stream (not bitwise, like the v1.x
     # injection); the emitted count is deterministic and both ledgers close to round-off
     config = make(CathodeConfig(3.5e-3, 4.5e-3, 9.0e-3, 10.0e-3, 2.0, 2e-3))
@@ -275,6 +289,8 @@ def test_cuda_graph_step_is_bitwise_identical_to_the_direct_launches_for_200_ste
     direct = Simulation(config, field, cross_sections=xs, backend="warp-cuda", step_graph=False)
     graph = Simulation(config, field, cross_sections=xs, backend="warp-cuda", step_graph=True)
     assert direct.backend.step_graph is False and graph.backend.step_graph is True
+    # v2.0.2: the launch-time provenance line reports the state honestly: graphs are captured lazily on the first step
+    assert graph.to_provenance()["v1_4_options"]["step_graph"] == "lazy" and direct.to_provenance()["v1_4_options"]["step_graph"] is False
     direct.run(200)
     graph.run(200)
     assert graph.backend.step_graph_active and graph.backend.graph_captures >= 2      # ion-push and electron-only variants

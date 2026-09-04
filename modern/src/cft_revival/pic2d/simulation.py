@@ -17,7 +17,8 @@ reproduce it (bit-identical deposition, roundoff-level push, distributional MCC)
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from collections import deque
+from dataclasses import dataclass
 from math import gcd, isfinite, pi, sqrt
 from typing import Any, Literal, Mapping
 
@@ -41,7 +42,6 @@ from .models import (
     PoissonConfig2D,
     Species2D,
     StabilityLimits,
-    StabilityReport2D,
     electron_species,
     require_stable,
     stability_report,
@@ -656,6 +656,7 @@ class CPUBackend:
             self.mcc = NullCollisionMCC(cross_sections, config.mcc, self.ion)
         self.state: SimulationState | None = None
         self.diagnostics = DiagnosticAccumulator(masks, iedf_max_ev=iedf_max_ev(config))
+        self.diagnostic_generation = 0     # v2.0.2: incremented by every reset_diagnostics (window bridging)
         self.quantum_c = ELEMENTARY_CHARGE_C * config.macro_weight
         self.last_tally: StepTally | None = None
         self._last_charge_maps: tuple[np.ndarray, np.ndarray] | None = None
@@ -948,12 +949,20 @@ class CPUBackend:
 
         return self.diagnostics.raw_sums()
 
+    def far_field_window_sums(self) -> tuple[np.ndarray, np.ndarray, int, int]:
+        """v2.0.2 plume-boundary gate: far-field rows of the window sums ``sum_t n_e``, ``sum_t n_i`` (m^-3 x steps),
+        the accumulated step count and the reset generation (same accumulation as ``diagnostic_sums``)."""
+
+        far = self.masks.far_field_node
+        return self.diagnostics.n_e[far].copy(), self.diagnostics.n_i[far].copy(), int(self.diagnostics.steps), self.diagnostic_generation
+
     def surface_charge_map(self) -> np.ndarray:
         assert self.state is not None
         return self.state.surface_charge_c.copy()
 
     def reset_diagnostics(self) -> None:
         self.diagnostics.reset()
+        self.diagnostic_generation += 1
 
 
 def injection_sample(config: PIC2DConfig, masks: MeshMasks, u: np.ndarray) -> ParticleArrays:
@@ -1120,15 +1129,17 @@ class SeriesRecord:
           | ({} if self.plume is None else {"plume": dict(self.plume)})
 
 
-# v2.0.1: sample-size floor for the plume-boundary gate's node density estimate (see PlumeBoundaryGateConfig);
-# also the recording floor when the gate is off.  Same order as PeakDebyeGateConfig.min_macro_particles_at_peak (32
-# in the plume protocol): relative shot noise ~ N^-1/2 = 18 %.
-PLUME_GATE_MIN_MACRO_PARTICLES_PER_NODE = 32
+# v2.0.2 plume-boundary gate: trailing window of ACCUMULATED steps over which the far-field charge statistic is
+# averaged (the plume protocol's 400 000-step / 0.6 us averaging window = 20 frames) and the sample-size floor in
+# accumulated macro-particle weight per node over that window (see PlumeBoundaryGateConfig for the derivation:
+# 32 independent beam-ion crossings of a node x 2000 steps per crossing).  Also the recording values when the gate is off.
+PLUME_GATE_WINDOW_STEPS = 400_000
+PLUME_GATE_MIN_ACCUMULATED_MACRO_PARTICLES_PER_NODE = 64_000.0
 
 
 @dataclass(frozen=True, slots=True)
 class PlumeBoundaryGateConfig:
-    """v2.0 plume-boundary sanity gate (fail-closed).
+    """v2.0 plume-boundary sanity gate (fail-closed), v2.0.2 window-averaged form.
 
     The far-field nodes are Dirichlet at the reference potential, so the check is on
     *charge pile-up*: a net charge density at the far-field nodes larger than
@@ -1138,36 +1149,174 @@ class PlumeBoundaryGateConfig:
     outer-boundary condition changed their plume current ratios).  Enforced after
     ``enforce_after_s`` so the seed plasma's first transit does not trip it.
 
-    The gate quantity is evaluated only on far-field nodes that hold at least
-    ``min_macro_particles_per_node`` macro-particles (electrons + ions, bilinear weights)
-    in the deposit, as the peak-node Debye gate does for its argmax: the density estimate
-    on a node is a single-deposit shot-noise sample, and the axis corner node of the far
-    plane has a bilinear shape volume of ``pi dr^2 dz / 6`` (6.5e-14 m^3 on the 50 um plume grid),
-    so ONE macro-ion (W = 6e4) deposited there reads 9.2e17 m^-3 = 0.4 of a 2.3e18 peak.
-    Plume attempt 6 (2026-09-04) was stopped by exactly that: 0.66 macro-ions and no
-    electrons on node (0, nz) gave 0.259 of the peak while the interval-averaged far-field
-    charge fraction was 0.03 (max over nodes) and 1e-4 (volume-weighted).  The unrestricted
-    maximum is still recorded (``charge_fraction_of_peak_raw``) so the shot-noise statistic
-    stays visible; a real sheath at the gate density puts >> 32 macro-particles on every
-    far-field node except the innermost few (r < 0.35 mm), which a resolved neighbour covers.
+    Gate quantity (v2.0.2): ``max over resolved far-field nodes of |<n_i> - <n_e>| / <n_e,peak>``
+    where ``<.>`` is the time average over the trailing window of at least ``window_steps``
+    accumulated steps, read from the SAME window accumulators that produce ``maps.npz`` and the
+    frames (``sum_t n_e``, ``sum_t n_i`` on the far-field nodes; the backend reads them at the
+    series-record host sync, never per step) and bridged across the runner's window resets by a
+    host-side carry, so the window is continuous.  The denominator is the mean over the window's
+    series records of the instantaneous peak electron density.  A far-field node is *resolved*
+    when its accumulated macro-particle weight over the window (electrons + ions, bilinear
+    weights, summed over the accumulated steps: ``(sum_t n_e + sum_t n_i) V_node / W``) is at
+    least ``min_accumulated_macro_particles_per_node``.
+
+    Why a window and this floor.  v2.0 read a SINGLE-deposit statistic: the axis corner node of
+    the far plane has a bilinear shape volume ``pi dr^2 dz / 6`` (6.5e-14 m^3 on the 50 um plume
+    grid), so ONE macro-ion (W = 6e4) there reads 9.2e17 m^-3 = 0.4 of a 2.3e18 peak; plume
+    attempt 6 (2026-09-04) was stopped by 0.66 macro-ions and no electrons on that node (0.259 of
+    the peak) while the interval-averaged far-field charge fraction was 0.03.  v2.0.1 kept the
+    single-deposit statistic and added a floor of 32 macro-particles PER DEPOSIT; attempt 7
+    showed that floor is unreachable at far-field densities (0.01-20 macro-particles per node,
+    0 resolved nodes in all 4601 armed records): the gate no longer false-fired but could not
+    fire at all.  The window average is the statistic the attempt-6/7 diagnoses actually used
+    (0.030-0.035 max over the far-field nodes).  Floor derivation: an accumulated weight ``A``
+    is particle-steps, and a beam ion (~15 km/s at the far plane, attempt 7: flux-weighted
+    <v_z> 14.8 km/s, IEDF 10 % quantile 13 km/s) stays on a 50 um node for ``tau`` = 50 um /
+    (15 km/s x 1.5 ps) = 2000 steps (the ~10 series intervals per corner-node crossing seen in
+    the attempt-6 log), so the number of independent samples is ``N_eff = A / (w tau) >= A / tau``
+    (bilinear weight w <= 1).  ``A >= 32 tau = 64 000`` therefore guarantees >= 32 independent
+    beam-ion crossings (the peak-node Debye gate's 32-particle convention, relative shot noise
+    <= 18 %) for every particle at least as fast as the beam; electrons (60x faster) only add
+    samples.  Over the 400 000-step window this is a mean occupancy of 0.16 macro-particles per
+    node: on the attempt-7 window maps it resolves 121 of the 481 far-field nodes (the far plane out
+    to r = 6.7 mm except the axis corner node at occupancy 0.10, which its resolved neighbour (1, nz)
+    covers at 0.0339 of the peak; attempt 6: 77 nodes, 0.0249); a genuine sheath at the 0.25 threshold puts >= 0.73 macro-ions
+    on the corner node and >= 4.4 on its neighbour at all times, i.e. is resolved everywhere but
+    the corner.  The unrestricted window statistic (all far-field nodes) and the v2.0.1
+    single-deposit statistic are recorded alongside; the threshold (0.25, 7x the attempt-7
+    window value) and the arming time are unchanged.
     """
 
     max_charge_fraction: float = 0.25
     enforce_after_s: float = 0.0
-    min_macro_particles_per_node: int = PLUME_GATE_MIN_MACRO_PARTICLES_PER_NODE
+    window_steps: int = PLUME_GATE_WINDOW_STEPS
+    min_accumulated_macro_particles_per_node: float = PLUME_GATE_MIN_ACCUMULATED_MACRO_PARTICLES_PER_NODE
 
     def __post_init__(self) -> None:
         if not isfinite(self.max_charge_fraction) or self.max_charge_fraction <= 0.0:
             raise PIC2DValidationError("max_charge_fraction must be positive")
         if not isfinite(self.enforce_after_s) or self.enforce_after_s < 0.0:
             raise PIC2DValidationError("enforce_after_s must be non-negative")
-        if (isinstance(self.min_macro_particles_per_node, bool) or not isinstance(self.min_macro_particles_per_node, int)
-                or self.min_macro_particles_per_node < 1):
-            raise PIC2DValidationError("min_macro_particles_per_node must be a positive integer")
+        if isinstance(self.window_steps, bool) or not isinstance(self.window_steps, int) or self.window_steps < 1:
+            raise PIC2DValidationError("window_steps must be a positive integer")
+        floor = self.min_accumulated_macro_particles_per_node
+        if isinstance(floor, bool) or not isinstance(floor, (int, float)) or not isfinite(floor) or floor <= 0.0:
+            raise PIC2DValidationError("min_accumulated_macro_particles_per_node must be a positive finite number")
+        object.__setattr__(self, "min_accumulated_macro_particles_per_node", float(floor))
 
     def to_dict(self) -> dict[str, float | int]:
         return {"max_charge_fraction": self.max_charge_fraction, "enforce_after_s": self.enforce_after_s,
-                "min_macro_particles_per_node": self.min_macro_particles_per_node}
+                "window_steps": self.window_steps,
+                "min_accumulated_macro_particles_per_node": self.min_accumulated_macro_particles_per_node}
+
+
+class FarFieldChargeWindow:
+    """v2.0.2: trailing-window far-field charge statistic from the diagnostic accumulators (host side).
+
+    At every series record (an existing host sync) the backend hands over the far-field rows of
+    its window sums ``sum_t n_e``, ``sum_t n_i``, the accumulated step count and a reset
+    generation counter.  Cumulative totals bridge the runner's accumulator resets (a generation
+    change carries the last reading before the reset, which in the runner IS the reset boundary
+    because every window reset follows a series record), and a ring of totals per record turns
+    the trailing window of at least ``window_steps`` accumulated steps into an exact difference
+    of two totals - the frame recorder's construction (``frames.interval_maps``).  The window is
+    ``min(window_steps, all accumulated history)`` until enough history exists; ``complete`` says
+    whether it reached ``window_steps``.  Memory: far-field nodes only (481 on the plume grid),
+    ``2 ceil(window_steps / series_interval) + 2`` entries.
+    """
+
+    def __init__(self, masks: MeshMasks, macro_weight: float, window_steps: int, series_interval_steps: int, floor: float) -> None:
+        self.far = masks.far_field_node
+        self.volume = np.asarray(masks.shape_volume_m3[self.far], dtype=np.float64)
+        self.macro_weight = float(macro_weight)
+        self.window_steps = int(window_steps)
+        self.floor = float(floor)
+        self.maxlen = 2 * (-(-self.window_steps // max(int(series_interval_steps), 1))) + 2
+        # ring entries: (step, cumulative accumulated steps, cumulative peak sum, record index, cumulative sum_e, cumulative sum_i)
+        self._ring: deque[tuple[int, int, float, int, np.ndarray, np.ndarray]] = deque(maxlen=self.maxlen)
+        self._carry_e = np.zeros(int(self.far.sum()))
+        self._carry_i = np.zeros(int(self.far.sum()))
+        self._carry_steps = 0
+        self._last: tuple[np.ndarray, np.ndarray, int, int] | None = None
+        self._peak_total = 0.0
+        self._records = 0
+
+    def reset(self, reading: tuple[np.ndarray, np.ndarray, int, int], step: int) -> None:
+        """Forget the history (fresh start / loaded checkpoint) and seed the ring with the current totals."""
+
+        self._ring.clear()
+        self._carry_e[...] = 0.0
+        self._carry_i[...] = 0.0
+        self._carry_steps = 0
+        self._peak_total = 0.0
+        self._records = 0
+        self._last = reading
+        n_e, n_i, steps, _ = reading
+        self._ring.append((int(step), int(steps), 0.0, 0, np.asarray(n_e, dtype=np.float64).copy(), np.asarray(n_i, dtype=np.float64).copy()))
+
+    def update(self, reading: tuple[np.ndarray, np.ndarray, int, int], step: int, peak_now: float) -> dict[str, Any]:
+        n_e = np.asarray(reading[0], dtype=np.float64)
+        n_i = np.asarray(reading[1], dtype=np.float64)
+        steps, generation = int(reading[2]), int(reading[3])
+        if self._last is not None and generation != self._last[3]:
+            # the accumulators were reset since the previous record: carry the last reading (the completed window)
+            self._carry_e += np.asarray(self._last[0], dtype=np.float64)
+            self._carry_i += np.asarray(self._last[1], dtype=np.float64)
+            self._carry_steps += int(self._last[2])
+        self._last = reading
+        self._records += 1
+        self._peak_total += float(peak_now)
+        total_e = self._carry_e + n_e
+        total_i = self._carry_i + n_i
+        total_steps = self._carry_steps + steps
+        # the newest ring entry at least window_steps of accumulation back (else the oldest available)
+        base = self._ring[0] if self._ring else (int(step), total_steps, self._peak_total, self._records, total_e, total_i)
+        for entry in reversed(self._ring):
+            if total_steps - entry[1] >= self.window_steps:
+                base = entry
+                break
+        window_steps = total_steps - base[1]
+        records = self._records - base[3]
+        out: dict[str, Any] = {
+            "window_steps": int(window_steps), "window_records": int(max(records, 0)), "window_start_step": int(base[0]),
+            "window_complete": bool(window_steps >= self.window_steps), "window_steps_required": self.window_steps,
+            "min_accumulated_macro_particles_per_node": self.floor,
+        }
+        peak_mean = (self._peak_total - base[2]) / records if records > 0 else float(peak_now)
+        out["peak_electron_density_window_per_m3"] = float(peak_mean)
+        if window_steps > 0 and self.far.any():
+            mean_e = (total_e - base[4]) / window_steps
+            mean_i = (total_i - base[5]) / window_steps
+            accumulated = (total_e + total_i - base[4] - base[5]) * self.volume / self.macro_weight   # macro-particle-steps
+            net = np.abs(mean_i - mean_e)
+            resolved = accumulated >= self.floor
+            raw_at = int(np.argmax(net))
+            far_net = float(net[resolved].max()) if resolved.any() else 0.0
+            out |= {
+                "far_field_net_charge_density_max_per_m3": far_net,
+                "charge_fraction_of_peak": far_net / peak_mean if peak_mean > 0.0 else 0.0,
+                "far_field_net_charge_density_max_window_raw_per_m3": float(net[raw_at]),
+                "charge_fraction_of_peak_window_raw": float(net[raw_at]) / peak_mean if peak_mean > 0.0 else 0.0,
+                "far_field_window_raw_max_node": self._node(raw_at),
+                "far_field_window_raw_max_accumulated_macro_particles": float(accumulated[raw_at]),
+                "far_field_resolved_nodes": int(resolved.sum()),
+                "far_field_accumulated_macro_particles_max": float(accumulated.max()),
+                "far_field_accumulated_macro_particles_median": float(np.median(accumulated)),
+            }
+        else:
+            out |= {
+                "far_field_net_charge_density_max_per_m3": 0.0, "charge_fraction_of_peak": 0.0,
+                "far_field_net_charge_density_max_window_raw_per_m3": 0.0, "charge_fraction_of_peak_window_raw": 0.0,
+                "far_field_window_raw_max_node": [0, 0], "far_field_window_raw_max_accumulated_macro_particles": 0.0,
+                "far_field_resolved_nodes": 0, "far_field_accumulated_macro_particles_max": 0.0,
+                "far_field_accumulated_macro_particles_median": 0.0,
+            }
+        self._ring.append((int(step), total_steps, self._peak_total, self._records, total_e.copy(), total_i.copy()))
+        return out
+
+    def _node(self, flat_far_index: int) -> list[int]:
+        node = np.flatnonzero(self.far.ravel())[flat_far_index]
+        return [int(k) for k in np.unravel_index(int(node), self.far.shape)]
 
 
 def boundary_forces_n(masks: MeshMasks, phi: np.ndarray) -> dict[str, float]:
@@ -1314,6 +1463,16 @@ class Simulation:
         self._last_momentum: float | None = None
         if config.cathode is not None and config.cathode.current_rule == "continuity":
             self.backend.set_emission_rate(config.initial_emission_rate_per_step)
+        # v2.0.2: trailing-window far-field charge statistic (plume domains only; recording values when the gate is off)
+        self._far_field_window: FarFieldChargeWindow | None = None
+        if self.masks.has_plume:
+            gate = config.plume_boundary_gate
+            self._far_field_window = FarFieldChargeWindow(
+                self.masks, config.macro_weight,
+                gate.window_steps if gate is not None else PLUME_GATE_WINDOW_STEPS, config.series_interval_steps,
+                gate.min_accumulated_macro_particles_per_node if gate is not None else PLUME_GATE_MIN_ACCUMULATED_MACRO_PARTICLES_PER_NODE,
+            )
+            self._far_field_window.reset(self.backend.far_field_window_sums(), self.backend.step_index)
 
     @property
     def state(self) -> SimulationState:
@@ -1338,6 +1497,10 @@ class Simulation:
         self._last_electrode = None
         self._last_momentum = None
         self._series_base_step = int(state.step)
+        if self._far_field_window is not None:
+            # the window history is not part of the checkpoint: after a resume the gate statistic covers the
+            # accumulation since the resume and is enforced once the window is complete again (disclosed)
+            self._far_field_window.reset(self.backend.far_field_window_sums(), int(state.step))
         if self.neutrals is not None:
             if state.neutral is None:
                 raise PIC2DValidationError("state has no neutral inventory but the configuration enables one")
@@ -1582,23 +1745,22 @@ class Simulation:
         grid = masks.grid
         q_e, q_i = self.backend.charge_maps()
         gate = config.plume_boundary_gate
-        min_particles = gate.min_macro_particles_per_node if gate is not None else PLUME_GATE_MIN_MACRO_PARTICLES_PER_NODE
         with np.errstate(invalid="ignore", divide="ignore"):
             volume = np.where(masks.plasma_node, masks.shape_volume_m3, np.inf)
             n_e = np.abs(q_e) / (ELEMENTARY_CHARGE_C * volume)
             net = (q_i + q_e) / (ELEMENTARY_CHARGE_C * volume)
         peak = float(n_e[masks.plasma_node].max()) if masks.plasma_node.any() else 0.0
         far = masks.far_field_node
-        # macro-particles (electrons + ions, bilinear weights) deposited on each node: the shot-noise
-        # sample size of its density estimate.  The gate reads only RESOLVED far-field nodes (>= min);
-        # the unrestricted maximum is recorded as the raw statistic (plume attempt 6 stopped on one
-        # macro-ion at the axis corner node, see PlumeBoundaryGateConfig).
+        # v2.0.1 single-deposit statistic, kept as the shot-noise WITNESS only (plume attempt 6 stopped on one
+        # macro-ion at the axis corner node; attempt 7 showed no far-field node reaches 32 macro-particles in one
+        # deposit): the unrestricted maximum over the far-field nodes, its node and macro-particle count.
         macro = (np.abs(q_e) + np.abs(q_i)) / (ELEMENTARY_CHARGE_C * config.macro_weight)
-        resolved = far & (macro >= float(min_particles))
         far_abs = np.abs(net)
         far_net_raw = float(np.max(far_abs[far])) if far.any() else 0.0
-        far_net = float(np.max(far_abs[resolved])) if resolved.any() else 0.0
         raw_node = [int(k) for k in np.unravel_index(int(np.argmax(np.where(far, far_abs, -1.0))), net.shape)] if far.any() else [0, 0]
+        # v2.0.2 gate quantity: the trailing-window average from the diagnostic accumulators (see FarFieldChargeWindow)
+        assert self._far_field_window is not None
+        window = self._far_field_window.update(self.backend.far_field_window_sums(), int(sample["step"]), peak)
         phi_dev = float(np.max(np.abs(phi[far] - config.potentials.exit_v))) if far.any() else 0.0
         induced = apply_operator(masks, phi)
         # axis potential: exit-plane value and the acceleration region (90 % -> 10 % of the drop from
@@ -1621,16 +1783,30 @@ class Simulation:
                 z10 = float(z[k_max + below10[0]])
         record = {
             "far_field_phi_max_abs_deviation_v": phi_dev,
-            "far_field_net_charge_density_max_per_m3": far_net,
+            # v2.0.2 gate quantity and its window (interval averages over the accumulated steps of the trailing window)
+            "far_field_net_charge_density_max_per_m3": window["far_field_net_charge_density_max_per_m3"],
+            "charge_fraction_of_peak": window["charge_fraction_of_peak"],
+            "far_field_window_steps": window["window_steps"],
+            "far_field_window_records": window["window_records"],
+            "far_field_window_start_step": window["window_start_step"],
+            "far_field_window_complete": window["window_complete"],
+            "far_field_window_steps_required": window["window_steps_required"],
+            "far_field_resolved_nodes": window["far_field_resolved_nodes"],
+            "min_accumulated_macro_particles_per_node": window["min_accumulated_macro_particles_per_node"],
+            "far_field_accumulated_macro_particles_max": window["far_field_accumulated_macro_particles_max"],
+            "far_field_accumulated_macro_particles_median": window["far_field_accumulated_macro_particles_median"],
+            # unrestricted window statistic (all far-field nodes) and its node
+            "far_field_net_charge_density_max_window_raw_per_m3": window["far_field_net_charge_density_max_window_raw_per_m3"],
+            "charge_fraction_of_peak_window_raw": window["charge_fraction_of_peak_window_raw"],
+            "far_field_window_raw_max_node": window["far_field_window_raw_max_node"],
+            "far_field_window_raw_max_accumulated_macro_particles": window["far_field_window_raw_max_accumulated_macro_particles"],
             "peak_electron_density_per_m3": peak,
-            "charge_fraction_of_peak": far_net / peak if peak > 0.0 else 0.0,
-            # unrestricted single-deposit statistic (the attempt-6 gate quantity) and its node
+            "peak_electron_density_window_per_m3": window["peak_electron_density_window_per_m3"],
+            # v2.0.1 single-deposit statistic (the attempt-6 gate quantity; shot-noise witness) and its node
             "far_field_net_charge_density_max_raw_per_m3": far_net_raw,
             "charge_fraction_of_peak_raw": far_net_raw / peak if peak > 0.0 else 0.0,
             "far_field_raw_max_node": raw_node,
             "far_field_raw_max_macro_particles": float(macro[raw_node[0], raw_node[1]]) if far.any() else 0.0,
-            "far_field_resolved_nodes": int(resolved.sum()),
-            "min_macro_particles_per_node": int(min_particles),
             "far_field_induced_charge_c": float(induced[far].sum()) if far.any() else 0.0,
             "body_conductor_induced_charge_c": float(induced[masks.body_conductor_node].sum()),
             "exit_plane_axis_potential_v": float(axis[j_exit]),
@@ -1643,7 +1819,10 @@ class Simulation:
         }
         if gate is not None:
             record["gate_max_charge_fraction"] = gate.max_charge_fraction
-            record["gate_enforced"] = bool(time_s >= gate.enforce_after_s)
+            # armed = past the arming time; enforced = armed AND the trailing window holds >= window_steps accumulated
+            # steps (a short window is the single-deposit shot noise again, e.g. right after a resume)
+            record["gate_armed"] = bool(time_s >= gate.enforce_after_s)
+            record["gate_enforced"] = bool(record["gate_armed"] and window["window_complete"])
         return record
 
     def _continuity_update(self, delta: Mapping[str, float], interval_steps: int, momentum: dict[str, Any]) -> None:
@@ -1684,6 +1863,13 @@ class Simulation:
 
         return self.backend.surface_charge_map()
 
+    def step_graph_state(self) -> bool | str:
+        """CUDA-graph state of the step: ``True`` (captured), ``"lazy"`` (enabled, captured on the first step), ``False``."""
+
+        if getattr(self.backend, "step_graph_active", False):
+            return True
+        return "lazy" if getattr(self.backend, "step_graph", False) else False
+
     def to_provenance(self) -> dict[str, Any]:
         record: dict[str, Any] = {
             "config": self.config.to_dict(),
@@ -1708,7 +1894,9 @@ class Simulation:
             "peak_debye_gate": None if self.config.peak_debye_gate is None else self.config.peak_debye_gate.to_dict(),
             "anomalous": None if self.config.anomalous is None else self.config.anomalous.to_dict(),
             "see": None if self.config.see is None else self.config.see.to_dict(),
-            "step_graph": bool(getattr(self.backend, "step_graph_active", False)),
+            # True once a step graph has been captured, "lazy" when graphs are enabled but none is captured yet (the
+            # capture happens on the first step, so the launch-time provenance line used to read False), False when off
+            "step_graph": self.step_graph_state(),
         }
         geometry = self.config.grid.geometry
         if geometry.has_plume:
@@ -1733,11 +1921,13 @@ __all__ = [
     "CUMULATIVE_KEYS",
     "CathodeConfig",
     "DiagnosticAccumulator",
+    "FarFieldChargeWindow",
     "IEDF_BINS",
     "InjectionConfig",
     "MOMENTUM_KEYS",
     "PIC2DConfig",
-    "PLUME_GATE_MIN_MACRO_PARTICLES_PER_NODE",
+    "PLUME_GATE_MIN_ACCUMULATED_MACRO_PARTICLES_PER_NODE",
+    "PLUME_GATE_WINDOW_STEPS",
     "PeakDebyeGateConfig",
     "PlumeBoundaryGateConfig",
     "SeedPlasmaConfig",

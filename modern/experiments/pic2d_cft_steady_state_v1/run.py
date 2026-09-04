@@ -75,7 +75,8 @@ from cft_revival.pic2d.simulation import (
     Simulation,
     instantaneous_maps,
 )
-from experiments.pic2d_cft_snapshot_v1.run import _exit_areas, _file_sha256, _gpu_utilisation, git_head
+from experiments.pic2d_cft_snapshot_v1.run import _exit_areas, _file_sha256, git_head
+from experiments.pic2d_cft_steady_state_v1.gpu_sampler import DEFAULT_INTERVAL_SECONDS, GpuUtilisationSampler
 
 HERE = Path(__file__).resolve().parent
 MODERN = HERE.parents[1]
@@ -122,6 +123,10 @@ PLUME_SCALARS = (
     "cathode_rate_per_step",
     # v2.0.1: unrestricted single-deposit statistic and the resolved-node count (NaN in attempt-6 and older records)
     "charge_fraction_of_peak_raw", "far_field_net_charge_density_max_raw_per_m3", "far_field_resolved_nodes",
+    # v2.0.2: the gate quantity is the trailing-window average; its window length, the unrestricted window statistic,
+    # the window-mean peak and the largest accumulated node weight (NaN in attempt-7/8 and older records)
+    "far_field_window_steps", "charge_fraction_of_peak_window_raw", "peak_electron_density_window_per_m3",
+    "far_field_accumulated_macro_particles_max",
 )
 
 
@@ -580,11 +585,13 @@ def status_from_record(
     if plume is not None:  # v2.0 plume-boundary sample
         line["plume"] = {key: plume[key] for key in ("charge_fraction_of_peak", "far_field_phi_max_abs_deviation_v",
                                                    "exit_plane_axis_potential_v", "acceleration_z90_m", "acceleration_z10_m")}
-        for key in ("charge_fraction_of_peak_raw", "far_field_resolved_nodes"):   # v2.0.1
+        for key in ("charge_fraction_of_peak_raw", "far_field_resolved_nodes",                        # v2.0.1
+                    "far_field_window_steps", "far_field_window_complete", "charge_fraction_of_peak_window_raw"):   # v2.0.2
             if key in plume:
                 line["plume"][key] = plume[key]
-        if "gate_enforced" in plume:
-            line["plume"]["gate_enforced"] = plume["gate_enforced"]
+        for key in ("gate_enforced", "gate_armed"):
+            if key in plume:
+                line["plume"][key] = plume[key]
     return line
 
 
@@ -800,6 +807,14 @@ def plume_summary(
         "charge_fraction_of_peak_max": float(np.nanmax(arrays["plume_charge_fraction_of_peak"])) if "plume_charge_fraction_of_peak" in arrays else None,
         "charge_fraction_of_peak_raw_max": (float(np.nanmax(arrays["plume_charge_fraction_of_peak_raw"]))
                                             if "plume_charge_fraction_of_peak_raw" in arrays and np.isfinite(arrays["plume_charge_fraction_of_peak_raw"]).any() else None),
+        # v2.0.2: the unrestricted trailing-window statistic, the window length and the resolved-node count at the last record
+        "charge_fraction_of_peak_window_raw_max": (float(np.nanmax(arrays["plume_charge_fraction_of_peak_window_raw"]))
+                                                   if "plume_charge_fraction_of_peak_window_raw" in arrays
+                                                   and np.isfinite(arrays["plume_charge_fraction_of_peak_window_raw"]).any() else None),
+        "far_field_window_steps_final": (int(arrays["plume_far_field_window_steps"][-1])
+                                         if "plume_far_field_window_steps" in arrays and np.isfinite(arrays["plume_far_field_window_steps"][-1]) else None),
+        "far_field_resolved_nodes_final": (int(arrays["plume_far_field_resolved_nodes"][-1])
+                                           if "plume_far_field_resolved_nodes" in arrays and np.isfinite(arrays["plume_far_field_resolved_nodes"][-1]) else None),
         "mass_flow_kg_per_s": feed_kg_per_s,
         "discharge_power_w": power_w,
         "specific_impulse_s": isp,
@@ -834,6 +849,7 @@ def write_final_artifacts(
     setup_seconds: float,
     wall_session: float,
     gpu_samples: list[float | None],
+    gpu_sampler: dict[str, Any] | None = None,
 ) -> Path:
     state = sim.state
     budget = protocol_budget(protocol)
@@ -912,8 +928,10 @@ def write_final_artifacts(
         "ms_per_step_this_session": (
             1e3 * wall_session / max(state.step - session["resumed_from_step"], 1) if state.step > session["resumed_from_step"] else None
         ),
-        # nvidia-smi failures / timeouts are None (attempt-7 lesson: a NaN sample made the summary non-canonical)
+        # nvidia-smi failures / timeouts are None (attempt-7 lesson: a NaN sample made the summary non-canonical);
+        # v2.0.2: sampled on a background thread at gpu_utilisation_sampler.interval_seconds (None for older runs)
         "gpu_utilisation_percent_samples": [None if sample is None else _finite(sample) for sample in gpu_samples],
+        "gpu_utilisation_sampler": gpu_sampler,
         "maps_kind": maps_kind,
         "averaging_window_steps": window,
         "averaging_window_step_range": list(window_range),
@@ -996,8 +1014,14 @@ def run_steady_state(
     require_same_code: bool = True,
     protocol_path: Path = PROTOCOL_PATH,
     log: Callable[[str], None] = lambda text: print(text, flush=True),
+    gpu_sample_interval_seconds: float = DEFAULT_INTERVAL_SECONDS,
+    gpu_sampler_factory: Callable[[float], GpuUtilisationSampler] = lambda interval: GpuUtilisationSampler(interval_s=interval),
 ) -> Path:
-    """Start or resume the run; returns the path of ``summary.json`` when the run stops."""
+    """Start or resume the run; returns the path of ``summary.json`` when the run stops.
+
+    ``gpu_sample_interval_seconds`` is the cadence of the background ``nvidia-smi`` sampler (v2.0.2; default
+    5 min, was a synchronous call per logged minute); the stepping thread never waits on it.
+    """
 
     config = build_config(protocol, backend=backend)
     numerics = protocol["numerics"]
@@ -1073,7 +1097,9 @@ def run_steady_state(
     last_print = t_session
     last_plateau: dict[str, Any] | None = None
     last_triad: dict[str, Any] | None = None
-    gpu_samples: list[float] = []
+    # v2.0.2: nvidia-smi runs on a daemon thread at its own cadence; the loop only reads the shared last value
+    gpu_sampler = gpu_sampler_factory(float(gpu_sample_interval_seconds)).start()
+    log(f"[steady-state] gpu sampler: background, every {gpu_sampler.interval_s:.0f} s, timeout {gpu_sampler.timeout_s:.0f} s")
 
     def wall_total() -> float:
         return wall_before + (time.perf_counter() - t_session)
@@ -1090,8 +1116,9 @@ def run_steady_state(
                                                       ms_per_step=ms, plateau=last_plateau, triad=last_triad))
         if now - last_print > 60.0:
             last_print = now
-            gpu_samples.append(_gpu_utilisation())
-            extra = "" if record.neutral is None else f" n_g={record.neutral['density_per_m3']:.3g}"
+            gpu_latest = gpu_sampler.latest()   # non-blocking: the last completed background sample (None if none / failed)
+            extra = "" if gpu_latest is None else f" gpu={gpu_latest:.0f}%"
+            extra += "" if record.neutral is None else f" n_g={record.neutral['density_per_m3']:.3g}"
             if record.neutral is not None and "net_utilisation" in record.neutral:
                 extra += f" util={record.neutral['gross_utilisation']:.2f}/{record.neutral['net_utilisation']:.2f}"
             if record.peak_node is not None:
@@ -1100,7 +1127,10 @@ def run_steady_state(
                 extra += (f" T={record.momentum['thrust_total_n']*1e6:.1f} uN closure={record.momentum['closure_fraction']*100:.0f}%")
             if record.plume is not None:
                 extra += f" phi_exit={record.plume['exit_plane_axis_potential_v']:.1f} V q_far={record.plume['charge_fraction_of_peak']:.3f}"
-                if "charge_fraction_of_peak_raw" in record.plume:  # v2.0.1: the unrestricted single-deposit statistic
+                if "far_field_window_steps" in record.plume:  # v2.0.2: window length / resolved nodes, unrestricted window and deposit statistics
+                    extra += (f"(w{record.plume['far_field_window_steps']}/{record.plume['far_field_resolved_nodes']}n"
+                              f" raw {record.plume['charge_fraction_of_peak_window_raw']:.3f} dep {record.plume['charge_fraction_of_peak_raw']:.3f})")
+                elif "charge_fraction_of_peak_raw" in record.plume:  # v2.0.1 records
                     extra += f"(raw {record.plume['charge_fraction_of_peak_raw']:.3f}/{record.plume['far_field_resolved_nodes']}n)"
             log(f"[steady-state] step {record.step} t={record.time_s*1e6:.3f} us e={record.electrons} i={record.ions} "
                 f"I_d={record.currents_a['discharge_a']*1e3:.2f} mA I_beam={record.currents_a['exit_ion_beam_a']*1e3:.2f} mA "
@@ -1181,6 +1211,8 @@ def run_steady_state(
 
     wall_session = time.perf_counter() - t_session
     run_state.update({"wall_seconds_total": wall_before + wall_session, "finished": True, "stop_reason": stop_reason})
+    gpu_sampler.stop(join_timeout_s=1.0)    # never waits for a hung nvidia-smi: the thread is a daemon
+    gpu_samples = gpu_sampler.snapshot()
     partial = sim.diagnostic_arrays()
     if int(partial["window_steps"][0]) >= window_steps // 2 or completed_window is None:
         maps, window_range = partial, (window_start, sim.backend.step_index)
@@ -1190,7 +1222,7 @@ def run_steady_state(
         protocol=protocol, protocol_path=protocol_path, results=results, sim=sim, config=config, field_map=field_map,
         xs_sha=xs_sha, records=records, maps=maps, window_range=window_range, maps_kind="window_average",
         stop_reason=stop_reason, gate_error=gate_error, run_state=run_state, session=session,
-        setup_seconds=setup_seconds, wall_session=wall_session, gpu_samples=gpu_samples,
+        setup_seconds=setup_seconds, wall_session=wall_session, gpu_samples=gpu_samples, gpu_sampler=gpu_sampler.summary(),
     )
     state = sim.state
     log(f"[steady-state] done: {state.step} steps, t = {state.time_s*1e6:.3f} us, {stop_reason}; summary at {summary_path}")
@@ -1423,6 +1455,8 @@ def main(argv: list[str] | None = None, *, protocol_path: Path = PROTOCOL_PATH, 
     run_parser.add_argument("--max-steps", type=int, default=None)
     run_parser.add_argument("--wall-budget-seconds", type=float, default=None)
     run_parser.add_argument("--ignore-code-identity", action="store_true", help="resume even if the package code hash changed")
+    run_parser.add_argument("--gpu-sample-interval-seconds", type=float, default=DEFAULT_INTERVAL_SECONDS,
+                            help="cadence of the background nvidia-smi utilisation sampler (v2.0.2; default 300 s; the step loop never waits on it)")
     fin = sub.add_parser("finalize")
     fin.add_argument("--backend", default="warp-cuda", help="the backend the run used (part of the config identity)")
     fin.add_argument("--stop-reason", default="finalized_from_checkpoint")
@@ -1436,7 +1470,8 @@ def main(argv: list[str] | None = None, *, protocol_path: Path = PROTOCOL_PATH, 
     results = results.parent / results_name
     if args.command == "run":
         run_steady_state(protocol, results, backend=args.backend, max_steps=args.max_steps, wall_budget_seconds=args.wall_budget_seconds,
-                         require_same_code=not args.ignore_code_identity, protocol_path=protocol_path)
+                         require_same_code=not args.ignore_code_identity, protocol_path=protocol_path,
+                         gpu_sample_interval_seconds=args.gpu_sample_interval_seconds)
     elif args.command == "finalize":
         finalize(protocol, results, backend=args.backend, stop_reason=args.stop_reason, protocol_path=protocol_path,
                  allow_refinalize=args.allow_refinalize, recover_runner_stop=args.recover_runner_stop)

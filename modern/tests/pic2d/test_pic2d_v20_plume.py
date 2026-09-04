@@ -62,12 +62,13 @@ def cathode(current_a: float = 1e-3, rule: str = "fixed", **extra) -> CathodeCon
 def config(grid: Grid2D, *, cathode_config: CathodeConfig | None = None, mcc: bool = False, seed_density: float = 1e15,
            gate: PlumeBoundaryGateConfig | None = None, inventory: NeutralInventoryConfig | None = None, **overrides) -> PIC2DConfig:
     interval = overrides.pop("series_interval_steps", 10)
+    potentials = overrides.pop("potentials", BoundaryPotentials(UA, 0.0))
     keywords: dict = dict(
         dt_s=5e-12, macro_weight=2e5, seed=7, reference_density_per_m3=1e15, reference_electron_temperature_ev=5.0,
         series_interval_steps=interval, runtime_stability_check_steps=interval,
     ) | overrides
     return PIC2DConfig(
-        grid=grid, potentials=BoundaryPotentials(UA, 0.0), cathode=cathode_config,
+        grid=grid, potentials=potentials, cathode=cathode_config,
         seed_plasma=SeedPlasmaConfig(seed_density, 5.0) if seed_density > 0 else None,
         mcc=MCCConfig(1.5e19) if mcc else None, poisson=PoissonConfig2D(method="direct", relative_tolerance=1e-10),
         limits=StabilityLimits(max_cell_debye_ratio=2.0), plume_boundary_gate=gate, neutral_inventory=inventory, **keywords,
@@ -414,49 +415,97 @@ def test_thrust_from_momentum_flux_matches_the_ion_beam_on_a_synthetic_case():
 
 # -- gates -------------------------------------------------------------------------------
 
-def test_plume_boundary_gate_fails_closed_on_charge_pile_up():
+def _piled_state(grid: Grid2D, n_ions: int = 2000):
+    """Ions parked in the last cell before the far plane (a sustained pile-up), 20 electrons deep in the channel (the peak)."""
+
     from cft_revival.pic2d.kernels import ParticleArrays
     from cft_revival.pic2d.simulation import SimulationState
+
+    ions = ParticleArrays(np.linspace(0.1e-3, 5.5e-3, n_ions), np.full(n_ions, 11.99e-3), np.zeros(n_ions), np.zeros(n_ions), np.zeros(n_ions))
+    electrons = ParticleArrays(np.full(20, 1e-3), np.full(20, 3e-3), np.zeros(20), np.zeros(20), np.zeros(20))
+    return SimulationState(step=0, time_s=0.0, electrons=electrons, ions=ions, surface_charge_c=np.zeros(grid.node_shape),
+                           phi_v=np.zeros(grid.node_shape), injection_carry=0.0, cumulative=empty_cumulative())
+
+
+def test_plume_boundary_gate_fails_closed_on_a_sustained_far_field_charge_pile_up():
+    """v2.0.2 regression (ii): a genuine, sustained far-field charge pile-up over the window trips the gate; the gate
+    waits for a complete window and reads only nodes above the accumulated-weight floor."""
 
     grid = plume_grid()
     with pytest.raises(PIC2DValidationError):
         config(Grid2D(CHANNEL_GEOMETRY, 12, 32), gate=PlumeBoundaryGateConfig(0.1))
     with pytest.raises(PIC2DValidationError):
         PlumeBoundaryGateConfig(0.0)
-    cfg = config(grid, seed_density=0.0, gate=PlumeBoundaryGateConfig(max_charge_fraction=0.05), series_interval_steps=5,
-                 runtime_stability_check_steps=5, dt_s=1e-12, macro_weight=1e3)
+    # window of 20 accumulated steps; floor = 32 macro-particles of mean occupancy (32 x 20 particle-steps)
+    gate = PlumeBoundaryGateConfig(max_charge_fraction=0.05, window_steps=20, min_accumulated_macro_particles_per_node=32.0 * 20)
+    cfg = config(grid, seed_density=0.0, gate=gate, series_interval_steps=5, runtime_stability_check_steps=5, dt_s=1e-12, macro_weight=1e3)
     sim = Simulation(cfg, zero_field_map(grid), backend="cpu")
-    n = 2000
-    # ions parked in the last cell before the far plane (pile-up), a few electrons deep in the channel (the peak reference)
-    ions = ParticleArrays(np.linspace(0.1e-3, 5.5e-3, n), np.full(n, 11.99e-3), np.zeros(n), np.zeros(n), np.zeros(n))
-    electrons = ParticleArrays(np.full(20, 1e-3), np.full(20, 3e-3), np.zeros(20), np.zeros(20), np.zeros(20))
-    piled = lambda: SimulationState(step=0, time_s=0.0, electrons=electrons, ions=ions, surface_charge_c=np.zeros(grid.node_shape),  # noqa: E731
-                                    phi_v=np.zeros(grid.node_shape), injection_carry=0.0, cumulative=empty_cumulative())
-    sim.load_state(piled())
+    sim.load_state(_piled_state(grid))
+    # (a) before the window is complete the pile-up is recorded but NOT gated (armed, not enforced): 15 accumulated steps
+    sim.run(15, accumulate_from_step=0)
+    plume = sim.series[-1].plume
+    assert plume["gate_armed"] is True and plume["gate_enforced"] is False and plume["far_field_window_complete"] is False
+    assert plume["far_field_window_steps"] == 15 and plume["far_field_window_steps_required"] == 20
+    assert plume["charge_fraction_of_peak"] > 0.05 and plume["far_field_resolved_nodes"] > 0        # ~90 macro-ions per far-plane node
+    # (b) the 20th accumulated step completes the window -> enforced -> fail-closed stop
     with pytest.raises(PIC2DStabilityError, match="plume-boundary gate"):
-        sim.run(5)
-    # without the gate the same state is recorded, not rejected
+        sim.run(10, accumulate_from_step=0)
+    assert sim.series[-1].plume["far_field_window_steps"] == 20 and sim.series[-1].plume["gate_enforced"] is True
+    # (c) without accumulation the window never fills: the gate cannot fire (nothing to read) and says so
+    sim3 = Simulation(cfg, zero_field_map(grid), backend="cpu")
+    sim3.load_state(_piled_state(grid))
+    sim3.run(25)
+    plume3 = sim3.series[-1].plume
+    assert plume3["far_field_window_steps"] == 0 and plume3["gate_enforced"] is False and plume3["charge_fraction_of_peak"] == 0.0
+    assert plume3["charge_fraction_of_peak_raw"] > 0.05      # ... while the single-deposit witness still sees the pile-up
+    # (d) without the gate the same state is recorded with the protocol defaults, not rejected: a 25-step accumulation is
+    # far below the 400 000-step window and the 64 000 particle-step floor (2000 ions x 25 steps over ~200 far-plane nodes),
+    # so the gated statistic reads 0 with 0 resolved nodes while the unrestricted window statistic sees the pile-up
     cfg2 = config(grid, seed_density=0.0, series_interval_steps=5, runtime_stability_check_steps=5, dt_s=1e-12, macro_weight=1e3)
     sim2 = Simulation(cfg2, zero_field_map(grid), backend="cpu")
-    sim2.load_state(piled())
-    sim2.run(5)
-    plume = sim2.series[-1].plume
-    assert plume["charge_fraction_of_peak"] > 0.05 and "gate_enforced" not in plume
-    assert plume["far_field_phi_max_abs_deviation_v"] == 0.0     # Dirichlet nodes hold the reference potential exactly
-    # a real pile-up is RESOLVED: ~90 macro-ions per far-plane node (>= the 32 floor), and the raw statistic bounds it
-    assert plume["far_field_resolved_nodes"] > 0 and plume["min_macro_particles_per_node"] == 32
-    assert plume["charge_fraction_of_peak_raw"] >= plume["charge_fraction_of_peak"] > 0.05
+    sim2.load_state(_piled_state(grid))
+    sim2.run(25, accumulate_from_step=0)
+    plume2 = sim2.series[-1].plume
+    assert "gate_enforced" not in plume2 and plume2["far_field_window_steps"] == 25 and plume2["far_field_window_complete"] is False
+    assert plume2["far_field_window_steps_required"] == 400_000 and plume2["min_accumulated_macro_particles_per_node"] == 64_000.0
+    assert plume2["far_field_resolved_nodes"] == 0 and plume2["charge_fraction_of_peak"] == 0.0
+    assert plume2["charge_fraction_of_peak_window_raw"] > 0.05 and plume2["far_field_accumulated_macro_particles_max"] < 64_000.0
+    assert plume2["far_field_phi_max_abs_deviation_v"] == 0.0     # Dirichlet nodes hold the reference potential exactly
+    # the window statistic of a (quasi-)static state equals the single-deposit statistic (the same deposit every step up
+    # to the 1e-12 m the ions drift in 25 ps; the peak reference moves ~1 % as the 20 channel electrons start to fall)
+    assert plume2["far_field_net_charge_density_max_window_raw_per_m3"] == pytest.approx(plume2["far_field_net_charge_density_max_raw_per_m3"], rel=1e-6)
+    assert plume2["charge_fraction_of_peak_window_raw"] == pytest.approx(plume2["charge_fraction_of_peak_raw"], rel=2e-2)
+    assert plume2["far_field_window_raw_max_node"] == plume2["far_field_raw_max_node"]
 
 
-def test_plume_boundary_gate_ignores_single_macro_particle_shot_noise_on_the_axis_corner_node():
-    """Regression for plume attempt 6 (2026-09-04): ONE macro-ion approaching the axis corner node of the
-    far plane (bilinear shape volume pi dr^2 dz / 6) read 0.259 of the peak electron density and stopped the run
-    66 ns after the gate armed, while the interval-averaged far-field charge fraction was 0.03.  The gate
-    must read only far-field nodes holding >= min_macro_particles_per_node macro-particles; the raw
-    single-deposit statistic stays recorded, and the pre-fix behaviour is reproduced with a floor of 1."""
+def _corner_state(grid: Grid2D, n_ions: int, *, ion_z_offset_m: float = 0.01e-3, ion_vz_m_per_s: float = 0.0, neutral_peak: bool = False):
+    """ONE (or n) macro-ion 10 um off axis approaching the axis corner node of the far plane; 20 electrons deep in the channel
+    exactly on node (4, 12) as the peak reference (optionally with 20 co-located ions so the peak node is field-free)."""
 
     from cft_revival.pic2d.kernels import ParticleArrays
-    from cft_revival.pic2d.simulation import PLUME_GATE_MIN_MACRO_PARTICLES_PER_NODE, SimulationState
+    from cft_revival.pic2d.simulation import SimulationState
+
+    electrons = ParticleArrays(np.full(20, 4 * grid.dr_m), np.full(20, 12 * grid.dz_m), np.zeros(20), np.zeros(20), np.zeros(20))
+    r = np.full(n_ions, 0.01e-3)
+    z = np.full(n_ions, grid.geometry.domain_z_max_m - ion_z_offset_m)
+    vz = np.full(n_ions, ion_vz_m_per_s)
+    ions = ParticleArrays(r, z, np.zeros(n_ions), np.zeros(n_ions), vz)
+    if neutral_peak:
+        ions = ions.append(ParticleArrays(np.full(20, 4 * grid.dr_m), np.full(20, 12 * grid.dz_m), np.zeros(20), np.zeros(20), np.zeros(20)))
+    return SimulationState(step=0, time_s=0.0, electrons=electrons, ions=ions, surface_charge_c=np.zeros(grid.node_shape),
+                           phi_v=np.zeros(grid.node_shape), injection_carry=0.0, cumulative=empty_cumulative())
+
+
+def test_plume_boundary_gate_ignores_single_deposit_shot_noise_on_the_axis_corner_node():
+    """v2.0.2 regression (i) for plume attempts 6 and 7 (2026-09-04).  Attempt 6: ONE macro-ion approaching the axis
+    corner node of the far plane (bilinear shape volume pi dr^2 dz / 6) read 0.259 of the peak in a single deposit and
+    stopped the run, while the interval average was 0.03.  Attempt 7 (v2.0.1, per-deposit floor of 32): no far-field
+    node ever held 32 macro-particles in one deposit - the gate was inert.  v2.0.2 reads the trailing-window average
+    from the diagnostic accumulators with a floor in ACCUMULATED weight: a single-deposit corner-node ion neither
+    trips the gate (the window average of one crossing is far below the threshold) nor counts as evidence (the
+    accumulated weight of one macro-particle is below the floor); the single-deposit witness stays recorded."""
+
+    from cft_revival.pic2d.simulation import PLUME_GATE_MIN_ACCUMULATED_MACRO_PARTICLES_PER_NODE, PLUME_GATE_WINDOW_STEPS
 
     grid = plume_grid()
     masks = build_mesh_masks(grid)
@@ -465,50 +514,161 @@ def test_plume_boundary_gate_ignores_single_macro_particle_shot_noise_on_the_axi
     assert corner_volume == pytest.approx(pi * grid.dr_m**2 * grid.dz_m / 6.0, rel=1e-12)   # the smallest far-field node
     assert corner_volume == masks.shape_volume_m3[masks.far_field_node].min()
     weight = 1e3
-    # ions 10 um off axis, 10 um before the far plane: bilinear weight (1 - 0.04)^2 = 0.92 each on node (0, nz);
-    # the peak reference is 20 electrons deep in the channel exactly on a node (r = 4 dr, z = 12 dz)
-    electrons = ParticleArrays(np.full(20, 4 * grid.dr_m), np.full(20, 12 * grid.dz_m), np.zeros(20), np.zeros(20), np.zeros(20))
-
-    def state(n_ions: int) -> SimulationState:
-        ions = ParticleArrays(np.full(n_ions, 0.01e-3), np.full(n_ions, grid.geometry.domain_z_max_m - 0.01e-3),
-                              np.zeros(n_ions), np.zeros(n_ions), np.zeros(n_ions))
-        return SimulationState(step=0, time_s=0.0, electrons=electrons, ions=ions, surface_charge_c=np.zeros(grid.node_shape),
-                               phi_v=np.zeros(grid.node_shape), injection_carry=0.0, cumulative=empty_cumulative())
-
     one_particle_over_peak = (weight / corner_volume) / (20 * weight / masks.shape_volume_m3[4, 12])
-    assert one_particle_over_peak > 1.0          # a single macro-ion there out-reads the whole 20-particle peak node
+    assert one_particle_over_peak == pytest.approx(2.4)          # a single macro-ion there out-reads the whole 20-particle peak node
 
-    def run(gate: PlumeBoundaryGateConfig, n_ions: int) -> dict:
-        cfg = config(grid, seed_density=0.0, gate=gate, series_interval_steps=5, runtime_stability_check_steps=5, dt_s=1e-12,
-                     macro_weight=weight)
+    def run(gate: PlumeBoundaryGateConfig, state, steps: int, **overrides) -> list:
+        cfg = config(grid, seed_density=0.0, gate=gate, series_interval_steps=1, runtime_stability_check_steps=1, macro_weight=weight,
+                     **({"dt_s": 1e-12} | overrides))
         sim = Simulation(cfg, zero_field_map(grid), backend="cpu")
-        sim.load_state(state(n_ions))
-        sim.run(5)
-        return sim.series[-1].plume
+        sim.load_state(state)
+        sim.run(steps, accumulate_from_step=0)
+        return [record.plume for record in sim.series]
 
-    # (a) default floor (32, as the protocol): ONE ion (the attempt-6 reading, 0.92 macro-particles on the corner
-    # node) leaves it unresolved -> the gate reads 0 and does not fire
-    plume = run(PlumeBoundaryGateConfig(max_charge_fraction=0.25), 1)
-    assert plume["gate_enforced"] and plume["min_macro_particles_per_node"] == PLUME_GATE_MIN_MACRO_PARTICLES_PER_NODE == 32
-    assert plume["far_field_resolved_nodes"] == 0 and plume["charge_fraction_of_peak"] == 0.0
-    assert plume["far_field_net_charge_density_max_per_m3"] == 0.0
-    # ... while the raw single-deposit statistic records it: one ion at the corner node, far above the threshold
-    assert plume["far_field_raw_max_node"] == [0, nz]
+    # (a) the attempt-6 reading held for a whole 20-step window: 0.92 macro-particles sit on the corner node every step.
+    # With the protocol floor (64 000 particle-steps) the node is unresolved (18 particle-steps) -> the gate reads 0 and
+    # does not fire; the unrestricted window statistic and the single-deposit witness both show the 2.2x-peak reading
+    gate = PlumeBoundaryGateConfig(max_charge_fraction=0.25, window_steps=20)
+    assert gate.min_accumulated_macro_particles_per_node == PLUME_GATE_MIN_ACCUMULATED_MACRO_PARTICLES_PER_NODE == 64_000.0
+    plume = run(gate, _corner_state(grid, 1), 20)[-1]
+    assert plume["gate_armed"] and plume["gate_enforced"] and plume["far_field_window_complete"] and plume["far_field_window_steps"] == 20
+    assert plume["far_field_resolved_nodes"] == 0 and plume["charge_fraction_of_peak"] == 0.0 and plume["far_field_net_charge_density_max_per_m3"] == 0.0
+    assert plume["far_field_window_raw_max_node"] == [0, nz] == plume["far_field_raw_max_node"]
+    assert plume["far_field_window_raw_max_accumulated_macro_particles"] == pytest.approx(0.96 * 0.96 * 20, rel=1e-3)
     assert plume["far_field_raw_max_macro_particles"] == pytest.approx(0.96 * 0.96, abs=2e-3)
-    assert plume["charge_fraction_of_peak_raw"] == pytest.approx(0.96 * 0.96 * one_particle_over_peak, rel=1e-3)
-    assert plume["charge_fraction_of_peak_raw"] > 0.25
-    # (b) the pre-fix gate had no sample-size floor: with the smallest admissible floor (1) two macro-ions on the
-    # corner node (1.84 macro-particles) stop the run; with the default floor the same state is recorded, not rejected
+    # (the 20 channel electrons fall ~0.01 cells in the 300 V field over 20 ps: the peak reference moves by ~1 %)
+    assert plume["charge_fraction_of_peak_raw"] == pytest.approx(0.96 * 0.96 * one_particle_over_peak, rel=1e-2)
+    assert plume["charge_fraction_of_peak_window_raw"] == pytest.approx(plume["charge_fraction_of_peak_raw"], rel=2e-2)
+    assert plume["charge_fraction_of_peak_window_raw"] > 0.25 and plume["charge_fraction_of_peak_raw"] > 0.25
+    # ... the floor is what decides whether ONE macro-particle counts: with a floor of one particle-step the same window
+    # is "resolved" and the sustained 2.2x-peak reading stops the run (the v2.0.1 argument, now on the window statistic)
     with pytest.raises(PIC2DStabilityError, match="plume-boundary gate"):
-        run(PlumeBoundaryGateConfig(max_charge_fraction=0.25, min_macro_particles_per_node=1), 2)
-    plume2 = run(PlumeBoundaryGateConfig(max_charge_fraction=0.25), 2)
-    assert plume2["far_field_resolved_nodes"] == 0 and plume2["charge_fraction_of_peak"] == 0.0
-    assert plume2["charge_fraction_of_peak_raw"] == pytest.approx(2 * plume["charge_fraction_of_peak_raw"], rel=1e-9)
-    # (c) the floor is part of the configuration identity and validated
-    assert PlumeBoundaryGateConfig(0.25, 2.4e-6).to_dict() == {"max_charge_fraction": 0.25, "enforce_after_s": 2.4e-6, "min_macro_particles_per_node": 32}
+        run(PlumeBoundaryGateConfig(max_charge_fraction=0.25, window_steps=20, min_accumulated_macro_particles_per_node=1.0), _corner_state(grid, 1), 20)
+    # (b) the attempt-6 MECHANISM - an ion crossing the last cell - averaged over the window: the ion starts 1.5 dz before
+    # the far plane at 0.9 dz per step, so exactly one deposit (0.38 macro-particles) lands on the corner node before it
+    # leaves through the far plane.  Field-free setup (0 V electrodes, neutral peak node) so nothing else moves; the floor is
+    # set below one particle-step so the AVERAGING alone is tested: the single-deposit witness exceeds the threshold at
+    # that record (0.92 of the peak), the window average over 20 steps is 1/20 of it and the gate does not fire.
+    dt = 3e-10
+    crossing = _corner_state(grid, 1, ion_z_offset_m=1.5 * grid.dz_m, ion_vz_m_per_s=0.9 * grid.dz_m / dt, neutral_peak=True)
+    gate_b = PlumeBoundaryGateConfig(max_charge_fraction=0.25, window_steps=20, min_accumulated_macro_particles_per_node=0.1)
+    records = run(gate_b, crossing, 20, dt_s=dt, reference_density_per_m3=1e13, max_electron_energy_ev=1.0, potentials=BoundaryPotentials(0.0, 0.0))
+    deposit = np.array([r["charge_fraction_of_peak_raw"] for r in records])
+    assert deposit[0] == 0.0 and deposit[1] == pytest.approx(0.4 * 0.96 * one_particle_over_peak, rel=1e-3) and np.all(deposit[2:] == 0.0)
+    assert deposit[1] > 0.25
+    assert [r["far_field_raw_max_node"] for r in records][1] == [0, nz]
+    final = records[-1]
+    assert final["gate_enforced"] and final["far_field_window_steps"] == 20 and final["far_field_resolved_nodes"] >= 1
+    assert final["far_field_window_raw_max_node"] == [0, nz]
+    assert final["far_field_window_raw_max_accumulated_macro_particles"] == pytest.approx(0.4 * 0.96, rel=1e-6)
+    # (the peak reference is the window MEAN of the instantaneous peaks; the neutral peak node drifts by ~1e-5 in the image field)
+    assert final["charge_fraction_of_peak"] == pytest.approx(deposit[1] / 20, rel=1e-4) and final["charge_fraction_of_peak"] < 0.25
+    assert final["charge_fraction_of_peak"] == final["charge_fraction_of_peak_window_raw"] == pytest.approx(0.046, abs=2e-3)
+    # every intermediate record stays below the threshold too (the window grows from 1 to 20 accumulated steps)
+    assert max(r["charge_fraction_of_peak"] for r in records[1:]) == pytest.approx(deposit[1] / 2, rel=1e-4) and all(
+        r["charge_fraction_of_peak"] <= 0.25 or not r["gate_enforced"] for r in records)
+    # (c) the window and the floor are part of the configuration identity and validated
+    assert PlumeBoundaryGateConfig(0.25, 2.4e-6).to_dict() == {
+        "max_charge_fraction": 0.25, "enforce_after_s": 2.4e-6, "window_steps": PLUME_GATE_WINDOW_STEPS,
+        "min_accumulated_macro_particles_per_node": PLUME_GATE_MIN_ACCUMULATED_MACRO_PARTICLES_PER_NODE,
+    } and PLUME_GATE_WINDOW_STEPS == 400_000
     for bad in (0, -1, 1.5, True):
         with pytest.raises(PIC2DValidationError):
             PlumeBoundaryGateConfig(0.25, 0.0, bad)  # type: ignore[arg-type]
+    for bad in (0, -1.0, float("inf"), float("nan"), True):
+        with pytest.raises(PIC2DValidationError):
+            PlumeBoundaryGateConfig(0.25, 0.0, 20, bad)  # type: ignore[arg-type]
+    with pytest.raises(TypeError):
+        PlumeBoundaryGateConfig(0.25, 0.0, min_macro_particles_per_node=32)  # type: ignore[call-arg]   # the v2.0.1 field is gone
+
+
+def _lattice_pairs(grid: Grid2D, masks, pairs_per_cell: int):
+    """``pairs_per_cell`` co-located electron/ion pairs at every plasma cell centre: exactly quasi-neutral, field-free."""
+
+    from cft_revival.pic2d.kernels import ParticleArrays
+
+    ci, cj = np.nonzero(masks.plasma_cell)
+    r = np.repeat(grid.r_m[ci] + 0.5 * grid.dr_m, pairs_per_cell)
+    z = np.repeat(grid.z_m[cj] + 0.5 * grid.dz_m, pairs_per_cell)
+    zeros = np.zeros(r.size)
+    return ParticleArrays(r, z, zeros, zeros, zeros), ParticleArrays(r.copy(), z.copy(), zeros.copy(), zeros.copy(), zeros.copy())
+
+
+def test_plume_boundary_gate_statistic_is_live_on_a_uniform_quasi_neutral_plume():
+    """v2.0.2 regression (iii): on a uniform, exactly quasi-neutral plume the gate statistic is 0 with resolved nodes > 0
+    (the gate is NOT inert), the window completes, and the statistic is the same interval average the window maps hold."""
+
+    from cft_revival.pic2d.simulation import SimulationState
+
+    grid = plume_grid()
+    masks = build_mesh_masks(grid)
+    far = masks.far_field_node
+    electrons, ions = _lattice_pairs(grid, masks, 80)
+    state = SimulationState(step=0, time_s=0.0, electrons=electrons, ions=ions, surface_charge_c=np.zeros(grid.node_shape),
+                            phi_v=np.zeros(grid.node_shape), injection_carry=0.0, cumulative=empty_cumulative())
+    # window 10 steps, floor = 32 macro-particles of mean occupancy: the corner node (one cell, 0.25 x 160 = 40 per step) passes
+    gate = PlumeBoundaryGateConfig(max_charge_fraction=0.25, window_steps=10, min_accumulated_macro_particles_per_node=32.0 * 10)
+    cfg = config(grid, seed_density=0.0, gate=gate, series_interval_steps=5, runtime_stability_check_steps=5, dt_s=1e-12, macro_weight=1e3,
+                 potentials=BoundaryPotentials(0.0, 0.0))
+    sim = Simulation(cfg, zero_field_map(grid), backend="cpu")
+    sim.load_state(state)
+    sim.run(10, accumulate_from_step=0)
+    plume = sim.series[-1].plume
+    assert plume["gate_enforced"] and plume["far_field_window_complete"] and plume["far_field_window_steps"] == 10 and plume["far_field_window_records"] == 2
+    assert plume["far_field_resolved_nodes"] == int(far.sum()) > 0                    # every far-field node is resolved ...
+    assert plume["charge_fraction_of_peak"] == 0.0 and plume["charge_fraction_of_peak_window_raw"] == 0.0   # ... and reads exactly 0
+    assert plume["far_field_net_charge_density_max_per_m3"] == 0.0 and plume["charge_fraction_of_peak_raw"] == 0.0
+    assert plume["peak_electron_density_window_per_m3"] == pytest.approx(plume["peak_electron_density_per_m3"], rel=1e-12)
+    assert plume["peak_electron_density_per_m3"] > 0.0
+    # the accumulated weights are the SAME accumulation the window maps carry: electron sample counts x 2 species
+    maps = sim.diagnostic_arrays()
+    assert int(maps["window_steps"][0]) == 10
+    accumulated_e = maps["sample_count_e"][far]
+    assert plume["far_field_accumulated_macro_particles_max"] == pytest.approx(2.0 * accumulated_e.max(), rel=1e-9)
+    assert plume["far_field_accumulated_macro_particles_median"] == pytest.approx(2.0 * np.median(accumulated_e), rel=1e-9)
+    assert accumulated_e.min() >= 0.5 * gate.min_accumulated_macro_particles_per_node
+    assert np.max(np.abs(maps["n_i_per_m3"][far] - maps["n_e_per_m3"][far])) == 0.0
+    # sanity of the identity behind the floor: accumulated weight = (<n_e> + <n_i>) V steps / W on every far-field node
+    expected = (maps["n_e_per_m3"][far] + maps["n_i_per_m3"][far]) * masks.shape_volume_m3[far] * 10 / cfg.macro_weight
+    assert expected.max() == pytest.approx(plume["far_field_accumulated_macro_particles_max"], rel=1e-9)
+
+
+def test_plume_boundary_gate_window_bridges_the_runner_accumulator_resets_and_restarts_on_load_state():
+    """The runner resets the device accumulators at every averaging-window boundary (right after a series record); the
+    gate's trailing window must be continuous across those resets (host-side carry), and a loaded checkpoint restarts it."""
+
+    grid = plume_grid()
+    gate = PlumeBoundaryGateConfig(max_charge_fraction=0.9, enforce_after_s=1.0, window_steps=20, min_accumulated_macro_particles_per_node=1.0)
+    cfg = config(grid, cathode_config=cathode(1e-3), seed_density=2e15, gate=gate, series_interval_steps=5, runtime_stability_check_steps=5)
+    field = uniform_field_map(grid, 0.02)
+    continuous = Simulation(cfg, field, backend="cpu")
+    continuous.run(30, accumulate_from_step=0)
+    chunked = Simulation(cfg, field, backend="cpu")
+    for _ in range(3):                                   # the runner pattern: reset right after the record at a chunk end
+        chunked.run(10, accumulate_from_step=0)
+        chunked.backend.reset_diagnostics()
+    assert chunked.backend.diagnostic_generation == 3 and chunked.diagnostic_arrays()["window_steps"][0] == 0
+    a = {r.step: r.plume for r in continuous.series}
+    b = {r.step: r.plume for r in chunked.series}
+    assert list(a) == list(b) == [5, 10, 15, 20, 25, 30]
+    for step in a:
+        # same seed -> bitwise dynamics; the chunked sums are re-associated (carry + partial) -> round-off only
+        assert b[step]["far_field_window_steps"] == a[step]["far_field_window_steps"] == min(step, 20)
+        assert b[step]["far_field_window_start_step"] == a[step]["far_field_window_start_step"] == max(step - 20, 0)
+        assert b[step]["far_field_resolved_nodes"] == a[step]["far_field_resolved_nodes"] > 0
+        for key in ("charge_fraction_of_peak", "charge_fraction_of_peak_window_raw", "far_field_accumulated_macro_particles_max",
+                    "peak_electron_density_window_per_m3"):
+            assert b[step][key] == pytest.approx(a[step][key], rel=1e-9, abs=1e-30), (step, key)
+        assert a[step]["gate_armed"] is False and a[step]["gate_enforced"] is False    # enforce_after_s = 1 s: never armed here
+    assert a[30]["far_field_window_steps"] == 20 and a[30]["far_field_window_start_step"] == 10 and a[30]["far_field_window_complete"]
+    assert a[15]["far_field_window_complete"] is False and a[20]["far_field_window_complete"] is True
+    # a loaded (checkpoint) state restarts the window: the first record after the load covers the accumulation since then
+    resumed = Simulation(cfg, field, backend="cpu")
+    resumed.load_state(continuous.state)
+    resumed.run(5, accumulate_from_step=30)
+    plume = resumed.series[-1].plume
+    assert plume["far_field_window_steps"] == 5 and plume["far_field_window_start_step"] == 30 and plume["far_field_window_complete"] is False
+    assert plume["far_field_window_records"] == 1
 
 
 def test_plume_record_reports_exit_plane_potential_and_acceleration_region():

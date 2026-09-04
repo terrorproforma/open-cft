@@ -20,7 +20,7 @@ block D").
 | neutrals | two-zone: channel 0-D inventory with recycling (v1.4) + analytic free-molecular cosine cone from the aperture in the plume (capped at 0.5 at the lip) as the local MCC factor; ion–neutral collisions OFF | review blocker 3 / 4a; CEX (Miller et al. 2002) deferred as a sensitivity flag |
 | thrust | (a) momentum flux through the far field per species + cold-gas effusion; (b) −F_on_thruster from the particle ledger (absorbed momentum − field impulse) and the **Maxwell-stress force** on every solid boundary from the field; closure reported | conservation check, not enforced |
 | plume diagnostics | j_i(θ) per steradian, 95 % divergence half-angle, IEDF mean/peak and peak − U_a, self-consistent exit-plane axis potential, acceleration region (90 → 10 % of the axis drop), Isp, anode efficiency | Koch et al. 2011: ion-energy peak ≈ U_a − 15 V is the validation-v1 observable (context, not validation) |
-| gates | v1.4 gates over the whole domain + plume-boundary charge pile-up gate (25 % of the peak density after 2.4 µs, read on far-field nodes holding ≥ 32 macro-particles in the deposit — attempt 7+; the unrestricted single-deposit maximum is recorded as `charge_fraction_of_peak_raw`) | Brandt 2016 box-size finding; the sample-size floor mirrors the peak-node Debye gate (attempt 6 was stopped by one macro-ion on the axis corner node, see the launch log) |
+| gates | v1.4 gates over the whole domain + plume-boundary charge pile-up gate (25 % of the peak density after 2.4 µs; **v2.0.2, attempt 9+**: max over resolved far-field nodes of the **trailing 400 000-step window average** \|⟨n_i⟩ − ⟨n_e⟩\| / ⟨n_e,peak⟩ read from the same accumulators as `maps.npz` and the frames, a node resolved at ≥ 64 000 accumulated macro-particle-steps = 32 beam-ion crossings; enforced once the window is complete; the unrestricted window statistic `charge_fraction_of_peak_window_raw` and the single-deposit witness `charge_fraction_of_peak_raw` are recorded. Attempts 7–8 ran v2.0.1: the single-deposit statistic on nodes holding ≥ 32 macro-particles in one deposit — unreachable at far-field densities, so the gate was inert; disclosed) | Brandt 2016 box-size finding; attempt 6 was stopped by one macro-ion on the axis corner node, attempt 7 showed the per-deposit floor cannot be met — see the launch log and `spec/pic2d/pic2d-model-v2.0.json` `gates_v2_0` |
 | seed | 5e16 m⁻³, 5 eV in the **channel only**; the plume starts empty | a plume seed would be 4.5 M unphysical macro-particles |
 
 ## Cost (measured 2026-09-03, RTX 5090, CUDA-graph step)
@@ -283,6 +283,51 @@ steady-state v3 (model v1.4) is deferred until after this run (devlog).
   still filling) are not below 5 % by then the run continues to the budget (≈ 20:00 AEST,
   ≈ 10.3–10.8 µs = 3.3–3.5 transits) and attempt 9 would be another resume. Logs: `results/run.log`
   / `run.err` (attempt 7's are kept as `run-attempt7.log` / `.err` / `.pid` and in the record folder).
+* **Model v2.0.2 (code only, 2026-09-04, while attempt 8 runs; not a launch)** — the two attempt-7
+  follow-ups. (1) **Plume-boundary gate re-based on the window accumulators.** Attempts 7 and 8 run
+  v2.0.1, whose per-deposit floor (≥ 32 macro-particles on a node in ONE deposit) is unreachable at
+  far-field densities: after arming, `far_field_resolved_nodes` = 0 in all 4601 records, the gated
+  statistic read 0.000 throughout while the raw single-deposit statistic exceeded 0.25 in 0.8 % of
+  the records and the true window average was 0.035 — the gate could not fire (**inert; disclosed**,
+  attempt 8 keeps the v2.0.1 configuration identity to its end). v2.0.2 reads, at every series
+  record (the existing host sync; nothing per step), the far-field rows of the device window sums
+  Σ_t n_e, Σ_t n_i — the same accumulation `maps.npz` and the 20 000-step frames use — keeps
+  cumulative totals across the runner's 400 000-step accumulator resets (host-side carry keyed on
+  the backend's reset generation) and a ring of totals per record, and forms the **trailing window of
+  ≥ 400 000 accumulated steps (0.6 µs = the averaging window = 20 frames)** as an exact difference
+  of two totals (the frame recorder's construction). Gate quantity: max over *resolved* far-field
+  nodes of |⟨n_i⟩ − ⟨n_e⟩| / ⟨n_e,peak⟩ (denominator: the record-mean of the instantaneous peak).
+  **Floor: ≥ 64 000 accumulated macro-particle-steps per node** = 32 × 2000: a 15 km/s beam ion stays
+  on a 50 µm node for 2000 steps (the ~10 series intervals per corner-node crossing seen in attempt 6),
+  so A ≥ 32 τ guarantees ≥ 32 independent beam-ion crossings (the peak-Debye 32-particle convention,
+  ≤ 18 % shot noise) for every particle at least as fast as the beam; on the attempt-6/7 window maps
+  this resolves 77 / 121 of the 481 far-field nodes (the far plane to r = 3.9 / 6.7 mm; the corner node
+  at occupancy 0.08–0.10 stays unresolved and its neighbour (1, 720) carries the statistic) and reads
+  **0.0249 / 0.0339 of the peak instead of 0.000** — live, 7× below the threshold; a genuine sheath at
+  0.25 puts ≥ 4.4 macro-ions on that neighbour at all times and is resolved. Enforced only when armed
+  (2.4 µs, unchanged) AND the window is complete, so the first 0.6 µs after a resume are recorded,
+  not gated (the window history is not checkpointed). Records: `charge_fraction_of_peak` (gate),
+  `far_field_window_steps/_complete`, `far_field_resolved_nodes`, `charge_fraction_of_peak_window_raw`
+  (all far-field nodes) and the v2.0.1 single-deposit witness `charge_fraction_of_peak_raw`; log column
+  `q_far=<gate>(w<steps>/<resolved>n raw <window raw> dep <deposit>)`; summary
+  `plume.charge_fraction_of_peak_window_raw_max`, `far_field_window_steps_final`,
+  `far_field_resolved_nodes_final`. Tests: a sustained far-field pile-up trips it once the window is
+  complete (and not before); a corner-node ion sitting for a window or crossing the last cell (the
+  attempt-6 mechanism) neither trips it nor counts as evidence while the deposit witness exceeds 0.25;
+  an exactly quasi-neutral uniform plume reads 0 with every far-field node resolved and the
+  accumulated weights equal to the window maps' sample counts (not inert); the window is continuous
+  across the runner's resets (bitwise same-seed comparison) and restarts on `load_state`; CPU/Warp
+  parity of the window statistic. (2) **`nvidia-smi` off the stepping thread**: attempt 7 spent 557 s
+  = 3.9 % of its wall budget in synchronous per-minute calls (17 of 238 hit the 5 s timeout). The
+  sampler is now a daemon thread (`gpu_sampler.GpuUtilisationSampler`) at a configurable cadence
+  (`--gpu-sample-interval-seconds`, default 300 s); the loop reads the shared last value
+  (`gpu=…%` in the log line), samples stay `float | None`, `summary.gpu_utilisation_sampler` records
+  the cadence and outcome counts; test: a query that never returns leaves `latest()` and `stop()`
+  sub-millisecond. Also: the launch-time provenance line now prints `step_graph: "lazy"` (graphs are
+  captured on the first step; it read `false` before) and `true` once captured. Spec
+  `pic2d-model-v2.0.json` `gates_v2_0` (v2.0.2 entry, floor/window justification, version history)
+  and `protocol.json` `numerics.plume_boundary_gate` (`window_steps`, `min_accumulated_macro_particles_per_node`)
+  updated; the configuration identity changes, so v2.0.2 applies to fresh starts (attempt 9+).
 
 ## Time-series frames and video
 

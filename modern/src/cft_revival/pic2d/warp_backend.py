@@ -29,14 +29,13 @@ import numpy as np
 
 from .fields import MagneticFieldMap
 from .kernels import FIXED_POINT_SCALE
-from .mcc import MCCConfig, NullCollisionMCC, XenonCrossSections
+from .mcc import NullCollisionMCC, XenonCrossSections
 from .mesh import MeshMasks
 from .models import (
     ELECTRON_MASS_KG,
     ELEMENTARY_CHARGE_C,
     EPSILON_0_F_PER_M,
     EV_J,
-    LIGHT_SPEED_M_PER_S,
     PIC2DConvergenceError,
     PIC2DDeviceError,
     PIC2DStabilityError,
@@ -1579,6 +1578,8 @@ class WarpBackend:
         self.d_exit_e = wp.zeros(self.nr, dtype=wp.float64, device=dev)
         self.d_exit_i = wp.zeros(self.nr, dtype=wp.float64, device=dev)
         self.diag_steps = 0
+        self.diagnostic_generation = 0     # v2.0.2: incremented by every reset_diagnostics (window bridging)
+        self._far_flat = np.flatnonzero(masks.far_field_node.ravel())   # v2.0.2: far-field node rows of the window sums
         self.species: dict[str, DeviceSpecies] = {}
         self.scratch_capacity = 0
         self.state_meta: dict[str, Any] = {}
@@ -2230,6 +2231,16 @@ class WarpBackend:
 
         return self._host_accumulator().raw_sums()
 
+    def far_field_window_sums(self) -> tuple[np.ndarray, np.ndarray, int, int]:
+        """v2.0.2 plume-boundary gate: far-field rows of the device window sums ``sum_t n_e``, ``sum_t n_i``, the
+        accumulated step count and the reset generation.  Read at the series-record sync (after ``flush``) - two node
+        arrays to the host per record, the same accumulation ``diagnostic_sums`` / the frames use; no per-step sync."""
+
+        self.flush()
+        far = self._far_flat
+        self.sync_count += 2
+        return self.d_n_e.numpy()[far].copy(), self.d_n_i.numpy()[far].copy(), int(self.diag_steps), self.diagnostic_generation
+
     def surface_charge_map(self) -> np.ndarray:
         self.flush()
         return self.surface.numpy().reshape(self.masks.grid.node_shape).copy()
@@ -2266,6 +2277,7 @@ class WarpBackend:
                       self.d_side_e, self.d_side_i, self.d_theta_i, self.d_iedf_i):
             array.zero_()
         self.diag_steps = 0
+        self.diagnostic_generation += 1
 
 
 __all__ = [

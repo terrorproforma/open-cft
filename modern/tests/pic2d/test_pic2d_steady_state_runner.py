@@ -13,6 +13,7 @@
 from __future__ import annotations
 
 import copy
+import functools
 import json
 from pathlib import Path
 
@@ -25,6 +26,14 @@ from cft_revival.pic2d.mcc import MCCConfig, XenonCrossSections
 from cft_revival.pic2d.models import BoundaryPotentials, ChannelGeometry, Grid2D, PoissonConfig2D, StabilityLimits
 from cft_revival.pic2d.simulation import InjectionConfig, PIC2DConfig, SeedPlasmaConfig, Simulation
 from experiments.pic2d_cft_steady_state_v1 import run as runner
+from experiments.pic2d_cft_steady_state_v1.gpu_sampler import GpuUtilisationSampler
+
+
+@pytest.fixture(autouse=True)
+def _no_nvidia_smi(monkeypatch):
+    """v2.0.2: the runner's background GPU sampler must not spawn nvidia-smi in the test suite (hermetic, GPU may be busy)."""
+
+    monkeypatch.setattr(runner, "GpuUtilisationSampler", functools.partial(GpuUtilisationSampler, query=lambda timeout_s: None))
 
 CFT_GEOMETRY = ChannelGeometry(2.0e-3, 0.0, 24.0e-3, 18.0e-3, 3.0e-3)
 RULE = {"plateau_threshold": 0.05, "plateau_window_fraction": 0.2, "min_transit_times": 3}
@@ -136,7 +145,7 @@ def test_status_and_checkpoint_cadence_and_summary(tiny, tmp_path: Path):
     assert summary_path.is_file()
     summary = artifacts.read_canonical_json(summary_path)
     assert summary["stop_reason"] == "target_steps_reached" and summary["steps_completed"] == 200
-    status_lines = [json.loads(l) for l in (results / "status.jsonl").read_text(encoding="utf-8").splitlines()]
+    status_lines = [json.loads(line) for line in (results / "status.jsonl").read_text(encoding="utf-8").splitlines()]
     samples = [s for s in status_lines if "event" not in s]
     assert len(samples) == 200 // 20                      # one per sync
     assert [s["step"] for s in samples] == list(range(20, 201, 20))
@@ -145,7 +154,7 @@ def test_status_and_checkpoint_cadence_and_summary(tiny, tmp_path: Path):
         assert key in samples[-1]
     assert samples[-1]["plateau"] is not None and "reached" in samples[-1]["plateau"]
     assert status_lines[-1] == {"event": "stop", "step": 200, "time_s": pytest.approx(200 * config.dt_s), "stop_reason": "target_steps_reached"}
-    series = [json.loads(l) for l in (results / "series.jsonl").read_text(encoding="utf-8").splitlines()]
+    series = [json.loads(line) for line in (results / "series.jsonl").read_text(encoding="utf-8").splitlines()]
     assert len(series) == 10 and series[-1]["step"] == 200
     # checkpoint per chunk (40 steps): the live checkpoint is at the last chunk boundary
     checkpoint = artifacts.read_canonical_json(results / "checkpoint" / "checkpoint-latest.json")
@@ -196,7 +205,7 @@ def test_resume_reproduces_uninterrupted_run_bitwise(tiny, tmp_path: Path):
     first_resumed = int(np.searchsorted(rb["step"], 100))
     assert rb["interval_electrode_work_j"][first_resumed] == 0.0 and rb["interval_residual_j"][first_resumed] == 0.0
     assert rb["interval_electrode_work_j"][first_resumed + 1] == ra["interval_electrode_work_j"][first_resumed + 1]
-    status_lines = [json.loads(l) for l in (interrupted / "status.jsonl").read_text(encoding="utf-8").splitlines()]
+    status_lines = [json.loads(line) for line in (interrupted / "status.jsonl").read_text(encoding="utf-8").splitlines()]
     assert sum(1 for s in status_lines if s.get("event") == "resume") == 1
 
 
@@ -303,7 +312,7 @@ def test_finalize_writes_artifacts_from_checkpoint_without_stepping(tiny, tmp_pa
         assert np.array_equal(final[key], latest[key]), key
     state = json.loads((results / "run_state.json").read_text(encoding="utf-8"))
     assert state["finished"] and state["finalized_from_step"] == 80
-    status_lines = [json.loads(l) for l in (results / "status.jsonl").read_text(encoding="utf-8").splitlines()]
+    status_lines = [json.loads(line) for line in (results / "status.jsonl").read_text(encoding="utf-8").splitlines()]
     assert status_lines[-1]["event"] == "stop" and status_lines[-1]["stop_reason"] == "finalized_no_ignition_reference"
 
 
@@ -426,7 +435,7 @@ def test_finalize_recovers_a_runner_stop_whose_summary_write_failed(tiny, tmp_pa
     recovery = recovered_state["finalization_recovery"]
     assert recovery["mode"] == "runner_stop_artifacts_reused" and "101.0 s > wall_budget_seconds 100 s" in recovery["stop_reason_evidence"]
     assert "not canonical finite JSON" in recovery["original_error"]["error"]
-    status_lines = [json.loads(l) for l in (results / "status.jsonl").read_text(encoding="utf-8").splitlines()]
+    status_lines = [json.loads(line) for line in (results / "status.jsonl").read_text(encoding="utf-8").splitlines()]
     assert status_lines[-1] == {"event": "stop", "step": max_steps, "time_s": pytest.approx(max_steps * config.dt_s),
                                 "stop_reason": "wall_clock_budget_reached"}
     # a recovered (or any finished) run is not recovered twice
@@ -447,7 +456,7 @@ def test_v13_run_records_neutral_inventory_in_status_series_and_summary(tiny, tm
     assert config.neutral_inventory is not None and config.neutral_inventory.feed_atoms_per_s == feed
     results = tmp_path / "v13"
     runner.run_steady_state(protocol, results, backend="cpu", field_map=field, cross_sections=xs, max_steps=120, log=lambda _: None)
-    samples = [json.loads(l) for l in (results / "status.jsonl").read_text(encoding="utf-8").splitlines()]
+    samples = [json.loads(line) for line in (results / "status.jsonl").read_text(encoding="utf-8").splitlines()]
     samples = [s for s in samples if "event" not in s]
     assert all("n_g_per_m3" in s and "n_g_fixed_point_per_m3" in s and "effusion_rate_per_s" in s for s in samples)
     n_g = [s["n_g_per_m3"] for s in samples]
@@ -543,7 +552,7 @@ def test_v14_run_records_recycling_peak_node_and_triad(tiny, tmp_path: Path):
     assert config.anomalous is None and runner.step_graph_flag(protocol) is True
     results = tmp_path / "v14"
     runner.run_steady_state(protocol, results, backend="cpu", field_map=field, cross_sections=xs, max_steps=120, log=lambda _: None)
-    samples = [json.loads(l) for l in (results / "status.jsonl").read_text(encoding="utf-8").splitlines()]
+    samples = [json.loads(line) for line in (results / "status.jsonl").read_text(encoding="utf-8").splitlines()]
     samples = [s for s in samples if "event" not in s]
     assert all("recycled_rate_per_s" in s and "net_utilisation" in s and "peak_node" in s for s in samples)
     assert all(s["net_utilisation"] <= s["gross_utilisation"] for s in samples)
@@ -566,7 +575,7 @@ def test_v14_run_records_recycling_peak_node_and_triad(tiny, tmp_path: Path):
     assert summary["provenance"]["v1_4_options"]["wall_recycling"] is True
     assert summary["provenance"]["v1_4_options"]["peak_debye_gate"]["max_cells_per_debye"] == 50.0
     # a v1.3 series (no recycled key, no peak node) still loads through records_to_arrays
-    old = [json.loads(l) for l in (results / "series.jsonl").read_text(encoding="utf-8").splitlines()]
+    old = [json.loads(line) for line in (results / "series.jsonl").read_text(encoding="utf-8").splitlines()]
     for record in old:
         record["neutral"] = {k: v for k, v in record["neutral"].items() if k not in ("recycled_rate_per_s", "net_utilisation")}
         record["neutral"]["ledger"].pop("recycled")
@@ -613,8 +622,12 @@ def test_plume_protocol_builds_the_v20_config_and_runs_with_the_v20_artifacts(tm
     assert real.grid.geometry.has_plume and real.grid.cell_shape == (240, 720) and real.grid.dr_m == pytest.approx(5e-5)
     assert real.cathode is not None and real.cathode.current_rule == "continuity" and real.injection is None
     assert real.seed_plasma.region == "channel" and real.plume_boundary_gate.max_charge_fraction == 0.25
-    # v2.0.1 (attempt 7+): the gate reads only resolved far-field nodes; the protocol declares the 32-particle floor
-    assert real.plume_boundary_gate.min_macro_particles_per_node == 32 and real.plume_boundary_gate.enforce_after_s == 2.4e-6
+    # v2.0.2 (attempt 9+): the gate reads the trailing 400 000-step window average of the far-field accumulators and resolves a
+    # node at >= 64 000 accumulated macro-particle-steps (32 beam-ion crossings x 2000 steps); attempts 7-8 ran v2.0.1 (inert)
+    assert real.plume_boundary_gate.window_steps == 400_000 and real.plume_boundary_gate.min_accumulated_macro_particles_per_node == 64_000.0
+    assert real.plume_boundary_gate.enforce_after_s == 2.4e-6 and not hasattr(real.plume_boundary_gate, "min_macro_particles_per_node")
+    assert real.plume_boundary_gate.window_steps == int(runner.load_protocol(PLUME_PROTOCOL)["numerics"]["averaging_window_steps"])
+    assert real.plume_boundary_gate.window_steps == 20 * int(runner.load_protocol(PLUME_PROTOCOL)["numerics"]["frame_recorder"]["cadence_steps"])
     assert real.neutral_inventory.wall_recycling and real.peak_debye_gate is not None
     assert runner.protocol_budget(runner.load_protocol(PLUME_PROTOCOL))["ion_transit_time_s"] == 3.1e-6
 
@@ -623,18 +636,27 @@ def test_plume_protocol_builds_the_v20_config_and_runs_with_the_v20_artifacts(tm
     field = uniform_field_map(config.grid, 0.02)
     xs = XenonCrossSections.from_file()
     results = tmp_path / "plume"
-    runner.run_steady_state(protocol, results, backend="cpu", field_map=field, cross_sections=xs, max_steps=400, log=lambda _: None)
-    samples = [json.loads(l) for l in (results / "status.jsonl").read_text(encoding="utf-8").splitlines()]
+    # v2.0.2: the GPU sampler is a background thread; a stub query keeps the test hermetic (no nvidia-smi)
+    sampler_factory = lambda interval: GpuUtilisationSampler(interval_s=interval, query=lambda timeout: 42.0)  # noqa: E731
+    runner.run_steady_state(protocol, results, backend="cpu", field_map=field, cross_sections=xs, max_steps=400, log=lambda _: None,
+                            gpu_sampler_factory=sampler_factory)
+    samples = [json.loads(line) for line in (results / "status.jsonl").read_text(encoding="utf-8").splitlines()]
     samples = [s for s in samples if "event" not in s]
     assert all("thrust" in s and "plume" in s and "cathode_emission_a" in s for s in samples)
     assert all(abs(s["thrust"]["interval_ledger_residual_kg_m_s"]) < 1e-25 for s in samples)
     assert samples[-1]["plume"]["far_field_phi_max_abs_deviation_v"] == 0.0 and samples[-1]["plume"]["gate_enforced"] is False
+    # the gate window is continuous across the runner's 200-step accumulator resets: at step 400 it covers all 400 steps
+    assert samples[-1]["plume"]["far_field_window_steps"] == 400 and samples[-1]["plume"]["far_field_window_complete"] is False
+    assert samples[-1]["plume"]["gate_armed"] is False and "charge_fraction_of_peak_window_raw" in samples[-1]["plume"]
     with np.load(results / "series.npz") as series:   # closed before the resume rewrites the file (Windows lock)
         for key in ("momentum_thrust_total_n", "momentum_closure_fraction", "momentum_electrostatic_force_thruster_n",
                     "momentum_cathode_emission_next_a", "plume_exit_plane_axis_potential_v", "plume_charge_fraction_of_peak",
-                    "plume_charge_fraction_of_peak_raw", "plume_far_field_resolved_nodes"):
+                    "plume_charge_fraction_of_peak_raw", "plume_far_field_resolved_nodes", "plume_far_field_window_steps",
+                    "plume_charge_fraction_of_peak_window_raw", "plume_peak_electron_density_window_per_m3",
+                    "plume_far_field_accumulated_macro_particles_max"):
             assert key in series.files and series[key].size == 20, key
-        assert np.all(series["plume_charge_fraction_of_peak_raw"] >= series["plume_charge_fraction_of_peak"])
+        assert np.all(series["plume_charge_fraction_of_peak_window_raw"] >= series["plume_charge_fraction_of_peak"])
+        assert np.array_equal(series["plume_far_field_window_steps"], np.arange(20, 401, 20))   # bridged across the resets at 200
     with np.load(results / "maps.npz") as maps:
         for key in ("plume_ion_current_per_sr_a", "plume_ion_counts_per_theta", "iedf_ion_counts", "iedf_edges_ev", "sample_count_e"):
             assert key in maps.files, key
@@ -650,9 +672,18 @@ def test_plume_protocol_builds_the_v20_config_and_runs_with_the_v20_artifacts(tm
     assert 0.0 <= plume["exit_plane_axis_potential_v"] <= 300.0
     assert summary["provenance"]["v2_0_options"]["cathode"]["current_rule"] == "continuity"
     assert summary["window_currents_a"]["cathode_emission_a"] >= 0.003 * 0.99
+    # v2.0.2 summary: the window statistic maxima and the final window length; the background GPU sampler record
+    assert plume["charge_fraction_of_peak_window_raw_max"] >= plume["charge_fraction_of_peak_max"] and plume["far_field_window_steps_final"] == 400
+    assert plume["far_field_resolved_nodes_final"] == 0     # protocol floor (64 000 particle-steps) on a 400-step run
+    assert summary["gpu_utilisation_percent_samples"] == [42.0] and summary["gpu_utilisation_sampler"]["interval_seconds"] == 300.0
+    assert summary["gpu_utilisation_sampler"]["calls"] == 1 and summary["gpu_utilisation_sampler"]["failures_or_timeouts"] == 0
+    assert summary["provenance"]["v1_4_options"]["step_graph"] is False     # CPU backend: no graphs (the CUDA path reports "lazy" / True)
     # resume continues the same run (two sessions) and keeps the v2.0 blocks
-    runner.run_steady_state(protocol, results, backend="cpu", field_map=field, cross_sections=xs, max_steps=600, log=lambda _: None)
+    runner.run_steady_state(protocol, results, backend="cpu", field_map=field, cross_sections=xs, max_steps=600, log=lambda _: None,
+                            gpu_sampler_factory=sampler_factory)
     resumed = artifacts.read_canonical_json(results / "summary.json")
     assert resumed["steps_completed"] == 600 and len(resumed["sessions"]) == 2 and resumed["plume"] is not None
+    # the gate window restarts at a resume (its history is not checkpointed): 200 steps since the step-400 checkpoint
+    assert resumed["plume"]["far_field_window_steps_final"] == 200 and resumed["final_series"]["plume"]["far_field_window_start_step"] == 400
     # the frame recorder (declared in the protocol) wrote one frame per cadence across both sessions
     assert resumed["artifacts"]["frames"]["count"] == 6 and resumed["artifacts"]["frames"]["config"]["cadence_steps"] == 100
