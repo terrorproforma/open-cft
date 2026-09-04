@@ -336,13 +336,16 @@ def preflight_all(options: tuple[tuple[str, str], ...] = PREFLIGHT_OPTIONS, *, l
     }
 
 
-def preflight_path() -> Path:
-    return protocol_module.PREFLIGHT_RECORD
+def preflight_path(variant: str = protocol_module.PRIMARY_VARIANT, grid: str = protocol_module.PRIMARY_GRID) -> Path:
+    """The whole-set record that carries the launch-box GPU timing of ``option`` (amendment 1: one record per timed option; the base keeps the launch-1 file)."""
+
+    return protocol_module.preflight_record_path(variant, grid)
 
 
-def write_preflight(options: tuple[tuple[str, str], ...] = PREFLIGHT_OPTIONS, *, log=print, gpu_timing_record: dict[str, Any] | None = None) -> tuple[Path, dict[str, Any]]:
+def write_preflight(options: tuple[tuple[str, str], ...] = PREFLIGHT_OPTIONS, *, log=print, gpu_timing_record: dict[str, Any] | None = None,
+                    path: Path | None = None) -> tuple[Path, dict[str, Any]]:
     report = preflight_all(options, log=log, gpu_timing_record=gpu_timing_record)
-    path = preflight_path()
+    path = preflight_path() if path is None else path
     path.write_bytes(json.dumps(report, indent=1, sort_keys=True, allow_nan=False, default=_plain).encode("utf-8") + b"\n")
     return path, report
 

@@ -235,14 +235,37 @@ def test_primary_protocol_is_the_v4_template_with_the_reference_operating_point(
     assert config.injection.electron_current_a == 1.8e-3 and config.potentials.anode_v == 400.0
 
 
-def test_bohm_variant_switches_only_the_anomalous_hook():
+def test_bohm_variant_switches_the_closure_model_and_the_amended_gates_only():
+    """Amendment 1: the bohm-0.4 option carries the v2.1.0 rotation closure at alpha 0.4, the v2.0.6 Debye floor and K = 5; everything else is the base's."""
+
     base, _ = protocol.build_protocol("base", "20um")
     bohm, _ = protocol.build_protocol("bohm-0.4", "20um")
-    assert bohm["numerics"]["anomalous_collisions"]["alpha"] == 0.4 and "anomalous_collisions" not in base["numerics"]
-    assert runner.build_config(bohm, backend="cpu").anomalous.alpha == 0.4
-    for key in ("operating_point", "geometry", "stopping_rule"):
+    hook = bohm["numerics"]["anomalous_collisions"]
+    assert hook["alpha"] == 0.4 and hook["model"] == protocol.ANOMALOUS_MODEL_ROTATION == "bohm_perpendicular_rotation" and "anomalous_collisions" not in base["numerics"]
+    config = runner.build_config(bohm, backend="cpu")
+    assert config.anomalous.alpha == 0.4 and config.anomalous.rotation and config.anomalous.diffusion_factor == pytest.approx(0.345, abs=5e-4)
+    assert config.moment_sample_interval == 5 and config.peak_debye_gate.min_accumulated_macro_particle_steps_at_peak == 64000
+    base_config = runner.build_config(base, backend="cpu")
+    assert base_config.moment_sample_interval == 1 and base_config.peak_debye_gate.min_accumulated_macro_particle_steps_at_peak is None and base_config.anomalous is None
+    for key in ("operating_point", "geometry"):
         assert json.dumps(base[key], sort_keys=True) == json.dumps(bohm[key], sort_keys=True), key
-    assert base["case"]["macro_weight"] == bohm["case"]["macro_weight"] and base["option"] == "channel-20um" and bohm["option"] == "channel-20um-bohm-0.4"
+    # the stopping rule differs only by the budget basis (the option's own launch-box timing) - thresholds, plateau rule and acceptance are the base's
+    for key in ("plateau", "plateau_threshold", "plateau_window_fraction", "min_transit_times", "grid_heating_triad", "acceptance", "ignition_check", "fail_closed"):
+        assert json.dumps(base["stopping_rule"][key], sort_keys=True) == json.dumps(bohm["stopping_rule"][key], sort_keys=True), key
+    assert base["case"]["macro_weight"] == bohm["case"]["macro_weight"] == pytest.approx(82466.8, abs=0.1) and base["option"] == "channel-20um" and bohm["option"] == "channel-20um-bohm-0.4"
+    assert {k: v for k, v in base["case"].items() if k != "id"} == {k: v for k, v in bohm["case"].items() if k != "id"}
+    assert bohm["case"]["id"].endswith("v2.1.0-bohm-rotation-v2.0.6-gates") and base["case"]["id"].endswith("v2.0.3-gates")
+    # numerics: the three amended keys only
+    base_num, bohm_num = base["numerics"], bohm["numerics"]
+    assert set(bohm_num) - set(base_num) == {"anomalous_collisions", "performance"}
+    assert {k: v for k, v in bohm_num.items() if k not in ("anomalous_collisions", "performance", "peak_debye_gate")} == {k: v for k, v in base_num.items() if k != "peak_debye_gate"}
+    assert {k: v for k, v in bohm_num["peak_debye_gate"].items() if not k.startswith("min_accumulated")} == base_num["peak_debye_gate"]
+    # the amendment travels with the sealed protocol; the base carries none (its launch-1 protocol is the preregistered one)
+    assert len(bohm["amendments"]) == 1 and bohm["amendments"][0]["option"] == "channel-20um-bohm-0.4" and "amendments" not in base
+    assert bohm["launch_history"] == protocol.LAUNCH_HISTORY and "channel-20um" in bohm["launch_history"]
+    assert "v2.1.0" in bohm["model_version"] and "v2.0.6" in bohm["model_version"] and "v2.1.0" not in base["model_version"]
+    # W: the 12 M cap is unchanged (parity would be 103 M particles, beyond the cap - no lower W within the cap is recommended)
+    assert "W 82 466.8" in bohm["amendments"][0]["unchanged"] and protocol.LAUNCH_SET == (("bohm-0.4", "20um"),)
 
 
 def test_grid_argument_rejects_33um_and_admits_20um_at_the_published_density():
@@ -385,10 +408,16 @@ def test_launch_refuses_options_outside_the_launch_set_and_dirty_worktrees(monke
     with pytest.raises(PIC2DValidationError, match="not clean"):
         ev_run.launch("base", "20um", expect_commit=head[:12])
     monkeypatch.setattr(ev_run, "worktree_status", lambda cwd=None: [])
+    # amendment 1: the launch set is the bohm-0.4 option; the base (launch 1 on record) and the 15 um follow-up are refused before any file is touched
     with pytest.raises(PIC2DValidationError, match="launch set"):
-        ev_run.launch("bohm-0.4", "20um", expect_commit=head[:12])
+        ev_run.launch("base", "20um", expect_commit=head[:12])
     with pytest.raises(PIC2DValidationError, match="launch set"):
         ev_run.launch("base", "15um", expect_commit=head[:12])
+    # the bohm-0.4 option passes the launch-set check and is then held by the blob discipline (forced here so the test can never reach the lock or the GPU)
+    monkeypatch.setattr(ev_run, "_blob_matches_head", lambda path: False)
+    with pytest.raises(PIC2DValidationError, match="differs from the committed blob"):
+        ev_run.launch("bohm-0.4", "20um", expect_commit=head[:12])
+    assert not (ev_run.results_dir("bohm-0.4", "20um") / ev_run.LOCK_NAME).exists()
 
 
 def test_shrunk_protocol_touches_only_cadences():

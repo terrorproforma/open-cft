@@ -8,7 +8,7 @@ From ``modern/`` (``$env:PYTHONPATH="$PWD\\src;$PWD"`` / ``PYTHONPATH=src:.``)::
     python -m experiments.pic2d_external_validation_v0.run protocol [--variant V] [--grid G] [--with-field]   # print a composed run protocol
     python -m experiments.pic2d_external_validation_v0.run comparison                   # write comparison-spec.json (validated)
     python -m experiments.pic2d_external_validation_v0.run compose                      # seal protocols/*.json (primary, sensitivity, 15 um) + protocol.json
-    python -m experiments.pic2d_external_validation_v0.run preflight [--gpu-timing]     # whole-set preflight (+ launch-box GPU timing) -> preflight-channel-20um.json
+    python -m experiments.pic2d_external_validation_v0.run preflight [--variant V --grid G] [--gpu-timing]   # whole-set preflight (+ the option's launch-box GPU timing) -> preflight-<option>.json
     python -m experiments.pic2d_external_validation_v0.run cost                         # cost table (20 / 33 / 15 um, plume box)
     python -m experiments.pic2d_external_validation_v0.run shakedown                    # GPU: shrunk-cadence run -> assess -> compare -> re-finalize -> shakedown-channel-20um.json
     python -m experiments.pic2d_external_validation_v0.run launch --expect-commit SHA [--require-mps] [--resume]   # PREREGISTERED execution (one)
@@ -208,9 +208,11 @@ def command_compose(args: argparse.Namespace) -> int:
 
 def command_preflight(args: argparse.Namespace) -> int:
     timing = None
+    variant, grid = getattr(args, "variant", protocol_module.PRIMARY_VARIANT), getattr(args, "grid", protocol_module.PRIMARY_GRID)
     if args.gpu_timing:
-        timing = preflight_module.gpu_timing(backend=args.backend, timing_steps=args.timing_steps)
-    path, report = preflight_module.write_preflight(gpu_timing_record=timing)
+        timing = preflight_module.gpu_timing(variant, grid, backend=args.backend, timing_steps=args.timing_steps)
+    # amendment 1: the record carrying an option's GPU timing is that option's file (the base keeps preflight-channel-20um.json, sealed at launch 1)
+    path, report = preflight_module.write_preflight(gpu_timing_record=timing, path=preflight_module.preflight_path(variant, grid))
     print(f"[preflight] all_passed={report['all_passed']} (launch set {report['launch_set_passed']}) over {report['option_count']} options"
           + (f"; launch-box timing {'PASS' if timing['passed'] else 'FAIL'}: seed {timing['timing_seed_load']['ms_per_step']:.2f} / plateau load {timing['timing_plateau_load']['ms_per_step']:.2f} ms/step "
              f"with {timing['concurrent_mps_clients']} other MPS client(s)" if timing else "")
@@ -428,7 +430,7 @@ def launch(variant: str, grid: str, *, expect_commit: str, backend: str = "warp-
     experiment_document = json.loads(experiment_protocol.read_text(encoding="utf-8"))
     if not str(experiment_document.get("status", "")).startswith("preregistered"):
         raise PIC2DValidationError(f"protocol.json status {experiment_document.get('status')!r} is not a preregistration")
-    required = [preflight_module.preflight_path(), shakedown_path(variant, grid)]
+    required = [preflight_module.preflight_path(variant, grid), shakedown_path(variant, grid)]
     missing = [p.name for p in required if not p.is_file()]
     if missing:
         raise PIC2DValidationError(f"preregistration records missing: {missing} (the launch-box preflight and the shakedown must exist and be committed)")
@@ -442,7 +444,7 @@ def launch(variant: str, grid: str, *, expect_commit: str, backend: str = "warp-
         raise PIC2DValidationError("the preflight carries no passed launch-box GPU timing (preflight --gpu-timing on the launch box, >= 2000 steps, budget covering the measured 3-transit wall)")
     shakedown_record = json.loads(required[1].read_text(encoding="utf-8"))
     if not shakedown_record.get("passed"):
-        raise PIC2DValidationError("shakedown-channel-20um.json does not record a passed shakedown (run -> assess -> compare -> re-finalize)")
+        raise PIC2DValidationError(f"{required[1].name} does not record a passed shakedown (run -> assess -> compare -> re-finalize)")
     mps_pipe = os.environ.get("CUDA_MPS_PIPE_DIRECTORY")
     if require_mps and not (mps_pipe and Path(mps_pipe).exists()):
         raise PIC2DValidationError(f"--require-mps: CUDA_MPS_PIPE_DIRECTORY {mps_pipe!r} is not set or does not exist in this environment")
@@ -682,8 +684,8 @@ def main(argv: list[str] | None = None) -> int:
     pr.add_argument("--with-field", action="store_true")
     add("comparison", command_comparison)
     add("compose", command_compose)
-    pf = add("preflight", command_preflight)
-    pf.add_argument("--gpu-timing", action="store_true", help="launch box: time >= 2000 production steps of the primary option at the seed and plateau loads (records the MPS contention)")
+    pf = add("preflight", command_preflight, option=True)      # amendment 1: --variant/--grid select the option whose GPU timing (and record file) is written
+    pf.add_argument("--gpu-timing", action="store_true", help="launch box: time >= 2000 production steps of the option at the seed and plateau loads (records the MPS contention)")
     pf.add_argument("--timing-steps", type=int, default=2000)
     pf.add_argument("--backend", default="warp-cuda")
     add("cost", command_cost)

@@ -1,4 +1,25 @@
 {
+ "amendments": [
+  {
+   "changes": [
+    "numerics.anomalous_collisions gains model = bohm_perpendicular_rotation (alpha 0.4 unchanged); the alpha_note states the reference's event model and the exact factor",
+    "numerics.peak_debye_gate.min_accumulated_macro_particle_steps_at_peak = 64000 (model v2.0.6; the near-axis column that launch 1 densified past pi unresolved is now gate-able)",
+    "the energy ledger is the v2.0.6 W-corrected one (code; no protocol key): acceptance (b) and the 5 % residual-power gate read the corrected statistic natively (launch 1 read the biased one: recorded +7.4 % = corrected +61.7 %)",
+    "numerics.performance.moment_sample_interval = 5 (v2.0.5; physics bitwise, declared identity)",
+    "stopping_rule.wall_budget_seconds from 1.5 x max(cost model, the bohm option's OWN launch-box plateau-load rate) (preflight-channel-20um-bohm-0.4.json)",
+    "LAUNCH_SET = (bohm-0.4, 20um); the base option's one execution is on record (LAUNCH_HISTORY / results/channel-20um-launch1-triad-gate-stop/) and is not relaunched",
+    "model_version / classification / case.id / simplifications text of the bohm-0.4 sealed protocol name v2.1.0 transport + v2.0.6 gates; its sha256 in preregistration.sealed_run_protocols changes accordingly; the base and 15um sealed protocols are byte-identical to the preregistration commit 3dc12cf6",
+    "scheduler job ext-val-v0-channel-20um-bohm-0.4 (tools/cloud/jobs.yaml); records preflight-channel-20um-bohm-0.4.json + shakedown-channel-20um-bohm-0.4.json"
+   ],
+   "expected_outcome": "declared inconclusiveness stays: the 20 um / W 82 466.8 envelope (hard pi at 1.36e19 x T_e/10 eV) may still be reached if the closure does not bound n_e enough; the discriminating outcomes are (i) a plateau under the reference's closure with I_a toward 4.3 mA and n_i toward 1e19 (rows inside V&V20 tolerance or recorded misses), or (ii) another heating / envelope stop, which would put the remaining difference on the SEE / neutral-profile / W-parity side (audit R2, R5a)",
+   "kind": "closure_event_model_and_gate_version_before_first_execution",
+   "option": "channel-20um-bohm-0.4",
+   "reason": "Launch 1 (the base option, no anomalous transport) stopped at 0.52 transits on genuine finite-grid heating: under the v1.3 closure at 2e20 static neutrals the discharge avalanched (S = 2.5x the feed, inventory doubling 0.24 us, corrected residual +61.7 % at the stop) - README section 10 concluded that the one sealed option that can plausibly reach a resolvable plateau at 20 um is the bohm-0.4 variant (the reference's own D_perp coefficient confines less), after (i) the v2.0.6 ledger fix and (ii) the accumulated-particle-step Debye floor. Both landed (4b53012d, 8c70cff0). The physics completeness audit (0901138a, section 4.c) further found that the sealed variant used the v1.4 ISOTROPIC redirect, which also randomises v_parallel, whereas Brandt et al. 2016 rotate only the perpendicular velocity - so the sealed run was a bracket of the reference's model, not the model; model v2.1.0 (cft_revival.pic2d.sensitivity, tests/pic2d/test_pic2d_v210_anomalous_transport.py) implements the reference's event (bohm_perpendicular_rotation) and verifies D_perp = (kT_e/eB) alpha/(1+alpha^2) on both backends. For a code-to-code comparison the reference's own model is the right closure to seal; alpha stays 0.4 (nu_an = 0.4 omega_ce: the D_perp coefficient read as a rate, the natural mapping of a selection probability that depends on |B| only, Pb_237; exact Green-Kubo factor 0.345 disclosed as before).",
+   "unchanged": "grid (75 x 700 at 20 um), dt 0.7 ps, W 82 466.8 (the 12 M-particle cap: parity would be 103 M particles, beyond the cap - README section 10 names the parity weight as the alternative to a weaker closure, not a lower W within the cap; the 8.6x parity weight stays a declared limit), seed 20260903, operating point (400 V, static Xe 2e20 / 500 K, 1.8 mA / 1 eV), frames, the v2.0.3 gate thresholds (hard pi / soft 2.5, 5 % residual power, triad drift bounds with their 1.0-transit arming - 'nothing about the drift members' arming needs to change', README section 10), the v2.0.4 omega_pe dt statistic, the plateau rule, acceptance (a)-(e), the comparison spec (byte-identical) and its inconclusiveness conditions",
+   "utc": "2026-09-04T17:30:00Z",
+   "version": "v0 amendment 1 (bohm-0.4 launch 2: closure model v2.1.0, gates v2.0.6)"
+  }
+ ],
  "comparison_spec": "modern/experiments/pic2d_external_validation_v0/comparison-spec.json",
  "cost_table": {
   "channel-15um": {
@@ -156,6 +177,7 @@
    "timing_steps": 2000,
    "utc": "2026-09-04T11:56:14Z"
   },
+  "launch_box_timing_bohm_0_4": null,
   "provenance_caveats": [
    "the runner's gpu_utilisation_percent_samples (nvidia-smi, 300 s) read the WHOLE GPU under MPS - shared-GPU readings, not per process",
    "ms/step per process under MPS depends on how many slots are busy: the measured launch-box rate below was taken with the sweep runs active and the run speeds up as they finish; wall-clock projections are per-slot upper bounds, the budget is a cap, not a cost",
@@ -845,9 +867,13 @@
    }
   ],
   "launch_discipline": "HEAD == --expect-commit; clean worktree; protocol.json and the sealed run protocol equal HEAD's blobs; the recomposition on this platform equals the sealed bytes; the preflight passed every option and its launch-box timing passed (budget covers the measured 3-transit wall); the shakedown passed; CUDA_MPS_PIPE_DIRECTORY present; O_EXCL execution-lock.json in results/channel-20um/",
+  "launch_history": {
+   "channel-20um": "launch 1 (PID 31588, 12:26:44-13:56:18 UTC 2026-09-04, prereg 3dc12cf6): STOPPED by the windowed residual-power gate at 0.52 transits - genuine finite-grid heating under the v1.3 closure at W 82 466.8 (README section 10; corrected residual +61.7 % at the stop, section 11); INCONCLUSIVE; no launch 2 of the base option at 20 um (the README's own rule)"
+  },
   "launch_set": [
-   "channel-20um"
+   "channel-20um-bohm-0.4"
   ],
+  "launch_set_note": "amendment 1: the launch set names what `launch` may execute now - the bohm-0.4 option (launch 2 of the campaign); the base option's one execution (launch 1) is on record under launch_history and is not relaunched",
   "records": {
    "comparison_spec": {
     "bytes": 42503,
@@ -864,15 +890,17 @@
     "path": "modern/experiments/pic2d_external_validation_v0/preflight-channel-20um.json",
     "sha256": "52c5841eb99265c0348a529b48cb5f326829c311c8503c93880783936ee2aca5"
    },
+   "preflight_bohm_0_4": null,
    "shakedown": {
     "bytes": 6803,
     "path": "modern/experiments/pic2d_external_validation_v0/shakedown-channel-20um.json",
     "sha256": "258f0c3e740a8d00cdbc2adbb7df4bcd998a29cabfdf85adee74535abf8ccc0a"
-   }
+   },
+   "shakedown_bohm_0_4": null
   },
   "sealed_run_protocols": {
    "modern/experiments/pic2d_external_validation_v0/protocols/brandt2016-micro-hempt-v1-channel-15um.json": "7a6b7139cae0486006b21bf155dbcd87ba51babe91b660bc04db2b412272158a",
-   "modern/experiments/pic2d_external_validation_v0/protocols/brandt2016-micro-hempt-v1-channel-20um-bohm-0.4.json": "b1a0d3b559778406e843545afab88eca42b905cff13b4a65da2150a476183972",
+   "modern/experiments/pic2d_external_validation_v0/protocols/brandt2016-micro-hempt-v1-channel-20um-bohm-0.4.json": "c1e2dd5583505e7ba71fc4face8ca0d43a81697adbaee6b05ff93cf667440406",
    "modern/experiments/pic2d_external_validation_v0/protocols/brandt2016-micro-hempt-v1-channel-20um.json": "3ec0d405520fb2b6b2efe05486dfaaef334ea410609aa2d0ef71dc5c50b7a243"
   },
   "state": "PREREGISTERED: the launch set is sealed by this file (sha256 of every run protocol under protocols/, of the whole-set preflight with the launch-box GPU timing, of the shakedown record, of the comparison spec and of the field binding). ONE execution of `channel-20um` from the commit that carries this file, through `run.py launch --expect-commit <sha> --require-mps` (tools/cloud/schedule.py job `ext-val-v0-channel-20um`); the sensitivity variant and the 15 um follow-up are sealed, not launched"
@@ -1467,7 +1495,8 @@
   },
   "bohm-0.4": {
    "anomalous_alpha": 0.4,
-   "role": "SENSITIVITY (sealed, not primary): v1.4 isotropic Bohm-scattering hook nu_an = 0.4 omega_ce = the reference's D_perp coefficient under D_perp ~ alpha k T_e / e B (exact factor alpha / (1 + alpha^2) = 0.345); a different MODEL of the same coefficient"
+   "anomalous_model": "bohm_perpendicular_rotation",
+   "role": "DISCRIMINATING RUN (amendment 1, launch 2 of the campaign): model v2.1.0 Bohm-type closure with the reference's own event model - the perpendicular velocity rotated about the local B by a random angle (v_parallel and |v| unchanged; Brandt et al. 2016 p. Pb_237) at nu_an = 0.4 omega_ce = the reference's D_perp coefficient 0.4 k T_e / e B read as a rate (exact Green-Kubo factor alpha / (1 + alpha^2) = 0.345 of k T_e / e B; both readings recorded). Sealed at the preregistration as the v1.4 isotropic hook (a bracket of the model); amended to the reference's model before its first execution"
   }
  }
 }

@@ -48,6 +48,14 @@ PROTOCOLS_DIR = EXPERIMENT_DIR / "protocols"
 PREFLIGHT_RECORD = EXPERIMENT_DIR / "preflight-channel-20um.json"
 SHAKEDOWN_RECORD = EXPERIMENT_DIR / "shakedown-channel-20um.json"
 
+
+def preflight_record_path(variant: str = "base", grid: str = "20um") -> Path:
+    """The whole-set preflight record carrying the launch-box GPU timing of ``option``: the base keeps the launch-1 file name (sealed at 3dc12cf6)."""
+
+    if variant == "base" and grid == "20um":
+        return PREFLIGHT_RECORD
+    return EXPERIMENT_DIR / f"preflight-{option_tag(variant, grid)}.json"
+
 # the launch box (recorded in every sealed run protocol under `execution`; the mini-sweep's record for the same box)
 LAUNCH_BOX = {
     "gpu": "NVIDIA H100 80GB HBM3",
@@ -83,6 +91,50 @@ LAUNCH_BOX_TIMING: dict[str, Any] | None = {
              "rate falls toward the solo rate (~7 ms/step by the cost model) as the sweep runs finish, so the measured value is an upper bound for the launch configuration "
              "and the cost-model MPS-4 rate (slower) stays the budget basis: 46.0 h"),
 }
+# amendment 1: the bohm-0.4 option's own launch-box timing (`preflight --variant bohm-0.4 --gpu-timing`, written to preflight-channel-20um-bohm-0.4.json); None until
+# measured (the composition then falls back to the cost model + the base measurement). Filled before the amendment commit; the sealed record may differ in the last digits.
+LAUNCH_BOX_TIMING_BOHM: dict[str, Any] | None = None
+LAUNCH_BOX_TIMINGS: dict[str, dict[str, Any] | None] = {"base": LAUNCH_BOX_TIMING, "bohm-0.4": LAUNCH_BOX_TIMING_BOHM}
+
+AMENDMENTS: list[dict[str, Any]] = [
+    {
+        "version": "v0 amendment 1 (bohm-0.4 launch 2: closure model v2.1.0, gates v2.0.6)",
+        "kind": "closure_event_model_and_gate_version_before_first_execution",
+        "utc": "2026-09-04T17:30:00Z",
+        "option": "channel-20um-bohm-0.4",
+        "reason": ("Launch 1 (the base option, no anomalous transport) stopped at 0.52 transits on genuine finite-grid heating: under the v1.3 closure at 2e20 static neutrals the "
+                   "discharge avalanched (S = 2.5x the feed, inventory doubling 0.24 us, corrected residual +61.7 % at the stop) - README section 10 concluded that the one "
+                   "sealed option that can plausibly reach a resolvable plateau at 20 um is the bohm-0.4 variant (the reference's own D_perp coefficient confines less), after "
+                   "(i) the v2.0.6 ledger fix and (ii) the accumulated-particle-step Debye floor. Both landed (4b53012d, 8c70cff0). The physics completeness audit (0901138a, "
+                   "section 4.c) further found that the sealed variant used the v1.4 ISOTROPIC redirect, which also randomises v_parallel, whereas Brandt et al. 2016 rotate only "
+                   "the perpendicular velocity - so the sealed run was a bracket of the reference's model, not the model; model v2.1.0 (cft_revival.pic2d.sensitivity, "
+                   "tests/pic2d/test_pic2d_v210_anomalous_transport.py) implements the reference's event (bohm_perpendicular_rotation) and verifies D_perp = (kT_e/eB) "
+                   "alpha/(1+alpha^2) on both backends. For a code-to-code comparison the reference's own model is "
+                   "the right closure to seal; alpha stays 0.4 (nu_an = 0.4 omega_ce: the D_perp coefficient read as a rate, the natural mapping of a selection probability that "
+                   "depends on |B| only, Pb_237; exact Green-Kubo factor 0.345 disclosed as before)."),
+        "changes": [
+            "numerics.anomalous_collisions gains model = bohm_perpendicular_rotation (alpha 0.4 unchanged); the alpha_note states the reference's event model and the exact factor",
+            "numerics.peak_debye_gate.min_accumulated_macro_particle_steps_at_peak = 64000 (model v2.0.6; the near-axis column that launch 1 densified past pi unresolved is now gate-able)",
+            ("the energy ledger is the v2.0.6 W-corrected one (code; no protocol key): acceptance (b) and the 5 % residual-power gate read the corrected statistic natively (launch 1 read "
+             "the biased one: recorded +7.4 % = corrected +61.7 %)"),
+            "numerics.performance.moment_sample_interval = 5 (v2.0.5; physics bitwise, declared identity)",
+            "stopping_rule.wall_budget_seconds from 1.5 x max(cost model, the bohm option's OWN launch-box plateau-load rate) (preflight-channel-20um-bohm-0.4.json)",
+            "LAUNCH_SET = (bohm-0.4, 20um); the base option's one execution is on record (LAUNCH_HISTORY / results/channel-20um-launch1-triad-gate-stop/) and is not relaunched",
+            ("model_version / classification / case.id / simplifications text of the bohm-0.4 sealed protocol name v2.1.0 transport + v2.0.6 gates; its sha256 in "
+             "preregistration.sealed_run_protocols changes accordingly; the base and 15um sealed protocols are byte-identical to the preregistration commit 3dc12cf6"),
+            "scheduler job ext-val-v0-channel-20um-bohm-0.4 (tools/cloud/jobs.yaml); records preflight-channel-20um-bohm-0.4.json + shakedown-channel-20um-bohm-0.4.json",
+        ],
+        "unchanged": ("grid (75 x 700 at 20 um), dt 0.7 ps, W 82 466.8 (the 12 M-particle cap: parity would be 103 M particles, beyond the cap - README section 10 names the parity weight "
+                      "as the alternative to a weaker closure, not a lower W within the cap; the 8.6x parity weight stays a declared limit), seed 20260903, operating point (400 V, static "
+                      "Xe 2e20 / 500 K, 1.8 mA / 1 eV), frames, the v2.0.3 gate thresholds (hard pi / soft 2.5, 5 % residual power, triad drift bounds with their 1.0-transit arming - "
+                      "'nothing about the drift members' arming needs to change', README section 10), the v2.0.4 omega_pe dt statistic, the plateau rule, acceptance (a)-(e), the "
+                      "comparison spec (byte-identical) and its inconclusiveness conditions"),
+        "expected_outcome": ("declared inconclusiveness stays: the 20 um / W 82 466.8 envelope (hard pi at 1.36e19 x T_e/10 eV) may still be reached if the closure does not bound n_e "
+                             "enough; the discriminating outcomes are (i) a plateau under the reference's closure with I_a toward 4.3 mA and n_i toward 1e19 (rows inside V&V20 "
+                             "tolerance or recorded misses), or (ii) another heating / envelope stop, which would put the remaining difference on the SEE / neutral-profile / W-parity "
+                             "side (audit R2, R5a)"),
+    },
+]
 EXPERIMENT_PROTOCOL_PATH = EXPERIMENT_DIR / "protocol.json"
 COMPARISON_SPEC_PATH = EXPERIMENT_DIR / "comparison-spec.json"
 
@@ -94,11 +146,23 @@ GRIDS: dict[str, dict[str, float]] = {
 PRIMARY_GRID = "20um"
 VARIANTS: dict[str, dict[str, Any]] = {
     "base": {"anomalous_alpha": None, "role": "PRIMARY: the accepted v1.3 closure (no anomalous transport, no SEE); the closure difference to the reference is declared"},
-    "bohm-0.4": {"anomalous_alpha": 0.4, "role": "SENSITIVITY (sealed, not primary): v1.4 isotropic Bohm-scattering hook nu_an = 0.4 omega_ce = the reference's D_perp coefficient "
-                                                  "under D_perp ~ alpha k T_e / e B (exact factor alpha / (1 + alpha^2) = 0.345); a different MODEL of the same coefficient"},
+    "bohm-0.4": {"anomalous_alpha": 0.4, "anomalous_model": "bohm_perpendicular_rotation",
+                 "role": ("DISCRIMINATING RUN (amendment 1, launch 2 of the campaign): model v2.1.0 Bohm-type closure with the reference's own event model - the perpendicular velocity "
+                          "rotated about the local B by a random angle (v_parallel and |v| unchanged; Brandt et al. 2016 p. Pb_237) at nu_an = 0.4 omega_ce = the reference's D_perp "
+                          "coefficient 0.4 k T_e / e B read as a rate (exact Green-Kubo factor alpha / (1 + alpha^2) = 0.345 of k T_e / e B; both readings recorded). Sealed at the "
+                          "preregistration as the v1.4 isotropic hook (a bracket of the model); amended to the reference's model before its first execution")},
 }
 PRIMARY_VARIANT = "base"
-LAUNCH_SET = (("base", "20um"),)
+# amendment 1 (2026-09-05): launch 1 = the base option (STOPPED, genuine heating, recorded under results/channel-20um-launch1-triad-gate-stop/; README section 10:
+# "no launch 2 at 20 um" for the base); launch 2 = the sealed bohm-0.4 option brought to model v2.0.6 + the v2.1.0 rotation closure. The launch set names
+# what `launch` may execute NOW; the history keeps the base's one execution on record.
+LAUNCH_SET = (("bohm-0.4", "20um"),)
+LAUNCH_HISTORY: dict[str, str] = {
+    "channel-20um": ("launch 1 (PID 31588, 12:26:44-13:56:18 UTC 2026-09-04, prereg 3dc12cf6): STOPPED by the windowed residual-power gate at 0.52 transits - genuine "
+                     "finite-grid heating under the v1.3 closure at W 82 466.8 (README section 10; corrected residual +61.7 % at the stop, section 11); INCONCLUSIVE; "
+                     "no launch 2 of the base option at 20 um (the README's own rule)"),
+}
+ANOMALOUS_MODEL_ROTATION = "bohm_perpendicular_rotation"
 
 ANODE_POTENTIAL_V = 400.0
 NEUTRAL_DENSITY_PER_M3 = 2.0e20
@@ -343,13 +407,43 @@ def build_protocol(variant: str = PRIMARY_VARIANT, grid: str = PRIMARY_GRID, *, 
         "v2.0.3 window-mode gate verbatim (hard pi fail-closed once the window is complete; soft 2.5 = plateau precondition). At the PUBLISHED density / temperature (1e19 / 10 eV) the 20 um grid "
         f"reads {20e-6/debye_length_m(1e19, 10.0):.2f}: a plateau at exactly the published state is recorded as 'resolution margin not met' (acceptance (a) fails on the soft precondition, the run "
         f"continues to the budget, the comparison rows carry the flag); the hard level is reached at {density_at_cells_per_debye(math.pi, 20e-6, 10.0):.3g} m^-3 at 10 eV")
+    amended = VARIANTS[variant].get("anomalous_model") is not None       # amendment 1: the bohm-0.4 option carries v2.1.0 transport + v2.0.6 gates
     if VARIANTS[variant]["anomalous_alpha"] is not None:
-        numerics["anomalous_collisions"] = {"alpha": float(VARIANTS[variant]["anomalous_alpha"]),
-                                            "alpha_note": "v1.4 Bohm-scattering hook: isotropic redirect at nu_an = alpha omega_ce; alpha 0.4 reproduces the reference's D_perp coefficient 0.4 k T_e / e B "
-                                                          "in the small-alpha identity (exact factor 0.345); it also randomises the parallel speed, which the reference's perpendicular-rotation model "
-                                                          "does not - a sensitivity bracket, not the reference's model"}
+        alpha = float(VARIANTS[variant]["anomalous_alpha"])
+        if amended:
+            numerics["anomalous_collisions"] = {
+                "model": VARIANTS[variant]["anomalous_model"], "alpha": alpha,
+                "alpha_note": (f"model v2.1.0 Bohm-type anomalous transport with the reference's event model (Brandt et al. 2016, Pb_237): every electron has its velocity rotated about the "
+                               f"local B by a uniform random angle - v_parallel and |v| unchanged to round-off, gyro-centre shifted - with probability 1 - exp(-alpha omega_ce dt) per step at "
+                               f"the particle's |B|; nu_an = {alpha:g} omega_ce = the reference's D_perp = 0.4 k T_e / e B read as a rate (a selection probability that depends on |B| only, "
+                               f"as the reference describes); exact Green-Kubo D_perp = (k T_e / e B) alpha / (1 + alpha^2) = {alpha / (1 + alpha**2):.3f} k T_e / e B (verified on both "
+                               f"backends, tests/pic2d/test_pic2d_v210_anomalous_transport.py). At 0.7 T nu_an = {alpha * 1.7588e11 * 0.7:.3g} s^-1, nu_an dt = "
+                               f"{alpha * 1.7588e11 * 0.7 * float(numerics['dt_s']):.3f}. Elastic (no ledger energy term), count tallied (cumulative.anomalous), axial momentum in "
+                               f"pz_collisions; outside the MCC null-collision budget as a separate exact-Poisson process (amendment 1)"),
+            }
+        else:
+            numerics["anomalous_collisions"] = {"alpha": alpha,
+                                                "alpha_note": "v1.4 Bohm-scattering hook: isotropic redirect at nu_an = alpha omega_ce; alpha 0.4 reproduces the reference's D_perp coefficient 0.4 k T_e / e B "
+                                                              "in the small-alpha identity (exact factor 0.345); it also randomises the parallel speed, which the reference's perpendicular-rotation model "
+                                                              "does not - a sensitivity bracket, not the reference's model"}
     else:
         numerics.pop("anomalous_collisions", None)
+    if amended:
+        numerics["peak_debye_gate"]["min_accumulated_macro_particle_steps_at_peak"] = 64000
+        numerics["peak_debye_gate"]["min_accumulated_macro_particle_steps_at_peak_note"] = (
+            "model v2.0.6 (spec gates_v2_0.peak_debye_gate_accumulated_floor_v2_0_6; amendment 1): the gated node is the densest node whose ACCUMULATED macro-electron-steps over the "
+            "400 000-step window reach 64 000, so the near-axis column launch 1 densified past pi while the 32-macro-electron mean-occupancy floor hid it (README section 10/11: "
+            "the axis node held 0.72 macro-electrons per step and 172 000 macro-electron-steps) is gate-able; the mean-occupancy floor stays recorded alongside")
+        numerics["performance"] = {"moment_sample_interval": 5,
+                                   "moment_sample_interval_note": "v2.0.5 (amendment 1): electron window moments sampled every 5th accumulated step; physics bitwise, enters config_sha256 by the "
+                                                                  "v2.0.5 identity policy; launch 1 (base option) ran K = 1"}
+        protocol["model_version"] = ("pic2d v1.3 runner with a STATIC neutral background (the inventory removed = the v1.2 static-background mode; NO wall-ion recycling, no SEE) + model "
+                                     "v2.1.0 anomalous cross-field transport (Bohm-type perpendicular-velocity rotation, nu_an = alpha omega_ce, Brandt et al. 2016 event model) with the "
+                                     "v2.0.6 gates (window-mode peak-Debye gate with the accumulated-particle-step floor, windowed residual-power gate on the W-corrected ledger), the "
+                                     "v2.0.4 runtime omega_pe dt statistic and the v2.0.5 K = 5 moment sampling (amendment 1)")
+        protocol["classification"] = "axisymmetric_electrostatic_pic_mcc_code_to_code_comparison_channel_only_static_neutrals_v1_3_closure_v2_1_0_bohm_rotation_v2_0_6_gates_not_validated"
+        protocol["amendments"] = copy.deepcopy(AMENDMENTS)
+        protocol["launch_history"] = dict(LAUNCH_HISTORY)
     # operating point
     operating = protocol["operating_point"]
     operating["anode_potential_v"] = ANODE_POTENTIAL_V
@@ -375,7 +469,7 @@ def build_protocol(variant: str = PRIMARY_VARIANT, grid: str = PRIMARY_GRID, *, 
     # case
     projected_m = weight_policy["projected_total_m"]
     protocol["case"] = {
-        "id": f"{CONFIG_ID}-{option_tag(variant, grid)}-w{weight:.6g}-ng2e20-static-inj1.8mA-1eV-v1.3-closure-v2.0.3-gates",
+        "id": f"{CONFIG_ID}-{option_tag(variant, grid)}-w{weight:.6g}-ng2e20-static-inj1.8mA-1eV-v1.3-closure-" + ("v2.1.0-bohm-rotation-v2.0.6-gates" if amended else "v2.0.3-gates"),
         "radial_cells": int(mapping.grid.radial_cells), "axial_cells": int(mapping.grid.axial_cells), "macro_weight": weight, "macro_weight_policy": weight_policy, "seed": SEED,
         "grid_policy": {"target_cell_m": cell_m, "dt_s": float(numerics["dt_s"]), "source": f"grid option {grid}: " + ("the published resolution" if grid == "20um" else "see grid_argument")},
         "grid_note": f"dr {mapping.grid.dr_m*1e6:.3f} um x dz {mapping.grid.dz_m*1e6:.3f} um: {mapping.grid.radial_cells} x {mapping.grid.axial_cells} cells, nodes {list(mapping.grid.node_shape)}",
@@ -383,7 +477,9 @@ def build_protocol(variant: str = PRIMARY_VARIANT, grid: str = PRIMARY_GRID, *, 
     # stopping rule / acceptance / budget
     cost = cost_row(mapping, dt_s=float(numerics["dt_s"]), macro_weight=weight, projected_total_m=projected_m)
     rule = protocol["stopping_rule"]
-    budget_hours, budget_basis = budget_basis_hours(cost)
+    # amendment 1: an amended option's budget reads its OWN launch-box timing (the bohm kernel adds a per-electron pass); the base keeps its record
+    timing = LAUNCH_BOX_TIMINGS.get(variant) if amended else LAUNCH_BOX_TIMING
+    budget_hours, budget_basis = budget_basis_hours(cost, timing=timing if timing is not None else {})
     wall_budget = max(3600.0, math.ceil(BUDGET_FACTOR * budget_hours * 3600.0 / 600.0) * 600.0)
     rule["wall_budget_seconds"] = float(wall_budget)
     rule["wall_budget_basis"] = budget_basis
@@ -420,13 +516,14 @@ def build_protocol(variant: str = PRIMARY_VARIANT, grid: str = PRIMARY_GRID, *, 
         "ion_transit_time_s": TRANSIT_S, "ion_transit_note": "2.4 us x 14 mm / 24 mm (the measured reference residence scaled with the channel length); superseded by the measured N_i / L residence",
         "expected_mean_density_per_m3": EXPECTED_MEAN_DENSITY_PER_M3, "particles_projected_m": projected_m, "macro_weight": weight, "macro_weight_parity": weight_policy["parity_weight"],
         "dr_m": mapping.grid.dr_m, "dz_m": mapping.grid.dz_m, "dt_s": float(numerics["dt_s"]), "wall_budget_factor": BUDGET_FACTOR, **{k: v for k, v in cost.items() if k not in ("nodes", "cells", "dt_s", "macro_weight")},
-        "launch_box_timing": LAUNCH_BOX_TIMING,
+        "launch_box_timing": timing if amended else LAUNCH_BOX_TIMING,
     }
     protocol["execution"] = {
         **LAUNCH_BOX,
-        "launch_box_timing": LAUNCH_BOX_TIMING,
+        "launch_box_timing": timing if amended else LAUNCH_BOX_TIMING,
         "scheduler": ("modern/tools/cloud/schedule.py (tmux, detached worktree at the preregistration commit, per-job results directory, Warp cuda:0 UUID cross-check, prereg "
-                      "ancestor + byte-identical protocol checks) with slots_per_gpu 4 and the MPS variables exported; job `ext-val-v0-channel-20um` in tools/cloud/jobs.yaml"),
+                      "ancestor + byte-identical protocol checks) with slots_per_gpu 4 and the MPS variables exported; job "
+                      + (f"`ext-val-v0-{option_tag(variant, grid)}`" if amended else "`ext-val-v0-channel-20um`") + " in tools/cloud/jobs.yaml"),
         "launch_discipline": ("run.py launch --expect-commit <prereg sha> --require-mps: HEAD == prereg commit, clean worktree, protocol.json and protocols/<option>.json blobs == HEAD, "
                               "recomposed protocol == sealed file byte for byte, preflight-channel-20um.json (whole set passed + launch-box GPU timing passed) and "
                               "shakedown-channel-20um.json (passed) present, O_EXCL execution-lock.json in results/<option>/, MPS pipe directory present"),
@@ -437,7 +534,9 @@ def build_protocol(variant: str = PRIMARY_VARIANT, grid: str = PRIMARY_GRID, *, 
         "neutrals: STATIC uniform xenon background 2e20 m^-3 at 500 K (the reference's static DSMC mean); no depletion, no profile (the reference's drops 6e20 -> 1e20 along the channel)",
         "electron source: 1.8 mA / 1 eV at the 0 V exit plane = the reference's continuity-derived effective source (an input taken from its results)",
         "channel-only box: the reference's 6.48 mm plume, its grounded body and its 0 V far boundaries are replaced by the Dirichlet exit plane (approximation A9); plume rows not compared",
-        "no anomalous transport (primary) / isotropic Bohm scattering at alpha 0.4 (variant) versus the reference's perpendicular-rotation D_perp = 0.4 k T_e / e B; no SEE versus its 50 % / 90 % model",
+        ("Bohm-type anomalous transport with the reference's perpendicular-rotation event model at nu_an = 0.4 omega_ce (D_perp = 0.345 k T_e / e B exact) - the reference's coefficient "
+         "and event model, IMPOSED as a constant-alpha closure as the reference does; no SEE versus its 50 % / 90 % model" if amended else
+         "no anomalous transport (primary) / isotropic Bohm scattering at alpha 0.4 (variant) versus the reference's perpendicular-rotation D_perp = 0.4 k T_e / e B; no SEE versus its 50 % / 90 % model"),
         "reconstructed field: level-0 material-aware P2 of the thesis' magnet stack with approximations A1-A8, scaled to the published axis anchor; not P2-qualified",
         "one grid (the published 20 um) and one seed: the grid caveat is carried, not measured; the 15 um sibling and a seed replicate are the declared follow-ups",
         ("one preregistered execution on one of four CUDA-MPS slots of a shared H100 (the design mini-sweep runs beside it): a code-to-code comparison of two development models, "
@@ -545,15 +644,20 @@ def experiment_protocol_document(*, preflight_summary: dict[str, Any] | None = N
                       "`run.py launch --expect-commit <sha> --require-mps` (tools/cloud/schedule.py job `ext-val-v0-channel-20um`); the sensitivity variant and the 15 um follow-up are "
                       "sealed, not launched"),
             "launch_set": [option_tag(*o) for o in LAUNCH_SET],
+            "launch_set_note": ("amendment 1: the launch set names what `launch` may execute now - the bohm-0.4 option (launch 2 of the campaign); the base option's one execution "
+                                "(launch 1) is on record under launch_history and is not relaunched"),
+            "launch_history": dict(LAUNCH_HISTORY),
             "sealed_run_protocols": sealed,
             "records": {"preflight": _file_record(PREFLIGHT_RECORD), "shakedown": _file_record(SHAKEDOWN_RECORD), "comparison_spec": _file_record(COMPARISON_SPEC_PATH),
-                        "field_binding": _file_record(EXPERIMENT_DIR / "fields" / CONFIG_ID / "binding.json")},
+                        "field_binding": _file_record(EXPERIMENT_DIR / "fields" / CONFIG_ID / "binding.json"),
+                        "preflight_bohm_0_4": _file_record(preflight_record_path("bohm-0.4", "20um")), "shakedown_bohm_0_4": _file_record(EXPERIMENT_DIR / "shakedown-channel-20um-bohm-0.4.json")},
             "launch_discipline": ("HEAD == --expect-commit; clean worktree; protocol.json and the sealed run protocol equal HEAD's blobs; the recomposition on this platform equals the sealed "
                                   "bytes; the preflight passed every option and its launch-box timing passed (budget covers the measured 3-transit wall); the shakedown passed; "
                                   "CUDA_MPS_PIPE_DIRECTORY present; O_EXCL execution-lock.json in results/channel-20um/"),
             "decisions_vs_draft": DECISIONS_VS_DRAFT,
         },
-        "execution": {**LAUNCH_BOX, "launch_box_timing": LAUNCH_BOX_TIMING},
+        "execution": {**LAUNCH_BOX, "launch_box_timing": LAUNCH_BOX_TIMING, "launch_box_timing_bohm_0_4": LAUNCH_BOX_TIMING_BOHM},
+        "amendments": copy.deepcopy(AMENDMENTS),
         "shakedown_summary": shakedown_summary,
         "reference": reference.reference_document(),
         "geometry_mapping": geometry_module.mapping_table(),
@@ -586,9 +690,10 @@ def write_comparison_spec(path: Path = COMPARISON_SPEC_PATH) -> Path:
     return path
 
 
-__all__ = ["ANODE_POTENTIAL_V", "BUDGET_FACTOR", "COMPARISON_SPEC_PATH", "COMPOSED_OPTIONS", "DECISIONS_VS_DRAFT", "EXPECTED_MEAN_DENSITY_PER_M3", "EXPECTED_PEAK_DENSITY_PER_M3", "EXPERIMENT_ID",
-           "EXPERIMENT_PROTOCOL_PATH", "EXPERIMENT_PROTOCOL_SCHEMA", "GRIDS", "INJECTION_CURRENT_A", "INJECTION_TEMPERATURE_EV", "LAUNCH_BOX", "LAUNCH_BOX_TIMING", "LAUNCH_SET",
-           "MAX_PROJECTED_PARTICLES_M", "NEUTRAL_DENSITY_PER_M3", "NEUTRAL_TEMPERATURE_K", "PREFLIGHT_RECORD", "PRIMARY_GRID", "PRIMARY_VARIANT", "PROTOCOLS_DIR", "RUN_PROTOCOL_SCHEMA",
-           "SHAKEDOWN_RECORD", "STABILITY_REFERENCE", "STATUS", "TEMPLATE_PATH", "TRANSIT_S", "VARIANTS", "admissible_dt", "budget_basis_hours", "build_protocol", "compose_all", "compose_run_protocol",
-           "composed_protocol_path", "cost_row", "debye_length_m", "density_at_cells_per_debye", "density_at_omega_pe_dt", "experiment_protocol_document", "grid_argument", "load_template",
-           "macro_weight_policy", "omega_pe", "option_tag", "protocol_bytes", "write_comparison_spec", "write_experiment_protocol"]
+__all__ = ["AMENDMENTS", "ANODE_POTENTIAL_V", "ANOMALOUS_MODEL_ROTATION", "BUDGET_FACTOR", "COMPARISON_SPEC_PATH", "COMPOSED_OPTIONS", "DECISIONS_VS_DRAFT", "EXPECTED_MEAN_DENSITY_PER_M3",
+           "EXPECTED_PEAK_DENSITY_PER_M3", "EXPERIMENT_ID", "EXPERIMENT_PROTOCOL_PATH", "EXPERIMENT_PROTOCOL_SCHEMA", "GRIDS", "INJECTION_CURRENT_A", "INJECTION_TEMPERATURE_EV", "LAUNCH_BOX",
+           "LAUNCH_BOX_TIMING", "LAUNCH_BOX_TIMINGS", "LAUNCH_BOX_TIMING_BOHM", "LAUNCH_HISTORY", "LAUNCH_SET", "MAX_PROJECTED_PARTICLES_M", "NEUTRAL_DENSITY_PER_M3", "NEUTRAL_TEMPERATURE_K",
+           "PREFLIGHT_RECORD", "PRIMARY_GRID", "PRIMARY_VARIANT", "PROTOCOLS_DIR", "RUN_PROTOCOL_SCHEMA", "SHAKEDOWN_RECORD", "STABILITY_REFERENCE", "STATUS", "TEMPLATE_PATH", "TRANSIT_S", "VARIANTS",
+           "admissible_dt", "budget_basis_hours", "build_protocol", "compose_all", "compose_run_protocol", "composed_protocol_path", "cost_row", "debye_length_m", "density_at_cells_per_debye",
+           "density_at_omega_pe_dt", "experiment_protocol_document", "grid_argument", "load_template", "macro_weight_policy", "omega_pe", "option_tag", "preflight_record_path", "protocol_bytes",
+           "write_comparison_spec", "write_experiment_protocol"]
