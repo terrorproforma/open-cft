@@ -170,7 +170,8 @@ Launch order (one H100 MPS slot each, as the scheduler frees them): `alpha-1over
   (π) stay enforced from their windows as the physics protections — they read +1.15 % / 0.48 on the 1/16 run; (ii) `stopping_rule.
   ignition_gate` — calibrated on the accepted 33 µm runs (ss-v4 / 047 / 009 / 056-L2: N_e ratio ≥ 1.31, S ratio ≥ 0.96 at 1.0 µs) and the
   extinguished launch (0.45 / 0.37): a discharge the latch can never arm on is stopped at 1.0 / 2.0 µs instead of running to its budget.
-  The amendment commit is the `--expect-commit` of `alpha-1over64` and `alpha-0.345` (jobs.yaml commit after it).
+  The amendment commit **`33be2a89`** (record `0916a4f8`, model v2.1.1 `e47ae78a`) is the `--expect-commit` of `alpha-1over64` and
+  `alpha-0.345` (jobs.yaml commit after it).
 - **Queue after the amendment**: the box slot-waiter `r1-queue` was paused at 19:35 UTC (no case may launch under the 1.0-transit rule) and
   restarted with the amended order `at-alpha-1over64` → `at-alpha-0.345` (one MPS slot each as the scheduler frees one; sweep-056-launch2
   ends ≈ 21:10 UTC → 1/64 ≈ 21:15 UTC / 07:15 AEST); the chained physics-effects queue (`pe-queue`) restarted behind it. 0.345 (D⊥ 5× the

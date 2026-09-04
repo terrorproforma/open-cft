@@ -335,118 +335,163 @@ def test_launch_records_a_nonzero_exit_code(repo: dict[str, object], tmp_path: P
 
 
 # ------------------------------------------------------------------------------------------ shipped jobs.yaml
+# The QUEUE-ERA contract of tools/cloud/jobs.yaml (2026-09-05). Since the box slot-waiters (tools/cloud/slot_queue.sh: tmux r1-queue ->
+# pe-queue) launch preregistered jobs one at a time with `launch --only <id>` - which ignores `enabled` - a WAITING job is listed
+# `enabled: false` (a plain `launch` must never abort on "no free GPU slot" while it waits) and still names its prereg / amendment commit
+# with a frozen sealed protocol. So neither "disabled => commit None" nor a fixed enabled list holds any more; what holds is:
+#   * every job runs from a detached worktree; every PREREGISTERED job names a full SHA that is an ancestor of HEAD, passes it as
+#     `--expect-commit`, and points at an existing sealed protocol with a transit time / memory / ms-per-step estimate;
+#   * a waiting preregistered job (disabled, no state on the box) passes prereg_check at HEAD (commit reachable, sealed protocol frozen);
+#   * a FINISHED launch superseded by an amendment (sweep-056 launch 1, at-alpha-1over16 launch 1) is disabled, still names the commit it
+#     ran at, and its sealed protocol is NO LONGER frozen against HEAD (the amendment re-sealed the same path) - pinned so nobody relaunches it;
+#   * launch-2 jobs (sweep-056-launch2, ext-val bohm-0.4) and the amended alpha cases name the AMENDMENT commit (after the prereg commit);
+#   * non-preregistered slots are disabled: the plume placeholders name no commit, the graph shakedown keeps its recorded commit;
+#   * the four-slot MPS accounting refuses a fifth client and accepts the next waiting job once a slot frees.
 SWEEP_PREREG_COMMIT = "291a9227669c8927ea5cf7a6de2eed23fe6f73de"
 SWEEP_JOBS = ["sweep-reference", "sweep-056", "sweep-047", "sweep-009"]
 EXT_VAL_JOB = "ext-val-v0-channel-20um"
 EXT_VAL_PREREG_COMMIT = "3dc12cf6d3a299c7c3702a1b2c349d69ffe1ddde"
-# steady-state v5 launch 2 (25 um ladder point; launch 1 on the local RTX 5090 withdrawn by the user): the job's commit is the
-# v5.1 records commit (protocol amendment + H100 preflight / shakedown), read from jobs.yaml. Slot sequencing on the box
-# (2026-09-04): design 056 ended on its triad gate at 10:52 UTC and design 047 reaches 3 transits ~12:50 UTC, so the two
-# newcomers (ss25-base, ext-val-v0-channel-20um) enter one after the other; `launch` plans only jobs whose state is "not launched".
+EXT_VAL_BOHM_JOB = "ext-val-v0-channel-20um-bohm-0.4"
 SS25_JOB = "ss25-base"
-# design 056 launch 1 stopped on its triad gate (raw omega_pe dt statistic) at 10:52 UTC; design 047 finished on the plateau rule at
-# 12:49 UTC. Launch 2 of 056 (amendment 1: model v2.0.4 gate reading, protocol.json amendments[0]) is its own job whose commit is
-# the AMENDMENT commit (read from jobs.yaml, a full SHA after the prereg commit) and whose sealed protocol carries the
-# omega_pe_dt_gate_reading block; it enters the slot the reference or 009 frees.
-FINISHED_SWEEP_JOBS = ["sweep-056", "sweep-047"]
 SWEEP_056_LAUNCH2_JOB = "sweep-056-launch2"
-# steady-state v4-fast (solver qualification: the v4 33 um plateau replayed under device-mg + K = 5): its commit is the preregistration
-# commit (read from jobs.yaml), `--require-mps`, the protocol names device-mg / K = 5. It enters a slot freed by the finished runs
-# (sweep-reference / 009 / 047 finished on the plateau rule, ext-val v0 on its triad gate by 14:17 UTC 2026-09-04).
 SS33_FAST_JOB = "ss33-fast"
+# anomalous transport v1 (R1): prereg 057841cf; launch 1 (alpha-1over16) finished at 1.00 transit on the drift members (extinguished under the
+# closure, record 0916a4f8, not relaunched); AMENDMENT 1 (v2.1.1 arming latch + ignition gate) re-sealed all three cases -> the two remaining
+# cases wait in the r1-queue at the amendment commit
+AT_PREREG_COMMIT = "057841cfcd72d24d09608143319079fc9f750e99"
+AT_LAUNCH1_JOB = "at-alpha-1over16"
+AT_WAITING_JOBS = ["at-alpha-1over64", "at-alpha-0.345"]
+# physics effects v1 (R2 + R3): prereg 79a7c87a; wait in the chained pe-queue behind the r1-queue
+PE_PREREG_COMMIT = "79a7c87a2fd1807180958f085f9dc36939488029"
+PE_JOBS = ["pe-see-bn", "pe-xe-set-v2", "pe-see-bn+xe-set-v2"]
+PLUME_PLACEHOLDERS = ["plume-v2.1-33um", "plume-v2.1-50um-3mA"]
+SUPERSEDED_LAUNCH1_JOBS = ["sweep-056", AT_LAUNCH1_JOB]
+# the four CUDA-MPS clients on the box at 19:35 UTC 2026-09-04 (the r1-queue's next launch, at-alpha-1over64, waits for one of them)
+LIVE_FOUR = [SS25_JOB, SS33_FAST_JOB, SWEEP_056_LAUNCH2_JOB, EXT_VAL_BOHM_JOB]
 
 
-def test_shipped_jobs_yaml_is_the_single_h100_mps_configuration_with_the_preregistered_sweep_enabled() -> None:
+def _sealed(job: schedule.JobSpec) -> dict:
+    return json.loads((REPOSITORY / job.protocol).read_text(encoding="utf-8"))
+
+
+def test_shipped_jobs_yaml_is_the_single_h100_mps_configuration_under_the_queue_era_contract() -> None:
     pytest.importorskip("yaml")
     plan = schedule.build_plan(schedule.load_jobs_file(schedule.DEFAULT_JOBS_FILE), source=schedule.DEFAULT_JOBS_FILE)
     assert plan.defaults.repo == REPOSITORY
     # the live box: one H100, four CUDA-MPS slots (bench-mps 2026-09-04), MPS client variables exported to every job
     assert plan.gpus == [0] and plan.defaults.slots_per_gpu == 4
     assert plan.defaults.env["CUDA_MPS_PIPE_DIRECTORY"] == "/tmp/nvidia-mps" and plan.defaults.env["CUDA_MPS_LOG_DIRECTORY"] == "/tmp/nvidia-log"
-    enabled = [j for j in plan.jobs if j.enabled]
-    # steady-state v5 (section ii of the file), the four sweep designs (056 finished on its triad gate at 10:52 UTC 2026-09-04,
-    # 047 on the plateau rule at 12:49 UTC), the 056 launch-2 job (amendment 1) and external validation v0
-    assert [j.id for j in enabled] == [SS25_JOB, SS33_FAST_JOB, "sweep-reference", SWEEP_056_LAUNCH2_JOB, "sweep-047", "sweep-009", EXT_VAL_JOB]
+    by_id = {j.id: j for j in plan.jobs}
+    assert len(by_id) == len(plan.jobs)
+    for name in SWEEP_JOBS + [EXT_VAL_JOB, EXT_VAL_BOHM_JOB, SS25_JOB, SWEEP_056_LAUNCH2_JOB, SS33_FAST_JOB, AT_LAUNCH1_JOB, *AT_WAITING_JOBS, *PE_JOBS, *PLUME_PLACEHOLDERS]:
+        assert name in by_id, name
+
+    # -- every job: detached worktree; every SCHEDULED preregistered job names a full reachable SHA, passes it as --expect-commit and has
+    #    a sealed protocol; a preregistered slot without a commit yet (the v4 replicate placeholders) is disabled
     for job in plan.jobs:
-        assert job.checkout == "worktree"
-        if job.id == "sweep-056":
-            # launch 1 of design 056: finished (triad stop) and superseded by the amendment - disabled, still names the prereg commit,
-            # and its sealed protocol is NO LONGER frozen against HEAD (amendment 1 re-sealed it) - pinned so nobody relaunches it
-            assert not job.enabled and job.commit == SWEEP_PREREG_COMMIT and job.preregistered is True
-            check = schedule.prereg_check(REPOSITORY, job.commit, job.protocol)
-            assert check["ok"] is False and any("differs between" in p for p in check["problems"])
-        elif job.id == SWEEP_056_LAUNCH2_JOB:
-            # launch 2 of design 056: the amendment commit (after the prereg commit), the SAME sealed protocol path as sweep-056
-            # (re-sealed with the gate-reading block), the canonical results directory, --expect-commit == commit
-            sweep_056 = next(j for j in plan.jobs if j.id == "sweep-056")
-            assert job.enabled and job.preregistered is True and len(job.commit) == 40 and job.commit != SWEEP_PREREG_COMMIT
-            assert schedule.is_ancestor(REPOSITORY, SWEEP_PREREG_COMMIT, job.commit)
-            assert job.protocol == sweep_056.protocol and job.results == sweep_056.results and job.transit_time_s == sweep_056.transit_time_s
-            assert job.args == ["launch", "--design", "l1a-gs-v3-056-effcbc8686", "--domain", "channel", "--grid", "33um", "--expect-commit", job.commit, "--require-mps"]
-            sealed = json.loads((REPOSITORY / job.protocol).read_text(encoding="utf-8"))
-            assert sealed["omega_pe_dt_gate_reading"]["statistic"] == "resolved_node_single_step_peak" and sealed["omega_pe_dt_gate_reading"]["min_macro_particles"] == 32
-            assert job.gpu_memory_gib and job.expected_ms_per_step
-        elif job.id.startswith("sweep-"):
-            # every sealed mini-sweep slot (launched or not) names the preregistration commit and its own sealed run protocol
-            assert job.commit == SWEEP_PREREG_COMMIT and job.preregistered is True and (REPOSITORY / job.protocol).is_file(), job.id
-            assert job.args[:1] == ["launch"] and "--require-mps" in job.args and job.args[job.args.index("--expect-commit") + 1] == SWEEP_PREREG_COMMIT
-            assert job.protocol.startswith("modern/experiments/pic2d_design_mini_sweep_v1/protocols/") and job.transit_time_s and job.gpu_memory_gib
-        elif job.id == EXT_VAL_JOB:
-            assert job.commit == EXT_VAL_PREREG_COMMIT and job.preregistered is True and (REPOSITORY / job.protocol).is_file()
-            assert job.args == ["launch", "--expect-commit", EXT_VAL_PREREG_COMMIT, "--require-mps"]
-            assert job.protocol == "modern/experiments/pic2d_external_validation_v0/protocols/brandt2016-micro-hempt-v1-channel-20um.json"
-            assert job.results == "modern/experiments/pic2d_external_validation_v0/results/channel-20um" and job.transit_time_s == 1.4e-6 and job.gpu_memory_gib >= 17
-        elif job.id == SS25_JOB:
-            # the v5 launch-2 job: preregistered, `--expect-commit` == `commit` (a full SHA, the v5.1 records commit), the v5 protocol
-            assert job.preregistered is True and job.commit and len(job.commit) == 40 and "PLACEHOLDER" not in job.note
-            assert job.args == ["launch", "--expect-commit", job.commit] and job.module == "experiments.pic2d_cft_steady_state_v5.run"
-            assert job.protocol == "modern/experiments/pic2d_cft_steady_state_v5/protocol.json" and (REPOSITORY / job.protocol).is_file()
-            assert job.results == "modern/experiments/pic2d_cft_steady_state_v5/results" and job.transit_time_s == pytest.approx(2.4e-6)
-            assert job.gpu_memory_gib and job.expected_ms_per_step
-        elif job.id == SS33_FAST_JOB:
-            # the solver-qualification replay: preregistered, `--expect-commit` == `commit` (a full SHA, the prereg commit), --require-mps,
-            # the v4-fast protocol at HEAD selects the multigrid and K = 5 (the two identity differences vs v4)
-            assert job.preregistered is True and job.commit and len(job.commit) == 40 and "PLACEHOLDER" not in job.note
-            assert job.args == ["launch", "--expect-commit", job.commit, "--require-mps"] and job.module == "experiments.pic2d_cft_steady_state_v4_fast.run"
-            assert job.protocol == "modern/experiments/pic2d_cft_steady_state_v4_fast/protocol.json" and (REPOSITORY / job.protocol).is_file()
-            assert job.results == "modern/experiments/pic2d_cft_steady_state_v4_fast/results" and job.transit_time_s == pytest.approx(2.4e-6)
-            assert job.gpu_memory_gib and job.expected_ms_per_step
-            protocol = json.loads((REPOSITORY / job.protocol).read_text(encoding="utf-8"))
-            assert protocol["numerics"]["poisson"]["method"] == "device-mg" and protocol["numerics"]["poisson"]["cycles"] == 14
-            assert protocol["numerics"]["performance"]["moment_sample_interval"] == 5 and protocol["stopping_rule"]["wall_budget_seconds"] == 102100
-        elif job.id == "shakedown-ss-v3-graph":
-            assert not job.enabled and job.preregistered is False and job.commit   # never relabelled; disabled so `launch` takes no slot
+        assert job.checkout == "worktree", job.id
+        assert job.gpu_memory_gib and job.expected_ms_per_step and job.gpu_memory_gib <= 0.9 * plan.defaults.gpu_memory_gib, job.id
+        if job.preregistered and job.commit:
+            assert job.protocol and (REPOSITORY / job.protocol).is_file() and job.results and job.transit_time_s, job.id
+            assert len(job.commit) == 40 and schedule.is_ancestor(REPOSITORY, job.commit, "HEAD"), job.id
+            assert job.args[:1] == ["launch"] and job.args[job.args.index("--expect-commit") + 1] == job.commit, job.id
         else:
-            assert not job.enabled and job.commit is None, f"{job.id}: disabled placeholder slots must not name a commit yet"
-    # the enabled jobs fit the memory rule and the prereg check holds for each (commit reachable, sealed protocol frozen)
-    assert sum(j.gpu_memory_gib for j in enabled) <= 0.9 * plan.defaults.gpu_memory_gib
-    for job in enabled:
+            assert not job.enabled, f"{job.id}: a slot without a preregistered commit must not be planned by a plain `launch`"
+    for name in PLUME_PLACEHOLDERS + ["ss33-seed-b", "ss33-w-0.7"]:
+        assert by_id[name].commit is None and not by_id[name].enabled, name
+    assert by_id["shakedown-ss-v3-graph"].commit and not by_id["shakedown-ss-v3-graph"].preregistered and not by_id["shakedown-ss-v3-graph"].enabled
+
+    # -- waiting preregistered jobs: disabled AND prereg_check ok at HEAD (the slot-waiter's `launch --only` ignores `enabled`)
+    for name in AT_WAITING_JOBS + PE_JOBS:
+        job = by_id[name]
+        assert not job.enabled and job.preregistered, name
         check = schedule.prereg_check(REPOSITORY, job.commit, job.protocol)
-        assert check["ok"] is True, (job.id, check["problems"])
-    # four MPS slots (2026-09-04 evening): the two sweep runs still executing (reference, 009) + the two newcomers that took the
-    # slots 056 and 047 freed (v5, external validation) are the four clients; the 056 launch-2 job is a FIFTH job that fits only
-    # once the reference or 009 frees a slot - `launch` plans only "not launched" jobs, so `--only sweep-056-launch2` is refused
-    # while four clients run and accepted with three
-    running_sweep = [j for j in enabled if j.id.startswith("sweep-") and j.id not in FINISHED_SWEEP_JOBS + [SWEEP_056_LAUNCH2_JOB]]
-    newcomers = [j for j in enabled if j.id in (EXT_VAL_JOB, SS25_JOB)]
-    launch2 = next(j for j in enabled if j.id == SWEEP_056_LAUNCH2_JOB)
-    assert len(running_sweep) == 2 and len(newcomers) == 2
-    four = running_sweep + newcomers
-    assert len(four) == plan.defaults.slots_per_gpu and schedule.assign_gpus(plan, four) == {j.id: 0 for j in four}
-    with pytest.raises(schedule.ScheduleError):        # a fifth concurrent job would exceed the four MPS slots
-        schedule.assign_gpus(plan, four + [launch2])
+        assert check["ok"] is True and check["protocol_frozen"] is True, (name, check["problems"])
+    # -- finished launch-1 jobs superseded by an amendment: disabled, the commit they ran at, sealed protocol no longer frozen against HEAD
+    for name in SUPERSEDED_LAUNCH1_JOBS:
+        job = by_id[name]
+        assert not job.enabled and job.preregistered, name
+        check = schedule.prereg_check(REPOSITORY, job.commit, job.protocol)
+        assert check["ok"] is False and any("differs between" in p for p in check["problems"]), (name, check)
+    # -- every ENABLED job is preregistered and its commit is reachable (finished or running launches stay enabled; the scheduler plans
+    #    only jobs without a state on the box, so they take no slot)
+    enabled = [j for j in plan.jobs if j.enabled]
+    assert enabled and all(j.preregistered for j in enabled)
+    assert {SS25_JOB, SS33_FAST_JOB, SWEEP_056_LAUNCH2_JOB, EXT_VAL_BOHM_JOB} <= {j.id for j in enabled}     # the four live clients
+    assert not ({AT_LAUNCH1_JOB, *AT_WAITING_JOBS, *PE_JOBS, "sweep-056"} & {j.id for j in enabled})
+
+    # -- the sweep (prereg 291a9227): launch 1 of 056 superseded by launch 2 at the amendment commit with the same sealed path
+    for name in SWEEP_JOBS:
+        job = by_id[name]
+        assert job.commit == SWEEP_PREREG_COMMIT and job.protocol.startswith("modern/experiments/pic2d_design_mini_sweep_v1/protocols/"), name
+        assert "--require-mps" in job.args
+    launch2 = by_id[SWEEP_056_LAUNCH2_JOB]
+    sweep_056 = by_id["sweep-056"]
+    assert launch2.commit != SWEEP_PREREG_COMMIT and schedule.is_ancestor(REPOSITORY, SWEEP_PREREG_COMMIT, launch2.commit)
+    assert launch2.protocol == sweep_056.protocol and launch2.results == sweep_056.results and launch2.transit_time_s == sweep_056.transit_time_s
+    assert launch2.args == ["launch", "--design", "l1a-gs-v3-056-effcbc8686", "--domain", "channel", "--grid", "33um", "--expect-commit", launch2.commit, "--require-mps"]
+    sealed = _sealed(launch2)
+    assert sealed["omega_pe_dt_gate_reading"]["statistic"] == "resolved_node_single_step_peak" and sealed["omega_pe_dt_gate_reading"]["min_macro_particles"] == 32
+
+    # -- external validation v0: launch 1 (channel-20um, prereg 3dc12cf6) and the bohm-0.4 launch 2 at its amendment commit
+    ext = by_id[EXT_VAL_JOB]
+    assert ext.commit == EXT_VAL_PREREG_COMMIT and ext.args == ["launch", "--expect-commit", EXT_VAL_PREREG_COMMIT, "--require-mps"]
+    assert ext.protocol == "modern/experiments/pic2d_external_validation_v0/protocols/brandt2016-micro-hempt-v1-channel-20um.json"
+    assert ext.results == "modern/experiments/pic2d_external_validation_v0/results/channel-20um" and ext.transit_time_s == 1.4e-6 and ext.gpu_memory_gib >= 17
+    bohm = by_id[EXT_VAL_BOHM_JOB]
+    assert bohm.commit != EXT_VAL_PREREG_COMMIT and schedule.is_ancestor(REPOSITORY, EXT_VAL_PREREG_COMMIT, bohm.commit)
+    assert bohm.args == ["launch", "--variant", "bohm-0.4", "--grid", "20um", "--expect-commit", bohm.commit, "--require-mps"]
+    assert bohm.protocol.endswith("brandt2016-micro-hempt-v1-channel-20um-bohm-0.4.json") and bohm.transit_time_s == 1.4e-6
+    assert _sealed(bohm)["numerics"]["anomalous_collisions"]["model"] == "bohm_perpendicular_rotation"
+
+    # -- steady-state v5 (25 um ladder point, launch 2) and the v4-fast solver qualification
+    ss25 = by_id[SS25_JOB]
+    assert ss25.args == ["launch", "--expect-commit", ss25.commit] and ss25.module == "experiments.pic2d_cft_steady_state_v5.run" and "PLACEHOLDER" not in ss25.note
+    assert ss25.protocol == "modern/experiments/pic2d_cft_steady_state_v5/protocol.json" and ss25.transit_time_s == pytest.approx(2.4e-6)
+    fast = by_id[SS33_FAST_JOB]
+    assert fast.args == ["launch", "--expect-commit", fast.commit, "--require-mps"] and fast.module == "experiments.pic2d_cft_steady_state_v4_fast.run"
+    protocol = _sealed(fast)
+    assert protocol["numerics"]["poisson"]["method"] == "device-mg" and protocol["numerics"]["poisson"]["cycles"] == 14
+    assert protocol["numerics"]["performance"]["moment_sample_interval"] == 5 and protocol["stopping_rule"]["wall_budget_seconds"] == 102100
+
+    # -- anomalous transport v1: launch 1 at the prereg commit (finished, superseded); the two remaining cases at AMENDMENT 1
+    launch1 = by_id[AT_LAUNCH1_JOB]
+    assert launch1.commit == AT_PREREG_COMMIT and launch1.args == ["launch", "--case", "alpha-1over16", "--expect-commit", AT_PREREG_COMMIT, "--require-mps"]
+    assert "EXTINGUISHED" in launch1.note and "NOT relaunched" in launch1.note
+    amendment = {by_id[name].commit for name in AT_WAITING_JOBS}
+    assert len(amendment) == 1
+    amendment_commit = amendment.pop()
+    assert amendment_commit != AT_PREREG_COMMIT and schedule.is_ancestor(REPOSITORY, AT_PREREG_COMMIT, amendment_commit)
+    for name in AT_WAITING_JOBS:
+        job = by_id[name]
+        case = name.removeprefix("at-")
+        assert job.args == ["launch", "--case", case, "--expect-commit", amendment_commit, "--require-mps"] and job.transit_time_s == pytest.approx(2.4e-6)
+        assert job.protocol == f"modern/experiments/pic2d_anomalous_transport_v1/protocols/{case}.json" and job.results.endswith(f"/results/{case}")
+        sealed = _sealed(job)
+        arming = sealed["stopping_rule"]["grid_heating_triad"]["drift_members_arming"]
+        assert arming["min_transit_times"] == 2.0 and arming["settle_quantity"] == "discharge_current" and arming["settle_check_cadence_steps"] == 40_000
+        assert [c["time_s"] for c in sealed["stopping_rule"]["ignition_gate"]["checks"]] == [1.0e-6, 2.0e-6]
+    # the launch-1 sealed path was re-sealed by the amendment: its protocol at HEAD carries the amendment keys the launch never ran under
+    assert "drift_members_arming" in _sealed(launch1)["stopping_rule"]["grid_heating_triad"]
+
+    # -- physics effects v1 (chained pe-queue): three cases at the prereg commit, case args, sealed protocols
+    for name in PE_JOBS:
+        job = by_id[name]
+        case = name.removeprefix("pe-")
+        assert job.commit == PE_PREREG_COMMIT and job.args == ["launch", "--case", case, "--expect-commit", PE_PREREG_COMMIT, "--require-mps"], name
+        assert job.protocol == f"modern/experiments/pic2d_physics_effects_v1/protocols/{case}.json"
+
+    # -- four-slot accounting: the r1-queue's next launch is refused while the four live clients hold the slots and accepted once one frees;
+    #    the chained pe-queue's first job behaves the same; two waiting jobs never share a freed slot
+    live = [by_id[name] for name in LIVE_FOUR]
+    assert schedule.assign_gpus(plan, live) == {j.id: 0 for j in live}
+    nxt = by_id[AT_WAITING_JOBS[0]]
     with pytest.raises(schedule.ScheduleError):
-        schedule.assign_gpus(plan, enabled)
-    # once the reference or 009 has finished, launch 2 of 056 takes the freed slot (four clients again)
-    for finished in running_sweep:
-        remaining = [j for j in four if j is not finished] + [launch2]
-        assert schedule.assign_gpus(plan, remaining) == {j.id: 0 for j in remaining}
-    # and the scheduler's own busy-slot accounting refuses it while four jobs are running
+        schedule.assign_gpus(plan, [nxt], busy={0: [j.id for j in live]})
     with pytest.raises(schedule.ScheduleError):
-        schedule.assign_gpus(plan, [launch2], busy={0: [j.id for j in four]})
-    # 14:17 UTC 2026-09-04: sweep-reference, 009, 047 and ext-val v0 have finished; ss25-base and 056 launch 2 hold two slots -> the
-    # solver-qualification job ss33-fast takes a freed slot (three clients), and a fourth newcomer would still fit, a fifth not
-    fast = next(j for j in enabled if j.id == SS33_FAST_JOB)
-    assert schedule.assign_gpus(plan, [fast], busy={0: [SS25_JOB, SWEEP_056_LAUNCH2_JOB]}) == {fast.id: 0}
-    with pytest.raises(schedule.ScheduleError):
-        schedule.assign_gpus(plan, [fast], busy={0: [j.id for j in four]})
+        schedule.assign_gpus(plan, live + [nxt])
+    for freed in live:
+        remaining = [j.id for j in live if j is not freed]
+        assert schedule.assign_gpus(plan, [nxt], busy={0: remaining}) == {nxt.id: 0}
+        with pytest.raises(schedule.ScheduleError):
+            schedule.assign_gpus(plan, [nxt, by_id[PE_JOBS[0]]], busy={0: remaining})

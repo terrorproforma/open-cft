@@ -157,16 +157,23 @@ jobs:
   # 28ca0391 (1/64) / 90cf53f1 (1/16) / 8ea88273 (0.345) vs v4's f10772b2. Predeclared hypotheses (audit 4.c): I_d up, S / utilisation / peak
   # n_e / T_e,peak down, n_g up, cusp wall electron loss up, cusp sheath drops down; series verdict by monotonicity of I_d and peak n_e.
   # Box preflight 16:48-16:52 UTC 2026-09-04 as the 4th MPS client: 4.77 ms/step at 4.5 M particles -> 6.8 h to 3 transits, budgets 37,200 s
-  # (10.3 h) = 1.5x. `commit` / `--expect-commit` = the PREREG commit 057841cf; `--require-mps`; ~1.3 GB device pool. Launch ORDER as slots
-  # free: at-alpha-1over16 (the audit's central point, LAUNCHED 17:08 UTC 2026-09-04) -> ext-val-v0-channel-20um-bohm-0.4 -> at-alpha-1over64 ->
-  # at-alpha-0.345; never a 5th client. The two later alpha jobs stay `enabled: false` (a plain `launch` must not abort on 'no free slot' while they
-  # wait); the box's slot-waiter (tmux `r1-queue`, /tmp/r1-queue.sh -> $WORK/r1/queue.log) launches them by `launch --only <id>` (which ignores
-  # `enabled`) in that order, retrying every 10 min only on the no-free-slot refusal, never --force; flip the flag in the launch-log commit.
+  # (10.3 h) = 1.5x. `--require-mps`; ~1.3 GB device pool. Launch ORDER as slots free: at-alpha-1over16 (the audit's central point, LAUNCHED
+  # 17:08 UTC 2026-09-04 at the PREREG commit 057841cf; STOPPED 19:01 UTC at exactly 1.00 transit on the v1.4 drift members - the discharge
+  # EXTINGUISHED under the closure, record 0916a4f8, NOT relaunched) -> ext-val-v0-channel-20um-bohm-0.4 (launched 19:07 UTC into the freed slot)
+  # -> at-alpha-1over64 -> at-alpha-0.345; never a 5th client. AMENDMENT 1 (33be2a89): the two remaining cases run with `commit` /
+  # `--expect-commit` = the AMENDMENT commit (the model v2.1.1 drift-member arming latch + the calibrated ignition gate; identities unchanged).
+  # They stay `enabled: false` (a plain `launch` must not abort on 'no free slot' while they wait); the box's slot-waiter (tmux `r1-queue`,
+  # tools/cloud/slot_queue.sh r1 -> $WORK/r1/queue.log) launches them by `launch --only <id>` (which ignores `enabled`) in that order, retrying
+  # every 10 min only on the no-free-slot refusal, never --force; the chained pe-queue follows once $WORK/r1/queue.log carries 'queue done'.
   - id: at-alpha-1over16
     note: >
       pic2d_anomalous_transport_v1 case alpha-1over16 (classical Bohm nu_an = omega_ce / 16, rotation model): 90 x 720 at 33 um,
       dt 1.4 ps, W 26666.7, ~4.5 M particles at the plateau, 5.14 M steps to 3 transits (2.4 us); preflight 4.77 ms/step (4 clients)
-      -> 6.8 h; budget 37,200 s (10.3 h). Launch 1 of the series.
+      -> 6.8 h; budget 37,200 s (10.3 h). Launch 1 of the series, PID 46438, 17:08:39-19:01:09 UTC 2026-09-04: FINISHED
+      grid_heating_triad_gate_stopped_run at 1.0033 transits (S drift -0.618, T_e,dense +0.366; residual +1.15 %, peak 0.48 cells/lambda_D)
+      = the discharge EXTINGUISHED under the closure (N_e e-fold 0.88 us, I_d 3.1 -> 0.06 mA, the injected 3 mA returned through the exit
+      plane); record 0916a4f8 (results/alpha-1over16, no_plateau). NOT relaunched (bitwise replay); disabled so nothing re-plans it; still
+      names the prereg commit 057841cf it ran at - its sealed protocol is no longer frozen against HEAD (amendment 1 re-sealed it).
     module: experiments.pic2d_anomalous_transport_v1.run
     args: [launch, --case, alpha-1over16, --expect-commit, "057841cfcd72d24d09608143319079fc9f750e99", --require-mps]
     gpu: auto
@@ -178,15 +185,17 @@ jobs:
     gpu_memory_gib: 2
     expected_ms_per_step: 4.8
     transit_time_s: 2.4e-6
-    enabled: true
+    enabled: false                # finished (launch 1 = the record); never relaunch
   - id: at-alpha-1over64
     note: >
       pic2d_anomalous_transport_v1 case alpha-1over64 (a quarter of the Bohm frequency, rotation model); same grid / dt / W / seed as
-      at-alpha-1over16; preflight 4.77 ms/step -> 6.8 h; budget 37,200 s. Launch 3 of the series (after the ext-val bohm-0.4 launch 2).
+      at-alpha-1over16; preflight 4.77 ms/step -> 6.8 h; budget 37,200 s. Launch 2 of the series (after the ext-val bohm-0.4 launch 2), at
+      AMENDMENT 1 (33be2a89: v2.1.1 drift-member arming latch + ignition gate; identity 28ca0391 unchanged) - the case the latch protects
+      (D_perp 4x below the extinguished 1/16 case).
     module: experiments.pic2d_anomalous_transport_v1.run
-    args: [launch, --case, alpha-1over64, --expect-commit, "057841cfcd72d24d09608143319079fc9f750e99", --require-mps]
+    args: [launch, --case, alpha-1over64, --expect-commit, "33be2a8954dd346fc47ee8ce42c583bafcfef71b", --require-mps]
     gpu: auto
-    commit: 057841cfcd72d24d09608143319079fc9f750e99
+    commit: 33be2a8954dd346fc47ee8ce42c583bafcfef71b
     preregistered: true
     protocol: modern/experiments/pic2d_anomalous_transport_v1/protocols/alpha-1over64.json
     results: modern/experiments/pic2d_anomalous_transport_v1/results/alpha-1over64
@@ -194,15 +203,17 @@ jobs:
     gpu_memory_gib: 2
     expected_ms_per_step: 4.8
     transit_time_s: 2.4e-6
-    enabled: false                # enable when a slot frees (after the ext-val bohm-0.4 launch 2)
+    enabled: false                # launched by the r1-queue slot-waiter (`launch --only`) when a slot frees
   - id: at-alpha-0.345
     note: >
       pic2d_anomalous_transport_v1 case alpha-0.345 (Brandt 2016's D_perp = 0.4 kT_e/eB as nu_an = 0.4 omega_ce -> exact factor 0.345, declared
-      as alpha 0.345, rotation model); same grid / dt / W / seed; preflight 4.78 ms/step -> 6.8 h; budget 37,200 s. Launch 4 of the series.
+      as alpha 0.345, rotation model); same grid / dt / W / seed; preflight 4.78 ms/step -> 6.8 h; budget 37,200 s. Launch 3 of the series, at
+      AMENDMENT 1 (33be2a89; identity 8ea88273 unchanged). Expected to extinguish faster than 1/16 (D_perp 5x): the ignition gate bounds
+      that outcome to ~1 h and records the point.
     module: experiments.pic2d_anomalous_transport_v1.run
-    args: [launch, --case, alpha-0.345, --expect-commit, "057841cfcd72d24d09608143319079fc9f750e99", --require-mps]
+    args: [launch, --case, alpha-0.345, --expect-commit, "33be2a8954dd346fc47ee8ce42c583bafcfef71b", --require-mps]
     gpu: auto
-    commit: 057841cfcd72d24d09608143319079fc9f750e99
+    commit: 33be2a8954dd346fc47ee8ce42c583bafcfef71b
     preregistered: true
     protocol: modern/experiments/pic2d_anomalous_transport_v1/protocols/alpha-0.345.json
     results: modern/experiments/pic2d_anomalous_transport_v1/results/alpha-0.345
@@ -210,7 +221,7 @@ jobs:
     gpu_memory_gib: 2
     expected_ms_per_step: 4.8
     transit_time_s: 2.4e-6
-    enabled: false                # enable when a slot frees
+    enabled: false                # launched by the r1-queue slot-waiter after at-alpha-1over64
 
   # ---------------------------------------------------------------- (ii-d) physics effects v1 - PREREGISTERED SEE(BN) / xe_collision_set_v2 campaign (models v2.2.0 + v2.3.0, roadmap R2 + R3)
   # modern/experiments/pic2d_physics_effects_v1/: the ss-v4 33 um protocol (90 x 720, dt 1.4 ps, W 26666.7, seed 20260903, v1.3 closure, frames ON)
