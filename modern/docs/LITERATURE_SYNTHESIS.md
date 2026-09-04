@@ -20,7 +20,17 @@ decision tables below (each carries its own recommendation table): `twt-ppm-phys
 could be made 5-10x faster - energy-conserving / semi-implicit / implicit schemes, similarity
 scaling, time acceleration, Poisson solvers, kernel engineering, variance reduction - with the
 speed-up, claim-risk and verification protocol per method in its section 8; it extends
-`pic-mcc-blockers.md` blockers 1 and 2).
+`pic-mcc-blockers.md` blockers 1 and 2), and `modern/docs/pic2d-physics-completeness-audit.md`
+(2026-09-05, 151 references of which 91 are new to the repository: a read-only audit of which physical
+interactions of consequence for a HEMP / cusped-field thruster the `cft_revival.pic2d` code has, which
+are absent - SEE, dielectric permittivity, anomalous transport, Coulomb collisions, the full xenon
+collision set, spatial neutrals, cathode, ion-induced emission, self-field, plume, physics-consequential
+numerics - graded by consequence for the claimed quantities against Brandt et al. 2016 and the Greifswald
+HEMPT codes, with a ranked "physics first, then speed" roadmap (R0 ledger W fix -> R1 anomalous-transport
+alpha-series -> R2 SEE -> R3 excitation levels + CEX/MEX -> R4 Coulomb -> R5 spatial neutrals +
+metastables -> R6 diagnostics), the expected change of the accepted 33 um plateau per item, and the
+statement of what the 2D axisymmetric model can never claim; it extends `pic-mcc-blockers.md` blockers
+3-4 and `pic-acceleration-methods.md` section 2).
 
 Every decision below cites the review row it answers; the
 effort and risk columns are the reviews' own words, not re-estimates. Repository facts are
