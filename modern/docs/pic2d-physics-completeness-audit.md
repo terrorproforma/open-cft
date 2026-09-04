@@ -160,11 +160,11 @@ define the standard for the instability physics an axisymmetric code cannot carr
 | c | anomalous cross-field transport (azimuthal ECDI) | Bohm hook OFF by default; `bohm-0.4` sealed, never run | every HEMPT PIC imposes it (Brandt 2016 D = 0.4 kT_e/eB "derived from a 3D simulation"; Szabo 2001/2014 Bohm bracket); 2D-theta / 3D benchmarks compute it | the central limitation: without it the ext-val point avalanches; with alpha in {1/64, 1/16, 0.345} expect I_d up (+20 to +60 %, closure-set), peak n_e and S down (-30 to -60 % at Brandt's point), cusp sheath drops down, per-cusp wall loss up; plateau existence becomes robust (a leak path bounds n_e) | S-M (hook exists; perpendicular-rotation variant 1 d; alpha-series protocol 1 d) | +1-2 % (one more per-electron kernel) | 1 |
 | d | Coulomb collisions (e-e, e-i) | ABSENT at `0901138a`; **implemented v2.4.0 (§11), runs pending** | Brandt 2016 include "coulomb" collisions; Tskhakaya 2007 method | nu_ee/nu_en = 0.15-0.4 at 1e18 m^-3 / 5-10 eV, 1.4-3.4 at 1e19 (estimate); tau_ee 0.06 us at 1e19 << transit: EEDF Maxwellianised, tail refilled -> S +5 to +20 % at our plateau, first-order at Brandt's point; T_e,peak -5 % | L (3-5 d: cell sort + Takizuka-Abe / Nanbu pairing, subcycled) - DONE | measured on the H100 (§11) | 4 |
 | e1 | multi-level excitation (4 Biagi levels) | lumped 8.32 eV | Biagi set has 4 levels | inelastic power +~15 %; T_e -3 to -5 %; S -3 to -5 % | S (0.5-1 d; data already bound) | ~0 | 3a |
-| e2 | metastables + stepwise ionisation (+ radiation trapping) | ABSENT | not in Brandt 2016; CR models exist for HET optics (Karabadzhak 2006) | estimate: stepwise/ground = 0.18-0.23 at n_e 1e18-1e19 (uncertain x3); channel optically thick to resonance radiation (k_0 L >> 1), so the whole 6s manifold is effectively metastable -> S +10 to +25 %, utilisation up, n_g down | L (3-5 d for a 0-D metastable pool mirroring `neutrals.py`; data: Hyman 1979, Ton-That 1977, Erwin 2004, Jung 2005) | +1 % | 5b |
+| e2 | metastables + stepwise ionisation (+ radiation trapping) | IMPLEMENTED v2.5.0 `metastables_v1` (§12; runs not scheduled) - was ABSENT | not in Brandt 2016; CR models exist for HET optics (Karabadzhak 2006) | estimate: stepwise/ground = 0.18-0.23 at n_e 1e18-1e19 (uncertain x3); channel optically thick to resonance radiation (k_0 L >> 1), so the whole 6s manifold is effectively metastable -> S +10 to +25 %, utilisation up, n_g down | L (3-5 d for a 0-D metastable pool mirroring `neutrals.py`; data: Hyman 1979, Ton-That 1977, Erwin 2004, Jung 2005) | +1 % | 5b |
 | e3 | double ionisation Xe2+ (from Xe and from Xe+) | ABSENT | not in Brandt 2016 | 0.3-2 % of ionisation events at T_e 7-15 eV from ground (estimate; Rejoub 2002, Syage 1992 ratios); HET measurements: of order 10 % of the ion current in Xe2+ at 300-1000 V (Hofer 2006); thrust -1.5 % per 5 % Xe2+ current, I_d +1-3 % | M (1-2 d second ion species) | +1 % | 6 |
 | e4 | ion-neutral CEX + MEX (Xe+ + Xe) | ABSENT | Brandt 2016 include CEX; Duras 2017 post-process CEX to 1 m | lambda_CEX ~ 60 mm at 3e19 (sigma 5.4e-19 m^2 at 300 eV, Miller 2002) vs 24 mm channel -> 15-30 % of channel-born beam ions exchange before the exit (estimate); IEDF gains a low-energy population; thrust moves to fast neutrals the ledger cannot see; divergence up (MEX); I_beam count unchanged | M (1-2 d; analytic Miller fits hash-bound; ions already subcycled) | +2-3 % | 3b |
 | e5 | anisotropic e-Xe scattering; 2 m_e/M elastic loss; volume recombination | isotropic on the momentum-transfer set; loss neglected; no recombination | standard | none of consequence: isotropic-on-sigma_m is the consistent choice (Vahedi 1995; Janssen 2016); elastic loss 4e-6 per collision; recombination ~1e-6 of ionisation at 1e19 | - | - | - |
-| f | spatial neutrals (DSMC / free-molecular / fluid), wall accommodation | 0-D inventory + analytic plume cone | Brandt 2016: static DSMC field with diffuse 500 K reflection; Kahnfeld 2018: neutral dynamics for breathing; Katz 2011 free-molecular algorithm | where ionisation happens (anode-side density high, exit depleted): the cusp "flames" move upstream, exit-cusp S down; n_g x sqrt(T_g/T_w) shift at fixed flux (-13 to -18 % for 400-500 K walls); the 0-D plateau is a property of the closure; the physical approach time is V/c ~ 0.2 ms | L (5-8 d: view-factor / DSMC-lite solved to steady state between windows, Picard-iterated with S(r,z)) | ~0 on the GPU step (host, per window) | 5a |
+| f | spatial neutrals (DSMC / free-molecular / fluid), wall accommodation | IMPLEMENTED v2.5.0 `neutrals_spatial_v1` (§12; runs not scheduled) - was 0-D inventory + analytic plume cone | Brandt 2016: static DSMC field with diffuse 500 K reflection; Kahnfeld 2018: neutral dynamics for breathing; Katz 2011 free-molecular algorithm | where ionisation happens (anode-side density high, exit depleted): the cusp "flames" move upstream, exit-cusp S down; n_g x sqrt(T_g/T_w) shift at fixed flux (-13 to -18 % for 400-500 K walls); the 0-D plateau is a property of the closure; the physical approach time is V/c ~ 0.2 ms | L (5-8 d: view-factor / DSMC-lite solved to steady state between windows, Picard-iterated with S(r,z)) | ~0 on the GPU step (host, per window) | 5a |
 | g | cathode / neutraliser | exit-plane fixed current (v1.3) or flux-tube volumetric emission with continuity (v2.0); no cathode plasma, keeper, coupling voltage or neutraliser gas | Brandt 2016: source at the plume boundary; Charoy 2019: cathode-plane current continuity; hollow-cathode physics only in dedicated codes (Mikellides 2005; Sary 2017) | I_d in plume runs is set by the continuity rule (the 6 mA vs 3.44 mA plume/channel gap is a closure property); the neutraliser's own gas (10-20 % of the propellant) is missing from the plume n_g and from plume CEX; emission T_e 1-2 eV physical vs the declared value | S (neutraliser gas as a second cosine source: 1 d); L and out of scope (cathode plasma) | ~0 | 7 |
 | h | ion-induced SEE, sputtering | ABSENT | Greifswald: SDTrimSP post-processing (B §6); Brandt 2016 report the wall ion energy-angle map for sputtering | gamma_i ~ 0.01-0.1 for Xe+ on ceramics at 100-400 eV (Hagstrum 1954; Baragiola 1979): a few % of the cusp electron balance; sputter yield needed for erosion claims only (Garnier 1999; Yamamura 1996) | S-M (1-2 d diagnostic on the existing wall maps) | ~0 | 8 |
 | i | self-magnetic field | ABSENT (electrostatic) | electrostatic everywhere | beta <= 4.5e-4 (0.3 T) ... 4e-3 (0.1 T) at 1e19 / 10 eV; Hall-loop field <= 3e-5 T at 50 mA vs >= 3e-2 T within 0.1 mm of the nulls: negligible | S (0.5 d beta / B_induced diagnostic from the window current moments) | ~0 | 11 |
@@ -951,3 +951,62 @@ a 70 ns average at 1e17 m^-3, not a reading of the plateau hypotheses.
 at our plateau (more at 1e19), T_e,peak DOWN ~5 %, I_d UP a few %, EEDF tail Maxwellianised; nu_ee / nu_en
 0.15-0.4 at 1e18 and 1.4-3.4 at 1e19 are read from the series and the per-cusp maps, not assumed; the
 like-for-like Brandt comparison is the ext-val `bohm-0.4` + Coulomb + SEE run.
+## 12. Status update 2026-09-05 - gaps (f) and (e2) implemented as model v2.5.0 `neutrals_spatial_v1` + `metastables_v1` (R5)
+
+*What landed* (`modern/spec/pic2d/pic2d-model-v2.5.json`, `cft_revival.pic2d.neutrals_spatial` / `warp_neutrals`,
+hooks in `mcc.py`, `ion_mcc.py`, `simulation.py`, `warp_backend.py`, `warp_ion_mcc.py`, `artifacts.py`, the shared runner;
+`tests/pic2d/test_pic2d_v25_neutrals_spatial.py`, 18 tests). Route (A) of §4.f - test-particle neutrals (DSMC-lite):
+atoms fed at the anode face with a cosine-law Maxwellian at T_g, ballistic flight with diffuse (accommodation
+coefficient, T_w) or specular reflection at the walls, the cone stairs and the anode, exit through the aperture / far
+field, depleted weight-consistently by every ionisation, CEX, excitation-into-the-pool and stepwise event the MCCs book
+per cell (integer sinks; per-cell debt when a cell is momentarily empty), fed by wall-ion recycling AT THE IMPACT CELL,
+with the CEX fast neutrals of v2.3.0 as real particles (the straight-line fate march is bypassed). The density is a
+nearest-cell deposit published at every neutral sub-step into a device-resident cell array that the electron MCC and the
+ion MCC read instead of the scalar n_g(t) x shape (the ion MCC samples its target from the cell's drift + thermal speed,
+the born ion takes the local gas velocity). Sub-cycled every `substep_steps` PIC steps; a declared time acceleration F
+(default 1) plays the role of the v1.3 `tau_g`: the neutral system relaxes F x faster toward the fixed point of the
+current plasma, the ledger runs in neutral time and the record divides the plasma-coupled terms by F. The 0-D inventory
+stays as `neutrals.model = inventory-0d` and replays origin head 8e02db57 bitwise (pinned digests, cpu and warp-cpu).
+
+*Why (A), with numbers.* Kn ~ 10-100 (lambda_nn 3-30 cm vs a 4 mm bore at 1e19-1e20) - collisionless free-molecular
+transport is the physics, so a particle model costs only straight lines and wall reflections. ~8.7e13 atoms sit in the
+24 mm channel at the ss-v4 feed (Knudsen profile 5.5e20 -> 5.5e19); at W_n = 2.2e7 that is ~4 M macro-neutrals (~60 per
+33 um cell, 14 % shot noise per cell that the electrons average along their paths), 0.5 GB with the compaction scratch,
+and ~9 kernels per sub-step every 200 PIC steps ~ 8-10 us per step (0.3-0.4 % of the 2.5 ms step; the box probe is in
+the shakedown record). A view-factor / fluid model (B) would have been free per step but cannot carry the fast CEX
+neutrals, the two-temperature wall mixture or the recycling at the impact point.
+
+*What the model says before any run.* The Knudsen closed-end profile gives an anode density (1 + 3 L / 8 a) x the
+exit density for a bore, 10 x for our 2 mm bore / 3 mm exit at the ss-v4 feed, and a channel-mean 4-5 x the 0-D fixed
+point at the same feed: the 0-D closure equated the whole channel to the exit density. The plateau under the spatial
+model is therefore not the 0-D plateau at the same feed (S and I_d up until the feed limits the ionisation), the flames
+weight toward the anode side and the exit-plane density falls - directions for the R5 runs, which must re-declare the
+ceiling (>= the Knudsen anode density with headroom for the deposit shot noise; the initial state fails closed otherwise, a clamped
+cell fraction above the declared 1e-3 per interval fails closed at the record) and the feed. The transport reproduces
+the Clausing transmission of a diffuse L/D = 2 tube to 0.4 % (0.3548 vs 0.3564) and the Knudsen gradient of a L/D = 4
+tube within the end correction.
+
+*Metastables.* The Xe 6s[3/2]_2 pool (8.315 eV; the 9.447 eV J = 0 metastable folded in) is a second state of the
+neutral arrays at weight_ratio x W_n, fed by declared branching fractions per Biagi level (0.45 / 0.35 / 0.50 / 0.35:
+the metastable share of the lumped 6s pairs from the level-resolved BSR cross sections, the 6p cascade per Aymar and
+Coulombe 1978, the upper block by cascade; net ~0.43 of the excitation events, inside §4.e's x3), lost by stepwise
+ionisation (Binary-Encounter-Bethe with B = 3.815 eV: peak 8.4e-20 m2 at 16.6 eV, the low end of the 1-3e-19 bracket
+of Ton-That and Flannery 1977 / Hyman 1979 / Deutsch 1999 - `stepwise_scale` is the sensitivity knob), superelastic
+de-excitation (detailed balance, ~8.5e-22 m2; the atom returns to the ground pool), wall de-excitation and an optional
+radiative rate. Both channels ride the electron MCC's null-collision chain against the LOCAL metastable density; the
+inelastic ledger books + (E_iz - E_m) and - E_m per event so the particle-side energy identity closes. §4.e's
+"whole 6s manifold effectively metastable" is superseded: the Holstein escape factor at k_0 L ~ 30 still leaves the
+resonance levels a ~0.3 us effective lifetime, shorter than the 3-10 us electron-collision times, so they radiate and
+are not pooled. Maxwellian rate coefficients: k_step / k_iz = 10 / 5.7 / 3.6 at T_e 5 / 7 / 10 eV; with n_m / n_g ~
+0.02 the stepwise share of the ionisation is ~0.07-0.2 (hypothesis for the runs; §4.e estimated 0.18-0.23 x3).
+
+*Contracts.* Atom ledger (neutral time): d(true ground) = fed + recycled + fast_in + returned + meta_wall +
+meta_radiative - ionized - cex_converted - excited_to_pool - effused and d(true meta) = excited_to_pool - meta_ionized -
+meta_superelastic - meta_wall - meta_radiative - meta_effused, on the TRUE counts (particles + un-spawned carries -
+un-removed debts), to round-off in every interval on both backends; sink_consistency_atoms = neutral_ionized - F W
+(ionisations - stepwise) = 0 exactly. Identity: the `neutrals_spatial` block (model name + every parameter, incl. the
+metastables block) enters `config_sha256` only when declared; graph vs direct bitwise with the model on (int64
+fixed-point cell sums and sinks); checkpoints carry the neutral particles + carries / debts / published fields and
+resume bitwise. Open: accommodation coefficient and T_w for BN / Al2O3 unmeasured (alpha = 1, 500 K declared); no
+atom-atom collisions; no neutraliser gas (gap g); the resonance-level trapping variant (radiative_decay_rate_per_s)
+untested against a CR model; the R5 runs are not scheduled.
