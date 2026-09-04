@@ -396,6 +396,20 @@ from (8, 214) at 35.6 macro-electrons per step to (6, 215) at 27.6), the axis de
 resolved and reads 2.18 in the 240 000-step window average - the window lag on a 0.24-us-doubling density remains a disclosed limitation. Route
 item (iii) (parity weight or the `bohm-0.4` closure) is unchanged.
 
+### 11.1 Corrected-ledger re-read of the recorded acceptance (2026-09-05)
+
+| item | recorded (`assessment.json` / `comparison.json`, section 8–10) | corrected ledger (`ledger-corrected.json`) |
+| --- | --- | --- |
+| stop | `grid_heating_triad_gate_stopped_run`: windowed residual power **+7.4 %** ≥ 5 % at step 1 040 000 = 0.728 µs (0.52 transits) | the same stop, read correctly: **+61.7 %** of the electrode work in the trailing window at the stop (+627 mW on 1.02 W); the corrected statistic crossed 5 % at the 0.34 µs checkpoint (0.24 transits) and 2 % at 0.31 µs — the gate saw the heating ~0.4 µs late because the recorded statistic was biased by the omitted inelastic power (−54 % of the electrode work in the last window) |
+| (a) plateau | `no_plateau` (0.52 transits) | unchanged |
+| (b) residual power < +2 % | FAIL (+7.4 %) | **FAIL (+61.7 %)** — status unchanged, magnitude 8× |
+| comparison rows vs Brandt 2016 | 10 rows evaluated on a transient, **not quotable** | unchanged: not quotable; the run was an ionisation avalanche under our closure with true numerical heating from 0.2 µs |
+| verdict | **INCONCLUSIVE** (section 8 conditions 4, 1, 2) | **stands** |
+
+Nothing recorded is modified; the sidecar hash-binds the recorded `series.npz`. The section-10 diagnosis ("genuine finite-grid heating
+seen late") is confirmed and quantified by the correction. Any future launch (parity weight, `bohm-0.4`) executes model ≥ v2.0.6 and
+reads the corrected statistic natively.
+
 ## Commands (from `modern/`; CPU unless stated; on the box `PYTHONPATH=src:.` with the MPS variables exported)
 
     $env:PYTHONPATH="$PWD\src;$PWD"; $env:OMP_NUM_THREADS='1'
