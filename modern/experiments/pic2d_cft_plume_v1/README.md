@@ -56,6 +56,25 @@ continuation. The v2.0.3 residual-power gate would have stopped attempts 6-8 at 
 numbers stay non-quotable. Peak-Debye under the v2.0.6 accumulated floor on the final windows: attempt 7 3.509 -> 3.509 at (6, 437), attempt 8
 3.608 -> 3.608 at (14, 285) - both past pi under either floor (the runs themselves ran the v2.0.1 single-step gate at 4.5).
 
+### Corrected-ledger re-read of the recorded acceptances (2026-09-05)
+
+These are **development records**: no attempt ever carried a predeclared acceptance and none was ever claimed as a
+plateau, a thrust value or a plume result. The re-read therefore changes no status — it sharpens the disclosure:
+
+| attempt | recorded reading (pre-v2.0.6 statistic) | corrected ledger (v2.0.6) | status |
+| --- | --- | --- | --- |
+| 3 (no ignition, 1.14 µs) | +8.5 % windowed | **+17.0 %** | development record; no acceptance existed; nothing quotable (already the case) |
+| 4 (neutral crash, 0.78 µs) | +12.8 % | **+24.1 %** | same |
+| 6 (gate shot noise, 2.47 µs) | −0.6 % (read as "conservative") | **+11.0 %** (never below +11 % from its first complete window) | same; the recorded "conservative" reading was the omitted inelastic power |
+| 7 (budget stop, 3.78 µs; development thrust 20.9 µN) | +12.1 % | **+28.1 %** | development record; thrust / Isp / half-angles were already non-quotable (> 5 % residual power); now at +28 % |
+| 8 (heating triad stop, 4.98 µs) | +41.7 % | **+67.3 %** | the diagnosed finite-grid runaway; nothing after ~3.2 µs (recorded) — on the corrected ledger nothing after 0.66 µs — is usable |
+
+**What may be said:** the 50 µm plume grid with the flux-tube cathode was never energy-conserving (≥ +11 % of the electrode
+power in every attempt's first complete window; the later 5 % gate fires at 0.66 µs on every ignited attempt); the attempt-8
+heating diagnosis stands and is strengthened; no plume or thrust number from this experiment is quotable, on either ledger.
+The next plume run (`pic2d_cft_plume_v2_1`, 33 µm or a current-limited cathode at 50 µm) must be assessed on the v2.0.6
+statistic from its first complete window.
+
 ## Commands (from `modern/`)
 
 ```powershell
