@@ -37,7 +37,7 @@ def _approx_json(a, b, *, rtol: float = 1e-9, path: str = "") -> list[str]:
             problems.append(f"{path}: keys {sorted(set(a) ^ set(b))}")
         for key in set(a) & set(b):
             problems += _approx_json(a[key], b[key], rtol=rtol, path=f"{path}/{key}")
-    elif isinstance(a, list) and isinstance(b, list):
+    elif isinstance(a, (list, tuple)) and isinstance(b, (list, tuple)):
         if len(a) != len(b):
             problems.append(f"{path}: length {len(a)} != {len(b)}")
         for index, (x, y) in enumerate(zip(a, b)):
