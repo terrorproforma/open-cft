@@ -86,13 +86,30 @@ within statistics (test).
 
 ## 5. Diagnostics
 
-Series record block `coulomb`: `nu_ee_mean_per_s`, `nu_ei_mean_per_s`, `nu_ii_mean_per_s` (from
-`nu_ee = 2 sum s / (sum_cycles N_e Delta t_c)`), `mean_s_*`, `fraction_large_s_*`, `mean_coulomb_log_*`,
-`interval_*_pairs`, `interval_cycles`, `interval_pz_coulomb_kg_m_s`, `interval_ke_coulomb_j`,
-`nu_en_elastic_mean_per_s` (the MCC elastic tally per electron per second) and `nu_ee_over_nu_en` (the audit's
-gap-(d) number). Maps / frames: `coulomb_nu_ee_per_s`, `coulomb_nu_ei_per_s`, `coulomb_mean_s_ee` per cell in
-the node layout (cell (i, j) at node index (i, j)); `coulomb.column_frequency_profile` gives the electron-weighted
-column mean at the cusp planes.
+Series record block `coulomb`: `nu_ee_mean_per_s`, `nu_ei_mean_per_s`, `nu_ii_mean_per_s` (the operator's
+pair-mean deflection rate `<s> / dt_c`, from `nu_ee = 2 sum s / (sum_cycles N_e Delta t_c)`), `mean_s_*`,
+`fraction_large_s_*`, `mean_coulomb_log_*`, `interval_*_pairs`, `interval_cycles`, `interval_pz_coulomb_kg_m_s`,
+`interval_ke_coulomb_j`, `nu_en_elastic_mean_per_s` (the MCC elastic tally per electron per second),
+`nu_ee_over_nu_en`, and `nu_e_spitzer_peak_per_s` / `nu_e_spitzer_peak_over_nu_en` - the NRL electron collision rate
+`2.91e-6 n lnL T^-3/2` at the record's peak node, the audit's gap-(d) definition. The two frequency definitions
+differ by design: the pair-mean averages `nu_pair` proportional to `1/g^3` over the formed pairs, which the slowest
+pairs dominate (the population mean diverges logarithmically and the sample mean grows with the sample size - the
+box shakedown read 13x the Spitzer value at the peak cell); it is the operator's realised deflection statistic,
+while the Spitzer form is the smooth function of n_e and T_e the audit's estimate uses. Maps / frames:
+`coulomb_nu_ee_per_s`, `coulomb_nu_ei_per_s`, `coulomb_mean_s_ee` per cell in the node layout (cell (i, j) at
+node index (i, j)); `coulomb.column_frequency_profile` gives the electron-weighted column mean at the cusp planes,
+and the shakedown readings add the Spitzer-form frequency at the peak cell and per cusp column.
+
+## 7. H100 record (2026-09-04, extra MPS client, contended)
+
+Cost at a 4.5 M-particle plateau load on the 90 x 720 grid: Coulomb cycle 4.49 ms (cell sort of both species
+1.14, prepare + pair kernels 3.34); inside the captured step 11.45 vs 6.62 ms -> 0.48 ms/step amortised over
+k = 10 = +7.3 % of the contended step (the shakedown ran at 4.79 vs the off twin's 4.52 ms/step, +6 %). Shakedown
+100k steps through finalize + assess: `pz_coulomb` 5e-29 kg m/s and `ke_coulomb_j` 3.9e-16 J over 8.5e9 pair
+collisions; mean s per pair 6e-5 / 4.5e-5 with 1e-6 of the pairs beyond s = 1; Spitzer nu_e at the window's peak
+cell 2.8e5 /s against nu_en 1.17e7 /s (0.024 in the 1e17 m^-3 seed transient; ~0.3 scaled to the plateau peak);
+S / I_d / I_beam within 0.5 % of the Coulomb-off twin, window T_e,peak +3 %, window peak n_e -2 % - shot noise of a
+70 ns average, not a reading of the plateau hypotheses. Details: `experiments/pic2d_coulomb_v1_shakedown/README.md`.
 
 ## 6. Out of scope here
 

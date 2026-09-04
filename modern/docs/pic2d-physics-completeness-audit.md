@@ -932,10 +932,20 @@ electrons Maxwellian (physical). The once-per-cycle pairing is coarse for `s >~ 
 s 0.3-0.8), hence the recorded per-record mean s and large-s fraction. Discharge conservation on cpu / warp-cpu /
 cuda: `pz_coulomb` < 1e-9 of the represented momentum, particle-side identity to 1e-6.
 
-*Cost and shakedown* (`experiments/pic2d_coulomb_v1_shakedown/`, filled from the H100 session): the probe and the
-100k-step shakedown against the R3 (Coulomb-off) twin are recorded in that directory's README and
-`shakedown.json` / `cost.json`; the audit's a-priori figure was +15-30 % per step every step, +2-3 % amortised
-over 10-20 steps.
+*Cost and shakedown* (`experiments/pic2d_coulomb_v1_shakedown/`, H100 as an extra MPS client, 2026-09-04 19:21-19:40
+UTC, ~15 GPU-minutes). Cost at a 4.5 M-particle plateau load on the 90 x 720 grid (contended, 5 other clients):
+Coulomb cycle 4.49 ms (cell sort of both species 1.14, prepare + pair kernels 3.34); inside the captured step
+11.45 vs 6.62 ms -> 0.48 ms/step amortised over k = 10 = +7.3 % of the contended step (+73 % every step); the
+shakedown ran at 4.79 vs the off twin's 4.52 ms/step (+6 %) - between the audit's a-priori +2-3 % (amortised) and
+its +15-30 % (every step). Shakedown 100k steps through finalize + assess (`no_plateau` at 0.14 us as it must;
+residual window +0.14 %, off twin +0.09 %): `pz_coulomb` 5e-29 kg m/s and `ke_coulomb_j` 3.9e-16 J over 8.5e9 pair
+collisions; mean s per pair 6e-5 / 4.5e-5, 1e-6 of the pairs beyond s = 1; the Spitzer electron collision rate at
+the window's peak cell 2.8e5 /s (n_e 1.7e17, T_e 8.2 eV, lnL 13.2) against nu_en 1.17e7 /s = 0.024 in the seed
+transient (~0.3 scaled to the plateau peak 1.3e18 / 5.6 eV, the audit's 0.15-0.4); the operator's pair-mean
+deflection rate is ~13x the Spitzer value at the peak cell (a 1/g^3-weighted mean dominated by the slowest pairs -
+recorded as the realised deflection statistic, not the collision frequency). Direction against the Coulomb-off twin
+at equal steps: S -0.5 %, I_d -0.4 %, I_beam -0.3 %, window T_e,peak +3.2 %, window peak n_e -2.4 % - shot noise of
+a 70 ns average at 1e17 m^-3, not a reading of the plateau hypotheses.
 
 *Hypotheses for the R4 runs* (unchanged directions from §4.d, restated in the spec as predeclared): S UP 5-20 %
 at our plateau (more at 1e19), T_e,peak DOWN ~5 %, I_d UP a few %, EEDF tail Maxwellianised; nu_ee / nu_en
