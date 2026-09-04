@@ -431,6 +431,25 @@ acceptance. The running / pending designs (009, reference, 056 launch 2) execute
 `grid_heating_triad.windowed_energy_residual_over_electrode_work` stays biased by about -8 % and acceptance (b) must be evaluated on the
 sidecar written by the tool. The whole-sweep `assess` should cite the sidecars.
 
+### Corrected-ledger re-read of the recorded acceptances (2026-09-05)
+
+| design / launch | recorded (b) < +2 % | corrected ledger (b) < +2 % | status |
+| --- | --- | --- | --- |
+| 047 (`l1a-gs-v2-047`, plateau at 3.003 transits, 7.784 µs) | pass at **−7.1 %** (cumulative −7.3 %) | **pass at +0.9 %** (cumulative +0.7 %; maximum over complete windows +0.9 % at 7.75 µs; 5 % gate never; first ≥ 2 % never) | (b) holds on the corrected statistic; (a) plateau unchanged; the design's 33 µm values are quotable under the sweep's own rule, with the v4 reference caveat below |
+| 056 launch 1 (`l1a-gs-v3-056`, triad stop at 2.07 transits, 3.528 µs, shot-noise artefact) | pass at **−7.6 %** (cumulative −8.9 %) | **pass at +0.6 %** (cumulative +0.5 %; maximum +0.6 % at 0.78 µs) | (b) holds; (a) no plateau (stopped) — the record is a diagnosed gate artefact, launch 2 (amendment 1) supersedes it |
+
+**Reference caveat (both readings).** `run.py assess` cites the steady-state v4 record for the convergence status of the 33 µm
+grid. On the recorded ledger v4 reads `resolution_limited` (its (b) passed at −7.67 %); on the corrected ledger
+(`pic2d_cft_steady_state_v4/results/assessment-corrected-ledger.json`) v4's (b) **fails at +2.46 %** and the predeclared (d)
+tree gives `refinement_heating`: *the 33 µm plateau is itself heating at +2.5 % of electrode work and is NOT a clean
+reference; 25 µm (v5) pending*. `assess_run` now reads that file when present and records both readings
+(`steady_state_v4_verdict.corrected_ledger`, `convergence_statement_corrected_ledger`), and evaluates this run's own (b)
+on its `ledger-corrected.json` sidecar when present (`b_residual_power.corrected`, `passed` on the corrected statistic as
+declared in the v2.0.6 spec before the pending runs report; the recorded reading is kept beside it). Consequence for the
+sweep: the designs' 33 µm plateau values are the resolved numbers of this sweep but carry no grid band of their own and
+may not be called converged or energy-conserving; 047's and 056's own corrected residuals (+0.9 %, +0.6 %) are below the
+reference's (+2.46 %), so the *reference* is the least conservative run of the four at this grid.
+
 ## Commands (from `modern/`; CPU unless stated; on the box `PYTHONPATH=src:.` with the MPS variables exported)
 
     $env:PYTHONPATH="$PWD\src;$PWD"; $env:OMP_NUM_THREADS='1'
