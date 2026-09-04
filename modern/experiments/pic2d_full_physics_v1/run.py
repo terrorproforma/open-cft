@@ -329,21 +329,34 @@ def preflight(case: str, *, backend: str = "warp-cuda", timing_steps: int = 2000
 shakedown_protocol = pe.shakedown_protocol
 
 
-def shakedown(case: str, *, results: Path | None = None, backend: str = "warp-cuda", max_steps: int = SHAKEDOWN_OVERRIDES["max_steps"],
+def shakedown(case: str, *, results: Path | None = None, backend: str = "warp-cuda", max_steps: int = SHAKEDOWN_OVERRIDES["max_steps"], reuse_run: bool = False,
               log: Callable[[str], None] = _log) -> dict[str, Any]:
+    """100 000-step real-input run of the case (cadences shrunk) through finalize -> assess (case + campaign) -> refinalize; ``reuse_run`` skips the stepping when the
+    results directory already holds a completed run of the byte-identical shakedown protocol (the assessment / record stages re-run on the existing artifacts)."""
+
     protocol = load_case_protocol(case)
     results = HERE / "results-shakedown" / case if results is None else results
-    if results.exists():
-        shutil.rmtree(results)
     p = shakedown_protocol(protocol)
-    results.mkdir(parents=True)
     shake_protocol_path = results / "protocol-shakedown.json"
-    artifacts.write_canonical_json(shake_protocol_path, p)
     clients_before = compute_apps()
-    t0 = time.perf_counter()
-    summary_path = runner.run_steady_state(p, results, backend=backend, max_steps=max_steps, protocol_path=shake_protocol_path, log=log)
-    run_seconds = time.perf_counter() - t0
-    summary = artifacts.read_canonical_json(summary_path)
+    if reuse_run:
+        if not (results / "summary.json").is_file() or not shake_protocol_path.is_file():
+            raise PIC2DValidationError(f"--reuse-run needs a completed run in {results}")
+        if artifacts.read_canonical_json(shake_protocol_path) != p:
+            raise PIC2DValidationError("--reuse-run refused: the existing run's shakedown protocol differs from the current one")
+        summary_path = results / "summary.json"
+        summary = artifacts.read_canonical_json(summary_path)
+        run_seconds = float(sum(float(s.get("wall_seconds", 0.0) or 0.0) for s in (summary.get("sessions") or [])) or summary.get("wall_seconds_total") or 0.0)
+        log(f"[shakedown] {case}: reusing the completed run in {results} (git head of the run {summary.get('git_head')})")
+    else:
+        if results.exists():
+            shutil.rmtree(results)
+        results.mkdir(parents=True)
+        artifacts.write_canonical_json(shake_protocol_path, p)
+        t0 = time.perf_counter()
+        summary_path = runner.run_steady_state(p, results, backend=backend, max_steps=max_steps, protocol_path=shake_protocol_path, log=log)
+        run_seconds = time.perf_counter() - t0
+        summary = artifacts.read_canonical_json(summary_path)
     assessment = assess_case(case, results=results, protocol=p, log=log, reference_check=True)
     campaign = assess_campaign(results_root=results.parent, cases_override={case: results}, log=log, output=results / "campaign-assessment.json")
     t1 = time.perf_counter()
@@ -360,7 +373,8 @@ def shakedown(case: str, *, results: Path | None = None, backend: str = "warp-cu
     run = assessment["run"]
     meta = CASES[case]
     record = {
-        "schema_version": SHAKEDOWN_SCHEMA, "utc": utc_now(), "git_head": runner.git_head(), "non_evidentiary": True, "case": case, "effects": protocol["campaign"]["effects"],
+        "schema_version": SHAKEDOWN_SCHEMA, "utc": utc_now(), "git_head": runner.git_head(), "run_git_head": summary.get("git_head"), "run_reused": bool(reuse_run),
+        "non_evidentiary": True, "case": case, "effects": protocol["campaign"]["effects"],
         "host": socket.gethostname(), "cuda_mps_pipe_directory": os.environ.get("CUDA_MPS_PIPE_DIRECTORY"), "concurrent_mps_clients": len(others),
         "concurrent_mps_client_pids": [a["pid"] for a in others], "overrides": {**SHAKEDOWN_OVERRIDES, "max_steps": max_steps}, "results_dir": results.relative_to(HERE).as_posix(),
         "run_seconds": run_seconds, "refinalize_seconds": refinalize_seconds, "steps_completed": summary["steps_completed"], "stop_reason": summary["stop_reason"],
@@ -878,17 +892,18 @@ def assess_case(case: str, *, results: Path | None = None, protocol: dict[str, A
     consistency = None
     reference_cusps = None
     if reference_check:
-        consistency = _consistency(reference, REFERENCE_RESULTS, grid)
+        ref_grid = runner.build_config(protocol_module.load_v4_protocol(), backend="cpu").grid      # the reference's own grid (== the case grid in production)
+        consistency = _consistency(reference, REFERENCE_RESULTS, ref_grid)
         if consistency is not None and not all(entry["agree"] for entry in consistency.values()):
             raise PIC2DValidationError("reference_run.quantities disagree with the ss-v4 artifacts on disk: " + json.dumps({k: v for k, v in consistency.items() if not v["agree"]}))
         if (REFERENCE_RESULTS / "maps.npz").is_file():
-            reference_cusps = run_quantities(REFERENCE_RESULTS, grid, anode_v=anode_v).get("per_cusp")
+            reference_cusps = run_quantities(REFERENCE_RESULTS, ref_grid, anode_v=anode_v).get("per_cusp")
     cusp_rows = None
     if run.get("per_cusp") is not None and reference_cusps is not None:
         cusp_rows = []
         cusp_gas = {c["z_c_m"]: c for c in ((run.get("neutrals") or {}).get("cusp_plane_density") or [])}
         coulomb_cols = ((run.get("coulomb") or {}).get("maps") or {})
-        for k, (mine, ref) in enumerate(zip(run["per_cusp"], reference_cusps, strict=True)):
+        for mine, ref in zip(run["per_cusp"], reference_cusps, strict=True):
             row = {"z_c_m": mine["z_c_m"],
                    "electron_wall_current_a": {"value": mine["electron_wall_current_a"], "reference": ref["electron_wall_current_a"],
                                                "relative_shift": (mine["electron_wall_current_a"] - ref["electron_wall_current_a"]) / abs(ref["electron_wall_current_a"]) if ref["electron_wall_current_a"] else None,
@@ -905,8 +920,10 @@ def assess_case(case: str, *, results: Path | None = None, protocol: dict[str, A
             if mine["z_c_m"] in cusp_gas:
                 row["neutral_gas"] = cusp_gas[mine["z_c_m"]]
             if coulomb_cols:
-                row["coulomb"] = {"nu_ee_pair_mean_per_s": (coulomb_cols.get("cusp_columns_nu_ee_pair_mean_per_s") or [None] * 3)[k],
-                                  "nu_e_spitzer_per_s": (coulomb_cols.get("cusp_columns_nu_e_spitzer_per_s") or [None] * 3)[k]}
+                # column_frequency_profile keys its planes "6.028mm" / "12.000mm" / "17.972mm"
+                plane_key = f"{mine['z_c_m'] * 1e3:.3f}mm"
+                row["coulomb"] = {"nu_ee_pair_mean_per_s": (coulomb_cols.get("cusp_columns_nu_ee_pair_mean_per_s") or {}).get(plane_key),
+                                  "nu_e_spitzer_per_s": (coulomb_cols.get("cusp_columns_nu_e_spitzer_per_s") or {}).get(plane_key)}
             cusp_rows.append(row)
     record = {
         "schema_version": ASSESSMENT_SCHEMA, "utc": utc_now(), "experiment_id": protocol["experiment_id"], "case": case, "effects": protocol["campaign"]["effects"],
@@ -1144,6 +1161,7 @@ def main(argv: list[str] | None = None) -> int:
     shake.add_argument("--case", required=True, choices=sorted(CASES))
     shake.add_argument("--backend", default="warp-cuda")
     shake.add_argument("--max-steps", type=int, default=SHAKEDOWN_OVERRIDES["max_steps"])
+    shake.add_argument("--reuse-run", action="store_true", help="skip the stepping: assess / record an existing completed run of the identical shakedown protocol")
     la = sub.add_parser("launch")
     la.add_argument("--case", required=True, choices=sorted(CASES))
     la.add_argument("--backend", default="warp-cuda")
@@ -1170,7 +1188,7 @@ def main(argv: list[str] | None = None) -> int:
         preflight(args.case, backend=args.backend, timing_steps=args.timing_steps, loaded_seed_density=args.loaded_seed_density, dense_seed_density=args.dense_seed_density,
                   gpu_timing=args.gpu_timing)
     elif args.command == "shakedown":
-        shakedown(args.case, backend=args.backend, max_steps=args.max_steps)
+        shakedown(args.case, backend=args.backend, max_steps=args.max_steps, reuse_run=args.reuse_run)
     elif args.command == "launch":
         launch(args.case, backend=args.backend, expect_commit=args.expect_commit, resume=args.resume, allow_dirty=args.allow_dirty, require_mps=args.require_mps,
                wall_budget_seconds=args.wall_budget_seconds)

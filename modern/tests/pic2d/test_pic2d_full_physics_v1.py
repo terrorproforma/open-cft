@@ -37,7 +37,10 @@ from experiments.pic2d_physics_effects_v1 import protocol as pe_protocol
 V4_CONFIG_SHA256_CUDA = "f10772b25b030e2ba9d86cbd48b9972b9e143cce689e0b0ee8d4d6f10ccc685f"
 UNCHANGED_TOP_LEVEL = ("geometry", "design_id", "field_authority")
 V4_HAS_RESULTS = (pm.V4_RESULTS / "maps.npz").is_file() and (pm.V4_RESULTS / "summary.json").is_file()
-QUIET = lambda _: None
+
+
+def QUIET(_: str) -> None:  # noqa: N802 - the silent log sink of the assessments
+    return None
 
 
 def test_case_protocols_are_the_v4_template_with_exactly_the_declared_changes():
@@ -474,11 +477,24 @@ def test_tiny_cpu_run_of_the_shrunk_full_physics_alpha_case_through_the_runner_f
         assert key in cumulative, key
     assert cumulative["neutral_substeps"] > 0 and cumulative["coulomb_ee_pairs"] > 0
     assert summary["neutral_inventory"]["model"] == "neutrals_spatial_v1" and summary["ignition"] is not None
-    assessment = fp.assess_case("full-physics-alpha1over16", results=results, protocol=p, log=QUIET, reference_check=False)
+    # reference_check=True (when the v4 artifacts are checked out) builds the per-cusp rows WITH the SEE / Coulomb / gas readings against the v4 cusps - the path the
+    # first box shakedown broke on (column_frequency_profile keys its planes by name, not by index)
+    assessment = fp.assess_case("full-physics-alpha1over16", results=results, protocol=p, log=QUIET, reference_check=V4_HAS_RESULTS)
     assert assessment["plateau_status"] in ("no_plateau", "extinguished") and assessment["hypothesis_verdict"] in ("inconclusive", "not_confirmed")
     run = assessment["run"]
     assert run["see"] is not None and run["collision_set"] is not None and run["coulomb"] is not None and run["neutrals"] is not None and run["anomalous"] is not None
     assert run["per_cusp"] is not None and len(run["per_cusp"]) == 3 and run["neutrals"]["axis_density_profile_per_m3"] and run["ionization_centroid_detail"] is not None
+    if V4_HAS_RESULTS:
+        rows = assessment["per_cusp_vs_reference"]
+        assert rows is not None and len(rows) == 3
+        assert all("see" in r and "neutral_gas" in r and "coulomb" in r for r in rows)
+        assert all(r["coulomb"]["nu_ee_pair_mean_per_s"] is not None and r["coulomb"]["nu_e_spitzer_per_s"] is not None for r in rows)
+        assert all(r["neutral_gas"]["column_mean_per_m3"] > 0 for r in rows)         # (the axis cell of a 4000-macro-neutral fixture may be empty)
+    # --reuse-run (record stages on an existing run without re-stepping) refuses a run whose stored shakedown protocol is not the sealed case's (the tiny fixture)
+    with pytest.raises(PIC2DValidationError, match="reuse-run"):
+        fp.shakedown("full-physics-alpha1over16", results=results, backend="cpu", reuse_run=True, log=QUIET)
+    with pytest.raises(PIC2DValidationError, match="needs a completed run"):
+        fp.shakedown("full-physics-alpha1over16", results=tmp_path / "nothing", backend="cpu", reuse_run=True, log=QUIET)
     assert run["sustain"]["probes"] == [] or run["sustain"]["probes"][0]["time_s"] == 0.1e-6
     campaign = fp.assess_campaign(results_root=tmp_path, log=QUIET)
     assert campaign["sustain"]["table"]["full-physics-alpha1over16"]["reading"] in ("undecided", "extinguished") and campaign["additivity"]["statement"] == "not_evaluable"
