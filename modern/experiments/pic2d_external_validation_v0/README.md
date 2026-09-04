@@ -463,7 +463,38 @@ reference's static-DSMC steady state is not reachable at this W with its transpo
 **Launch log.** Launch 2 enters an MPS slot after the anomalous-transport α-series' first job (`at-alpha-1over16`, 17:08 UTC) as the
 scheduler job `ext-val-v0-channel-20um-bohm-0.4` (jobs.yaml) — details appended here at the launch.
 
-## Commands (from `modern/`; CPU unless stated; on the box `PYTHONPATH=src:.` with the MPS variables exported)
+- **LAUNCH 2 — `channel-20um-bohm-0.4`: PID 49403, 19:07:11 UTC 2026-09-04 (05:07 AEST 5 Sep)**, `schedule.py launch --only
+  ext-val-v0-channel-20um-bohm-0.4` by the box slot-waiter (`r1-queue`) into the slot `at-alpha-1over16` freed at 19:01 UTC; detached worktree
+  `jobs/ext-val-v0-channel-20um-bohm-0.4/tree` at `a1065ce4`; 4th MPS client beside ss25-base (32709), sweep-056-launch2 (38282), ss33-fast
+  (44430); 2.95 → 3.9 ms/step at the seed load; `results/channel-20um-bohm-0.4/`. Budget end 19:07 + 46.0 h ≈ 17:07 UTC 6 Sep.
+
+## 13. Decision on the triad drift-member arming for this campaign (2026-09-05 06:30 AEST; model v2.1.1)
+
+The α-series launch 1 (`pic2d_anomalous_transport_v1`, α = 1/16 on the 33 µm reference plateau) stopped at exactly 1.00 transit on the
+triad's drift members — the run had EXTINGUISHED under the closure (its README §9) — and exposed that the drift members' 1.0-transit arming
+(`enforced_after_transit_times`, this protocol's §3 / §12 "unchanged") was calibrated on α = 0 plateaus only. Model v2.1.1 (`e47ae78a`, spec
+`triad_drift_arming_v2_1_1`) arms them by a settled-once latch (≥ 2 transits AND the I_d drift has read < 5 % at a checkpoint) and requires an
+`ignition_gate` beside it; the α-series adopted both by its amendment 1 (`33be2a89`).
+
+**This campaign is exposed to the same rule in principle**: the sealed `channel-20um-bohm-0.4` protocol (`1aaa080d41cd…`, §12) arms the
+drift members at 1.0 transit = 1.40 µs = 2 000 000 steps and declares no ignition gate (§10: "nothing about the drift members' arming needs
+to change for this run" was written for launch 1, which the residual-power member stopped at 0.52 transit). Launch 2's state at the decision
+(0.43 µs, 0.31 transit): N_e 5.7e4 → 3.9e4 macro, sitting at 0.9× its 0.05–0.2 µs reference (neither launch 1's avalanche — N_e ratio 3.46
+at 0.5 µs — nor yet a decay); I_d drift +0.01, S drift +0.11, residual window not yet complete.
+
+**Decision (recorded, nothing changed on the running process or its sealed protocol):**
+
+1. Launch 2 runs to its own outcome under the sealed 1.0-transit arming. It is never signalled (Xid-31 lesson) and its protocol is not amended
+   while it runs.
+2. If it is stopped by the drift members at ≈ 1.40 µs WITH a discharge that is re-equilibrating (I_d, N_e, S moving toward a state, residual
+   < 5 %, peak below π — the α-series' "(b)" reading), a **launch 3 is preregistered under an ext-val amendment 2** that adopts the v2.1.1
+   `drift_members_arming` block verbatim and an `ignition_gate` calibrated for THIS seed transient (20 µm / 2e20 / 400 V; the 33 µm bounds of the
+   α-series do not transfer: launch 1's N_e ratio at 0.5 µs was 3.46 where the 33 µm accepted runs read 1.1) from launch 1's and launch 2's
+   series; identities unchanged (stopping-rule keys), the comparison spec untouched.
+3. If it is stopped by the drift members with a DECAYING discharge (N_e falling from its reference, the injected current returning — the
+   1/16 extinction signature), or by the residual-power / peak-Debye members, or reaches its plateau or budget, the stop is the recorded outcome
+   (§8 conditions apply) and no amendment follows.
+4. `tools/cloud/jobs.yaml` keeps the job at `a1065ce4` (running); the α-series' `r1-queue` waiter continues behind it.
 
     $env:PYTHONPATH="$PWD\src;$PWD"; $env:OMP_NUM_THREADS='1'
     python -m experiments.pic2d_external_validation_v0.run reference          # the reference record
