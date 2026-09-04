@@ -44,9 +44,26 @@ PLUME_V20_PROTOCOL = MODERN / "experiments" / "pic2d_cft_plume_v1" / "protocol.j
 PLUME_V21_PROTOCOL = MODERN / "experiments" / "pic2d_cft_plume_v2_1" / "protocol.json"
 
 # v2.0.2 plume protocol (0251ff10) configuration identities: any change here is a deliberate identity change of the
-# v2.0.x record family (attempts 7-8 are v2.0.1; attempt 9+ v2.0.2) and must be declared in the spec
+# v2.0.x record family (attempts 7-8 are v2.0.1; attempt 9+ v2.0.2) and must be declared in the spec.  Since v2.0.3 the
+# checked-in protocol carries the window-mode peak-Debye gate (pi / soft 2.5 / 400000-step window): its identity is pinned
+# below, and the v2.0.2 identity is reproduced from the protocol with the v2.0.3 gate keys stripped (max 4.5 restored).
 V20_CONFIG_SHA256_CUDA = "1937f3790426696008e18eee87080630bef90a556f1ce868250a3383a5bcf1e6"
 V20_CONFIG_SHA256_CPU = "4c969bff274c7f33dc1f9c65744285956fc840b12ff7a13829b7c11777b5d96c"
+V203_CONFIG_SHA256_CUDA = "f7a4beddbbaa7ddc320fca4e3c1bb355b3f2b93c2273f6b60ce4a92f45432569"
+V203_CONFIG_SHA256_CPU = "e1377abd2ea173446c40a45647e7fb8b22de5b5cbdaf6a3a7a042e1ced4e62a5"
+V203_PEAK_GATE_KEYS = ("window_steps", "window_snapshot_steps", "soft_cells_per_debye")
+
+
+def v202_protocol(protocol: dict) -> dict:
+    """The v2.0.2 configuration of a v2.0.3 plume protocol: the window-mode gate keys removed, the 4.5 single-step gate restored."""
+
+    import copy
+
+    stripped = copy.deepcopy(protocol)
+    for key in V203_PEAK_GATE_KEYS:
+        stripped["numerics"]["peak_debye_gate"].pop(key)
+    stripped["numerics"]["peak_debye_gate"]["max_cells_per_debye"] = 4.5
+    return stripped
 # v2.0 field identity (p2-field-plume-extension-v1, direct node sample) on the coarse 60 x 72 grid of the real
 # geometry (dr 0.2 mm, dz 0.5 mm), computed on the pre-v2.1 code: the v1 provenance must stay bit-for-bit
 V20_COARSE_FIELD_SHA256 = "d30d2d24c9d0d8d6f126f11cdb678fec056cfbb01cad9efe68d2ecae1c6479e0"
@@ -212,8 +229,19 @@ def test_configuration_identity_changes_with_the_plume_length_and_the_v2_0_ident
     assert set(ChannelGeometry(**PRODUCTION).to_dict()) == {"bore_radius_m", "z_min_m", "z_max_m", "cone_start_z_m", "exit_radius_m"}
     assert set(tiny_geometry(4.0e-3).to_dict()) == set(ChannelGeometry(**PRODUCTION).to_dict()) | {"plume_radius_m", "plume_length_m", "body_dielectric_radius_m"}
     protocol = runner.load_protocol(PLUME_V20_PROTOCOL)
-    assert artifacts.config_identity(runner.build_config(protocol, backend="warp-cuda")) == V20_CONFIG_SHA256_CUDA
-    assert artifacts.config_identity(runner.build_config(protocol, backend="cpu")) == V20_CONFIG_SHA256_CPU
+    # v2.0.3 (checked in): window-mode peak-Debye gate at pi / soft 2.5 over the 400000-step window - a new identity, pinned
+    config = runner.build_config(protocol, backend="warp-cuda")
+    assert config.peak_debye_gate.windowed and config.peak_debye_gate.max_cells_per_debye == pytest.approx(3.141592653589793)
+    assert config.peak_debye_gate.soft_cells_per_debye == 2.5 and config.peak_debye_gate.window_steps == 400_000
+    assert config.peak_debye_gate.window_snapshot_steps == 40_000 == protocol["numerics"]["checkpoint_every_steps"]
+    assert protocol["stopping_rule"]["grid_heating_triad"]["residual_window_steps"] == 400_000 == protocol["numerics"]["averaging_window_steps"]
+    assert protocol["stopping_rule"]["grid_heating_triad"]["windowed_energy_residual_over_electrode_work_max"] == 0.05
+    assert artifacts.config_identity(config) == V203_CONFIG_SHA256_CUDA
+    assert artifacts.config_identity(runner.build_config(protocol, backend="cpu")) == V203_CONFIG_SHA256_CPU
+    # the v2.0.2 identities (attempts 9+ before the recalibration) are reproduced from the same protocol without the window keys
+    v202 = v202_protocol(protocol)
+    assert artifacts.config_identity(runner.build_config(v202, backend="warp-cuda")) == V20_CONFIG_SHA256_CUDA
+    assert artifacts.config_identity(runner.build_config(v202, backend="cpu")) == V20_CONFIG_SHA256_CPU
     assert runner.plume_extension_path(protocol) is None            # v2.0 protocols keep the default (v1) extension
 
 

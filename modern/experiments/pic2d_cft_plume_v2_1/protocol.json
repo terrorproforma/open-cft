@@ -3,7 +3,7 @@
   "experiment_id": "pic2d-cft-plume-v2-1",
   "status": "development_screening_not_preregistered_NOT_LAUNCHED",
   "classification": "axisymmetric_electrostatic_pic_mcc_development_run_with_axially_extended_plume_domain_cathode_region_two_zone_neutrals_and_thrust_ledger_not_validated",
-  "model_version": "pic2d v2.1 (v2.0.2 + axially extended plume box 12 x 24 mm on the padded P2 field; fresh start, new configuration identity)",
+  "model_version": "pic2d v2.1 (v2.0.3 + axially extended plume box 12 x 24 mm on the padded P2 field; fresh start, new configuration identity)",
   "model_spec": "modern/spec/pic2d/pic2d-model-v2.1.json",
   "design_id": "divergent-exit-stack",
   "field_authority": "modern/spec/pic2d/p2-field-authority-v1.json (role primary, channel cross-check) + modern/spec/pic2d/p2-field-plume-extension-v2.json (domain-padding-1.5 P2 solution of the same design, direct node evaluation over the whole L-shaped box)",
@@ -92,10 +92,14 @@
       "note": "as v2.0 (cadence 20000 steps = 30 ns, float32, exact interval averages of the full-domain node maps + boundary profiles + histograms + scalar record; cadence divides checkpoint and window). Size: 241 x 961 nodes x float32 x 7 arrays = 6.5 MB/frame uncompressed (4.9 MB at v2.0); 3 transits = 11.4 us = 380 frames = 2.5 GB uncompressed, 0.7-1.2 GB at the measured 2-4:1 compression - inside the 1-2 GB envelope; hash-bound in summary.json artifacts.frames"
     },
     "peak_debye_gate": {
-      "max_cells_per_debye": 4.5,
+      "max_cells_per_debye": 3.141592653589793,
       "min_macro_particles_at_peak": 32,
       "dense_fraction": 0.5,
-      "max_cells_per_debye_note": "v1.4 gate over the WHOLE domain (channel + plume): max(dr, dz) / lambda_D at the densest node holding >= 32 macro-electrons must stay <= 4.5; the channel peak is the expected location"
+      "max_cells_per_debye_note": "v2.0.3 (2026-09-04, after attempt 8): the GATED statistic is the interval-averaged peak - the densest node of the trailing window of >= 400000 accumulated steps (0.6 us = the averaging window = 20 frames) among the nodes whose mean occupancy over the window is >= 32 macro-electrons, with the window's moment T_e (the maps.npz / frame construction, read from the same device accumulators at the series-record host sync, bridged across the runner's window resets; window snapshots every 40000 steps = the checkpoint cadence, so the window spans 400000-440000 steps). HARD: max(dr, dz) / lambda_D <= pi (3.1416), the Birdsall-Langdon CIC finite-grid-instability threshold for the momentum-conserving scheme, enforced once the window is complete (fail-closed, PIC2DStabilityError 'peak-node Debye gate (window)'); the first 0.6 us after a fresh start or a resume are recorded, not gated (disclosed per record via peak_node.window.window_complete / gate_enforced). SOFT: 2.5 (20 % under pi) is the declared resolution margin, recorded per record (soft_exceeded) and a plateau precondition in the runner (plateau.peak_debye_soft_ok), never a stop. The single-step sample stays recorded as the shot-noise witness (peak_node.cells_per_debye, gate_mode 'window', gate_enforced false). Why: attempt 8 kept densifying under the v1.4 gate at 4.5 while the energy-ledger residual per 0.4 us window changed sign exactly when the window-averaged peak crossed Delta/lambda_D ~ 3.2 (2.96 -> 3.23 -> 3.37 -> 3.58 -> 3.66-3.75; residual -0.5 % -> +2.4 -> +5.8 -> +11.3 -> +15.3 -> +23.5 -> +37.0 -> +54.8 % of the electrode work), and the accepted channel-only base plateau (pic2d_cft_steady_state_v2/results) sat at 3.17 with the residual closing to +0.4 %: the two runs bracket the onset at ~3.2, so 4.5 was not protective. On the 50 um plume grid at the attempt-8 peak (3.3-3.7e18 m^-3, 11 eV) pi corresponds to Delta <= 40 um and 2.5 to Delta <= 32 um: this protocol (50 um) will now stop at the heating onset instead of running into it; a resolved plume run needs Delta ~33 um (see the attempt-8 resolution table in the README).",
+      "window_steps": 400000,
+      "window_snapshot_steps": 40000,
+      "soft_cells_per_debye": 2.5,
+      "v2_0_2_and_earlier_note": "attempts 3-8 (v2.0 .. v2.0.2) ran the v1.4 single-step gate at 4.5 (densest node holding >= 32 macro-electrons in ONE deposit); the window keys change the configuration identity, so v2.0.3 applies to fresh starts only"
     },
     "plume_boundary_gate": {
       "max_charge_fraction": 0.25,
@@ -125,7 +129,7 @@
     "min_transit_times": 3,
     "wall_budget_seconds": 79200,
     "wall_budget_note": "22 h cumulative over resumes (run_state.json): 3 transits = 11.4 us = 7.6 M steps x 8.2 ms/step = 17.4 h at the projected step cost, +2 h if the particle count keeps growing at attempt 8's +0.6 M ions/us (N ~6.5 M at 11 us -> ~9.7 ms/step), + ~12 min factorisation per session; the budget lets the plateau rule be evaluated past 3 transits (3.3-3.5 transits). NOT LAUNCHED: v2.1 is prepared, not scheduled; the GPU carries attempt 8 (PID 51256, v2.0.1) until ~20:00 AEST 2026-09-04 and any v2.1 run must wait for it",
-    "fail_closed": "cathode field-line connectivity at launch (re-traced on the padded field over the 48 mm box), ignition gate (no_ignition), runtime omega_pe dt gate, peak-node Debye gate (4.5 cells per lambda_D, whole domain), grid-heating triad hard bounds after one transit, plume-boundary charge pile-up gate after 3.8 us (v2.0.2 window statistic), one-cell Courant crossing, Poisson residual contract, neutral inventory exhaustion or ceiling violation: the run ends with the artifacts written",
+    "fail_closed": "cathode field-line connectivity at launch (re-traced on the padded field over the 48 mm box), ignition gate (no_ignition), runtime omega_pe dt gate, peak-node Debye gate (v2.0.3: interval-averaged peak, hard pi cells per lambda_D once the 400000-step window is complete, whole domain), grid-heating triad hard drift bounds after one transit and the v2.0.3 windowed residual-power bound (>= 5 % of the electrode work over the trailing 400000 steps) from the first complete window, plume-boundary charge pile-up gate after 3.8 us (v2.0.2 window statistic), one-cell Courant crossing, Poisson residual contract, neutral inventory exhaustion or ceiling violation: the run ends with the artifacts written",
     "ignition_check": "after ~15 minutes (the first ~12 min are the host factorisation): S growing, N_e rising, cathode current relaxing from the 15 mA ceiling toward I_d, ions crossing the far field only after ~1.6 us (24 mm at 15 km/s: I_beam is ZERO for the first plume crossing - not a fault), thrust ledger residual at round-off, exit-plane axis potential settling below 300 V, q_far ~ 0 with a resolved-node count > 0 once the beam arrives",
     "ignition_gate": {
       "reference_window_s": [
@@ -151,7 +155,10 @@
       "energy_residual_over_electrode_work_max": 0.1,
       "soft_drift_max": 0.05,
       "hard_drift_max": 0.25,
-      "enforced_after_transit_times": 1.0
+      "enforced_after_transit_times": 1.0,
+      "residual_window_steps": 400000,
+      "windowed_energy_residual_over_electrode_work_max": 0.05,
+      "note": "v2.0.3: the hard residual member is the trailing-window residual POWER - the ledger residual summed over the records of the trailing residual_window_steps (400000 = the averaging window) over the electrode work of the same records - one-sided (positive = energy created by the scheme = finite-grid heating), enforced from the first complete window (no transit arming: the accepted base plateau's window ratios are -12.7 % -> -0.2 %, never positive beyond +0.4 %, so a one-sided 5 % bound is silent on every accepted run and would have stopped attempt 8 at ~3.2 us instead of 4.98 us), stop_reason grid_heating_triad_gate_stopped_run. The cumulative ratio energy_residual_over_electrode_work is RECORDED as the witness (it lagged the window ratio by ~1 us in attempt 8: +8.6 % cumulative when the last window was +54.8 %) and keeps its 10 % bound as a plateau precondition only; the soft check also requires the window ratio < 5 %. Drift members (S, T_e,dense, omega_pe dt) unchanged."
     }
   },
   "simplifications": [

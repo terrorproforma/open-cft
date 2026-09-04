@@ -434,8 +434,39 @@ steady-state v3 (model v1.4) is deferred until after this run (devlog).
   (segment residual ≥ 5 % of the electrode work over the trailing window → stop; the cumulative
   ratio lags by ~1 µs); then run the cheapest resolved case — the channel-only box at 33 µm / 1.4 ps
   (≈ 6–14 h depending on the particle load) as the grid-refinement check of the accepted 3.44 mA
-  plateau — or the plume box at 50 µm at a lower operating point (option e), whose peak density
+  plateau —   or the plume box at 50 µm at a lower operating point (option e), whose peak density
   must be verified against the recalibrated gate before any thrust number is read.
+* **Model v2.0.3 (code only, 2026-09-04 after attempt 8; not a launch)** — the two recalibrations
+  the attempt-8 diagnosis asked for, applied to this protocol (fresh starts only: the gate keys are
+  in `config_sha256`, identity `f7a4bedd…` CUDA / `e1377abd…` CPU; the v2.0.2 identities
+  `1937f379…` / `4c969bff…` are reproduced from this protocol with the window keys stripped and are
+  pinned by test) and to the prepared v2.1 protocol. (1) **Peak-node Debye gate in window mode**
+  (`PeakDebyeGateConfig(max_cells_per_debye = π, soft_cells_per_debye = 2.5, window_steps = 400000,
+  window_snapshot_steps = 40000)`): the GATED statistic is the interval-averaged peak — the densest
+  node of the trailing 400 000-step window (the maps/frames accumulation, read at the series-record
+  host sync from the same device sums, six node arrays per record, bridged across the runner's window
+  resets, ring of cumulative snapshots every 40 000 steps) among nodes with mean occupancy ≥ 32
+  macro-electrons, with the window's moment T_e; hard π (the Birdsall–Langdon CIC threshold, the value
+  the attempt-8 ledger identified: residual sign change at Δ/λ_D ≈ 3.2, the base plateau on the
+  threshold at 3.17) fail-closed once the window is complete; soft 2.5 (20 % margin) recorded and a
+  plateau precondition (`plateau.peak_debye_soft_ok`), never a stop; the single-step sample stays
+  recorded as the shot-noise witness (`gate_mode "window"`, `gate_enforced false`). On this 50 µm
+  protocol at the attempt-8 peak (3.3–3.7e18, 11 eV) the window statistic reads 3.4–3.8 > π: a fresh
+  attempt would now stop at the heating onset (~2.4 µs) by design instead of running into it — a
+  resolved plume run needs Δ ≈ 33 µm (cost table above) or a lower operating point. (2) **Windowed
+  residual-power gate** (`stopping_rule.grid_heating_triad.residual_window_steps = 400000`,
+  `windowed_energy_residual_over_electrode_work_max = 0.05`): the trailing-400 000-step ledger residual
+  over the electrode work of the same records, ONE-SIDED (positive = energy the scheme created), stops
+  the run from the first complete window; the cumulative ratio is recorded as the witness (its 10 %
+  bound stays a plateau precondition). Calibration: attempt 8's per-window ratio crossed +5 % at
+  ≈ 3.1 µs (the gate would have stopped it there instead of 4.98 µs, ~1.9 µs before the S-drift member
+  and ~2 µs before the cumulative bound); the accepted channel-only runs (v2 base / seed-b / W×0.7)
+  read −12.7 % → −0.2 % / −1.5 % / −4.2 % (never above +0.4 %), so the one-sided bound is silent on
+  every accepted run while a two-sided 5 % bound would have stopped all three before 4 µs. Spec
+  `pic2d-model-v2.0.json` `gates_v2_0` (`peak_debye_gate_v2_0_3`, `windowed_energy_residual_gate_v2_0_3`,
+  `gate_recalibration_history_v2_0_3`); tests `tests/pic2d/test_pic2d_v203_gates.py` (9) + parity /
+  identity / runner pins; tests/pic2d 207 passed. First use: the channel-only refinement campaign
+  `experiments/pic2d_cft_steady_state_v4/` (33.3 µm / 1.4 ps / W 2.667e4, preregistered).
 
 ## Time-series frames and video
 

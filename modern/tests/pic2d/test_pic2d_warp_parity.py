@@ -114,7 +114,7 @@ def test_l_shaped_plume_domain_with_cathode_parity(device: str):
     """v2.0 (tiny): L-shaped mask, internal walls / front face, far-field exits, cathode emission,
     momentum ledger and plume histograms agree between the numpy reference and the Warp backend."""
 
-    from cft_revival.pic2d.simulation import CathodeConfig, PlumeBoundaryGateConfig
+    from cft_revival.pic2d.simulation import CathodeConfig, PeakDebyeGateConfig, PlumeBoundaryGateConfig
 
     geometry = ChannelGeometry(2.0e-3, 0.0, 8.0e-3, 6.0e-3, 3.0e-3, plume_radius_m=6.0e-3, plume_length_m=4.0e-3,
                                body_dielectric_radius_m=4.0e-3)
@@ -123,13 +123,15 @@ def test_l_shaped_plume_domain_with_cathode_parity(device: str):
     # v2.0.2: a recording-only gate (never armed) with a 20-step window and a one-particle-step floor so the window
     # statistic read from each backend's accumulators is exercised and compared
     gate = PlumeBoundaryGateConfig(0.25, enforce_after_s=1.0, window_steps=20, min_accumulated_macro_particles_per_node=1.0)
+    # v2.0.3: a window-mode peak-Debye gate with an unreachable threshold (recording only) over the same 20-step window
+    peak_gate = PeakDebyeGateConfig(1e6, min_macro_particles_at_peak=1, window_steps=20, window_snapshot_steps=20, soft_cells_per_debye=1e6)
 
     def make(cathode: CathodeConfig | None) -> PIC2DConfig:
         return PIC2DConfig(
             grid=grid, potentials=BoundaryPotentials(300.0, 0.0), dt_s=5e-12, macro_weight=2e5, seed=5, cathode=cathode,
             seed_plasma=SeedPlasmaConfig(1e15, 5.0), poisson=PoissonConfig2D(), reference_density_per_m3=1e15,
             reference_electron_temperature_ev=5.0, limits=StabilityLimits(max_cell_debye_ratio=2.0), series_interval_steps=20,
-            runtime_stability_check_steps=20, plume_boundary_gate=gate,
+            runtime_stability_check_steps=20, plume_boundary_gate=gate, peak_debye_gate=peak_gate,
         )
 
     # (a) seed plasma only: the L-shaped mask, internal walls, front face and far-field exits are bitwise-comparable
@@ -165,6 +167,13 @@ def test_l_shaped_plume_domain_with_cathode_parity(device: str):
     assert ra.plume["far_field_raw_max_node"] == rb.plume["far_field_raw_max_node"]
     assert ra.plume["far_field_window_raw_max_node"] == rb.plume["far_field_window_raw_max_node"]
     assert ra.plume["gate_armed"] is False and ra.plume["gate_enforced"] is False
+    # v2.0.3: the window-mode peak-Debye statistic from each backend's own electron window sums (device atomics on Warp)
+    wa, wb = ra.peak_node["window"], rb.peak_node["window"]
+    assert ra.peak_node["gate_mode"] == rb.peak_node["gate_mode"] == "window" and wa["gate_enforced"] and wb["gate_enforced"]
+    assert wa["window_steps"] == wb["window_steps"] == 20 and wa["node"] == wb["node"] and wa["resolved_nodes"] == wb["resolved_nodes"] > 0
+    for key in ("cells_per_debye", "n_e_peak_per_m3", "t_e_peak_ev", "mean_macro_particles_at_peak", "debye_length_m"):
+        assert wa[key] == pytest.approx(wb[key], rel=1e-9), key
+    assert wa["cells_per_debye"] > 0.0 and ra.peak_node["gate_enforced"] is False
     # (b) with the cathode: the emission samples use each backend's RNG stream (not bitwise, like the v1.x
     # injection); the emitted count is deterministic and both ledgers close to round-off
     config = make(CathodeConfig(3.5e-3, 4.5e-3, 9.0e-3, 10.0e-3, 2.0, 2e-3))

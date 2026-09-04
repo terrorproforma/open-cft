@@ -110,6 +110,10 @@ PEAK_NODE_SCALARS = (
     "n_e_peak_per_m3", "t_e_peak_ev", "debye_length_m", "cells_per_debye", "macro_particles_at_peak", "t_e_dense_ev",
     "r_m", "z_m",
 )
+# v2.0.3 window-mode peak-Debye gate (peak_node["window"]); NaN in single-step records -> arrays peak_node_window_<key>
+PEAK_NODE_WINDOW_SCALARS = (
+    "cells_per_debye", "n_e_peak_per_m3", "t_e_peak_ev", "window_steps", "mean_macro_particles_at_peak", "resolved_nodes", "r_m", "z_m",
+)
 # v2.0 momentum / thrust ledger and plume-boundary sample (absent from v1.x records -> arrays omitted)
 MOMENTUM_SCALARS = (
     "momentum_z_kg_m_s", "interval_ledger_residual_kg_m_s", "beam_momentum_rate_ions_n", "beam_momentum_rate_electrons_n",
@@ -429,6 +433,23 @@ def evaluate_triad(arrays: dict[str, np.ndarray], rule: dict[str, Any], transit_
     ``enforced_after_transit_times`` have elapsed (before that the ratio and drifts are
     ill-conditioned: small electrode work, ignition transient).  Returns ``None`` when the
     protocol declares no triad block (v1.2/v1.3 protocols).
+
+    v2.0.3 (``residual_window_steps`` in the block): the HARD residual member becomes the
+    trailing-window residual power - the ledger residual summed over the records of the trailing
+    ``residual_window_steps`` (the 400 000-step averaging window) divided by the electrode work
+    over the same records - and it is one-sided: a POSITIVE residual is energy the scheme
+    created (finite-grid heating); it stops the run once the window is complete and the ratio
+    reaches ``windowed_energy_residual_over_electrode_work_max`` (0.05).  Plume attempt 8
+    (2026-09-04): the per-window ratio went -0.5 % (2.0-2.4 us) -> +2.4 -> +5.8 (2.8-3.2 us)
+    -> ... -> +54.8 % while the CUMULATIVE ratio, which lags by the whole history, was still
+    +8.6 % (below its 10 % bound) when the S-drift member stopped the run at 4.98 us, ~1.8 us
+    after the window ratio had crossed 5 %.  The accepted channel-only plateau runs (v2 base,
+    seed-b, W x 0.7) have NEGATIVE window ratios throughout (-12.7 % in the seed window rising to
+    -0.2 % / -1.4 % / -4.2 % at the plateau; max +0.37 %), so the negative side is recorded, not
+    gated (a two-sided 5 % bound would have stopped all three accepted runs before 4 us).  The
+    cumulative ratio stays recorded as the witness (``energy_residual_over_electrode_work``) and
+    enters the soft (plateau-precondition) check against its bound as before, but no longer stops
+    the run.  Without ``residual_window_steps`` the v1.4 cumulative hard gate is unchanged.
     """
 
     block = rule.get("grid_heating_triad")
@@ -451,15 +472,24 @@ def evaluate_triad(arrays: dict[str, np.ndarray], rule: dict[str, Any], transit_
     residual_max = float(block["energy_residual_over_electrode_work_max"])
     enforce_after = float(block.get("enforced_after_transit_times", 1.0))
     enforced = transits >= enforce_after
+    windowed = windowed_energy_residual(arrays, block)
     soft_ok = ratio is not None and abs(ratio) < residual_max and all(v is not None and abs(v) < soft for v in drifts.values())
+    if windowed is not None and windowed["window_complete"]:
+        soft_ok = soft_ok and windowed["ratio"] is not None and windowed["ratio"] < windowed["max"]
     hard_failures = []
     if enforced:
-        if ratio is None or abs(ratio) >= residual_max:
+        if windowed is None and (ratio is None or abs(ratio) >= residual_max):
             hard_failures.append(f"energy residual / electrode work {ratio} exceeds {residual_max}")
         for key, value in drifts.items():
             if value is not None and abs(value) >= hard:
                 hard_failures.append(f"{key} {value:.3g} exceeds {hard}")
-    return {
+    if windowed is not None and windowed["window_complete"] and windowed["ratio"] is not None and windowed["ratio"] >= windowed["max"]:
+        # v2.0.3: enforced from the first complete window, independent of the transit arming of the drift members
+        hard_failures.append(
+            f"windowed energy residual / electrode work {windowed['ratio']:.3g} over the trailing {windowed['window_steps']} steps "
+            f"exceeds {windowed['max']} (finite-grid heating)"
+        )
+    result = {
         "energy_residual_over_electrode_work": ratio,
         **drifts,
         "soft_ok": bool(soft_ok),
@@ -468,6 +498,84 @@ def evaluate_triad(arrays: dict[str, np.ndarray], rule: dict[str, Any], transit_
         "thresholds": {"energy_residual_over_electrode_work_max": residual_max, "soft_drift_max": soft, "hard_drift_max": hard,
                        "enforced_after_transit_times": enforce_after},
         "window_fraction": fraction,
+    }
+    if windowed is not None:
+        result["windowed_energy_residual_over_electrode_work"] = windowed["ratio"]
+        result["windowed_energy_residual_window_steps"] = windowed["window_steps"]
+        result["windowed_energy_residual_window_complete"] = windowed["window_complete"]
+        result["windowed_energy_residual_electrode_work_j"] = windowed["electrode_work_j"]
+        result["windowed_energy_residual_j"] = windowed["residual_j"]
+        result["cumulative_residual_is_witness_only"] = True
+        result["thresholds"]["windowed_energy_residual_over_electrode_work_max"] = windowed["max"]
+        result["thresholds"]["residual_window_steps"] = windowed["window_steps_required"]
+    return result
+
+
+def windowed_energy_residual(arrays: dict[str, np.ndarray], block: Mapping[str, Any]) -> dict[str, Any] | None:
+    """v2.0.3: energy-ledger residual over the electrode work, both summed over the records of the trailing window.
+
+    ``block["residual_window_steps"]`` (absent -> None: the v1.4 cumulative member only) is the window in steps;
+    the records inside it are those with ``step > last_step - window``; the window is complete when the series
+    reaches back at least that far (``first_step <= last_step - window``).  A resume's first record contributes
+    zero residual and zero electrode work (the interval ledger restarts there) - a bias of one record in 2000.
+    """
+
+    window_steps = block.get("residual_window_steps")
+    if window_steps is None or arrays.get("step") is None or arrays["step"].size < 2:
+        return None
+    window_steps = int(window_steps)
+    steps = arrays["step"]
+    last = float(steps[-1])
+    in_window = steps > last - window_steps
+    residual = float(arrays["interval_residual_j"][in_window].sum())
+    electrode = float(arrays["interval_electrode_work_j"][in_window].sum())
+    # the window's records cover (start, last] where start is the last record OUTSIDE the window (their intervals end at
+    # their own step); with every record inside, the coverage starts at the first record (whose own residual is zero)
+    outside = steps[~in_window]
+    start = float(outside[-1]) if outside.size else float(steps[0])
+    return {
+        "ratio": residual / electrode if electrode > 0.0 else None,
+        "residual_j": residual,
+        "electrode_work_j": electrode,
+        "window_steps": int(last - start),
+        "window_steps_required": window_steps,
+        "window_complete": bool(outside.size > 0),
+        "max": float(block.get("windowed_energy_residual_over_electrode_work_max", 0.05)),
+    }
+
+
+def evaluate_peak_debye_window(arrays: dict[str, np.ndarray], config: PIC2DConfig) -> dict[str, Any] | None:
+    """v2.0.3: the window-mode peak-Debye soft margin as a plateau precondition.
+
+    The gate quantity ``peak_node_window_cells_per_debye`` of the LAST record is already a trailing-window
+    (>= 0.6 us) average; ``soft_ok`` holds when it is at or below the declared ``soft_cells_per_debye`` (the
+    resolution margin, 2.5 = 20 % under the CIC threshold pi) or when no soft level is declared.  A run whose
+    plateau is physical but sits between the soft and the hard level is recorded as such (``soft_ok`` False
+    blocks the plateau verdict, the run continues to its budget); the hard level stops it in the simulation.
+    Returns None for single-step gates (v1.4 / v2.0.0-v2.0.2) or when the series carries no window sample.
+    """
+
+    gate = config.peak_debye_gate
+    if gate is None or not gate.windowed or "peak_node_window_cells_per_debye" not in arrays:
+        return None
+    values = arrays["peak_node_window_cells_per_debye"]
+    steps = arrays["peak_node_window_window_steps"]
+    last = float(values[-1])
+    complete = bool(np.isfinite(steps[-1]) and steps[-1] >= gate.window_steps)
+    n_tail = max(values.size // 5, 1)
+    tail = values[-n_tail:]
+    soft = gate.soft_cells_per_debye
+    soft_ok = True if soft is None else bool(complete and np.isfinite(last) and last <= soft)
+    return {
+        "cells_per_debye_window_last": last if np.isfinite(last) else None,
+        "window_steps_last": int(steps[-1]) if np.isfinite(steps[-1]) else None,
+        "window_complete_last": complete,
+        "trailing_20pct_mean_cells_per_debye_window": float(np.nanmean(tail)) if np.isfinite(tail).any() else None,
+        "max_cells_per_debye_window": float(np.nanmax(values)) if np.isfinite(values).any() else None,
+        "soft_cells_per_debye": soft,
+        "hard_cells_per_debye": gate.max_cells_per_debye,
+        "soft_ok": soft_ok,
+        "records_above_soft": None if soft is None else int(np.sum(values[np.isfinite(values)] > soft)),
     }
 
 
@@ -488,6 +596,10 @@ def records_to_arrays(records: list[dict[str, Any]]) -> dict[str, np.ndarray]:
     if with_peak:
         for key in PEAK_NODE_SCALARS:
             arrays[f"peak_node_{key}"] = []
+    with_window = with_peak and records[0]["peak_node"].get("window") is not None   # v2.0.3 window-mode gate
+    if with_window:
+        for key in PEAK_NODE_WINDOW_SCALARS:
+            arrays[f"peak_node_window_{key}"] = []
     with_momentum = bool(records) and records[0].get("momentum") is not None
     with_plume = bool(records) and records[0].get("plume") is not None
     if with_momentum:
@@ -515,6 +627,11 @@ def records_to_arrays(records: list[dict[str, Any]]) -> dict[str, np.ndarray]:
             peak = record["peak_node"]
             for key in PEAK_NODE_SCALARS:
                 arrays[f"peak_node_{key}"].append(float("nan") if peak[key] is None else float(peak[key]))
+        if with_window:
+            window = record["peak_node"].get("window") or {}
+            for key in PEAK_NODE_WINDOW_SCALARS:
+                value = window.get(key)
+                arrays[f"peak_node_window_{key}"].append(float("nan") if value is None else float(value))
         if with_momentum:
             momentum = record["momentum"]
             for key in MOMENTUM_SCALARS:
@@ -574,6 +691,12 @@ def status_from_record(
         if "gate_enforced" in peak:
             line["peak_node"]["gate_enforced"] = peak["gate_enforced"]
             line["peak_node"]["gate_max_cells_per_debye"] = peak["gate_max_cells_per_debye"]
+        if peak.get("window") is not None:  # v2.0.3 window-mode gate quantity
+            window = peak["window"]
+            line["peak_node"]["gate_mode"] = peak.get("gate_mode")
+            line["peak_node"]["window"] = {key: window[key] for key in ("cells_per_debye", "n_e_peak_per_m3", "t_e_peak_ev", "node",
+                                                                        "window_steps", "window_complete", "gate_enforced", "soft_exceeded",
+                                                                        "mean_macro_particles_at_peak", "resolved_nodes")}
     if triad is not None:
         line["grid_heating_triad"] = {key: triad[key] for key in triad if key not in ("thresholds", "window_fraction")}
     momentum = record.get("momentum")
@@ -912,10 +1035,16 @@ def write_final_artifacts(
         if triad is not None:
             plateau["triad_soft_ok"] = triad["soft_ok"]
             plateau["reached"] = bool(plateau["reached"] and triad["soft_ok"])
+        debye_window = evaluate_peak_debye_window(arrays, config)
+        if debye_window is not None:   # v2.0.3: the soft resolution margin is a plateau precondition
+            plateau["peak_debye_soft_ok"] = debye_window["soft_ok"]
+            plateau["reached"] = bool(plateau["reached"] and debye_window["soft_ok"])
         if "peak_node_cells_per_debye" in arrays:
             n_tail = max(arrays["step"].size // 5, 1)
             gate = config.peak_debye_gate
             peak_node_summary = {
+                "window": debye_window,
+                "gate_mode": "window" if (gate is not None and gate.windowed) else ("single_step" if gate is not None else None),
                 "trailing_20pct_mean_cells_per_debye": float(np.mean(arrays["peak_node_cells_per_debye"][-n_tail:])),
                 "max_cells_per_debye": float(np.max(arrays["peak_node_cells_per_debye"])),
                 "trailing_20pct_mean_n_e_peak_per_m3": float(np.mean(arrays["peak_node_n_e_peak_per_m3"][-n_tail:])),
@@ -925,7 +1054,8 @@ def write_final_artifacts(
                 "trailing_20pct_mean_peak_z_m": float(np.mean(arrays["peak_node_z_m"][-n_tail:])),
                 "gate": None if gate is None else gate.to_dict(),
                 "note": "peak node = densest node holding >= min_macro_particles_at_peak macro-electrons; the gate fails closed on "
-                        "max(dr, dz) / lambda_D there (review blocker 1: resolve the peak, not the mean)",
+                        "max(dr, dz) / lambda_D there (review blocker 1: resolve the peak, not the mean); v2.0.3 window mode: the gated "
+                        "statistic is the trailing-window (interval-averaged) peak in 'window', the single-step sample is the witness",
             }
     maps_sha = artifacts.write_npz(results / "maps.npz", maps)
     series_sha = artifacts.write_npz(results / "series.npz", arrays) if arrays else None
@@ -1180,6 +1310,11 @@ def run_steady_state(
                 extra += f" util={record.neutral['gross_utilisation']:.2f}/{record.neutral['net_utilisation']:.2f}"
             if record.peak_node is not None:
                 extra += f" peak={record.peak_node['n_e_peak_per_m3']:.2e} cells/lD={record.peak_node['cells_per_debye']:.2f}"
+                if record.peak_node.get("window") is not None:   # v2.0.3: the gated window statistic
+                    window = record.peak_node["window"]
+                    extra += f" win={window['cells_per_debye']:.2f}(w{window['window_steps']}{'' if window['gate_enforced'] else ' n/e'})"
+            if last_triad is not None and last_triad.get("windowed_energy_residual_over_electrode_work") is not None:
+                extra += f" res_w={last_triad['windowed_energy_residual_over_electrode_work']*100:+.1f}%"
             if record.momentum is not None:  # v2.0
                 extra += (f" T={record.momentum['thrust_total_n']*1e6:.1f} uN closure={record.momentum['closure_fraction']*100:.0f}%")
             if record.plume is not None:
@@ -1256,6 +1391,12 @@ def run_steady_state(
                 break
             last_plateau["triad_soft_ok"] = last_triad["soft_ok"]
             last_plateau["reached"] = bool(last_plateau["reached"] and last_triad["soft_ok"])
+        last_debye = evaluate_peak_debye_window(arrays, config)
+        if last_debye is not None:
+            # v2.0.3: the window-mode soft margin (2.5 cells per lambda_D) is a plateau precondition, never a stop
+            last_plateau["peak_debye_soft_ok"] = last_debye["soft_ok"]
+            last_plateau["peak_debye_cells_per_debye_window"] = last_debye["cells_per_debye_window_last"]
+            last_plateau["reached"] = bool(last_plateau["reached"] and last_debye["soft_ok"])
         if last_plateau["reached"]:
             stop_reason = "plateau_reached_after_min_transit_times"
             break
@@ -1465,7 +1606,8 @@ def _runner_stop_recovery_preflight(results: Path, protocol: dict[str, Any], sto
         plateau = evaluate_plateau(arrays["time_s"], arrays["current_discharge_a"], arrays["electrons"], rule, transit,
                                    arrays.get("neutral_density_per_m3"))
         triad = evaluate_triad(arrays, rule, transit)
-        if not plateau["reached"] or (triad is not None and not triad["soft_ok"]):
+        debye_window = evaluate_peak_debye_window(arrays, build_config(protocol, backend="cpu"))
+        if not plateau["reached"] or (triad is not None and not triad["soft_ok"]) or (debye_window is not None and not debye_window["soft_ok"]):
             raise PIC2DValidationError(f"the recorded series does not satisfy the plateau rule; refusing '{stop_reason}'")
         evidence = f"plateau rule holds on the recorded series at step {step} ({plateau['transit_times_elapsed']:.2f} transits)"
     else:

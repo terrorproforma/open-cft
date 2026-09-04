@@ -48,6 +48,7 @@ from .poisson import Poisson2D, apply_operator, boundary_potential_array
 from .simulation import (
     CATHODE_RATE_KEY,
     IEDF_BINS,
+    PEAK_WINDOW_SUM_KEYS,
     THETA_BINS,
     DiagnosticAccumulator,
     PIC2DConfig,
@@ -2240,6 +2241,19 @@ class WarpBackend:
         far = self._far_flat
         self.sync_count += 2
         return self.d_n_e.numpy()[far].copy(), self.d_n_i.numpy()[far].copy(), int(self.diag_steps), self.diagnostic_generation
+
+    def peak_window_sums(self) -> tuple[dict[str, np.ndarray], int, int]:
+        """v2.0.3 peak-Debye gate: the electron window sums (``sum_t n_e``, ``sum_t w``, ``sum_t w v_r/v_theta/v_z``,
+        ``sum_t w v^2``) over the whole node map, the accumulated step count and the reset generation - the device
+        accumulators behind ``maps.npz`` / the frames, read at the series-record sync (six node arrays per record,
+        next to the five single-step gate moments); no per-step sync."""
+
+        self.flush()
+        shape = self.masks.grid.node_shape
+        arrays = (self.d_n_e, self.d_w, self.d_vr, self.d_vt, self.d_vz, self.d_v2)
+        self.sync_count += len(arrays)
+        return ({key: array.numpy().reshape(shape).copy() for key, array in zip(PEAK_WINDOW_SUM_KEYS, arrays)},
+                int(self.diag_steps), self.diagnostic_generation)
 
     def surface_charge_map(self) -> np.ndarray:
         self.flush()

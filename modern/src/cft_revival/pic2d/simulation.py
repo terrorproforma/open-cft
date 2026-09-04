@@ -392,11 +392,38 @@ class PeakDebyeGateConfig:
     temperature; the gate is then recorded but not enforced.  ``dense_fraction``
     defines the "densest cells" (n >= dense_fraction * n_peak) whose density-weighted
     T_e is recorded for the grid-heating triad.
+
+    v2.0.3 (window mode, ``window_steps`` set): the GATED statistic is the interval-averaged
+    peak, not the single-step one.  Plume attempt 8 (2026-09-04) ran into finite-grid-heating
+    runaway with the single-step gate at 4.5 never tripping: the energy-ledger residual changed
+    sign when the window-averaged peak crossed ``max(dr, dz) / lambda_D ~ 3.2``, the
+    Birdsall-Langdon CIC threshold ``pi`` for the momentum-conserving scheme, and the accepted
+    channel-only base plateau sat at 3.17 with the residual closing to +0.4 % - the two runs
+    bracket the onset, so the declared 4.5 was not protective.  In window mode the peak node is
+    the densest node of the trailing window of at least ``window_steps`` ACCUMULATED steps
+    (the same accumulators that produce ``maps.npz`` and the frames: ``sum_t n_e`` and the
+    electron moment sums, read at the series-record host sync, bridged across the runner's
+    window resets by a host-side carry, see ``PeakDebyeWindow``) among the nodes whose mean
+    occupancy over the window is at least ``min_macro_particles_at_peak`` macro-electrons; its
+    T_e is the window's moment temperature (``maps.npz`` ``t_e_ev`` at that node).
+    ``max_cells_per_debye`` (hard, fail-closed once the window is complete) should be the CIC
+    threshold ``pi``; ``soft_cells_per_debye`` (the declared resolution margin, 2.5 = 20 %
+    under pi) is recorded per record and is a plateau precondition in the runner, never a
+    stop.  The single-step sample stays recorded as the shot-noise witness (``gate_mode``
+    ``"window"``, its ``gate_enforced`` is False).  ``window_snapshot_steps`` is the cadence of
+    the window's ring of cumulative totals (memory: ``window_steps / window_snapshot_steps + 2``
+    full node-map sets), so the trailing window spans between ``window_steps`` and
+    ``window_steps + window_snapshot_steps`` accumulated steps; default ``window_steps // 10``.
+    Without ``window_steps`` the v1.4 single-step gate and its configuration identity are
+    unchanged.
     """
 
     max_cells_per_debye: float
     min_macro_particles_at_peak: int = 16
     dense_fraction: float = 0.5
+    window_steps: int | None = None
+    soft_cells_per_debye: float | None = None
+    window_snapshot_steps: int | None = None
 
     def __post_init__(self) -> None:
         if not isfinite(self.max_cells_per_debye) or self.max_cells_per_debye <= 0.0:
@@ -405,10 +432,36 @@ class PeakDebyeGateConfig:
             raise PIC2DValidationError("min_macro_particles_at_peak must be a positive integer")
         if not 0.0 < self.dense_fraction <= 1.0:
             raise PIC2DValidationError("dense_fraction must be in (0, 1]")
+        if self.window_steps is not None:
+            if isinstance(self.window_steps, bool) or not isinstance(self.window_steps, int) or self.window_steps < 1:
+                raise PIC2DValidationError("window_steps must be a positive integer")
+            snapshot = self.window_snapshot_steps
+            if snapshot is None:
+                snapshot = max(self.window_steps // 10, 1)
+                object.__setattr__(self, "window_snapshot_steps", snapshot)
+            if isinstance(snapshot, bool) or not isinstance(snapshot, int) or not 1 <= snapshot <= self.window_steps:
+                raise PIC2DValidationError("window_snapshot_steps must be an integer in [1, window_steps]")
+        elif self.window_snapshot_steps is not None or self.soft_cells_per_debye is not None:
+            raise PIC2DValidationError("soft_cells_per_debye and window_snapshot_steps apply to the window mode (window_steps) only")
+        if self.soft_cells_per_debye is not None:
+            soft = self.soft_cells_per_debye
+            if isinstance(soft, bool) or not isinstance(soft, (int, float)) or not isfinite(soft) or not 0.0 < soft <= self.max_cells_per_debye:
+                raise PIC2DValidationError("soft_cells_per_debye must be a finite number in (0, max_cells_per_debye]")
+            object.__setattr__(self, "soft_cells_per_debye", float(soft))
+
+    @property
+    def windowed(self) -> bool:
+        """v2.0.3 window mode: the gate reads the interval-averaged peak."""
+
+        return self.window_steps is not None
 
     def to_dict(self) -> dict[str, Any]:
-        return {"max_cells_per_debye": self.max_cells_per_debye, "min_macro_particles_at_peak": self.min_macro_particles_at_peak,
-                "dense_fraction": self.dense_fraction}
+        record: dict[str, Any] = {"max_cells_per_debye": self.max_cells_per_debye, "min_macro_particles_at_peak": self.min_macro_particles_at_peak,
+                                  "dense_fraction": self.dense_fraction}
+        if self.windowed:   # v1.4 / v2.0.0-v2.0.2 identities unchanged when the window mode is off
+            record |= {"window_steps": self.window_steps, "window_snapshot_steps": self.window_snapshot_steps,
+                       "soft_cells_per_debye": self.soft_cells_per_debye}
+        return record
 
 
 def peak_node_debye(
@@ -956,6 +1009,13 @@ class CPUBackend:
         far = self.masks.far_field_node
         return self.diagnostics.n_e[far].copy(), self.diagnostics.n_i[far].copy(), int(self.diagnostics.steps), self.diagnostic_generation
 
+    def peak_window_sums(self) -> tuple[dict[str, np.ndarray], int, int]:
+        """v2.0.3 peak-Debye gate: the electron window sums (``PEAK_WINDOW_SUM_KEYS``) over the whole node map, the
+        accumulated step count and the reset generation (same accumulation as ``diagnostic_sums``)."""
+
+        diag = self.diagnostics
+        return {key: np.asarray(getattr(diag, key)).copy() for key in PEAK_WINDOW_SUM_KEYS}, int(diag.steps), self.diagnostic_generation
+
     def surface_charge_map(self) -> np.ndarray:
         assert self.state is not None
         return self.state.surface_charge_c.copy()
@@ -1319,6 +1379,144 @@ class FarFieldChargeWindow:
         return [int(k) for k in np.unravel_index(int(node), self.far.shape)]
 
 
+# v2.0.3 peak-Debye window: the electron window sums the statistic needs, in the order the backends return them
+PEAK_WINDOW_SUM_KEYS = ("n_e", "e_weight", "e_vr", "e_vt", "e_vz", "e_v2")
+
+
+def window_peak_debye(
+    masks: MeshMasks, config: "PIC2DConfig", sums: Mapping[str, np.ndarray], steps: int, *, min_mean_occupancy: float,
+) -> dict[str, Any]:
+    """v2.0.3: peak-node Debye statistic of an accumulated window (``sum_t n_e`` and the electron moment sums over ``steps``).
+
+    ``<n_e>`` = ``sum_t n_e / steps`` per node; T_e is the window's moment temperature
+    ``m_e (sum v^2 / sum w - |sum v / sum w|^2) / 3e`` (exactly ``maps.npz`` ``t_e_ev``); the peak is the
+    densest plasma node whose mean occupancy ``sum w / steps`` is at least ``min_mean_occupancy``
+    macro-electrons (the v1.4 floor, now on the window mean); ``max(dr, dz) / lambda_D`` there is the gate
+    quantity.  The unrestricted window maximum is reported as ``raw_peak``.  Zero ``steps`` gives an
+    empty (unresolved) statistic.
+    """
+
+    grid = masks.grid
+    plasma = masks.plasma_node
+    out: dict[str, Any] = {"window_steps": int(steps), "min_mean_macro_particles_at_peak": float(min_mean_occupancy)}
+    if steps <= 0 or not plasma.any():
+        return out | {"resolved": False, "resolved_nodes": 0, "node": [0, 0], "r_m": 0.0, "z_m": 0.0, "n_e_peak_per_m3": 0.0,
+                      "t_e_peak_ev": 0.0, "debye_length_m": None, "cells_per_debye": 0.0, "mean_macro_particles_at_peak": 0.0,
+                      "raw_peak": {"node": [0, 0], "n_e_per_m3": 0.0, "mean_macro_particles": 0.0}}
+    n_e_sum = np.asarray(sums["n_e"], dtype=np.float64)
+    w = np.asarray(sums["e_weight"], dtype=np.float64)
+    with np.errstate(invalid="ignore", divide="ignore"):
+        n_e = np.where(plasma, n_e_sum / steps, 0.0)
+        safe_w = np.maximum(w, 1e-300)
+        mean_v2 = np.where(w > 0.0, np.asarray(sums["e_v2"], dtype=np.float64) / safe_w, 0.0)
+        drift2 = np.where(w > 0.0, (np.asarray(sums["e_vr"], dtype=np.float64) ** 2 + np.asarray(sums["e_vt"], dtype=np.float64) ** 2
+                                    + np.asarray(sums["e_vz"], dtype=np.float64) ** 2) / safe_w**2, 0.0)
+        t_e = np.maximum(mean_v2 - drift2, 0.0) * ELECTRON_MASS_KG / (3.0 * EV_J)
+    occupancy = w / steps
+    raw_flat = int(np.argmax(n_e))
+    resolved_mask = plasma & (occupancy >= float(min_mean_occupancy))
+    resolved = bool(resolved_mask.any())
+    flat = int(np.argmax(np.where(resolved_mask, n_e, -1.0))) if resolved else raw_flat
+    i, j = np.unravel_index(flat, n_e.shape)
+    n_peak = float(n_e[i, j])
+    t_peak = float(t_e[i, j])
+    cell = max(grid.dr_m, grid.dz_m)
+    debye: float | None
+    if n_peak > 0.0 and t_peak > 0.0:
+        debye = sqrt(EPSILON_0_F_PER_M * t_peak * EV_J / (n_peak * ELEMENTARY_CHARGE_C**2))
+        cells_per_debye = cell / debye
+    else:
+        debye, cells_per_debye = None, 0.0
+    raw_i, raw_j = np.unravel_index(raw_flat, n_e.shape)
+    return out | {
+        "resolved": resolved,
+        "resolved_nodes": int(resolved_mask.sum()),
+        "node": [int(i), int(j)],
+        "r_m": float(i * grid.dr_m),
+        "z_m": float(grid.geometry.z_min_m + j * grid.dz_m),
+        "n_e_peak_per_m3": n_peak,
+        "t_e_peak_ev": t_peak,
+        "debye_length_m": debye,
+        "cells_per_debye": float(cells_per_debye),
+        "mean_macro_particles_at_peak": float(occupancy[i, j]),
+        "raw_peak": {"node": [int(raw_i), int(raw_j)], "n_e_per_m3": float(n_e[raw_i, raw_j]), "mean_macro_particles": float(occupancy[raw_i, raw_j])},
+    }
+
+
+class PeakDebyeWindow:
+    """v2.0.3: trailing-window peak-node Debye statistic from the diagnostic accumulators (host side).
+
+    The same construction as ``FarFieldChargeWindow`` on the WHOLE node map of the electron window sums
+    (``sum_t n_e``, ``sum_t w``, ``sum_t w v_r``, ``sum_t w v_theta``, ``sum_t w v_z``, ``sum_t w v^2``):
+    at every series record the backend hands over the current sums, the accumulated step count and its
+    reset generation; cumulative totals bridge the runner's window resets (the last reading before a reset
+    is carried - the runner resets right after a series record, so nothing is lost), and a ring of
+    cumulative totals turns the trailing window into an exact difference of two totals.  Because a full
+    node-map set is ~3 MB on the plume grid, the ring keeps a snapshot every ``snapshot_steps`` accumulated
+    steps (not every record): the window spans between ``window_steps`` and ``window_steps + snapshot_steps``
+    accumulated steps once complete, and ``min(window_steps, all accumulated history)`` before that.  Memory:
+    ``window_steps / snapshot_steps + 2`` snapshots.
+    """
+
+    def __init__(self, masks: MeshMasks, config: "PIC2DConfig", window_steps: int, snapshot_steps: int, min_mean_occupancy: float) -> None:
+        self.masks = masks
+        self.config = config
+        self.window_steps = int(window_steps)
+        self.snapshot_steps = int(snapshot_steps)
+        self.min_mean_occupancy = float(min_mean_occupancy)
+        shape = masks.grid.node_shape
+        self._carry = {key: np.zeros(shape) for key in PEAK_WINDOW_SUM_KEYS}
+        self._carry_steps = 0
+        self._last: tuple[dict[str, np.ndarray], int, int] | None = None
+        self._records = 0
+        self._next_snapshot_at = 0
+        # ring entries: (step, cumulative accumulated steps, record index, cumulative totals)
+        self._ring: deque[tuple[int, int, int, dict[str, np.ndarray]]] = deque(maxlen=self.window_steps // self.snapshot_steps + 2)
+
+    def reset(self, reading: tuple[dict[str, np.ndarray], int, int], step: int) -> None:
+        """Forget the history (fresh start / loaded checkpoint) and seed the ring with the current totals."""
+
+        sums, steps, _ = reading
+        self._ring.clear()
+        for key in PEAK_WINDOW_SUM_KEYS:
+            self._carry[key][...] = 0.0
+        self._carry_steps = 0
+        self._records = 0
+        self._last = reading
+        self._ring.append((int(step), int(steps), 0, {key: np.asarray(sums[key], dtype=np.float64).copy() for key in PEAK_WINDOW_SUM_KEYS}))
+        self._next_snapshot_at = int(steps) + self.snapshot_steps
+
+    def update(self, reading: tuple[dict[str, np.ndarray], int, int], step: int) -> dict[str, Any]:
+        sums, steps, generation = reading
+        steps = int(steps)
+        if self._last is not None and int(self._last[2]) != int(generation):
+            # the accumulators were reset since the previous record: carry the last reading (the completed window)
+            for key in PEAK_WINDOW_SUM_KEYS:
+                self._carry[key] += np.asarray(self._last[0][key], dtype=np.float64)
+            self._carry_steps += int(self._last[1])
+        self._last = reading
+        self._records += 1
+        totals = {key: self._carry[key] + np.asarray(sums[key], dtype=np.float64) for key in PEAK_WINDOW_SUM_KEYS}
+        total_steps = self._carry_steps + steps
+        base = self._ring[0] if self._ring else (int(step), total_steps, self._records, totals)
+        for entry in reversed(self._ring):
+            if total_steps - entry[1] >= self.window_steps:
+                base = entry
+                break
+        window_steps = total_steps - base[1]
+        window = {key: totals[key] - base[3][key] for key in PEAK_WINDOW_SUM_KEYS}
+        out = window_peak_debye(self.masks, self.config, window, window_steps, min_mean_occupancy=self.min_mean_occupancy)
+        out |= {
+            "window_records": int(max(self._records - base[2], 0)), "window_start_step": int(base[0]),
+            "window_complete": bool(window_steps >= self.window_steps), "window_steps_required": self.window_steps,
+            "window_snapshot_steps": self.snapshot_steps,
+        }
+        if total_steps >= self._next_snapshot_at:
+            self._ring.append((int(step), total_steps, self._records, {key: value.copy() for key, value in totals.items()}))
+            self._next_snapshot_at = total_steps + self.snapshot_steps
+        return out
+
+
 def boundary_forces_n(masks: MeshMasks, phi: np.ndarray) -> dict[str, float]:
     """Electrostatic axial force on the solid boundaries from the discrete field (v2.0): Maxwell stress.
 
@@ -1473,6 +1671,13 @@ class Simulation:
                 gate.min_accumulated_macro_particles_per_node if gate is not None else PLUME_GATE_MIN_ACCUMULATED_MACRO_PARTICLES_PER_NODE,
             )
             self._far_field_window.reset(self.backend.far_field_window_sums(), self.backend.step_index)
+        # v2.0.3: trailing-window peak-node Debye statistic (any geometry; only when the gate declares a window)
+        self._peak_debye_window: PeakDebyeWindow | None = None
+        if config.peak_debye_gate is not None and config.peak_debye_gate.windowed:
+            gate = config.peak_debye_gate
+            self._peak_debye_window = PeakDebyeWindow(self.masks, config, gate.window_steps, gate.window_snapshot_steps,
+                                                      float(gate.min_macro_particles_at_peak))
+            self._peak_debye_window.reset(self.backend.peak_window_sums(), self.backend.step_index)
 
     @property
     def state(self) -> SimulationState:
@@ -1501,6 +1706,10 @@ class Simulation:
             # the window history is not part of the checkpoint: after a resume the gate statistic covers the
             # accumulation since the resume and is enforced once the window is complete again (disclosed)
             self._far_field_window.reset(self.backend.far_field_window_sums(), int(state.step))
+        if self._peak_debye_window is not None:
+            # same disclosure as the plume gate: the window history is not checkpointed; after a resume the windowed
+            # peak covers the accumulation since the resume and is enforced once the window is complete again
+            self._peak_debye_window.reset(self.backend.peak_window_sums(), int(state.step))
         if self.neutrals is not None:
             if state.neutral is None:
                 raise PIC2DValidationError("state has no neutral inventory but the configuration enables one")
@@ -1640,10 +1849,24 @@ class Simulation:
         # v1.4: peak-node Debye sample (blocker 1): the grid must resolve the PEAK, not the mean
         gate = config.peak_debye_gate
         peak_node = self.backend.peak_node_sample()
+        window_peak: dict[str, Any] | None = None
         if gate is not None:
             peak_node["gate_max_cells_per_debye"] = gate.max_cells_per_debye
-            enforced = peak_node["macro_particles_at_peak"] >= gate.min_macro_particles_at_peak
-            peak_node["gate_enforced"] = bool(enforced)
+            if self._peak_debye_window is not None:
+                # v2.0.3: the gate reads the interval-averaged peak; the single-step sample is the shot-noise witness
+                window_peak = self._peak_debye_window.update(self.backend.peak_window_sums(), step)
+                window_peak["gate_max_cells_per_debye"] = gate.max_cells_per_debye
+                window_peak["soft_cells_per_debye"] = gate.soft_cells_per_debye
+                window_peak["gate_enforced"] = bool(window_peak["window_complete"] and window_peak["resolved"])
+                window_peak["soft_exceeded"] = (None if gate.soft_cells_per_debye is None or not window_peak["gate_enforced"]
+                                                else bool(window_peak["cells_per_debye"] > gate.soft_cells_per_debye))
+                peak_node["gate_mode"] = "window"
+                peak_node["gate_enforced"] = False
+                peak_node["window"] = window_peak
+            else:
+                peak_node["gate_mode"] = "single_step"
+                enforced = peak_node["macro_particles_at_peak"] >= gate.min_macro_particles_at_peak
+                peak_node["gate_enforced"] = bool(enforced)
         momentum: dict[str, Any] | None = None
         plume: dict[str, Any] | None = None
         if masks.has_plume:
@@ -1670,6 +1893,12 @@ class Simulation:
             raise PIC2DStabilityError(
                 f"peak-node Debye gate: {peak_node['cells_per_debye']:.3g} cells per lambda_D at node {peak_node['node']} "
                 f"(n_e {peak_node['n_e_peak_per_m3']:.3g} m^-3, T_e {peak_node['t_e_peak_ev']:.3g} eV) exceeds {gate.max_cells_per_debye}"
+            )
+        if window_peak is not None and window_peak["gate_enforced"] and window_peak["cells_per_debye"] > gate.max_cells_per_debye:
+            raise PIC2DStabilityError(
+                f"peak-node Debye gate (window): {window_peak['cells_per_debye']:.3g} cells per lambda_D at node {window_peak['node']} "
+                f"averaged over {window_peak['window_steps']} steps (<n_e> {window_peak['n_e_peak_per_m3']:.3g} m^-3, "
+                f"T_e {window_peak['t_e_peak_ev']:.3g} eV) exceeds {gate.max_cells_per_debye}"
             )
 
     # -- v2.0 plume block ---------------------------------------------------------
@@ -1925,10 +2154,12 @@ __all__ = [
     "IEDF_BINS",
     "InjectionConfig",
     "MOMENTUM_KEYS",
+    "PEAK_WINDOW_SUM_KEYS",
     "PIC2DConfig",
     "PLUME_GATE_MIN_ACCUMULATED_MACRO_PARTICLES_PER_NODE",
     "PLUME_GATE_WINDOW_STEPS",
     "PeakDebyeGateConfig",
+    "PeakDebyeWindow",
     "PlumeBoundaryGateConfig",
     "SeedPlasmaConfig",
     "SeriesRecord",
@@ -1945,4 +2176,5 @@ __all__ = [
     "neutral_shape_cells",
     "plume_neutral_shape",
     "seed_plasma_state",
+    "window_peak_debye",
 ]

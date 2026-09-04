@@ -686,6 +686,9 @@ def test_plume_protocol_builds_the_v20_config_and_runs_with_the_v20_artifacts(tm
     assert real.plume_boundary_gate.window_steps == int(runner.load_protocol(PLUME_PROTOCOL)["numerics"]["averaging_window_steps"])
     assert real.plume_boundary_gate.window_steps == 20 * int(runner.load_protocol(PLUME_PROTOCOL)["numerics"]["frame_recorder"]["cadence_steps"])
     assert real.neutral_inventory.wall_recycling and real.peak_debye_gate is not None
+    # v2.0.3 (attempt 9+): the peak-Debye gate reads the interval-averaged peak over the same 400 000-step window, hard pi / soft 2.5
+    assert real.peak_debye_gate.windowed and real.peak_debye_gate.window_steps == 400_000 and real.peak_debye_gate.soft_cells_per_debye == 2.5
+    assert real.peak_debye_gate.max_cells_per_debye == pytest.approx(3.141592653589793)
     assert runner.protocol_budget(runner.load_protocol(PLUME_PROTOCOL))["ion_transit_time_s"] == 3.1e-6
 
     protocol = _tiny_plume_protocol()
@@ -705,6 +708,10 @@ def test_plume_protocol_builds_the_v20_config_and_runs_with_the_v20_artifacts(tm
     # the gate window is continuous across the runner's 200-step accumulator resets: at step 400 it covers all 400 steps
     assert samples[-1]["plume"]["far_field_window_steps"] == 400 and samples[-1]["plume"]["far_field_window_complete"] is False
     assert samples[-1]["plume"]["gate_armed"] is False and "charge_fraction_of_peak_window_raw" in samples[-1]["plume"]
+    # v2.0.3: the window-mode peak-Debye statistic is recorded (400 of 400 000 steps: not enforced) next to the single-step witness
+    assert samples[-1]["peak_node"]["gate_mode"] == "window" and samples[-1]["peak_node"]["gate_enforced"] is False
+    assert samples[-1]["peak_node"]["window"]["window_steps"] == 400 and samples[-1]["peak_node"]["window"]["gate_enforced"] is False
+    assert "windowed_energy_residual_over_electrode_work" in samples[-1]["grid_heating_triad"]
     with np.load(results / "series.npz") as series:   # closed before the resume rewrites the file (Windows lock)
         for key in ("momentum_thrust_total_n", "momentum_closure_fraction", "momentum_electrostatic_force_thruster_n",
                     "momentum_cathode_emission_next_a", "plume_exit_plane_axis_potential_v", "plume_charge_fraction_of_peak",
