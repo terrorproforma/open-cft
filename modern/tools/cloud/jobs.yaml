@@ -150,6 +150,65 @@ jobs:
     transit_time_s: 2.4e-6
     enabled: true
 
+  # ---------------------------------------------------------------- (ii-c) anomalous transport v1 - PREREGISTERED Bohm alpha-series (model v2.1.0, roadmap R1)
+  # modern/experiments/pic2d_anomalous_transport_v1/: the ss-v4 33 um protocol (90 x 720, dt 1.4 ps, W 26666.7, seed 20260903, v1.3 closure,
+  # frames ON) + numerics.anomalous_collisions {model bohm_perpendicular_rotation, alpha} + the v2.0.6 accumulated-particle-step Debye floor
+  # (64 000) + K = 5; alpha = 0 is the RECORDED ss-v4 plateau (0d228ad2, (b) FAIL at +2.46 % on the corrected ledger - stated). Identities
+  # 28ca0391 (1/64) / 90cf53f1 (1/16) / 8ea88273 (0.345) vs v4's f10772b2. Predeclared hypotheses (audit 4.c): I_d up, S / utilisation / peak
+  # n_e / T_e,peak down, n_g up, cusp wall electron loss up, cusp sheath drops down; series verdict by monotonicity of I_d and peak n_e.
+  # Box preflight 16:48-16:52 UTC 2026-09-04 as the 4th MPS client: 4.77 ms/step at 4.5 M particles -> 6.8 h to 3 transits, budgets 37,200 s
+  # (10.3 h) = 1.5x. `commit` / `--expect-commit` = the PREREG commit 057841cf; `--require-mps`; ~1.3 GB device pool. Launch ORDER as slots
+  # free: at-alpha-1over16 (the audit's central point) -> [ext-val-v0-channel-20um-bohm-0.4] -> at-alpha-1over64 -> at-alpha-0.345; never a 5th client.
+  - id: at-alpha-1over16
+    note: >
+      pic2d_anomalous_transport_v1 case alpha-1over16 (classical Bohm nu_an = omega_ce / 16, rotation model): 90 x 720 at 33 um,
+      dt 1.4 ps, W 26666.7, ~4.5 M particles at the plateau, 5.14 M steps to 3 transits (2.4 us); preflight 4.77 ms/step (4 clients)
+      -> 6.8 h; budget 37,200 s (10.3 h). Launch 1 of the series.
+    module: experiments.pic2d_anomalous_transport_v1.run
+    args: [launch, --case, alpha-1over16, --expect-commit, "057841cfcd72d24d09608143319079fc9f750e99", --require-mps]
+    gpu: auto
+    commit: 057841cfcd72d24d09608143319079fc9f750e99
+    preregistered: true
+    protocol: modern/experiments/pic2d_anomalous_transport_v1/protocols/alpha-1over16.json
+    results: modern/experiments/pic2d_anomalous_transport_v1/results/alpha-1over16
+    checkout: worktree
+    gpu_memory_gib: 2
+    expected_ms_per_step: 4.8
+    transit_time_s: 2.4e-6
+    enabled: true
+  - id: at-alpha-1over64
+    note: >
+      pic2d_anomalous_transport_v1 case alpha-1over64 (a quarter of the Bohm frequency, rotation model); same grid / dt / W / seed as
+      at-alpha-1over16; preflight 4.77 ms/step -> 6.8 h; budget 37,200 s. Launch 3 of the series (after the ext-val bohm-0.4 launch 2).
+    module: experiments.pic2d_anomalous_transport_v1.run
+    args: [launch, --case, alpha-1over64, --expect-commit, "057841cfcd72d24d09608143319079fc9f750e99", --require-mps]
+    gpu: auto
+    commit: 057841cfcd72d24d09608143319079fc9f750e99
+    preregistered: true
+    protocol: modern/experiments/pic2d_anomalous_transport_v1/protocols/alpha-1over64.json
+    results: modern/experiments/pic2d_anomalous_transport_v1/results/alpha-1over64
+    checkout: worktree
+    gpu_memory_gib: 2
+    expected_ms_per_step: 4.8
+    transit_time_s: 2.4e-6
+    enabled: false                # enable when a slot frees (after the ext-val bohm-0.4 launch 2)
+  - id: at-alpha-0.345
+    note: >
+      pic2d_anomalous_transport_v1 case alpha-0.345 (Brandt 2016's D_perp = 0.4 kT_e/eB as nu_an = 0.4 omega_ce -> exact factor 0.345, declared
+      as alpha 0.345, rotation model); same grid / dt / W / seed; preflight 4.78 ms/step -> 6.8 h; budget 37,200 s. Launch 4 of the series.
+    module: experiments.pic2d_anomalous_transport_v1.run
+    args: [launch, --case, alpha-0.345, --expect-commit, "057841cfcd72d24d09608143319079fc9f750e99", --require-mps]
+    gpu: auto
+    commit: 057841cfcd72d24d09608143319079fc9f750e99
+    preregistered: true
+    protocol: modern/experiments/pic2d_anomalous_transport_v1/protocols/alpha-0.345.json
+    results: modern/experiments/pic2d_anomalous_transport_v1/results/alpha-0.345
+    checkout: worktree
+    gpu_memory_gib: 2
+    expected_ms_per_step: 4.8
+    transit_time_s: 2.4e-6
+    enabled: false                # enable when a slot frees
+
   # ---------------------------------------------------------------- (iii) PIC design mini-sweep v1 (4 primary designs) - PREREGISTERED channel-33um option
   # modern/experiments/pic2d_design_mini_sweep_v1/: the steady-state v4 template (model v1.3 closure + v2.0.3 gates), 33.33 um / 1.4 ps,
   # W = 6e4 x dr dz / (50 um)^2 (particles-per-cell parity; 26 666.7 for the reference = v4), wall budgets 1.5x the projected
