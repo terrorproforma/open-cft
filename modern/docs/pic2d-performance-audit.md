@@ -855,3 +855,34 @@ than the direct solve even under contention.
 4. The v2.1 33 µm plume box (`pic2d_cft_plume_v2_1`, 360 × 1440) is the run this solver was built for: its 6 GB of
    inverse blocks and 20-second factorisations are gone and the step is already faster under contention; its
    cost table should be re-issued after item 1.
+
+## 13. Model v2.0.6 — energy-ledger correction and the accumulated-particle-step Debye floor (2026-09-05; not a performance change)
+
+Recorded here because §§3, 5 and 11 describe the ledger's cost and its bitwise contract, and because the number the
+residual-power gate reads has changed. Spec entries `pic2d-model-v2.0.json#gates_v2_0.energy_ledger_correction_v2_0_6`,
+`gate_recalibration_v2_0_6`, `peak_debye_gate_accumulated_floor_v2_0_6`.
+
+* **What was wrong.** Both backends added the MCC tally's per-macro-event threshold energy `(n_exc E_exc + n_ion E_ion) e`
+  to `cumulative["inelastic_loss_j"]` without the macro weight `W` (every other ledger term carries `W`). The recorded
+  interval residual was therefore `H − L_inel` with `H = field work + dU − electrode work` the true numerical energy
+  creation and `L_inel` the W-scaled inelastic power: every residual recorded up to v2.0.5 read too negative by the
+  inelastic power (7–14 % of the electrode work at the accepted plateaus). Found by the external-validation launch-1
+  diagnosis (036bd679); verified by the particle-side identity closing to round-off in both backends
+  (`tests/pic2d/test_pic2d_v206_ledger.py`).
+* **Cost.** One multiply and one dictionary add in the host flush (`WarpBackend.flush`, after the graph) and in the CPU
+  step; no kernel, no launch, no device array changed. The step graph and the physics state are bitwise those of v2.0.5;
+  the §11 timings stand. The series record gains one scalar (`interval_inelastic_loss_j`).
+* **Post hoc.** `python -m cft_revival.pic2d.ledger_recompute <results-dir>` rebuilds the corrected windowed and
+  cumulative residual from the recorded `series.npz` (`H` per record; sidecar `ledger-corrected.json`; recorded files
+  untouched). Corrected end-state windows: v2 base / seed-b / W×0.7 (50 µm) +13.0 / +11.1 / +7.2 % — the 50 µm
+  plateaus were heating; ss-v4 (33 µm) +2.46 % (acceptance (b) < +2 % recorded PASS → corrected FAIL); 047 +0.9 %;
+  056 L1 +0.6 %; v5 L1 (25 µm, 0.8 µs) +0.3 %; attempt 8 +67 %; ext-val L1 +62 % (5 % crossed at 0.34 µs, recorded 0.73).
+* **Gate.** The 5 % one-sided windowed residual-power stop is kept on the corrected statistic (2× margin over the accepted
+  33 µm maxima; catches attempt 8 at 0.66 µs and the ext-val avalanche at 0.34 µs). Running preregistered campaigns
+  (ss-v5, sweep 056 L2, reference) execute pre-v2.0.6 code: assess their (b) on the sidecar.
+* **Peak-Debye floor.** `PeakDebyeGateConfig.min_accumulated_macro_particle_steps_at_peak` (64 000 = 32 samples ×
+  2000 steps, the v2.0.2 plume-gate figure) gates the densest node with that much accumulated electron weight over the
+  window (the ext-val axis column at 0.76 macro-electrons per step had ~300 000 macro-electron-steps and was invisible to
+  the ≥ 32 mean-occupancy floor); the v2.0.3 reading stays as the witness. Enters `config_sha256` only when declared; the
+  v4 plateau reads 2.154 under both floors, attempt 8's final window 3.61 (trips). Host-side only (the same window sums
+  as v2.0.3; one extra comparison per node at the record sync): no step cost.
