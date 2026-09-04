@@ -66,9 +66,23 @@ LAUNCH_BOX = {
     ],
 }
 # ms/step measured on the launch box by `preflight --gpu-timing` (>= 2000 production steps at the seed load and at the projected plateau
-# load, under the MPS contention present at the time); None until the box preflight has run. When set, the wall budget is derived
-# from max(cost-model MPS-4 rate, measured plateau-load rate) so a slower-than-modelled box can never starve the 3-transit plateau rule.
-LAUNCH_BOX_TIMING: dict[str, Any] | None = None
+# load, under the MPS contention present at the time). The wall budget is derived from max(cost-model MPS-4 rate, measured plateau-load
+# rate) so a slower-than-modelled box can never starve the 3-transit plateau rule; a faster measurement leaves the cost-model budget.
+LAUNCH_BOX_TIMING: dict[str, Any] | None = {
+    "utc": "2026-09-04T11:56:14Z",
+    "host": "ubuntu@68.209.75.2 (NVIDIA H100 80GB HBM3, GPU-a800b021-6364-473f-5177-cd6ae7ce0005, driver 580.105.08)",
+    "record": "modern/experiments/pic2d_external_validation_v0/preflight-channel-20um.json launch_box_timing (first box preflight at 42e30aaa; the sealed record is the re-run at the "
+              "preregistration commit and may differ in the last digits and in the client count)",
+    "timing_steps": 2000,
+    "ms_per_step_at_seed_load": 5.58,                 # 60 000 seed electrons (5e16 m^-3 / 5 eV), 2000 steps after 200 warm-up
+    "ms_per_step_at_plateau_load": 13.07,             # 6.0 M e- + 6.0 M i (synthetic uniform 5e18 seed = the 12 M-particle cap), 2000 steps after 200 warm-up
+    "concurrent_mps_clients": 5,                      # three mini-sweep runs (reference, 047, 009) + the steady-state v5 shakedown + a profiling job of other agents
+    "factorisation_seconds": 7.1,
+    "hours_to_3_transits_at_plateau_load": 21.8,      # 6.0 M steps x 13.07 ms; the cost model's MPS-4 projection is 30.6 h at 18.3 ms/step
+    "note": ("measured under SIX-way GPU sharing (five other CUDA-MPS clients), i.e. heavier contention than the four-slot configuration the run executes in; the per-process "
+             "rate falls toward the solo rate (~7 ms/step by the cost model) as the sweep runs finish, so the measured value is an upper bound for the launch configuration "
+             "and the cost-model MPS-4 rate (slower) stays the budget basis: 46.0 h"),
+}
 EXPERIMENT_PROTOCOL_PATH = EXPERIMENT_DIR / "protocol.json"
 COMPARISON_SPEC_PATH = EXPERIMENT_DIR / "comparison-spec.json"
 
