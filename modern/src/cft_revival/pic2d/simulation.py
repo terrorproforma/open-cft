@@ -27,7 +27,16 @@ from typing import Any, Literal, Mapping
 import numpy as np
 
 from . import kernels
-from .coulomb import COULOMB_KEYS, COULOMB_RNG_STREAM, CoulombConfig, CoulombOperator, cell_maps_to_nodes, coulomb_frequencies
+from .coulomb import (
+    COULOMB_KEYS,
+    COULOMB_RNG_STREAM,
+    CoulombConfig,
+    CoulombOperator,
+    cell_maps_to_nodes,
+    coulomb_frequencies,
+    coulomb_log_ee,
+    spitzer_electron_ion_momentum_rate,
+)
 from .fields import MagneticFieldMap
 from .ion_mcc import ION_MCC_KEYS, IonNullCollisionMCC
 from .mcc import MCCConfig, NullCollisionMCC, XenonCrossSections, maxwellian_velocity
@@ -2245,11 +2254,7 @@ class Simulation:
             see_sample = self._see_record(extra, delta, interval, current_unit, phi, plasma_phi)
             currents["see_emission_a"] = see_sample["emission_current_a"]
             currents["see_effective_yield"] = see_sample["interval_effective_yield"]
-        coulomb_sample: dict[str, Any] | None = None
-        if config.coulomb_active:
-            coulomb_sample = self._coulomb_record(extra, delta, interval, int(sample["electrons"]))
-            currents["coulomb_nu_ee_mean_per_s"] = coulomb_sample["nu_ee_mean_per_s"]
-            currents["coulomb_nu_ei_mean_per_s"] = coulomb_sample["nu_ei_mean_per_s"]
+        coulomb_sample: dict[str, Any] | None = None     # v2.4.0: filled after the peak-node sample (it reads the peak n_e, T_e)
         neutral: dict[str, Any] | None = None
         if self.neutrals is not None and self.neutral_state is not None:
             # v1.3: advance the inventory with the ionisation measured over this interval,
@@ -2289,6 +2294,10 @@ class Simulation:
         # v1.4: peak-node Debye sample (blocker 1): the grid must resolve the PEAK, not the mean
         gate = config.peak_debye_gate
         peak_node = self.backend.peak_node_sample()
+        if config.coulomb_active:
+            coulomb_sample = self._coulomb_record(extra, delta, interval, int(sample["electrons"]), peak_node)
+            currents["coulomb_nu_ee_mean_per_s"] = coulomb_sample["nu_ee_mean_per_s"]
+            currents["coulomb_nu_ei_mean_per_s"] = coulomb_sample["nu_ei_mean_per_s"]
         window_peak: dict[str, Any] | None = None
         if gate is not None:
             peak_node["gate_max_cells_per_debye"] = gate.max_cells_per_debye
@@ -2380,11 +2389,19 @@ class Simulation:
         }
 
     # -- v2.4.0 Coulomb block ------------------------------------------------------------
-    def _coulomb_record(self, extra: Any, delta: Mapping[str, float], interval: float, electrons: int) -> dict[str, Any]:
-        """Interval Coulomb sample: mean e-e / e-i / i-i collision frequencies (``coulomb.coulomb_frequencies``), the mean and
-        large-s fraction of the per-pair deflection parameter (the ``nu dt_c << 1`` check), the mean Coulomb logarithm, the
-        electron-neutral elastic frequency of the same interval and the ratio ``nu_ee / nu_en`` the audit estimates, the
-        (round-off) momentum and relativistic-energy tallies."""
+    def _coulomb_record(self, extra: Any, delta: Mapping[str, float], interval: float, electrons: int,
+                        peak_node: Mapping[str, Any]) -> dict[str, Any]:
+        """Interval Coulomb sample.
+
+        Two frequency definitions are recorded because they answer different questions: ``nu_*_mean_per_s`` is the
+        operator's own pair-mean deflection rate ``<s> / dt_c`` (``coulomb.coulomb_frequencies``) - the average over the
+        pairs actually formed of ``nu_pair = (lnL / 4 pi)(q_a q_b / eps0 m_ab)^2 n / g^3``, whose ``1/g^3`` weighting is
+        dominated by the slowest pairs (a heavy tail: typically several times the thermal rate and noisy); ``nu_e_spitzer_
+        peak_per_s`` is the NRL "electron collision rate" ``2.91e-6 n lnL T^-3/2`` at the record's peak node (the
+        audit's gap-(d) definition, a smooth function of n_e and T_e).  Also: the mean and large-s fraction of the per-pair
+        deflection parameter (the ``nu dt_c << 1`` check), the mean Coulomb logarithm, the interval's electron-neutral elastic
+        frequency (MCC elastic events per electron per second; n_g is uniform in the channel) with both ratios to it, and
+        the (round-off) momentum and relativistic-energy tallies."""
 
         config = self.config
         assert config.coulomb is not None
@@ -2396,11 +2413,20 @@ class Simulation:
         record["interval_cycles"] = diff["coulomb_cycles"]
         record["interval_pz_coulomb_kg_m_s"] = diff["pz_coulomb"]
         record["interval_ke_coulomb_j"] = diff["ke_coulomb_j"]
-        # electron-neutral elastic frequency over the interval from the MCC tally (macro events per electron per second) and
-        # the ratio the audit's gap (d) estimate is about
         nu_en = delta["elastic"] / (max(electrons, 1) * interval) if self.config.mcc is not None else 0.0
         record["nu_en_elastic_mean_per_s"] = nu_en
         record["nu_ee_over_nu_en"] = record["nu_ee_mean_per_s"] / nu_en if nu_en > 0.0 else None
+        n_peak = float(peak_node.get("n_e_peak_per_m3") or 0.0)
+        t_peak = float(peak_node.get("t_e_peak_ev") or 0.0)
+        if n_peak > 0.0 and t_peak > 0.0:
+            lnl = config.coulomb.coulomb_log_fixed
+            if lnl is None:
+                lnl = float(coulomb_log_ee(n_peak, t_peak, config.coulomb.coulomb_log_floor))
+            nu_spitzer = spitzer_electron_ion_momentum_rate(n_peak, t_peak, lnl)
+        else:
+            nu_spitzer = 0.0
+        record["nu_e_spitzer_peak_per_s"] = nu_spitzer
+        record["nu_e_spitzer_peak_over_nu_en"] = nu_spitzer / nu_en if nu_en > 0.0 else None
         return record
 
     # -- v2.0 plume block ---------------------------------------------------------

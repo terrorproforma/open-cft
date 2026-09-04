@@ -118,6 +118,7 @@ COULOMB_SCALARS = (
     "nu_ee_mean_per_s", "nu_ei_mean_per_s", "nu_ii_mean_per_s", "mean_s_ee", "mean_s_ei", "mean_s_ii", "fraction_large_s_ee",
     "fraction_large_s_ei", "mean_coulomb_log_ee", "mean_coulomb_log_ei", "interval_ee_pairs", "interval_ei_pairs", "interval_ii_pairs",
     "interval_cycles", "interval_pz_coulomb_kg_m_s", "interval_ke_coulomb_j", "nu_en_elastic_mean_per_s", "nu_ee_over_nu_en",
+    "nu_e_spitzer_peak_per_s", "nu_e_spitzer_peak_over_nu_en",
 )
 MOMENTUM_OPTIONAL_SCALARS_V24 = ("coulomb_momentum_rate_n",)
 # v2.2.0 SEE sample (records of an emitting wall only; see Simulation._see_record)

@@ -545,6 +545,10 @@ def test_conservation_per_step_in_a_discharge_and_the_ledger_terms(backend: str)
     assert block["interval_cycles"] > 0 and block["nu_ee_mean_per_s"] > 0.0 and block["nu_ei_mean_per_s"] > 0.0 and block["nu_ii_mean_per_s"] == 0.0
     assert 5.0 < block["mean_coulomb_log_ee"] < 20.0 and 5.0 < block["mean_coulomb_log_ei"] < 20.0
     assert 0.0 <= block["fraction_large_s_ee"] <= 1.0 and block["nu_en_elastic_mean_per_s"] > 0.0 and block["nu_ee_over_nu_en"] > 0.0
+    # the NRL electron collision rate at the record's peak node (the audit's definition) beside the operator's pair-mean rate
+    peak = record["peak_node"]
+    expected_spitzer = spitzer_electron_ion_momentum_rate(peak["n_e_peak_per_m3"], peak["t_e_peak_ev"], float(coulomb_log_ee(peak["n_e_peak_per_m3"], peak["t_e_peak_ev"])))
+    assert block["nu_e_spitzer_peak_per_s"] == pytest.approx(expected_spitzer) and block["nu_e_spitzer_peak_over_nu_en"] > 0.0
     assert block["cycle_dt_s"] == pytest.approx(2.0 * config.dt_s) and record["ledger"]["interval_coulomb_ke_j"] == pytest.approx(terms["coulomb"][-1])
     assert record["currents_a"]["coulomb_nu_ee_mean_per_s"] == block["nu_ee_mean_per_s"]
     # window maps: cell-layout Coulomb frequencies (node-shaped arrays, last row / column zero), positive where electrons were

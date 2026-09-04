@@ -32,7 +32,7 @@ from typing import Any
 import numpy as np
 
 from cft_revival.pic2d import artifacts
-from cft_revival.pic2d.coulomb import column_frequency_profile
+from cft_revival.pic2d.coulomb import column_frequency_profile, coulomb_log_ee
 from cft_revival.pic2d.models import XENON_MASS_KG, ParticleArrays
 from cft_revival.pic2d.simulation import SimulationState, empty_cumulative
 from experiments.pic2d_cft_steady_state_v1 import run as runner
@@ -119,9 +119,25 @@ def frequency_map_readings(maps: dict[str, np.ndarray], results: Path) -> dict[s
     out["electron_weighted_mean_nu_ee_per_s"] = float(np.sum(nu_ee[:-1, :-1][resolved] * weight[resolved]) / weight[resolved].sum()) if resolved.any() else None
     out["electron_weighted_mean_nu_ei_per_s"] = float(np.sum(nu_ei[:-1, :-1][resolved] * weight[resolved]) / weight[resolved].sum()) if resolved.any() else None
     out["max_nu_ee_per_s"] = float(np.max(nu_ee))
+    out["definition_note"] = ("coulomb_nu_*_per_s are the operator's pair-mean deflection rates <s> / dt_c (a 1/g^3-weighted mean: heavy-tailed, "
+                              "several times the thermal rate); nu_e_spitzer_* is the NRL electron collision rate 2.91e-6 n lnL T^-3/2 from the window "
+                              "n_e / T_e maps (the audit's definition)")
     if "t_e_ev" in maps:
         t_nodes = maps["t_e_ev"]
-        out["peak_cell"]["t_e_window_ev"] = float(0.25 * (t_nodes[i, j] + t_nodes[i + 1, j] + t_nodes[i, j + 1] + t_nodes[i + 1, j + 1]))
+        t_cells = 0.25 * (t_nodes[:-1, :-1] + t_nodes[1:, :-1] + t_nodes[:-1, 1:] + t_nodes[1:, 1:])
+        n_cells = 0.25 * (n_e[:-1, :-1] + n_e[1:, :-1] + n_e[:-1, 1:] + n_e[1:, 1:])
+        out["peak_cell"]["t_e_window_ev"] = float(t_cells[i, j])
+        floor = float(protocol["numerics"].get("coulomb", {}).get("coulomb_log_floor", 2.0))
+        valid = (n_cells > 0.0) & (t_cells > 0.0)
+        lnl = np.where(valid, coulomb_log_ee(np.where(valid, n_cells, 1.0), np.where(valid, t_cells, 1.0), floor), 0.0)
+        with np.errstate(invalid="ignore", divide="ignore"):
+            spitzer = np.where(valid, 2.91e-6 * n_cells * 1e-6 * lnl * np.where(valid, t_cells, 1.0) ** -1.5, 0.0)
+        spitzer_nodes = np.zeros(nu_ee.shape)
+        spitzer_nodes[:-1, :-1] = spitzer
+        out["peak_cell"]["nu_e_spitzer_per_s"] = float(spitzer[i, j])
+        out["peak_cell"]["coulomb_log_ee"] = float(lnl[i, j])
+        out["cusp_columns_nu_e_spitzer_per_s"] = column_frequency_profile(spitzer_nodes, seconds, grid, CUSP_PLANES_M)
+        out["electron_weighted_mean_nu_e_spitzer_per_s"] = float(np.sum(spitzer[resolved] * weight[resolved]) / weight[resolved].sum()) if resolved.any() else None
     return out
 
 
@@ -165,16 +181,33 @@ def direction_against_off(on: dict[str, Any], off: dict[str, Any] | None) -> dic
     return out
 
 
-def shakedown(backend: str = "warp-cuda") -> dict[str, Any]:
-    protocol = load_protocol()
-    record = v4.shakedown(protocol, results=RESULTS, backend=backend, output=SHAKEDOWN_PATH)
+def _attach_readings(record: dict[str, Any], protocol: dict[str, Any], results: Path) -> dict[str, Any]:
     record["schema_version"] = "cft-revival.pic2d-coulomb-v1.shakedown/1.0.0"
     record["coulomb"] = protocol["numerics"]["coulomb"]
-    record["coulomb_readings"] = coulomb_readings(RESULTS)
+    record["coulomb_readings"] = coulomb_readings(results)
     record["off_twin"] = off_twin_readings()
     record["direction_against_off_twin"] = direction_against_off(record["coulomb_readings"], record["off_twin"])
     record["not_a_result"] = "100k-step shakedown of model v2.4.0 on the ss-v4 protocol; early readings only"
+    return record
+
+
+def shakedown(backend: str = "warp-cuda") -> dict[str, Any]:
+    protocol = load_protocol()
+    record = v4.shakedown(protocol, results=RESULTS, backend=backend, output=SHAKEDOWN_PATH)
+    _attach_readings(record, protocol, RESULTS)
     artifacts.write_canonical_json(SHAKEDOWN_PATH, record)
+    print(json.dumps({"coulomb_readings": record["coulomb_readings"], "direction": record["direction_against_off_twin"]}, indent=1, default=str), flush=True)
+    return record
+
+
+def refresh_readings(results: Path = RESULTS, output: Path = SHAKEDOWN_PATH) -> dict[str, Any]:
+    """Recompute the readings blocks of an existing shakedown record from its results directory (CPU only; the run record -
+    steps, timing, gates, assessment - is kept as written by the run)."""
+
+    record = json.loads(output.read_text(encoding="utf-8"))
+    record["readings_refreshed_git_head"] = runner.git_head()
+    _attach_readings(record, load_protocol(), results)
+    artifacts.write_canonical_json(output, record)
     print(json.dumps({"coulomb_readings": record["coulomb_readings"], "direction": record["direction_against_off_twin"]}, indent=1, default=str), flush=True)
     return record
 
@@ -285,11 +318,15 @@ def main(argv: list[str] | None = None) -> int:
     c.add_argument("--repeats", type=int, default=20)
     r = sub.add_parser("readings", help="print the Coulomb readings of the shakedown results")
     r.add_argument("--results", type=Path, default=RESULTS)
+    f = sub.add_parser("refresh-readings", help="recompute the readings blocks of shakedown.json from the results directory (CPU only)")
+    f.add_argument("--results", type=Path, default=RESULTS)
     args = parser.parse_args(argv)
     if args.command == "shakedown":
         shakedown(backend=args.backend)
     elif args.command == "cost":
         cost(backend=args.backend, particles=args.particles, repeats=args.repeats)
+    elif args.command == "refresh-readings":
+        refresh_readings(results=args.results)
     else:
         print(json.dumps(coulomb_readings(args.results), indent=1, default=str))
     return 0
