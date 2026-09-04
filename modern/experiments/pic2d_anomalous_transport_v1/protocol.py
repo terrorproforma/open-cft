@@ -10,7 +10,10 @@ dt 1.4 ps, W 26 666.7, the v1.3 closure, seed 20260903, frames ON) with exactly 
 * ``numerics.performance.moment_sample_interval`` K = 5 (v2.0.5; physics bitwise, enters ``config_sha256`` by policy);
 * the acceptance block: (a) the v4 plateau rule, (b) corrected windowed residual < +2 %, the alpha = 0 reference (ss-v4) with its
   (b) FAIL at +2.46 % stated, the predeclared hypotheses (signs from the physics audit section 4.c) and the series verdict rule;
-* the wall budget from the launch-box measured rate x 1.5 (filled from the preflight before the preregistration commit).
+* the wall budget from the launch-box measured rate x 1.5 (filled from the preflight before the preregistration commit);
+* AMENDMENT 1 (2026-09-05, after launch 1 of alpha-1over16 extinguished and was stopped by the drift members at 1.00 transit): the model
+  v2.1.1 ``drift_members_arming`` latch on the triad's drift members and the v2.0 ``ignition_gate`` calibrated on the accepted 33 um runs
+  (``DRIFT_MEMBERS_ARMING`` / ``IGNITION_GATE`` / ``AMENDMENTS``; stopping-rule keys outside ``config_sha256``).
 
 Everything else (geometry, operating point, dt, grid, W, seed, cadences, plateau rule, the v2.0.3 gate thresholds) is byte-for-byte
 the v4 protocol; ``test_pic2d_anomalous_transport_v1.py`` pins that.
@@ -64,6 +67,90 @@ LAUNCH_PRIORITY: tuple[str, ...] = ("alpha-1over16", "alpha-1over64", "alpha-0.3
 REFERENCE_CASE = "alpha-0"
 REFERENCE_CORRECTED_RESIDUAL = 0.02458578453535502      # ss-v4 ledger-corrected.json end_state_window.corrected_ratio (+2.46 %)
 STEPS_TO_3_TRANSITS = 5_142_858
+
+# -- amendment 1 (2026-09-05, after launch 1 of alpha-1over16 stopped at exactly 1.00 transit on the drift members) ------------------
+# model v2.1.1 arming of the triad's drift members relative to the run's own discharge (spec triad_drift_arming_v2_1_1) + the v2.0
+# ignition gate calibrated on the accepted 33 um runs; both are stopping-rule keys OUTSIDE config_sha256 (identities unchanged)
+DRIFT_MEMBERS_ARMING: dict[str, Any] = {
+    "min_transit_times": 2.0,
+    "settle_quantity": "discharge_current",
+    "settle_drift_max": 0.05,
+    "settle_check_cadence_steps": 40000,
+    "note": ("model v2.1.1 (amendment 1): the triad's DRIFT members (trailing-20 % drifts of S, T_e,dense, resolved omega_pe dt; hard 0.25) are enforced "
+             "only once >= 2.0 ion transits have elapsed AND the trailing-20 % I_d drift has read < 0.05 (the plateau threshold) at a 40 000-step "
+             "checkpoint at or after 2.0 transits - a 'settled once' latch, a pure function of the series. Under the v1.4 rule (enforced_after_transit_times "
+             "1.0, calibrated on alpha = 0 plateaus: ss-v4 I_d drift +0.116 / S +0.10 / T_e,dense +0.02 at 1.0 transit) a discharge re-equilibrating to "
+             "a different state under the closure could be stopped for moving. The physics protections are unchanged and independent of the arming: the "
+             "one-sided windowed residual-POWER gate (>= 5 % of the electrode work, from the first complete 400 000-step window) and the window-mode "
+             "peak-Debye hard gate (pi cells per lambda_D on the accumulated-floor peak). Calibration on the accepted runs: ss-v4's latch closes at 2.66 "
+             "transits (checkpoint 4 560 000, drift +0.049); 047 / 009 / 056-L2 read |I_d drift| < 0.05 from 2.0 transits; no accepted run ever tripped a "
+             "drift member; plume attempt 8 and the ext-val launch 1 are stopped by the residual-power member at their first complete window whatever the "
+             "arming. Launch 1 of alpha-1over16 (record results/alpha-1over16, protocol b59b4402...) stopped at 1.0033 transits on S drift -0.618 and "
+             "T_e,dense drift +0.366 with the residual at +1.15 % and the peak at 0.48 cells per lambda_D: an EXTINCTION (see ignition_gate), not heating"),
+}
+IGNITION_GATE: dict[str, Any] = {
+    "reference_window_s": [0.05e-6, 0.2e-6],
+    "check_window_s": 0.15e-6,
+    "checks": [
+        {"time_s": 1.0e-6, "min_s_ratio": 0.3, "min_electron_ratio": 0.6},
+        {"time_s": 2.0e-6, "min_s_ratio": 0.4, "min_electron_ratio": 0.6},
+    ],
+    "note": ("amendment 1: fail-closed stop_reason no_ignition (the v2.0 runner gate), evaluated at every checkpoint from the series: trailing 0.15 us means "
+             "of S and N_e over their 0.05-0.2 us reference means (after the seed dump). Required with the drift-member arming latch: a discharge that never "
+             "settles is an extinction the latch can never arm on, and would otherwise run to its wall budget. Calibration (N_e ratio / S ratio at 1.0 and "
+             "2.0 us): accepted 33 um plateaus ss-v4 1.40 / 1.03 and 2.01 / 1.58; sweep 047 1.31 / 0.96 and 1.68 / 1.08; 009 1.32 / 1.17 and 1.76 / 1.33; "
+             "056-L2 1.44 / 0.99 and 1.67 / 1.11 (margins >= 2.2x on N_e, >= 2.4x on S over the bounds); the extinguished alpha-1over16 launch 1: 0.45 / 0.37 "
+             "at 1.0 us (fails on N_e) and 0.14 / 0.02 at 2.0 us - it would have stopped at the first checkpoint past 1.0 us (720 000 steps, ~1 h) instead "
+             "of 2.408 us. A case re-equilibrated at the hypotheses' extreme (S, N_e -40 % of alpha = 0) reads ~0.84 / 0.6 - inside. A non-ignition under "
+             "the frozen seed and injection is a recorded outcome of the closure at that alpha (stopping_rule.ignition_check), never a reason to adjust"),
+}
+PRE_AMENDMENT_SEALED_SHA256: dict[str, str] = {
+    "alpha-1over64": "33acb08a0767c4d74ea1685c35a5b2141930eafc4dc5664cf5bcec5166876c3f",
+    "alpha-1over16": "b59b4402ac36e33891374a24f9147c22452acc6fc7bae5658182d44bfed83eaa",
+    "alpha-0.345": "a9519acb5a97d0e43dfc639a6f6b0c7cb241d269a809adf30778c609525b2d74",
+}
+AMENDMENTS: list[dict[str, Any]] = [
+    {
+        "id": 1,
+        "date_utc": "2026-09-04T20:00Z (2026-09-05 06:00 AEST)",
+        "preregistration_commit": "057841cf",
+        "trigger": ("LAUNCH 1 of alpha-1over16 (PID 46438, 17:08:39-19:01:09 UTC 2026-09-04, lock 057841cf, protocol b59b4402...) stopped "
+                    "grid_heating_triad_gate_stopped_run at step 1 720 000 = 2.408 us = 1.0033 transits, the first checkpoint after the drift members armed: "
+                    "ionisation_rate_drift -0.618 and t_e_dense_drift +0.366 exceeded the hard 0.25. Diagnosis (results/alpha-1over16/triad-stop-diagnosis.json): "
+                    "NOT heating (windowed residual +1.15 % of the electrode work, cumulative -0.17 %, accumulated-floor peak 0.48 cells per lambda_D), NOT a "
+                    "re-equilibration toward the hypothesised state (I_d 3.1 -> 0.06 mA) and NOT a gate artefact in the S member: the discharge EXTINGUISHED "
+                    "under the closure - N_e fell monotonically from the seed (6.06e5 -> 4.62e5 at 0.1 us -> 1.89e5 at 1.0 us -> 3.74e4 at 2.41 us; e-fold "
+                    "0.88 us over the last microsecond, matching r_w^2 / 4 D_perp ~ 1 us at D_perp = kT_e / 16 eB), S 2.1e16 -> 6.2e15 -> 0 /s, the injected "
+                    "3.0 mA returned through the exit plane (0.32 -> 2.2 -> 2.9 mA) while the anode electron current fell 3.1 -> 0.93 -> 0.06 mA, n_g back at "
+                    "the undepleted 5.49e19; the anomalous event rate 2.0e19 /s at 0.1 us = omega_ce / 16 per electron at <|B|> 0.15 T (the hook at its "
+                    "declared rate). The T_e,dense member's +0.366 IS a shot-noise reading of an undefined statistic (the dense node held < a few "
+                    "macro-electrons; values 1e-17 ... 0.6 eV) - recorded as a gate-statistic weakness; the S member's -0.618 is the real decay"),
+        "changes": [
+            ("stopping_rule.grid_heating_triad.drift_members_arming added (model v2.1.1 latch: min_transit_times 2.0, settle_quantity discharge_current, "
+             "settle_drift_max 0.05, settle_check_cadence_steps 40000); enforced_after_transit_times 1.0 kept in the block as the recorded, superseded rule"),
+            ("stopping_rule.ignition_gate added (v2.0 runner gate; reference 0.05-0.2 us, checks at 1.0 us N_e >= 0.6 / S >= 0.3 and 2.0 us N_e >= 0.6 / "
+             "S >= 0.4 of the reference means; calibrated on ss-v4 / 047 / 009 / 056-L2 and the extinguished launch 1)"),
+            "stopping_rule.fail_closed and grid_heating_triad.note text updated to name both; campaign.changes lists them",
+            ("all three sealed protocols re-sealed identically (the same two stopping-rule keys); config_sha256 identities UNCHANGED "
+             "(28ca0391 / 90cf53f1 / 8ea88273: stopping rules are outside the physics identity)"),
+        ],
+        "not_changed": ("geometry, operating point, grid, dt, W, seed, closure model and alphas, cadences, the plateau rule, the residual-power and peak-Debye "
+                        "gates and their thresholds, acceptance (a)-(d), the hypotheses, the reference block, the budgets (37 200 s from the preflights)"),
+        "pre_amendment_sealed_sha256": PRE_AMENDMENT_SEALED_SHA256,
+        "launch_1_disposition": ("alpha-1over16 launch 1 is RECORDED as the case's result (results/alpha-1over16/, executed under the pre-amendment seal "
+                                 "b59b4402...; stop_reason grid_heating_triad_gate_stopped_run; assess --case -> no_plateau): NOT relaunched - the same "
+                                 "seed and configuration identity replay bitwise into the same extinction, and under this amendment the ignition gate "
+                                 "would stop the replay at 1.0 us. The series' 1/16 point is 'extinguished under the closure' (a no_plateau outcome that "
+                                 "CONTRADICTS the hypothesis I_d up: no discharge exists at alpha = 1/16 under the v1.3 closure at this operating point "
+                                 "with this cathode model)"),
+        "remaining_launches": ("alpha-1over64 then alpha-0.345, each with --expect-commit at this amendment's commit, one MPS slot each via the box "
+                               "slot-waiter (r1-queue); alpha-0.345 (D_perp 5x the 1/16 value) is expected to extinguish faster - the ignition gate bounds "
+                               "that cost to ~1 h and records the point; alpha-1over64 (D_perp 4x smaller) is the case the latch protects"),
+        "series_verdict_consequence": ("with 1/16 at no_plateau, trend_confirmed needs both 1/64 and 0.345 to reach (a) (3 of 4 points incl. alpha = 0); "
+                                       "if 0.345 also extinguishes the predeclared rule returns inconclusive, and the recorded finding is stated as such: the "
+                                       "Bohm closure at alpha >= 1/16 extinguishes this discharge; the sign hypotheses are not testable at those alphas"),
+    },
+]
 
 # predeclared expectations (audit section 4.c and roadmap R1; the SIGN is the hypothesis, the magnitude is what the series measures)
 HYPOTHESES: dict[str, dict[str, Any]] = {
@@ -129,7 +216,8 @@ def compose_case_protocol(case_id: str, *, wall_budget_seconds: float | None = N
                      "changes": ["numerics.anomalous_collisions (model bohm_perpendicular_rotation, alpha)", "numerics.peak_debye_gate.min_accumulated_macro_particle_steps_at_peak (v2.0.6 floor)",
                                  "numerics.performance.moment_sample_interval = 5 (v2.0.5)", "stopping_rule.wall_budget_seconds (launch-box measured rate x 1.5)",
                                  "stopping_rule.acceptance (b corrected ledger, c -> alpha-series trend, hypotheses)", "case.id", "status / classification / model_version / model_spec / claim_boundary / simplifications text",
-                                 "reference_run -> the ss-v4 plateau as the alpha = 0 point with its corrected-ledger status"]}
+                                 "reference_run -> the ss-v4 plateau as the alpha = 0 point with its corrected-ledger status",
+                                 "AMENDMENT 1: stopping_rule.grid_heating_triad.drift_members_arming (model v2.1.1 latch) + stopping_rule.ignition_gate (v2.0 gate, calibrated on the accepted 33 um runs)"]}
     p["status"] = "preregistered_anomalous_transport_alpha_series_not_validated"
     p["classification"] = ("axisymmetric_electrostatic_pic_mcc_bohm_alpha_series_on_the_33um_reference_plateau_v1_3_closure_v2_1_0_transport_v2_0_6_gates_not_validated")
     p["model_version"] = MODEL_VERSION
@@ -179,8 +267,15 @@ def compose_case_protocol(case_id: str, *, wall_budget_seconds: float | None = N
                                     "preregistration commit (compose --budget-from-preflight)")
     stop["fail_closed"] = stop["fail_closed"].replace("v2.0.3 window-mode peak-node Debye gate", "v2.0.6 window-mode peak-node Debye gate (accumulated-particle-step floor)") \
         .replace("v2.0.3 windowed residual-power bound", "v2.0.3 windowed residual-power bound on the v2.0.6 W-corrected ledger")
+    stop["fail_closed"] += ("; AMENDMENT 1 (model v2.1.1): the triad's drift members are armed by the settled-once latch (grid_heating_triad.drift_members_arming: "
+                            ">= 2 transits AND the I_d drift has read < 5 % at a checkpoint) instead of at 1.0 transit, and the v2.0 ignition gate "
+                            "(stopping_rule.ignition_gate) stops an extinguished discharge at 1.0 / 2.0 us (stop_reason no_ignition)")
     stop["grid_heating_triad"]["note"] += ("; v2.0.6: the ledger's inelastic_loss_j carries W, so the windowed statistic IS the corrected one (the recorded ss-v4 "
-                                           "series read -7.7 % where the corrected value was +2.46 %)")
+                                           "series read -7.7 % where the corrected value was +2.46 %)"
+                                           "; AMENDMENT 1 (model v2.1.1): enforced_after_transit_times 1.0 is SUPERSEDED by drift_members_arming (kept as the "
+                                           "recorded rule launch 1 of alpha-1over16 ran under); the residual-power member is unchanged")
+    stop["grid_heating_triad"]["drift_members_arming"] = copy.deepcopy(DRIFT_MEMBERS_ARMING)
+    stop["ignition_gate"] = copy.deepcopy(IGNITION_GATE)
     stop["acceptance"] = {
         "declared": "predeclared before the launch; evaluated by `run.py assess --case <case>` (per case) and `run.py assess --series` (the trend) against reference_run "
                     "(the alpha = 0 ss-v4 plateau); verdicts recorded in results/<case>/assessment.json and results/series-assessment.json (results-only commits)",
@@ -293,7 +388,7 @@ def compose_campaign(case_protocols: dict[str, dict[str, Any]], *, budgets: dict
             "ledger": "the v2.0.6 W correction is code (bug fix, identity unchanged); acceptance (b) reads the corrected statistic natively",
         },
         "preregistration": first["preregistration"],
-        "amendments": [],
+        "amendments": copy.deepcopy(AMENDMENTS),
     }
 
 
@@ -321,7 +416,8 @@ def load_campaign() -> dict[str, Any]:
 
 
 __all__ = [
-    "CASES", "CUSP_HALF_WIDTH_M", "CUSP_PLANES_M", "EXPERIMENT_ID", "HYPOTHESES", "LAUNCH_PRIORITY", "MONOTONE_QUANTITIES", "PARTICLE_BAND",
-    "REFERENCE_CASE", "REFERENCE_CORRECTED_RESIDUAL", "STEPS_TO_3_TRANSITS", "compose_campaign", "compose_case_protocol", "load_campaign",
-    "load_case_protocol", "load_v4_protocol", "protocol_sha256", "v4_reference_block", "write_sealed_protocols",
+    "AMENDMENTS", "CASES", "CUSP_HALF_WIDTH_M", "CUSP_PLANES_M", "DRIFT_MEMBERS_ARMING", "EXPERIMENT_ID", "HYPOTHESES", "IGNITION_GATE", "LAUNCH_PRIORITY",
+    "MONOTONE_QUANTITIES", "PARTICLE_BAND", "PRE_AMENDMENT_SEALED_SHA256", "REFERENCE_CASE", "REFERENCE_CORRECTED_RESIDUAL", "STEPS_TO_3_TRANSITS",
+    "compose_campaign", "compose_case_protocol", "load_campaign", "load_case_protocol", "load_v4_protocol", "protocol_sha256", "v4_reference_block",
+    "write_sealed_protocols",
 ]
