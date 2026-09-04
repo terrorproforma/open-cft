@@ -214,6 +214,11 @@ modern/experiments/pic2d_cft_plume_v1/results-attempt8-grid-heating-triad-stop/*
 # pic2d design mini-sweep v1: the per-design P2 field checkpoints (Git LFS) live under fields/, not results/
 !modern/experiments/pic2d_design_mini_sweep_v1/fields/**/*.json.arrays.npz
 
+# pic2d external validation v0 (DRAFT): the Brandt 2016 reconstruction P2 checkpoint (Git LFS) lives under fields/;
+# run results stay untracked until a run ends (results-only commit adds the negations)
+!modern/experiments/pic2d_external_validation_v0/fields/**/*.json.arrays.npz
+modern/experiments/pic2d_external_validation_v0/results*/
+
 # pic2d cross-platform test anchors: node field arrays sampled on the anchor platform (~70 KB, hash-bound by
 # their .anchor.json); non-anchor platforms are gated by allclose against them, not by the content hash
 !modern/tests/pic2d/anchors/*.npz

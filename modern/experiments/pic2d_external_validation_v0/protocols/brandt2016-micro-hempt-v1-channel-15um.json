@@ -1,0 +1,264 @@
+{
+ "budget_external_validation_v0": {
+  "cost_model": "experiments.pic2d_design_mini_sweep_v1.cost (5090 anchors; H100 MPS-4 anchor 8.71 ms/step for the v4 configuration; solo anchor 3.37) scaled by nodes and particles",
+  "device_gb_projected": 17.804863648,
+  "dr_m": 1.5e-05,
+  "dt_s": 5e-13,
+  "dz_m": 1.5005359056806002e-05,
+  "expected_mean_density_per_m3": 5e+18,
+  "expected_peak_density_dt_policy_per_m3": 2.5e+19,
+  "factorisation_s": 273.31308261140606,
+  "field_map_s": 14.150099999999998,
+  "fixed_ms": 1.9725138289095943,
+  "hours_to_3_transits_h100_solo_equivalent": 17.950881096657184,
+  "hours_to_3_transits_mps4": 46.26877466795563,
+  "hours_to_reference_time_mps4": 837.1192567691032,
+  "inverse_block_reads_ms": 0.88107956,
+  "inverse_blocks_gb": 0.704863648,
+  "ion_transit_note": "2.4 us x 14 mm / 24 mm (the measured reference residence scaled with the channel length); superseded by the measured N_i / L residence",
+  "ion_transit_time_s": 1.3999999999999997e-06,
+  "launches_ms": 1.01,
+  "macro_weight": 82466.8,
+  "macro_weight_parity": 5401.9,
+  "ms_per_step_h100_mps4_per_process": 19.795253050241538,
+  "ms_per_step_h100_solo_equivalent": 7.659012948256484,
+  "ms_per_step_rtx5090_model": 10.768513828909594,
+  "n_eq_projected_per_m3": 1e+19,
+  "n_max_note": "n_max = the density at which this grid reaches the v2.0.3 HARD peak-Debye level pi at the published 10 eV (2.42e+19 m^-3 = 2.42x the published typical density; scales with T_e): the resolvable envelope of the run. The omega_pe dt gate at 0.50 ps trips later, at 5.03e+19 m^-3. n_eq_projected = the reference's published typical density",
+  "n_max_per_m3": 2.422396875637684e+19,
+  "node_kernels_ms": 0.08143426890959421,
+  "particles_projected_m": 12.0,
+  "platform": "h100-mps4",
+  "reference_run_steps": 24000000.0,
+  "reference_run_time_s": 7.612e-05,
+  "sequential_launches": 202,
+  "steps_to_3_transits": 8399999.999999998,
+  "transit_s": 1.3999999999999997e-06,
+  "wall_budget_factor": 1.5
+ },
+ "case": {
+  "axial_cells": 933,
+  "grid_note": "dr 15.000 um x dz 15.005 um: 100 x 933 cells, nodes [101, 934]",
+  "grid_policy": {
+   "dt_s": 5e-13,
+   "source": "grid option 15um: see grid_argument",
+   "target_cell_m": 1.5e-05
+  },
+  "id": "brandt2016-micro-hempt-v1-channel-15um-w82466.8-ng2e20-static-inj1.8mA-1eV-v1.3-closure-v2.0.3-gates-draft",
+  "macro_weight": 82466.8,
+  "macro_weight_policy": {
+   "channel_volume_m3": 9.896016858807848e-08,
+   "expected_mean_density_per_m3": 5e+18,
+   "macro_electrons_per_cell_at_mid_radius_at_published_density": 128.61737450587665,
+   "parity_weight": 5401.9,
+   "projected_total_m": 12.0,
+   "projected_total_m_at_parity": 183.19511391932187,
+   "reference_macro_ratio_original_units": {
+    "note": "the reference's 1:2618 applies in its scaled system; x s^2 in original-system units",
+    "paper_factor_4": 41888,
+    "thesis_factor_8": 167552
+   },
+   "rule": "W raised from the parity value 5401.9 to cap the projected count at 12 M (183.2 M projected at parity for the declared mean density 5.0e+18 m^-3 over the channel volume 9.896e-08 m^3)"
+  },
+  "radial_cells": 100,
+  "seed": 20260903
+ },
+ "claim_boundary": {
+  "comparison": "cross-model (claim ceiling CROSS_MODEL_AGREEMENT); every row conditional on the unpropagated inputs (B scale, neutral profile, effective source); opens no physics level",
+  "draft": "DRAFT protocol composed on the steady-state v4 template for a code-to-code comparison with Brandt et al. 2016; NOT preregistered; NOT launched; the coordinator launches from a preregistration commit",
+  "geometry_approximation": "approximations A1-A9 of experiments/pic2d_external_validation_v0/geometry.py; field gates G1-G7 of fields.py"
+ },
+ "classification": "axisymmetric_electrostatic_pic_mcc_code_to_code_comparison_channel_only_static_neutrals_v1_3_closure_v2_0_3_gates_not_validated_draft",
+ "cross_sections": "modern/spec/pic2d/xenon-cross-sections-v1.json",
+ "design_id": "brandt2016-micro-hempt-v1",
+ "experiment_id": "pic2d-external-validation-v0",
+ "field_binding": "modern/experiments/pic2d_external_validation_v0/fields/brandt2016-micro-hempt-v1/binding.json",
+ "field_source": "external-validation-v0 binding: direct node evaluation of the reconstructed micro-HEMPT's padded level-0 material-aware P2 checkpoint at z_FEM = z + 2.5 mm, scaled to the published axis anchor (source_strength_scale, gate G1)",
+ "geometry": {
+  "axial_offset_m_field_frame": 0.0025,
+  "bore_radius_m": 0.0015,
+  "cone_start_z_m": 0.014,
+  "exit_radius_m": 0.0015,
+  "snaps": {
+   "bore_cells": 100,
+   "channel_cells": 933,
+   "cone_start": {
+    "cells": 933,
+    "error_m": 0.0,
+    "snapped_m": 0.014,
+    "value_m": 0.014
+   },
+   "dr_m": 1.5e-05,
+   "dz_m": 1.5005359056806002e-05,
+   "exit_radius": {
+    "cells": 100,
+    "error_m": 0.0,
+    "snapped_m": 0.0015,
+    "value_m": 0.0015
+   },
+   "target_cell_m": 1.5e-05
+  },
+  "source": "Brandt 2016 channel (Z_thr 14 mm, R_thr 1.5 mm) channel-only at 15 um; every reference line on a grid line (snaps zero)",
+  "z_max_m": 0.014,
+  "z_min_m": 0.0
+ },
+ "geometry_mapping": {
+  "approximations": [
+   "A1",
+   "A2",
+   "A3",
+   "A4",
+   "A5",
+   "A6",
+   "A7",
+   "A8",
+   "A9"
+  ],
+  "table": "protocol.json geometry_mapping (experiment level) / README section 2"
+ },
+ "model_spec": "modern/spec/pic2d/pic2d-model-v1.3.json (physics) + modern/spec/pic2d/pic2d-model-v2.0.json gates_v2_0 (v2.0.3 gates)",
+ "model_version": "pic2d v1.3 runner with a STATIC neutral background (the inventory removed = the v1.2 static-background mode; NO wall-ion recycling, no SEE, no anomalous transport unless the variant switches the v1.4 Bohm hook on) with the v2.0.3 gates (window-mode peak-Debye gate, windowed residual-power gate)",
+ "numerics": {
+  "averaging_window_note": "consecutive 400000-step (0.56 us at 1.4 ps) windows; the reported maps are the last completed window (or the current one if at least half full); the v2.0.3 gates read the same 400000-step window",
+  "averaging_window_steps": 400000,
+  "checkpoint_every_steps": 40000,
+  "checkpoint_note": "checkpoint-latest.{json,npz} rewritten atomically every 40000 steps (56 ns); n_g and the atom ledgers are in the checkpoint arrays; series.jsonl / status.jsonl appended at every 200-step sync",
+  "deposition": "bilinear, fixed-point 2^-40 integer accumulation",
+  "device_sync_steps": 200,
+  "dt_justification": "0.50 ps: the runtime omega_pe dt gate (0.2) trips at 5.03e+19 m^-3 = 5.0x the published typical density (the reference's 3.17 ps is the original-system value of its factor-4/8 scaled run: omega_pe dt 0.2 in ITS frame, 0.56 in ours); electron Courant at 400 eV 0.40 cells; omega_ce dt at 0.7 T 0.062. Step-count conversions: 400000-step window = 0.200 us, 40000-step checkpoint / frame = 20.0 ns, one transit (1.40 us) = 2,800,000 steps",
+  "dt_policy": {
+   "omega_ce": {
+    "max_b_t": 0.772255975,
+    "omega_ce_dt": 0.0679129631,
+    "rule": "composed dt kept: omega_ce dt 0.068 <= 0.95 x 0.2"
+   },
+   "rule": "composed 0.50 ps: omega_pe dt = 0.2 at 5.03e+19 m^-3 (declared expected peak 2.5e+19); 0.089 at the published 1e19"
+  },
+  "dt_s": 5e-13,
+  "frame_recorder": {
+   "cadence_steps": 40000,
+   "precision": "float32"
+  },
+  "frame_recorder_note": "frame recorder ON: 40000-step frames = 20.0 ns exact interval averages (the template's 28 ns time cadence at half the time step); 3 transits = 209 frames on the 101 x 934 node grid; frames are diagnostics (ionisation structure at the cusp planes, the potential staircase) and feed the comparison's qualitative rows",
+  "ion_subcycle": 8,
+  "neutral_update_note": "the inventory is advanced at every series interval (= sync interval) with the ionisations tallied over that interval",
+  "peak_debye_gate": {
+   "dense_fraction": 0.5,
+   "max_cells_per_debye": 3.141592653589793,
+   "max_cells_per_debye_note": "v2.0.3 window-mode gate verbatim (hard pi fail-closed once the window is complete; soft 2.5 = plateau precondition). At the PUBLISHED density / temperature (1e19 / 10 eV) the 20 um grid reads 2.69: a plateau at exactly the published state is recorded as 'resolution margin not met' (acceptance (a) fails on the soft precondition, the run continues to the budget, the comparison rows carry the flag); the hard level is reached at 1.36e+19 m^-3 at 10 eV",
+   "min_macro_particles_at_peak": 32,
+   "min_macro_particles_at_peak_note": "mean occupancy over the window; the v2 peak node (14, 286) held ~300 macro-electrons per step at W 6e4 (node volume 1.1e-11 m^3); at W 2.667e4 on the 33.3 um grid the corresponding node (r 0.7 mm: volume 2pi r dr dz = 4.9e-12 m^3) holds ~300 as well (same particles per cell); axis nodes (volume pi (dr/2)^2 dz / ... ~ 1e-14 m^3) stay below the floor",
+   "soft_cells_per_debye": 2.5,
+   "window_snapshot_steps": 40000,
+   "window_steps": 400000
+  },
+  "poisson": "device block-Thomas direct (exact to round-off, true-residual contract 1e-10 |rhs| verified at every host sync)",
+  "series_interval_steps": 200,
+  "stability_limits": {
+   "max_cell_debye_ratio": 3.141592653589793,
+   "max_collision_probability": 0.1,
+   "max_omega_ce_dt": 0.2,
+   "max_omega_pe_dt": 0.2,
+   "max_particle_courant": 1.0
+  },
+  "stability_limits_note": "max_cell_debye_ratio raised from the template's 2.0 to pi: the template value was its own reference-density ratio (33 um at 4e17 / 8 eV = 1.0 cell per lambda_D); here the a-priori check is made at the PUBLISHED density (2.69 cells / lambda_D on 20 um) against the v2.0.3 HARD level pi, and the runtime window-mode gate (hard pi / soft 2.5 on the interval-averaged peak) is the protective one (v2.0.3 lesson). Every other limit is the template's",
+  "stability_reference": {
+   "density_per_m3": 1e+19,
+   "electron_temperature_ev": 10.0,
+   "max_electron_energy_ev": 400.0
+  },
+  "stability_reference_note": "the PUBLISHED typical density and the thesis' estimated electron temperature (Brandt 2016 Pb_240; thesis ch. 7); anode 400 V sets the maximum electron energy",
+  "step_graph": true,
+  "step_graph_note": "v1.4 CUDA-graph step (bitwise-identical to the direct launches; tests/pic2d/test_pic2d_warp_parity.py)"
+ },
+ "operating_point": {
+  "anode_potential_v": 400.0,
+  "electron_injection_current_a": 0.0018,
+  "electron_injection_justification": "1.8 mA at 1 eV: the reference's effective electron source into the channel by continuity (I_anode - I_beam = 4.3 - 2.5 mA; its own estimate 'a third of 5.85 mA' = 1.95 mA) at its source temperature (1 eV). TAKEN FROM THE REFERENCE'S RESULTS: the anode-current row is conditioned on it (comparison spec); the template's 3 mA / 2 eV is our operating point, not theirs",
+  "electron_injection_temperature_ev": 1.0,
+  "exit_plane_potential_v": 0.0,
+  "neutral_density_per_m3": 2e+20,
+  "neutral_density_role": "STATIC uniform background (v1.2 mode: no inventory): the MCC density is this constant, as the reference's static DSMC import (mean 'about 2e20 m^-3')",
+  "neutral_inventory": null,
+  "neutral_inventory_note": "REMOVED (null): the reference keeps its neutrals static and neglects the 25 % depletion; the v1.3 inventory would move the operating point to its own fixed point and confound the comparison. Under static neutrals gross = net utilisation is undefined; Brandt's 'net ionisation' is I_a / (e Q_in) with Q_in = 1.1e17 /s (comparison spec)",
+  "neutral_temperature_k": 500.0,
+  "reference_feed_atoms_per_s": 1.1e+17,
+  "seed_electron_temperature_ev": 5.0,
+  "seed_ion_temperature_ev": 0.0,
+  "seed_justification": "the template's seed plasma (5e16 m^-3, 5 eV, cold ions) unchanged: at 2e20 background and 0.6 T confinement ignition is expected to be faster than in the accepted runs; the reference seeded a whole plasma column plus an exit electron source for 1.5e6 steps - a different transient, the same steady state sought",
+  "seed_plasma_density_per_m3": 5e+16,
+  "unchanged_note": "operating point = the reference's: anode 400 V, static xenon 2e20 at 500 K, effective source 1.8 mA / 1 eV at the exit plane; exit plane 0 V (channel-only); seed plasma = the template's"
+ },
+ "option": "channel-15um",
+ "reference": {
+  "citation": "Brandt, T., Schneider, R., Duras, J., Kahnfeld, D., Hey, F. G., Kersten, H., Jansen, F., Braxmaier, C. (2016). Particle-in-Cell Simulation of a Down-Scaled HEMP Thruster. Trans. JSASS Aerospace Tech. Japan 14(ists30), Pb_235-Pb_242.",
+  "doi": "10.2322/tastj.14.Pb_235",
+  "role": "published PIC-MCC model output (code-to-code); not hardware",
+  "thesis_urn": "urn:nbn:de:gbv:8-diss-224024"
+ },
+ "schema_version": "cft.pic2d.external-validation-v0.run-protocol/0.1.0-draft",
+ "simplifications": [
+  "no ion-neutral collisions (elastic or charge exchange)",
+  "electron-neutral: isotropic elastic without the 2 m_e/M energy loss, one lumped 8.32 eV excitation, single ionisation with Vahedi-Surendra secondary energy and isotropic emission",
+  "dielectric wall: perfectly absorbing with accumulated surface charge, zero field in the dielectric backing (perfect insulator), no secondary electron emission, no sputtering",
+  "exit plane: Dirichlet 0 V cathode/neutraliser reference; electrons injected there as a flux-weighted half-Maxwellian at fixed current",
+  "anode: perfectly absorbing conductor at fixed potential",
+  "cone wall represented as a one-cell stair-step of the plasma cell mask",
+  "prescribed static B from the P2 solution (no plasma-induced field); bilinear node interpolation of the C1 bicubic psi field",
+  "ions pushed every 8 steps with 8 dt (frozen in between; births added to the ion charge immediately)",
+  "electrostatic only, azimuthally symmetric: no azimuthal instabilities/anomalous transport",
+  "momentum-conserving bilinear scheme: energy is not exactly conserved; the ledger (with electrode work) residual is reported; a resume restarts the interval ledger",
+  "development/screening run: not preregistered, no experimental validation, not a performance prediction",
+  "neutrals: STATIC uniform xenon background 2e20 m^-3 at 500 K (the reference's static DSMC mean); no depletion, no profile (the reference's drops 6e20 -> 1e20 along the channel)",
+  "electron source: 1.8 mA / 1 eV at the 0 V exit plane = the reference's continuity-derived effective source (an input taken from its results)",
+  "channel-only box: the reference's 6.48 mm plume, its grounded body and its 0 V far boundaries are replaced by the Dirichlet exit plane (approximation A9); plume rows not compared",
+  "no anomalous transport (primary) / isotropic Bohm scattering at alpha 0.4 (variant) versus the reference's perpendicular-rotation D_perp = 0.4 k T_e / e B; no SEE versus its 50 % / 90 % model",
+  "reconstructed field: level-0 material-aware P2 of the thesis' magnet stack with approximations A1-A8, scaled to the published axis anchor; not P2-qualified",
+  "one grid (the published 20 um) and one seed: the grid caveat is carried, not measured; the 15 um sibling and a seed replicate are the declared follow-ups",
+  "DRAFT: not preregistered, not launched; a code-to-code comparison of two development models, not a validation against hardware"
+ ],
+ "status": "DRAFT_NOT_PREREGISTERED_NOT_LAUNCHED_external_validation_v0_code_to_code_brandt2016",
+ "stopping_rule": {
+  "acceptance": {
+   "a_plateau": "stop_reason == plateau_reached_after_min_transit_times under stopping_rule.plateau (>= 3 x 1.40 us, drifts of I_d and N_e < 5 %, triad soft, peak-Debye soft 2.5)",
+   "b_residual_power": "summary.grid_heating_triad.windowed_energy_residual_over_electrode_work < +0.02 (one-sided) at the stop",
+   "c_comparison": "every row of comparison-spec.json with comparable_under containing 'channel' evaluated with S from the trailing window (E, u_val, statement); rows needing the plume box are reported as not comparable",
+   "d_verdicts": {
+    "comparison_quotable": "(a) AND (b): E +- u_val per row is quotable as CROSS-MODEL agreement/disagreement under the declared closure differences",
+    "comparison_resolution_flagged": "(a) fails ONLY on the peak-Debye soft precondition (plateau drifts met, peak between 2.5 and pi) AND (b): E reported with 'resolution margin not met' on every row",
+    "no_plateau": "NOT (a) otherwise: inconclusive within the budget; the trailing-window quantities are reported as transient",
+    "plateau_with_heating": "(a) but NOT (b): E reported, not quotable"
+   },
+   "declared": "predeclared in this DRAFT; evaluated by `run.py assess` and `run.py compare` on the trailing-window quantities",
+   "e_claim_ceiling": "CROSS_MODEL_AGREEMENT: a published model output can support cross-model agreement at most; nothing here opens GATE-L3 or validates against hardware"
+  },
+  "fail_closed": "runtime omega_pe dt gate (0.2), v2.0.3 window-mode peak-node Debye gate (hard pi cells per lambda_D on the 400000-step interval-averaged peak, once the window is complete), grid-heating triad hard drift bounds (S, T_e,dense, omega_pe dt drifts >= 0.25 after one transit) and the v2.0.3 windowed residual-power bound (trailing-400000-step ledger residual >= 5 % of the electrode work, one-sided, from the first complete window), one-cell Courant crossing, Poisson residual contract, neutral inventory exhaustion or ceiling violation: PIC2DStabilityError / triad stop ends the run with the artifacts written",
+  "grid_heating_triad": {
+   "energy_residual_over_electrode_work_max": 0.1,
+   "enforced_after_transit_times": 1.0,
+   "hard_drift_max": 0.25,
+   "note": "v1.4 triad drift members (soft 5 % = plateau precondition; hard 25 % after one transit) + v2.0.3 windowed residual-power hard gate (one-sided, 5 % of the electrode work over the trailing 400000 steps, from the first complete window); the cumulative ratio is recorded as the witness with its 10 % bound as a plateau precondition only. Calibration: the v2 base window ratios were -12.7 % (seed window) rising monotonically to -0.2 % at the plateau (max +0.37 %); seed-b -12.8 -> -1.5 %; w-0.7 -12.7 -> -4.2 %; attempt 8 crossed +5 % at ~3.1 us and reached +54.8 %",
+   "residual_window_steps": 400000,
+   "soft_drift_max": 0.05,
+   "windowed_energy_residual_over_electrode_work_max": 0.05
+  },
+  "ignition_check": "S growing and N_e rising within ~0.5 us at 2e20 / 400 V / 0.6 T is expected (the reference ignited from a seeded column); a non-ignition under the frozen seed and injection is a recorded outcome, not a reason to adjust (comparison-spec inconclusive_conditions)",
+  "min_transit_times": 3,
+  "plateau": "relative drift < 5 % over the trailing 20 % of the elapsed simulated time for the discharge current AND the plasma electron count (linear fit, drift = slope x window / |mean|; the neutral density is static and drops out of the rule), evaluated at every checkpoint; may only be declared after >= 3 ion transit times (3 x 1.40 us = 4.20 us = 8,400,000 steps); additionally the grid-heating triad must be inside its soft bounds AND the window-mode peak-Debye soft margin must hold (<= 2.5) - the ss-v4 rule verbatim",
+  "plateau_threshold": 0.05,
+  "plateau_window_fraction": 0.2,
+  "wall_budget_note": "1.5 x the projected wall to 3 transits at one of four H100 CUDA-MPS slots (46.3 h at 19.8 ms/step; 8.40 M steps; solo-H100 equivalent 18.0 h), rounded up to 10 min; cumulative over resumes. The reference's 76 us would cost 837 h at this rate - not budgeted; the plateau rule decides",
+  "wall_budget_seconds": 250200.0
+ },
+ "template_protocol": {
+  "experiment_id": "pic2d-cft-steady-state-v4",
+  "model_version": "pic2d v1.3 closure (v1.2 runner + quasi-steady 0-D neutral inventory, NO wall-ion recycling: bit-for-bit the v2 base physics) with the v2.0.3 gates (window-mode peak-Debye gate, windowed residual-power gate)",
+  "path": "modern/experiments/pic2d_cft_steady_state_v4/protocol.json",
+  "sha256": "82d3f2814de1596e5f92240b1b773b19b1f6893cfc02754b6c56210f8222c6cf"
+ },
+ "variant": {
+  "anomalous_alpha": null,
+  "id": "base",
+  "role": "PRIMARY: the accepted v1.3 closure (no anomalous transport, no SEE); the closure difference to the reference is declared"
+ }
+}

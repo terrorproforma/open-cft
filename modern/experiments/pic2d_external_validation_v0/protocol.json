@@ -1,0 +1,1307 @@
+{
+ "comparison_spec": "modern/experiments/pic2d_external_validation_v0/comparison-spec.json",
+ "cost_table": {
+  "channel-15um": {
+   "cells": [
+    100,
+    933
+   ],
+   "cost_model": "experiments.pic2d_design_mini_sweep_v1.cost (5090 anchors; H100 MPS-4 anchor 8.71 ms/step for the v4 configuration; solo anchor 3.37) scaled by nodes and particles",
+   "device_gb_projected": 17.804863648,
+   "dt_s": 5e-13,
+   "factorisation_s": 273.31308261140606,
+   "field_map_s": 14.150099999999998,
+   "fixed_ms": 1.9725138289095943,
+   "hours_to_3_transits_h100_solo_equivalent": 17.950881096657184,
+   "hours_to_3_transits_mps4": 46.26877466795563,
+   "hours_to_reference_time_mps4": 837.1192567691032,
+   "inverse_block_reads_ms": 0.88107956,
+   "inverse_blocks_gb": 0.704863648,
+   "launches_ms": 1.01,
+   "macro_weight": 82466.8,
+   "ms_per_step_h100_mps4_per_process": 19.795253050241538,
+   "ms_per_step_h100_solo_equivalent": 7.659012948256484,
+   "ms_per_step_rtx5090_model": 10.768513828909594,
+   "node_kernels_ms": 0.08143426890959421,
+   "nodes": [
+    101,
+    934
+   ],
+   "particles_projected_m": 12.0,
+   "platform": "h100-mps4",
+   "reference_run_steps": 24000000.0,
+   "reference_run_time_s": 7.612e-05,
+   "sequential_launches": 202,
+   "steps_to_3_transits": 8399999.999999998,
+   "transit_s": 1.3999999999999997e-06
+  },
+  "channel-20um": {
+   "cells": [
+    75,
+    700
+   ],
+   "cost_model": "experiments.pic2d_design_mini_sweep_v1.cost (5090 anchors; H100 MPS-4 anchor 8.71 ms/step for the v4 configuration; solo anchor 3.37) scaled by nodes and particles",
+   "device_gb_projected": 17.398771808000003,
+   "dt_s": 7e-13,
+   "factorisation_s": 86.94929482970869,
+   "field_map_s": 7.991399999999999,
+   "fixed_ms": 1.1794555174196741,
+   "hours_to_3_transits_h100_solo_equivalent": 11.851300810883597,
+   "hours_to_3_transits_mps4": 30.588724440790923,
+   "hours_to_reference_time_mps4": 553.9062467108719,
+   "inverse_block_reads_ms": 0.37346476,
+   "inverse_blocks_gb": 0.298771808,
+   "launches_ms": 0.76,
+   "macro_weight": 82466.8,
+   "ms_per_step_h100_mps4_per_process": 18.337411215336274,
+   "ms_per_step_h100_solo_equivalent": 7.094957037391876,
+   "ms_per_step_rtx5090_model": 9.975455517419674,
+   "node_kernels_ms": 0.04599075741967415,
+   "nodes": [
+    76,
+    701
+   ],
+   "particles_projected_m": 12.0,
+   "platform": "h100-mps4",
+   "reference_run_steps": 24000000.0,
+   "reference_run_time_s": 7.612e-05,
+   "sequential_launches": 152,
+   "steps_to_3_transits": 5999999.999999998,
+   "transit_s": 1.3999999999999997e-06
+  },
+  "channel-33um": {
+   "cells": [
+    45,
+    420
+   ],
+   "cost_model": "experiments.pic2d_design_mini_sweep_v1.cost (5090 anchors; H100 MPS-4 anchor 8.71 ms/step for the v4 configuration; solo anchor 3.37) scaled by nodes and particles",
+   "device_gb_projected": 17.165224688000002,
+   "dt_s": 7e-13,
+   "factorisation_s": 11.399939254651809,
+   "field_map_s": 2.9048999999999996,
+   "fixed_ms": 0.5582486505283695,
+   "hours_to_3_transits_h100_solo_equivalent": 11.092521883323345,
+   "hours_to_3_transits_mps4": 28.66309992844271,
+   "hours_to_reference_time_mps4": 519.4125473033697,
+   "inverse_block_reads_ms": 0.08153086000000001,
+   "inverse_blocks_gb": 0.065224688,
+   "launches_ms": 0.46,
+   "macro_weight": 82466.8,
+   "ms_per_step_h100_mps4_per_process": 17.195475817189855,
+   "ms_per_step_h100_solo_equivalent": 6.653128990118233,
+   "ms_per_step_rtx5090_model": 9.354248650528369,
+   "node_kernels_ms": 0.016717790528369428,
+   "nodes": [
+    46,
+    421
+   ],
+   "particles_projected_m": 12.0,
+   "platform": "h100-mps4",
+   "reference_run_steps": 24000000.0,
+   "reference_run_time_s": 7.612e-05,
+   "sequential_launches": 92,
+   "steps_to_3_transits": 5999999.999999998,
+   "transit_s": 1.3999999999999997e-06
+  },
+  "plume-brandt-20um": {
+   "cells": [
+    256,
+    1024
+   ],
+   "cost_model": "experiments.pic2d_design_mini_sweep_v1.cost (5090 anchors; H100 MPS-4 anchor 8.71 ms/step for the v4 configuration; solo anchor 3.37) scaled by nodes and particles",
+   "device_gb_projected": 19.260085,
+   "dt_s": 7e-13,
+   "factorisation_s": 919.1854421831562,
+   "field_map_s": 39.513749999999995,
+   "fixed_ms": 5.497509119458623,
+   "hours_to_3_transits_h100_solo_equivalent": 17.209864606732097,
+   "hours_to_3_transits_mps4": 44.058115803036074,
+   "hours_to_reference_time_mps4": 793.6744316950134,
+   "inverse_block_reads_ms": 2.70010625,
+   "inverse_blocks_gb": 2.160085,
+   "launches_ms": 2.57,
+   "macro_weight": 82466.8,
+   "ms_per_step_h100_mps4_per_process": 26.27508628312446,
+   "ms_per_step_h100_solo_equivalent": 10.166135565342069,
+   "ms_per_step_rtx5090_model": 14.293509119458623,
+   "node_kernels_ms": 0.2274028694586242,
+   "nodes": [
+    257,
+    1025
+   ],
+   "note": "the reference's full box (1024 x 256 at 20 um) on the v2.1 plume model; particles = 1.75x the channel projection (mini-sweep plume factor) capped at 12 M; the cathode model (annulus, continuity) differs from the reference's rim source - a follow-up protocol on the v2.1 template, NOT composed here",
+   "particles_projected_m": 12.0,
+   "platform": "h100-mps4",
+   "reference_run_steps": 24000000.0,
+   "reference_run_time_s": 7.612e-05,
+   "sequential_launches": 514,
+   "steps_to_3_transits": 5999999.999999998,
+   "transit_s": 1.3999999999999997e-06
+  }
+ },
+ "experiment_id": "pic2d-external-validation-v0",
+ "field_binding_summary": {
+  "all_passed": true,
+  "axis_max_t": 0.6976769195389555,
+  "axis_max_z_m": 0.005550000000000023,
+  "b_at_17mm_t": 0.0529309927952164,
+  "checkpoint_file_sha256": "ec520ec850517f34e4a18fde16fd51dec10e4b199e77bfd0d0b2e65b92b3beb5",
+  "exit_null_m": 0.015848489539744628,
+  "genealogy_entries": 2,
+  "implied_remanence_t": 1.1354770645595835,
+  "interior_nulls_m": [
+   0.002634115551341434,
+   0.00836574598900689
+  ],
+  "low_field_contour_radius_m": [
+   0.0009000000000000001,
+   0.0009000000000000001
+  ],
+  "no_ring_bracket": {
+   "axis_max_t": {
+    "no_rings": 0.6880959306370279,
+    "with_rings": 0.6976769195389555
+   },
+   "b_at_17mm_t": {
+    "no_rings": 0.03611802645441612,
+    "with_rings": 0.0529309927952164
+   },
+   "exit_null_m": {
+    "no_rings": 0.016125534498032123,
+    "with_rings": 0.015848489539744628
+   },
+   "interior_nulls_m": {
+    "no_rings": [
+     0.00251636985324451,
+     0.008483441666497305
+    ],
+    "shifts_m": [
+     0.00011774569809692428,
+     0.00011769567749041546
+    ],
+    "with_rings": [
+     0.002634115551341434,
+     0.00836574598900689
+    ]
+   },
+   "low_field_contour_radius_m": {
+    "no_rings": [
+     0.001,
+     0.001
+    ],
+    "with_rings": [
+     0.0009000000000000001,
+     0.0009000000000000001
+    ]
+   },
+   "reading": "the reference's rings (r 2.5-8 mm, saturating steel) lie between 'no ring' and the represented full-radius linear ring; the difference between the two columns bounds the effect of approximations A2 (end rings absent), A3 (ring radius) and A4 (linear iron) on the gate quantities",
+   "wall_cusp_b_t": {
+    "no_rings": [
+     0.401787406577012,
+     0.4017455195918795
+    ],
+    "with_rings": [
+     0.49104111342167883,
+     0.4905304795529647
+    ]
+   }
+  },
+  "p2_dofs": 415859,
+  "solve_wall_seconds": 170.87026329999208,
+  "source_strength_scale": 1.0814067281519844,
+  "wall_cusp_b_t": [
+   0.49104111342167883,
+   0.4905304795529647
+  ]
+ },
+ "geometry_mapping": {
+  "approximations": [
+   {
+    "effect": "none on B (exact geometry); the PIC anode plane sits at the magnet-1 mid-plane as in the reference",
+    "id": "A1",
+    "item": "anode inside the first magnet",
+    "quantified_by": "field gate G5 (axis |B| maximum at the magnet-3 centre z = 11.0 mm)",
+    "reference": "anode surface at the mid-plane of magnet 1 (magnet 1 spans -2.5..2.5 mm)",
+    "represented": "exactly, by an axial offset: the FEM geometry starts 2.5 mm behind the anode (injector zone 0..2.5 mm FEM = the unmodelled inlet section); the PIC grid samples the field at z_FEM = z + 2.5 mm"
+   },
+   {
+    "effect": "the exit-side ring would pull the exit null toward the channel exit and raise the wall field at 13.5-14 mm; the anode-side ring is behind the anode plane",
+    "id": "A2",
+    "item": "end distance rings",
+    "quantified_by": "field gates G3 (exit null 16 +- 1.5 mm) and G4 (|B| 0.05 +- 0.025 T at z = 17 mm); the no-ring sensitivity solve brackets the ring effect",
+    "reference": "five 0.5 mm soft-iron rings; the layout implies rings at both stack ends (anode side at -3.0..-2.5 mm, exit side 13.5..14.0 mm) plus two interior rings; the fifth ring's position is not stated (stack 17.5 vs stated 18 mm)",
+    "represented": "the two INTERIOR rings only (v1.1 pole pieces exist between adjacent magnets); no end rings"
+   },
+   {
+    "effect": "extra iron between the magnets at 8-15 mm: more flux shorted in the outer region, marginally stronger cusp focusing",
+    "id": "A3",
+    "item": "distance-ring outer radius",
+    "quantified_by": "no-ring sensitivity solve (pole mu_r -> 1): the represented ring lies between 'no ring' and 'full-radius ring'; the shift of the gate quantities between the two solves is the bracket",
+    "reference": "8 mm (magnets 15 mm)",
+    "represented": "15 mm (v1.1 poles share the magnet radii)"
+   },
+   {
+    "effect": "a 0.5 mm ring between two 12.5 mm-thick SmCo pole faces saturates in reality; the linear ring over-focuses -> cusp wall field over-predicted",
+    "id": "A4",
+    "item": "iron constitutive law",
+    "quantified_by": "gate G6 (wall |B| at the cusps within 0.1-0.35 T of the reference's 'about 0.2 T and lower'); the no-ring solve is the lower bracket",
+    "reference": "FEMM 'Carbon steel forgings, annealed' (nonlinear B-H, saturates ~2 T)",
+    "represented": "linear mu_r 4000 (the L1b v1.1 material)"
+   },
+   {
+    "effect": "none on B (mu_r 1 either side of the gap); none on the PIC (front face radius set directly)",
+    "id": "A5",
+    "item": "dielectric tube thickness",
+    "quantified_by": "not needed",
+    "reference": "1.0 mm (Al2O3, r 1.5-2.5 mm)",
+    "represented": "0.9 mm in the FEM geometry (manufacturing rule: strictly positive clearance to the magnet bore); the PIC front face keeps 2.5 mm as the body-dielectric radius"
+   },
+   {
+    "effect": "none",
+    "id": "A6",
+    "item": "return yoke / housing",
+    "quantified_by": "not needed (mu_r 1 regions do not enter the mesh grading or the field)",
+    "reference": "none in the FEMM model (magnets + distance rings only); housing material unspecified",
+    "represented": "the mandatory v1.1 yoke role filled by a mu_r = 1 placeholder ring (magnetically inert); Al shield mu_r 1"
+   },
+   {
+    "effect": "the absolute field level is calibrated on the published anchor, not predicted; the scale must stay inside the SmCo grade band",
+    "id": "A7",
+    "item": "magnet remanence",
+    "quantified_by": "gate G1 (scale in [0.80, 1.20] of nominal = remanence 0.84-1.26 T); the anchor's own precision ('about 0.6 T', +-0.05 T) is carried as the field's u_input",
+    "reference": "SmCo, grade not stated (FEMM library SmCo 20-32 MGOe: B_r 0.9-1.15 T)",
+    "represented": "the repository's SmCo-like contract (B_r 1.05 T, recoil mu_r 1.05), then ONE linear post-scale so that |B|(r = 0, z = 11 mm) = 0.6 T (the published anchor)"
+   },
+   {
+    "effect": "none expected",
+    "id": "A8",
+    "item": "magnetisation uniformity / recoil",
+    "quantified_by": "not needed",
+    "reference": "FEMM linear-demagnetisation SmCo",
+    "represented": "uniform axial remanence with recoil mu_r 1.05 (same model class)"
+   },
+   {
+    "effect": "channel-only forces the whole 400 V drop inside the channel; the exit cell, the exit cusp region and every plume quantity are not comparable (comparison spec 'comparable_under')",
+    "id": "A9",
+    "item": "channel exit and plume box",
+    "quantified_by": "declared per comparison row; the plume option is the follow-up",
+    "reference": "domain 20.48 x 5.12 mm: channel + 6.48 mm plume, grounded body 2.5 <= r <= 5.12 mm, 0 V far boundaries",
+    "represented": "channel-only option (z <= 14 mm, Dirichlet 0 V exit plane, the ss-v4 template) as the PRIMARY protocol; the reference box as the 'plume-brandt' mapping (256 x 1024 cells at 20 um, the published grid exactly) for the costed plume option"
+   }
+  ],
+  "config_id": "brandt2016-micro-hempt-v1",
+  "frames": {
+   "axial_offset_m": 0.0025,
+   "rule": "z_FEM = z_anode + offset; the PIC and the reference use the anode frame"
+  },
+  "geometry_sha256": "15a19234992a2ffd8231a455b4a01619222fdde53a39b7057c13d51b377147d1",
+  "rows": [
+   {
+    "approximation": null,
+    "item": "channel radius",
+    "reference_m": 0.0015,
+    "represented_m": 0.0015
+   },
+   {
+    "approximation": "A1 (FEM chamber 16.5 mm = 2.5 mm inlet zone + 14 mm channel)",
+    "item": "channel length (anode -> exit)",
+    "reference_m": 0.014,
+    "represented_m": 0.014
+   },
+   {
+    "approximation": "A5",
+    "item": "dielectric thickness",
+    "reference_m": 0.001,
+    "represented_m": 0.0009
+   },
+   {
+    "approximation": null,
+    "item": "magnet count / polarity",
+    "reference": "3, alternating",
+    "represented": "3, alternating (first +)"
+   },
+   {
+    "approximation": null,
+    "item": "magnet axial length",
+    "reference_m": 0.005,
+    "represented_m": 0.005
+   },
+   {
+    "approximation": null,
+    "item": "magnet inner / outer radius",
+    "reference_m": [
+     0.0025,
+     0.015
+    ],
+    "represented_m": [
+     0.0025,
+     0.015
+    ]
+   },
+   {
+    "approximation": "A1",
+    "item": "magnet centres (anode frame)",
+    "reference_m": [
+     0.0,
+     0.0055,
+     0.011
+    ],
+    "represented_m": [
+     0.0,
+     0.0055,
+     0.011
+    ]
+   },
+   {
+    "approximation": "A2, A3, A4",
+    "item": "distance rings",
+    "reference": "5 x 0.5 mm, r 2.5-8 mm, annealed carbon steel (nonlinear)",
+    "represented": "2 interior x 0.5 mm, r 2.5-15 mm, linear mu_r 4000"
+   },
+   {
+    "approximation": "A2",
+    "item": "distance-ring centres (anode frame)",
+    "reference_m": [
+     0.00275,
+     0.00825,
+     "exit ring 13.5-14.0",
+     "anode-side ring -3.0..-2.5"
+    ],
+    "represented_m": [
+     0.0027499999999999994,
+     0.008249999999999999
+    ]
+   },
+   {
+    "approximation": "A6",
+    "item": "return yoke",
+    "reference": "none",
+    "represented": "mu_r 1 placeholder (inert)"
+   },
+   {
+    "approximation": "A7",
+    "item": "remanence",
+    "reference": "SmCo, grade not stated",
+    "represented": "1.05 T nominal, post-scaled to the 0.6 T axis anchor"
+   },
+   {
+    "approximation": "A9",
+    "item": "PIC box (primary)",
+    "reference": "20.48 x 5.12 mm incl. 6.48 mm plume",
+    "represented": "channel-only 14 x 1.5 mm, 75 x 700 cells at 20 um"
+   },
+   {
+    "approximation": null,
+    "item": "PIC box (plume option)",
+    "reference": "20.48 x 5.12 mm, 1024 x 256 cells",
+    "represented": "1024 x 256 cells at 20 um, body dielectric 2.5 mm, plume radius 5.12 mm"
+   }
+  ],
+  "schema_version": "cft_revival.geometry.axisymmetric_cft/1.1.0",
+  "stack": [
+   {
+    "polarity": 1,
+    "r_m": [
+     0.0025,
+     0.015
+    ],
+    "reference_r_m": [
+     0.0025,
+     0.015
+    ],
+    "region_id": "magnet-01",
+    "role": "permanent_magnet",
+    "z_anode_m": [
+     -0.0025,
+     0.0025
+    ],
+    "z_fem_m": [
+     0.0,
+     0.005
+    ]
+   },
+   {
+    "polarity": null,
+    "r_m": [
+     0.0025,
+     0.015
+    ],
+    "reference_r_m": [
+     0.0025,
+     0.008
+    ],
+    "region_id": "pole-01",
+    "role": "pole_piece",
+    "z_anode_m": [
+     0.0025,
+     0.0029999999999999996
+    ],
+    "z_fem_m": [
+     0.005,
+     0.0055
+    ]
+   },
+   {
+    "polarity": -1,
+    "r_m": [
+     0.0025,
+     0.015
+    ],
+    "reference_r_m": [
+     0.0025,
+     0.015
+    ],
+    "region_id": "magnet-02",
+    "role": "permanent_magnet",
+    "z_anode_m": [
+     0.0029999999999999996,
+     0.008
+    ],
+    "z_fem_m": [
+     0.0055,
+     0.0105
+    ]
+   },
+   {
+    "polarity": null,
+    "r_m": [
+     0.0025,
+     0.015
+    ],
+    "reference_r_m": [
+     0.0025,
+     0.008
+    ],
+    "region_id": "pole-02",
+    "role": "pole_piece",
+    "z_anode_m": [
+     0.008,
+     0.008499999999999999
+    ],
+    "z_fem_m": [
+     0.0105,
+     0.011
+    ]
+   },
+   {
+    "polarity": 1,
+    "r_m": [
+     0.0025,
+     0.015
+    ],
+    "reference_r_m": [
+     0.0025,
+     0.015
+    ],
+    "region_id": "magnet-03",
+    "role": "permanent_magnet",
+    "z_anode_m": [
+     0.008499999999999999,
+     0.0135
+    ],
+    "z_fem_m": [
+     0.011,
+     0.016
+    ]
+   },
+   {
+    "polarity": null,
+    "r_m": null,
+    "reference_r_m": [
+     0.0025,
+     0.008
+    ],
+    "region_id": "exit-ring (not represented)",
+    "role": "pole_piece",
+    "z_anode_m": [
+     0.0135,
+     0.014
+    ],
+    "z_fem_m": [
+     0.016,
+     0.0165
+    ]
+   },
+   {
+    "polarity": null,
+    "r_m": null,
+    "reference_r_m": [
+     0.0025,
+     0.008
+    ],
+    "region_id": "anode-side ring (not represented)",
+    "role": "pole_piece",
+    "z_anode_m": [
+     -0.003,
+     -0.0025
+    ],
+    "z_fem_m": [
+     -0.0005,
+     0.0
+    ]
+   }
+  ]
+ },
+ "grid_argument": {
+  "debye_length_at_published_m": 7.433941994700463e-06,
+  "decision": "PRIMARY = 20 um (the published resolution; 75 x 700 channel cells = the reference's channel block exactly, 1024 x 256 = its whole box): at the published density and temperature it sits at 2.69 cells / lambda_D - under the v2.0.3 HARD gate (pi) and over the SOFT plateau precondition (2.5) - so a plateau at exactly the published density would be recorded as 'resolution margin not met' but the code-to-code numbers exist at the same grid as the reference. The ss-v4 option (33.3 um) is INADMISSIBLE a priori: 4.48 cells / lambda_D at the published density, i.e. our own hard gate stops the run once the peak reaches ~5e18 at 10 eV; a comparison with the reference could never form. 15 um / 0.5 ps meets the soft margin (2.02) at the published density and is the declared resolution follow-up at 1.8x the cells and 1.4x the steps (2.5x the cost).",
+  "published_density_per_m3": 1e+19,
+  "published_temperature_ev": 10.0,
+  "reference_scaling_note": "the reference's own 20 um is the ORIGINAL-SYSTEM value of a self-similar scaled run (factor 4 / 8): in its scaled plasma the cell was ~1 lambda_D (thesis: dr / lambda_D = 0.95); at device scale the same 20 um is 2.7 lambda_D at 1e19 / 10 eV - the reference resolved its Debye length by scaling, we resolve ours by the gate; neither run is 'better resolved' than the other in its own frame (closure_differences)",
+  "rows": [
+   {
+    "admissible_hard_pi": true,
+    "cell_m": 2e-05,
+    "cells": [
+     75,
+     700
+    ],
+    "cells_per_debye_at_published": 2.690362665495329,
+    "dt_s": 7e-13,
+    "electron_courant_400ev": 0.41516787065119076,
+    "grid": "20um",
+    "hard_gate_density_at_10ev_per_m3": 1.363572048655945e+19,
+    "nodes": [
+     76,
+     701
+    ],
+    "omega_pe_dt_at_published": 0.12487904553354108,
+    "omega_pe_dt_gate_density_per_m3": 2.564961495164214e+19,
+    "relative_cell_count": 1.0,
+    "relative_steps_to_3_transits": 1.0,
+    "soft_2p5_met": false,
+    "soft_level_density_at_10ev_per_m3": 8.634920871964233e+18
+   },
+   {
+    "admissible_hard_pi": false,
+    "cell_m": 3.3333333333333335e-05,
+    "cells": [
+     45,
+     420
+    ],
+    "cells_per_debye_at_published": 4.483937775825549,
+    "dt_s": 7e-13,
+    "electron_courant_400ev": 0.24910072239071446,
+    "grid": "33um",
+    "hard_gate_density_at_10ev_per_m3": 4.908859375161402e+18,
+    "nodes": [
+     46,
+     421
+    ],
+    "omega_pe_dt_at_published": 0.12487904553354108,
+    "omega_pe_dt_gate_density_per_m3": 2.564961495164214e+19,
+    "relative_cell_count": 0.36,
+    "relative_steps_to_3_transits": 1.0,
+    "soft_2p5_met": false,
+    "soft_level_density_at_10ev_per_m3": 3.1085715139071247e+18
+   },
+   {
+    "admissible_hard_pi": true,
+    "cell_m": 1.5e-05,
+    "cells": [
+     100,
+     933
+    ],
+    "cells_per_debye_at_published": 2.0184928894391536,
+    "dt_s": 5e-13,
+    "electron_courant_400ev": 0.39539797204875304,
+    "grid": "15um",
+    "hard_gate_density_at_10ev_per_m3": 2.422396875637684e+19,
+    "nodes": [
+     101,
+     934
+    ],
+    "omega_pe_dt_at_published": 0.08919931823824362,
+    "omega_pe_dt_gate_density_per_m3": 5.027324530521861e+19,
+    "relative_cell_count": 1.7771428571428571,
+    "relative_steps_to_3_transits": 1.4000000000000001,
+    "soft_2p5_met": true,
+    "soft_level_density_at_10ev_per_m3": 1.534000741819444e+19
+   }
+  ]
+ },
+ "inconclusive_conditions": [
+  {
+   "condition": "no plateau within the wall budget",
+   "consequence": "no S exists; the trailing-window values are reported as 'transient at t = ...'; no E is formed"
+  },
+  {
+   "condition": "hard peak-Debye gate (pi) or omega_pe dt gate stop",
+   "consequence": "the discharge densified beyond the 20 um / 0.7 ps envelope (interval-averaged peak > 1.36e19 x T_e / 10 eV for the Debye gate; > 2.6e19 for omega_pe dt): resolution-limited at the published grid; the 15 um / 0.5 ps sibling (hard level 2.4e19 at 10 eV) is the only route; no E is formed"
+  },
+  {
+   "condition": "plateau with the peak between the soft 2.5 and hard pi levels",
+   "consequence": "E is formed but every row carries 'resolution margin not met'; the grid caveat becomes a discrepancy suspect"
+  },
+  {
+   "condition": "windowed residual power >= 2 % at the plateau",
+   "consequence": "grid heating: E is reported but not quotable (the ss-v4 acceptance (b) rule)"
+  },
+  {
+   "condition": "no ignition at 2e20 with 1.8 mA / 1 eV injection and the 5e16 seed",
+   "consequence": "recorded outcome; the seed / injection are the frozen inputs; no relaunch with adjusted inputs under this spec"
+  },
+  {
+   "condition": "a field gate G1-G7 fails",
+   "consequence": "the reconstruction, not the plasma model, is under test: the run is not launched (preflight refuses)"
+  },
+  {
+   "condition": "every current / potential row discrepant in the direction the closure table predicts (more confinement in ours)",
+   "consequence": "the exercise measured the closure difference, not the kernels; the bohm-0.4 variant is the discriminating run"
+  },
+  {
+   "condition": "the reference's own two runs (paper 4.3 mA / 50 deg; thesis 4.7 mA / 60 deg) already span the tolerance",
+   "consequence": "the row cannot discriminate (u_D dominates u_val): reported as such"
+  },
+  {
+   "condition": "channel-only rows only",
+   "consequence": "the plume angle and the exit-cusp electron energy are NOT compared in v0 (comparable_under); a 'validation of the plume' claim is not available"
+  }
+ ],
+ "operating_point_policy": {
+  "anode_potential_v": 400.0,
+  "electron_injection": {
+   "current_a": 0.0018,
+   "source": "reference continuity I_a - I_beam",
+   "temperature_ev": 1.0
+  },
+  "expected_mean_density_per_m3": 5e+18,
+  "expected_peak_density_per_m3": 2.5e+19,
+  "neutral_density_per_m3": 2e+20,
+  "neutral_temperature_k": 500.0,
+  "neutrals": "static uniform (no inventory)",
+  "seed": 20260903,
+  "stability_reference": {
+   "density_per_m3": 1e+19,
+   "electron_temperature_ev": 10.0,
+   "max_electron_energy_ev": 400.0
+  }
+ },
+ "preflight_summary": {
+  "all_passed": true,
+  "generated_utc": "2026-09-04T07:38:27.680131+00:00",
+  "launch_set_passed": true,
+  "options": {
+   "channel-15um": {
+    "cells": [
+     100,
+     933
+    ],
+    "cells_per_debye_at_published": 2.018492889439153,
+    "dt_s": 5e-13,
+    "field_source_sha256": "749cd1a7ea51fe0a0905630f8ee2466ec9b8ba6d34516100ddc3df62de266ee3",
+    "gates": {
+     "comparison_spec": true,
+     "cost": true,
+     "field_binding": true,
+     "field_map": true,
+     "geometry": true,
+     "grid": true,
+     "mesh_masks": true,
+     "protocol": true,
+     "reference": true
+    },
+    "macro_weight": 82466.8,
+    "passed": true,
+    "wall_budget_hours": 69.5
+   },
+   "channel-20um": {
+    "cells": [
+     75,
+     700
+    ],
+    "cells_per_debye_at_published": 2.690362665495329,
+    "dt_s": 7e-13,
+    "field_source_sha256": "0562cb3ffd975138b94ff2fa6582af125d8be78b3aebe4b87ff18e3287d6ce59",
+    "gates": {
+     "comparison_spec": true,
+     "cost": true,
+     "field_binding": true,
+     "field_map": true,
+     "geometry": true,
+     "grid": true,
+     "mesh_masks": true,
+     "protocol": true,
+     "reference": true
+    },
+    "macro_weight": 82466.8,
+    "passed": true,
+    "wall_budget_hours": 46.0
+   },
+   "channel-20um-bohm-0.4": {
+    "cells": [
+     75,
+     700
+    ],
+    "cells_per_debye_at_published": 2.690362665495329,
+    "dt_s": 7e-13,
+    "field_source_sha256": "0562cb3ffd975138b94ff2fa6582af125d8be78b3aebe4b87ff18e3287d6ce59",
+    "gates": {
+     "comparison_spec": true,
+     "cost": true,
+     "field_binding": true,
+     "field_map": true,
+     "geometry": true,
+     "grid": true,
+     "mesh_masks": true,
+     "protocol": true,
+     "reference": true
+    },
+    "macro_weight": 82466.8,
+    "passed": true,
+    "wall_budget_hours": 46.0
+   }
+  },
+  "platform": {
+   "gpu_used": false,
+   "host": "DESKTOP-31AD96J",
+   "machine": "AMD64",
+   "note": "CPU-only preflight (a preregistered run re-runs it on the launch box)",
+   "numpy": "2.5.2",
+   "python": "3.12.10",
+   "release": "11",
+   "system": "Windows"
+  }
+ },
+ "preregistration": {
+  "launch_set": [
+   "channel-20um"
+  ],
+  "records": {
+   "comparison_spec": {
+    "bytes": 42503,
+    "path": "modern/experiments/pic2d_external_validation_v0/comparison-spec.json",
+    "sha256": "543c81fcff014b2d928c43e5cfd218d21f5adc3751f3c627a32ce0f37aa7590d"
+   },
+   "field_binding": {
+    "bytes": 77259,
+    "path": "modern/experiments/pic2d_external_validation_v0/fields/brandt2016-micro-hempt-v1/binding.json",
+    "sha256": "1b3bdf5dce6de34e5fd42db6aed0dcdaf13637ea605e5e54e8c691750b2c2730"
+   },
+   "preflight": {
+    "bytes": 38018,
+    "path": "modern/experiments/pic2d_external_validation_v0/preflight-channel-20um.json",
+    "sha256": "3312ca729e489e53e3e782da188beb53a70de2a539bcad2cdb4049a4bd0c6911"
+   }
+  },
+  "sealed_run_protocols_draft": {
+   "modern/experiments/pic2d_external_validation_v0/protocols/brandt2016-micro-hempt-v1-channel-15um.json": "77afa105c8a05a8c18a762b68dbcc206197b6c8e64a46c0187df64abf537a436",
+   "modern/experiments/pic2d_external_validation_v0/protocols/brandt2016-micro-hempt-v1-channel-20um-bohm-0.4.json": "23c8392a773b0ffbdce37e3629c00d1acacd416d2722aaad4d321130b7f1b0e8",
+   "modern/experiments/pic2d_external_validation_v0/protocols/brandt2016-micro-hempt-v1-channel-20um.json": "41dbe84e0eee709ffd72c0a49fa47fa9b30e3af14ca4a7a40d6fede8666b25a1"
+  },
+  "state": "NOT preregistered. This file and protocols/*.json are a DRAFT; nothing is hash-bound to a run. The coordinator preregisters and launches from a commit after the preflight and this record are reviewed; `run.py launch` refuses until then"
+ },
+ "primary": {
+  "grid": "20um",
+  "option": "channel-20um",
+  "variant": "base"
+ },
+ "reference": {
+  "alternatives_considered": [
+   {
+    "device": "Thales HEMP-T DM3a (51 mm x 9 mm channel) at ~1 kV",
+    "doi": "10.1109/TPS.2010.2056936",
+    "reference": "Matyash, Schneider, Mutzke, Kalentev, Taccogna, Koch, Schirra (2010) IEEE Trans. Plasma Sci. 38(9) 2274-2280",
+    "why_not": "9 mm bore at Debye-resolving cells is 8-30x our cell count per transit; the DM3a magnet stack, operating point and scalar results are not tabulated in the paper (closed access; abstract only in our review)"
+   },
+   {
+    "device": "optimised downscaled CFT of the Fahey-Muffatti-Ogawa MDO",
+    "doi": "10.1002/ctpp.201900028",
+    "reference": "Matthias, Kahnfeld, Schneider, Yeo, Ogawa (2019) Contrib. Plasma Phys. 59(9) e201900028",
+    "why_not": "design point, field and numerical parameters not in the abstract (closed access); our lineage's own design - a comparison would test the MDO chain, not the PIC kernel"
+   },
+   {
+    "device": "DM3a, breathing modes",
+    "doi": "10.1088/1361-6595/aaf29a",
+    "reference": "Kahnfeld, Heidemann, Duras, Matthias, Bandelow, Luskow, Kemnitz, Matyash, Schneider (2018) Plasma Sources Sci. Technol. 27 124002",
+    "why_not": "time-dependent (100 kHz breathing) target needing neutral dynamics we do not model; DM3a scale"
+   },
+   {
+    "device": "MS4 thruster",
+    "doi": "10.3389/fphy.2022.833159",
+    "reference": "Lewerentz, Kahnfeld, Schulz, Heidemann, Schneider (2022) Frontiers in Physics 10 833159",
+    "why_not": "different device class (multi-stage MS4, larger); not examined beyond the abstract in our reviews"
+   },
+   {
+    "device": "the SAME micro-HEMPT family, experiment",
+    "doi": "10.1109/TPS.2014.2321095",
+    "reference": "Keller, Koehler, Hey, Berger, Braxmaier, Feili, Weise, Johann (2015) IEEE Trans. Plasma Sci. 43(1) 45-53",
+    "why_not": "experimental (validation v2's target, not a code-to-code case); geometry given as ranges (chamber 2-5 mm, SmCo OD 10-40 mm, cusp length 1-10 mm) - Brandt 2016 / 2017 pin ONE of these configurations and simulate it"
+   }
+  ],
+  "citation": "Brandt, T., Schneider, R., Duras, J., Kahnfeld, D., Hey, F. G., Kersten, H., Jansen, F., Braxmaier, C. (2016). Particle-in-Cell Simulation of a Down-Scaled HEMP Thruster. Trans. JSASS Aerospace Tech. Japan 14(ists30), Pb_235-Pb_242.",
+  "doi": "10.2322/tastj.14.Pb_235",
+  "feed_current_equivalent_a": 0.017623942974,
+  "open_access_pdf": "https://www.jstage.jst.go.jp/article/tastj/14/ists30/14_Pb_235/_pdf",
+  "qualitative": {
+   "cusp_potential_dips": {
+    "source": "thesis ch. 7",
+    "statement": "near the cusps, close to the dielectric surface, a potential dip of 'several 10 V'"
+   },
+   "density_fill": {
+    "source": "paper Pb_239",
+    "statement": "electron density fills the channel more uniformly (radially) than in the large HEMPT; ions follow the electrons"
+   },
+   "flat_interior_potential": {
+    "source": "paper Pb_238-240, Fig. 3 and 5",
+    "statement": "potential mostly flat throughout the channel close to the anode potential; main drop at the exit cusp beyond the dielectric 'anchor' (a bulge)"
+   },
+   "ionisation_structure": {
+    "source": "paper Pb_240, Fig. 7",
+    "statement": "ionisation close to the axis and in the cusps, a peak UPSTREAM of each cusp, and at the exit"
+   },
+   "sheath": {
+    "source": "paper Pb_239",
+    "statement": "radial sheath at the dielectric 5-10 Debye lengths wide"
+   },
+   "wall_flux_localisation": {
+    "source": "paper Pb_240, Fig. 10-11",
+    "statement": "wall particle flux and mean ion energy maxima at the cusp locations; erosion practically zero elsewhere"
+   }
+  },
+  "reported": {
+   "anode_electron_current_a": {
+    "experiment": 0.0045,
+    "kind": "text",
+    "second_run": {
+     "source": "thesis ch. 7 ('The sum is 4.7 mA and in the experiment it is 4.5 mA')",
+     "value": 0.0047
+    },
+    "source": "paper Pb_240 ('the electron current at the anode is 4.3 mA, which is close to the measured value of 4.5 mA')",
+    "u_d": [
+     {
+      "method": "half the last stated digit (4.3 mA)",
+      "name": "stated_precision",
+      "standard": 5e-05
+     },
+     {
+      "method": "half the spread between the paper (4.3 mA) and thesis (4.7 mA) runs of the same case",
+      "name": "reference_variability",
+      "standard": 0.0002
+     }
+    ],
+    "unit": "A",
+    "value": 0.0043
+   },
+   "beam_fraction_of_feed": {
+    "kind": "inferred",
+    "source": "I_beam / (e Q_in) = 2.5 mA / 17.6 mA",
+    "u_d": [
+     {
+      "method": "beam-current budget divided by e Q_in",
+      "name": "propagated_from_beam_current",
+      "standard": 0.014466171165882669
+     }
+    ],
+    "unit": "fraction",
+    "value": 0.14185247896501735
+   },
+   "electron_energy_near_exit_cusp_ev": {
+    "kind": "figure / text",
+    "source": "paper Pb_240 ('a high energy region of around 200 eV near the exit cusp', Fig. 8)",
+    "u_d": [
+     {
+      "method": "'around 200 eV': 25 %",
+      "name": "stated_rounding",
+      "standard": 50.0
+     }
+    ],
+    "unit": "eV",
+    "value": 200.0
+   },
+   "ion_beam_current_a": {
+    "experiment": 0.0031,
+    "kind": "text",
+    "second_run": {
+     "source": "thesis ch. 7",
+     "value": 0.0025
+    },
+    "source": "paper Pb_241 ('overall ion beam current ... 2.5 mA, which is similar to the value of 3.1 mA derived from the experiment'); thesis ch. 7 (2.5 mA) - summed over the domain's outer boundary cells",
+    "u_d": [
+     {
+      "method": "half the last stated digit",
+      "name": "stated_precision",
+      "standard": 5e-05
+     },
+     {
+      "method": "DECLARED 10 %: Brandt states the Dirichlet -> Neumann outer boundary changed the plume current ratios and that the domain is 'still too small'; no number given",
+      "name": "boundary_sensitivity",
+      "standard": 0.00025
+     }
+    ],
+    "unit": "A",
+    "value": 0.0025
+   },
+   "ion_density_typical_per_m3": {
+    "kind": "figure / text",
+    "log_scale": true,
+    "source": "paper Pb_240 ('Ions have mostly a density of about 1e19 m^-3', Fig. 6 colour scale); thesis ch. 7 a-priori estimate 1e19; paper Pb_240 also states ~50x more neutrals than ions (-> ~4e18 at 2e20)",
+    "u_d": [
+     {
+      "method": "log-scale colour map: factor 1.5 (0.18 dex) read-off",
+      "name": "figure_digitisation_log10",
+      "standard": 0.18
+     },
+     {
+      "method": "'about 1e19' vs 'about 50 times more neutrals' (2e20 / 50 = 4e18): half the log10 spread",
+      "name": "internal_inconsistency_log10",
+      "standard": 0.2
+     }
+    ],
+    "unit": "m^-3",
+    "value": 1e+19
+   },
+   "net_ionisation_fraction": {
+    "dependence": "not independent of anode_electron_current_a (same number divided by e Q_in); compared as a consistency row",
+    "experiment": 0.25,
+    "kind": "text / inferred",
+    "second_run": {
+     "source": "thesis ch. 7 anode current 4.7 mA / 17.6 mA",
+     "value": 0.2666826604542326
+    },
+    "source": "paper Pb_240 ('2.7e16 particles per second ... neutral gas influx of 1.1e17 ... ionization rate of 24 %'); Brandt equates the net ion production with the anode electron current (thesis ch. 7)",
+    "u_d": [
+     {
+      "method": "half the last stated digit (24 %)",
+      "name": "stated_precision",
+      "standard": 0.005
+     },
+     {
+      "method": "half the spread between the paper and thesis anode currents divided by e Q_in",
+      "name": "reference_variability",
+      "standard": 0.01334133022711631
+     }
+    ],
+    "unit": "fraction",
+    "value": 0.24
+   },
+   "plasma_potential_near_anode_above_anode_v": {
+    "kind": "text",
+    "source": "paper Pb_239-240 ('Near the anode the plasma potential is about 5 V (relative to the anode potential of 400 V)'); thesis ch. 7",
+    "u_d": [
+     {
+      "method": "'about 5 V': half the rounding unit",
+      "name": "stated_rounding",
+      "standard": 2.5
+     }
+    ],
+    "unit": "V",
+    "value": 5.0
+   },
+   "plume_peak_angle_deg": {
+    "experiment": 60.0,
+    "kind": "figure / text",
+    "second_run": {
+     "source": "thesis ch. 7 ('the maximum is at higher angles at about 60 degrees in the experiment and in the simulation', Fig. 7.6)",
+     "value": 60.0
+    },
+    "source": "paper Pb_241 ('The maximum lies at about 60 degrees in the experiment and 50 degrees in the simulation', Fig. 12, 5 deg bins)",
+    "u_d": [
+     {
+      "method": "5 deg angular bins",
+      "name": "bin_half_width",
+      "standard": 2.5
+     },
+     {
+      "method": "half the spread between the paper (50 deg) and thesis (60 deg) runs",
+      "name": "reference_variability",
+      "standard": 5.0
+     }
+    ],
+    "unit": "deg",
+    "value": 50.0
+   },
+   "potential_drop_first_cusp_v": {
+    "kind": "text",
+    "source": "paper Pb_240 ('At the first magnetic cusp, the potential undergoes a drop of about 10 V'); thesis ch. 7",
+    "u_d": [
+     {
+      "method": "'about 10 V': half of the 5 V rounding unit",
+      "name": "stated_rounding",
+      "standard": 2.5
+     }
+    ],
+    "unit": "V",
+    "value": 10.0
+   },
+   "potential_drop_second_cusp_v": {
+    "kind": "text",
+    "source": "paper Pb_240 ('At the second cusp inside the channel, the potential drop is significantly lower, with only about 5 V'); thesis ch. 7",
+    "u_d": [
+     {
+      "method": "'about 5 V': half the rounding unit",
+      "name": "stated_rounding",
+      "standard": 2.5
+     }
+    ],
+    "unit": "V",
+    "value": 5.0
+   },
+   "wall_ion_current_density_max_a_per_m2": {
+    "kind": "figure / text",
+    "source": "paper Pb_240 ('At this location one gets a current flux density of 640 A/m^2', Fig. 10)",
+    "u_d": [
+     {
+      "method": "10 % of the stated maximum (colour-scale read-off of Fig. 10)",
+      "name": "figure_digitisation",
+      "standard": 64.0
+     }
+    ],
+    "unit": "A/m^2",
+    "value": 640.0
+   },
+   "wall_ion_energy_max_ev": {
+    "kind": "figure / text",
+    "source": "paper Pb_240 ('cusp inside the acceleration channel close to the exit of the thruster, with ion energies up to 160 eV', Fig. 11)",
+    "u_d": [
+     {
+      "method": "10 % of the stated maximum (colour-scale read-off of Fig. 11)",
+      "name": "figure_digitisation",
+      "standard": 16.0
+     }
+    ],
+    "unit": "eV",
+    "value": 160.0
+   }
+  },
+  "setup": {
+   "anode": {
+    "kind": "text",
+    "source": "paper Pb_237 ('The anode lies at z = 0 mm ... 0 mm <= r <= 1.5 mm on a potential of 400 V'); thesis ch. 7 sets the whole z = 0 boundary out to r = 2.5 mm at anode potential and notes the physical anode ends at r = 1.25 mm (neutral gap 1.25-1.5 mm)",
+    "value": {
+     "potential_v": 400.0,
+     "r_max_m": 0.0015,
+     "r_min_m": 0.0,
+     "z_m": 0.0
+    }
+   },
+   "anode_voltage_v": {
+    "kind": "text",
+    "source": "paper Pb_237; thesis ch. 7 (experiment: fixed anode potential 400 V)",
+    "value": 400.0
+   },
+   "anomalous_transport": {
+    "kind": "text",
+    "source": "paper Pb_237",
+    "value": {
+     "coefficient": 0.4,
+     "model": "Bohm-type perpendicular diffusion D_perp = 0.4 k_B T_e / (e B) imposed by rotating the perpendicular velocity (guiding-centre shift; parallel speed unchanged); electrons selected at random at a rate set by the local |B|",
+     "provenance": "'derived from a 3D simulation of a similar thruster model' (Kalentev et al.)"
+    }
+   },
+   "cathode_neutraliser": {
+    "kind": "text / inferred",
+    "source": "paper Pb_237 (source areas, 1 eV, ignition aid) and Pb_240 (17.55 / 11.7 / 5.85 mA, 'a third of them reach the thruster'); the continuity value 1.8 mA = I_anode - I_beam = 4.3 - 2.5 mA (electron continuity with quasi-neutral wall recombination)",
+    "value": {
+     "continuity_effective_a": 0.0018,
+     "estimated_reaching_thruster_a": 0.00195,
+     "ignition_aid": "additional electron source at the channel exit for the first 1.5e6 steps",
+     "lost_at_outer_boundary_a": 0.0117,
+     "model": "uniform volume electron source at 1 eV over 14 <= z <= 20.48 mm, 3.84 <= r <= 5.12 mm and 19.2 <= z <= 20.48 mm, 0.01 <= r <= 3.84 mm",
+     "real": "tungsten filaments at r ~ 40 mm, z = 0 from the exit (outside the domain)",
+     "remaining_a": 0.00585,
+     "source_current_a": 0.01755
+    }
+   },
+   "channel_length_m": {
+    "kind": "text",
+    "source": "paper Pb_235-236 ('Z_thr = 14 mm', Z counted from the anode surface); thesis ch. 7",
+    "value": 0.014
+   },
+   "channel_radius_m": {
+    "kind": "text",
+    "source": "paper Pb_235-236 ('R_thr = 1.5 mm'); thesis ch. 7 ('radius of 1.5 mm')",
+    "value": 0.0015
+   },
+   "collisions": {
+    "kind": "text",
+    "source": "paper Pb_237; thesis ch. 7",
+    "value": "electron-neutral elastic, ionisation, excitation (LLNL EEDL cross sections), Coulomb, charge exchange; thesis ch. 7 adds Xe2+ production"
+   },
+   "dielectric": {
+    "kind": "text",
+    "source": "paper Pb_237 ('At r = 1.5 mm over 0 <= z <= 14 mm surface charge accumulation ... A surface with equal properties is at z = 14 mm, 1.5 mm <= r <= 2.5 mm'; 'The dielectrics in this model is quite narrow (1 mm)'); thesis ch. 7 (Al2O3, epsilon_r = 9, inner radius 1.5 mm, thickness 1 mm)",
+    "value": {
+     "inner_radius_m": 0.0015,
+     "material": "Al2O3",
+     "outer_radius_m": 0.0025,
+     "relative_permittivity": 9.0,
+     "surface_charge_on": "r = 1.5 mm for 0 <= z <= 14 mm and the top end z = 14 mm for 1.5 <= r <= 2.5 mm",
+     "thickness_m": 0.001
+    }
+   },
+   "electron_temperature_estimate_ev": {
+    "kind": "text (thesis)",
+    "source": "thesis ch. 7 ('estimated average electron temperature is 10 eV')",
+    "value": 10.0
+   },
+   "field_anchors": {
+    "kind": "text",
+    "source": "paper Pb_236 ('maximum flux density inside the micro HEMPTs discharge channel (e.g. at Z = 11 mm, R = 0 mm ...) is about 0.6 T'; 'Near the magnetic cusps the flux is about 0.2 T and lower'; 'At the exit cusp outside the channel the flux is also low (e.g. 0.05 T at Z = 17 mm, R = 0 mm)'); thesis ch. 7 ('maximum of about 0.7 T'; zero-field point 'outside the thrusters exit at around z = 16 mm'; nulls 'around the z-position of the distance rings')",
+    "value": {
+     "axis_max_at": {
+      "r_m": 0.0,
+      "z_m": 0.011
+     },
+     "axis_max_t": 0.6,
+     "exit_cusp_axis_at": {
+      "r_m": 0.0,
+      "z_m": 0.017
+     },
+     "exit_cusp_axis_t": 0.05,
+     "exit_null_z_m": 0.016,
+     "internal_nulls": "on the axis both B_z and B_r drop to zero around the z-positions of the distance rings",
+     "near_cusps_t": "about 0.2 T and lower",
+     "thesis_max_t": 0.7
+    }
+   },
+   "grid": {
+    "kind": "text",
+    "source": "paper Pb_237 ('1024 x 256 cells', 'Delta r = 2e-5 m'); scaled-back (original-system) units",
+    "value": {
+     "cell_m": 2e-05,
+     "cells": [
+      1024,
+      256
+     ],
+     "domain_m": [
+      0.02048,
+      0.00512
+     ]
+    }
+   },
+   "grounded_body": {
+    "kind": "text",
+    "source": "paper Pb_237 ('The volume 0 mm <= z <= 14 mm, 2.5 mm <= r <= 5.12 mm is grounded, in order to represent the magnets and their distance rings')",
+    "value": {
+     "r_max_m": 0.00512,
+     "r_min_m": 0.0025,
+     "z_max_m": 0.014,
+     "z_min_m": 0.0
+    }
+   },
+   "macroparticles": {
+    "kind": "text",
+    "source": "paper Pb_237",
+    "value": {
+     "note": "the ratio applies in the SCALED system; in original-system units one macro-particle stands for 2618 x s^2 real particles (s = 4 paper / 8 thesis: 4.2e4 / 1.7e5)",
+     "rule": "no less than six super particles in the axis cells at the maximum assumed plasma density",
+     "super_particle_ratio": 2618
+    }
+   },
+   "magnet_stack": {
+    "kind": "text (thesis)",
+    "source": "thesis ch. 6 ('The axial length of the magnetic rings is 5 mm while for the distance rings this length is 0.5 mm ... inner radii of these rings from 2.5 mm (1 mm thickness version) ... outer radius ... 15 mm for the magnetic rings and 8 mm for the distance rings'; 'magnetization of samarium-cobalt'; distance rings 'Carbon steel forgings, annealed') and ch. 7 ('three magnetic rings and five distance rings ... The length of this setup is 18 mm. The anode surface is placed halfway at the first magnet'); paper Pb_236 (FEMM import) and Fig. 1-2 (three magnets of alternating polarity)",
+    "value": {
+     "anode_position": "halfway along the first magnet",
+     "distance_ring_axial_length_m": 0.0005,
+     "distance_ring_count": 5,
+     "distance_ring_inner_radius_m": 0.0025,
+     "distance_ring_material": "'Carbon steel forgings, annealed' (soft iron, FEMM library material)",
+     "distance_ring_outer_radius_m": 0.008,
+     "field_solver": "FEMM, r-z, triangular mesh, domain z -37.5..48.5 mm, r 0..50 mm (thesis ch. 7)",
+     "layout_inferred": "ring | magnet 1 | ring | magnet 2 | ring | magnet 3 | ring (four of the five rings placed); with the anode at the mid-plane of magnet 1: magnet 1 -2.5..2.5 mm, ring 2.5..3.0, magnet 2 3.0..8.0, ring 8.0..8.5, magnet 3 8.5..13.5, ring 13.5..14.0 (= the channel exit); the fifth ring's position is not stated; 3 x 5 + 5 x 0.5 = 17.5 mm against the stated 18 mm (0.5 mm discrepancy recorded)",
+     "magnet_axial_length_m": 0.005,
+     "magnet_count": 3,
+     "magnet_inner_radius_m": 0.0025,
+     "magnet_material": "SmCo (samarium-cobalt; grade / remanence not stated)",
+     "magnet_outer_radius_m": 0.015,
+     "return_yoke": "none described (FEMM model lists the magnets and the distance rings; the housing is not part of the magnetic model)",
+     "stack_length_m": 0.018
+    }
+   },
+   "mass_flow": {
+    "kind": "text",
+    "source": "paper Pb_236 ('inflow of 0.27 SCCM xenon'), Pb_240 ('neutral gas influx of 1.1e17 particles per second')",
+    "value": {
+     "atoms_per_s": 1.1e+17,
+     "propellant": "xenon",
+     "sccm": 0.27
+    }
+   },
+   "max_density_estimate_per_m3": {
+    "kind": "text (thesis)",
+    "source": "thesis ch. 7 ('estimated maximum plasma density in steady state is 1e19 m^-3')",
+    "value": 1e+19
+   },
+   "neutral_background": {
+    "kind": "text",
+    "source": "paper Pb_236 ('average neutral gas density inside the discharge channel of about 2e20 m^-3', 'kept as a static background', 'thermal velocity of the neutrals at 500 K'); thesis ch. 7 (6e20 -> 1e20 along the channel)",
+    "value": {
+     "depletion": "neglected (25 % ionised)",
+     "mean_density_per_m3": 2e+20,
+     "profile": "DSMC import, static; drops from ~6e20 at the injector to ~1e20 at the exit (thesis Fig. 7.3)",
+     "temperature_k": 500.0,
+     "wall_reflection": "diffuse"
+    }
+   },
+   "self_similarity_scaling": {
+    "kind": "text",
+    "source": "paper Pb_237 ('scaled down by a factor of four'); thesis ch. 7 ('scaled down by factor 8')",
+    "value": {
+     "consequence": "lambda_D / L and omega_pe x transit are NOT preserved: at factor s the scaled plasma has lambda_D / L larger by sqrt(s) (2.0 / 2.83) and relatively thicker sheaths; 'as soon as surface processes and sources get important the scaling ... deviates from the real solution'",
+     "factor_paper": 4,
+     "factor_thesis": 8,
+     "kept_constant": "system length / gyroradius and system length / mean free path"
+    }
+   },
+   "simulation_domain": {
+    "kind": "text",
+    "source": "paper Pb_236-237; thesis ch. 7 uses Z = 19.12 mm (a second run of the case)",
+    "value": {
+     "outer_boundary": "0 V Dirichlet on 14 <= z <= 20.48 mm at r = 5.12 mm and on z = 20.48 mm",
+     "r_max_m": 0.00512,
+     "z_max_m": 0.02048
+    }
+   },
+   "steps": {
+    "kind": "text",
+    "source": "paper Pb_237 ('run over 2.4e7 time steps'), Pb_238 ('quasi steady-state ... after 7.612e-5 s (averaged over 1e6 time steps)')",
+    "value": {
+     "averaging_window": 1000000.0,
+     "ignition_source_off_after": 1500000.0,
+     "quasi_steady_time_s": 7.612e-05,
+     "total": 24000000.0
+    }
+   },
+   "time_step_s": {
+    "kind": "text",
+    "source": "paper Pb_237 ('Delta t = 3.17e-12 s'); thesis ch. 7: dt_0 = 4e-13 s in the factor-8 scaled system = a fifth of the plasma period at the scaled maximum density 8e19",
+    "value": 3.17e-12
+   },
+   "wall_model": {
+    "kind": "text",
+    "source": "paper Pb_237, Pb_239",
+    "value": {
+     "dielectric": "surface charge accumulated and included in the Poisson solve with the dielectric constant; no explicit boundary condition",
+     "ions": "absorbed; 'recycled' as neutrals conceptually (static background)",
+     "see": "50 % of impacting electrons re-emitted with 90 % of their incident energy"
+    }
+   }
+  },
+  "thesis": {
+   "citation": "Brandt, T. (2017). Computer modeling for improvement of a High Efficiency Multistage Plasma Thruster. Dr. rer. nat. thesis, Christian-Albrechts-Universitaet zu Kiel.",
+   "role": "supplies the magnet stack (chapter 6 'the same periodic arrangement of magnets as for the micro-HEMPT'; chapter 7 'Setup including the magnets assembly') and a second, independently run version of the same case (thesis chapter 7: domain 19.12 mm, scaling factor 8, I_a 4.7 mA, peak angle 60 deg) whose spread against the paper's numbers is the reference's own reproducibility",
+   "url": "https://nbn-resolving.org/urn:nbn:de:gbv:8-diss-224024",
+   "urn": "urn:nbn:de:gbv:8-diss-224024"
+  },
+  "verification": {
+   "doi_verified": "Crossref work record fetched 2026-09-04 (title, authors, container, volume 14, issue ists30, pages Pb_235-Pb_242, year 2016); Crossref records the DOI in lower case (10.2322/tastj.14.pb_235); both forms resolve",
+   "full_text": "open-access PDF (J-STAGE) downloaded 2026-09-04 and read in full (8 pages)",
+   "thesis": "full text read through the URN landing page on 2026-09-04 (chapters 5-8)"
+  },
+  "why_this_reference": "the only published HEMP PIC-MCC case near our scale (14 x 1.5 mm channel vs our 24 x 2 mm; 400 V vs 300 V; mA-class) whose full text is open access and which states its operating point, grid, time step, super-particle ratio, boundary conditions and SCALAR results in the text; the same code family (Greifswald PIC-MCC) as every other HEMP PIC paper; the companion thesis publishes the magnet stack so the field is reconstructable without author contact; and the case has a second published run (thesis chapter 7) that bounds the reference's own reproducibility. The cost of the case at device scale is affordable (section 'protocol')."
+ },
+ "schema_version": "cft.pic2d.external-validation-v0.protocol/0.1.0-draft",
+ "status": "DRAFT_NOT_PREREGISTERED_NOT_LAUNCHED_external_validation_v0_code_to_code_brandt2016",
+ "variants": {
+  "base": {
+   "anomalous_alpha": null,
+   "role": "PRIMARY: the accepted v1.3 closure (no anomalous transport, no SEE); the closure difference to the reference is declared"
+  },
+  "bohm-0.4": {
+   "anomalous_alpha": 0.4,
+   "role": "SENSITIVITY (sealed, not primary): v1.4 isotropic Bohm-scattering hook nu_an = 0.4 omega_ce = the reference's D_perp coefficient under D_perp ~ alpha k T_e / e B (exact factor alpha / (1 + alpha^2) = 0.345); a different MODEL of the same coefficient"
+  }
+ }
+}
