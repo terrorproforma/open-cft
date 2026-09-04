@@ -1,0 +1,1052 @@
+{
+ "design_id": "l1a-gs-v3-056-effcbc8686",
+ "drift_trajectory_at_checkpoints": [
+  {
+   "I_d": 0.08378335238362018,
+   "S": -0.032508717618526015,
+   "T_e_dense": 0.051017320475625884,
+   "raw": -0.008156390627808093,
+   "raw_mean": 0.08184394615484039,
+   "resolved": -0.06355372744571441,
+   "resolved_mean": 0.0512910024214441,
+   "step": 640000,
+   "time_us": 0.8960000000000001,
+   "transits": 0.5254826117661476,
+   "window": 0.105003514092867
+  },
+  {
+   "I_d": 0.09610865476878429,
+   "S": -0.023158548270838894,
+   "T_e_dense": 0.0763617173300211,
+   "raw": -0.004733749262266651,
+   "raw_mean": 0.08169787657131726,
+   "resolved": -0.09449021667604103,
+   "resolved_mean": 0.050412111681266,
+   "step": 680000,
+   "time_us": 0.9520000000000001,
+   "transits": 0.5583252750015318,
+   "window": 0.06958306756306294
+  },
+  {
+   "I_d": 0.11329750403958173,
+   "S": -0.0016262661237485955,
+   "T_e_dense": 0.05472741594290495,
+   "raw": -0.024753281571628347,
+   "raw_mean": 0.08133418544239704,
+   "resolved": -0.07345564077123497,
+   "resolved_mean": 0.04927955856986767,
+   "step": 720000,
+   "time_us": 1.0080000000000002,
+   "transits": 0.5911679382369162,
+   "window": -0.007648867302477866
+  },
+  {
+   "I_d": 0.16483127829737,
+   "S": 0.023663941485934686,
+   "T_e_dense": 0.039369966995367774,
+   "raw": -0.006150256382547991,
+   "raw_mean": 0.08115701227956841,
+   "resolved": -0.08176197413014202,
+   "resolved_mean": 0.04829875785354181,
+   "step": 760000,
+   "time_us": 1.064,
+   "transits": 0.6240106014723004,
+   "window": -0.06281469209043461
+  },
+  {
+   "I_d": 0.2098486011485637,
+   "S": 0.04466061526090396,
+   "T_e_dense": 0.010647543018447263,
+   "raw": 0.015860351363798465,
+   "raw_mean": 0.08141222089218995,
+   "resolved": -0.10319548135962264,
+   "resolved_mean": 0.0472395553422026,
+   "step": 800000,
+   "time_us": 1.12,
+   "transits": 0.6568532647076846,
+   "window": -0.06790218161816902
+  },
+  {
+   "I_d": 0.22833686766920636,
+   "S": 0.06973926664352277,
+   "T_e_dense": -0.03159355294639505,
+   "raw": 0.019546134006727583,
+   "raw_mean": 0.08146744417825622,
+   "resolved": -0.08753623532739245,
+   "resolved_mean": 0.04639962926584844,
+   "step": 840000,
+   "time_us": 1.1760000000000002,
+   "transits": 0.6896959279430688,
+   "window": -0.0330371264328266
+  },
+  {
+   "I_d": 0.19307690164488192,
+   "S": 0.06153878482669894,
+   "T_e_dense": -0.08202315203595305,
+   "raw": 0.0031509389721795897,
+   "raw_mean": 0.08155604311786908,
+   "resolved": -0.026249002785245765,
+   "resolved_mean": 0.046118331658265024,
+   "step": 880000,
+   "time_us": 1.232,
+   "transits": 0.722538591178453,
+   "window": -0.008777550510849608
+  },
+  {
+   "I_d": 0.14777704432856356,
+   "S": 0.06187812736281222,
+   "T_e_dense": -0.09749896007735644,
+   "raw": -0.005308769396146806,
+   "raw_mean": 0.08192885910050902,
+   "resolved": 0.056018615986396764,
+   "resolved_mean": 0.04623598369448146,
+   "step": 920000,
+   "time_us": 1.288,
+   "transits": 0.7553812544138372,
+   "window": -0.008185151513990628
+  },
+  {
+   "I_d": 0.12058989144701443,
+   "S": 0.05136891699519937,
+   "T_e_dense": -0.07336444659361704,
+   "raw": 0.019116963956827285,
+   "raw_mean": 0.082176474390296,
+   "resolved": 0.1251944654293932,
+   "resolved_mean": 0.04694125445901613,
+   "step": 960000,
+   "time_us": 1.344,
+   "transits": 0.7882239176492215,
+   "window": -0.02655167931485995
+  },
+  {
+   "I_d": 0.10095228897761434,
+   "S": 0.03986182399039017,
+   "T_e_dense": -0.02224366449847692,
+   "raw": 0.054963315540811894,
+   "raw_mean": 0.08281735640412878,
+   "resolved": 0.14006552121780966,
+   "resolved_mean": 0.0479219746873791,
+   "step": 1000000,
+   "time_us": 1.4000000000000001,
+   "transits": 0.8210665808846057,
+   "window": -0.051354004918687086
+  },
+  {
+   "I_d": 0.11530611005261662,
+   "S": 0.04873579291830907,
+   "T_e_dense": 0.032471321844380494,
+   "raw": 0.06541186962463286,
+   "raw_mean": 0.0833614712272589,
+   "resolved": 0.10443129321460334,
+   "resolved_mean": 0.04878408232822685,
+   "step": 1040000,
+   "time_us": 1.4560000000000002,
+   "transits": 0.8539092441199899,
+   "window": -0.07128186212357056
+  },
+  {
+   "I_d": 0.11738962729728264,
+   "S": 0.03796458990015581,
+   "T_e_dense": 0.0711745525168915,
+   "raw": 0.03855812081086057,
+   "raw_mean": 0.08385225962062151,
+   "resolved": 0.071239147007163,
+   "resolved_mean": 0.04944284228798531,
+   "step": 1080000,
+   "time_us": 1.512,
+   "transits": 0.8867519073553741,
+   "window": -0.06169993926827593
+  },
+  {
+   "I_d": 0.12417605548800631,
+   "S": 0.03926954648587815,
+   "T_e_dense": 0.08711398233613653,
+   "raw": 0.008248213329653755,
+   "raw_mean": 0.08413462359212931,
+   "resolved": 0.05120977767656432,
+   "resolved_mean": 0.05012202532288734,
+   "step": 1120000,
+   "time_us": 1.568,
+   "transits": 0.9195945705907583,
+   "window": -0.032155561729445614
+  },
+  {
+   "I_d": 0.12389764749715926,
+   "S": 0.04017302041216797,
+   "T_e_dense": 0.08043753657312977,
+   "raw": 0.011459446610863578,
+   "raw_mean": 0.08461787214719248,
+   "resolved": 0.05734245737627015,
+   "resolved_mean": 0.050783123830683105,
+   "step": 1160000,
+   "time_us": 1.624,
+   "transits": 0.9524372338261425,
+   "window": 0.007311961361866423
+  },
+  {
+   "I_d": 0.1274439159100194,
+   "S": 0.033427562987378354,
+   "T_e_dense": 0.054176786889013465,
+   "raw": 0.006389669694798639,
+   "raw_mean": 0.08498767716485404,
+   "resolved": 0.07359332187454601,
+   "resolved_mean": 0.05129362305734602,
+   "step": 1200000,
+   "time_us": 1.68,
+   "transits": 0.9852798970615267,
+   "window": 0.049800037436417734
+  },
+  {
+   "I_d": 0.10936560736147836,
+   "S": 0.02665130863234899,
+   "T_e_dense": 0.022424390420049064,
+   "raw": 0.025613781290103044,
+   "raw_mean": 0.08512537896503666,
+   "resolved": 0.09408888667011507,
+   "resolved_mean": 0.05183088602540408,
+   "step": 1240000,
+   "time_us": 1.7360000000000002,
+   "transits": 1.018122560296911,
+   "window": 0.08384627375476726
+  },
+  {
+   "I_d": 0.08483948746918905,
+   "S": 0.01718412141560378,
+   "T_e_dense": -0.010442085153975444,
+   "raw": 0.043536777549543035,
+   "raw_mean": 0.08527434802026608,
+   "resolved": 0.12035072846141882,
+   "resolved_mean": 0.05264433599937326,
+   "step": 1280000,
+   "time_us": 1.7920000000000003,
+   "transits": 1.0509652235322953,
+   "window": 0.10652428232506223
+  },
+  {
+   "I_d": 0.055303540434168026,
+   "S": 0.011835776652715915,
+   "T_e_dense": -0.03086912329451766,
+   "raw": 0.05283156507813377,
+   "raw_mean": 0.08594683968206673,
+   "resolved": 0.13267852842563185,
+   "resolved_mean": 0.053588482397234634,
+   "step": 1320000,
+   "time_us": 1.848,
+   "transits": 1.0838078867676795,
+   "window": 0.12084566122492853
+  },
+  {
+   "I_d": 0.030848088863409985,
+   "S": -0.00020455379498250943,
+   "T_e_dense": -0.03604489612743163,
+   "raw": 0.05015891512427362,
+   "raw_mean": 0.0863376431759536,
+   "resolved": 0.13662903949637545,
+   "resolved_mean": 0.05458235323273033,
+   "step": 1360000,
+   "time_us": 1.9040000000000001,
+   "transits": 1.1166505500030637,
+   "window": 0.1331904233367601
+  },
+  {
+   "I_d": 0.033447839336817414,
+   "S": 0.0005237870796184897,
+   "T_e_dense": -0.033254930747676575,
+   "raw": 0.02692716900212439,
+   "raw_mean": 0.08680046627573629,
+   "resolved": 0.12568035373875575,
+   "resolved_mean": 0.05539761153053711,
+   "step": 1400000,
+   "time_us": 1.9600000000000002,
+   "transits": 1.149493213238448,
+   "window": 0.14076862011020083
+  },
+  {
+   "I_d": 0.04312277223345334,
+   "S": -0.0014327999994986945,
+   "T_e_dense": -0.030317513807816665,
+   "raw": 0.02900211495565521,
+   "raw_mean": 0.08703308250728715,
+   "resolved": 0.10309234503040136,
+   "resolved_mean": 0.05596834450160281,
+   "step": 1440000,
+   "time_us": 2.0160000000000005,
+   "transits": 1.1823358764738323,
+   "window": 0.14211065367770853
+  },
+  {
+   "I_d": 0.06556797191505036,
+   "S": -0.002026500663913075,
+   "T_e_dense": -0.03645739197245074,
+   "raw": 0.011993897443878833,
+   "raw_mean": 0.08713104528926441,
+   "resolved": 0.08214735874357047,
+   "resolved_mean": 0.05654375186916172,
+   "step": 1480000,
+   "time_us": 2.072,
+   "transits": 1.2151785397092165,
+   "window": 0.13660197931856935
+  },
+  {
+   "I_d": 0.0875103001066433,
+   "S": 0.0009607411778400248,
+   "T_e_dense": -0.04957740025931346,
+   "raw": 0.015232326927812621,
+   "raw_mean": 0.08747810160481713,
+   "resolved": 0.06570242209021149,
+   "resolved_mean": 0.05718561368059456,
+   "step": 1520000,
+   "time_us": 2.128,
+   "transits": 1.2480212029446007,
+   "window": 0.12726137778716845
+  },
+  {
+   "I_d": 0.10547215912552454,
+   "S": 0.00948190898796965,
+   "T_e_dense": -0.07278125949238634,
+   "raw": 0.02241699270918699,
+   "raw_mean": 0.08785185484660543,
+   "resolved": 0.06008814758704487,
+   "resolved_mean": 0.057814814471697056,
+   "step": 1560000,
+   "time_us": 2.184,
+   "transits": 1.280863866179985,
+   "window": 0.11988188643643109
+  },
+  {
+   "I_d": 0.09808332081430136,
+   "S": 0.018367173231649,
+   "T_e_dense": -0.10071113985351553,
+   "raw": 0.03246686637348107,
+   "raw_mean": 0.08828542735244284,
+   "resolved": 0.07077401145882997,
+   "resolved_mean": 0.058403825564424035,
+   "step": 1600000,
+   "time_us": 2.24,
+   "transits": 1.3137065294153691,
+   "window": 0.1163553361028157
+  },
+  {
+   "I_d": 0.07986232418877591,
+   "S": 0.035078918141785834,
+   "T_e_dense": -0.1308219431681969,
+   "raw": 0.043067497957348155,
+   "raw_mean": 0.08858706405546447,
+   "resolved": 0.09217991391125112,
+   "resolved_mean": 0.059055594424649485,
+   "step": 1640000,
+   "time_us": 2.2960000000000003,
+   "transits": 1.3465491926507533,
+   "window": 0.11970791687005207
+  },
+  {
+   "I_d": 0.07032003466989017,
+   "S": 0.052615699080812046,
+   "T_e_dense": -0.14950137613307662,
+   "raw": 0.056725124847310626,
+   "raw_mean": 0.08891972393728326,
+   "resolved": 0.10237768339621779,
+   "resolved_mean": 0.05957762097024754,
+   "step": 1680000,
+   "time_us": 2.3520000000000003,
+   "transits": 1.3793918558861376,
+   "window": 0.12770189832851103
+  },
+  {
+   "I_d": 0.05910583852762793,
+   "S": 0.0712931694701381,
+   "T_e_dense": -0.15469001463335658,
+   "raw": 0.05738051060752008,
+   "raw_mean": 0.0893664998696502,
+   "resolved": 0.10353957365729236,
+   "resolved_mean": 0.05993046866310808,
+   "step": 1720000,
+   "time_us": 2.408,
+   "transits": 1.4122345191215218,
+   "window": 0.13395693412529167
+  },
+  {
+   "I_d": 0.05378339427665543,
+   "S": 0.08262445116462815,
+   "T_e_dense": -0.13939639079495467,
+   "raw": 0.043044717682272235,
+   "raw_mean": 0.08953584291725765,
+   "resolved": 0.07608474160175942,
+   "resolved_mean": 0.060191867574550806,
+   "step": 1760000,
+   "time_us": 2.464,
+   "transits": 1.445077182356906,
+   "window": 0.13645834973887236
+  },
+  {
+   "I_d": 0.05327940925780897,
+   "S": 0.08747582082110339,
+   "T_e_dense": -0.11759036787534302,
+   "raw": 0.03476996344862638,
+   "raw_mean": 0.08975729870069278,
+   "resolved": 0.04245795271584656,
+   "resolved_mean": 0.06042753047867219,
+   "step": 1800000,
+   "time_us": 2.52,
+   "transits": 1.4779198455922902,
+   "window": 0.13342016628719353
+  },
+  {
+   "I_d": 0.05763387072196228,
+   "S": 0.08496228104978888,
+   "T_e_dense": -0.0928064345852469,
+   "raw": 0.022325712081738776,
+   "raw_mean": 0.09017746540538468,
+   "resolved": 0.0095380624929589,
+   "resolved_mean": 0.060578211301274026,
+   "step": 1840000,
+   "time_us": 2.576,
+   "transits": 1.5107625088276744,
+   "window": 0.12602259751430933
+  },
+  {
+   "I_d": 0.06428989477042872,
+   "S": 0.0797929856000628,
+   "T_e_dense": -0.07098214286416521,
+   "raw": 0.016777253968673578,
+   "raw_mean": 0.09046351692142938,
+   "resolved": -0.01250476456384502,
+   "resolved_mean": 0.060735128448347414,
+   "step": 1880000,
+   "time_us": 2.6320000000000006,
+   "transits": 1.5436051720630588,
+   "window": 0.11475466067068647
+  },
+  {
+   "I_d": 0.0731092832110285,
+   "S": 0.06748278230837745,
+   "T_e_dense": -0.05524426619641768,
+   "raw": 0.00964890108196786,
+   "raw_mean": 0.0906151945670979,
+   "resolved": -0.021447784111137406,
+   "resolved_mean": 0.06088891061524878,
+   "step": 1920000,
+   "time_us": 2.688,
+   "transits": 1.576447835298443,
+   "window": 0.10260165382307425
+  },
+  {
+   "I_d": 0.07577301321311007,
+   "S": 0.06204774054927096,
+   "T_e_dense": -0.04411273864989386,
+   "raw": 0.009735688704616769,
+   "raw_mean": 0.09078498149560271,
+   "resolved": -0.02089507542219401,
+   "resolved_mean": 0.06100125295422894,
+   "step": 1960000,
+   "time_us": 2.744,
+   "transits": 1.6092904985338272,
+   "window": 0.09009201380043086
+  },
+  {
+   "I_d": 0.06855158511611874,
+   "S": 0.05224452209941535,
+   "T_e_dense": -0.038416260538721714,
+   "raw": 0.01634300513063967,
+   "raw_mean": 0.09095237985929733,
+   "resolved": -0.006964645196047784,
+   "resolved_mean": 0.061131360135134906,
+   "step": 2000000,
+   "time_us": 2.8000000000000003,
+   "transits": 1.6421331617692114,
+   "window": 0.0762408846424946
+  },
+  {
+   "I_d": 0.054903865031547504,
+   "S": 0.04443455948179132,
+   "T_e_dense": -0.04063450278565142,
+   "raw": 0.01829909785766681,
+   "raw_mean": 0.09112781732714091,
+   "resolved": 0.01840388815689695,
+   "resolved_mean": 0.06120467032125458,
+   "step": 2040000,
+   "time_us": 2.8560000000000003,
+   "transits": 1.6749758250045956,
+   "window": 0.06544654069297764
+  },
+  {
+   "I_d": 0.04316012830912918,
+   "S": 0.0379741908696906,
+   "T_e_dense": -0.04322234372206426,
+   "raw": 0.018202362561577562,
+   "raw_mean": 0.0912142129576031,
+   "resolved": 0.038825211928200494,
+   "resolved_mean": 0.0612441353717193,
+   "step": 2080000,
+   "time_us": 2.9120000000000004,
+   "transits": 1.7078184882399798,
+   "window": 0.05794466051950188
+  },
+  {
+   "I_d": 0.033030382662757554,
+   "S": 0.035426152585222,
+   "T_e_dense": -0.04346659377747964,
+   "raw": 0.024991646707689576,
+   "raw_mean": 0.09118537640827802,
+   "resolved": 0.05014089044411314,
+   "resolved_mean": 0.061290461880894126,
+   "step": 2120000,
+   "time_us": 2.9680000000000004,
+   "transits": 1.740661151475364,
+   "window": 0.04990929975503719
+  },
+  {
+   "I_d": 0.02467489269584246,
+   "S": 0.033611567934757156,
+   "T_e_dense": -0.03662430845428189,
+   "raw": 0.024389814821866636,
+   "raw_mean": 0.09136114288226502,
+   "resolved": 0.05078474150691173,
+   "resolved_mean": 0.061334443224978996,
+   "step": 2160000,
+   "time_us": 3.024,
+   "transits": 1.7735038147107482,
+   "window": 0.04177193531328923
+  },
+  {
+   "I_d": 0.014863329574693664,
+   "S": 0.029851047920495328,
+   "T_e_dense": -0.02641347073241182,
+   "raw": 0.029552303068743572,
+   "raw_mean": 0.09172894227626228,
+   "resolved": 0.04426390779749317,
+   "resolved_mean": 0.061475517581855196,
+   "step": 2200000,
+   "time_us": 3.08,
+   "transits": 1.8063464779461325,
+   "window": 0.035061162497705564
+  },
+  {
+   "I_d": 0.009269945670371992,
+   "S": 0.031106161584652552,
+   "T_e_dense": -0.017838079383070027,
+   "raw": 0.030114500764531565,
+   "raw_mean": 0.09202372659066564,
+   "resolved": 0.037413115149117035,
+   "resolved_mean": 0.06164153870137363,
+   "step": 2240000,
+   "time_us": 3.136,
+   "transits": 1.8391891411815167,
+   "window": 0.030900129934363616
+  },
+  {
+   "I_d": 0.005472855291716797,
+   "S": 0.028232457514452823,
+   "T_e_dense": -0.011688959994134976,
+   "raw": 0.03833765429537694,
+   "raw_mean": 0.092306622263656,
+   "resolved": 0.02919899802244082,
+   "resolved_mean": 0.06185167203646359,
+   "step": 2280000,
+   "time_us": 3.192,
+   "transits": 1.8720318044169009,
+   "window": 0.028520872723924073
+  },
+  {
+   "I_d": 0.008861278882768941,
+   "S": 0.02791692571743299,
+   "T_e_dense": -0.005960700630167024,
+   "raw": 0.05016275274284124,
+   "raw_mean": 0.09270139839270534,
+   "resolved": 0.018659587050553473,
+   "resolved_mean": 0.06203404954111619,
+   "step": 2320000,
+   "time_us": 3.248,
+   "transits": 1.904874467652285,
+   "window": 0.026910815938499102
+  },
+  {
+   "I_d": 0.010501502022655424,
+   "S": 0.023731660623851243,
+   "T_e_dense": 0.0007774544952711222,
+   "raw": 0.08736131652024803,
+   "raw_mean": 0.09358287352937121,
+   "resolved": 0.011833183498863892,
+   "resolved_mean": 0.06217039084675925,
+   "step": 2360000,
+   "time_us": 3.304,
+   "transits": 1.9377171308876693,
+   "window": 0.02774915795938845
+  },
+  {
+   "I_d": 0.011212346711927735,
+   "S": 0.02427335959148154,
+   "T_e_dense": 0.00926937445280235,
+   "raw": 0.13193973251694813,
+   "raw_mean": 0.09482037936903077,
+   "resolved": 0.007823577250641282,
+   "resolved_mean": 0.06228514357129142,
+   "step": 2400000,
+   "time_us": 3.36,
+   "transits": 1.9705597941230535,
+   "window": 0.02971163868667221
+  },
+  {
+   "I_d": 0.012366035012290671,
+   "S": 0.025769153244823362,
+   "T_e_dense": 0.018873100967133582,
+   "raw": 0.1903436704883357,
+   "raw_mean": 0.09639635781845589,
+   "resolved": 0.007204507828815648,
+   "resolved_mean": 0.0624062253847302,
+   "step": 2440000,
+   "time_us": 3.4160000000000004,
+   "transits": 2.003402457358438,
+   "window": 0.03241290104565001
+  },
+  {
+   "I_d": 0.011653075871007341,
+   "S": 0.02696465951780016,
+   "T_e_dense": 0.028359891725677943,
+   "raw": 0.24891432640156724,
+   "raw_mean": 0.09824149348276814,
+   "resolved": 0.010381918015859817,
+   "resolved_mean": 0.06248101741682509,
+   "step": 2480000,
+   "time_us": 3.4720000000000004,
+   "transits": 2.036245120593822,
+   "window": 0.03362187114630914
+  },
+  {
+   "I_d": 0.017825782438695283,
+   "S": 0.02623922284756151,
+   "T_e_dense": 0.036070541444393166,
+   "raw": 0.28284863663546506,
+   "raw_mean": 0.09989427376438544,
+   "resolved": 0.016462736408527117,
+   "resolved_mean": 0.06253985697082584,
+   "step": 2520000,
+   "time_us": 3.5280000000000005,
+   "transits": 2.0690877838292066,
+   "window": 0.034230793452506944
+  }
+ ],
+ "energy_residual": {
+  "cumulative_over_electrode_work": -0.08898180584052773,
+  "runner_cumulative": -0.08898180584052773,
+  "runner_windowed": -0.07579849484567075,
+  "segments_0p4us": [
+   {
+    "electrode_work_j": 3.1550101672172503e-07,
+    "mean_I_d_ma": 2.753335236996575,
+    "mean_N_e": 1419297.2387955182,
+    "mean_S_per_s": 3.923247406062425e+16,
+    "mean_T_e_dense_ev": 9.214215153828658,
+    "mean_cells_per_debye_window": 0.5504451580221155,
+    "mean_n_g": 4.07441005378489e+19,
+    "mean_raw_omega_pe_dt": 0.0881331689319319,
+    "mean_resolved_omega_pe_dt": 0.054234374624744286,
+    "residual_over_electrode_work": -0.14959005380884674,
+    "t_us": [
+     0.0,
+     0.39999999999999997
+    ]
+   },
+   {
+    "electrode_work_j": 3.208166376261387e-07,
+    "mean_I_d_ma": 2.6709640366194045,
+    "mean_N_e": 1770709.2078376487,
+    "mean_S_per_s": 3.838209414475657e+16,
+    "mean_T_e_dense_ev": 6.265589530636411,
+    "mean_cells_per_debye_window": 0.7518946629113008,
+    "mean_n_g": 3.9560284308804395e+19,
+    "mean_raw_omega_pe_dt": 0.08408674286781499,
+    "mean_resolved_omega_pe_dt": 0.05458165194905004,
+    "residual_over_electrode_work": -0.14248712757397805,
+    "t_us": [
+     0.39999999999999997,
+     0.7999999999999999
+    ]
+   },
+   {
+    "electrode_work_j": 4.1718602092958743e-07,
+    "mean_I_d_ma": 3.4709865734754146,
+    "mean_N_e": 1968646.1288515406,
+    "mean_S_per_s": 3.5552297193877548e+16,
+    "mean_T_e_dense_ev": 6.103817186348751,
+    "mean_cells_per_debye_window": 1.094652949348176,
+    "mean_n_g": 4.095040016550055e+19,
+    "mean_raw_omega_pe_dt": 0.08153721101847577,
+    "mean_resolved_omega_pe_dt": 0.0476554156338786,
+    "residual_over_electrode_work": -0.09939683446000974,
+    "t_us": [
+     0.7999999999999999,
+     1.2
+    ]
+   },
+   {
+    "electrode_work_j": 5.184952386591624e-07,
+    "mean_I_d_ma": 4.318745385109512,
+    "mean_N_e": 2107121.4730580826,
+    "mean_S_per_s": 3.810488633210037e+16,
+    "mean_T_e_dense_ev": 5.993679337068689,
+    "mean_cells_per_debye_window": 1.1242741772467446,
+    "mean_n_g": 3.99673249474976e+19,
+    "mean_raw_omega_pe_dt": 0.08394916058006972,
+    "mean_resolved_omega_pe_dt": 0.049874450827960284,
+    "residual_over_electrode_work": -0.08603309774836317,
+    "t_us": [
+     1.2,
+     1.5999999999999999
+    ]
+   },
+   {
+    "electrode_work_j": 5.720651971141783e-07,
+    "mean_I_d_ma": 4.769112174580566,
+    "mean_N_e": 2224518.1477591037,
+    "mean_S_per_s": 3.899992153961584e+16,
+    "mean_T_e_dense_ev": 6.087468262058621,
+    "mean_cells_per_debye_window": 1.0434623659526265,
+    "mean_n_g": 3.95445972230587e+19,
+    "mean_raw_omega_pe_dt": 0.08691347612629209,
+    "mean_resolved_omega_pe_dt": 0.055800496714108326,
+    "residual_over_electrode_work": -0.07903927523839728,
+    "t_us": [
+     1.5999999999999999,
+     2.0
+    ]
+   },
+   {
+    "electrode_work_j": 6.12163813102453e-07,
+    "mean_I_d_ma": 5.095626802956868,
+    "mean_N_e": 2279931.211336599,
+    "mean_S_per_s": 3.9919053772868136e+16,
+    "mean_T_e_dense_ev": 5.598652290580292,
+    "mean_cells_per_debye_window": 1.2334385484775876,
+    "mean_n_g": 3.9260513383992525e+19,
+    "mean_raw_omega_pe_dt": 0.08966565663653303,
+    "mean_resolved_omega_pe_dt": 0.060394617265205924,
+    "residual_over_electrode_work": -0.07472234865501011,
+    "t_us": [
+     2.0,
+     2.4
+    ]
+   },
+   {
+    "electrode_work_j": 6.401431134133413e-07,
+    "mean_I_d_ma": 5.338121306009208,
+    "mean_N_e": 2342436.1981792715,
+    "mean_S_per_s": 4.203785478691476e+16,
+    "mean_T_e_dense_ev": 5.302017728586149,
+    "mean_cells_per_debye_window": 1.4063665466126343,
+    "mean_n_g": 3.837520952009174e+19,
+    "mean_raw_omega_pe_dt": 0.0909829441443421,
+    "mean_resolved_omega_pe_dt": 0.06074623068862247,
+    "residual_over_electrode_work": -0.07493409774499554,
+    "t_us": [
+     2.4,
+     2.8
+    ]
+   },
+   {
+    "electrode_work_j": 6.476474543996877e-07,
+    "mean_I_d_ma": 5.395947761853316,
+    "mean_N_e": 2409409.9825052484,
+    "mean_S_per_s": 4.286329953014095e+16,
+    "mean_T_e_dense_ev": 5.220812063108501,
+    "mean_cells_per_debye_window": 1.4894353318346778,
+    "mean_n_g": 3.803264449851574e+19,
+    "mean_raw_omega_pe_dt": 0.09286686617741843,
+    "mean_resolved_omega_pe_dt": 0.06228238709737985,
+    "residual_over_electrode_work": -0.07536485863548145,
+    "t_us": [
+     2.8,
+     3.1999999999999997
+    ]
+   },
+   {
+    "electrode_work_j": 5.351423104493147e-07,
+    "mean_I_d_ma": 5.4371690829561725,
+    "mean_N_e": 2478264.8575085322,
+    "mean_S_per_s": 4.348993903339834e+16,
+    "mean_T_e_dense_ev": 5.306552660850803,
+    "mean_cells_per_debye_window": 1.5288433054609882,
+    "mean_n_g": 3.780364047503306e+19,
+    "mean_raw_omega_pe_dt": 0.10791223020325197,
+    "mean_resolved_omega_pe_dt": 0.06285924190105062,
+    "residual_over_electrode_work": -0.07613466186790252,
+    "t_us": [
+     3.1999999999999997,
+     3.5280000000000005
+    ]
+   }
+  ],
+  "window_steps": 400000,
+  "windowed_over_electrode_work_at_stop": -0.07579849484567075
+ },
+ "gate_reading_at_291a9227": "the triad member omega_pe_dt_drift is trailing_time_drift(time, SeriesRecord.peak_omega_pe_dt): at 291a9227 (pre-v2.0.4) peak_omega_pe_dt is sqrt(max over EVERY plasma node of the single-step |q_e| deposit / (e V_node)) x dt - the RAW single-node statistic; v2.0.4 (79e6a670) makes it the peak over nodes whose deposit holds >= 32 macro-electrons and records the raw one alongside",
+ "heating_signature": {
+  "peak_debye_window_soft_ok": true,
+  "residual_power_rising": false,
+  "resolved_omega_pe_dt_drifting_above_hard": false,
+  "resolved_omega_pe_dt_drifting_above_soft": false,
+  "t_e_dense_rising_while_I_d_falls": false,
+  "windowed_residual_positive": false
+ },
+ "member_drifts_at_stop": {
+  "cells_per_debye_window_drift": 0.05359770836531889,
+  "discharge_current_drift": 0.017825782438695283,
+  "electron_count_drift": 0.0544307665044664,
+  "ionisation_rate_drift": 0.02623922284756151,
+  "kinetic_electron_per_electron_drift": 0.004795925335913616,
+  "n_e_peak_resolved_drift": 0.032939532001269575,
+  "neutral_density_drift": -0.011924015982642623,
+  "omega_pe_dt_drift_raw": 0.28284863663546506,
+  "omega_pe_dt_drift_resolved_single_step": 0.016462736408527117,
+  "omega_pe_dt_drift_resolved_window": 0.034230793452506944,
+  "s_over_n_e_drift": -0.02817644450913101,
+  "t_e_dense_drift": 0.036070541444393166,
+  "t_e_peak_drift": -0.009215590584339274
+ },
+ "method": {
+  "inputs": [
+   "series.npz (runner arrays)",
+   "summary.json",
+   "protocol.json",
+   "series.jsonl peak_node.raw_peak / peak_node fields (lifted read-only on the launch box; not tracked)"
+  ],
+  "note": "analysis code kept out of the experiment package by design: this record is self-contained (the script text is embedded here); numbers are recomputable from the tracked series.npz + summary.json except the raw-peak node census (needs series.jsonl, untracked, 53 MB, on the box)",
+  "run_on": "PC (CPU), 2026-09-04 ~23:20 AEST, over read-only copies of the job worktree jobs/sweep-056/tree results",
+  "script_source": "\"\"\"Diagnosis of the design-056 grid-heating-triad stop (mini-sweep v1, launch 1, PID 19913, code 291a9227 = pre-v2.0.4).\n\nRead-only over the run's series.npz / summary.json / status.jsonl (+ the raw_peak fields lifted from series.jsonl).\nReconstructs the triad's omega_pe_dt_drift member under BOTH readings:\n  raw      = SeriesRecord.peak_omega_pe_dt (pre-v2.0.4: max over EVERY plasma node of the single-step deposit)\n  resolved = omega_pe dt formed from peak_node.n_e_peak_per_m3 (the v1.4 single-step peak node holding >= 32 macro-electrons,\n             the same floor / same single-step deposit the v2.0.4 gate statistic reads)\n  window   = omega_pe dt formed from peak_node.window.n_e_peak_per_m3 (the 400k-step interval-averaged resolved peak)\nand the other members (S drift, T_e,dense drift, windowed / cumulative energy residual), plus the heating-signature checks\n(residual power per segment, T_e vs I_d trends, S/N_e, n_g), all with the runner's own trailing_time_drift definition.\nUsage: python diagnose_056.py <results-dir> <raw-peak.json> <out.json>\n\"\"\"\nfrom __future__ import annotations\n\nimport json\nimport sys\nfrom math import sqrt\n\nimport numpy as np\n\nE = 1.602176634e-19\nEPS0 = 8.8541878128e-12\nME = 9.1093837139e-31\n\n\ndef trailing_time_drift(time_s, values, fraction):\n    if time_s.size < 8:\n        return None\n    t_end = float(time_s[-1])\n    mask = time_s >= t_end - fraction * t_end\n    if int(mask.sum()) < 8:\n        return None\n    x = time_s[mask].astype(np.float64)\n    y = values[mask].astype(np.float64)\n    ok = np.isfinite(y)\n    x, y = x[ok], y[ok]\n    if x.size < 8:\n        return None\n    mean = float(np.mean(y))\n    if not np.isfinite(mean) or abs(mean) < 1e-300:\n        return None\n    slope = float(np.polyfit(x - x[0], y, 1)[0])\n    return slope * float(x[-1] - x[0]) / abs(mean)\n\n\ndef omega_pe_dt(n_e, dt):\n    return np.sqrt(np.maximum(n_e, 0.0) * E**2 / (EPS0 * ME)) * dt\n\n\ndef main(results, raw_peak_path, out_path):\n    summary = json.load(open(f\"{results}/summary.json\", encoding=\"utf-8\"))\n    protocol = json.load(open(f\"{results}/protocol.json\", encoding=\"utf-8\"))\n    z = np.load(f\"{results}/series.npz\")\n    dt = float(protocol[\"numerics\"][\"dt_s\"])\n    W = float(protocol[\"case\"][\"macro_weight\"])\n    dr, dz = float(protocol[\"case\"][\"radial_cells\"]), float(protocol[\"case\"][\"axial_cells\"])\n    transit = float(summary[\"simulated_time_s\"]) / float(summary[\"ion_transit_times\"])\n    t = z[\"time_s\"]\n    step = z[\"step\"]\n    raw = z[\"peak_omega_pe_dt\"]\n    n_res = z[\"peak_node_n_e_peak_per_m3\"]\n    n_win = z[\"peak_node_window_n_e_peak_per_m3\"]\n    res = omega_pe_dt(n_res, dt)\n    win = omega_pe_dt(n_win, dt)\n    rows = json.load(open(raw_peak_path, encoding=\"utf-8\"))\n    raw_nodes = np.array([r[\"raw_node\"] if r[\"raw_node\"] else [-1, -1] for r in rows])\n    raw_np = np.array([r[\"raw_macro_particles\"] if r[\"raw_macro_particles\"] is not None else np.nan for r in rows])\n    raw_ne = np.array([r[\"raw_n_e_per_m3\"] if r[\"raw_n_e_per_m3\"] is not None else np.nan for r in rows])\n    res_np = z[\"peak_node_macro_particles_at_peak\"]\n    frac = float(protocol[\"stopping_rule\"][\"plateau_window_fraction\"])\n    triad_rule = protocol[\"stopping_rule\"][\"grid_heating_triad\"]\n    hard = float(triad_rule[\"hard_drift_max\"])\n    soft = float(triad_rule[\"soft_drift_max\"])\n\n    # -- member drifts at the stop (the runner's definition) ---------------------------------------------------------------------\n    at_stop = {\n        \"omega_pe_dt_drift_raw\": trailing_time_drift(t, raw, frac),\n        \"omega_pe_dt_drift_resolved_single_step\": trailing_time_drift(t, res, frac),\n        \"omega_pe_dt_drift_resolved_window\": trailing_time_drift(t, win, frac),\n        \"n_e_peak_resolved_drift\": trailing_time_drift(t, n_res, frac),\n        \"ionisation_rate_drift\": trailing_time_drift(t, z[\"current_ionization_rate_per_s\"], frac),\n        \"t_e_dense_drift\": trailing_time_drift(t, z[\"peak_node_t_e_dense_ev\"], frac),\n        \"t_e_peak_drift\": trailing_time_drift(t, z[\"peak_node_t_e_peak_ev\"], frac),\n        \"discharge_current_drift\": trailing_time_drift(t, z[\"current_discharge_a\"], frac),\n        \"electron_count_drift\": trailing_time_drift(t, z[\"electrons\"].astype(float), frac),\n        \"neutral_density_drift\": trailing_time_drift(t, z[\"neutral_density_per_m3\"], frac),\n        \"kinetic_electron_per_electron_drift\": trailing_time_drift(t, z[\"kinetic_electron_j\"] / np.maximum(z[\"electrons\"], 1), frac),\n        \"s_over_n_e_drift\": trailing_time_drift(t, z[\"current_ionization_rate_per_s\"] / np.maximum(z[\"electrons\"], 1), frac),\n        \"cells_per_debye_window_drift\": trailing_time_drift(t, z[\"peak_node_window_cells_per_debye\"], frac),\n    }\n    runner_triad = summary[\"grid_heating_triad\"]\n\n    # -- trailing-window statistics of the two statistics -------------------------------------------------------------------------\n    mask = t >= t[-1] * (1 - frac)\n    def stats(a):\n        a = a[mask]\n        a = a[np.isfinite(a)]\n        return {\"mean\": float(a.mean()), \"min\": float(a.min()), \"max\": float(a.max()), \"p05\": float(np.percentile(a, 5)), \"p95\": float(np.percentile(a, 95)),\n                \"first_tenth_mean\": float(a[: max(1, a.size // 10)].mean()), \"last_tenth_mean\": float(a[-max(1, a.size // 10):].mean())}\n    window_stats = {\"raw\": stats(raw), \"resolved_single_step\": stats(res), \"resolved_window\": stats(win),\n                    \"raw_peak_macro_particles\": stats(raw_np), \"resolved_peak_macro_particles\": stats(res_np),\n                    \"raw_peak_n_e\": stats(raw_ne), \"resolved_peak_n_e\": stats(n_res)}\n    # raw-peak node census over the trailing window and the whole run\n    axis = raw_nodes[:, 0] == 0\n    def census(sel):\n        n = int(sel.sum())\n        return {\"records\": n, \"axis_node_fraction\": float(axis[sel].mean()) if n else None,\n                \"macro_particles_le_4_fraction\": float((raw_np[sel] <= 4).mean()) if n else None,\n                \"macro_particles_lt_32_fraction\": float((raw_np[sel] < 32).mean()) if n else None,\n                \"distinct_nodes\": int(len({tuple(x) for x in raw_nodes[sel]})) if n else None,\n                \"mode_node\": [int(v) for v in max({tuple(x) for x in raw_nodes[sel]}, key=lambda k: int(np.all(raw_nodes[sel] == k, axis=1).sum()))] if n else None,\n                \"z_index_range\": [int(raw_nodes[sel, 1].min()), int(raw_nodes[sel, 1].max())] if n else None}\n    node_census = {\"trailing_window\": census(mask), \"whole_run\": census(np.ones_like(mask, bool)),\n                   \"resolved_peak_axis_fraction_trailing\": float((z[\"peak_node_r_m\"][mask] == 0).mean())}\n    # ratio raw / resolved statistic\n    ratio = raw / np.maximum(res, 1e-300)\n\n    # -- drift trajectories: the member evaluated at every checkpoint step as the runner did (checkpoint_every_steps) ----------------\n    cadence = int(protocol[\"numerics\"][\"checkpoint_every_steps\"])\n    traj = []\n    for k in range(len(step)):\n        if int(step[k]) % cadence != 0 or t[k] < transit * 0.5:\n            continue\n        sl = slice(0, k + 1)\n        traj.append({\"step\": int(step[k]), \"time_us\": float(t[k] * 1e6), \"transits\": float(t[k] / transit),\n                     \"raw\": trailing_time_drift(t[sl], raw[sl], frac), \"resolved\": trailing_time_drift(t[sl], res[sl], frac),\n                     \"window\": trailing_time_drift(t[sl], win[sl], frac), \"S\": trailing_time_drift(t[sl], z[\"current_ionization_rate_per_s\"][sl], frac),\n                     \"T_e_dense\": trailing_time_drift(t[sl], z[\"peak_node_t_e_dense_ev\"][sl], frac),\n                     \"I_d\": trailing_time_drift(t[sl], z[\"current_discharge_a\"][sl], frac),\n                     \"raw_mean\": float(raw[sl][t[sl] >= t[k] * (1 - frac)].mean()), \"resolved_mean\": float(res[sl][t[sl] >= t[k] * (1 - frac)].mean())})\n    # first checkpoint (after arming at 1 transit) where the raw member would have exceeded hard / where the resolved one ever did\n    armed = [r for r in traj if r[\"transits\"] >= float(triad_rule.get(\"enforced_after_transit_times\", 1.0))]\n    first_raw_hard = next((r for r in armed if r[\"raw\"] is not None and abs(r[\"raw\"]) >= hard), None)\n    any_res_hard = [r for r in armed if r[\"resolved\"] is not None and abs(r[\"resolved\"]) >= hard]\n    any_res_soft = [r for r in armed if r[\"resolved\"] is not None and abs(r[\"resolved\"]) >= soft]\n    max_res_drift = max((abs(r[\"resolved\"]) for r in armed if r[\"resolved\"] is not None), default=None)\n    max_win_drift = max((abs(r[\"window\"]) for r in armed if r[\"window\"] is not None), default=None)\n    raw_hard_count = sum(1 for r in armed if r[\"raw\"] is not None and abs(r[\"raw\"]) >= hard)\n    raw_soft_count = sum(1 for r in armed if r[\"raw\"] is not None and abs(r[\"raw\"]) >= soft)\n\n    # -- energy residual: cumulative, windowed at stop, and per 0.4 us segment (power = residual / electrode work per segment) -------\n    resid = z[\"interval_residual_j\"]\n    work = z[\"interval_electrode_work_j\"]\n    seg = 0.4e-6\n    segments = []\n    edges = np.arange(0.0, float(t[-1]) + seg, seg)\n    for a, b in zip(edges[:-1], edges[1:]):\n        m = (t > a) & (t <= b)\n        if m.sum() < 8:\n            continue\n        w = float(work[m].sum())\n        segments.append({\"t_us\": [float(a * 1e6), float(min(b, t[-1]) * 1e6)], \"residual_over_electrode_work\": float(resid[m].sum() / w) if w else None,\n                         \"electrode_work_j\": w, \"mean_T_e_dense_ev\": float(np.nanmean(z[\"peak_node_t_e_dense_ev\"][m])),\n                         \"mean_I_d_ma\": float(z[\"current_discharge_a\"][m].mean() * 1e3), \"mean_S_per_s\": float(z[\"current_ionization_rate_per_s\"][m].mean()),\n                         \"mean_n_g\": float(z[\"neutral_density_per_m3\"][m].mean()), \"mean_N_e\": float(z[\"electrons\"][m].mean()),\n                         \"mean_raw_omega_pe_dt\": float(raw[m].mean()), \"mean_resolved_omega_pe_dt\": float(res[m].mean()),\n                         \"mean_cells_per_debye_window\": float(np.nanmean(z[\"peak_node_window_cells_per_debye\"][m]))})\n    win_steps = int(triad_rule[\"residual_window_steps\"])\n    in_w = step > step[-1] - win_steps\n    windowed = float(resid[in_w].sum() / work[in_w].sum())\n    cumulative = float(resid[1:].sum() / work[1:].sum())\n\n    # -- verdict ----------------------------------------------------------------------------------------------------------------------\n    res_drift = at_stop[\"omega_pe_dt_drift_resolved_single_step\"]\n    heating_signature = {\n        \"residual_power_rising\": bool(len(segments) >= 3 and segments[-1][\"residual_over_electrode_work\"] > segments[-2][\"residual_over_electrode_work\"] > segments[-3][\"residual_over_electrode_work\"] and segments[-1][\"residual_over_electrode_work\"] > 0),\n        \"windowed_residual_positive\": windowed > 0,\n        \"t_e_dense_rising_while_I_d_falls\": bool(at_stop[\"t_e_dense_drift\"] > soft and at_stop[\"discharge_current_drift\"] < -soft),\n        \"resolved_omega_pe_dt_drifting_above_soft\": bool(res_drift is not None and abs(res_drift) >= soft),\n        \"resolved_omega_pe_dt_drifting_above_hard\": bool(res_drift is not None and abs(res_drift) >= hard),\n        \"peak_debye_window_soft_ok\": bool(summary[\"peak_node_debye\"][\"window\"][\"soft_ok\"]),\n    }\n    artefact = (not heating_signature[\"resolved_omega_pe_dt_drifting_above_hard\"] and not heating_signature[\"residual_power_rising\"]\n                and not heating_signature[\"windowed_residual_positive\"] and not heating_signature[\"t_e_dense_rising_while_I_d_falls\"]\n                and window_stats[\"raw_peak_macro_particles\"][\"mean\"] < 32 and node_census[\"trailing_window\"][\"axis_node_fraction\"] > 0.5)\n    verdict = \"SHOT_NOISE_ARTEFACT\" if artefact else \"GENUINE_OR_UNDETERMINED\"\n    out = {\n        \"schema\": \"cft.pic2d.design-mini-sweep.triad-stop-diagnosis/1.0.0\",\n        \"design_id\": protocol.get(\"design_id\"), \"results_dir\": results.replace(\"\\\\\", \"/\").rstrip(\"/\").split(\"/\")[-1],\n        \"run\": {\"git_head\": summary[\"git_head\"], \"protocol_sha256\": summary[\"protocol_sha256\"], \"stop_reason\": summary[\"stop_reason\"],\n                \"steps\": int(summary[\"steps_completed\"]), \"time_us\": float(summary[\"simulated_time_s\"]) * 1e6, \"transits\": float(summary[\"ion_transit_times\"]),\n                \"transit_time_us\": transit * 1e6, \"dt_s\": dt, \"macro_weight\": W, \"cells\": [dr, dz], \"series_records\": int(len(step)),\n                \"series_interval_steps\": int(protocol[\"numerics\"][\"series_interval_steps\"]), \"checkpoint_every_steps\": cadence,\n                \"model_version\": summary[\"model_version\"], \"wall_seconds\": summary[\"wall_seconds_total\"], \"ms_per_step\": summary[\"ms_per_step_this_session\"]},\n        \"gate_reading_at_291a9227\": \"the triad member omega_pe_dt_drift is trailing_time_drift(time, SeriesRecord.peak_omega_pe_dt): at 291a9227 (pre-v2.0.4) \"\n                                     \"peak_omega_pe_dt is sqrt(max over EVERY plasma node of the single-step |q_e| deposit / (e V_node)) x dt - the RAW single-node statistic; \"\n                                     \"v2.0.4 (79e6a670) makes it the peak over nodes whose deposit holds >= 32 macro-electrons and records the raw one alongside\",\n        \"resolved_statistic_source\": \"peak_node.n_e_peak_per_m3 of every series record = the v1.4 single-step peak node holding >= min_macro_particles_at_peak (32) \"\n                                     \"macro-electrons (simulation.peak_node_debye), i.e. the v2.0.4 gate statistic reconstructed from the same run; omega_pe dt = \"\n                                     \"sqrt(n e^2 / (eps0 m_e)) dt; 'window' = the 400k-step interval-averaged resolved peak (peak_node.window)\",\n        \"runner_triad_at_stop\": runner_triad,\n        \"member_drifts_at_stop\": at_stop,\n        \"thresholds\": {\"soft_drift_max\": soft, \"hard_drift_max\": hard, \"plateau_window_fraction\": frac, \"omega_pe_dt_limit\": protocol[\"numerics\"].get(\"limits\", {}).get(\"max_omega_pe_dt\", 0.2)},\n        \"trailing_window_statistics\": window_stats,\n        \"raw_peak_node_census\": node_census,\n        \"raw_over_resolved_ratio\": {\"trailing_mean\": float(ratio[mask].mean()), \"trailing_min\": float(ratio[mask].min()), \"trailing_max\": float(ratio[mask].max()), \"whole_run_mean\": float(ratio.mean())},\n        \"drift_trajectory_at_checkpoints\": traj,\n        \"trajectory_summary\": {\"armed_checkpoints\": len(armed), \"raw_member_hard_exceedances\": raw_hard_count, \"raw_member_soft_exceedances\": raw_soft_count,\n                               \"first_raw_hard_exceedance\": first_raw_hard, \"resolved_member_hard_exceedances\": len(any_res_hard),\n                               \"resolved_member_soft_exceedances\": len(any_res_soft), \"max_abs_resolved_drift_when_armed\": max_res_drift,\n                               \"max_abs_window_drift_when_armed\": max_win_drift},\n        \"energy_residual\": {\"cumulative_over_electrode_work\": cumulative, \"windowed_over_electrode_work_at_stop\": windowed, \"window_steps\": win_steps,\n                            \"runner_windowed\": runner_triad.get(\"windowed_energy_residual_over_electrode_work\"), \"runner_cumulative\": runner_triad.get(\"energy_residual_over_electrode_work\"),\n                            \"segments_0p4us\": segments},\n        \"peak_debye_window_at_stop\": summary[\"peak_node_debye\"][\"window\"],\n        \"operating_point_at_stop\": {\"window_currents_a\": summary[\"window_currents_a\"], \"neutral_trailing\": {k: summary[\"neutral_inventory\"][k] for k in (\"trailing_20pct_mean_density_per_m3\", \"trailing_20pct_mean_ionization_rate_per_s\", \"gross_utilisation_trailing\", \"final_fixed_point_per_m3\")},\n                                   \"final_counts\": summary[\"final_counts\"], \"plateau_block\": summary[\"plateau\"]},\n        \"heating_signature\": heating_signature,\n        \"verdict\": verdict,\n    }\n    with open(out_path, \"wb\") as handle:\n        handle.write(json.dumps(out, indent=1, sort_keys=True, allow_nan=False, default=float).encode(\"utf-8\") + b\"\\n\")\n    # console summary\n    print(\"verdict:\", verdict)\n    print(\"drifts at stop:\", json.dumps({k: (None if v is None else round(v, 4)) for k, v in at_stop.items()}, indent=1))\n    print(\"window stats raw/resolved omega_pe dt:\", json.dumps({k: {kk: round(vv, 4) for kk, vv in v.items()} for k, v in window_stats.items() if k in (\"raw\", \"resolved_single_step\", \"resolved_window\")}, indent=1))\n    print(\"raw peak macro-particles (trailing):\", json.dumps({k: round(v, 3) for k, v in window_stats[\"raw_peak_macro_particles\"].items()}))\n    print(\"resolved peak macro-particles (trailing):\", json.dumps({k: round(v, 1) for k, v in window_stats[\"resolved_peak_macro_particles\"].items()}))\n    print(\"raw node census:\", json.dumps(node_census, indent=1))\n    print(\"trajectory summary:\", json.dumps(out[\"trajectory_summary\"], indent=1, default=str))\n    print(\"energy residual cumulative / windowed:\", round(cumulative, 4), round(windowed, 4))\n    for s in segments:\n        print(\"  seg\", [round(x, 2) for x in s[\"t_us\"]], \"res/W\", round(s[\"residual_over_electrode_work\"], 4), \"T_e,dense\", round(s[\"mean_T_e_dense_ev\"], 3), \"I_d mA\", round(s[\"mean_I_d_ma\"], 3),\n              \"S\", f\"{s['mean_S_per_s']:.3e}\", \"N_e\", f\"{s['mean_N_e']:.3e}\", \"n_g\", f\"{s['mean_n_g']:.3e}\", \"raw\", round(s[\"mean_raw_omega_pe_dt\"], 4), \"res\", round(s[\"mean_resolved_omega_pe_dt\"], 4), \"cells/lD\", round(s[\"mean_cells_per_debye_window\"], 3))\n    print(\"heating signature:\", heating_signature)\n    for r in traj[-14:]:\n        print(\"  ckpt\", r[\"step\"], f\"{r['transits']:.3f}\", \"raw\", None if r[\"raw\"] is None else round(r[\"raw\"], 4), \"res\", None if r[\"resolved\"] is None else round(r[\"resolved\"], 4), \"win\", None if r[\"window\"] is None else round(r[\"window\"], 4), \"S\", round(r[\"S\"], 4), \"Te\", round(r[\"T_e_dense\"], 4), \"Id\", round(r[\"I_d\"], 4))\n\n\nif __name__ == \"__main__\":\n    main(*sys.argv[1:4])\n"
+ },
+ "operating_point_at_stop": {
+  "final_counts": {
+   "electrons": 2511884,
+   "ions": 2503637
+  },
+  "neutral_trailing": {
+   "final_fixed_point_per_m3": 3.6317738620342493e+19,
+   "gross_utilisation_trailing": 0.3109397949972525,
+   "trailing_20pct_mean_density_per_m3": 3.792122304686529e+19,
+   "trailing_20pct_mean_ionization_rate_per_s": 4.3166531836734696e+16
+  },
+  "plateau_block": {
+   "discharge_current_drift": 0.01782578243869532,
+   "drifts_within_threshold": false,
+   "electron_count_drift": 0.05443076650446707,
+   "min_transit_times": 3.0,
+   "neutral_density_drift": -0.011924015982642045,
+   "peak_debye_soft_ok": true,
+   "reached": false,
+   "threshold": 0.05,
+   "tracked": [
+    "discharge_current_drift",
+    "electron_count_drift",
+    "neutral_density_drift"
+   ],
+   "transit_times_elapsed": 2.0690877838292066,
+   "triad_soft_ok": false,
+   "window_fraction": 0.2
+  },
+  "window_currents_a": {
+   "anode_electron_a": 0.005536558553942309,
+   "anode_ion_a": 0.00013016439172814091,
+   "discharge_a": 0.0054063941622141684,
+   "exit_electron_a": 0.0024710408125670274,
+   "exit_ion_beam_a": 0.00487881983054408,
+   "injected_electron_a": 0.003000006098029014,
+   "ionization_rate_per_s": 4.300785394285714e+16,
+   "wall_electron_a": 0.001114214794033279,
+   "wall_ion_a": 0.0011813682189044106
+  }
+ },
+ "peak_debye_window_at_stop": {
+  "cells_per_debye_window_last": 1.536628484398644,
+  "hard_cells_per_debye": 3.141592653589793,
+  "max_cells_per_debye_window": 1.5490964470013646,
+  "records_above_soft": 0,
+  "soft_cells_per_debye": 2.5,
+  "soft_ok": true,
+  "trailing_20pct_mean_cells_per_debye_window": 1.5086668791840911,
+  "window_complete_last": true,
+  "window_steps_last": 400000
+ },
+ "raw_over_resolved_ratio": {
+  "trailing_max": 2.1708448342986735,
+  "trailing_mean": 1.5966581365640644,
+  "trailing_min": 1.2841935105840447,
+  "whole_run_mean": 1.6139892234602569
+ },
+ "raw_peak_node_census": {
+  "resolved_peak_axis_fraction_trailing": 0.0,
+  "trailing_window": {
+   "axis_node_fraction": 0.9642998809996033,
+   "distinct_nodes": 286,
+   "macro_particles_le_4_fraction": 0.9642998809996033,
+   "macro_particles_lt_32_fraction": 0.9646965489884967,
+   "mode_node": [
+    0,
+    368
+   ],
+   "records": 2521,
+   "z_index_range": [
+    0,
+    400
+   ]
+  },
+  "whole_run": {
+   "axis_node_fraction": 0.9341269841269841,
+   "distinct_nodes": 825,
+   "macro_particles_le_4_fraction": 0.9342063492063492,
+   "macro_particles_lt_32_fraction": 0.9350793650793651,
+   "mode_node": [
+    0,
+    107
+   ],
+   "records": 12600,
+   "z_index_range": [
+    0,
+    512
+   ]
+  }
+ },
+ "resolved_statistic_source": "peak_node.n_e_peak_per_m3 of every series record = the v1.4 single-step peak node holding >= min_macro_particles_at_peak (32) macro-electrons (simulation.peak_node_debye), i.e. the v2.0.4 gate statistic reconstructed from the same run; omega_pe dt = sqrt(n e^2 / (eps0 m_e)) dt; 'window' = the 400k-step interval-averaged resolved peak (peak_node.window)",
+ "results_dir": "l1a-gs-v3-056-effcbc8686-channel-33um",
+ "run": {
+  "cells": [
+   115.0,
+   512.0
+  ],
+  "checkpoint_every_steps": 40000,
+  "dt_s": 1.4e-12,
+  "git_head": "291a9227669c8927ea5cf7a6de2eed23fe6f73de",
+  "macro_weight": 26566.8,
+  "model_version": "pic2d v1.3 closure (v1.2 runner + quasi-steady 0-D neutral inventory, NO wall-ion recycling: bit-for-bit the v2 base physics) with the v2.0.3 gates (window-mode peak-Debye gate, windowed residual-power gate)",
+  "ms_per_step": 7.10881288699246,
+  "protocol_sha256": "35760e9b5bcd235676a5c64779d3e4f4c10f98c1bc9179dca22603a8830da742",
+  "series_interval_steps": 200,
+  "series_records": 12600,
+  "steps": 2520000,
+  "stop_reason": "grid_heating_triad_gate_stopped_run",
+  "time_us": 3.5280000000000005,
+  "transit_time_us": 1.705099236278329,
+  "transits": 2.0690877838292066,
+  "wall_seconds": 17914.208475221
+ },
+ "runner_triad_at_stop": {
+  "cumulative_residual_is_witness_only": true,
+  "energy_residual_over_electrode_work": -0.08898180584052773,
+  "enforced": true,
+  "hard_failures": [
+   "omega_pe_dt_drift 0.283 exceeds 0.25"
+  ],
+  "ionisation_rate_drift": 0.026239222847561684,
+  "omega_pe_dt_drift": 0.2828486366354657,
+  "soft_ok": false,
+  "t_e_dense_drift": 0.03607054144439369,
+  "thresholds": {
+   "energy_residual_over_electrode_work_max": 0.1,
+   "enforced_after_transit_times": 1.0,
+   "hard_drift_max": 0.25,
+   "residual_window_steps": 400000,
+   "soft_drift_max": 0.05,
+   "windowed_energy_residual_over_electrode_work_max": 0.05
+  },
+  "window_fraction": 0.2,
+  "windowed_energy_residual_electrode_work_j": 9.120707426039916e-07,
+  "windowed_energy_residual_j": -6.913358948215575e-08,
+  "windowed_energy_residual_over_electrode_work": -0.07579849484567075,
+  "windowed_energy_residual_window_complete": true,
+  "windowed_energy_residual_window_steps": 400000
+ },
+ "schema": "cft.pic2d.design-mini-sweep.triad-stop-diagnosis/1.0.0",
+ "thresholds": {
+  "hard_drift_max": 0.25,
+  "omega_pe_dt_limit": 0.2,
+  "plateau_window_fraction": 0.2,
+  "soft_drift_max": 0.05
+ },
+ "trailing_window_statistics": {
+  "raw": {
+   "first_tenth_mean": 0.09185855334926366,
+   "last_tenth_mean": 0.11462692566326015,
+   "max": 0.13777773067124247,
+   "mean": 0.09989427376438544,
+   "min": 0.08022233054245989,
+   "p05": 0.08639273020560365,
+   "p95": 0.11846382692510547
+  },
+  "raw_peak_macro_particles": {
+   "first_tenth_mean": 23.918228675150328,
+   "last_tenth_mean": 2.008693553926049,
+   "max": 236.4493035734584,
+   "mean": 8.665725022589433,
+   "min": 0.5105314727700764,
+   "p05": 0.991638714528166,
+   "p95": 2.6286046149523603
+  },
+  "raw_peak_n_e": {
+   "first_tenth_mean": 8.237398893716803e+17,
+   "last_tenth_mean": 1.3849976112634854e+18,
+   "max": 2.422898879773389e+18,
+   "mean": 1.0224959277910225e+18,
+   "min": 5.961156226035462e+17,
+   "p05": 6.519515718216337e+17,
+   "p95": 1.5622046803110738e+18
+  },
+  "resolved_peak_macro_particles": {
+   "first_tenth_mean": 205.50664926775218,
+   "last_tenth_mean": 223.9326300730303,
+   "max": 305.39687063193634,
+   "mean": 204.22797109166595,
+   "min": 157.1502421527651,
+   "p05": 177.94918098019318,
+   "p95": 231.30865620271985
+  },
+  "resolved_peak_n_e": {
+   "first_tenth_mean": 6.323491264010501e+17,
+   "last_tenth_mean": 6.423754841971357e+17,
+   "max": 6.864544921183192e+17,
+   "mean": 6.270891765741905e+17,
+   "min": 5.915481914841587e+17,
+   "p05": 6.054707098067724e+17,
+   "p95": 6.505960611866661e+17
+  },
+  "resolved_single_step": {
+   "first_tenth_mean": 0.06280250813442209,
+   "last_tenth_mean": 0.06329954413612038,
+   "max": 0.06543731060474792,
+   "mean": 0.06253985697082584,
+   "min": 0.060745572833939145,
+   "p05": 0.061456261201253325,
+   "p95": 0.06370525833676736
+  },
+  "resolved_window": {
+   "first_tenth_mean": 0.05742440453511365,
+   "last_tenth_mean": 0.05889908219631866,
+   "max": 0.059022686810444674,
+   "mean": 0.05812703182107489,
+   "min": 0.05734962069643273,
+   "p05": 0.05738895236891308,
+   "p95": 0.05888911074268284
+  }
+ },
+ "trajectory_summary": {
+  "armed_checkpoints": 33,
+  "first_raw_hard_exceedance": {
+   "I_d": 0.017825782438695283,
+   "S": 0.02623922284756151,
+   "T_e_dense": 0.036070541444393166,
+   "raw": 0.28284863663546506,
+   "raw_mean": 0.09989427376438544,
+   "resolved": 0.016462736408527117,
+   "resolved_mean": 0.06253985697082584,
+   "step": 2520000,
+   "time_us": 3.5280000000000005,
+   "transits": 2.0690877838292066,
+   "window": 0.034230793452506944
+  },
+  "max_abs_resolved_drift_when_armed": 0.13662903949637545,
+  "max_abs_window_drift_when_armed": 0.14211065367770853,
+  "raw_member_hard_exceedances": 1,
+  "raw_member_soft_exceedances": 10,
+  "resolved_member_hard_exceedances": 0,
+  "resolved_member_soft_exceedances": 16
+ },
+ "verdict": "SHOT_NOISE_ARTEFACT"
+}

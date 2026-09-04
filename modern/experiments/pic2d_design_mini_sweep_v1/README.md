@@ -467,3 +467,42 @@ preflight for both channel options, run / launch guards, shrunk-cadence protocol
   reading. `assess` / `targets` are DEFERRED to the sweep-wide assessment after the reference and 009 finish, from a
   checkout that carries the steady-state v4 `assessment.json` (`0d228ad2`, verdict `resolution_limited`), so that the
   predeclared caveat (f) is cited from the file, not from a checkout where it reads "pending".
+* **2026-09-04 10:52:09 UTC (20:52 AEST) - design 056 launch 1 STOPPED by the grid-heating triad gate at 2.07 transits
+  (PID 19913): `omega_pe_dt_drift 0.283 exceeds 0.25` - DIAGNOSED as a SHOT-NOISE ARTEFACT of the pre-v2.0.4 RAW
+  gate statistic, not heating.** Record `results/l1a-gs-v3-056-effcbc8686-channel-33um-launch1-triad-gate-stop/` (same
+  contract as 047, plus `triad-stop-diagnosis.json`; archived under the `-launch1-triad-gate-stop` suffix so that
+  launch 2 runs in the canonical directory; 126 frames, the 202 MB checkpoint and the 53 MB `series.jsonl` stay in
+  `jobs/sweep-056/tree`). Stop `grid_heating_triad_gate_stopped_run` at step 2,520,000 = 3.528 us = 2.069 transits
+  (1.705 us a priori), 17,914 s = 4.98 h, 7.11 ms/step mean (8.0 at the end), exit 0, `finished: true`; lock commit
+  `291a9227`, protocol `35760e9b5bcd`, config `3d247f1ea3f6`. State at the stop: I_d 5.41 mA, I_beam 4.88 mA,
+  S 4.30e16 /s, n_g 3.79e19 (fixed point 3.63e19), utilisation 0.311, N_e 2.51 M / N_i 2.50 M (the 10.2 M projection
+  4x too high), peak n_e (window) 5.58e17 at z 10.4 mm, T_e,peak 4.81 eV, T_e,dense 5.26 eV, Delta/lambda_D window 1.54
+  (max 1.55; soft 2.5 ok), windowed residual -7.58 % (cumulative -8.90 %), plateau drifts I_d +1.8 % / N_e +5.4 % /
+  n_g -1.2 % (not yet a plateau: 2.07 < 3 transits and N_e still filling).
+  **Diagnosis** (`triad-stop-diagnosis.json`, read-only over series.npz / summary.json / the series.jsonl `raw_peak`
+  fields, the runner's own `trailing_time_drift`): the tripped member is `trailing_time_drift(peak_omega_pe_dt)`, and at
+  `291a9227` `peak_omega_pe_dt` is the max over EVERY plasma node of the single-step |q_e| deposit (the raw statistic
+  v2.0.4 now records only as a witness). Reconstructed under both readings at the stop: RAW +0.283 (hard 0.25) versus the
+  v2.0.4 RESOLVED single-step statistic (`peak_node.n_e_peak_per_m3`, the densest node holding >= 32 macro-electrons -
+  the same floor and the same single-step deposit the v2.0.4 gate reads) **+0.0165**, and the 400k-step window-averaged
+  resolved peak **+0.034** - both inside the 5 % SOFT bound, let alone the hard one. Trailing-window values: raw
+  omega_pe dt 0.100 mean (0.080-0.138; first tenth 0.092 -> last tenth 0.115), resolved 0.0625 (0.061-0.065, flat),
+  window 0.058 (0.057-0.059). The raw argmax sat on an AXIS node (i = 0) holding <= 4 macro-electrons in 96.4 % of the
+  2521 trailing records (p05 0.99, median ~1.5, p95 2.6 macro-electrons; 286 distinct nodes over z-index 0-400 - a
+  different 1-3-particle axis node every record), whereas the resolved peak held 157-305 (mean 204) macro-electrons and
+  was never on the axis (raw / resolved ratio 1.6 mean, up to 2.2). Trajectory at the checkpoints: the raw member rose
+  0.050 (1.905 transits) -> 0.087 -> 0.132 -> 0.190 -> 0.249 -> 0.283 (2.069) over the last 0.16 transits while the
+  resolved member FELL 0.019 -> 0.012 -> 0.008 -> 0.007 -> 0.010 -> 0.017 and the window member sat at 0.027-0.034; the
+  resolved member exceeded the soft bound only at 1.02-1.45 transits (max 0.137, the still-densifying ignition phase:
+  I_d drift +3 to +11 %, T_e,dense falling), never the hard one, and read <= 0.05 from 1.77 transits on. No heating
+  signature: the energy-ledger residual per 0.4 us segment is -15.0, -14.3, -9.9, -8.6, -7.9, -7.5, -7.5, -7.5, -7.6 %
+  of the electrode work (cooling side, flat - the accepted plateaus' pattern; attempt 8 went +2.4 -> +5.8 -> +54.8 %),
+  T_e,dense 9.2 -> 6.3 -> 6.1 -> 6.0 -> 6.1 -> 5.6 -> 5.3 -> 5.2 -> 5.3 eV (falling, then flat: trailing drift +3.6 %)
+  while I_d ROSE 2.75 -> 5.44 mA (trailing +1.8 %) - the opposite of the heating signature (T_e up while I_d falls);
+  S +2.6 %, S/N_e -2.8 %, K_e/N_e +0.5 %, n_g -1.2 %, Delta/lambda_D window 1.53 rising with the density, far from pi.
+  **Verdict: SHOT-NOISE ARTEFACT** (every heating-signature check negative; the resolved statistic 17x inside the hard
+  bound while the raw one drifted on 1-3-particle axis nodes) - the same failure mode as the plume attempt-6
+  plume-boundary gate and the external-validation preflight stop that produced v2.0.4. Under v2.0.4 the run would have
+  continued; it needed ~1.13 M more steps to reach 3 transits (~2.5 h at 8 ms/step). Consequence: launch 2 of 056 under
+  model v2.0.4 as a protocol AMENDMENT (next entry). What this record is: a gate-stopped run of the sweep (no plateau,
+  not assessable, not a failure of the design); the sweep-wide `assess` runs after the reference and 009 finish.
