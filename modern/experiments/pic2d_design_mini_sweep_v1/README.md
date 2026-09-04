@@ -545,3 +545,21 @@ preflight for both channel options, run / launch guards, shrunk-cadence protocol
   re-sealed on the box (`35760e9b5bcd` -> `8b876b31eb14`, the only sealed file that changed; `protocol.json` -> `a7229bf997e4`);
   tests/pic2d/test_pic2d_design_mini_sweep.py 20/20 on the PC. The launch (job `sweep-056-launch2`, `--expect-commit` = the
   amendment commit) waits for the reference or 009 to free a slot - next entry.
+* **2026-09-05 00:00:38 AEST (2026-09-04 14:00:38 UTC) - LAUNCH 2 of design 056** (amendment 1, commit `ee35bc84`; jobs.yaml
+  `8f68e865`): job `sweep-056-launch2` via `tools/cloud/schedule.py launch --only sweep-056-launch2` into a freed CUDA-MPS slot
+  (the external-validation v0 run had stopped itself at 13:56 UTC on its windowed residual-power gate, so the box held three
+  PIC clients - reference, 009, steady-state v5 - and the launch keeps it at four; `plan` had refused fail-closed at 13:31 UTC
+  with four clients running). Detached worktree `jobs/sweep-056-launch2/tree` at `ee35bc84` (prereg check: ancestor of the
+  box head, sealed protocol frozen), Warp `cuda:0` UUID cross-checked, PID 38282 (wrapper 38269), tmux `pic-sweep-056-launch2`,
+  6 BLAS threads. Execution lock: commit `ee35bc847dd5`, protocol `8b876b31eb14`, experiment protocol `a7229bf997e4`, config
+  identity `3d247f1ea3f6` = launch 1's (the amendment block is documentary, as declared), clean worktree, MPS pipe
+  `/tmp/nvidia-mps`. Stepping at 5.9 ms/step at the seed load (three other clients). **Replay check at the first common record
+  (step 4400)**: electrons 1 288 811, I_d 3.6332017077986196 mA and the RAW peak omega_pe dt 0.09895866033218684 are bitwise
+  launch 1's values - the physics replays as `mps-replay.json` predicts; the series now carries both readings
+  (`peak_omega_pe_dt` = resolved 0.0283, `peak_omega_pe_dt_raw` = 0.0990 at that record; the reconstruction from launch 1's
+  `peak_node` moments gave 0.0276 there, 2.6 % apart - deposit vs moment sample - so the launch-1 diagnosis is a faithful
+  proxy). Expected: 3 transits (5.115 us, 3.65 M steps) at ~6-8 ms/step -> ~06:00-08:00 AEST 2026-09-05; budget end 25.3 h
+  after the start (~01:20 AEST 2026-09-06). Sweep status at the launch: 047 finished (plateau, 22:49 AEST), **009 FINISHED
+  on the plateau rule at ~23:59 AEST (step 4 920 000 = 6.888 us = 3.02 transits, exit 0)** - its record commit is not part of
+  this entry; the reference at 2.92 transits (~10 min to 3). Do NOT kill any process (section 8.3); the sweep-wide `assess`
+  (citing v4's `resolution_limited`) runs after the reference and 056 launch 2 finish.
