@@ -378,15 +378,31 @@ class PoissonConfig2D:
       one CUDA graph, no host synchronisation); the CPU backend maps it to
       ``direct``.  Agrees with ``direct`` to roundoff, not bitwise.
     * ``pcg``: Jacobi preconditioned conjugate gradient (host or device).
+    * ``device-mg`` (poisson_gmg_v1): geometric multigrid with a FIXED number of
+      V(mg_pre_sweeps, mg_post_sweeps) cycles of damped Jacobi (``mg_omega``),
+      operator-dependent transfers and Galerkin coarse operators down to a dense
+      coarsest solve (``poisson_mg.py`` / ``warp_poisson_mg.py``); warm-started from
+      the previous potential; graph-capturable.  Convergence is not iterated on but
+      verified against the same contract (every step on the device, read at each host
+      sync) and the run stops fail-closed if a fixed-count solve misses it.  The CPU
+      backend runs the same cycles in numpy.  The ``mg_*`` parameters enter the
+      configuration identity only for this method, so every existing identity is
+      unchanged; a different solver is a different ``config_sha256``.
 
     The contract is ``true residual <= max(absolute_tolerance, relative_tolerance * |rhs|)``.
     """
 
-    method: Literal["direct", "device-direct", "pcg"] = "direct"
+    method: Literal["direct", "device-direct", "pcg", "device-mg"] = "direct"
     relative_tolerance: float = 1.0e-10
     absolute_tolerance: float = 0.0
     max_iterations: int = 20_000
     preconditioner: Literal["jacobi"] = "jacobi"
+    # device-mg (poisson_gmg_v1) parameters; ignored (and absent from the identity) for other methods
+    mg_cycles: int = 12
+    mg_pre_sweeps: int = 2
+    mg_post_sweeps: int = 2
+    mg_omega: float = 0.8
+    mg_coarsest_max_unknowns: int = 1024
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "relative_tolerance", _positive("relative_tolerance", self.relative_tolerance))
@@ -394,17 +410,36 @@ class PoissonConfig2D:
         object.__setattr__(self, "max_iterations", _integer("max_iterations", self.max_iterations, 1))
         if self.preconditioner != "jacobi":
             raise PIC2DValidationError("only the Jacobi preconditioner is implemented")
-        if self.method not in ("direct", "device-direct", "pcg"):
-            raise PIC2DValidationError("Poisson method must be 'direct', 'device-direct' or 'pcg'")
+        if self.method not in ("direct", "device-direct", "pcg", "device-mg"):
+            raise PIC2DValidationError("Poisson method must be 'direct', 'device-direct', 'pcg' or 'device-mg'")
+        object.__setattr__(self, "mg_cycles", _integer("mg_cycles", self.mg_cycles, 1))
+        object.__setattr__(self, "mg_pre_sweeps", _integer("mg_pre_sweeps", self.mg_pre_sweeps, 0))
+        object.__setattr__(self, "mg_post_sweeps", _integer("mg_post_sweeps", self.mg_post_sweeps, 0))
+        object.__setattr__(self, "mg_coarsest_max_unknowns", _integer("mg_coarsest_max_unknowns", self.mg_coarsest_max_unknowns, 1))
+        omega = self.mg_omega
+        if isinstance(omega, bool) or not isinstance(omega, (int, float)) or not isfinite(omega) or not (0.0 < omega <= 1.0):
+            raise PIC2DValidationError("mg_omega must lie in (0, 1]")
+        object.__setattr__(self, "mg_omega", float(omega))
+        if self.method == "device-mg" and self.mg_pre_sweeps + self.mg_post_sweeps == 0:
+            raise PIC2DValidationError("device-mg needs at least one smoothing sweep per level")
 
     def to_dict(self) -> dict[str, object]:
-        return {
+        record: dict[str, object] = {
             "method": self.method,
             "relative_tolerance": self.relative_tolerance,
             "absolute_tolerance": self.absolute_tolerance,
             "max_iterations": self.max_iterations,
             "preconditioner": self.preconditioner,
         }
+        if self.method == "device-mg":
+            record["multigrid"] = {
+                "cycles": self.mg_cycles,
+                "pre_sweeps": self.mg_pre_sweeps,
+                "post_sweeps": self.mg_post_sweeps,
+                "omega": self.mg_omega,
+                "coarsest_max_unknowns": self.mg_coarsest_max_unknowns,
+            }
+        return record
 
 
 @dataclass(frozen=True, slots=True)

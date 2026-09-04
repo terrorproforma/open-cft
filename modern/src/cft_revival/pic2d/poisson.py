@@ -107,8 +107,13 @@ class Poisson2D:
         self.inverse_diagonal = np.zeros_like(masks.diagonal)
         self.inverse_diagonal[self.unknown] = 1.0 / diagonal
         self.direct: BlockTridiagonalSolver | None = None
+        self.multigrid = None    # poisson_gmg_v1: the host counterpart of the device multigrid (``poisson_mg.py``)
         if config.method in ("direct", "device-direct"):
             self.direct = BlockTridiagonalSolver(masks, relative_tolerance=config.relative_tolerance)
+        elif config.method == "device-mg":
+            from .poisson_mg import MultigridPoisson2D
+
+            self.multigrid = MultigridPoisson2D(masks, config)
 
     def _matvec(self, x: np.ndarray) -> np.ndarray:
         # x is a full node array that is zero off the unknown set.
@@ -135,6 +140,8 @@ class Poisson2D:
     ) -> PoissonResult2D:
         if self.direct is not None:
             return self.direct.solve(node_charge_c, potentials)
+        if self.multigrid is not None:
+            return self.multigrid.solve(node_charge_c, potentials, initial_phi_v=initial_phi_v)
         rhs = self.right_hand_side(node_charge_c, potentials)
         rhs_norm = float(np.linalg.norm(rhs))
         tolerance = max(self.config.absolute_tolerance, self.config.relative_tolerance * rhs_norm)

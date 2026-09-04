@@ -1539,6 +1539,13 @@ class WarpBackend:
             self.gpu_poisson = WarpPoisson(masks, config.potentials, config.poisson, dev, use_graph=use_graph)
         elif config.poisson.method == "device-direct":
             self.device_direct = WarpBlockThomas(masks, config.potentials, config.poisson, dev, use_graph=use_graph)
+        elif config.poisson.method == "device-mg":
+            # poisson_gmg_v1: fixed-cycle geometric multigrid with the WarpBlockThomas interface
+            # (bind / solve_sequence / queue_residual_check / verify), so every downstream use of
+            # ``device_direct`` (step graph, residual check at the host sync, checkpoint binding) is shared
+            from .warp_poisson_mg import WarpPoissonMG
+
+            self.device_direct = WarpPoissonMG(masks, config.potentials, config.poisson, dev, use_graph=use_graph)  # type: ignore[assignment]
         else:
             self.host_poisson = Poisson2D(masks, config.poisson)
             self.source_dev = wp.zeros(self.node_count, dtype=wp.float64, device=dev)
@@ -1585,7 +1592,7 @@ class WarpBackend:
         self.iedf_max_ev = iedf_max_ev(config)
         # CUDA-graph capture of the whole step (v1.4): one graph per step variant
         # (ion push?, ion redeposit?, accumulate?) and per particle-array allocation.
-        self.step_graph = bool(step_graph) and self.device.is_cuda and config.poisson.method == "device-direct"
+        self.step_graph = bool(step_graph) and self.device.is_cuda and config.poisson.method in ("device-direct", "device-mg")
         self.step_graph_active = False
         self.step_graphs: dict[tuple, Any] = {}
         self.graph_captures = 0
