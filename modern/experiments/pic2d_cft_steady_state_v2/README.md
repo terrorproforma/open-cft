@@ -46,7 +46,7 @@ are recorded in `protocol.json` (`attempts`, `seed_justification`, `feed_justifi
 | n_e mean / peak (window maps) | 2.13e17 (0.93 × the projected 0-D n_eq) / **1.64e18 = 4.1 × n_max** at z = 14.3 mm, r = 0.70 mm |
 | ⟨T_e⟩ (density-weighted) · T_e max | 8.2 eV · 59 eV |
 | φ range | −10.7 … 337 V (anode 300 V) |
-| energy-ledger residual (with electrode work) | −2.9e-7 J = −4.4 % of the 6.5e-6 J electrode work; interval RMS 1.5e-11 J |
+| energy-ledger residual (with electrode work) | −2.9e-7 J = −4.4 % of the 6.5e-6 J electrode work; interval RMS 1.5e-11 J — **recorded pre-v2.0.6 statistic**; on the corrected ledger (model v2.0.6, `results/ledger-corrected.json`) the cumulative residual is **+8.3 %** and the trailing-400 000-step window **+13.0 %** of the electrode work: the plateau was heating numerically (see "Energy-ledger correction" below) |
 | neutral-ledger closure | 0.14 atoms = 7e-15 of the inventory |
 | resolvability at the peak node | λ_D = 16.6 µm → Δz/λ_D = Δr/λ_D = 3.0 (**under-resolved**); ω_pe Δt 0.108 at the peak, max observed 0.118 (gate 0.2) |
 | cusp planes (B_z = 0 on axis) | z = 6.0, 12.0, 17.95 mm; the density peak sits in the magnetic bottle between the last two cusps, the wall ion flux peaks at the cusps |
@@ -97,6 +97,24 @@ The three 50 um plateaus were HEATING numerically at 7-13 % of the electrode pow
 `resolution_limited` verdict of `pic2d_cft_steady_state_v4` and the peak Delta/lambda_D 3.17 on the CIC threshold: every quantity quoted from
 these runs is a heated-grid value, and the paper wording must say so. The v2.0.3 calibration statement "negative window ratios throughout" was a
 statement about the biased statistic.
+
+### Corrected-ledger re-read of the recorded acceptances (2026-09-05)
+
+| run | recorded acceptance | on the corrected ledger |
+| --- | --- | --- |
+| base (`results/`, 3.20 transits) | plateau rule PASS (drifts I_d +0.08 %, N_e +4.98 %, n_g −0.18 %); no residual acceptance existed (development record, model v1.3, no runtime residual gate); recorded cumulative residual −4.4 %, trailing window +0.4 % | plateau rule **unchanged** (not a ledger quantity); trailing window **+13.0 %**, cumulative +8.3 %: against the later v2.0.3 standard the 2 % acceptance bound and the 5 % hard gate are both **exceeded** (the gate would have stopped the run at 2.70 µs, before its 7.68 µs plateau declaration) |
+| seed-b (`results-seed-b/`, 2.53 transits, budget stop) | no plateau declaration (< 3 transits); recorded window −1.4 % | **+11.1 %** windowed, +7.0 % cumulative; 5 % gate at 2.76 µs |
+| W × 0.7 (`results-w-0.7/`, 3.05 transits) | plateau rule PASS (N_e drift 4.97 %, marginal); recorded window −4.1 % | plateau rule unchanged; **+7.2 %** windowed, +5.0 % cumulative; 5 % gate at 4.50 µs |
+
+**Quotable statement:** *the 50 µm plateaus (base, seed-b, W × 0.7) were heating numerically at +7…+13 % of the
+electrode power on the corrected ledger; they are resolution-limited (`pic2d_cft_steady_state_v4`: Δ/λ_D 3.17 on the CIC
+threshold) and every value quoted from them is a heated-grid value.* Nothing recorded was changed; the plateau values
+stand as recorded development numbers with this disclosure. The convergence-pair bands (seed-b ≤ 1 %, W × 0.7 ~5 %)
+remain valid as *spreads between heated runs of the same grid*, not as evidence of energy conservation. The 33 µm
+refinement (`pic2d_cft_steady_state_v4`) reads +2.46 % corrected — above its own 2 % acceptance bound — so it is the
+better-resolved but not a clean reference either; the 25 µm point (`pic2d_cft_steady_state_v5`) is pending. The
+dashboard `modern/visualization/pic2d-cft-steady-state.html` shows the recorded and the corrected residuals side by side
+(claim statement, ledger panel, energy plot).
 
 ## Running (from `modern/`)
 
