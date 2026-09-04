@@ -96,26 +96,32 @@ jobs:
     expected_ms_per_step: 5.4
     enabled: false
 
-  # ---------------------------------------------------------------- (ii) 25 um point of the Delta ladder
+  # ---------------------------------------------------------------- (ii) 25 um point of the Delta ladder - PREREGISTERED steady-state v5 (amended v5.1)
+  # modern/experiments/pic2d_cft_steady_state_v5/: 120 x 960 cells (25 um), dt 1.0 ps, W 1.5e4, v1.3 closure, v2.0.3 gates,
+  # primary reference the 33 um v4 plateau (secondary: the 50 um base, reported). Preregistered at 69ff435d; launch 1 on the
+  # local RTX 5090 (PID 43572) was WITHDRAWN by the user at 0.800 us (record results-launch1-withdrawn/, a0235676); amendment
+  # v5.1 (a529b457) moved the ONE execution to this box (launch_platform block, budget 117,000 s = 1.5 x the 21.6 h box-preflight
+  # projection at 10.82 ms/step under MPS-4; config identity efb9bb09 unchanged). `commit` / `--expect-commit` = the v5.1 records
+  # commit (H100 preflight + shakedown in the tree); launch 2 is a FRESH start (no cross-GPU resume). It takes the MPS slot the
+  # sweep's design 056 freed at 10:52 UTC (triad gate), so the box stays at four PIC clients.
   - id: ss25-base
     note: >
-      Channel-only 25 um (120 x 960), dt 1.0 ps, W 1.5e4 (particles per cell as the base -> ~8 M
-      macro-particles at the plateau): third point of the 50/33/25 convergence ladder. Needs its own protocol
-      (a 25 um sibling of v4: dt, cells and W are not --case keys) committed and, to count as evidence,
-      preregistered with the v4 gates and acceptance rules. 7.2-7.7 M steps; ~7.4 ms/step by the
-      v4-calibrated cost model (15-16 h) up to 17.3 ms/step by the plume-README model (35-37 h) - the
-      benchmark's channel-25um configuration settles it on day 1.
-    module: experiments.pic2d_cft_steady_state_v5.run                 # PLACEHOLDER (25 um sibling of v4)
-    args: [launch, --expect-commit, "<prereg sha>"]
+      pic2d_cft_steady_state_v5 LAUNCH 2 (fresh start on the H100; launch 1 on the RTX 5090 withdrawn by the user at
+      0.800 us): channel-only 25 um (120 x 960), dt 1.0 ps, W 1.5e4 -> ~7-8 M macro-particles at the plateau, 7.2 M steps to
+      3 transits (2.4 us protocol transit); box preflight under MPS-4 6.99 ms/step at the seed, 10.82 at 8.0 M particles ->
+      21.6 h, budget 117,000 s (32.5 h); ~2.7 GB device pool.
+    module: experiments.pic2d_cft_steady_state_v5.run
+    args: [launch, --expect-commit, "351257f299bcd2dc830e9862b39f6f2ae9f40863"]
     gpu: auto
-    commit: null
+    commit: 351257f299bcd2dc830e9862b39f6f2ae9f40863
     preregistered: true
     protocol: modern/experiments/pic2d_cft_steady_state_v5/protocol.json
     results: modern/experiments/pic2d_cft_steady_state_v5/results
     checkout: worktree
-    gpu_memory_gib: 14
-    expected_ms_per_step: 7.4
-    enabled: false
+    gpu_memory_gib: 5
+    expected_ms_per_step: 10.8
+    transit_time_s: 2.4e-6
+    enabled: true
 
   # ---------------------------------------------------------------- (iii) PIC design mini-sweep v1 (4 primary designs) - PREREGISTERED channel-33um option
   # modern/experiments/pic2d_design_mini_sweep_v1/: the steady-state v4 template (model v1.3 closure + v2.0.3 gates), 33.33 um / 1.4 ps,
