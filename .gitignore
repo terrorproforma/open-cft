@@ -269,10 +269,27 @@ modern/experiments/pic2d_cft_plume_v1/results-attempt8-grid-heating-triad-stop/*
 # pic2d design mini-sweep v1: the per-design P2 field checkpoints (Git LFS) live under fields/, not results/
 !modern/experiments/pic2d_design_mini_sweep_v1/fields/**/*.json.arrays.npz
 
-# pic2d external validation v0 (DRAFT): the Brandt 2016 reconstruction P2 checkpoint (Git LFS) lives under fields/;
-# run results stay untracked until a run ends (results-only commit adds the negations)
+# pic2d external validation v0: the Brandt 2016 reconstruction P2 checkpoint (Git LFS) lives under fields/;
+# run results stay untracked until a run ends (results-only commit adds the negations). channel-20um launch 1 = grid-heating
+# triad stop (windowed residual-power member) at 0.52 transits, archived as results/channel-20um-launch1-triad-gate-stop/ with
+# the v4 record contract (+ triad-stop-diagnosis.json, assessment.json, comparison.json) so that a future execution keeps the
+# canonical results/channel-20um/; frames, checkpoint arrays, the field anchor, the raw series and logs/pid stay untracked.
 !modern/experiments/pic2d_external_validation_v0/fields/**/*.json.arrays.npz
 modern/experiments/pic2d_external_validation_v0/results*/
+!modern/experiments/pic2d_external_validation_v0/results/
+modern/experiments/pic2d_external_validation_v0/results/*
+!modern/experiments/pic2d_external_validation_v0/results/channel-20um-launch1-triad-gate-stop/
+!modern/experiments/pic2d_external_validation_v0/results/channel-20um-launch1-triad-gate-stop/maps.npz
+!modern/experiments/pic2d_external_validation_v0/results/channel-20um-launch1-triad-gate-stop/series.npz
+modern/experiments/pic2d_external_validation_v0/results/channel-20um-launch1-triad-gate-stop/checkpoint/
+modern/experiments/pic2d_external_validation_v0/results/channel-20um-launch1-triad-gate-stop/frames/
+modern/experiments/pic2d_external_validation_v0/results/channel-20um-launch1-triad-gate-stop/video/
+modern/experiments/pic2d_external_validation_v0/results/channel-20um-launch1-triad-gate-stop/checkpoint-final.npz
+modern/experiments/pic2d_external_validation_v0/results/channel-20um-launch1-triad-gate-stop/checkpoint-final.field.npz
+modern/experiments/pic2d_external_validation_v0/results/channel-20um-launch1-triad-gate-stop/series.jsonl
+modern/experiments/pic2d_external_validation_v0/results/channel-20um-launch1-triad-gate-stop/*.pid
+modern/experiments/pic2d_external_validation_v0/results/channel-20um-launch1-triad-gate-stop/*.log
+modern/experiments/pic2d_external_validation_v0/results/channel-20um-launch1-triad-gate-stop/*.err
 
 # pic2d cross-platform test anchors: node field arrays sampled on the anchor platform (~70 KB, hash-bound by
 # their .anchor.json); non-anchor platforms are gated by allclose against them, not by the content hash

@@ -297,6 +297,90 @@ structural one: rows whose 2 u_val already exceeds the tolerance (the potential 
 cannot discriminate whatever the run does, and every current / potential row discrepant in the closure-predicted direction measures the closure
 difference, not the kernels (the bohm-0.4 variant is the discriminating follow-up).
 
+## 10. Launch 1 outcome (`channel-20um`): STOPPED by the grid-heating triad gate at 0.52 transits - genuine finite-grid heating, INCONCLUSIVE
+
+Record: `results/channel-20um-launch1-triad-gate-stop/` (v4 contract: summary with the frames manifest, execution lock, run state,
+status/series/maps, final checkpoint metadata + sha256 sidecars, the sealed protocol copy; `assessment.json` / `comparison.json` from
+`run.py assess` / `compare` executed in the job worktree at `3dc12cf6`; `triad-stop-diagnosis.json` with the analysis script embedded).
+Bytes verified against the box's `sha256sum`. Frames (26), particle checkpoint, field anchor, `series.jsonl` and logs stay on the box
+(`/lambda/nfs/h100-files/cft/jobs/ext-val-v0-channel-20um/`). The canonical `results/channel-20um/` is free for a future execution.
+
+**Stop.** PID 31588, launched 12:26:44 UTC 2026-09-04, exited 13:56:18 UTC, `grid_heating_triad_gate_stopped_run` at step **1,040,000 =
+0.728 us = 0.52 transits** (of 1.40 us), 26 frames, 5,366 s wall (1.49 h) at 5.8 ms/step as the fourth MPS client, exit 0, `finished: true`, no
+finalization error, no Xid. State at the stop: I_d 2.74 mA (rising +11 % over the last 0.2 us), N_e 882 k / N_i 890 k macro-particles
+(1.77 M of the 12 M cap), S 2.4-2.7e17 /s, T_e,dense 9.3 eV, window-mode peak 5.89e18 at 8.4 eV (2.26 cells / lambda_D, soft ok),
+phi_max 466 V (+66 V above the anode), `assess` -> **`no_plateau`** (drifts I_d +8.6 % / N_e +42 % at 0.52 < 3 transits), `compare` ->
+10 channel rows formed, **`quotable: false`**.
+
+**Which member fired, and why it could fire at 0.52 transits.** The v2.0.3 **windowed residual-POWER member**: trailing-400,000-step
+ledger residual / electrode work = **+0.0743 >= 0.05** (2.12e-8 J over 2.85e-7 J). That member is enforced from the FIRST complete
+400,000-step window (0.28 us) by design, independent of the transit arming (`enforced_after_transit_times` 1.0) that gates the three
+DRIFT members - which read S +0.58, resolved omega_pe dt +0.32, T_e,dense +0.19 at the stop (all past the 0.25 hard bound) but were
+**not enforced** (`enforced: false`, 0.52 < 1.0 transit; the S member crossed 0.25 at 0.42 transits and would have stopped the run
+there under a 0.5-transit arming). The arming rule worked as declared; the physics-protection member is the one that stopped the run.
+
+**Verdict: (a) genuine finite-grid heating** (`triad-stop-diagnosis.json verdict`), not an ignition-transient artefact and not shot noise:
+
+* **The gate fired LATE, not early - a ledger omission found during this diagnosis.** The energy ledger's `inelastic_loss_j` is the
+  per-MACRO-event count times the threshold energy (`mcc.py` MCC tally, `warp_backend.py` flush) and lacks the macro-weight W, while
+  every other ledger term carries W. Verified on this run: the particle-side identity dKE = field work + injected - absorbed + born -
+  W (n_exc E_exc + n_ion E_ion) e closes to 4.5e-14 J per record (sum -9.4e-11 J on 1.6e-7 J); the recorded `interval_residual_j` equals
+  H - L_inel to 4.5e-14 J per record, where **H = field work + dU_field - electrode work is the true energy created by the field-particle
+  coupling** and L_inel the omitted W-scaled inelastic sink (2.63e-7 J cumulative here = 40 % of the electrode work). Recorded
+  `inelastic_loss_j` / unscaled count = 1.0003 here and 1/W exactly (26 660, 26 649, 26 561, 59 986) on ss-v4, 047, 056-L1, attempts 7/8.
+  Every recorded residual is biased NEGATIVE by the inelastic power. For this run H / electrode work per 28-ns frame: -0.7 % (0.03 us),
+  +1.5 % (0.14), **+5.2 % (0.20)**, +11.8 % (0.31), +25.3 % (0.45), +50.6 % (0.59), +79.3 % (0.67), **+111.9 % (0.728 us)** - 1.22 W of
+  numerical heating against 1.09 W of electrode power; cumulative +32 %. The trailing-400k gate reading corrected for the omission
+  crossed 5 % at step 480,000 (0.34 us, 0.24 transits) while the recorded statistic still read -22 %; it crossed 5 % on the recorded
+  statistic only at step 1,040,000.
+* **Debye statistics recomputed on the 28-ns frames** (exact interval averages, 32-macro-electron mean-occupancy floor): resolved peak
+  cells / lambda_D 1.19 (0.31 us) -> 1.67 (0.45) -> 2.08 (0.53) -> 2.44 (0.64) -> **2.85 (0.728 us)**; 0 resolved nodes above pi, **1,508
+  above the soft 2.5** (8.7 % of the electron inventory), all in the near-axis column r 0.12-0.30 mm, z 3.2-7.3 mm (between the first
+  and second nulls). The column's AXIS (r < 0.12 mm) is unresolved by construction - an axis node (V = 6.3e-15 m^3) holds 0.76
+  macro-electrons at 1e19 and W 82,467; the first radial node reaching the floor at 1e19 is i = 6 - and there the frame-averaged n_i is
+  1.07-1.34e19, n_e 0.8-1.0e19 at 9 eV: **2.9-3.3 cells / lambda_D, at or past pi**, invisible to the window-mode hard gate (whose
+  0.28-us average of a 0.24-us-doubling density read 2.26). The final-checkpoint snapshot puts 9.5e18 in the core with a Maxwellian
+  electron distribution (slope fit 9.0 eV = moment T_e 9.0 eV; 1.2 % above 50 eV): the statistic is not beam-inflated. The column's
+  20-um cells hold 2.6 (axis) to 58 macro-electrons - at 8.6x the parity weight the stochastic (1/N_c) heating precedes the CIC aliasing
+  threshold, which is why H turned positive at a resolved 1.2-1.7 cells / lambda_D.
+* Corroboration: T_e,dense 7.5 -> 9.3 eV (+24 %) over the last 0.20 us; the electron kinetic energy rose 70 -> 118 nJ over the last
+  0.17 us while the integrated H over those 0.17 us was 136 nJ - more than the gain (the numerical energy is spent on inelastic collisions -
+  S doubled - and at the walls); I_d ROSE (2.46 -> 2.74 mA), so the plateau signature "T_e up while I_d down" does not apply to a discharge
+  still igniting. (c) is excluded because the member is a 400,000-step ledger integral, not a single-node statistic; (b) is excluded because
+  the accepted runs' ignition windows read -12 ... -25 % on the same (biased) statistic and never exceeded +0.4 % at any time.
+
+**Where the discharge was heading vs the reference (transient values of the last 240,000-step window, non-evidentiary; `comparison.json`).**
+I_a 2.61 mA vs 4.3 (E -1.69 mA, tolerance 0.86); net ionisation 0.148 vs 0.24; I_beam 0.81 vs 2.5 mA; anode-cell potential +16.4 V above
+the anode vs ~5; cusp drops -1.3 / +41.0 V vs ~10 / ~5 (the mid-radius potential falls 30-40 V at the second null, 8.4 mm; the axis stays
+at 410-429 V to z = 12 mm; the whole ~385 V acceleration sits in the last 1 mm before the 0 V exit plane, A9); resolved n_i 9.3e18 vs
+~1e19 (the one row "within u_val"); wall ion energy 381 vs 160 eV; wall ion current density 439 vs 640 A/m^2. Trend: I_d +10 %, N_e +63 %,
+S x1.8, T_e,dense +21 % over the last 0.17 us; ion production 43 mA-equivalent (S 2.7e17 /s = 2.5x the reference's 1.1e17 /s feed under the
+static background) against 2.7 mA of ion losses -> the ion inventory doubles every 0.24 us with no saturation in sight. **Peak density vs
+the 20 um hard-pi envelope** (1.36e19 x T_e / 10 eV = 1.25e19 at the frame's 9.1 eV): resolved frame peak 1.03e19 = 82 %; axis n_i
+1.3-1.6e19 = 105-132 % (past it, unresolved); the gate's window statistic 5.9e18 = 52 % (lag). The hard-pi stop would have followed
+within ~0.1 us; the avalanche would have carried the column past the 15 um envelope (2.42e19 at 10 eV) as well.
+
+**Classification under section 8:** condition 4 (windowed residual power >= 2 % -> grid heating; not quotable), condition 1 (no plateau;
+trailing-window values reported as transient), and condition 2 in substance (the discharge densified past the 20 um / W 82,467 envelope
+in the unresolved axis column before the hard-pi gate could see it: resolution-limited at the published grid). Calibration disclosure:
+the v2.0.3 residual-power gate was calibrated on the accepted PLATEAUS (recorded -12.7 % -> -0.2 %, i.e. on a statistic biased by the
+omitted inelastic loss), was never exercised on an ignition transient at 2e20 / 400 V, and this protocol declares no ignition gate; with
+the omission corrected it should have fired ~0.4 us earlier. Nothing about the drift members' arming needs to change for this run.
+
+**Decision: no launch 2 at 20 um** (a genuine-heating stop is not a gate artefact; the README's own rule sends it to the resolution
+follow-up). The sealed **15 um sibling** (`channel-15um`: 100 x 933, dt 0.5 ps, W 82,466.8 unchanged, 8.4 M steps to 3 transits, 19.8 ms/step
+at MPS-4 -> 46.3 h, 18.0 h solo-equivalent, **budget 69.5 h**, 17.8 GB) is **not recommended as sealed**: at the same W it holds 0.42x the
+macro-particles per cell (the axis cell would hold ~1 at 1e19), so the stochastic heating that started this run's H gets worse, and the
+avalanche exceeds its 2.42e19 envelope too. What a conclusive v0 needs, in order: (i) model v2.0.6 - `inelastic_loss_j` x W in both backends,
+tests, and a re-calibration of the residual-power gate on the accepted runs with the corrected statistic (end-state estimates: v2 base 50 um
+~+13 %, seed-b ~+12.6 %, W x 0.7 ~+8.4 % - the 50 um plateau was heating at the 5 % level; ss-v4 33 um ~+1.9 %, 047 ~+2.6 %, 056-L1 ~+0.7 %;
+attempt 8's last window ~+80 %); (ii) a peak-Debye floor in accumulated particle-steps (the v2.0.2 plume-gate design) so that the axis
+column is gated; (iii) for THIS operating point either the parity weight (103 M particles - beyond the cap and ~100 ms/step) or a weaker
+closure: the sealed `bohm-0.4` variant (the reference's own D_perp; the discriminating run of section 8.7) confines less and is the one
+sealed option that can plausibly reach a resolvable plateau at 20 um - it needs (i) and (ii) first, then its own amendment, box preflight
+and shakedown. Static 2e20 neutrals with a confining closure avalanche (retained lesson); the reference's static-DSMC steady state may not
+be reachable without its anomalous transport.
+
 ## Commands (from `modern/`; CPU unless stated; on the box `PYTHONPATH=src:.` with the MPS variables exported)
 
     $env:PYTHONPATH="$PWD\src;$PWD"; $env:OMP_NUM_THREADS='1'
@@ -351,3 +435,20 @@ launch guards incl. the launch-set and clean-worktree refusals; the shrunk-caden
   `tools/cloud/schedule.py status` on the box (`gpu` samples are whole-GPU readings under MPS); do NOT kill the process (Xid-31 lesson).
   When it stops: from the job worktree `run.py assess` then `run.py compare` (results/channel-20um), a results-only record commit
   (`chore(pic2d)`), the comparison table into section 10 of this README and the roadmap canvas row `validation-v0-v2`.
+* **2026-09-04 23:56:18 AEST (13:56:18 UTC) - launch 1 STOPPED by the grid-heating triad gate at 0.52 transits - genuine finite-grid
+  heating (verdict (a)), INCONCLUSIVE, no launch 2 at 20 um.** `grid_heating_triad_gate_stopped_run` at step 1,040,000 = 0.728 us, 26
+  frames, 5,366 s wall, 5.8 ms/step, exit 0, `finished: true`, no Xid (PID 31588, lock `3dc12cf6` / `3ec0d405520f`). Member: the v2.0.3
+  windowed residual-POWER gate, +0.0743 >= 0.05 over the trailing 400,000 steps (enforced from the first complete window by design; the
+  drift members S +0.58 / omega_pe dt +0.32 / T_e,dense +0.19 were NOT enforced at 0.52 < 1.0 transit). Diagnosis (section 10,
+  `results/channel-20um-launch1-triad-gate-stop/triad-stop-diagnosis.json`): the ledger's `inelastic_loss_j` lacks the macro-weight, so the
+  recorded residual is H - L_inel; the true non-conservation H = field work + dU - electrode work was +5 % of the electrode work at 0.20 us,
+  +25 % at 0.45 us and +112 % (1.22 W) at the stop, while the gate statistic still read -22 % at 0.34 us - the gate fired ~0.4 us late.
+  Frame-resolved peak 2.85 cells / lambda_D (1,508 nodes above 2.5, none above pi), the unresolved axis column (0.76 macro-electrons per
+  axis node at 1e19) at 1.1-1.3e19 -> 2.9-3.3; the column's cells hold 2.6-58 macro-electrons at 8.6x the parity weight. Discharge at the
+  stop: I_a 2.6-2.7 mA (ref 4.3), I_beam 0.8 mA (2.5), n_i 0.9-1.6e19 (~1e19), anode-cell potential +16 V (~5), S 2.7e17 /s = 43 mA-
+  equivalent against 2.7 mA of ion losses (inventory doubling 0.24 us) - an avalanche under the static 2e20 background. `assess` ->
+  `no_plateau`; `compare` -> 10 rows, `quotable: false`. Classification: section 8 conditions 4, 1 and (in substance) 2. Record commit:
+  results-only (v4 contract + assessment / comparison / diagnosis), `.gitignore` negations, this section; the 15 um sibling (69.5 h) is not
+  recommended as sealed (same W -> fewer particles per cell; the avalanche exceeds its envelope too); recommended route in section 10.
+  `tools/cloud/jobs.yaml` job `ext-val-v0-channel-20um` remains enabled but cannot relaunch (execution lock present) - disable it when the
+  jobs file is next edited. Slot freed at 13:56 UTC (the scheduler's four slots: ss25-base, sweep-056-launch2, sweep-reference, one free).
