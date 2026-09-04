@@ -19,6 +19,7 @@ from ..orbit_mc.artifacts import canonical_bytes, content_hash
 from .fields import FIELD_REPLAY_ATOL_OVER_MAX_B, FIELD_REPLAY_RTOL, MagneticFieldMap, compare_field_arrays
 from .models import PIC2DValidationError, ParticleArrays
 from .neutrals import NEUTRAL_LEDGER_KEYS, NEUTRAL_LEDGER_KEYS_V2, NeutralState
+from .neutrals_spatial import NeutralParticles, SpatialNeutralState
 from .simulation import CUMULATIVE_KEYS, PIC2DConfig, SimulationState
 
 SIDECAR_SCHEMA = "cft.pic2d.artifact-sidecar.v1"
@@ -314,6 +315,20 @@ def save_checkpoint(
     if state.neutral is not None:
         # v1.3: n_g and the atom ledgers travel with the arrays (hash-bound like the particles)
         arrays["neutral"] = state.neutral.to_array()
+    spatial_meta: dict[str, Any] = {}
+    if state.neutral_particles is not None:
+        # v2.5.0 (neutrals_spatial_v1): the neutral macro-particles, the per-cell carries / debts and the published fields
+        neutral = state.neutral_particles
+        for name, values in zip(("r_m", "z_m", "vr_m_per_s", "vt_m_per_s", "vz_m_per_s", "weight", "state"), neutral.particles.arrays(), strict=True):
+            arrays[f"neutrals_{name}"] = np.asarray(values)
+        for name, values in zip(SpatialNeutralState.CELL_ARRAY_KEYS, neutral.cell_arrays(), strict=True):
+            arrays[f"neutrals_cell_{name}"] = np.asarray(values, dtype=np.float64)
+        spatial_meta = {
+            "neutral_particle_count": neutral.particles.count,
+            "spatial_neutral_cell_keys": list(SpatialNeutralState.CELL_ARRAY_KEYS),
+            "neutral_time_s": float(neutral.neutral_time_s),
+            "neutral_substeps": int(neutral.substeps),
+        }
     # v1.4: optional tallies (sensitivity hooks) beyond the fixed ledger, e.g. "anomalous"
     extra_keys = sorted(key for key in state.cumulative if key not in CUMULATIVE_KEYS)
     if extra_keys:
@@ -330,6 +345,7 @@ def save_checkpoint(
         "cumulative_keys": list(CUMULATIVE_KEYS),
         "neutral_keys": None if state.neutral is None else ["density_per_m3", *state.neutral.ledger_keys],   # v1.4 or v2.3.0 layout
         **({"cumulative_extra_keys": extra_keys} if extra_keys else {}),
+        **spatial_meta,
         "arrays_file": npz_path.name,
         "arrays_sha256": npz_sha,
         "config_sha256": config_identity(config),
@@ -459,9 +475,33 @@ def load_checkpoint(
         neutral = NeutralState.from_array(arrays["neutral"])
     if (config.neutral_inventory is not None) != (neutral is not None):
         raise PIC2DValidationError("checkpoint neutral inventory presence does not match the configuration")
+    spatial = None
+    if metadata.get("neutral_particle_count") is not None or "neutrals_r_m" in arrays:
+        # v2.5.0: the spatial neutral state (fail closed on a layout mismatch)
+        if list(metadata.get("spatial_neutral_cell_keys", [])) != list(SpatialNeutralState.CELL_ARRAY_KEYS):
+            raise PIC2DValidationError("checkpoint spatial neutral cell arrays differ from the current layout")
+        count = int(metadata["neutral_particle_count"])
+        names = ("r_m", "z_m", "vr_m_per_s", "vt_m_per_s", "vz_m_per_s", "weight", "state")
+        values = []
+        for name in names:
+            key = f"neutrals_{name}"
+            if key not in arrays or int(arrays[key].size) != count:
+                raise PIC2DValidationError("checkpoint neutral particle arrays differ from their metadata")
+            values.append(np.asarray(arrays[key], dtype=np.int32 if name == "state" else np.float64))
+        n_cells = config.grid.radial_cells * config.grid.axial_cells
+        cells = []
+        for name in SpatialNeutralState.CELL_ARRAY_KEYS:
+            key = f"neutrals_cell_{name}"
+            if key not in arrays or arrays[key].shape != (n_cells,) or not np.isfinite(arrays[key]).all():
+                raise PIC2DValidationError("checkpoint spatial neutral cell arrays do not match the grid")
+            cells.append(np.asarray(arrays[key], dtype=np.float64))
+        spatial = SpatialNeutralState(NeutralParticles(*values), *cells, float(metadata.get("neutral_time_s", 0.0)),
+                                      int(metadata.get("neutral_substeps", 0)))
+    if (config.neutrals_spatial is not None) != (spatial is not None):
+        raise PIC2DValidationError("checkpoint spatial neutral presence does not match the configuration")
     return SimulationState(
         int(metadata["step"]), float(metadata["time_s"]), electrons, ions, surface, phi,
-        float(metadata["injection_carry"]), cumulative, neutral,
+        float(metadata["injection_carry"]), cumulative, neutral, spatial,
     )
 
 

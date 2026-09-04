@@ -108,8 +108,17 @@ if wp is not None:
         shape_cell: wp.array(dtype=F64), plasma_cell: wp.array(dtype=wp.int32), has_plume: int,
         dr: F64, dz: F64, z_min: F64, z_exit: F64, r_exit: F64, nr: int, nz: int, march_limit: int,
         stats: wp.array(dtype=F64), base: int,
+        # v2.5.0 (neutrals_spatial_v1): the published per-cell ground density and gas moments replace n_g x shape and the
+        # Maxwellian at T_g; a CEX event flags the ion slot and stores the pre-event velocity for the neutral model's
+        # hand-off (no fate march) and books the converted thermal atom as a ground-atom sink at the event cell
+        spatial: int, density_cell: wp.array(dtype=F64), drift_r: wp.array(dtype=F64), drift_t: wp.array(dtype=F64),
+        drift_z: wp.array(dtype=F64), thermal_cell: wp.array(dtype=F64),
+        fast_flag: wp.array(dtype=wp.int32), fast_vr: wp.array(dtype=F64), fast_vt: wp.array(dtype=F64), fast_vz: wp.array(dtype=F64),
+        sink_cex: wp.array(dtype=wp.int64), sink_unit: int, flag_bound: int,
     ):
         p = wp.tid()
+        if spatial != 0 and p < flag_bound:
+            fast_flag[p] = 0
         candidate = F64(0.0)
         cex = F64(0.0)
         mex = F64(0.0)
@@ -144,9 +153,24 @@ if wp is not None:
                 u5 = F64(wp.randf(state))
                 rad1 = wp.sqrt(F64(-2.0) * wp.log(u2))
                 rad2 = wp.sqrt(F64(-2.0) * wp.log(u4))
-                nvx = thermal * rad1 * wp.cos(F64(6.283185307179586) * u3)
-                nvy = thermal * rad1 * wp.sin(F64(6.283185307179586) * u3)
-                nvz = thermal * rad2 * wp.cos(F64(6.283185307179586) * u5)
+                cell = int(0)
+                if has_plume != 0 or spatial != 0:
+                    ci = wp.clamp(int(wp.floor(r[p] / dr)), 0, nr - 1)
+                    cj = wp.clamp(int(wp.floor((z[p] - z_min) / dz)), 0, nz - 1)
+                    cell = ci * nz + cj
+                th = thermal
+                ur = F64(0.0)
+                ut = F64(0.0)
+                uz = F64(0.0)
+                if spatial != 0:
+                    ur = drift_r[cell]
+                    ut = drift_t[cell]
+                    uz = drift_z[cell]
+                    if thermal_cell[cell] > F64(0.0):
+                        th = thermal_cell[cell]
+                nvx = ur + th * rad1 * wp.cos(F64(6.283185307179586) * u3)
+                nvy = ut + th * rad1 * wp.sin(F64(6.283185307179586) * u3)
+                nvz = uz + th * rad2 * wp.cos(F64(6.283185307179586) * u5)
                 ivx = vr[p]
                 ivy = vt[p]
                 ivz = vz[p]
@@ -157,10 +181,10 @@ if wp is not None:
                 g = wp.sqrt(g2)
                 energy = F64(0.5) * mass * g2 / F64(1.602176634e-19)
                 density = neutral_density_ctrl[0]
-                if has_plume != 0:
-                    ci = wp.clamp(int(wp.floor(r[p] / dr)), 0, nr - 1)
-                    cj = wp.clamp(int(wp.floor((z[p] - z_min) / dz)), 0, nz - 1)
-                    density = density * shape_cell[ci * nz + cj]
+                if spatial != 0:
+                    density = density_cell[cell]
+                elif has_plume != 0:
+                    density = density * shape_cell[cell]
                 nu_cex = density * ion_sigma_lookup(table, points, step_ev, max_ev, energy, 0) * g
                 nu_mex = density * ion_sigma_lookup(table, points, step_ev, max_ev, energy, 1) * g
                 total = nu_cex + nu_mex
@@ -183,7 +207,14 @@ if wp is not None:
                     if z[p] >= z_exit:
                         in_plume = 1
                         cex_plume = F64(1.0)
-                    if fspeed < fast_threshold:
+                    if spatial != 0:
+                        # v2.5.0: hand the fast neutral to the neutral particle model; the converted atom is a ground sink
+                        fast_flag[p] = 1
+                        fast_vr[p] = ivx
+                        fast_vt[p] = ivy
+                        fast_vz[p] = ivz
+                        wp.atomic_add(sink_cex, cell, wp.int64(sink_unit))
+                    elif fspeed < fast_threshold:
                         fast_thermal = F64(1.0)
                     elif in_plume != 0:
                         fast_exit_plume = F64(1.0)

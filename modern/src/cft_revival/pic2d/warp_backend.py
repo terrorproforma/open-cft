@@ -33,6 +33,7 @@ from .ion_mcc import IonNullCollisionMCC
 from .kernels import FIXED_POINT_SCALE
 from .mcc import MAX_EXCITATION_LEVELS, NullCollisionMCC, XenonCrossSections
 from .mesh import MeshMasks
+from .neutrals_spatial import NEUTRAL_RNG_STREAM, NEUTRAL_SPATIAL_LEDGER_KEYS, SINK_FIXED_POINT
 from .models import (
     ELECTRON_MASS_KG,
     ELEMENTARY_CHARGE_C,
@@ -61,6 +62,8 @@ from .simulation import (
     SimulationState,
     StepTally,
     build_ion_mcc,
+    build_metastable_table,
+    build_spatial_neutrals,
     iedf_max_ev,
     neutral_shape_cells,
     omega_pe_gate_min_macro_particles,
@@ -81,11 +84,12 @@ PARTICLE_BLOCK = 256
 # compiles a module for one block width, so this equals PARTICLE_BLOCK.
 THOMAS_LANES = PARTICLE_BLOCK
 # Per-step RNG streams read from the device seed table (v1.4): 0 = MCC, 1 = injection,
-# 2 = anomalous scattering, 3 = ion-neutral MCC (v2.3.0), 4 = SEE (v2.2.0), 5 = Coulomb collisions (v2.4.0); the seeds of
-# streams 0-4 are unchanged, so every earlier run replays bitwise (stream_seed(seed, step, id) per table column).
-# Row = steps since the last host sync.
-SEED_STREAMS = 6
-SEED_STREAM_IDS = (1, 2, 3, 4, 5, 6)    # stream_seed(seed, step, id) per table column
+# 2 = anomalous scattering, 3 = ion-neutral MCC (v2.3.0), 4 = SEE (v2.2.0), 5 = Coulomb collisions (v2.4.0), 6 = spatial neutrals
+# (v2.5.0); the seeds of streams 0-5 are unchanged, so every earlier run replays bitwise (stream_seed(seed, step, id) per table
+# column).  Row = steps since the last host sync.
+SEED_STREAMS = 7
+SEED_STREAM_IDS = (1, 2, 3, 4, 5, 6, NEUTRAL_RNG_STREAM)    # stream_seed(seed, step, id) per table column
+NEUTRAL_STREAM_COLUMN = 6
 
 # Interval statistics slots (float64 device array, read once per host sync).
 STATS_WORK = 0
@@ -127,7 +131,10 @@ STATS_SEE_KE = STATS_SEE_IMPACTS + 4                             # W-scaled emit
 STATS_SEE_PZ = STATS_SEE_IMPACTS + 5                             # W-scaled emitted axial momentum
 STATS_SEE_YIELD_SUM = STATS_SEE_IMPACTS + 6                      # sum of delta over the electron impacts
 STATS_SEE_CLAMPED = STATS_SEE_IMPACTS + 7                        # impacts whose yield exceeded the per-impact cap
-STATS_SIZE = STATS_SEE_CLAMPED + 1
+# v2.5.0 (metastables_v1): electron-impact events on the metastable pool (stepwise births are ALSO in the STATS_MCC ionisation count)
+STATS_STEPWISE = STATS_SEE_CLAMPED + 1
+STATS_SUPERELASTIC = STATS_SEE_CLAMPED + 2
+STATS_SIZE = STATS_SUPERELASTIC + 1
 
 
 def padded_dim(count: int, block: int) -> int:
@@ -542,6 +549,9 @@ if wp is not None:
         # v2.2.0: per-slot wall-impact flag consumed by the SEE stage (warp_see.py) at the end of the step; the dead
         # slot keeps its pre-push arrays, from which the stage reconstructs the impact
         wall_hit: wp.array(dtype=wp.int32),
+        # v2.5.0 (neutrals_spatial_v1): wall / anode ions recycle ``recycle_weight`` atoms at their last plasma cell
+        # (0 for electrons, for the exit / far field, for the body face, and without the spatial model)
+        recycle_cell: wp.array(dtype=wp.int64), recycle_units: int,
     ):
         # stats layout (see WarpBackend.STATS): counts at count_slot+code-1, energies at
         # energy_slot+code-1, momenta at pz_slot+code-1, work at 0, max speed^2 at 1, invalid at 2,
@@ -637,6 +647,9 @@ if wp is not None:
                     wp.atomic_add(stats, pz_slot + code - 1, mass_weight * vz_new)
                     if code == 3 and has_plume != 0 and r_new >= r_exit:
                         wp.atomic_add(stats, body_slot, F64(1.0))
+                    elif recycle_units > 0 and code != 2:
+                        # v2.5.0: the absorbed ion returns as thermal atoms in its last plasma cell (spawned at the next neutral sub-step)
+                        wp.atomic_add(recycle_cell, i * nz + j, wp.int64(recycle_units))
                     if code == 3:
                         # renormalised bilinear surface deposit on plasma nodes
                         gr = wp.clamp(r_new / dr, F64(0.0), F64(nr) - F64(1.0e-12))
@@ -758,6 +771,17 @@ if wp is not None:
         # v2.0.5: born-ledger tallies (ion kinetic energy, axial momentum of the ionisation products) reduced
         # here with the other tallies instead of three strided sums + single-thread adds after the spawn
         ion_mass_weight: F64, ke_born_slot: int, pz_born_slot: int,
+        # v2.5.0 (neutrals_spatial_v1 + metastables_v1): with ``spatial`` the density is the published per-cell field
+        # (absolute, <= the ceiling) and the born ion samples the local gas (drift + thermal speed); the events book per-cell
+        # atom sinks (real atoms: W, or W x branching for excitation into the pool).  ``meta_on`` adds two channels on the
+        # metastable density after the ground processes (stepwise ionisation, then superelastic de-excitation).  Off
+        # (spatial = 0, meta_on = 0) the arithmetic of the legacy path is untouched.
+        spatial: int, density_cell: wp.array(dtype=F64), drift_r: wp.array(dtype=F64), drift_t: wp.array(dtype=F64),
+        drift_z: wp.array(dtype=F64), thermal_cell: wp.array(dtype=F64), sink_iz: wp.array(dtype=wp.int64), sink_exc: wp.array(dtype=wp.int64),
+        branching_units: wp.array(dtype=wp.int64), sink_unit: int,
+        meta_on: int, meta_density_cell: wp.array(dtype=F64), meta_table: wp.array(dtype=F64), meta_points: int, meta_step_ev: F64,
+        meta_max_ev: F64, meta_threshold: F64, meta_energy: F64, sink_miz: wp.array(dtype=wp.int64), sink_msuper: wp.array(dtype=wp.int64),
+        stepwise_slot: int, superelastic_slot: int,
     ):
         # No early returns: the five tallies (candidates, elastic, excitation,
         # ionisation, null) are reduced per block with tile sums.
@@ -767,7 +791,7 @@ if wp is not None:
         if p < flag_bound:
             ionize[p] = 0
         candidate = F64(0.0)
-        outcome = 4  # 0 elastic, 1 excitation, 2 ionisation, 3 null, 4 no candidate
+        outcome = 4  # 0 elastic, 1 excitation, 2 ionisation, 3 null, 4 no candidate, 5 stepwise ionisation, 6 superelastic
         dpz = F64(0.0)
         plume_birth = F64(0.0)
         ke_born = F64(0.0)
@@ -794,10 +818,15 @@ if wp is not None:
                 # sees every inventory update (a captured scalar would freeze it at capture time)
                 neutral_density = neutral_density_ctrl[0]
                 density = neutral_density
-                if has_plume != 0:
+                cell = int(0)
+                if has_plume != 0 or spatial != 0:
                     ci = wp.clamp(int(wp.floor(r[p] / dr)), 0, nr - 1)
                     cj = wp.clamp(int(wp.floor((z[p] - z_min) / dz)), 0, nz - 1)
-                    density = neutral_density * shape_cell[ci * nz + cj]
+                    cell = ci * nz + cj
+                if spatial != 0:
+                    density = density_cell[cell]
+                elif has_plume != 0:
+                    density = neutral_density * shape_cell[cell]
                 nu0 = density * sigma_lookup(table, points, step_ev, max_ev, energy, 0) * speed
                 # total excitation frequency over the levels (a single level: 0 + x == x, the legacy value bitwise)
                 nu1 = F64(0.0)
@@ -813,6 +842,17 @@ if wp is not None:
                 c1 = nu0
                 c2 = nu0 + nu1
                 c3 = c2 + nu2
+                # v2.5.0: the metastable channels follow the ground processes in the selector chain
+                c4 = c3
+                c5 = c3
+                if meta_on != 0:
+                    n_m = meta_density_cell[cell]
+                    nu_step = n_m * sigma_lookup(meta_table, meta_points, meta_step_ev, meta_max_ev, energy, 0) * speed
+                    if energy < meta_threshold:
+                        nu_step = F64(0.0)
+                    nu_super = n_m * sigma_lookup(meta_table, meta_points, meta_step_ev, meta_max_ev, energy, 1) * speed
+                    c4 = c3 + nu_step
+                    c5 = c4 + nu_super
                 u2 = F64(wp.randf(state))
                 u3 = F64(wp.randf(state))
                 if selector < c1:
@@ -845,50 +885,85 @@ if wp is not None:
                     vt[p] = v[1]
                     vz[p] = v[2]
                     outcome = 1
-                elif selector < c3:
-                    available = wp.max(energy - threshold_ion, F64(0.0))
-                    u4 = F64(wp.randf(state))
-                    secondary = b_ev * wp.tan(u4 * wp.atan(available / (F64(2.0) * b_ev)))
-                    secondary = wp.clamp(secondary, F64(0.0), available)
-                    primary = available - secondary
-                    v = isotropic(wp.sqrt(F64(2.0) * primary * ev / m_e), u2, u3)
-                    vr[p] = v[0]
-                    vt[p] = v[1]
-                    vz[p] = v[2]
-                    u5 = F64(wp.randf(state))
-                    u6 = F64(wp.randf(state))
-                    sv = isotropic(wp.sqrt(F64(2.0) * secondary * ev / m_e), u5, u6)
-                    sec_vr[p] = sv[0]
-                    sec_vt[p] = sv[1]
-                    sec_vz[p] = sv[2]
-                    u7 = wp.max(F64(wp.randf(state)), F64(1.0e-30))
-                    u8 = F64(wp.randf(state))
-                    u9 = wp.max(F64(wp.randf(state)), F64(1.0e-30))
-                    u10 = F64(wp.randf(state))
-                    rad1 = wp.sqrt(F64(-2.0) * wp.log(u7))
-                    rad2 = wp.sqrt(F64(-2.0) * wp.log(u9))
-                    ivr = ion_thermal * rad1 * wp.cos(F64(6.283185307179586) * u8)
-                    ivt = ion_thermal * rad1 * wp.sin(F64(6.283185307179586) * u8)
-                    ivz = ion_thermal * rad2 * wp.cos(F64(6.283185307179586) * u10)
-                    ion_vr[p] = ivr
-                    ion_vt[p] = ivt
-                    ion_vz[p] = ivz
-                    ionize[p] = 1
-                    outcome = 2
-                    if has_plume != 0 and z[p] >= z_exit:
-                        plume_birth = F64(1.0)
-                    # v2.0.5: the same per-particle values the removed energy_sum / momentum_sum kernels
-                    # formed from ion_v* / sec_vz after the spawn (summation order differs -> round-off)
-                    ke_born = kinetic_energy(ivr, ivt, ivz, ion_mass_weight)
-                    pz_born = ion_mass_weight * ivz + mass_weight * sv[2]
+                    if meta_on != 0:
+                        # the declared share of this level ends in the metastable pool: a ground-atom sink at the event cell
+                        wp.atomic_add(sink_exc, cell, branching_units[level])
+                elif selector < c5:
+                    # ionisation from the ground (selector < c3), stepwise ionisation from the pool ([c3, c4)) or
+                    # superelastic de-excitation ([c4, c5)); the first two share the birth kinematics
+                    if selector >= c4:
+                        gained = energy + meta_energy
+                        v = isotropic(wp.sqrt(F64(2.0) * gained * ev / m_e), u2, u3)
+                        vr[p] = v[0]
+                        vt[p] = v[1]
+                        vz[p] = v[2]
+                        outcome = 6
+                        wp.atomic_add(sink_msuper, cell, wp.int64(sink_unit))
+                    else:
+                        threshold = threshold_ion
+                        if selector >= c3:
+                            threshold = meta_threshold
+                        available = wp.max(energy - threshold, F64(0.0))
+                        u4 = F64(wp.randf(state))
+                        secondary = b_ev * wp.tan(u4 * wp.atan(available / (F64(2.0) * b_ev)))
+                        secondary = wp.clamp(secondary, F64(0.0), available)
+                        primary = available - secondary
+                        v = isotropic(wp.sqrt(F64(2.0) * primary * ev / m_e), u2, u3)
+                        vr[p] = v[0]
+                        vt[p] = v[1]
+                        vz[p] = v[2]
+                        u5 = F64(wp.randf(state))
+                        u6 = F64(wp.randf(state))
+                        sv = isotropic(wp.sqrt(F64(2.0) * secondary * ev / m_e), u5, u6)
+                        sec_vr[p] = sv[0]
+                        sec_vt[p] = sv[1]
+                        sec_vz[p] = sv[2]
+                        u7 = wp.max(F64(wp.randf(state)), F64(1.0e-30))
+                        u8 = F64(wp.randf(state))
+                        u9 = wp.max(F64(wp.randf(state)), F64(1.0e-30))
+                        u10 = F64(wp.randf(state))
+                        rad1 = wp.sqrt(F64(-2.0) * wp.log(u7))
+                        rad2 = wp.sqrt(F64(-2.0) * wp.log(u9))
+                        th = ion_thermal
+                        ur = F64(0.0)
+                        ut = F64(0.0)
+                        uz = F64(0.0)
+                        if spatial != 0:
+                            # v2.5.0: the born ion samples the local gas (drift + thermal speed; feed temperature for an empty cell)
+                            ur = drift_r[cell]
+                            ut = drift_t[cell]
+                            uz = drift_z[cell]
+                            if thermal_cell[cell] > F64(0.0):
+                                th = thermal_cell[cell]
+                        ivr = ur + th * rad1 * wp.cos(F64(6.283185307179586) * u8)
+                        ivt = ut + th * rad1 * wp.sin(F64(6.283185307179586) * u8)
+                        ivz = uz + th * rad2 * wp.cos(F64(6.283185307179586) * u10)
+                        ion_vr[p] = ivr
+                        ion_vt[p] = ivt
+                        ion_vz[p] = ivz
+                        ionize[p] = 1
+                        outcome = 2
+                        if selector >= c3:
+                            outcome = 5
+                            wp.atomic_add(sink_miz, cell, wp.int64(sink_unit))
+                        elif spatial != 0:
+                            wp.atomic_add(sink_iz, cell, wp.int64(sink_unit))
+                        if has_plume != 0 and z[p] >= z_exit:
+                            plume_birth = F64(1.0)
+                        # v2.0.5: the same per-particle values the removed energy_sum / momentum_sum kernels
+                        # formed from ion_v* / sec_vz after the spawn (summation order differs -> round-off)
+                        ke_born = kinetic_energy(ivr, ivt, ivz, ion_mass_weight)
+                        pz_born = ion_mass_weight * ivz + mass_weight * sv[2]
                 else:
                     outcome = 3
-                if outcome < 3:
+                if outcome != 3:
                     dpz = mass_weight * (vz[p] - vzp)
         e_flag = F64(0.0)
         x_flag = F64(0.0)
         i_flag = F64(0.0)
         n_flag = F64(0.0)
+        s_flag = F64(0.0)
+        q_flag = F64(0.0)
         if outcome == 0:
             e_flag = F64(1.0)
         elif outcome == 1:
@@ -897,6 +972,11 @@ if wp is not None:
             i_flag = F64(1.0)
         elif outcome == 3:
             n_flag = F64(1.0)
+        elif outcome == 5:
+            i_flag = F64(1.0)      # a stepwise birth is an ion birth for the particle-count identity
+            s_flag = F64(1.0)
+        elif outcome == 6:
+            q_flag = F64(1.0)
         wp.tile_atomic_add(stats, wp.tile_sum(wp.tile(candidate)), offset=tally_slot)
         wp.tile_atomic_add(stats, wp.tile_sum(wp.tile(e_flag)), offset=tally_slot + 1)
         wp.tile_atomic_add(stats, wp.tile_sum(wp.tile(x_flag)), offset=tally_slot + 2)
@@ -906,6 +986,8 @@ if wp is not None:
         wp.tile_atomic_add(stats, wp.tile_sum(wp.tile(plume_birth)), offset=STATS_ION_PLUME)
         wp.tile_atomic_add(stats, wp.tile_sum(wp.tile(ke_born)), offset=ke_born_slot)
         wp.tile_atomic_add(stats, wp.tile_sum(wp.tile(pz_born)), offset=pz_born_slot)
+        wp.tile_atomic_add(stats, wp.tile_sum(wp.tile(s_flag)), offset=stepwise_slot)
+        wp.tile_atomic_add(stats, wp.tile_sum(wp.tile(q_flag)), offset=superelastic_slot)
 
     @wp.kernel
     def spawn_kernel(
@@ -1588,7 +1670,7 @@ class WarpBackend:
         if config.mcc is not None:
             if cross_sections is None:
                 raise PIC2DValidationError("MCC requires cross sections")
-            self.mcc = NullCollisionMCC(cross_sections, config.mcc, self.ion)
+            self.mcc = NullCollisionMCC(cross_sections, config.mcc, self.ion, build_metastable_table(config, cross_sections))   # v2.5.0 metastables
             self.ion_mcc = build_ion_mcc(config, self.ion, masks)      # v2.3.0: None unless the collision set declares it
         self.sync_interval = int(config.sync_steps)
         grid = masks.grid
@@ -1713,6 +1795,21 @@ class WarpBackend:
         self.species: dict[str, DeviceSpecies] = {}
         self.scratch_capacity = 0
         self.state_meta: dict[str, Any] = {}
+        # v2.5.0: spatial neutrals (+ metastables) - device model, per-cell fields the MCC kernels read, metastable table
+        self.spatial_on = bool(config.spatial_neutrals_active)
+        self.meta_on = bool(config.metastables_active)
+        self.neutral_model: Any = None
+        self.spatial = None
+        dummy = wp.zeros(1, dtype=wp.float64, device=dev)
+        self.dummy_f64 = dummy
+        self.dummy_i32 = wp.zeros(1, dtype=wp.int32, device=dev)
+        self.dummy_i64 = wp.zeros(1, dtype=wp.int64, device=dev)
+        if self.spatial_on:
+            from .warp_neutrals import WarpNeutralModel
+
+            self.spatial = build_spatial_neutrals(config, masks)
+            self.neutral_model = WarpNeutralModel(self.spatial, dev, ion_capacity=1024, seed_streams=SEED_STREAMS,
+                                                  stream_column=NEUTRAL_STREAM_COLUMN, stream_id=NEUTRAL_RNG_STREAM)
         if self.mcc is not None:
             self.table = f64(self.mcc.table.table_m2)
             self.table_points = self.mcc.table.point_count
@@ -1727,6 +1824,13 @@ class WarpBackend:
                 self.ion_table_points = self.ion_mcc.table.point_count
                 self.ion_probability = self.ion_mcc.collision_probability(config.dt_s * config.ion_subcycle)
                 self.ion_march_limit = 4 * (self.nr + self.nz) + 8
+            if self.meta_on:
+                meta = self.mcc.metastables
+                self.meta_table = f64(meta.table.table_m2)
+                self.meta_points = meta.table.point_count
+            else:
+                self.meta_table = dummy
+                self.meta_points = 2
         else:
             self.probability = 0.0
             self.neutral_density_ctrl = wp.zeros(1, dtype=wp.float64, device=dev)
@@ -1945,6 +2049,17 @@ class WarpBackend:
             for key in COULOMB_KEYS:  # v2.4.0: likewise for the Coulomb tallies
                 self.state_meta["cumulative"].setdefault(key, 0.0)
             self.coulomb.stats.zero_()
+        if self.spatial_on:
+            # v2.5.0: the neutral particle state (a fresh state gets the declared initial profile from the step-0 neutral stream,
+            # as the CPU reference); the neutral ledger keys exist from the first record
+            neutral = state.neutral_particles
+            if neutral is None:
+                neutral = self.spatial.initial_state(np.random.default_rng([self.config.seed, 0, NEUTRAL_RNG_STREAM]))
+            self.neutral_model.upload(neutral)
+            for key in NEUTRAL_SPATIAL_LEDGER_KEYS:
+                self.state_meta["cumulative"].setdefault(key, 0.0)
+        elif state.neutral_particles is not None:
+            raise PIC2DValidationError("state carries spatial neutrals but the configuration has none")
         self.stats.zero_()
         self.steps_since_sync = 0
         self.injected_since_sync = 0
@@ -1972,7 +2087,47 @@ class WarpBackend:
             self._download(self.species["e"]), self._download(self.species["i"]),
             self.surface.numpy().reshape(shape).copy(), self.phi.numpy().reshape(shape).copy(),
             self.state_meta["injection_carry"], dict(self.state_meta["cumulative"]),
+            None, self.neutral_model.download() if self.spatial_on else None,
         )
+
+    def neutral_sample(self) -> dict[str, Any]:
+        """v2.5.0: the spatial-neutral series sample (device atom sums + the small per-cell arrays; at a sync)."""
+
+        self.flush()
+        model = self.neutral_model
+        n_g, n_m, count_g, count_m = model.atom_sums()
+        cells = {name: array.numpy() for name, array in (
+            ("debt_ground", model.debt_g), ("debt_meta", model.debt_iz), ("debt_meta_super", model.debt_super),
+            ("pending_feed", model.pending_feed), ("pending_recycle", model.pending_recycle), ("pending_return", model.pending_return),
+            ("pending_meta", model.pending_meta), ("density_per_m3", model.density), ("meta_density_per_m3", model.meta_density))}
+        self.sync_count += 10
+        spatial = self.spatial
+        masks = self.masks
+        channel = (masks.plasma_cell & ~masks.plume_cell).ravel() if masks.has_plume else masks.plasma_cell.ravel()
+        volume = float(spatial.cell_volume[channel].sum())
+        density = cells["density_per_m3"]
+        axis = density.reshape(spatial.nr, spatial.nz)[0]
+        pending = cells["pending_feed"].sum() + cells["pending_recycle"].sum() + cells["pending_return"].sum() + cells["pending_meta"].sum()
+        return {
+            "atoms_ground": n_g,
+            "atoms_metastable": n_m,
+            "true_atoms_ground": n_g + float(cells["pending_feed"].sum() + cells["pending_recycle"].sum() + cells["pending_return"].sum())
+            - float(cells["debt_ground"].sum()),
+            "true_atoms_metastable": n_m + float(cells["pending_meta"].sum()) - float(cells["debt_meta"].sum() + cells["debt_meta_super"].sum()),
+            "macro_neutrals": count_g,
+            "macro_metastables": count_m,
+            "channel_mean_density_per_m3": float(np.sum(density[channel] * spatial.cell_volume[channel])) / volume if volume > 0.0 else 0.0,
+            "channel_mean_metastable_density_per_m3": float(np.sum(cells["meta_density_per_m3"][channel] * spatial.cell_volume[channel])) / volume
+            if volume > 0.0 else 0.0,
+            "density_max_per_m3": float(density.max()) if density.size else 0.0,
+            "axis_density_anode_per_m3": float(axis[0]),
+            "axis_density_exit_per_m3": float(axis[min(int(round(spatial.geometry.channel_length_m / spatial.grid.dz_m)) - 1, spatial.nz - 1)]),
+            "debt_ground_atoms": float(cells["debt_ground"].sum()),
+            "debt_meta_atoms": float(cells["debt_meta"].sum() + cells["debt_meta_super"].sum()),
+            "pending_atoms": float(pending),
+            "neutral_time_s": model.neutral_time_s,
+            "substeps": model.substeps,
+        }
 
     def flush(self) -> StepTally | None:
         """Force a host sync (ledger, compaction, gate values) if steps are pending."""
@@ -2008,11 +2163,14 @@ class WarpBackend:
         # the phase is anchored on the window's accumulated-step count, so a window reset restarts it
         moments = bool(accumulate) and self.diag_steps % self.moment_sample_interval == 0
         coulomb_step = config.coulomb_step(step_index)      # v2.4.0: every cycle_steps steps (False when off)
+        # v2.5.0: the neutral sub-step runs every substep_steps PIC steps (its own graph variant)
+        neutral_step = self.spatial_on and (step_index + 1) % config.neutrals_spatial.substep_steps == 0   # type: ignore[union-attr]
 
         if self.step_graph:
-            self._step_graph_launch(ion_step, redo_ions, accumulate, moments, coulomb_step)
+            self._step_graph_launch(ion_step, redo_ions, accumulate, moments, coulomb_step, neutral_step)
         else:
-            self._launch_step(ion_step, redo_ions, accumulate, moments=moments, fixed_shape=False, coulomb_step=coulomb_step)
+            self._launch_step(ion_step, redo_ions, accumulate, moments=moments, fixed_shape=False, coulomb_step=coulomb_step,
+                              neutral_step=neutral_step)
         if self.device_direct is not None and self.steps_since_sync + 1 >= self.sync_interval:
             self.device_direct.queue_residual_check()  # read and enforced in _sync (outside the captured step)
 
@@ -2032,17 +2190,20 @@ class WarpBackend:
             self.diag_steps += 1
             if moments:
                 self.moment_samples += 1
+            if neutral_step:
+                self.neutral_model.neutral_samples += 1
         self.steps_since_sync += 1
         if self.steps_since_sync >= self.sync_interval:
             return self._sync()
         return None
 
-    def _step_graph_launch(self, ion_step: bool, redo_ions: bool, accumulate: bool, moments: bool, coulomb_step: bool = False) -> None:
+    def _step_graph_launch(self, ion_step: bool, redo_ions: bool, accumulate: bool, moments: bool, coulomb_step: bool = False,
+                           neutral_step: bool = False) -> None:
         """Replay (capturing on first use) the CUDA graph of this step variant for the current particle arrays."""
 
         electrons = self.species["e"]
         ions = self.species["i"]
-        key = (ion_step, redo_ions, accumulate, moments, coulomb_step, electrons.r.ptr, ions.r.ptr, electrons.capacity, ions.capacity)
+        key = (ion_step, redo_ions, accumulate, moments, coulomb_step, neutral_step, electrons.r.ptr, ions.r.ptr, electrons.capacity, ions.capacity)
         graph = self.step_graphs.get(key)
         if graph is None:
             if not self.step_graphs:
@@ -2059,10 +2220,15 @@ class WarpBackend:
                     from . import warp_coulomb
 
                     wp.load_module(module=warp_coulomb, device=self.device)
+                if self.spatial_on:
+                    from . import warp_neutrals
+
+                    wp.load_module(module=warp_neutrals, device=self.device)
             profile, self.profile = self.profile, None
             try:
                 with wp.ScopedCapture(device=self.device) as capture:
-                    self._launch_step(ion_step, redo_ions, accumulate, moments=moments, fixed_shape=True, coulomb_step=coulomb_step)
+                    self._launch_step(ion_step, redo_ions, accumulate, moments=moments, fixed_shape=True, coulomb_step=coulomb_step,
+                                      neutral_step=neutral_step)
             finally:
                 self.profile = profile
             graph = capture.graph
@@ -2073,7 +2239,7 @@ class WarpBackend:
         self._mark("graph-step")
 
     def _launch_step(self, ion_step: bool, redo_ions: bool, accumulate: bool, *, moments: bool | None = None, fixed_shape: bool,
-                     coulomb_step: bool = False) -> None:
+                     coulomb_step: bool = False, neutral_step: bool = False) -> None:
         """Issue every device operation of one step.
 
         With ``fixed_shape`` the launch dimensions are the array capacities and nothing
@@ -2163,6 +2329,12 @@ class WarpBackend:
         self._mark("field+diag")
 
         geometry = grid.geometry
+        model = self.neutral_model
+        recycle_cell = model.recycle if self.spatial_on else self.dummy_i64
+        recycle_units = 0
+        if self.spatial_on and config.neutrals_spatial.wall_recycling:   # type: ignore[union-attr]
+            # integer units of W / 2**20 (exact, order-independent accumulation)
+            recycle_units = int(round(config.neutrals_spatial.recombination_coefficient * SINK_FIXED_POINT))   # type: ignore[union-attr]
         for slot, (species, particles, dim) in enumerate(((self.electron, electrons, e_dim), (self.ion, ions, i_dim))):
             is_electron = slot == 0
             if dim == 0 or (not is_electron and not ion_step):
@@ -2184,7 +2356,8 @@ class WarpBackend:
                         STATS_E_PZ if is_electron else STATS_I_PZ, STATS_BODY_FACE_E if is_electron else STATS_BODY_FACE_I,
                         0 if is_electron else 1, self.d_side_e if is_electron else self.d_side_i, self.d_theta_i, self.d_iedf_i,
                         IEDF_BINS / self.iedf_max_ev, THETA_BINS / 90.0,
-                        self.see_hit_e if is_electron else self.see_hit_i],
+                        self.see_hit_e if is_electron else self.see_hit_i,
+                        recycle_cell, 0 if is_electron else recycle_units],
                 device=dev,
             )
         wp.launch(wall_int_to_charge_kernel, dim=self.node_count,
@@ -2199,6 +2372,9 @@ class WarpBackend:
                                 dt * config.coulomb.cycle_steps, accumulate)  # type: ignore[union-attr]
             self._mark("coulomb")
 
+        spatial_flag = 1 if self.spatial_on else 0
+        density_cell = model.density if self.spatial_on else self.dummy_f64
+        gas_moments = (model.drift_r, model.drift_t, model.drift_z, model.thermal) if self.spatial_on else (self.dummy_f64,) * 4
         if self.ion_mcc is not None and ion_step and i_dim:
             # v2.3.0: Xe+ - Xe CEX / MEX on the pushed ions (velocities only: the frozen ion charge stays valid), before
             # this step's births join (as the CPU reference); RNG stream 3 of the seed table; n_g device-resident
@@ -2212,9 +2388,16 @@ class WarpBackend:
                         self.ion.mass_kg, self.ion.mass_kg * config.macro_weight, ion_mcc.thermal_speed, ion_mcc.fast_speed_threshold,
                         self.neutral_shape, self.plasma_cell, 1 if self.has_plume else 0,
                         grid.dr_m, grid.dz_m, geometry.z_min_m, geometry.z_max_m, geometry.exit_radius_m, self.nr, self.nz, self.ion_march_limit,
-                        self.stats, STATS_ION_MCC],
+                        self.stats, STATS_ION_MCC,
+                        # v2.5.0 spatial neutrals: per-cell fields, fast-neutral staging, CEX sink
+                        spatial_flag, density_cell, *gas_moments,
+                        model.fast_flag if self.spatial_on else self.dummy_i32, *(model.fast_v if self.spatial_on else (self.dummy_f64,) * 3),
+                        model.sink_cex if self.spatial_on else self.dummy_i64, int(SINK_FIXED_POINT), i_dim if self.spatial_on else 0],
                 device=dev,
             )
+            if self.spatial_on:
+                # the CEX fast neutrals join the neutral population at F x W each
+                model.launch_fast_hand_off(ions, self.slots, i_dim, config.neutrals_spatial.time_acceleration * config.macro_weight)   # type: ignore[union-attr]
             self._mark("ion-mcc")
 
         if config.anomalous is not None and e_dim:
@@ -2241,7 +2424,16 @@ class WarpBackend:
                         electrons.r, electrons.z, self.neutral_shape, 1 if self.has_plume else 0, geometry.z_max_m,
                         grid.dr_m, grid.dz_m, geometry.z_min_m, self.nr, self.nz, ELECTRON_MASS_KG * config.macro_weight,
                         # v2.0.5: born-ledger tallies (ke_born_ions_j, pz_born) tile-reduced inside the MCC kernel
-                        self.ion.mass_kg * config.macro_weight, STATS_KE_BORN, STATS_PZ_BORN],
+                        self.ion.mass_kg * config.macro_weight, STATS_KE_BORN, STATS_PZ_BORN,
+                        # v2.5.0: spatial neutral fields + sinks, metastable channels
+                        spatial_flag, density_cell, *gas_moments,
+                        model.sink_iz if self.spatial_on else self.dummy_i64, model.sink_exc if self.spatial_on else self.dummy_i64,
+                        model.branching_units if self.spatial_on else self.dummy_i64, int(SINK_FIXED_POINT),
+                        1 if self.meta_on else 0, model.meta_density if self.spatial_on else self.dummy_f64,
+                        self.meta_table, self.meta_points, mcc.table.energy_step_ev, mcc.table.energy_max_ev,
+                        mcc.metastables.stepwise_threshold_ev if self.meta_on else 0.0, mcc.metastables.pool_energy_ev if self.meta_on else 0.0,
+                        model.sink_miz if self.spatial_on else self.dummy_i64, model.sink_msuper if self.spatial_on else self.dummy_i64,
+                        STATS_STEPWISE, STATS_SUPERELASTIC],
                 device=dev,
             )
             self._mark("mcc")
@@ -2297,6 +2489,11 @@ class WarpBackend:
             wp.launch(wall_int_to_charge_kernel, dim=self.node_count,
                       inputs=[self.acc_wall, ELEMENTARY_CHARGE_C * config.macro_weight / FIXED_POINT_SCALE, self.surface], device=dev)
             self._mark("see")
+        if neutral_step:
+            # v2.5.0: the neutral sub-step (deplete by the booked sinks -> spawn -> free flight -> publish), last in the step
+            # (as the CPU reference), seed column 5 of the seed table
+            model.launch_substep(self.seed_table, self.step_counter, accumulate, self.plasma_cell)
+            self._mark("neutrals")
         wp.launch(tick_kernel, dim=1, inputs=[self.step_counter], device=dev)
         self._mark("inject")
 
@@ -2375,8 +2572,25 @@ class WarpBackend:
                     loss_ev += count * thresholds[1 + k]
                     add(f"excitations_level_{k + 1}", count)
             per_weight = (loss_ev + n_ion * thresholds[-1]) * EV_J
+            if self.meta_on:
+                # v2.5.0: the stepwise births (inside n_ion) removed E_iz - E_m, not E_iz; the superelastic events returned E_m
+                n_step = float(stats[STATS_STEPWISE])
+                n_super = float(stats[STATS_SUPERELASTIC])
+                meta = self.mcc.metastables
+                per_weight += (n_step * (meta.stepwise_threshold_ev - thresholds[-1]) - n_super * meta.pool_energy_ev) * EV_J
+                add("stepwise_ionizations", n_step)
+                add("superelastic", n_super)
             cumulative["inelastic_loss_j"] += per_weight * config.macro_weight
             add(INELASTIC_LOSS_PER_WEIGHT_KEY, per_weight)
+        if self.spatial_on:
+            # v2.5.0: the neutral ledger (atoms, neutral time) + fail-closed checks; compaction and reservation of the neutral arrays
+            neutral_stats = self.neutral_model.read_stats()
+            if neutral_stats["overflow"] != 0.0:
+                raise PIC2DValidationError("device neutral arrays overflowed their reserved capacity")
+            if neutral_stats["march_unresolved"] != 0.0:
+                raise PIC2DStabilityError(f"{neutral_stats['march_unresolved']:.0f} neutrals exceeded the free-flight piece cap in one sub-step")
+            for key in NEUTRAL_SPATIAL_LEDGER_KEYS:
+                add(key, neutral_stats[key])
         if self.ion_mcc is not None:
             # v2.3.0: ion-neutral tallies (counts exact; energy / momentum sums are float atomics)
             for offset, key in enumerate(warp_ion_mcc.ION_STATS_KEYS):
@@ -2404,6 +2618,9 @@ class WarpBackend:
         self._compact(electrons, 0, int(slots[0]), expected_e)
         self._compact(ions, 1, int(slots[1]), expected_i)
         self._set_slots(electrons.alive, ions.alive)
+        if self.spatial_on:
+            self.neutral_model.compact()
+            self.sync_count += 3
         peak_density_raw = float(stats[STATS_PEAK_DENSITY])
         peak_density = float(stats[STATS_PEAK_DENSITY_RESOLVED])
         max_speed2 = float(stats[STATS_MAX_SPEED2])
@@ -2427,6 +2644,12 @@ class WarpBackend:
         self.species["e"] = self._grow(electrons, need_e)
         self.species["i"] = self._grow(ions, need_i)
         self._ensure_scratch(max(self.species["e"].capacity, self.species["i"].capacity))
+        if self.spatial_on:
+            # v2.5.0: neutral arrays + the per-ion-slot CEX staging; a reallocation invalidates the captured graphs
+            grown = self.neutral_model.reserve(self.sync_interval, self.species["i"].capacity)
+            grown = self.neutral_model.ensure_fast_capacity(self.species["i"].capacity) or grown
+            if grown:
+                self.step_graphs.clear()
 
     # ------------------------------------------------------------------ diagnostics
     def series_sample(self) -> dict[str, Any]:
@@ -2531,7 +2754,7 @@ class WarpBackend:
     def _host_accumulator(self) -> DiagnosticAccumulator:
         wp.synchronize_device(self.device)
         shape = self.masks.grid.node_shape
-        acc = DiagnosticAccumulator(self.masks, self.iedf_max_ev, see=self.see_active, coulomb=self.coulomb is not None)
+        acc = DiagnosticAccumulator(self.masks, self.iedf_max_ev, see=self.see_active, coulomb=self.coulomb is not None, neutrals=self.spatial_on)
         acc.steps = self.diag_steps
         acc.moment_samples = self.moment_samples
         if self.see_active:
@@ -2540,6 +2763,10 @@ class WarpBackend:
         if self.coulomb is not None:
             for key, value in self.coulomb.window_sums().items():     # v2.4.0: per-cell sums in the node layout
                 setattr(acc, key, value)
+        if self.spatial_on:
+            acc.neutral_density = self.neutral_model.d_density.numpy().reshape(self.nr, self.nz)
+            acc.metastable_density = self.neutral_model.d_meta.numpy().reshape(self.nr, self.nz)
+            acc.neutral_samples = self.neutral_model.neutral_samples
         acc.side_electrons = self.d_side_e.numpy()
         acc.side_ions = self.d_side_i.numpy()
         acc.theta_ions = self.d_theta_i.numpy()
@@ -2571,6 +2798,8 @@ class WarpBackend:
         self.diag_steps = 0
         self.moment_samples = 0
         self.diagnostic_generation += 1
+        if self.spatial_on:
+            self.neutral_model.reset_diagnostics()
 
 
 __all__ = [

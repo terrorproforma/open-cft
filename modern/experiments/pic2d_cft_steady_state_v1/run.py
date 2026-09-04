@@ -67,6 +67,7 @@ from cft_revival.pic2d.models import (
 )
 from cft_revival.pic2d.coulomb import CoulombConfig
 from cft_revival.pic2d.neutrals import NEUTRAL_LEDGER_KEYS, NeutralInventoryConfig
+from cft_revival.pic2d.neutrals_spatial import NEUTRAL_SPATIAL_LEDGER_KEYS, MetastableConfig, SpatialNeutralConfig
 from cft_revival.pic2d.see import SEEConfig
 from cft_revival.pic2d.sensitivity import AnomalousCollisionConfig
 from cft_revival.pic2d.simulation import (
@@ -134,6 +135,18 @@ NEUTRAL_SCALARS = (
 )
 # v1.4 (wall-ion recycling): absent from v1.3 records -> NaN in the arrays
 NEUTRAL_SCALARS_V14 = ("recycled_rate_per_s", "wall_ion_absorption_rate_per_s", "gross_utilisation", "net_utilisation")
+# v2.5.0 (neutrals_spatial_v1): the spatial model's record carries these instead of fixed_point / scale / artificial (NaN otherwise);
+# its atom ledger keys (NEUTRAL_SPATIAL_LEDGER_KEYS) are stored as neutral_ledger_<key> next to the 0-D ones
+NEUTRAL_SCALARS_V25 = (
+    "atoms_ground", "atoms_metastable", "macro_neutrals", "macro_metastables", "density_max_per_m3", "axis_density_anode_per_m3",
+    "axis_density_exit_per_m3", "fast_neutral_in_rate_per_s", "cex_converted_rate_per_s", "neutral_exit_thrust_n", "neutral_exit_power_w",
+    "neutral_wall_force_n", "debt_ground_atoms", "debt_meta_atoms", "pending_atoms", "interval_meta_ledger_residual_atoms",
+    "sink_consistency_atoms", "neutral_time_s", "time_acceleration", "ceiling_violation_fraction",
+)
+METASTABLE_SCALARS_V25 = (
+    "channel_mean_density_per_m3", "fraction_of_ground", "production_rate_per_s", "stepwise_ionization_rate_per_s", "superelastic_rate_per_s",
+    "wall_deexcitation_rate_per_s", "radiative_rate_per_s", "effusion_rate_per_s", "stepwise_fraction_of_ionization",
+)
 # v1.4 peak-node Debye sample (blocker 1); absent from v1.3 records -> arrays omitted
 PEAK_NODE_SCALARS = (
     "n_e_peak_per_m3", "t_e_peak_ev", "debye_length_m", "cells_per_debye", "macro_particles_at_peak", "t_e_dense_ev",
@@ -293,6 +306,11 @@ def build_config(protocol: dict[str, Any], *, backend: str = "warp-cuda") -> PIC
         )
         if int(numerics["series_interval_steps"]) != sync:
             raise PIC2DValidationError("the neutral inventory is updated at the series interval, which must equal device_sync_steps")
+    # v2.5.0: ``operating_point.neutrals`` = {"model": "neutrals_spatial_v1", ...SpatialNeutralConfig fields, "metastables": {...} | null}
+    # replaces the 0-D inventory (the two blocks are mutually exclusive); absent = inventory-0d, identity unchanged
+    spatial = None
+    if operating.get("neutrals") is not None:
+        spatial = spatial_neutral_config_from_protocol(operating["neutrals"])
     peak_gate = None
     if numerics.get("peak_debye_gate") is not None:
         peak_gate = PeakDebyeGateConfig(**{k: v for k, v in numerics["peak_debye_gate"].items() if not k.endswith("_note")})
@@ -355,7 +373,30 @@ def build_config(protocol: dict[str, Any], *, backend: str = "warp-cuda") -> PIC
         see=see,
         coulomb=coulomb,
         moment_sample_interval=moment_sample_interval,
+        neutrals_spatial=spatial,
     )
+
+
+def spatial_neutral_config_from_protocol(block: Mapping[str, Any]) -> SpatialNeutralConfig:
+    """v2.5.0: the ``operating_point.neutrals`` block (``*_note`` / ``*_justification`` keys are documentation)."""
+
+    def clean(mapping: Mapping[str, Any]) -> dict[str, Any]:
+        return {k: v for k, v in mapping.items() if not k.endswith("_note") and not k.endswith("_justification") and k != "model"}
+
+    model = block.get("model")
+    if model != "neutrals_spatial_v1":
+        raise PIC2DValidationError(f"unknown neutral model {model!r} (known: 'neutrals_spatial_v1'; the 0-D inventory is operating_point.neutral_inventory)")
+    fields = clean(block)
+    meta_block = fields.pop("metastables", None)
+    metastables = None
+    if meta_block is not None:
+        if meta_block.get("model", "metastables_v1") != "metastables_v1":
+            raise PIC2DValidationError(f"unknown metastable model {meta_block.get('model')!r}")
+        meta_fields = clean(meta_block)
+        meta_fields["branching"] = tuple(float(b) for b in meta_fields["branching"])
+        metastables = MetastableConfig(**meta_fields)
+    fields["substep_steps"] = int(fields["substep_steps"])
+    return SpatialNeutralConfig(**fields, metastables=metastables)
 
 
 def step_graph_flag(protocol: dict[str, Any]) -> bool:
@@ -692,11 +733,21 @@ def records_to_arrays(records: list[dict[str, Any]]) -> dict[str, np.ndarray]:
         arrays[f"current_{key}"] = []
     with_neutral = bool(records) and records[0].get("neutral") is not None
     with_peak = bool(records) and records[0].get("peak_node") is not None
+    with_spatial = with_neutral and records[0]["neutral"].get("model") == "neutrals_spatial_v1"    # v2.5.0
+    with_meta = with_spatial and records[0]["neutral"].get("metastables") is not None
     if with_neutral:
         for key in NEUTRAL_SCALARS + NEUTRAL_SCALARS_V14 + NEUTRAL_SCALARS_V23:
             arrays[f"neutral_{key}"] = []
         for key in NEUTRAL_LEDGER_KEYS + NEUTRAL_LEDGER_KEYS_V23:
             arrays[f"neutral_ledger_{key}"] = []
+    if with_spatial:
+        for key in NEUTRAL_SCALARS_V25:
+            arrays[f"neutral_{key}"] = []
+        for key in NEUTRAL_SPATIAL_LEDGER_KEYS:
+            arrays[f"neutral_ledger_{key}"] = []
+    if with_meta:
+        for key in METASTABLE_SCALARS_V25:
+            arrays[f"metastable_{key}"] = []
     if with_peak:
         for key in PEAK_NODE_SCALARS:
             arrays[f"peak_node_{key}"] = []
@@ -732,11 +783,21 @@ def records_to_arrays(records: list[dict[str, Any]]) -> dict[str, np.ndarray]:
         if with_neutral:
             neutral = record["neutral"]
             for key in NEUTRAL_SCALARS:
-                arrays[f"neutral_{key}"].append(float(neutral[key]))
+                arrays[f"neutral_{key}"].append(float(neutral.get(key, float("nan"))))   # v2.5.0 spatial records lack fixed_point / scale / artificial
             for key in NEUTRAL_SCALARS_V14 + NEUTRAL_SCALARS_V23:
                 arrays[f"neutral_{key}"].append(float(neutral.get(key, float("nan"))))
             for key in NEUTRAL_LEDGER_KEYS + NEUTRAL_LEDGER_KEYS_V23:
                 arrays[f"neutral_ledger_{key}"].append(float(neutral["ledger"].get(key, 0.0)))  # v1.3 records: no 'recycled'; pre-v2.3.0: no sink
+        if with_spatial:
+            neutral = record["neutral"]
+            for key in NEUTRAL_SCALARS_V25:
+                arrays[f"neutral_{key}"].append(float(neutral.get(key, float("nan"))))
+            for key in NEUTRAL_SPATIAL_LEDGER_KEYS:
+                arrays[f"neutral_ledger_{key}"].append(float(neutral["ledger"].get(key, 0.0)))
+        if with_meta:
+            meta = record["neutral"].get("metastables") or {}
+            for key in METASTABLE_SCALARS_V25:
+                arrays[f"metastable_{key}"].append(float(meta.get(key, float("nan"))))
         if with_peak:
             peak = record["peak_node"]
             for key in PEAK_NODE_SCALARS:
@@ -803,13 +864,20 @@ def status_from_record(
     neutral = record.get("neutral")
     if neutral is not None:
         line["n_g_per_m3"] = neutral["density_per_m3"]
-        line["n_g_fixed_point_per_m3"] = neutral["fixed_point_per_m3"]
+        line["n_g_fixed_point_per_m3"] = neutral.get("fixed_point_per_m3")     # None for the v2.5.0 spatial model
         line["effusion_rate_per_s"] = neutral["effusion_rate_per_s"]
         line["neutral_ledger_residual_atoms"] = neutral["interval_ledger_residual_atoms"]
         if "recycled_rate_per_s" in neutral:  # v1.4
             line["recycled_rate_per_s"] = neutral["recycled_rate_per_s"]
             line["gross_utilisation"] = neutral["gross_utilisation"]
             line["net_utilisation"] = neutral["net_utilisation"]
+        if neutral.get("model") == "neutrals_spatial_v1":   # v2.5.0
+            line["neutral_model"] = neutral["model"]
+            for key in ("axis_density_anode_per_m3", "axis_density_exit_per_m3", "macro_neutrals", "macro_metastables", "debt_ground_atoms"):
+                line[key] = neutral[key]
+            if neutral.get("metastables") is not None:
+                line["metastable_fraction_of_ground"] = neutral["metastables"]["fraction_of_ground"]
+                line["stepwise_fraction_of_ionization"] = neutral["metastables"]["stepwise_fraction_of_ionization"]
     peak = record.get("peak_node")
     if peak is not None:  # v1.4 peak-node Debye sample
         line["peak_node"] = {key: peak[key] for key in ("n_e_peak_per_m3", "t_e_peak_ev", "cells_per_debye", "macro_particles_at_peak",
@@ -991,7 +1059,61 @@ def ledger_summary(arrays: dict[str, np.ndarray]) -> dict[str, Any]:
     }
 
 
+def spatial_neutral_summary(arrays: dict[str, np.ndarray], sim: Simulation) -> dict[str, Any] | None:
+    """v2.5.0: summary of the spatial neutral model (ledger closure, trailing profile readings, metastable fraction)."""
+
+    if not getattr(sim, "spatial_neutrals_on", False) or "neutral_atoms_ground" not in arrays:
+        return None
+    spatial = sim.backend.spatial
+    tail = max(arrays["neutral_density_per_m3"].size // 5, 1)
+    ledger = {key: float(arrays[f"neutral_ledger_{key}"][-1]) for key in NEUTRAL_SPATIAL_LEDGER_KEYS}
+    f_acc = float(arrays["neutral_time_acceleration"][-1])
+    out: dict[str, Any] = {
+        **spatial.to_dict(),
+        "final_channel_mean_density_per_m3": float(arrays["neutral_density_per_m3"][-1]),
+        "final_axis_density_anode_per_m3": float(arrays["neutral_axis_density_anode_per_m3"][-1]),
+        "final_axis_density_exit_per_m3": float(arrays["neutral_axis_density_exit_per_m3"][-1]),
+        "final_atoms_ground": float(arrays["neutral_atoms_ground"][-1]),
+        "final_atoms_metastable": float(arrays["neutral_atoms_metastable"][-1]),
+        "final_macro_neutrals": float(arrays["neutral_macro_neutrals"][-1]),
+        "final_macro_metastables": float(arrays["neutral_macro_metastables"][-1]),
+        "neutral_time_s_total": float(arrays["neutral_neutral_time_s"][-1]),
+        "trailing_20pct_mean_density_per_m3": float(np.mean(arrays["neutral_density_per_m3"][-tail:])),
+        "trailing_20pct_mean_ionization_rate_per_s": float(np.mean(arrays["neutral_ionization_rate_per_s"][-tail:])),
+        "trailing_20pct_mean_effusion_rate_per_s": float(np.mean(arrays["neutral_effusion_rate_per_s"][-tail:])),
+        "trailing_20pct_mean_recycled_rate_per_s": float(np.mean(arrays["neutral_recycled_rate_per_s"][-tail:])),
+        "trailing_20pct_mean_neutral_exit_thrust_n": float(np.mean(arrays["neutral_neutral_exit_thrust_n"][-tail:])),
+        "gross_utilisation_trailing": float(np.mean(arrays["neutral_gross_utilisation"][-tail:])),
+        "propellant_utilisation_trailing": float(np.mean(arrays["neutral_gross_utilisation"][-tail:])),    # the v4 assess key (gross)
+        "net_utilisation_trailing": float(np.mean(arrays["neutral_net_utilisation"][-tail:])),
+        "cumulative_ledger_atoms_neutral_time": ledger,
+        "cumulative_ledger_atoms_real_time_plasma_terms": {
+            key: ledger[key] / f_acc for key in ("neutral_ionized", "neutral_cex_converted", "neutral_excited_to_pool", "neutral_recycled", "neutral_fast_in",
+                                                  "meta_ionized", "meta_superelastic")
+        },
+        "max_interval_ledger_residual_atoms": float(np.max(np.abs(arrays["neutral_interval_ledger_residual_atoms"]))),
+        "max_interval_meta_ledger_residual_atoms": float(np.max(np.abs(arrays["neutral_interval_meta_ledger_residual_atoms"]))),
+        "max_sink_consistency_atoms": float(np.max(np.abs(arrays["neutral_sink_consistency_atoms"]))),
+        "final_debt_ground_atoms": float(arrays["neutral_debt_ground_atoms"][-1]),
+        "note": ("neutral time = time_acceleration x plasma time; the ledger identities close on the true counts (particles + carries - debts); "
+                 "only the quasi-steady profile is physical when time_acceleration > 1"),
+    }
+    if "metastable_fraction_of_ground" in arrays:
+        out["metastables"] = {
+            "final_fraction_of_ground": float(arrays["metastable_fraction_of_ground"][-1]),
+            "trailing_20pct_mean_fraction_of_ground": float(np.mean(arrays["metastable_fraction_of_ground"][-tail:])),
+            "trailing_20pct_mean_stepwise_fraction_of_ionization": float(np.mean(arrays["metastable_stepwise_fraction_of_ionization"][-tail:])),
+            "trailing_20pct_mean_production_rate_per_s": float(np.mean(arrays["metastable_production_rate_per_s"][-tail:])),
+            "trailing_20pct_mean_stepwise_ionization_rate_per_s": float(np.mean(arrays["metastable_stepwise_ionization_rate_per_s"][-tail:])),
+            "trailing_20pct_mean_superelastic_rate_per_s": float(np.mean(arrays["metastable_superelastic_rate_per_s"][-tail:])),
+            "trailing_20pct_mean_wall_deexcitation_rate_per_s": float(np.mean(arrays["metastable_wall_deexcitation_rate_per_s"][-tail:])),
+        }
+    return out
+
+
 def neutral_summary(arrays: dict[str, np.ndarray], sim: Simulation, initial_density: float) -> dict[str, Any] | None:
+    if getattr(sim, "spatial_neutrals_on", False):
+        return spatial_neutral_summary(arrays, sim)
     if sim.neutrals is None or "neutral_density_per_m3" not in arrays:
         return None
     inventory = sim.neutrals
@@ -1077,7 +1199,8 @@ def plume_summary(
         centres = 0.5 * (e_edges[:-1] + e_edges[1:])
         mean_energy = float(np.sum(centres * iedf) / iedf.sum())
         peak_energy = float(centres[int(np.argmax(iedf))])
-    feed_kg_per_s = None if config.neutral_inventory is None else config.neutral_inventory.feed_atoms_per_s * XENON_MASS_KG
+    feed_block = config.neutral_inventory if config.neutral_inventory is not None else config.neutrals_spatial   # v2.5.0: either neutral model
+    feed_kg_per_s = None if feed_block is None else feed_block.feed_atoms_per_s * XENON_MASS_KG
     discharge = window_currents.get("discharge_a")
     power_w = None if discharge is None else float(config.potentials.anode_v) * float(discharge)
     isp = None if feed_kg_per_s in (None, 0.0) else thrust_total / (feed_kg_per_s * G0_M_PER_S2)

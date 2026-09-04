@@ -42,6 +42,19 @@ from .ion_mcc import ION_MCC_KEYS, IonNullCollisionMCC
 from .mcc import MCCConfig, NullCollisionMCC, XenonCrossSections, maxwellian_velocity
 from .mesh import MeshMasks, build_mesh_masks, cell_index
 from .neutrals import NeutralInventory, NeutralInventoryConfig, NeutralState
+from .neutrals_spatial import (
+    NEUTRAL_MODEL_INVENTORY_0D,
+    NEUTRAL_MODEL_SPATIAL_V1,
+    NEUTRAL_RNG_STREAM,
+    NEUTRAL_SPATIAL_LEDGER_KEYS,
+    STATE_GROUND,
+    CellSinks,
+    MetastableProcessTable,
+    SpatialNeutralConfig,
+    SpatialNeutrals,
+    SpatialNeutralState,
+    quantised_fraction,
+)
 from .models import (
     ELECTRON_MASS_KG,
     ELEMENTARY_CHARGE_C,
@@ -228,10 +241,25 @@ class PIC2DConfig:
     # v1.4-v2.0.4 behaviour and leaves the configuration identity unchanged; K != 1 enters ``to_dict`` (and so
     # ``config_sha256``) because the window statistics become sampled estimators.  Dynamics never depend on K.
     moment_sample_interval: int = 1
+    # v2.5.0 (neutrals_spatial_v1 + metastables_v1): test-particle neutrals with a per-cell density read by the MCCs;
+    # mutually exclusive with the 0-D ``neutral_inventory`` (which stays the ``inventory-0d`` model, identity unchanged)
+    neutrals_spatial: SpatialNeutralConfig | None = None
 
     def __post_init__(self) -> None:
         if not isfinite(self.dt_s) or self.dt_s <= 0.0:
             raise PIC2DValidationError("dt_s must be positive")
+        if self.neutrals_spatial is not None:
+            if not isinstance(self.neutrals_spatial, SpatialNeutralConfig):
+                raise PIC2DValidationError("neutrals_spatial must be a SpatialNeutralConfig")
+            if self.neutral_inventory is not None:
+                raise PIC2DValidationError("neutrals_spatial and neutral_inventory are mutually exclusive neutral models")
+            if self.mcc is None or self.mcc.neutral_density_per_m3 <= 0.0:
+                raise PIC2DValidationError("neutrals_spatial requires an MCC configuration with a positive ceiling density")
+            k = self.neutrals_spatial.substep_steps
+            if self.sync_steps % k != 0 or self.series_interval_steps % k != 0:
+                raise PIC2DValidationError("neutrals_spatial.substep_steps must divide device_sync_steps and series_interval_steps")
+            if self.neutrals_spatial.metastables is not None and self.mcc.collision_set is None:
+                raise PIC2DValidationError("metastables_v1 needs a declared collision set (the excitation levels the branching refers to)")
         if isinstance(self.moment_sample_interval, bool) or not isinstance(self.moment_sample_interval, int) or self.moment_sample_interval < 1:
             raise PIC2DValidationError("moment_sample_interval must be a positive integer")
         if self.plume_boundary_gate is not None and not self.grid.geometry.has_plume:
@@ -299,9 +327,25 @@ class PIC2DConfig:
           | ({} if self.coulomb is None else {"coulomb": self.coulomb.to_dict()}) \
           | ({} if self.cathode is None else {"cathode": self.cathode.to_dict()}) \
           | ({} if self.plume_boundary_gate is None else {"plume_boundary_gate": self.plume_boundary_gate.to_dict()}) \
-          | ({} if self.moment_sample_interval == 1 else {"moment_sample_interval": self.moment_sample_interval})
+          | ({} if self.moment_sample_interval == 1 else {"moment_sample_interval": self.moment_sample_interval}) \
+          | ({} if self.neutrals_spatial is None else {"neutrals_spatial": self.neutrals_spatial.to_dict()})
         # (each key is present only when its option is on, so v1.0-v1.3 config identities are unchanged;
-        #  v2.0.5: K = 1 keeps every v2.0.x identity, K != 1 is part of the identity)
+        #  v2.0.5: K = 1 keeps every v2.0.x identity, K != 1 is part of the identity;
+        #  v2.5.0: the spatial neutral block (model name + parameters) enters only when declared)
+
+    @property
+    def neutral_model(self) -> str:
+        """v2.5.0: ``inventory-0d`` (v1.3 closure, or a static background), or ``neutrals_spatial_v1``."""
+
+        return NEUTRAL_MODEL_SPATIAL_V1 if self.neutrals_spatial is not None else NEUTRAL_MODEL_INVENTORY_0D
+
+    @property
+    def spatial_neutrals_active(self) -> bool:
+        return self.neutrals_spatial is not None
+
+    @property
+    def metastables_active(self) -> bool:
+        return self.neutrals_spatial is not None and self.neutrals_spatial.metastables is not None
 
     @property
     def see_active(self) -> bool:
@@ -360,12 +404,15 @@ class SimulationState:
     cumulative: dict[str, float]
     # v1.3: the neutral inventory (None when the background is static)
     neutral: NeutralState | None = None
+    # v2.5.0: the spatial neutral particle state (None unless ``neutrals_spatial`` is configured)
+    neutral_particles: SpatialNeutralState | None = None
 
     def copy(self) -> "SimulationState":
         return SimulationState(
             self.step, self.time_s, self.electrons.copy(), self.ions.copy(),
             self.surface_charge_c.copy(), self.phi_v.copy(), self.injection_carry, dict(self.cumulative),
             None if self.neutral is None else self.neutral.copy(),
+            None if self.neutral_particles is None else self.neutral_particles.copy(),
         )
 
 
@@ -667,7 +714,7 @@ def peak_node_debye(
 class DiagnosticAccumulator:
     """Time-window sums of node maps and boundary fluxes (CPU numpy)."""
 
-    def __init__(self, masks: MeshMasks, iedf_max_ev: float = 450.0, see: bool = False, coulomb: bool = False) -> None:
+    def __init__(self, masks: MeshMasks, iedf_max_ev: float = 450.0, see: bool = False, coulomb: bool = False, neutrals: bool = False) -> None:
         self.masks = masks
         shape = masks.grid.node_shape
         nz = masks.grid.axial_cells
@@ -686,6 +733,12 @@ class DiagnosticAccumulator:
         self.coulomb_ei_s = np.zeros(shape)
         self.coulomb_ei_pairs = np.zeros(shape)
         self.coulomb_electron_seconds = np.zeros(shape)
+        # v2.5.0: cell-centred neutral / metastable density sums over the published neutral sub-steps of the window
+        # (present only with neutrals_spatial_v1; ``neutral_samples`` counts the sub-steps)
+        self.neutrals = bool(neutrals)
+        self.neutral_density = np.zeros((nr, nz))
+        self.metastable_density = np.zeros((nr, nz))
+        self.neutral_samples = 0
         # v2.0.5: number of steps at which the electron moments (e_weight, e_v*, e_v2) were deposited; equals
         # ``steps`` for moment_sample_interval = 1.  The moment maps are ratios (v2 / w etc.), so they need no
         # normalisation; the occupancy ``e_weight / moment_samples`` is the mean macro-electron count per node.
@@ -714,7 +767,7 @@ class DiagnosticAccumulator:
         self.iedf_max_ev = float(iedf_max_ev)
 
     def reset(self) -> None:
-        self.__init__(self.masks, self.iedf_max_ev, self.see, self.coulomb)
+        self.__init__(self.masks, self.iedf_max_ev, self.see, self.coulomb, self.neutrals)
 
     # v2.0 frame recorder: the raw window sums, so that an interval [a, b] inside the window is
     # recovered exactly as the difference of two cumulative snapshots (sums are additive)
@@ -728,9 +781,11 @@ class DiagnosticAccumulator:
     # v2.4.0: optional Coulomb sums (present only when the operator is on): per-cell sum of the pair deflection parameter s
     # and pair count for e-e and e-i, and the electron-seconds sum_cycles N_e dt_c (nu_ee = 2 sum s / electron-seconds)
     COULOMB_SUM_KEYS = ("coulomb_ee_s", "coulomb_ee_pairs", "coulomb_ei_s", "coulomb_ei_pairs", "coulomb_electron_seconds")
+    # v2.5.0: optional spatial-neutral sums (cell-centred; present only with neutrals_spatial_v1)
+    NEUTRAL_SUM_KEYS = ("neutral_density", "metastable_density")
 
     # additive scalar counters that ride along with the sums (differenced like them by the frame recorder)
-    COUNT_KEYS = ("steps", "moment_samples")
+    COUNT_KEYS = ("steps", "moment_samples", "neutral_samples")
 
     @classmethod
     def optional_sum_keys(cls) -> tuple[str, ...]:
@@ -739,23 +794,29 @@ class DiagnosticAccumulator:
         return cls.SEE_SUM_KEYS + cls.COULOMB_SUM_KEYS
 
     def sum_keys(self) -> tuple[str, ...]:
-        return self.SUM_KEYS + (self.SEE_SUM_KEYS if self.see else ()) + (self.COULOMB_SUM_KEYS if self.coulomb else ())
+        return (self.SUM_KEYS + (self.SEE_SUM_KEYS if self.see else ()) + (self.COULOMB_SUM_KEYS if self.coulomb else ())
+                + (self.NEUTRAL_SUM_KEYS if self.neutrals else ()))
 
     def raw_sums(self) -> dict[str, np.ndarray]:
         out = {key: np.asarray(getattr(self, key)).copy() for key in self.sum_keys()}
         out["steps"] = np.array([self.steps], dtype=np.int64)
         out["moment_samples"] = np.array([self.moment_samples], dtype=np.int64)
+        if self.neutrals:
+            out["neutral_samples"] = np.array([self.neutral_samples], dtype=np.int64)
         return out
 
     @classmethod
     def from_sums(cls, masks: MeshMasks, sums: Mapping[str, np.ndarray], iedf_max_ev: float = 450.0) -> "DiagnosticAccumulator":
         acc = cls(masks, iedf_max_ev, see=all(key in sums for key in cls.SEE_SUM_KEYS),
-                  coulomb=all(key in sums for key in cls.COULOMB_SUM_KEYS))
+                  coulomb=all(key in sums for key in cls.COULOMB_SUM_KEYS),
+                  neutrals=all(key in sums for key in cls.NEUTRAL_SUM_KEYS))
         for key in acc.sum_keys():
             setattr(acc, key, np.asarray(sums[key], dtype=np.float64).copy())
         acc.steps = int(np.asarray(sums["steps"]).reshape(-1)[0])
         # sums recorded before v2.0.5 carry no sample count: the moments were deposited at every accumulated step
         acc.moment_samples = int(np.asarray(sums["moment_samples"]).reshape(-1)[0]) if "moment_samples" in sums else acc.steps
+        if acc.neutrals:
+            acc.neutral_samples = int(np.asarray(sums["neutral_samples"]).reshape(-1)[0]) if "neutral_samples" in sums else 0
         return acc
 
     def record_exit(self, is_electron: bool, r_m: np.ndarray, z_m: np.ndarray, energy_ev: np.ndarray) -> None:
@@ -804,10 +865,18 @@ class DiagnosticAccumulator:
         solid_angle = 2.0 * pi * (np.cos(theta_edges[:-1]) - np.cos(theta_edges[1:]))
         iedf_edges = np.linspace(0.0, self.iedf_max_ev, IEDF_BINS + 1)
         see_maps: dict[str, np.ndarray] = {}
+        if self.neutrals:
+            # v2.5.0: window-mean cell-centred neutral / metastable densities (nearest-cell deposits of the neutral sub-steps)
+            samples = max(self.neutral_samples, 1)
+            see_maps = {
+                "neutral_density_per_m3": self.neutral_density / samples,
+                "metastable_density_per_m3": self.metastable_density / samples,
+                "neutral_samples": np.array([self.neutral_samples]),
+            }
         if self.see:
             # v2.2.0: emitted flux per wall cell, the effective yield (emitted / impacting per cell; the regime diagnostic
             # against the Hobbs-Wesson limit) and the mean emitted energy
-            see_maps = {
+            see_maps = see_maps | {
                 "wall_see_flux_per_m2_s": self.wall_see_electrons * electron_weight / (wall_area * window_s),
                 "wall_see_effective_yield": np.where(self.wall_electrons > 0, self.wall_see_electrons / np.maximum(self.wall_electrons, 1), 0.0),
                 "wall_see_mean_energy_ev": np.where(
@@ -911,17 +980,28 @@ class CPUBackend:
         self.poisson = Poisson2D(masks, config.poisson)
         self.mcc = None
         self.ion_mcc: IonNullCollisionMCC | None = None
+        # v2.5.0: spatial neutrals (+ metastables): the CPU reference operator, the per-cell sinks the MCCs book into, and
+        # the metastable channels handed to the electron MCC
+        self.spatial: SpatialNeutrals | None = None
+        self.sinks: CellSinks | None = None
+        metastables = None
+        if config.neutrals_spatial is not None:
+            assert config.mcc is not None and cross_sections is not None
+            metastables = build_metastable_table(config, cross_sections)
+            self.spatial = build_spatial_neutrals(config, masks)
+            self.sinks = CellSinks.zeros(self.spatial.n_cells, config.macro_weight)
         if config.mcc is not None:
             if cross_sections is None:
                 raise PIC2DValidationError("MCC requires cross sections")
-            self.mcc = NullCollisionMCC(cross_sections, config.mcc, self.ion)
+            self.mcc = NullCollisionMCC(cross_sections, config.mcc, self.ion, metastables)
             self.ion_mcc = build_ion_mcc(config, self.ion, masks)
         # v2.4.0: Coulomb collision operator (numpy reference; None when off)
         self.coulomb: CoulombOperator | None = None
         if config.coulomb_active:
             self.coulomb = CoulombOperator(config.coulomb, masks.grid, masks, config.macro_weight, ion_mass_kg=self.ion.mass_kg)  # type: ignore[arg-type]
         self.state: SimulationState | None = None
-        self.diagnostics = DiagnosticAccumulator(masks, iedf_max_ev=iedf_max_ev(config), see=config.see_active, coulomb=config.coulomb_active)
+        self.diagnostics = DiagnosticAccumulator(masks, iedf_max_ev=iedf_max_ev(config), see=config.see_active, coulomb=config.coulomb_active,
+                                                 neutrals=config.spatial_neutrals_active)
         self.diagnostic_generation = 0     # v2.0.2: incremented by every reset_diagnostics (window bridging)
         self.quantum_c = ELEMENTARY_CHARGE_C * config.macro_weight
         # v2.2.0: SEE emission of the current step (electron- and ion-induced passes share one RNG stream, 4)
@@ -945,10 +1025,43 @@ class CPUBackend:
         if self.config.coulomb_active:
             for key in COULOMB_KEYS:      # v2.4.0: likewise for the Coulomb tallies
                 self.state.cumulative.setdefault(key, 0.0)
+        if self.spatial is not None:
+            # v2.5.0: the neutral particle state travels with the simulation state; a fresh state gets the declared
+            # initial profile (RNG stream of step 0), and the neutral ledger keys exist from the first record
+            if self.state.neutral_particles is None:
+                self.state.neutral_particles = self.spatial.initial_state(np.random.default_rng([self.config.seed, 0, NEUTRAL_RNG_STREAM]))
+            for key in NEUTRAL_SPATIAL_LEDGER_KEYS:
+                self.state.cumulative.setdefault(key, 0.0)
+            self.sinks = CellSinks.zeros(self.spatial.n_cells, self.config.macro_weight)
+        elif state.neutral_particles is not None:
+            raise PIC2DValidationError("state carries spatial neutrals but the configuration has none")
 
     def export_state(self) -> SimulationState:
         assert self.state is not None
         return self.state.copy()
+
+    def neutral_sample(self) -> dict[str, Any]:
+        """v2.5.0: instantaneous spatial-neutral sample for the series record (atoms, counts, published fields)."""
+
+        assert self.state is not None and self.spatial is not None and self.state.neutral_particles is not None
+        return spatial_neutral_sample(self.spatial, self.state.neutral_particles)
+
+    def _local_neutral_fields(self, r_m: np.ndarray, z_m: np.ndarray) -> tuple[np.ndarray, np.ndarray | None, tuple[np.ndarray, ...]]:
+        """Published per-cell ground density, metastable density and gas moments at the given positions."""
+
+        assert self.state is not None and self.state.neutral_particles is not None and self.spatial is not None
+        neutral = self.state.neutral_particles
+        ci, cj, _, _ = cell_index(self.masks.grid, r_m, z_m)
+        cells = ci * self.spatial.nz + cj
+        meta = neutral.meta_density_per_m3[cells] if self.config.metastables_active else None
+        return neutral.density_per_m3[cells], meta, (neutral.drift_r[cells], neutral.drift_t[cells], neutral.drift_z[cells], neutral.thermal_speed[cells])
+
+    def _book_sink(self, array: np.ndarray, r_m: np.ndarray, z_m: np.ndarray, atoms: np.ndarray | float) -> None:
+        if r_m.size == 0:
+            return
+        assert self.spatial is not None
+        ci, cj, _, _ = cell_index(self.masks.grid, r_m, z_m)
+        np.add.at(array, ci * self.spatial.nz + cj, atoms)
 
     def set_neutral_scale(self, scale: float) -> None:
         """v1.3: real-collision frequency factor ``n_g / n_g0`` (null ceiling fixed at ``n_g0``)."""
@@ -1112,10 +1225,20 @@ class CPUBackend:
             # v2.3.0: Xe+ - Xe CEX / MEX on the pushed ions (before this step's births join), RNG stream 4
             rng_ion = np.random.default_rng([config.seed, state.step, 4])
             shape = None
-            if masks.has_plume:
-                ci, cj, _, _ = cell_index(grid, ions.r_m, ions.z_m)
-                shape = self.neutral_shape_cell[ci, cj]
-            ion_result = self.ion_mcc.apply(ions, dt * config.ion_subcycle, rng_ion, density_shape=shape)
+            if self.spatial is not None:
+                # v2.5.0: the local published density and gas moments; CEX fast neutrals are handed to the neutral model
+                assert self.sinks is not None
+                local, _, moments = self._local_neutral_fields(ions.r_m, ions.z_m)
+                ion_result = self.ion_mcc.apply(ions, dt * config.ion_subcycle, rng_ion, density_per_particle=local, neutral_moments=moments,
+                                                hand_off_fast_neutrals=True)
+                if ion_result.fast_neutrals.count:
+                    self.sinks.fast_neutrals = self.sinks.fast_neutrals.append(ion_result.fast_neutrals)
+                    self._book_sink(self.sinks.ground_cex, ion_result.cex_r_m, ion_result.cex_z_m, config.macro_weight)
+            else:
+                if masks.has_plume:
+                    ci, cj, _, _ = cell_index(grid, ions.r_m, ions.z_m)
+                    shape = self.neutral_shape_cell[ci, cj]
+                ion_result = self.ion_mcc.apply(ions, dt * config.ion_subcycle, rng_ion, density_shape=shape)
             ions = ion_result.ions
             for key, value in ion_result.tally.to_cumulative().items():
                 add(key, value)
@@ -1136,10 +1259,27 @@ class CPUBackend:
         if self.mcc is not None and electrons.count:
             rng = np.random.default_rng([config.seed, state.step, 1])
             shape = None
-            if masks.has_plume:
-                ci, cj, _, _ = cell_index(grid, electrons.r_m, electrons.z_m)
-                shape = self.neutral_shape_cell[ci, cj]
-            mcc_result = self.mcc.apply(electrons, dt, rng, density_shape=shape)
+            if self.spatial is not None:
+                # v2.5.0: the published per-cell fields at the electron positions; the events book per-cell atom sinks
+                assert self.sinks is not None
+                local, meta_local, moments = self._local_neutral_fields(electrons.r_m, electrons.z_m)
+                mcc_result = self.mcc.apply(electrons, dt, rng, density_per_particle=local, metastable_density_per_particle=meta_local,
+                                            neutral_moments=moments)
+                weight = config.macro_weight
+                self._book_sink(self.sinks.ground_ionization, mcc_result.ionization_r_m, mcc_result.ionization_z_m, weight)
+                if config.metastables_active and mcc_result.excitation_r_m.size:
+                    # the branching enters as the sink bookkeeping quantises it (rint(b 2**20) / 2**20, as the device counts)
+                    branching = np.asarray([quantised_fraction(b) for b in config.neutrals_spatial.metastables.branching])[mcc_result.excitation_level]   # type: ignore[union-attr]
+                    self._book_sink(self.sinks.ground_excitation, mcc_result.excitation_r_m, mcc_result.excitation_z_m, weight * branching)
+                self._book_sink(self.sinks.meta_ionization, mcc_result.stepwise_r_m, mcc_result.stepwise_z_m, weight)
+                self._book_sink(self.sinks.meta_superelastic, mcc_result.superelastic_r_m, mcc_result.superelastic_z_m, weight)
+                add("stepwise_ionizations", mcc_result.tally.stepwise_ionization)
+                add("superelastic", mcc_result.tally.superelastic)
+            else:
+                if masks.has_plume:
+                    ci, cj, _, _ = cell_index(grid, electrons.r_m, electrons.z_m)
+                    shape = self.neutral_shape_cell[ci, cj]
+                mcc_result = self.mcc.apply(electrons, dt, rng, density_shape=shape)
             add("pz_collisions", self.electron.mass_kg * config.macro_weight
                 * float(np.sum(mcc_result.electrons.vz_m_per_s - electrons.vz_m_per_s)))
             electrons = mcc_result.electrons
@@ -1155,7 +1295,8 @@ class CPUBackend:
                     self.diagnostics.ionization += kernels.deposit_node_moment(
                         masks, mcc_result.new_ions, np.ones(mcc_result.new_ions.count)
                     )
-            state.cumulative["ionizations"] += tally.ionization
+            # v2.5.0: ``ionizations`` counts every ion birth (ground + stepwise) so the particle-count identity holds
+            state.cumulative["ionizations"] += tally.ionization + tally.stepwise_ionization
             state.cumulative["excitations"] += tally.excitation
             state.cumulative["elastic"] += tally.elastic
             if len(tally.excitation_levels) > 1:      # v2.3.0: per-level counts (extra keys, multi-level sets only)
@@ -1179,6 +1320,14 @@ class CPUBackend:
             if emitted.count:
                 electrons = electrons.append(emitted)
         self._see_emitted = []
+
+        if self.spatial is not None and (state.step + 1) % config.neutrals_spatial.substep_steps == 0:   # type: ignore[union-attr]
+            # v2.5.0: the neutral sub-step (deplete by the booked sinks -> spawn -> free flight -> publish), RNG stream 6
+            assert self.sinks is not None and state.neutral_particles is not None
+            rng_n = np.random.default_rng([config.seed, state.step, NEUTRAL_RNG_STREAM])
+            substep = self.spatial.substep(state.neutral_particles, self.sinks, rng_n, accumulate=accumulate, diagnostics=self.diagnostics)
+            for key, value in substep.values.items():
+                add(key, value)
 
         state.electrons = electrons
         state.ions = ions
@@ -1237,6 +1386,15 @@ class CPUBackend:
             state.cumulative[energy_key] += float(ke[mask].sum())
             momentum_key = f"pz_{name}_{label}"
             state.cumulative[momentum_key] = state.cumulative.get(momentum_key, 0.0) + mass_weight * float(moved.vz_m_per_s[mask].sum())
+            if not is_electron and self.spatial is not None and code != kernels.BOUNDARY_EXIT and self.config.neutrals_spatial.wall_recycling:  # type: ignore[union-attr]
+                # v2.5.0: wall / anode ions recycle as thermal atoms AT THE IMPACT CELL (the ion's last plasma cell); hits on
+                # the thruster front face of a plume geometry are not channel-wall hits and are not recycled (as v2.0)
+                recycled = mask.copy()
+                if code == kernels.BOUNDARY_WALL and grid.geometry.has_plume:
+                    recycled &= moved.r_m < grid.geometry.exit_radius_m
+                assert self.sinks is not None
+                self._book_sink(self.sinks.recycle, before.r_m[recycled], before.z_m[recycled],
+                                quantised_fraction(self.config.neutrals_spatial.recombination_coefficient) * species.macro_weight)   # type: ignore[union-attr]
             if code == kernels.BOUNDARY_WALL:
                 charge = np.full(count, species.charge_c * species.macro_weight)
                 if self.config.see_active:
@@ -1357,6 +1515,57 @@ def build_ion_mcc(config: PIC2DConfig, ion: Species2D, masks: MeshMasks) -> IonN
         return None
     ion_config = config.mcc.collision_set.ion_neutral
     return IonNullCollisionMCC(ion_config.load(), config.mcc, ion_config, ion, masks)
+
+
+def build_metastable_table(config: PIC2DConfig, cross_sections: XenonCrossSections) -> MetastableProcessTable | None:
+    """v2.5.0: the metastable channels of the electron MCC (None unless ``metastables_v1`` is declared)."""
+
+    if config.neutrals_spatial is None or config.neutrals_spatial.metastables is None:
+        return None
+    assert config.mcc is not None
+    return MetastableProcessTable.build(cross_sections, config.neutrals_spatial.metastables, ground_ceiling_per_m3=config.mcc.neutral_density_per_m3,
+                                        energy_step_ev=config.mcc.energy_step_ev, energy_max_ev=config.mcc.energy_max_ev)
+
+
+def build_spatial_neutrals(config: PIC2DConfig, masks: MeshMasks) -> SpatialNeutrals:
+    """v2.5.0: the spatial neutral operator (shared by both backends: the Warp backend uses it for the initial state and records)."""
+
+    assert config.neutrals_spatial is not None and config.mcc is not None
+    return SpatialNeutrals(config.neutrals_spatial, masks, temperature_k=config.mcc.neutral_temperature_k,
+                           ceiling_density_per_m3=config.mcc.neutral_density_per_m3, dt_s=config.dt_s, ion_macro_weight=config.macro_weight)
+
+
+def spatial_neutral_sample(spatial: SpatialNeutrals, neutral: SpatialNeutralState) -> dict[str, Any]:
+    """v2.5.0: the instantaneous neutral sample shared by both backends' series records."""
+
+    particles = neutral.particles
+    ground = particles.state == STATE_GROUND
+    n_g = float(particles.weight[ground].sum()) if particles.count else 0.0
+    n_m = float(particles.weight[~ground].sum()) if particles.count else 0.0
+    masks = spatial.masks
+    channel = (masks.plasma_cell & ~masks.plume_cell).ravel() if masks.has_plume else masks.plasma_cell.ravel()
+    volume = float(spatial.cell_volume[channel].sum())
+    density = neutral.density_per_m3
+    channel_atoms = float(np.sum(density[channel] * spatial.cell_volume[channel]))
+    axis = density.reshape(spatial.nr, spatial.nz)[0]
+    return {
+        "atoms_ground": n_g,
+        "atoms_metastable": n_m,
+        "true_atoms_ground": neutral.true_ground_atoms(),
+        "true_atoms_metastable": neutral.true_meta_atoms(),
+        "macro_neutrals": int(np.count_nonzero(ground)),
+        "macro_metastables": int(np.count_nonzero(~ground)),
+        "channel_mean_density_per_m3": channel_atoms / volume if volume > 0.0 else 0.0,
+        "channel_mean_metastable_density_per_m3": float(np.sum(neutral.meta_density_per_m3[channel] * spatial.cell_volume[channel])) / volume if volume > 0.0 else 0.0,
+        "density_max_per_m3": float(density.max()) if density.size else 0.0,
+        "axis_density_anode_per_m3": float(axis[0]),
+        "axis_density_exit_per_m3": float(axis[min(int(round(spatial.geometry.channel_length_m / spatial.grid.dz_m)) - 1, spatial.nz - 1)]),
+        "debt_ground_atoms": float(neutral.debt_ground.sum()),
+        "debt_meta_atoms": float(neutral.debt_meta.sum() + neutral.debt_meta_super.sum()),
+        "pending_atoms": float(neutral.pending_feed.sum() + neutral.pending_recycle.sum() + neutral.pending_return.sum() + neutral.pending_meta.sum()),
+        "neutral_time_s": neutral.neutral_time_s,
+        "substeps": neutral.substeps,
+    }
 
 
 def injection_sample(config: PIC2DConfig, masks: MeshMasks, u: np.ndarray) -> ParticleArrays:
@@ -2009,7 +2218,11 @@ class Simulation:
                 self.ion_mcc_on = getattr(config.mcc.collision_set, "ion_neutral", None) is not None
             elif not cross_sections.is_legacy_set:
                 raise PIC2DValidationError("a multi-level cross-section set must be declared through MCCConfig.collision_set (identity)")
-            probability = NullCollisionMCC(cross_sections, config.mcc, xenon_ion_species(config.macro_weight)).collision_probability(config.dt_s)
+            probability = NullCollisionMCC(cross_sections, config.mcc, xenon_ion_species(config.macro_weight),
+                                           build_metastable_table(config, cross_sections)).collision_probability(config.dt_s)
+        # v2.5.0: the spatial neutral model needs the MCC (its density is the ceiling) - validated by PIC2DConfig
+        self.spatial_neutrals_on = config.spatial_neutrals_active
+        self._last_neutral_sample: dict[str, Any] | None = None
         self.stability = require_stable(
             stability_report(
                 config.grid, config.dt_s,
@@ -2074,12 +2287,19 @@ class Simulation:
                                                       float(gate.min_macro_particles_at_peak),
                                                       gate.min_accumulated_macro_particle_steps_at_peak)   # v2.0.6 floor (None: v2.0.3)
             self._peak_debye_window.reset(self.backend.peak_window_sums(), self.backend.step_index)
+        if self.spatial_neutrals_on:
+            # v2.5.0: the atom-ledger identity of the first interval differences against the initial neutral state
+            self._last_neutral_sample = self.backend.neutral_sample()
 
     @property
     def state(self) -> SimulationState:
         state = self.backend.export_state()
         state.neutral = None if self.neutral_state is None else self.neutral_state.copy()
         return state
+
+    @property
+    def neutral_model(self) -> str:
+        return self.config.neutral_model
 
     def load_state(self, state: SimulationState) -> None:
         """Load a (checkpoint) state and re-base the interval bookkeeping on it.
@@ -2113,6 +2333,8 @@ class Simulation:
             self.backend.set_neutral_scale(self.neutrals.scale(self.neutral_state))
         elif state.neutral is not None:
             raise PIC2DValidationError("state carries a neutral inventory but the configuration is a static background")
+        if self.spatial_neutrals_on:
+            self._last_neutral_sample = self.backend.neutral_sample()
 
     def run(self, steps: int, *, accumulate_from_step: int | None = None, progress: Any = None) -> SimulationState:
         """Advance ``steps`` cycles; accumulate diagnostics from ``accumulate_from_step`` on."""
@@ -2291,6 +2513,8 @@ class Simulation:
             }
             if fast_neutral_exit_rate is not None:
                 neutral["fast_neutral_exit_rate_per_s"] = advance.fast_neutral_exit_rate_per_s
+        elif self.spatial_neutrals_on:
+            neutral = self._spatial_neutral_record(extra, delta, interval, currents)
         # v1.4: peak-node Debye sample (blocker 1): the grid must resolve the PEAK, not the mean
         gate = config.peak_debye_gate
         peak_node = self.backend.peak_node_sample()
@@ -2350,6 +2574,98 @@ class Simulation:
                 f"averaged over {window_peak['window_steps']} steps (<n_e> {window_peak['n_e_peak_per_m3']:.3g} m^-3, "
                 f"T_e {window_peak['t_e_peak_ev']:.3g} eV) exceeds {gate.max_cells_per_debye}"
             )
+
+    # -- v2.5.0 spatial neutral block -----------------------------------------------
+    def _spatial_neutral_record(self, extra: Any, delta: Mapping[str, float], interval: float, currents: dict[str, Any]) -> dict[str, Any]:
+        """Interval record of ``neutrals_spatial_v1`` (+ ``metastables_v1``) with the atom-ledger identity check.
+
+        The ledger runs in NEUTRAL time (``F`` x real); the plasma-coupled terms divided by ``F`` are the real-time rates the
+        0-D balance ``V dn/dt = Q + R - S - F_cex - c n`` speaks of.  The identity closes on the TRUE counts (particles +
+        un-spawned carries - un-removed debts): ``d(true ground) = fed + recycled + fast_in + returned - ionized -
+        cex_converted - excited_to_pool - effused`` and ``d(true meta) = excited_to_pool - meta_ionized - meta_superelastic -
+        meta_wall - meta_radiative - meta_effused``, both to round-off (the debt / carry terms make it exact); a non-zero
+        residual is a backend bug.  ``ceiling_violations`` > 0 fails closed (a cell above the null-collision ceiling).
+        """
+
+        config = self.config
+        assert config.neutrals_spatial is not None
+        sample = self.backend.neutral_sample()
+        f_acc = config.neutrals_spatial.time_acceleration
+        weight = config.macro_weight
+        ledger = {key: extra(key) for key in NEUTRAL_SPATIAL_LEDGER_KEYS}
+        cell_substeps = float(np.count_nonzero(self.masks.plasma_cell)) * max(ledger["neutral_substeps"], 1.0)
+        violation_fraction = ledger["neutral_ceiling_violations"] / cell_substeps
+        if violation_fraction > config.neutrals_spatial.max_ceiling_violation_fraction:
+            raise PIC2DStabilityError(
+                f"spatial neutral density exceeded the null-collision ceiling in {ledger['neutral_ceiling_violations']:.0f} cell-substeps "
+                f"({violation_fraction:.2e} of the interval's plasma cell-substeps; limit {config.neutrals_spatial.max_ceiling_violation_fraction:.1e}) - "
+                "raise mcc.neutral_density_per_m3: the Knudsen anode density is several times the exit density"
+            )
+        previous = self._last_neutral_sample
+        residual_g = residual_m = 0.0
+        if previous is not None:
+            d_ground = sample["true_atoms_ground"] - previous["true_atoms_ground"]
+            d_meta = sample["true_atoms_metastable"] - previous["true_atoms_metastable"]
+            residual_g = d_ground - (ledger["neutral_fed"] + ledger["neutral_recycled"] + ledger["neutral_fast_in"] + ledger["neutral_returned"]
+                                     + ledger["meta_wall_deexcited"] + ledger["meta_radiative"]
+                                     - ledger["neutral_ionized"] - ledger["neutral_cex_converted"] - ledger["neutral_excited_to_pool"]
+                                     - ledger["neutral_effused"])
+            residual_m = d_meta - (ledger["neutral_excited_to_pool"] - ledger["meta_ionized"] - ledger["meta_superelastic"]
+                                   - ledger["meta_wall_deexcited"] - ledger["meta_radiative"] - ledger["meta_effused"])
+        self._last_neutral_sample = sample
+        feed = config.neutrals_spatial.feed_atoms_per_s
+        real = lambda key: ledger[key] / (f_acc * interval)  # noqa: E731   real-time rate of a neutral-time ledger term
+        s_real = currents["ionization_rate_per_s"]
+        record: dict[str, Any] = {
+            "model": NEUTRAL_MODEL_SPATIAL_V1,
+            "time_acceleration": f_acc,
+            "neutral_time_s": sample["neutral_time_s"],
+            "substeps": sample["substeps"],
+            "density_per_m3": sample["channel_mean_density_per_m3"],          # channel-mean of the published field (the 0-D analogue)
+            "atoms_ground": sample["atoms_ground"],
+            "atoms_metastable": sample["atoms_metastable"],
+            "macro_neutrals": sample["macro_neutrals"],
+            "macro_metastables": sample["macro_metastables"],
+            "density_max_per_m3": sample["density_max_per_m3"],
+            "axis_density_anode_per_m3": sample["axis_density_anode_per_m3"],
+            "axis_density_exit_per_m3": sample["axis_density_exit_per_m3"],
+            "feed_atoms_per_s": feed,
+            "ionization_rate_per_s": s_real,
+            "effusion_rate_per_s": real("neutral_effused"),
+            "recycled_rate_per_s": real("neutral_recycled"),
+            "fast_neutral_in_rate_per_s": real("neutral_fast_in"),
+            "cex_converted_rate_per_s": real("neutral_cex_converted"),
+            "wall_ion_absorption_rate_per_s": (delta["wall_ions"] + delta["anode_ions"] - extra("body_face_ions")) * weight / interval,
+            "gross_utilisation": s_real / feed,
+            "net_utilisation": (s_real - real("neutral_recycled")) / feed,
+            "neutral_exit_thrust_n": ledger["neutral_pz_exit"] / (f_acc * interval),
+            "neutral_exit_power_w": ledger["neutral_ke_exit_j"] / (f_acc * interval),
+            "neutral_wall_force_n": ledger["neutral_pz_wall"] / (f_acc * interval),
+            "debt_ground_atoms": sample["debt_ground_atoms"],
+            "debt_meta_atoms": sample["debt_meta_atoms"],
+            "pending_atoms": sample["pending_atoms"],
+            "ceiling_violation_fraction": violation_fraction,
+            "interval_ledger_residual_atoms": residual_g,
+            "interval_meta_ledger_residual_atoms": residual_m,
+            "sink_consistency_atoms": ledger["neutral_ionized"] - f_acc * weight * (delta["ionizations"] - extra("stepwise_ionizations")),
+            "ledger": {key: float(self._last_cumulative.get(key, 0.0) + ledger[key]) for key in NEUTRAL_SPATIAL_LEDGER_KEYS},
+            "interval_ledger": ledger,
+        }
+        if config.metastables_active:
+            n_g = sample["channel_mean_density_per_m3"]
+            record["metastables"] = {
+                "model": "metastables_v1",
+                "channel_mean_density_per_m3": sample["channel_mean_metastable_density_per_m3"],
+                "fraction_of_ground": sample["channel_mean_metastable_density_per_m3"] / n_g if n_g > 0.0 else 0.0,
+                "production_rate_per_s": real("neutral_excited_to_pool"),
+                "stepwise_ionization_rate_per_s": extra("stepwise_ionizations") * weight / interval,
+                "superelastic_rate_per_s": extra("superelastic") * weight / interval,
+                "wall_deexcitation_rate_per_s": real("meta_wall_deexcited"),
+                "radiative_rate_per_s": real("meta_radiative"),
+                "effusion_rate_per_s": real("meta_effused"),
+                "stepwise_fraction_of_ionization": (extra("stepwise_ionizations") / delta["ionizations"]) if delta["ionizations"] > 0 else 0.0,
+            }
+        return record
 
     # -- v2.2.0 SEE block ----------------------------------------------------------
     def _see_record(self, extra: Any, delta: Mapping[str, float], interval: float, current_unit: float, phi: np.ndarray,

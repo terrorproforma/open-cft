@@ -23,7 +23,7 @@ live in ``cft_revival.pic2d.ion_mcc``.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from hashlib import sha256
 import json
 from math import exp, isfinite, pi, sqrt
@@ -308,6 +308,10 @@ class MCCTally:
     inelastic_energy_loss_j: float
     # v2.3.0: per-level excitation counts in table order (``sum == excitation``; one entry for the legacy set)
     excitation_levels: tuple[int, ...] = ()
+    # v2.5.0 (metastables_v1): electron-impact channels on the metastable pool; ``ionization`` counts GROUND births only,
+    # the stepwise births are separate (both spawn an ion + a secondary electron)
+    stepwise_ionization: int = 0
+    superelastic: int = 0
 
     def to_dict(self) -> dict[str, object]:
         record: dict[str, object] = {
@@ -320,7 +324,21 @@ class MCCTally:
         }
         if len(self.excitation_levels) > 1:
             record["excitation_levels"] = list(self.excitation_levels)
+        if self.stepwise_ionization or self.superelastic:
+            record["stepwise_ionization"] = self.stepwise_ionization
+            record["superelastic"] = self.superelastic
         return record
+
+
+def _empty_f64() -> np.ndarray:
+    return np.zeros(0, dtype=np.float64)
+
+
+def _empty_i64() -> np.ndarray:
+    return np.zeros(0, dtype=np.int64)
+
+
+_EMPTY = np.zeros(0, dtype=np.float64)
 
 
 @dataclass(frozen=True, slots=True)
@@ -331,6 +349,15 @@ class MCCResult:
     ionization_r_m: np.ndarray
     ionization_z_m: np.ndarray
     tally: MCCTally
+    # v2.5.0: event positions the spatial neutral model books as per-cell atom sinks (empty for the legacy operator paths).
+    # ``new_ions`` = ground births (``ionization_r_m``) followed by the stepwise births (``stepwise_r_m``).
+    excitation_r_m: np.ndarray = field(default_factory=_empty_f64)
+    excitation_z_m: np.ndarray = field(default_factory=_empty_f64)
+    excitation_level: np.ndarray = field(default_factory=_empty_i64)
+    stepwise_r_m: np.ndarray = field(default_factory=_empty_f64)
+    stepwise_z_m: np.ndarray = field(default_factory=_empty_f64)
+    superelastic_r_m: np.ndarray = field(default_factory=_empty_f64)
+    superelastic_z_m: np.ndarray = field(default_factory=_empty_f64)
 
 
 def isotropic_velocity(speed: np.ndarray, u1: np.ndarray, u2: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
@@ -355,7 +382,7 @@ def maxwellian_velocity(mass_kg: float, temperature_k: float, u: np.ndarray) -> 
 class NullCollisionMCC:
     """CPU reference null-collision operator for electrons on a static neutral background."""
 
-    def __init__(self, cross_sections: XenonCrossSections, config: MCCConfig, ion_species: Species2D) -> None:
+    def __init__(self, cross_sections: XenonCrossSections, config: MCCConfig, ion_species: Species2D, metastables: Any | None = None) -> None:
         self.cross_sections = cross_sections
         self.config = config
         self.ion_species = ion_species
@@ -363,6 +390,13 @@ class NullCollisionMCC:
             cross_sections, energy_step_ev=config.energy_step_ev, energy_max_ev=config.energy_max_ev
         )
         self.nu_max = maximum_collision_frequency(self.table, config.neutral_density_per_m3)
+        # v2.5.0 (metastables_v1): two extra channels on the LOCAL metastable density (stepwise ionisation, superelastic
+        # de-excitation; ``neutrals_spatial.MetastableProcessTable``).  Their ceiling frequency at the declared metastable
+        # ceiling adds to nu_max; without the block (None) every legacy identity and random-number consumption is unchanged.
+        self.metastables = metastables
+        self.nu_max_ground = self.nu_max
+        if metastables is not None:
+            self.nu_max = self.nu_max_ground + metastables.maximum_collision_frequency()
         # v1.3: the instantaneous neutral density is ``neutral_scale * config.neutral_density_per_m3``;
         # the null-collision ceiling ``nu_max`` stays at the configured density, so the scale
         # must not exceed 1 (fail closed).
@@ -382,12 +416,21 @@ class NullCollisionMCC:
 
     def apply(
         self, electrons: ParticleArrays, dt_s: float, rng: np.random.Generator, *, density_shape: np.ndarray | None = None,
+        density_per_particle: np.ndarray | None = None, metastable_density_per_particle: np.ndarray | None = None,
+        neutral_moments: tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray] | None = None,
     ) -> MCCResult:
         """One null-collision step.
 
         ``density_shape`` (v2.0, optional, per particle in [0, 1]) multiplies the neutral
         density at each electron's position (the two-zone channel/plume field); the null
         ceiling stays at the configured density, so the shape must not exceed 1.
+
+        v2.5.0 (``neutrals_spatial_v1``): ``density_per_particle`` is the ABSOLUTE local ground density
+        at each electron (the published cell field, <= the ceiling); it replaces ``n_g0 x scale x shape``.
+        ``metastable_density_per_particle`` drives the two metastable channels (requires the operator to
+        have been built with a ``MetastableProcessTable``).  ``neutral_moments`` = per-particle
+        ``(u_r, u_theta, u_z, v_th)`` of the local gas; the born ion's velocity is drawn from that
+        drifting Maxwellian (``v_th = 0``: the feed temperature, as the legacy path).
         """
 
         count = electrons.count
@@ -405,7 +448,13 @@ class NullCollisionMCC:
         speed = np.sqrt(vx * vx + vy * vy + vz * vz)
         sigma = self.table.lookup(energy)  # (3, N)
         density = self.neutral_density_per_m3
-        if density_shape is not None:
+        if density_per_particle is not None:
+            local = np.asarray(density_per_particle, dtype=np.float64)
+            if local.shape != (count,) or not np.isfinite(local).all() or np.any(local < 0.0) \
+                    or np.any(local > self.config.neutral_density_per_m3 * (1.0 + 1e-9)):
+                raise PIC2DValidationError("local neutral density must be per particle within [0, n_g0] (null-collision ceiling)")
+            density = local
+        elif density_shape is not None:
             shape = np.asarray(density_shape, dtype=np.float64)
             if shape.shape != (count,) or not np.isfinite(shape).all() or np.any(shape < 0.0) or np.any(shape > 1.0 + 1e-12):
                 raise PIC2DValidationError("neutral density shape must be per particle in [0, 1]")
@@ -427,7 +476,23 @@ class NullCollisionMCC:
         excitation = levels[0]
         for chosen in levels[1:]:
             excitation = excitation | chosen
-        null = candidate & ~(elastic | excitation | ionization)
+        # v2.5.0: the metastable channels follow the ground processes in the selector chain (stepwise, then superelastic)
+        stepwise = np.zeros(count, dtype=bool)
+        superelastic = np.zeros(count, dtype=bool)
+        if self.metastables is not None and metastable_density_per_particle is not None:
+            n_m = np.asarray(metastable_density_per_particle, dtype=np.float64)
+            if n_m.shape != (count,) or not np.isfinite(n_m).all() or np.any(n_m < 0.0) \
+                    or np.any(n_m > self.metastables.ceiling_density_per_m3 * (1.0 + 1e-9)):
+                raise PIC2DValidationError("local metastable density must be per particle within [0, n_m0] (null-collision ceiling)")
+            sigma_m = self.metastables.table.lookup(energy)      # (2, N): stepwise (0 below threshold), superelastic
+            nu_step = n_m * sigma_m[0] * speed
+            nu_super = n_m * sigma_m[1] * speed
+            c_step = cumulative[-1] + nu_step
+            c_super = c_step + nu_super
+            stepwise = candidate & ~assigned & (selector < c_step)
+            assigned = assigned | stepwise
+            superelastic = candidate & ~assigned & (selector < c_super)
+        null = candidate & ~(elastic | excitation | ionization | stepwise | superelastic)
         thresholds = self.table.thresholds_ev
         # Elastic: isotropic, same speed.
         if np.any(elastic):
@@ -443,21 +508,48 @@ class NullCollisionMCC:
         new_ions = ParticleArrays.empty()
         ion_r = np.zeros(0)
         ion_z = np.zeros(0)
-        if np.any(ionization):
-            available = np.maximum(energy[ionization] - thresholds[-1], 0.0)
-            secondary = VAHEDI_SURENDRA_B_EV * np.tan(u[4][ionization] * np.arctan(available / (2.0 * VAHEDI_SURENDRA_B_EV)))
+
+        def born_ion_velocity(mask: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+            if neutral_moments is None:
+                return maxwellian_velocity(self.ion_species.mass_kg, self.config.neutral_temperature_k, u[7:11][:, mask])
+            # v2.5.0: the local gas (drift + thermal speed of the neutral deposit; v_th = 0 -> the feed temperature)
+            u_r, u_t, u_z, v_th = (np.asarray(m, dtype=np.float64)[mask] for m in neutral_moments)
+            feed = sqrt(BOLTZMANN_J_PER_K * self.config.neutral_temperature_k / self.ion_species.mass_kg)
+            thermal = np.where(v_th > 0.0, v_th, feed)
+            gx, gy, gz = maxwellian_velocity(1.0, 1.0 / BOLTZMANN_J_PER_K, u[7:11][:, mask])   # unit-variance Gaussians
+            return u_r + thermal * gx, u_t + thermal * gy, u_z + thermal * gz
+
+        def births(mask: np.ndarray, threshold: float) -> tuple[ParticleArrays, ParticleArrays]:
+            available = np.maximum(energy[mask] - threshold, 0.0)
+            secondary = VAHEDI_SURENDRA_B_EV * np.tan(u[4][mask] * np.arctan(available / (2.0 * VAHEDI_SURENDRA_B_EV)))
             secondary = np.clip(secondary, 0.0, available)
             primary = available - secondary
-            pvx, pvy, pvz = isotropic_velocity(electron_speed_from_energy(primary), u[2][ionization], u[3][ionization])
-            vx[ionization], vy[ionization], vz[ionization] = pvx, pvy, pvz
-            svx, svy, svz = isotropic_velocity(electron_speed_from_energy(secondary), u[5][ionization], u[6][ionization])
-            ion_r = electrons.r_m[ionization].copy()
-            ion_z = electrons.z_m[ionization].copy()
-            new_electrons = ParticleArrays(ion_r.copy(), ion_z.copy(), svx, svy, svz)
-            ivx, ivy, ivz = maxwellian_velocity(
-                self.ion_species.mass_kg, self.config.neutral_temperature_k, u[7:11][:, ionization]
-            )
-            new_ions = ParticleArrays(ion_r.copy(), ion_z.copy(), ivx, ivy, ivz)
+            pvx, pvy, pvz = isotropic_velocity(electron_speed_from_energy(primary), u[2][mask], u[3][mask])
+            vx[mask], vy[mask], vz[mask] = pvx, pvy, pvz
+            svx, svy, svz = isotropic_velocity(electron_speed_from_energy(secondary), u[5][mask], u[6][mask])
+            b_r = electrons.r_m[mask].copy()
+            b_z = electrons.z_m[mask].copy()
+            ivx, ivy, ivz = born_ion_velocity(mask)
+            return ParticleArrays(b_r.copy(), b_z.copy(), svx, svy, svz), ParticleArrays(b_r, b_z, ivx, ivy, ivz)
+
+        if np.any(ionization):
+            new_electrons, new_ions = births(ionization, thresholds[-1])
+            ion_r = new_ions.r_m.copy()
+            ion_z = new_ions.z_m.copy()
+        step_r = step_z = super_r = super_z = _EMPTY
+        n_step = int(np.count_nonzero(stepwise))
+        n_super = int(np.count_nonzero(superelastic))
+        if n_step:
+            step_e, step_i = births(stepwise, self.metastables.stepwise_threshold_ev)
+            step_r, step_z = step_i.r_m.copy(), step_i.z_m.copy()
+            new_electrons = new_electrons.append(step_e)
+            new_ions = new_ions.append(step_i)
+        if n_super:
+            # the electron gains the pool energy, isotropic redirect; the atom returns to the ground pool (booked by the caller)
+            gained = energy[superelastic] + self.metastables.pool_energy_ev
+            nvx, nvy, nvz = isotropic_velocity(electron_speed_from_energy(gained), u[2][superelastic], u[3][superelastic])
+            vx[superelastic], vy[superelastic], vz[superelastic] = nvx, nvy, nvz
+            super_r, super_z = electrons.r_m[superelastic].copy(), electrons.z_m[superelastic].copy()
         level_counts = tuple(int(np.count_nonzero(chosen)) for chosen in levels)
         n_exc = sum(level_counts)
         n_ion = int(np.count_nonzero(ionization))
@@ -467,8 +559,19 @@ class NullCollisionMCC:
         for k, count in enumerate(level_counts):
             loss_ev += count * thresholds[1 + k]
         loss = (loss_ev + n_ion * thresholds[-1]) * EV_J
-        tally = MCCTally(n_candidates, int(np.count_nonzero(elastic)), n_exc, n_ion, int(np.count_nonzero(null)), loss, level_counts)
+        if n_step or n_super:
+            # v2.5.0: stepwise removes its threshold; superelastic hands the pool energy back (a negative loss)
+            loss += (n_step * self.metastables.stepwise_threshold_ev - n_super * self.metastables.pool_energy_ev) * EV_J
+        tally = MCCTally(n_candidates, int(np.count_nonzero(elastic)), n_exc, n_ion, int(np.count_nonzero(null)), loss, level_counts,
+                         n_step, n_super)
         updated = ParticleArrays(electrons.r_m.copy(), electrons.z_m.copy(), vx, vy, vz)
+        if excitation.any() or n_step or n_super:
+            exc_r = electrons.r_m[excitation].copy()
+            exc_z = electrons.z_m[excitation].copy()
+            exc_level = np.zeros(exc_r.size, dtype=np.int64)
+            for k, chosen in enumerate(levels):
+                exc_level[chosen[excitation]] = k
+            return MCCResult(updated, new_electrons, new_ions, ion_r, ion_z, tally, exc_r, exc_z, exc_level, step_r, step_z, super_r, super_z)
         return MCCResult(updated, new_electrons, new_ions, ion_r, ion_z, tally)
 
     def to_dict(self) -> dict[str, Any]:
@@ -477,7 +580,7 @@ class NullCollisionMCC:
             excitation = "lumped 8.32 eV loss, isotropic"
         else:
             excitation = "per-level threshold loss (" + ", ".join(f"{p.identifier} {p.threshold_ev} eV" for p in levels) + "), isotropic (v2.3.0)"
-        return {
+        record: dict[str, Any] = {
             "config": self.config.to_dict(),
             "cross_sections": self.cross_sections.to_dict(),
             "uniform_table_sha256": self.table.sha256(),
@@ -489,6 +592,15 @@ class NullCollisionMCC:
                 "energy_definition": "classical 0.5 m_e v^2 in the lab frame (neutral at rest)",
             },
         }
+        if self.metastables is not None:
+            record["nu_max_ground_per_s"] = self.nu_max_ground
+            record["metastables"] = self.metastables.to_dict()
+            record["kinematics"]["stepwise_ionization"] = (
+                f"{self.metastables.stepwise_threshold_ev:.4g} eV loss against the local metastable density; Vahedi-Surendra secondary; "
+                "ion born with the local gas velocity (v2.5.0)"
+            )
+            record["kinematics"]["superelastic"] = f"electron gains {self.metastables.pool_energy_ev:.4g} eV, isotropic; the atom returns to the ground pool"
+        return record
 
 
 def _expm1(value: float) -> float:

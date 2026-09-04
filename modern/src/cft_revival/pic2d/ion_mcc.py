@@ -36,7 +36,7 @@ momentum change; the fast-neutral terms are what the ledger needs to close momen
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from hashlib import sha256
 import json
 from math import floor, isfinite, sqrt
@@ -295,6 +295,12 @@ class IonMCCTally:
 class IonMCCResult:
     ions: ParticleArrays
     tally: IonMCCTally
+    # v2.5.0 (neutrals_spatial_v1): CEX fast neutrals handed over to the neutral particle model (the ion's pre-event
+    # velocity at the ion position; one macro-ion weight each) and the cells of the CEX events (the thermal atom that
+    # became the slow ion is a ground-atom sink there).  Empty on the legacy path.
+    fast_neutrals: ParticleArrays = field(default_factory=ParticleArrays.empty)
+    cex_r_m: np.ndarray = field(default_factory=lambda: np.zeros(0))
+    cex_z_m: np.ndarray = field(default_factory=lambda: np.zeros(0))
 
 
 class IonNullCollisionMCC:
@@ -327,7 +333,19 @@ class IonNullCollisionMCC:
     def collision_probability(self, dt_s: float) -> float:
         return -_expm1(-self.nu_max * dt_s)
 
-    def apply(self, ions: ParticleArrays, dt_s: float, rng: np.random.Generator, *, density_shape: np.ndarray | None = None) -> IonMCCResult:
+    def apply(self, ions: ParticleArrays, dt_s: float, rng: np.random.Generator, *, density_shape: np.ndarray | None = None,
+              density_per_particle: np.ndarray | None = None,
+              neutral_moments: tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray] | None = None,
+              hand_off_fast_neutrals: bool = False) -> IonMCCResult:
+        """One ion null-collision step.
+
+        v2.5.0: ``density_per_particle`` (absolute local ground density, <= n_g0) replaces ``n_g0 x scale x shape``;
+        ``neutral_moments`` = per-ion ``(u_r, u_theta, u_z, v_th)`` of the local gas, from which the target atom is
+        sampled (``v_th = 0``: the feed temperature); with ``hand_off_fast_neutrals`` the CEX fast neutral is RETURNED
+        as a particle (``IonMCCResult.fast_neutrals``) instead of the straight-line fate march, and the fate tallies
+        stay zero (the neutral transport decides).
+        """
+
         count = ions.count
         probability = self.collision_probability(dt_s)
         if count == 0 or probability == 0.0:
@@ -344,14 +362,27 @@ class IonNullCollisionMCC:
         if idx.size == 0:
             return IonMCCResult(ParticleArrays(ions.r_m.copy(), ions.z_m.copy(), vx, vy, vz), tally)
         # thermal atom velocity for every candidate (Box-Muller, four uniforms)
-        nvx, nvy, nvz = maxwellian_velocity(mass, self.mcc_config.neutral_temperature_k, u[2:6][:, idx])
+        if neutral_moments is None:
+            nvx, nvy, nvz = maxwellian_velocity(mass, self.mcc_config.neutral_temperature_k, u[2:6][:, idx])
+        else:
+            # v2.5.0: the local gas is a drifting Maxwellian with the deposited moments (v_th = 0 -> the feed temperature)
+            u_r, u_t, u_z, v_th = (np.asarray(m, dtype=np.float64)[idx] for m in neutral_moments)
+            gx0, gy0, gz0 = maxwellian_velocity(1.0, 1.0 / BOLTZMANN_J_PER_K, u[2:6][:, idx])
+            thermal = np.where(v_th > 0.0, v_th, self.thermal_speed)
+            nvx, nvy, nvz = u_r + thermal * gx0, u_t + thermal * gy0, u_z + thermal * gz0
         gx, gy, gz = vx[idx] - nvx, vy[idx] - nvy, vz[idx] - nvz
         g2 = gx * gx + gy * gy + gz * gz
         g = np.sqrt(g2)
         energy = 0.5 * mass * g2 / EV_J
         sigma = self.table.lookup(energy)             # (2, N_c)
         density = self.neutral_density_per_m3
-        if density_shape is not None:
+        if density_per_particle is not None:
+            local = np.asarray(density_per_particle, dtype=np.float64)
+            if local.shape != (count,) or not np.isfinite(local).all() or np.any(local < 0.0) \
+                    or np.any(local > self.mcc_config.neutral_density_per_m3 * (1.0 + 1e-9)):
+                raise PIC2DValidationError("local neutral density must be per particle within [0, n_g0] (null-collision ceiling)")
+            density = local[idx]
+        elif density_shape is not None:
             shape = np.asarray(density_shape, dtype=np.float64)
             if shape.shape != (count,) or not np.isfinite(shape).all() or np.any(shape < 0.0) or np.any(shape > 1.0 + 1e-12):
                 raise PIC2DValidationError("neutral density shape must be per particle in [0, 1]")
@@ -380,10 +411,21 @@ class IonNullCollisionMCC:
         energy_loss = weight * float(np.sum((ke_before - ke_after)[changed]))
         pz_ions = weight * mass * float(np.sum((new_vz - old_vz)[changed]))
         vx[idx], vy[idx], vz[idx] = new_vx, new_vy, new_vz
-        # fast-neutral fate for every CEX event
         z_exit = self.masks.grid.geometry.z_max_m
         exit_channel = exit_plume = wall = thermal = unresolved = cex_plume = 0
         pz_exit = pz_wall = ke_exit = 0.0
+        if hand_off_fast_neutrals:
+            # v2.5.0: the fast neutral is a particle of the spatial model (weight = the ion macro weight); the thermal atom
+            # that became the slow ion is booked by the caller as a ground-atom sink at the event cell
+            cex_idx = idx[is_cex]
+            cex_plume = int(np.count_nonzero(ions.z_m[cex_idx] >= z_exit))
+            fast = ParticleArrays(ions.r_m[cex_idx].copy(), ions.z_m[cex_idx].copy(), old_vx[is_cex].copy(), old_vy[is_cex].copy(), old_vz[is_cex].copy())
+            tally = IonMCCTally(
+                candidates=int(idx.size), cex=int(np.count_nonzero(is_cex)), mex=int(np.count_nonzero(is_mex)), null=null, cex_plume=cex_plume,
+                ceiling_violations=violations, energy_loss_j=energy_loss, pz_ions_kg_m_s=pz_ions,
+            )
+            return IonMCCResult(ParticleArrays(ions.r_m.copy(), ions.z_m.copy(), vx, vy, vz), tally, fast, fast.r_m.copy(), fast.z_m.copy())
+        # fast-neutral fate for every CEX event
         for k in np.flatnonzero(is_cex):
             p = idx[k]
             fvx, fvy, fvz = old_vx[k], old_vy[k], old_vz[k]
@@ -418,7 +460,18 @@ class IonNullCollisionMCC:
         )
         return IonMCCResult(ParticleArrays(ions.r_m.copy(), ions.z_m.copy(), vx, vy, vz), tally)
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self, *, spatial_neutrals: bool = False) -> dict[str, Any]:
+        if spatial_neutrals:
+            fate = ("v2.5.0 neutrals_spatial_v1: the fast neutral is handed over as a neutral macro-particle (the ion's velocity at the ion "
+                    "position, one ion macro weight); exit / wall thermalisation are the neutral transport's; the thermal atom that became "
+                    "the slow ion is a ground-atom sink at the event cell; the target atom is sampled from the local deposited drift and "
+                    "thermal speed")
+        else:
+            fate = (
+                "straight-line flight through the cell mask in 0.5 min(dr, dz) steps: exit aperture -> leaves (inventory sink, thrust "
+                "ledger); wall / cone / anode / unresolved -> thermalised on the wall (inventory unchanged, momentum to the thruster); "
+                "below the speed threshold -> thermal atom (inventory unchanged); plume-born -> leaves the box"
+            )
         return {
             "config": self.config.to_dict(),
             "cross_sections": self.cross_sections.to_dict(),
@@ -426,11 +479,7 @@ class IonNullCollisionMCC:
             "nu_max_per_s": self.nu_max,
             "neutral_temperature_k": self.mcc_config.neutral_temperature_k,
             "fast_neutral_speed_threshold_m_per_s": self.fast_speed_threshold,
-            "fast_neutral_fate": (
-                "straight-line flight through the cell mask in 0.5 min(dr, dz) steps: exit aperture -> leaves (inventory sink, thrust "
-                "ledger); wall / cone / anode / unresolved -> thermalised on the wall (inventory unchanged, momentum to the thruster); "
-                "below the speed threshold -> thermal atom (inventory unchanged); plume-born -> leaves the box"
-            ),
+            "fast_neutral_fate": fate,
         }
 
 

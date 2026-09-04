@@ -106,10 +106,11 @@ def interval_maps(sums_end: Mapping[str, np.ndarray], sums_start: Mapping[str, n
     """Exact interval average between two cumulative snapshots of the window sums."""
 
     diff: dict[str, np.ndarray] = {}
-    # v2.2.0 / v2.4.0: the optional SEE and Coulomb sums travel with the others when their option is on (absent otherwise:
-    # nothing added to the frame)
+    # v2.2.0 / v2.4.0 / v2.5.0: the optional SEE, Coulomb and spatial-neutral sums travel with the others when their option is on
+    # (absent otherwise: nothing added to the frame); the neutral sample count rides along like the moment samples
     optional_keys = tuple(key for key in DiagnosticAccumulator.optional_sum_keys() if key in sums_end)
-    for key in DiagnosticAccumulator.SUM_KEYS + optional_keys + ("steps",):
+    count_keys = ("neutral_samples",) if "neutral_samples" in sums_end and "neutral_density" in sums_end else ()
+    for key in DiagnosticAccumulator.SUM_KEYS + optional_keys + ("steps",) + count_keys:
         end = np.asarray(sums_end[key])
         diff[key] = end.copy() if sums_start is None else end - np.asarray(sums_start[key])
     # v2.0.5: the moment sample count is additive like the sums (absent in pre-v2.0.5 snapshots: one sample per step)
