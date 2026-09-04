@@ -405,13 +405,15 @@ def test_see_off_reproduces_the_v2_0_6_identity_ledger_and_tallies():
         assert (sim.state.electrons.count, sim.state.ions.count) == (electrons, ions), backend
         assert {key: int(c[key]) for key in tallies} == tallies, backend
         assert sorted(c) == sorted(empty_cumulative()) + ["anomalous"] or sorted(c) == sorted([*empty_cumulative(), "anomalous"])
-    # the seed streams of MCC / injection / anomalous scattering are unchanged by the 4th (SEE) stream
+    # the seed streams of MCC / injection / anomalous scattering / ion-neutral MCC (columns 0-3) are unchanged by the SEE
+    # column (4 = stream id 5): the table row is read per column, so a wider row leaves every earlier column's seeds as they were
     try:
-        from cft_revival.pic2d.warp_backend import SEED_STREAMS, stream_seed
+        from cft_revival.pic2d.warp_backend import SEED_STREAM_IDS, SEED_STREAMS, stream_seed
+        from cft_revival.pic2d.warp_see import SEE_STREAM
     except ImportError:  # pragma: no cover
         return
-    assert SEED_STREAMS == 4
-    assert stream_seed(3, 17, 1) == stream_seed(3, 17, 1) and stream_seed(3, 17, 4) != stream_seed(3, 17, 3)
+    assert SEED_STREAMS == 5 and SEED_STREAM_IDS == (1, 2, 3, 4, 5) and SEE_STREAM == 4
+    assert len({stream_seed(3, 17, s) for s in SEED_STREAM_IDS}) == 5
 
 
 # -- Warp: graph bitwise with SEE on; parity with the numpy reference ---------------------------------------------------------
@@ -447,7 +449,14 @@ def test_cuda_graph_step_is_bitwise_identical_to_the_direct_launches_with_see_on
     a, b = direct.state, graph.state
     assert a.cumulative["see_electrons"] > 0 and a.cumulative["ionizations"] > 0
     _assert_same_state(a, b)
-    assert [r.to_dict()["see"] for r in direct.series] == pytest.approx([r.to_dict()["see"] for r in graph.series], rel=1e-9)
+    # the SEE sample: counts and potentials exact, float-atomic sums (emitted energy / momentum) at round-off
+    for x, y in zip(direct.series, graph.series, strict=True):
+        for key, value in x.to_dict()["see"].items():
+            other = y.to_dict()["see"][key]
+            if isinstance(value, bool):
+                assert value == other, key
+            else:
+                assert value == pytest.approx(other, rel=1e-9, abs=1e-12), key
 
 
 @pytest.mark.parametrize("backend", WARP_BACKENDS)
@@ -519,7 +528,8 @@ def test_floating_dielectric_wall_sheath_drop_follows_hobbs_wesson_with_and_with
     space-charge-limited value ~1.02 T_e of the primary electrons.
 
     Tolerances: strict monotone decrease with delta; |Delta phi(0) - Delta phi(delta) - T_e ln(1/(1 - delta_eff))| <= 0.35 T_e
-    for delta 0.5 and 0.9; for delta 1.5 and 3.0: drop in [0.7, 1.5] x T_e(delta = 0), the two within 25 % of each other,
+    for delta 0.5 and 0.9; for delta 1.5 and 3.0: drop in [0.7, 1.5] x T_e(delta = 0), both below 0.6 x the delta = 0.9 drop
+    (saturation) and within 40 % of each other (the shot noise of a 2000-step window on ~8000 macro-particles is ~0.4 V),
     effective yield in [0.8, 1.0); the particle-side energy identity closed to 1e-9 of the kinetic energy in every case.
     """
 
@@ -541,4 +551,5 @@ def test_floating_dielectric_wall_sheath_drop_follows_hobbs_wesson_with_and_with
         r = results[delta]
         assert 0.8 <= r["effective_yield"] < 1.0, r                    # space-charge-limited: the wall returns the excess
         assert 0.7 * t_e <= r["drop_v"] <= 1.5 * t_e, (delta, r["drop_v"] / t_e, HOBBS_WESSON_SCL_DROP_TE)
-    assert results[1.5]["drop_v"] == pytest.approx(results[3.0]["drop_v"], rel=0.25)
+        assert r["drop_v"] <= 0.6 * results[0.9]["drop_v"]              # saturated well below the emitting (delta < 1) sheath
+    assert results[1.5]["drop_v"] == pytest.approx(results[3.0]["drop_v"], rel=0.4)

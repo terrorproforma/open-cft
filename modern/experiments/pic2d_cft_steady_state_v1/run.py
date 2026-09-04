@@ -109,6 +109,7 @@ NEUTRAL_LEDGER_KEYS_V23 = ("fast_neutral_exit",)
 MOMENTUM_OPTIONAL_SCALARS_V23 = (
     "ion_collision_momentum_rate_n", "fast_neutral_exit_momentum_rate_n", "fast_neutral_wall_momentum_rate_n", "gas_momentum_rate_n",
     "fast_neutral_thrust_n", "fast_neutral_exit_power_w",
+)
 # v2.2.0 SEE sample (records of an emitting wall only; see Simulation._see_record)
 SEE_SCALARS = (
     "interval_impacts", "interval_emitted", "interval_ion_induced_emitted", "interval_effective_yield", "interval_mean_yield",

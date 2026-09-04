@@ -886,10 +886,10 @@ yield falls with electron exposure). Furman-Pivi parameter sets exist for Cu / s
 Sydorenko fractions.
 
 *Physics check* (afterglow slab, floating dielectric wall, constant yield with a 3 eV threshold, T_see 0.5 eV;
-declared tolerances in the test). Bulk-to-wall drop 11.09 / 9.83 / 7.41 / 3.61 / 3.11 V for delta 0 / 0.5 /
+declared tolerances in the test). Bulk-to-wall drop 11.09 / 9.71 / 7.63 / 3.69 / 2.86 V for delta 0 / 0.5 /
 0.9 / 1.5 / 3.0 at T_e(0) = 3.08 eV; the fall follows the Hobbs-Wesson factor T_e ln[1/(1 - delta_eff)] within
-0.04 / 0.17 T_e (delta_eff 0.36 / 0.64 = the wall-defined yield); at delta >= 1.5 the effective yield saturates
-at 0.89 / 0.95 < 1 and the drop is 1.17 / 1.01 T_e against the space-charge-limited 1.02 T_e. The ion-flux
+0.03 / 0.07 T_e (delta_eff 0.34 / 0.65 = the wall-defined yield); at delta >= 1.5 the effective yield saturates
+at 0.89 / 0.95 < 1 and the drop is 1.20 / 0.93 T_e against the space-charge-limited 1.02 T_e. The ion-flux
 equilibrium value 5.27 T_e is not reached in 12 ns (it needs the ion transit) and is not the test.
 
 *Hypotheses for the R2 runs* (unchanged directions from §4.a, restated in the spec as predeclared): cusp
