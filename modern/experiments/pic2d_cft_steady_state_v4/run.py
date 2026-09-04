@@ -165,8 +165,10 @@ def preflight(protocol: dict[str, Any], *, backend: str = "warp-cuda", timing_st
     }
     t0 = time.perf_counter()
     field_map, cross_sections = runner.load_inputs(config, None, None, protocol=protocol)
-    record["field"] = {"sha256": field_map.sha256, "max_b_t": field_map.max_b_t, "seconds": time.perf_counter() - t0,
-                       "evidence": field_map.to_dict().get("evidence") or field_map.to_dict().get("source")}
+    # sha256 is the content hash of the sampled arrays (bitwise identity on THIS platform, provenance only); the
+    # platform-independent binding the checkpoints verify is source_sha256 (P2 bundle file hashes + grid)
+    record["field"] = {"sha256": field_map.sha256, "source_sha256": field_map.source_sha256, "max_b_t": field_map.max_b_t,
+                       "seconds": time.perf_counter() - t0, "evidence": field_map.to_dict().get("evidence") or field_map.to_dict().get("source")}
     record["cross_sections_sha256"] = cross_sections.payload_sha256 if cross_sections is not None else None
     masks = build_mesh_masks(grid)
     record["mesh"] = masks.to_dict()

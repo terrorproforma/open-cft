@@ -91,7 +91,9 @@ def preflight_design(design_id: str, domain: str, *, log=print) -> dict[str, Any
         report = stability_report(mapping.grid, float(numerics["dt_s"]), reference_density_per_m3=float(reference["density_per_m3"]),
                                   reference_electron_temperature_ev=float(reference["electron_temperature_ev"]), max_b_t=fm.max_b_t,
                                   max_electron_energy_ev=float(reference["max_electron_energy_ev"]), limits=limits)
-        return {"passed": report.stable, "field_map_sha256": fm.sha256, "max_b_t": fm.max_b_t, "stability": report.to_dict(),
+        # field_map_sha256 = content hash of the sampled arrays (this platform's bitwise identity, provenance only);
+        # field_source_sha256 = the platform-independent binding (checkpoint bundle hashes + grid + scale)
+        return {"passed": report.stable, "field_map_sha256": fm.sha256, "field_source_sha256": fm.source_sha256, "max_b_t": fm.max_b_t, "stability": report.to_dict(),
                 "dt_s": float(numerics["dt_s"]), "dt_policy": numerics.get("dt_policy"), "cathode_placement": protocol["operating_point"].get("cathode", {}).get("placement_search_note"),
                 "provenance_kind": fm.provenance.get("kind"), "plasma_nodes_sampled": fm.provenance.get("plasma_nodes_sampled")}
 

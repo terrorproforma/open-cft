@@ -29,10 +29,37 @@ DEFAULT_PLUME_EXTENSION_PATH = SPEC_DIR / "p2-field-plume-extension-v1.json"
 # v2.1: the same design's domain-padding-1.5 P2 solution (FEM box z <= 60.75 mm) for axially extended plume boxes
 PLUME_EXTENSION_V2_PATH = SPEC_DIR / "p2-field-plume-extension-v2.json"
 
+# Provenance blocks that are COMPUTED from the sampled node arrays on the generating CPU (withheld-cell errors,
+# cross-check residuals, certificate tightness, the channel map's own content hash).  They differ in the last
+# digits between CPUs / BLAS kernels / compilers and are therefore excluded from ``source_sha256``; every other
+# provenance value is a declared input (file-byte hashes of the P2 checkpoint bundle, paths, grids, region
+# names, the source-strength scale) and is platform-independent.
+DERIVED_PROVENANCE_KEYS = frozenset({
+    "channel_cross_check", "withheld_midcell_error", "node_reference_b_max_abs_error_t", "certificate", "certified_max_b_t",
+})
+# Declared cross-platform replay tolerance for a sampled node field (ULP-scale: the P2 element evaluation is a
+# handful of FMAs and a division by r, so two CPUs disagree by <= ~1e-14 relative; the physics gate on the same
+# maps is 0.02 T).  A live map whose source identity matches an anchor but whose arrays differ by MORE than this
+# is not a replay of the same field and is refused.
+FIELD_REPLAY_RTOL = 1.0e-12
+FIELD_REPLAY_ATOL_OVER_MAX_B = 1.0e-12
+
+
+def source_provenance(provenance: Mapping[str, Any]) -> dict[str, Any]:
+    """The declared-input view of a field provenance (``DERIVED_PROVENANCE_KEYS`` removed at the top level)."""
+
+    return {key: value for key, value in provenance.items() if key not in DERIVED_PROVENANCE_KEYS}
+
 
 @dataclass(frozen=True, slots=True)
 class MagneticFieldMap:
-    """Node-centred ``(B_r, B_z)`` in tesla with bound provenance."""
+    """Node-centred ``(B_r, B_z)`` in tesla with bound provenance.
+
+    Two identities: ``sha256`` is the content hash of the sampled arrays plus the full provenance (bitwise
+    replay identity - equal only on the platform that produced it); ``source_sha256`` binds the grid and the
+    declared inputs only (the P2 checkpoint bundle's file-byte hashes, extension / authority file hashes,
+    scale, box) and is the platform-independent binding a checkpoint or a launcher must verify.
+    """
 
     grid: Grid2D
     b_r_t: np.ndarray
@@ -62,12 +89,58 @@ class MagneticFieldMap:
             }
         )
 
+    @property
+    def source_sha256(self) -> str:
+        """Platform-independent binding: the grid and the declared (file-byte-hashed) inputs, no sampled values."""
+
+        return content_hash({"grid": self.grid.to_dict(), "provenance": source_provenance(self.provenance)})
+
     def to_dict(self) -> dict[str, Any]:
         return {
             "max_b_t": self.max_b_t,
             "provenance": dict(self.provenance),
             "field_map_sha256": self.sha256,
+            "field_source_sha256": self.source_sha256,
         }
+
+
+def compare_field_arrays(
+    live: MagneticFieldMap,
+    anchor_b_r_t: np.ndarray,
+    anchor_b_z_t: np.ndarray,
+    *,
+    rtol: float = FIELD_REPLAY_RTOL,
+    atol_over_max_b: float = FIELD_REPLAY_ATOL_OVER_MAX_B,
+) -> dict[str, Any]:
+    """Numerical replay check of ``live`` against anchor node arrays under the declared tolerance.
+
+    Returns a record with ``within_tolerance``, the largest absolute / relative differences and the tolerance
+    used; ``bitwise`` is True when every node is identical.  The caller decides whether a failure is fatal.
+    """
+
+    anchor_b_r_t = np.asarray(anchor_b_r_t, dtype=np.float64)
+    anchor_b_z_t = np.asarray(anchor_b_z_t, dtype=np.float64)
+    if anchor_b_r_t.shape != live.b_r_t.shape or anchor_b_z_t.shape != live.b_z_t.shape:
+        raise PIC2DValidationError("anchor field arrays do not match the live grid")
+    max_b = max(live.max_b_t, float(np.max(np.hypot(anchor_b_r_t, anchor_b_z_t))), np.finfo(float).tiny)
+    atol = atol_over_max_b * max_b
+    diff_r = np.abs(live.b_r_t - anchor_b_r_t)
+    diff_z = np.abs(live.b_z_t - anchor_b_z_t)
+    max_abs = float(max(diff_r.max(), diff_z.max()))
+    scale = np.maximum(np.maximum(np.abs(anchor_b_r_t), np.abs(anchor_b_z_t)), atol)
+    max_rel = float(max((diff_r / scale).max(), (diff_z / scale).max()))
+    within = bool(np.allclose(live.b_r_t, anchor_b_r_t, rtol=rtol, atol=atol) and np.allclose(live.b_z_t, anchor_b_z_t, rtol=rtol, atol=atol))
+    return {
+        "bitwise": bool(np.array_equal(live.b_r_t, anchor_b_r_t) and np.array_equal(live.b_z_t, anchor_b_z_t)),
+        "within_tolerance": within,
+        "max_abs_diff_t": max_abs,
+        "max_rel_diff": max_rel,
+        "nodes_differing": int(np.count_nonzero(diff_r) + np.count_nonzero(diff_z)),
+        "rtol": float(rtol),
+        "atol_t": float(atol),
+        "atol_over_max_b": float(atol_over_max_b),
+        "max_b_t": float(max_b),
+    }
 
 
 def load_authority(path: Path = DEFAULT_AUTHORITY_PATH) -> dict[str, Any]:
@@ -396,16 +469,21 @@ def zero_field_map(grid: Grid2D) -> MagneticFieldMap:
 __all__ = [
     "DEFAULT_AUTHORITY_PATH",
     "DEFAULT_PLUME_EXTENSION_PATH",
+    "DERIVED_PROVENANCE_KEYS",
+    "FIELD_REPLAY_ATOL_OVER_MAX_B",
+    "FIELD_REPLAY_RTOL",
     "PLUME_EXTENSION_SCHEMAS",
     "PLUME_EXTENSION_V2_PATH",
     "MagneticFieldMap",
     "build_p2_psi_field",
+    "compare_field_arrays",
     "linear_psi_field_map",
     "load_authority",
     "load_plume_extension",
     "p2_field_map",
     "p2_plume_field_map",
     "sample_field_map",
+    "source_provenance",
     "uniform_field_map",
     "zero_field_map",
 ]

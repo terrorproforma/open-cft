@@ -259,3 +259,35 @@ mkdir -p modern/tools/cloud/records/$(date -u +%Y%m%d) && cp "$WORK"/provision.l
    **box-wide first-GPU readings** (the sampler has no `--id`); use `jobs/<id>/state.json` and
    `schedule.py status` (`gpu_live`, per-index) for the pinned GPU. A `--gpu-index` for the sampler
    is a follow-up change to the runner, not made here (package/runner identity untouched).
+
+## 6. Cross-platform identities (what is and is not bitwise between the 5090 box and this one)
+
+Policy: bitwise replay only on the anchor platform; numerical replay elsewhere under predeclared,
+scale-aware tolerances. Every `summary.json` / checkpoint records `provenance.runtime.platform_fingerprint`
+(OS, numpy wheel + compiler, SIMD dispatch, OpenBLAS runtime kernel, CPU model) and `runtime.gpu`
+(device, arch, driver, toolkit), so a record says where it was produced.
+
+1. **Fresh launches are not blocked by any CPU-derived hash.** The bindings the launchers verify
+   fail-closed are file-byte hashes (P2 checkpoint bundle, protocol blob, sidecars), the
+   protocol-derived `config_sha256`, and the sealed design authorities of the mini-sweep (rebuilt and
+   equal on Ubuntu: `tests/pic2d` passed there at `af9e79d1`). The sampled field map's content hash
+   (`field_sha256`, `field_map_sha256`) differs in its last digits between the msvc and gcc numpy
+   wheels (FMA contraction); it is provenance. The platform-independent field binding is
+   `field_source_sha256` (grid + P2 bundle file hashes + extension/authority file hashes + scale).
+2. **Resuming a checkpoint written on the other box** is admitted only if `field_source_sha256`
+   matches and the re-sampled map lies within `rtol 1e-12 / atol 1e-12 x max|B|` of the anchor arrays
+   stored next to the checkpoint (`checkpoint-latest.field.npz`); the session then records
+   `field_identity.mode = "numerical"` (not a bitwise continuation). Checkpoints written before this
+   change carry no anchor and resume only under an exactly equal content hash (i.e. on the platform
+   that wrote them).
+3. **GPU model / driver are never bitwise-comparable**: same-seed replay across the 5090 (sm_120)
+   and the H100 (sm_90) is numerical only. Nothing in `assess` / plateau / triad / acceptance compares
+   across machines bitwise (tolerances 10-20 %, reference consistency from stored bytes).
+4. Re-running `preflight` / `shakedown` on this box rewrites `preflight.json` / `shakedown.json` with
+   this box's `field.sha256` (and `source_sha256`): commit them as this box's preflight before a
+   preregistered `launch` (clean-worktree rule), or leave the committed ones in place. Do **not**
+   launch `pic2d_cft_steady_state_v4` here while attempt 1 runs on the 5090 (one execution).
+5. The cathode connectivity gate (`require_channel_connected_fraction`) and the mini-sweep `dt_policy`
+   read the re-sampled field (derived floats, not hashes): the whole-set preflight must be re-run on
+   this box before the first plume / mini-sweep launch so a marginal field line or a `floor()` on
+   `omega_ce dt` cannot surprise the launch.

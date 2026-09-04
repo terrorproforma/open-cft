@@ -778,8 +778,12 @@ def _demote_terminal_state(run_state: dict[str, Any], *, event: str, step: int, 
     return entry
 
 
-def save_checkpoint_atomic(results: Path, sim: Simulation, config: PIC2DConfig, field_sha256: str, xs_sha256: str | None) -> Path:
-    """Write the checkpoint into a fresh directory, then swap it in (old copy kept until the swap is done)."""
+def save_checkpoint_atomic(results: Path, sim: Simulation, config: PIC2DConfig, field_map: MagneticFieldMap, xs_sha256: str | None) -> Path:
+    """Write the checkpoint into a fresh directory, then swap it in (old copy kept until the swap is done).
+
+    The field map is passed whole so the checkpoint binds its platform-independent source identity and keeps an
+    anchor copy of the node arrays (cross-platform resume policy, see ``artifacts.save_checkpoint``).
+    """
 
     tmp = results / f"{CHECKPOINT_DIR}-tmp"
     old = results / f"{CHECKPOINT_DIR}-old"
@@ -788,7 +792,7 @@ def save_checkpoint_atomic(results: Path, sim: Simulation, config: PIC2DConfig, 
         if stale.exists():
             shutil.rmtree(stale)
     tmp.mkdir(parents=True)
-    artifacts.save_checkpoint(tmp, CHECKPOINT_NAME, sim.state, config, field_sha256=field_sha256,
+    artifacts.save_checkpoint(tmp, CHECKPOINT_NAME, sim.state, config, field_sha256=field_map.sha256, field=field_map,
                               cross_section_sha256=xs_sha256, backend=sim.backend.name)
     if live.exists():
         live.rename(old)
@@ -1060,7 +1064,8 @@ def write_final_artifacts(
     maps_sha = artifacts.write_npz(results / "maps.npz", maps)
     series_sha = artifacts.write_npz(results / "series.npz", arrays) if arrays else None
     checkpoint_json, checkpoint_npz = artifacts.save_checkpoint(
-        results, "checkpoint-final", state, config, field_sha256=field_map.sha256, cross_section_sha256=xs_sha, backend=sim.backend.name
+        results, "checkpoint-final", state, config, field_sha256=field_map.sha256, field=field_map, cross_section_sha256=xs_sha,
+        backend=sim.backend.name,
     )
     window = int(maps["window_steps"][0])
     plasma = sim.masks.plasma_node
@@ -1249,8 +1254,13 @@ def run_steady_state(
     session = {"started_utc": datetime.now(timezone.utc).isoformat(), "resumed_from_step": 0, "pid": os.getpid(),
                "wall_budget_seconds": wall_budget}
     if checkpoint is not None:
-        state = artifacts.load_checkpoint(checkpoint, config, field_sha256=field_map.sha256, cross_section_sha256=xs_sha,
-                                          require_same_code=require_same_code)
+        # the field binding is verified through its platform-independent source identity; a resume on another CPU /
+        # BLAS / OS is admitted only when the re-sampled map lies within the declared tolerance of the recorded anchor
+        # (mode "numerical"), and the mode is recorded with the session (a numerical resume is not a bitwise replay)
+        identity: dict[str, Any] = {}
+        state = artifacts.load_checkpoint(checkpoint, config, field_sha256=field_map.sha256, field=field_map, cross_section_sha256=xs_sha,
+                                          require_same_code=require_same_code, identity_report=identity)
+        session["field_identity"] = identity["field"]
         sim.load_state(state)
         if state_path.is_file():
             run_state = json.loads(state_path.read_text(encoding="utf-8"))
@@ -1268,7 +1278,10 @@ def run_steady_state(
         artifacts.write_canonical_json(state_path, run_state)
         _append_jsonl(status_path, {"event": "resume", "step": int(state.step), "time_s": float(state.time_s), "utc": session["started_utc"]})
         log(f"[steady-state] resumed from step {state.step} (t = {state.time_s*1e9:.1f} ns), {len(records)} series records kept"
-            + ("" if demoted is None else f"; previous terminal state ({demoted.get('stop_reason')}) moved to run_state.history"))
+            + ("" if demoted is None else f"; previous terminal state ({demoted.get('stop_reason')}) moved to run_state.history")
+            + f"; field replay {identity['field']['mode']}"
+            + ("" if identity["field"]["mode"] == "bitwise" else
+               f" (max |dB| {identity['field']['comparison']['max_abs_diff_t']:.2e} T vs the recorded anchor; not a bitwise continuation)"))
         if recorder is not None:
             removed = recorder.reconcile(int(state.step))
             log(f"[steady-state] frames: {recorder.index} kept, {removed} past the checkpoint removed")
@@ -1362,7 +1375,7 @@ def run_steady_state(
         if recorder is not None and step % checkpoint_every != 0 and (max_steps is None or step < max_steps):
             continue   # frame boundary inside a checkpoint interval: no checkpoint / plateau evaluation yet
         # checkpoint after every checkpoint_every steps (every chunk without a recorder)
-        save_checkpoint_atomic(results, sim, config, field_map.sha256, xs_sha)
+        save_checkpoint_atomic(results, sim, config, field_map, xs_sha)
         run_state.update({"wall_seconds_total": wall_total(), "checkpoint_step": step, "checkpoint_time_s": sim.state.time_s})
         if recorder is not None:
             run_state["frames_written"] = recorder.index
@@ -1487,7 +1500,9 @@ def finalize(
     field_map, cross_sections = load_inputs(config, field_map, cross_sections, protocol=protocol)
     xs_sha = cross_sections.payload_sha256 if cross_sections is not None else None
     sim = Simulation(config, field_map, cross_sections=cross_sections, backend=backend, step_graph=step_graph_flag(protocol))
-    state = artifacts.load_checkpoint(checkpoint, config, field_sha256=field_map.sha256, cross_section_sha256=xs_sha, require_same_code=False)
+    identity: dict[str, Any] = {}
+    state = artifacts.load_checkpoint(checkpoint, config, field_sha256=field_map.sha256, field=field_map, cross_section_sha256=xs_sha,
+                                      require_same_code=False, identity_report=identity)
     sim.load_state(state)
     setup_seconds = time.perf_counter() - t0
     records = [r for r in _read_jsonl(results / "series.jsonl") if r["step"] <= state.step]
@@ -1500,7 +1515,8 @@ def finalize(
     run_state: dict[str, Any] = {"wall_seconds_total": 0.0, "sessions": [], "checkpoint_step": int(state.step), "finished": False}
     if state_path.is_file():
         run_state = json.loads(state_path.read_text(encoding="utf-8"))
-    session = {"started_utc": datetime.now(timezone.utc).isoformat(), "resumed_from_step": int(state.step), "pid": os.getpid(), "finalize_only": True}
+    session = {"started_utc": datetime.now(timezone.utc).isoformat(), "resumed_from_step": int(state.step), "pid": os.getpid(), "finalize_only": True,
+               "field_identity": identity["field"]}
     # v2.1 hygiene: whatever terminal block the file carried (an earlier finalization, a recovery, a recorded
     # finalization_error, or the stale block of a run that was resumed by an older runner) goes to history;
     # the terminal state written below belongs to THIS finalization only
