@@ -381,6 +381,21 @@ sealed option that can plausibly reach a resolvable plateau at 20 um - it needs 
 and shakedown. Static 2e20 neutrals with a confining closure avalanche (retained lesson); the reference's static-DSMC steady state may not
 be reachable without its anomalous transport.
 
+## 11. Energy-ledger correction (model v2.0.6, post hoc; recorded values unchanged)
+
+Up to model v2.0.5 the energy ledger's `inelastic_loss_j` lacked the macro weight W (found by the external-validation v0 launch-1 diagnosis, 036bd679), so every recorded interval residual was `H - L_inel` - biased NEGATIVE by the inelastic power - where `H = field work + dU - electrode work` is the true numerical energy creation. The sidecar(s) `ledger-corrected.json` (+ `.sha256.json`) were written by `python -m cft_revival.pic2d.ledger_recompute <results-dir>` from the recorded `series.npz` (corrected residual = H per record; `spec/pic2d/pic2d-model-v2.0.json#gates_v2_0.energy_ledger_correction_v2_0_6`); **the recorded series, maps and summaries are unchanged.** Values below: trailing-400 000-step residual / electrode work at the last record, recorded -> corrected.
+
+`results/channel-20um-launch1-triad-gate-stop/ledger-corrected.json`: **+7.4 % -> +61.7 %** at the stop (0.728 us; cumulative -7.8 % -> +31.9 %;
++627 mW of numerical heating on 1.02 W of electrode power in the last window); the corrected statistic crossed the 5 % gate at the 0.34 us
+checkpoint (0.24 transits; +6.1 %) and 2 % at 0.31 us, against the recorded stop at 0.73 us; the cross-check against the final counts is exact
+to 9.1e-5. The section-10 finding is implemented as model v2.0.6: (i) `inelastic_loss_j` x W in both backends with the identity tests and the
+recalibration of the residual-power gate on the corrected statistic (thresholds kept at 5 %: the accepted 33 um plateaus peak at +2.5 %, the 50 um
+plateaus were heating at 7-13 %), and (ii) the peak-Debye floor in accumulated macro-electron-steps (`min_accumulated_macro_particle_steps_at_peak`,
+64 000): on this run's end-state map the near-axis nodes the occupancy floor excluded become resolved (8 843 -> 42 373 nodes; the gated node moves
+from (8, 214) at 35.6 macro-electrons per step to (6, 215) at 27.6), the axis densest node (0.72 per step, 172 000 macro-electron-steps) is
+resolved and reads 2.18 in the 240 000-step window average - the window lag on a 0.24-us-doubling density remains a disclosed limitation. Route
+item (iii) (parity weight or the `bohm-0.4` closure) is unchanged.
+
 ## Commands (from `modern/`; CPU unless stated; on the box `PYTHONPATH=src:.` with the MPS variables exported)
 
     $env:PYTHONPATH="$PWD\src;$PWD"; $env:OMP_NUM_THREADS='1'
