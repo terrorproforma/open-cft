@@ -1,0 +1,79 @@
+{
+ "design": {
+  "design_id": "divergent-exit-stack",
+  "note": "every pic2d run so far; rho_cons 0.60-0.62 under the qualified P2 field; fields exist (authority level-1, padding-1.5)",
+  "optional": false,
+  "priority": 1,
+  "role": "reference",
+  "source": "p2_divergent_exit"
+ },
+ "design_id": "divergent-exit-stack",
+ "existing_artifacts": {
+  "channel": {
+   "file": "modern/spec/pic2d/p2-field-authority-v1.json",
+   "map": {
+    "checkpoint_file_sha256": "bbdb0757191c28df9b455452ddb77f810a975a4a4493e5ba3d40c618db58ebd6",
+    "checkpoint_path": "modern/examples/fem_reference/artifacts/third-level/divergent-exit-stack/checkpoints/divergent-exit-stack.level-1.json",
+    "checkpoint_payload_sha256": "7630287a840aff41a7ee7d1896323a6fdf316dfc97ac375f3d1ae7de6baf8f88",
+    "mesh_sha256": "df005a93500db61857cfd671837b926f60fff00af35161c614a9f314b7128271",
+    "run_sha256": "e6eadc929d8c7af2846882a8a0e9b0abcd1336ddf5ca2040c5b1bd9067a18abe",
+    "sidecar_file_sha256": "f9f5fe6e4904289434ad40795af30b6c4f7bb1844b3457eca64be693f330a371"
+   },
+   "note": "regular psi-grid bicubic of the qualified level-1 checkpoint (every v1.x steady-state run)",
+   "sha256": "96b58afaca0f2b47f44a8bc18e5abc1acea3a1e33398a80aba135fc713e82ceb"
+  },
+  "plume-12mm": {
+   "bounding_box": {
+    "r_max_m": 0.012,
+    "r_min_m": 0.0,
+    "z_max_m": 0.036,
+    "z_min_m": 0.0
+   },
+   "file": "modern/spec/pic2d/p2-field-plume-extension-v1.json",
+   "note": "direct node evaluation of the level-1 authority checkpoint (FEM box z <= 36.25 mm; v2.0 attempts 3-8)",
+   "sha256": "baeb32cba3a088ab3490762bb4cd959267a93b58762c1585cbd33e90963736b0"
+  },
+  "plume-24mm": {
+   "bounding_box": {
+    "r_max_m": 0.04875,
+    "r_min_m": 0.0,
+    "z_max_m": 0.06075,
+    "z_min_m": -0.03725
+   },
+   "file": "modern/spec/pic2d/p2-field-plume-extension-v2.json",
+   "map": {
+    "checkpoint_file_sha256": "ee3f92e98c0497c683fc8cbc9915a656c6ab0dae7bbfc706f9c2a5a0cc52b3c2",
+    "checkpoint_path": "modern/examples/fem_reference/artifacts/third-level/divergent-exit-stack/checkpoints/divergent-exit-stack.domain-padding-1.5.json",
+    "checkpoint_payload_sha256": "776462f8f1545126df0124116cbc5f3ab419ec898d6f6c3fc20bc5b5754f0edf",
+    "classification": "independent_numerical_reference_not_hardware_validation",
+    "domain_study": {
+     "padding_factor": 1.5
+    },
+    "fem_level": 0,
+    "mesh_sha256": "85c0ce4bd106881a9ec5d65eaafa00ac73c78cba5c5ef4e15f0ec38b539631a3",
+    "run_sha256": "e429e3e33e91dd546f558ab4730d0464e1f0fbdf6a6b589d96a8957f87fbb6b5",
+    "sidecar_file_sha256": "70ee6338bfd7e2af3c3fd9b6398074c7eb91be778d93ea9b755a1fbae743249b",
+    "source_note": "the phase-matched domain-expansion study of the fem_reference qualification chain (examples/fem_reference/run_reference_campaign.py, _run_domain_studies: padding factors 0.5 / 1.0 / 1.5 at the level-0 resolution); committed and hash-bound like the level-1 checkpoint; NOT itself the NUMERICAL_P2_QUALIFIED map - its use for the plume is declared here and gated by the channel cross-check below"
+   },
+   "note": "domain-padding-1.5 level-0 solve of the qualification chain (FEM box z <= 60.75 mm; model v2.1, prepared not launched)",
+   "sha256": "96ef03155a30bc853bf304c0e8b69346e18985ef628dc85f2a2a4490bc436391",
+   "supported_pic_box": {
+    "note": "model v2.1 proposal: z_far = 48 mm (L_plume = 24 mm = 1.0 L_channel), r_far = 12 mm; alternatives 44 x 12 and 48 x 16 mm; every box up to 60 x 48 mm is servable from this checkpoint without a new FEM solve (cost table: spec/pic2d/pic2d-model-v2.1.json)",
+    "r_max_m": 0.048,
+    "z_max_m": 0.06
+   }
+  }
+ },
+ "gates": {
+  "all_passed": true,
+  "channel_cross_check": "performed at map build by p2_plume_field_map (0.02 T bound; measured 0.74 mT max for padding-1.5 vs level-1)"
+ },
+ "identity": {
+  "config_id": "divergent-exit-stack-v1",
+  "geometry_sha256": "9b7ec5608d02754dcf7605d0389915efddfe4202f5bc466feb4652a46d004217",
+  "identity_basis": "cft_revival.geometry.generators.divergent_exit_stack (the fem_reference qualification design)"
+ },
+ "schema": "cft.pic2d.design-mini-sweep.field-binding.v1",
+ "source_strength_scale": 1.0,
+ "status": "existing-artifacts-no-new-solve"
+}

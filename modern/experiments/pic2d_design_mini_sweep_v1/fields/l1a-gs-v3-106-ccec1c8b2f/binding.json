@@ -1,0 +1,468 @@
+{
+ "bounding_box": {
+  "r_max_m": 0.037475501219176297,
+  "r_min_m": 0.0,
+  "z_max_m": 0.04603805783391181,
+  "z_min_m": -0.02635447657439545
+ },
+ "coverage": {
+  "ladder": [
+   {
+    "covers": false,
+    "domain": {
+     "r_max_m": 0.03230460590429721,
+     "r_min_m": 0.0,
+     "z_max_m": 0.04086716251903272,
+     "z_min_m": -0.02118358125951636
+    },
+    "padding_factor": 1.0
+   },
+   {
+    "covers": true,
+    "domain": {
+     "r_max_m": 0.037475501219176297,
+     "r_min_m": 0.0,
+     "z_max_m": 0.04603805783391181,
+     "z_min_m": -0.02635447657439545
+    },
+    "padding_factor": 1.25
+   }
+  ],
+  "required": {
+   "r_max_m": 0.012750000000000001,
+   "z_max_m": 0.04493358125951636
+  }
+ },
+ "design": {
+  "design_id": "l1a-gs-v3-106-ccec1c8b2f",
+  "note": "5 stages, 4 cusps / 5 cells (the five-stage four-cusp HEMP-like class), no exit taper, rho 2.56 (L1a) -> 2.93 (L1b iron), wall |B| 0.31 T under iron",
+  "optional": true,
+  "priority": 5,
+  "role": "hemp-like-four-cusp",
+  "source": "sobol_v3"
+ },
+ "design_id": "l1a-gs-v3-106-ccec1c8b2f",
+ "field_convention": "B_r = -dA_phi/dz, B_z = A_phi/r + dA_phi/dr (2 dA_phi/dr on the axis)",
+ "front_face_note": "plasma nodes on the thruster front face (z = L_channel, r > exit radius) carry the plasma-side (ambient) limit of the P2 field; nodes inside solids are never evaluated",
+ "gates": {
+  "all_passed": true,
+  "coverage": {
+   "domain": {
+    "r_max_m": 0.037475501219176297,
+    "r_min_m": 0.0,
+    "z_max_m": 0.04603805783391181,
+    "z_min_m": -0.02635447657439545
+   },
+   "passed": true,
+   "r_max_m": 0.012750000000000001,
+   "z_max_m": 0.04493358125951636
+  },
+  "l1b_accepted_grid_agreement": {
+   "gate_max_abs_t": 0.02,
+   "grid_path": "artifacts/fields/hemp_like_v3/l1a-gs-v3-106-ccec1c8b2f.json.gz",
+   "grid_payload_sha256": "ac094e3d2c8d15e519a9500379ff6978183f96a143d29b240e77332eebf99e89",
+   "grid_payload_sha256_recorded": "ac094e3d2c8d15e519a9500379ff6978183f96a143d29b240e77332eebf99e89",
+   "max_abs_diff_channel_t": 0.000954447045399267,
+   "max_abs_diff_t": 0.000954447045399267,
+   "nodes": 10593,
+   "passed": true,
+   "reference": "l1b_hemp_confirmation_v1_1 accepted (level-1, padding 0.5) bore map, scaled by source_strength_scale",
+   "reference_max_b_t": 0.30726793620561166,
+   "rms_diff_channel_t": 0.00017338661524540186,
+   "rms_diff_t": 0.00028735203511645515
+  },
+  "mesh_angle": {
+   "gate_deg": 5.0,
+   "minimum_angle_deg": 32.36785576809784,
+   "passed": true
+  },
+  "solver_converged": {
+   "gate": 2e-10,
+   "passed": true,
+   "relative_true_residual_l2": 1.9859567503843847e-10
+  },
+  "topology_agreement": {
+   "axis_window_m": [
+    -0.004036716251903272,
+    0.02422029751141963
+   ],
+   "boundary_ambiguity_tolerance_m": 0.00025,
+   "boundary_cusps_excluded_z_m": {
+    "catalogue": [],
+    "p2": []
+   },
+   "catalogue_field": "L1a linear-vacuum equivalent-current",
+   "catalogue_interior_cusp_count": 4,
+   "catalogue_min_rho_conservative": 2.5604035984374143,
+   "catalogue_wall_cusp_count": 4,
+   "count_equal": true,
+   "count_equal_strict": true,
+   "count_rule": "boundary-tolerant (L1b v1.1 GATE (b)): cusps within boundary_ambiguity_tolerance_m of the straight-section ends are not counted; the strict count is recorded",
+   "l1b_v1_1": {
+    "max_shift_vs_l1b_m": 9.102753402920327e-07,
+    "p2_level1_cusps_z_m": [
+     0.004074873079224809,
+     0.008044844887182379,
+     0.01213868900346598,
+     0.016108892969458746
+    ],
+    "p2_level1_min_rho_conservative": 2.927676383018529
+   },
+   "matches": [
+    {
+     "catalogue_z_c_m": 0.0039472400283640605,
+     "p2_z_c_m": 0.00407559287976072,
+     "shift_m": 0.00012835285139665975
+    },
+    {
+     "catalogue_z_c_m": 0.008267668307791003,
+     "p2_z_c_m": 0.008044649038622094,
+     "shift_m": 0.00022301926916890903
+    },
+    {
+     "catalogue_z_c_m": 0.011923889555194918,
+     "p2_z_c_m": 0.012138931946989054,
+     "shift_m": 0.0002150423917941357
+    },
+    {
+     "catalogue_z_c_m": 0.0162489713937662,
+     "p2_z_c_m": 0.016107982694118454,
+     "shift_m": 0.0001409886996477476
+    }
+   ],
+   "max_shift_m": 0.00022301926916890903,
+   "p2_hemp_like_all_cusps": true,
+   "p2_interior_cusp_count": 4,
+   "p2_min_rho_conservative": 2.9252077032561696,
+   "p2_min_rho_conservative_interior": 2.9252077032561696,
+   "p2_wall_cusp_count": 4,
+   "passed": true,
+   "positions_within_tolerance": true,
+   "tolerance_m": 0.0005127918681182564,
+   "tolerance_rule": "max(r_w / 8, L1a dz) - the L1b v1.1 rule (one level-0 bore element, never below the L1a axial step)"
+  }
+ },
+ "geometry_config_id": "l1a-gs-v3-106-ccec1c8b2f-v1",
+ "identity": {
+  "case_sha256": "583348c7c5e8ae2e94844a5064024b484f9befdf04503b6dcd46b9c32f6d6d56",
+  "config_sha256": "ada417c1e3fe7f3cccd1a968c62fed1430f20b770ed143f552ec376573f971ad",
+  "geometry_sha256": "3d0bc7f6337e3557225611ef34bce3c59cb03736400e04ced64c332ef85d7014",
+  "identity_basis": "sweep-v3 Sobol (seed, index) rebuild; hashes equal the sealed sweep-v3 design authorities",
+  "identity_checks": {
+   "case_sha256": true,
+   "config_sha256": true,
+   "geometry_sha256": true,
+   "source_sha256": true
+  },
+  "sampling_design_id": "ccec1c8b2f0d14c7b644f9bfde37bcca93a053043c48fe843e9a11cfb382d5e7",
+  "source_sha256": "57ca7cd86055c4db927b74ecaa464eb3b975ee4778385ba90c293db3fdd7acd7"
+ },
+ "map": {
+  "checkpoint_file_sha256": "99f9dc0518b67781e41a2587ad2f46ee34cbad2b56d41a09272b81fc3cc4406e",
+  "checkpoint_path": "modern/experiments/pic2d_design_mini_sweep_v1/fields/l1a-gs-v3-106-ccec1c8b2f/l1a-gs-v3-106-ccec1c8b2f.domain-padding-1.25.level-0.json",
+  "checkpoint_payload_sha256": "cc8b69bf46789ba6a3a0326c58ba9e9a1dd5fdfb59ce021d11bdc0f755da91c5",
+  "classification": "independent_numerical_reference_not_hardware_validation",
+  "domain_study": {
+   "padding_factor": 1.25
+  },
+  "fem_level": 0,
+  "materials": "linear soft-iron poles and return yoke mu_r 4000, SmCo-like recoil mu_r 1.05 + remanence, BN / Al / Cu at mu_r 1 (fem_reference.adapters.adapt_geometry; the L1b v1.1 materials)",
+  "mesh": {
+   "bore_elements": 8,
+   "feature_elements": 4,
+   "reject_below_angle_deg": 5.0
+  },
+  "mesh_sha256": "edc8e88e3ef53ee288a0ac8e3e257143a875f393febeb8791b7763434dbf505c",
+  "run_sha256": "b363d68a2abe3102867fa3c2032ca849bc99156b626525444e58b748f97d11f6",
+  "sidecar_file_sha256": "0013cead3b8a20eba77335fd5e85f7cade735acdbf47161877e28f755e0a906d",
+  "solver": {
+   "absolute_tolerance": 1e-12,
+   "backend": "numpy-csr-jacobi-pcg",
+   "max_iterations": 16000,
+   "relative_tolerance": 2e-10
+  }
+ },
+ "mesh_preflight": {
+  "allocation_preflight": {
+   "available_ram_bytes": 4294967296,
+   "calibration_probe_retained_rss_delta_bytes": 675840,
+   "calibration_probe_rss_and_allocator_margin": "covered_by_1.75x_plus_scaled_reserve_up_to_256MiB",
+   "calibration_probe_tracemalloc_bytes": 2914493,
+   "check_timing": "immediately_before_level_and_assembly",
+   "coo_keys_bytes": 45239184,
+   "csr_upper_bound_bytes": 92998336,
+   "effective_required_free_ram_bytes": 688825623,
+   "fixed_python_reserve_bytes": 78722928,
+   "modeled_bytes": 393614642,
+   "passed": true,
+   "phase": "design-mini-sweep-level-0",
+   "required_free_ram_bytes": 688825623,
+   "safety_factor": 1.75,
+   "serialization_parse_buffers_bytes": 0,
+   "sort_workspace_bytes": 45239184,
+   "third_level": false,
+   "unique_masks_and_keys_bytes": 50894082,
+   "vectors_and_mesh_temporaries_bytes": 80520928
+  },
+  "bore_elements": 8,
+  "design_id": "l1a-gs-v3-106-ccec1c8b2f",
+  "domain": {
+   "r_max_m": 0.037475501219176297,
+   "r_min_m": 0.0,
+   "z_max_m": 0.04603805783391181,
+   "z_min_m": -0.02635447657439545
+  },
+  "feature_elements": 4,
+  "fits_dof_cap": true,
+  "level0_p2_dofs": 314995,
+  "level0_triangles": 156884,
+  "mesh_seconds": 15.345315100013977,
+  "minimum_angle_deg": 32.36785576809784,
+  "padding_factor": 1.25,
+  "passed": true,
+  "passes_angle_gate": true,
+  "reject_below_angle_deg": 5.0,
+  "robin_edges": 786,
+  "sliver": {
+   "element_count": 156884,
+   "elements_below_threshold": 0,
+   "fraction_below_threshold": 0.0,
+   "minimum_angle_deg": 32.36785576809784,
+   "regions_below_threshold": {},
+   "threshold_deg": 10.0
+  }
+ },
+ "plasma_regions": [
+  "injector-zone",
+  "channel-straight",
+  "channel-divergent-exit",
+  "dielectric-straight",
+  "dielectric-divergent-exit",
+  "ambient-background"
+ ],
+ "regated": "gates recomputed from the bound checkpoint (fields.regate_field); solve untouched",
+ "scale_note": "the FEM is solved at the nominal SmCo-like remanence; the PIC map (and every gate here) multiplies B by the design's L1a source_strength_scale so the field carries the catalogue's magnet strength (linear problem, exact) - the same convention as L1b v1.1",
+ "schema": "cft.pic2d.design-mini-sweep.field-binding.v1",
+ "solid_regions_sampled": [
+  "anode",
+  "magnet-01",
+  "magnet-02",
+  "magnet-03",
+  "magnet-04",
+  "magnet-05",
+  "pole-01",
+  "pole-02",
+  "pole-03",
+  "pole-04",
+  "return-yoke",
+  "shield-shell"
+ ],
+ "solve": {
+  "assembly_seconds": 35.63535990001401,
+  "converged": true,
+  "iterations": 3127,
+  "level": 0,
+  "mesh_quality": {
+   "maximum_aspect_indicator": 1.4076668590926114,
+   "minimum_angle_deg": 32.36785576809784,
+   "minimum_area_m2": 1.0921447603607693e-08,
+   "p2_dofs": 314995,
+   "triangles": 156884,
+   "vertices": 79056
+  },
+  "mesh_sha256": "edc8e88e3ef53ee288a0ac8e3e257143a875f393febeb8791b7763434dbf505c",
+  "p2_dofs": 314995,
+  "padding_factor": 1.25,
+  "peak_working_set_bytes": 102857096,
+  "purpose": "pic2d design mini-sweep v1 static field (level-0 padded solve; NOT a qualification chain member)",
+  "qois_bz_t": {
+   "stage-1-axis-patch": -0.04124617304476684,
+   "stage-1-bore-average": -0.06138207506908694,
+   "stage-1-bore-wall-line-average": -0.10486872751486657,
+   "stage-2-axis-patch": 0.0265023823229359,
+   "stage-2-bore-average": 0.053227512704473554,
+   "stage-2-bore-wall-line-average": 0.10715675033377539,
+   "stage-3-axis-patch": -0.03268201378508161,
+   "stage-3-bore-average": -0.05900102531400338,
+   "stage-3-bore-wall-line-average": -0.11251757022651865,
+   "stage-4-axis-patch": 0.024919517357740343,
+   "stage-4-bore-average": 0.052748594759116404,
+   "stage-4-bore-wall-line-average": 0.10759186699086341,
+   "stage-5-axis-patch": -0.06239633382803681,
+   "stage-5-bore-average": -0.12025372603024359,
+   "stage-5-bore-wall-line-average": -0.21034300426098052
+  },
+  "relative_true_residual_l2": 1.9859567503843847e-10,
+  "rss_after_solve_bytes": 174989312,
+  "solve_seconds": 80.10237690000213,
+  "solve_wall_seconds": 116.40574829999241,
+  "triangles": 156884
+ },
+ "source_strength_scale": 1.2157698210794479,
+ "status": "draft-field-artifact-for-a-not-yet-preregistered-sweep",
+ "supported_pic_box": {
+  "r_max_m": 0.036725501219176296,
+  "z_max_m": 0.04528805783391181
+ },
+ "topology_under_iron": {
+  "all_traces_terminate_cleanly": true,
+  "axis_nulls": [
+   {
+    "classification": "X",
+    "null_id": "axis-null-01",
+    "z_m": -0.0026607776213537077,
+    "zone": "anode_side"
+   },
+   {
+    "classification": "X",
+    "null_id": "axis-null-02",
+    "z_m": 0.0042330625907111945,
+    "zone": "channel"
+   },
+   {
+    "classification": "X",
+    "null_id": "axis-null-03",
+    "z_m": 0.007981659612677662,
+    "zone": "channel"
+   },
+   {
+    "classification": "X",
+    "null_id": "axis-null-04",
+    "z_m": 0.012202030859650432,
+    "zone": "channel"
+   },
+   {
+    "classification": "X",
+    "null_id": "axis-null-05",
+    "z_m": 0.01595046205105729,
+    "zone": "channel"
+   },
+   {
+    "classification": "X",
+    "null_id": "axis-null-06",
+    "z_m": 0.02284432620325423,
+    "zone": "downstream"
+   }
+  ],
+  "cells": [
+   {
+    "axis_bz_peak_t": 0.07930184581084054,
+    "cell_id": "cell-01",
+    "kind": "anode_partial",
+    "wall_b_min_t": 0.12338158184788159,
+    "z_end_m": 0.00407559287976072,
+    "z_start_m": 0.0
+   },
+   {
+    "axis_bz_peak_t": 0.0470743691492432,
+    "cell_id": "cell-02",
+    "kind": "interior",
+    "wall_b_min_t": 0.23065149331099974,
+    "z_end_m": 0.008044649038622094,
+    "z_start_m": 0.00407559287976072
+   },
+   {
+    "axis_bz_peak_t": 0.05518218952409421,
+    "cell_id": "cell-03",
+    "kind": "interior",
+    "wall_b_min_t": 0.23063649103595535,
+    "z_end_m": 0.012138931946989054,
+    "z_start_m": 0.008044649038622094
+   },
+   {
+    "axis_bz_peak_t": 0.04705648627743912,
+    "cell_id": "cell-04",
+    "kind": "interior",
+    "wall_b_min_t": 0.2306466773100875,
+    "z_end_m": 0.016107982694118454,
+    "z_start_m": 0.012138931946989054
+   },
+   {
+    "axis_bz_peak_t": 0.0793015016078986,
+    "cell_id": "cell-05",
+    "kind": "exit_partial",
+    "wall_b_min_t": 0.12341114098497163,
+    "z_end_m": 0.02018358125951636,
+    "z_start_m": 0.016107982694118454
+   }
+  ],
+  "hemp_like_all_cusps": true,
+  "interior_rule": "cusps farther than 0.00025 m from the straight-section ends (boundary cusps of the moved end nulls are excluded)",
+  "min_rho_conservative": 2.9252077032561696,
+  "min_rho_conservative_interior": 2.9252077032561696,
+  "rho": [
+   {
+    "cusp_id": "wall-cusp-01",
+    "hemp_like_conservative": true,
+    "rho_conservative": 2.9252077032561696,
+    "rho_wall": 0.7757800544823132,
+    "wall_b_t": 0.23197437024830378,
+    "z_c_m": 0.00407559287976072
+   },
+   {
+    "cusp_id": "wall-cusp-02",
+    "hemp_like_conservative": true,
+    "rho_conservative": 4.180514305704822,
+    "rho_wall": 0.751697140068917,
+    "wall_b_t": 0.2306899327255906,
+    "z_c_m": 0.008044649038622094
+   },
+   {
+    "cusp_id": "wall-cusp-03",
+    "hemp_like_conservative": true,
+    "rho_conservative": 4.180506586148769,
+    "rho_wall": 0.751695752017643,
+    "wall_b_t": 0.23068950674358543,
+    "z_c_m": 0.012138931946989054
+   },
+   {
+    "cusp_id": "wall-cusp-04",
+    "hemp_like_conservative": true,
+    "rho_conservative": 2.9252584625705613,
+    "rho_wall": 0.7756438539687728,
+    "wall_b_t": 0.23197738867305837,
+    "z_c_m": 0.016107982694118454
+   }
+  ],
+  "sampling": {
+   "axial_samples": 408,
+   "dr_m": 0.0001281979670295641,
+   "dz_m": 0.000128306917298978,
+   "max_b_t": 0.3067665360360467,
+   "max_hits_per_node": 2,
+   "multi_hit_node_count": 162,
+   "r_max_m": 0.004102334944946051,
+   "radial_samples": 33,
+   "source_strength_scale_applied": 1.2157698210794479,
+   "z_max_m": 0.03620224830009988,
+   "z_min_m": -0.016018667040583523
+  },
+  "wall_cusps": [
+   {
+    "angle_to_wall_normal_deg": 1.4045916462366534,
+    "cusp_id": "wall-cusp-01",
+    "wall_b_t": 0.23197437024830378,
+    "z_c_m": 0.00407559287976072
+   },
+   {
+    "angle_to_wall_normal_deg": 0.7874014446920503,
+    "cusp_id": "wall-cusp-02",
+    "wall_b_t": 0.2306899327255906,
+    "z_c_m": 0.008044649038622094
+   },
+   {
+    "angle_to_wall_normal_deg": 0.7645792254658277,
+    "cusp_id": "wall-cusp-03",
+    "wall_b_t": 0.23068950674358543,
+    "z_c_m": 0.012138931946989054
+   },
+   {
+    "angle_to_wall_normal_deg": 1.4199424110685226,
+    "cusp_id": "wall-cusp-04",
+    "wall_b_t": 0.23197738867305837,
+    "z_c_m": 0.016107982694118454
+   }
+  ]
+ },
+ "total_seconds": 290.92329299999983
+}

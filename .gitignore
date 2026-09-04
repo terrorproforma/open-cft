@@ -204,3 +204,6 @@ modern/experiments/pic2d_cft_plume_v1/results-attempt8-grid-heating-triad-stop/s
 modern/experiments/pic2d_cft_plume_v1/results-attempt8-grid-heating-triad-stop/*.pid
 modern/experiments/pic2d_cft_plume_v1/results-attempt8-grid-heating-triad-stop/*.log
 modern/experiments/pic2d_cft_plume_v1/results-attempt8-grid-heating-triad-stop/*.err
+
+# pic2d design mini-sweep v1: the per-design P2 field checkpoints (Git LFS) live under fields/, not results/
+!modern/experiments/pic2d_design_mini_sweep_v1/fields/**/*.json.arrays.npz
