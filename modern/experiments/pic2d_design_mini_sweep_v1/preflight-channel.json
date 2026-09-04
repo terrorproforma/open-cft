@@ -1,0 +1,840 @@
+{
+ "all_passed": true,
+ "design_count": 5,
+ "designs": [
+  {
+   "design_id": "divergent-exit-stack",
+   "domain": "channel",
+   "gates": {
+    "cathode_connectivity": {
+     "passed": true,
+     "skipped": "channel-only domain has no cathode region"
+    },
+    "cost": {
+     "cells": [
+      60,
+      480
+     ],
+     "design_id": "divergent-exit-stack",
+     "device_gb_projected": 4.2127175329498865,
+     "domain": "channel",
+     "dr_um": 50.0,
+     "dz_um": 50.0,
+     "factorisation_s": 22.545687451003108,
+     "field_map_s": 4.4011499999999995,
+     "fixed_ms": 0.7764589661650774,
+     "inverse_block_reads_ms": 0.14113021,
+     "inverse_blocks_gb": 0.112904168,
+     "launches_ms": 0.61,
+     "ms_per_step": 2.2423537327098977,
+     "node_kernels_ms": 0.025328756165077317,
+     "nodes": [
+      61,
+      481
+     ],
+     "particles_projected_m": {
+      "channel_m": 1.9998564345768355,
+      "channel_volume_ratio": 0.9999282172884177,
+      "plume_m": 0.0,
+      "total_m": 1.9998564345768355
+     },
+     "passed": true,
+     "sequential_launches": 122,
+     "stepping_hours": 2.9898049769465302,
+     "steps_to_transits": 4800000.0,
+     "transit_s": 2.4e-06,
+     "transits": 3.0,
+     "wall_hours": 2.997290209571809
+    },
+    "field_binding": {
+     "cusps_under_iron": [],
+     "hash_checks": {
+      "channel": true,
+      "plume-12mm": true,
+      "plume-24mm": true
+     },
+     "passed": true,
+     "production_gates": {
+      "all_passed": true,
+      "channel_cross_check": "performed at map build by p2_plume_field_map (0.02 T bound; measured 0.74 mT max for padding-1.5 vs level-1)"
+     },
+     "rho_under_iron": null
+    },
+    "field_map": {
+     "cathode_placement": null,
+     "dt_policy": {
+      "max_b_t": 0.29139328801100517,
+      "omega_ce_dt_at_template": 0.07687625178912129,
+      "rule": "template dt kept: omega_ce dt 0.077 <= 0.95 x 0.2"
+     },
+     "dt_s": 1.5e-12,
+     "field_map_sha256": "c2811620d72050abf7ad66ee1fc2e09e7ac785bdef64664b76c5e0bf9a98d94b",
+     "max_b_t": 0.29139328801100517,
+     "passed": true,
+     "plasma_nodes_sampled": null,
+     "provenance_kind": "p2-psi-bicubic-node-sample",
+     "stability": {
+      "cell_debye_ratio": 1.5039584510437707,
+      "debye_length_m": 3.324559928188124e-05,
+      "dt_s": 1.5e-12,
+      "max_b_t": 0.29139328801100517,
+      "max_collision_probability": 0.0,
+      "max_electron_speed_m_per_s": 11854980.41078976,
+      "omega_ce_dt": 0.07687625178912129,
+      "omega_ce_rad_per_s": 51250834526.08086,
+      "omega_pe_dt": 0.05351959094294617,
+      "omega_pe_rad_per_s": 35679727295.29745,
+      "particle_courant": 0.3556494123236928,
+      "reference_density_per_m3": 4e+17,
+      "reference_electron_temperature_ev": 8.0,
+      "stable": true,
+      "violations": []
+     }
+    },
+    "grid": {
+     "dr_m": 5e-05,
+     "dz_m": 5e-05,
+     "node_shape": [
+      61,
+      481
+     ],
+     "passed": true,
+     "snaps": {
+      "bore_cells": 40,
+      "channel_cells": 480,
+      "cone_start": {
+       "cells": 360,
+       "error_m": 0.0,
+       "snapped_m": 0.018000000000000002,
+       "value_m": 0.018000000000000002
+      },
+      "dr_m": 5e-05,
+      "dz_m": 5e-05,
+      "exit_radius": {
+       "cells": 60,
+       "error_m": 0.0,
+       "snapped_m": 0.003,
+       "value_m": 0.003
+      },
+      "target_cell_m": 5e-05
+     },
+     "worst_snap_in_cells": 0.0
+    },
+    "identity": {
+     "identity": {
+      "config_id": "divergent-exit-stack-v1",
+      "geometry_sha256": "9b7ec5608d02754dcf7605d0389915efddfe4202f5bc466feb4652a46d004217",
+      "identity_basis": "cft_revival.geometry.generators.divergent_exit_stack (the fem_reference qualification design)"
+     },
+     "passed": true
+    },
+    "mesh_masks": {
+     "body_face_nodes": 0,
+     "dirichlet_nodes": 101,
+     "far_field_nodes": 0,
+     "passed": true,
+     "plasma_cells": 20340,
+     "plasma_nodes": 20880,
+     "plasma_volume_m3": 3.432268513863189e-07,
+     "unknown_nodes": 20779,
+     "wall_nodes": 498,
+     "wall_representation": "exact radial grid line in the straight bore; one-cell stair-step in the cone"
+    },
+    "protocol": {
+     "case_id": "divergent-exit-stack-channel-w6e+04-ng0-5.5e+19-seed5e16-draft",
+     "feed_atoms_per_s": 8.551102004120011e+16,
+     "ion_transit_time_s": 2.4e-06,
+     "macro_weight": 60000.0,
+     "passed": true,
+     "wall_budget_seconds": 13800.0
+    }
+   },
+   "passed": true,
+   "seconds": 1.865441500005545
+  },
+  {
+   "design_id": "l1a-gs-v3-056-effcbc8686",
+   "domain": "channel",
+   "gates": {
+    "cathode_connectivity": {
+     "passed": true,
+     "skipped": "channel-only domain has no cathode region"
+    },
+    "cost": {
+     "cells": [
+      76,
+      341
+     ],
+     "design_id": "l1a-gs-v3-056-effcbc8686",
+     "device_gb_projected": 7.460356465683889,
+     "domain": "channel",
+     "dr_um": 50.295837426299265,
+     "dz_um": 50.00291015478971,
+     "factorisation_s": 10.229807497647245,
+     "field_map_s": 3.9501,
+     "fixed_ms": 0.8827952292809088,
+     "inverse_block_reads_ms": 0.09006228,
+     "inverse_blocks_gb": 0.072049824,
+     "launches_ms": 0.77,
+     "ms_per_step": 4.202894281861132,
+     "node_kernels_ms": 0.022732949280908833,
+     "nodes": [
+      77,
+      342
+     ],
+     "particles_projected_m": {
+      "channel_m": 4.529466647449145,
+      "channel_volume_ratio": 2.2647333237245726,
+      "plume_m": 0.0,
+      "total_m": 4.529466647449145
+     },
+     "passed": true,
+     "sequential_launches": 154,
+     "stepping_hours": 3.981306572311096,
+     "steps_to_transits": 3410198.4725566576,
+     "transit_s": 1.7050992362783289e-06,
+     "transits": 3.0,
+     "wall_hours": 3.9852454355048867
+    },
+    "field_binding": {
+     "cusps_under_iron": [
+      0.004313612482825282,
+      0.008525496423343368,
+      0.012737388759216041
+     ],
+     "hash_checks": {
+      "checkpoint_file_sha256": true,
+      "checkpoint_payload_sha256": true,
+      "mesh_sha256": true,
+      "run_sha256": true,
+      "sidecar_file_sha256": true
+     },
+     "passed": true,
+     "production_gates": {
+      "all_passed": true,
+      "coverage": true,
+      "l1b_accepted_grid_agreement": true,
+      "mesh_angle": true,
+      "solver_converged": true,
+      "topology_agreement": true
+     },
+     "rho_under_iron": 2.356900671248411
+    },
+    "field_map": {
+     "cathode_placement": null,
+     "dt_policy": {
+      "max_b_t": 0.32115355594887113,
+      "omega_ce_dt_at_template": 0.08472769499469263,
+      "rule": "template dt kept: omega_ce dt 0.085 <= 0.95 x 0.2"
+     },
+     "dt_s": 1.5e-12,
+     "field_map_sha256": "f97bc3045b020b180f68b3d164c9861cb11cd811e937b0af6470a7afa4b7249d",
+     "max_b_t": 0.32115355594887113,
+     "passed": true,
+     "plasma_nodes_sampled": 26334,
+     "provenance_kind": "p2-direct-node-sample-design-mini-sweep",
+     "stability": {
+      "cell_debye_ratio": 1.512856994992127,
+      "debye_length_m": 3.324559928188124e-05,
+      "dt_s": 1.5e-12,
+      "max_b_t": 0.32115355594887113,
+      "max_collision_probability": 0.0,
+      "max_electron_speed_m_per_s": 11854980.41078976,
+      "omega_ce_dt": 0.08472769499469263,
+      "omega_ce_rad_per_s": 56485129996.46175,
+      "omega_pe_dt": 0.05351959094294617,
+      "omega_pe_rad_per_s": 35679727295.29745,
+      "particle_courant": 0.35562871363160614,
+      "reference_density_per_m3": 4e+17,
+      "reference_electron_temperature_ev": 8.0,
+      "stable": true,
+      "violations": []
+     }
+    },
+    "grid": {
+     "dr_m": 5.029583742629926e-05,
+     "dz_m": 5.000291015478971e-05,
+     "node_shape": [
+      77,
+      342
+     ],
+     "passed": true,
+     "snaps": {
+      "bore_cells": 76,
+      "channel_cells": 341,
+      "cone_start": {
+       "cells": 341,
+       "error_m": 0.0,
+       "snapped_m": 0.01705099236278329,
+       "value_m": 0.01705099236278329
+      },
+      "dr_m": 5.029583742629926e-05,
+      "dz_m": 5.000291015478971e-05,
+      "exit_radius": {
+       "cells": 76,
+       "error_m": 0.0,
+       "snapped_m": 0.0038224836443987442,
+       "value_m": 0.0038224836443987442
+      },
+      "target_cell_m": 5e-05
+     },
+     "worst_snap_in_cells": 0.0
+    },
+    "identity": {
+     "identity": {
+      "case_sha256": "ea2534eebad7d376444f016d56ed05163496700e8f039d65f2104498fe835fa3",
+      "config_sha256": "3d2dc838d86040092c49df99544e731ef6dd485287441c3d904a2573bb368385",
+      "geometry_sha256": "6f287938a4e31a83501cbbb7bd83e4d690a7699a85bb07f449b8e90af96db873",
+      "identity_basis": "sweep-v3 Sobol (seed, index) rebuild; hashes equal the sealed sweep-v3 design authorities",
+      "identity_checks": {
+       "case_sha256": true,
+       "config_sha256": true,
+       "geometry_sha256": true,
+       "source_sha256": true
+      },
+      "sampling_design_id": "effcbc86867858a8680a8f8dd32fe763279619fc2afd3afa586bf8ea9cf22f81",
+      "source_sha256": "96fde8fa1c96476f132ac8e168ce556bd81987c29afd4b32af5f4e0bb71774bc"
+     },
+     "passed": true
+    },
+    "mesh_masks": {
+     "body_face_nodes": 0,
+     "dirichlet_nodes": 154,
+     "far_field_nodes": 0,
+     "passed": true,
+     "plasma_cells": 25916,
+     "plasma_nodes": 26334,
+     "plasma_volume_m3": 7.826918366792123e-07,
+     "unknown_nodes": 26180,
+     "wall_nodes": 0,
+     "wall_representation": "exact radial grid line in the straight bore; one-cell stair-step in the cone"
+    },
+    "protocol": {
+     "case_id": "l1a-gs-v3-056-effcbc8686-channel-w6e+04-ng0-5.5e+19-seed5e16-draft",
+     "feed_atoms_per_s": 1.3882601240254925e+17,
+     "ion_transit_time_s": 1.7050992362783289e-06,
+     "macro_weight": 60000.0,
+     "passed": true,
+     "wall_budget_seconds": 18000.0
+    }
+   },
+   "passed": true,
+   "seconds": 1.573570499982452
+  },
+  {
+   "design_id": "l1a-gs-v2-047-e3196a8aa5",
+   "domain": "channel",
+   "gates": {
+    "cathode_connectivity": {
+     "passed": true,
+     "skipped": "channel-only domain has no cathode region"
+    },
+    "cost": {
+     "cells": [
+      44,
+      518
+     ],
+     "design_id": "l1a-gs-v2-047-e3196a8aa5",
+     "device_gb_projected": 3.148216872042367,
+     "domain": "channel",
+     "dr_um": 50.54796815624779,
+     "dz_um": 50.03284535369916,
+     "factorisation_s": 20.893586974903737,
+     "field_map_s": 3.5032499999999995,
+     "fixed_ms": 0.5913737635283521,
+     "inverse_block_reads_ms": 0.12121245,
+     "inverse_blocks_gb": 0.09696996,
+     "launches_ms": 0.45,
+     "ms_per_step": 1.4660383685491636,
+     "node_kernels_ms": 0.02016131352835216,
+     "nodes": [
+      45,
+      519
+     ],
+     "particles_projected_m": {
+      "channel_m": 1.1932668554172052,
+      "channel_volume_ratio": 0.5966334277086026,
+      "plume_m": 0.0,
+      "total_m": 1.1932668554172052
+     },
+     "passed": true,
+     "sequential_launches": 90,
+     "stepping_hours": 2.1108520425375903,
+     "steps_to_transits": 5183402.778643232,
+     "transit_s": 2.5917013893216162e-06,
+     "transits": 3.0,
+     "wall_hours": 2.1176289416972858
+    },
+    "field_binding": {
+     "cusps_under_iron": [
+      7.299304895023195e-05,
+      0.006607336451088326,
+      0.012958533741169537,
+      0.0193097667742252
+     ],
+     "hash_checks": {
+      "checkpoint_file_sha256": true,
+      "checkpoint_payload_sha256": true,
+      "mesh_sha256": true,
+      "run_sha256": true,
+      "sidecar_file_sha256": true
+     },
+     "passed": true,
+     "production_gates": {
+      "all_passed": true,
+      "coverage": true,
+      "l1b_accepted_grid_agreement": null,
+      "mesh_angle": true,
+      "solver_converged": true,
+      "topology_agreement": true
+     },
+     "rho_under_iron": 0.2292369740304119
+    },
+    "field_map": {
+     "cathode_placement": null,
+     "dt_policy": {
+      "max_b_t": 0.25423743909646607,
+      "omega_ce_dt_at_template": 0.06707368421424709,
+      "rule": "template dt kept: omega_ce dt 0.067 <= 0.95 x 0.2"
+     },
+     "dt_s": 1.5e-12,
+     "field_map_sha256": "cf09adc96033e7bb13556153f3ee9ce30a84f482634cd7915308a9388df49264",
+     "max_b_t": 0.25423743909646607,
+     "passed": true,
+     "plasma_nodes_sampled": 16818,
+     "provenance_kind": "p2-direct-node-sample-design-mini-sweep",
+     "stability": {
+      "cell_debye_ratio": 1.5204408778336056,
+      "debye_length_m": 3.324559928188124e-05,
+      "dt_s": 1.5e-12,
+      "max_b_t": 0.25423743909646607,
+      "max_collision_probability": 0.0,
+      "max_electron_speed_m_per_s": 11854980.41078976,
+      "omega_ce_dt": 0.06707368421424709,
+      "omega_ce_rad_per_s": 44715789476.16473,
+      "omega_pe_dt": 0.05351959094294617,
+      "omega_pe_rad_per_s": 35679727295.29745,
+      "particle_courant": 0.35541593708041835,
+      "reference_density_per_m3": 4e+17,
+      "reference_electron_temperature_ev": 8.0,
+      "stable": true,
+      "violations": []
+     }
+    },
+    "grid": {
+     "dr_m": 5.0547968156247794e-05,
+     "dz_m": 5.0032845353699156e-05,
+     "node_shape": [
+      45,
+      519
+     ],
+     "passed": true,
+     "snaps": {
+      "bore_cells": 31,
+      "channel_cells": 518,
+      "cone_start": {
+       "cells": 484,
+       "error_m": -2.4950604210861177e-05,
+       "snapped_m": 0.02421589715119039,
+       "value_m": 0.02424084775540125
+      },
+      "dr_m": 5.0547968156247794e-05,
+      "dz_m": 5.0032845353699156e-05,
+      "exit_radius": {
+       "cells": 44,
+       "error_m": 2.4654754241508915e-05,
+       "snapped_m": 0.002224110598874903,
+       "value_m": 0.002199455844633394
+      },
+      "target_cell_m": 5e-05
+     },
+     "worst_snap_in_cells": 0.49868449484487426
+    },
+    "identity": {
+     "identity": {
+      "case_sha256": "5276353d3575a2216c712d8c933cc55cf45bc299fef065274b5fc6251b95af2e",
+      "config_sha256": "d2b36e39b461fc7b7abcc2eadc3cc508e025283f8083a3d156f536e7108ab243",
+      "geometry_sha256": "2cc4435b0ac4e35e8f4b7da6415400435c552819a807e81c49921df7c7a866c4",
+      "identity_basis": "sweep-v2 case rebuilt by the wall-loss geometry screening pipeline; hashes equal the sealed raw record",
+      "identity_checks": {
+       "case_sha256": true,
+       "config_sha256": true,
+       "geometry_sha256": true,
+       "source_sha256": true
+      },
+      "sampling_design_id": "e3196a8aa552b35cb00047e63ff919cd8a027427e85b5b27994db9530a08f360",
+      "source_sha256": "cf9ebc93ef398e3197bda91a7e432e06c6ef9c2c0a9266fcae2c76ffa8d45d3c"
+     },
+     "passed": true
+    },
+    "mesh_masks": {
+     "body_face_nodes": 0,
+     "dirichlet_nodes": 76,
+     "far_field_nodes": 0,
+     "passed": true,
+     "plasma_cells": 16256,
+     "plasma_nodes": 16818,
+     "plasma_volume_m3": 2.0550840819975519e-07,
+     "unknown_nodes": 16742,
+     "wall_nodes": 529,
+     "wall_representation": "exact radial grid line in the straight bore; one-cell stair-step in the cone"
+    },
+    "protocol": {
+     "case_id": "l1a-gs-v2-047-e3196a8aa5-channel-w6e+04-ng0-5.5e+19-seed5e16-draft",
+     "feed_atoms_per_s": 4.699940252500502e+16,
+     "ion_transit_time_s": 2.5917013893216162e-06,
+     "macro_weight": 60000.0,
+     "passed": true,
+     "wall_budget_seconds": 9600.0
+    }
+   },
+   "passed": true,
+   "seconds": 1.3443633999850135
+  },
+  {
+   "design_id": "l1a-gs-v3-009-d0c686b4aa",
+   "domain": "channel",
+   "gates": {
+    "cathode_connectivity": {
+     "passed": true,
+     "skipped": "channel-only domain has no cathode region"
+    },
+    "cost": {
+     "cells": [
+      54,
+      456
+     ],
+     "design_id": "l1a-gs-v3-009-d0c686b4aa",
+     "device_gb_projected": 5.463755292464858,
+     "domain": "channel",
+     "dr_um": 49.65008126115814,
+     "dz_um": 49.97790687124698,
+     "factorisation_s": 17.434508463685532,
+     "field_map_s": 3.7702499999999994,
+     "fixed_ms": 0.6865648568951032,
+     "inverse_block_reads_ms": 0.11486695000000001,
+     "inverse_blocks_gb": 0.09189356,
+     "launches_ms": 0.55,
+     "ms_per_step": 2.869699202969519,
+     "node_kernels_ms": 0.021697906895103043,
+     "nodes": [
+      55,
+      457
+     ],
+     "particles_projected_m": {
+      "channel_m": 2.9783551788191214,
+      "channel_volume_ratio": 1.4891775894095607,
+      "plume_m": 0.0,
+      "total_m": 2.9783551788191214
+     },
+     "passed": true,
+     "sequential_launches": 110,
+     "stepping_hours": 3.633346174367392,
+     "steps_to_transits": 4557985.106657725,
+     "transit_s": 2.2789925533288623e-06,
+     "transits": 3.0,
+     "wall_hours": 3.639236385051749
+    },
+    "field_binding": {
+     "cusps_under_iron": [
+      0.005736591493176383,
+      0.011394963081762662,
+      0.017053340790616076
+     ],
+     "hash_checks": {
+      "checkpoint_file_sha256": true,
+      "checkpoint_payload_sha256": true,
+      "mesh_sha256": true,
+      "run_sha256": true,
+      "sidecar_file_sha256": true
+     },
+     "passed": true,
+     "production_gates": {
+      "all_passed": true,
+      "coverage": true,
+      "l1b_accepted_grid_agreement": null,
+      "mesh_angle": true,
+      "solver_converged": true,
+      "topology_agreement": true
+     },
+     "rho_under_iron": 0.924060254394743
+    },
+    "field_map": {
+     "cathode_placement": null,
+     "dt_policy": {
+      "max_b_t": 0.10707898700989497,
+      "omega_ce_dt_at_template": 0.028249899724477664,
+      "rule": "template dt kept: omega_ce dt 0.028 <= 0.95 x 0.2"
+     },
+     "dt_s": 1.5e-12,
+     "field_map_sha256": "785c227c6b6297f93968f12b38d6eceeb4910f767fa5808dd3ac28fc26474476",
+     "max_b_t": 0.10707898700989497,
+     "passed": true,
+     "plasma_nodes_sampled": 25135,
+     "provenance_kind": "p2-direct-node-sample-design-mini-sweep",
+     "stability": {
+      "cell_debye_ratio": 1.5032939080898087,
+      "debye_length_m": 3.324559928188124e-05,
+      "dt_s": 1.5e-12,
+      "max_b_t": 0.10707898700989497,
+      "max_collision_probability": 0.0,
+      "max_electron_speed_m_per_s": 11854980.41078976,
+      "omega_ce_dt": 0.028249899724477664,
+      "omega_ce_rad_per_s": 18833266482.985107,
+      "omega_pe_dt": 0.05351959094294617,
+      "omega_pe_rad_per_s": 35679727295.29745,
+      "particle_courant": 0.35815592169223864,
+      "reference_density_per_m3": 4e+17,
+      "reference_electron_temperature_ev": 8.0,
+      "stable": true,
+      "violations": []
+     }
+    },
+    "grid": {
+     "dr_m": 4.965008126115814e-05,
+     "dz_m": 4.997790687124698e-05,
+     "node_shape": [
+      55,
+      457
+     ],
+     "passed": true,
+     "snaps": {
+      "bore_cells": 54,
+      "channel_cells": 456,
+      "cone_start": {
+       "cells": 456,
+       "error_m": 0.0,
+       "snapped_m": 0.022789925533288624,
+       "value_m": 0.022789925533288624
+      },
+      "dr_m": 4.965008126115814e-05,
+      "dz_m": 4.997790687124698e-05,
+      "exit_radius": {
+       "cells": 54,
+       "error_m": 0.0,
+       "snapped_m": 0.00268110438810254,
+       "value_m": 0.00268110438810254
+      },
+      "target_cell_m": 5e-05
+     },
+     "worst_snap_in_cells": 0.0
+    },
+    "identity": {
+     "identity": {
+      "case_sha256": "6f7a1838aa4906dfc936816b984e8026ebfd3310df7f8c42739d7bfcbe21121c",
+      "config_sha256": "a88d2337c3f7a80cb2cc618ad359fd32041e462fc1d6acf283801ee594777327",
+      "geometry_sha256": "76f335289890e2f60efefea6c5da97d1a9a93a56f9d86de92ed6f099210f0534",
+      "identity_basis": "sweep-v3 Sobol (seed, index) rebuild; hashes equal the sealed sweep-v3 design authorities",
+      "identity_checks": {
+       "case_sha256": true,
+       "config_sha256": true,
+       "geometry_sha256": true,
+       "source_sha256": true
+      },
+      "sampling_design_id": "d0c686b4aae4a83d1fb8d1968783ea6b69ca0d25ff02c10f72e37a2ed3d014b4",
+      "source_sha256": "cf5ba2f6bbd6fd5148627584fa8f15d3428ac92009f53bcf80f62cf857d66e91"
+     },
+     "passed": true
+    },
+    "mesh_masks": {
+     "body_face_nodes": 0,
+     "dirichlet_nodes": 110,
+     "far_field_nodes": 0,
+     "passed": true,
+     "plasma_cells": 24624,
+     "plasma_nodes": 25135,
+     "plasma_volume_m3": 5.146597748999442e-07,
+     "unknown_nodes": 25025,
+     "wall_nodes": 0,
+     "wall_representation": "exact radial grid line in the straight bore; one-cell stair-step in the cone"
+    },
+    "protocol": {
+     "case_id": "l1a-gs-v3-009-d0c686b4aa-channel-w6e+04-ng0-5.5e+19-seed5e16-draft",
+     "feed_atoms_per_s": 6.829784876137707e+16,
+     "ion_transit_time_s": 2.2789925533288623e-06,
+     "macro_weight": 60000.0,
+     "passed": true,
+     "wall_budget_seconds": 16800.0
+    }
+   },
+   "passed": true,
+   "seconds": 1.2711923999886494
+  },
+  {
+   "design_id": "l1a-gs-v3-106-ccec1c8b2f",
+   "domain": "channel",
+   "gates": {
+    "cathode_connectivity": {
+     "passed": true,
+     "skipped": "channel-only domain has no cathode region"
+    },
+    "cost": {
+     "cells": [
+      82,
+      404
+     ],
+     "design_id": "l1a-gs-v3-106-ccec1c8b2f",
+     "device_gb_projected": 9.636960356516806,
+     "domain": "channel",
+     "dr_um": 50.02847493836648,
+     "dz_um": 49.95935955325832,
+     "factorisation_s": 18.312244572615214,
+     "field_map_s": 5.04225,
+     "fixed_ms": 0.9951590567546804,
+     "inverse_block_reads_ms": 0.13614075,
+     "inverse_blocks_gb": 0.1089126,
+     "launches_ms": 0.8300000000000001,
+     "ms_per_step": 5.5217429071599256,
+     "node_kernels_ms": 0.02901830675468028,
+     "nodes": [
+      83,
+      405
+     ],
+     "particles_projected_m": {
+      "channel_m": 6.175421351166774,
+      "channel_volume_ratio": 3.087710675583387,
+      "plume_m": 0.0,
+      "total_m": 6.175421351166774
+     },
+     "passed": true,
+     "sequential_launches": 166,
+     "stepping_hours": 6.191585925601135,
+     "steps_to_transits": 4036716.2519032713,
+     "transit_s": 2.0183581259516356e-06,
+     "transits": 3.0,
+     "wall_hours": 6.198073285204639
+    },
+    "field_binding": {
+     "cusps_under_iron": [
+      0.00407559287976072,
+      0.008044649038622094,
+      0.012138931946989054,
+      0.016107982694118454
+     ],
+     "hash_checks": {
+      "checkpoint_file_sha256": true,
+      "checkpoint_payload_sha256": true,
+      "mesh_sha256": true,
+      "run_sha256": true,
+      "sidecar_file_sha256": true
+     },
+     "passed": true,
+     "production_gates": {
+      "all_passed": true,
+      "coverage": true,
+      "l1b_accepted_grid_agreement": true,
+      "mesh_angle": true,
+      "solver_converged": true,
+      "topology_agreement": true
+     },
+     "rho_under_iron": 2.9252077032561696
+    },
+    "field_map": {
+     "cathode_placement": null,
+     "dt_policy": {
+      "max_b_t": 0.30719650514693586,
+      "omega_ce_dt_at_template": 0.08104550396343382,
+      "rule": "template dt kept: omega_ce dt 0.081 <= 0.95 x 0.2"
+     },
+     "dt_s": 1.5e-12,
+     "field_map_sha256": "39da1fef473f8c4a741eadb997a2ee49e330617031809bfcedc27099c35eb3b6",
+     "max_b_t": 0.30719650514693586,
+     "passed": true,
+     "plasma_nodes_sampled": 33615,
+     "provenance_kind": "p2-direct-node-sample-design-mini-sweep",
+     "stability": {
+      "cell_debye_ratio": 1.5048149535277549,
+      "debye_length_m": 3.324559928188124e-05,
+      "dt_s": 1.5e-12,
+      "max_b_t": 0.30719650514693586,
+      "max_collision_probability": 0.0,
+      "max_electron_speed_m_per_s": 11854980.41078976,
+      "omega_ce_dt": 0.08104550396343382,
+      "omega_ce_rad_per_s": 54030335975.62255,
+      "omega_pe_dt": 0.05351959094294617,
+      "omega_pe_rad_per_s": 35679727295.29745,
+      "particle_courant": 0.3559387224975921,
+      "reference_density_per_m3": 4e+17,
+      "reference_electron_temperature_ev": 8.0,
+      "stable": true,
+      "violations": []
+     }
+    },
+    "grid": {
+     "dr_m": 5.0028474938366476e-05,
+     "dz_m": 4.9959359553258315e-05,
+     "node_shape": [
+      83,
+      405
+     ],
+     "passed": true,
+     "snaps": {
+      "bore_cells": 82,
+      "channel_cells": 404,
+      "cone_start": {
+       "cells": 404,
+       "error_m": 0.0,
+       "snapped_m": 0.02018358125951636,
+       "value_m": 0.02018358125951636
+      },
+      "dr_m": 5.0028474938366476e-05,
+      "dz_m": 4.9959359553258315e-05,
+      "exit_radius": {
+       "cells": 82,
+       "error_m": 0.0,
+       "snapped_m": 0.004102334944946051,
+       "value_m": 0.004102334944946051
+      },
+      "target_cell_m": 5e-05
+     },
+     "worst_snap_in_cells": 0.0
+    },
+    "identity": {
+     "identity": {
+      "case_sha256": "583348c7c5e8ae2e94844a5064024b484f9befdf04503b6dcd46b9c32f6d6d56",
+      "config_sha256": "ada417c1e3fe7f3cccd1a968c62fed1430f20b770ed143f552ec376573f971ad",
+      "geometry_sha256": "3d0bc7f6337e3557225611ef34bce3c59cb03736400e04ced64c332ef85d7014",
+      "identity_basis": "sweep-v3 Sobol (seed, index) rebuild; hashes equal the sealed sweep-v3 design authorities",
+      "identity_checks": {
+       "case_sha256": true,
+       "config_sha256": true,
+       "geometry_sha256": true,
+       "source_sha256": true
+      },
+      "sampling_design_id": "ccec1c8b2f0d14c7b644f9bfde37bcca93a053043c48fe843e9a11cfb382d5e7",
+      "source_sha256": "57ca7cd86055c4db927b74ecaa464eb3b975ee4778385ba90c293db3fdd7acd7"
+     },
+     "passed": true
+    },
+    "mesh_masks": {
+     "body_face_nodes": 0,
+     "dirichlet_nodes": 166,
+     "far_field_nodes": 0,
+     "passed": true,
+     "plasma_cells": 33128,
+     "plasma_nodes": 33615,
+     "plasma_volume_m3": 1.0671128094816186e-06,
+     "unknown_nodes": 33449,
+     "wall_nodes": 0,
+     "wall_representation": "exact radial grid line in the straight bore; one-cell stair-step in the cone"
+    },
+    "protocol": {
+     "case_id": "l1a-gs-v3-106-ccec1c8b2f-channel-w6e+04-ng0-5.5e+19-seed5e16-draft",
+     "feed_atoms_per_s": 1.598975504437045e+17,
+     "ion_transit_time_s": 2.0183581259516356e-06,
+     "macro_weight": 60000.0,
+     "passed": true,
+     "wall_budget_seconds": 28200.0
+    }
+   },
+   "passed": true,
+   "seconds": 1.6174612999893725
+  }
+ ],
+ "domain": "channel",
+ "experiment_id": "pic2d-design-mini-sweep-v1",
+ "generated_utc": "2026-09-04T02:22:22.224160+00:00",
+ "schema_version": "cft.pic2d.design-mini-sweep.preflight/0.1.0-draft",
+ "seconds": 7.672428399993805,
+ "status": "whole-set preflight of a DRAFT (not preregistered) sweep"
+}

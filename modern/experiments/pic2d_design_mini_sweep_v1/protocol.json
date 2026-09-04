@@ -1,0 +1,750 @@
+{
+ "closure_targets": [
+  {
+   "name": "cusp_transit_loss_probability",
+   "per": "cusp",
+   "pic_observable": "L_k / je_arriving,k: window-averaged electron wall current in the cusp window (|z - z_c| <= w) over the electron current arriving at the cusp plane from the exit side, from the Kornfeld chain je_k = je_{k-1} - L_k + I_k seeded with the injected/cathode current that enters the channel",
+   "plasma_network_v2_parameter": "SheathClosureInputs.declared_cusp_probabilities[k] (CL-1) / anode_cusp_probability (anode-most cusp)",
+   "role": "calibration",
+   "unit": "-"
+  },
+  {
+   "name": "cusp_electron_wall_current",
+   "per": "cusp",
+   "pic_observable": "e x sum over the cusp window of wall_electron_flux x wall area (maps.npz wall_electron_flux_per_m2_s)",
+   "plasma_network_v2_parameter": "L_k in rows R23-R26 / R35-R37 (the lost electron current)",
+   "role": "calibration",
+   "unit": "A"
+  },
+  {
+   "name": "cusp_ion_wall_current",
+   "per": "cusp",
+   "pic_observable": "e x sum over the cusp window of wall_ion_flux x wall area",
+   "plasma_network_v2_parameter": "PlasmaState.cusp_ion_current_a[k] (ambipolar balance of the sheath rows)",
+   "role": "reproduction",
+   "unit": "A"
+  },
+  {
+   "name": "effective_cusp_loss_coefficient",
+   "per": "cusp",
+   "pic_observable": "L_k / (e N_e,cell) with N_e,cell the window-averaged electron inventory of the cell upstream of the cusp: the electron loss frequency the reduced model implies",
+   "plasma_network_v2_parameter": "derived: p_k x (je_arriving / e N_e) - the cross-field transport the four-cell model has no explicit slot for (disclosure: it enters only through p_k)",
+   "role": "disclosure",
+   "unit": "1/s"
+  },
+  {
+   "name": "cusp_leak_width",
+   "per": "cusp",
+   "pic_observable": "FWHM of the wall electron flux profile about z_c",
+   "plasma_network_v2_parameter": "SheathClosureInputs.leak_width_prefactor (CL-4: width / hybrid gyroradius at the cusp wall field)",
+   "role": "calibration",
+   "unit": "m"
+  },
+  {
+   "name": "cusp_sheath_drop",
+   "per": "cusp",
+   "pic_observable": "phi(axis, z_c) - phi(wall, z_c) and the near-wall drop phi(wall - 3 dr) - phi(wall) (pic_context proxy)",
+   "plasma_network_v2_parameter": "SheathClosureState.sheath_drop_v[k]; with T_k gives c_s,k = Delta phi / T_k -> CuspSheathSpec.area_ratio via ln(K0 rho_k) and the regime",
+   "role": "calibration",
+   "unit": "V"
+  },
+  {
+   "name": "cusp_near_wall_temperature",
+   "per": "cusp",
+   "pic_observable": "density-weighted T_e in the last 0.5 mm before the wall over the cusp window",
+   "plasma_network_v2_parameter": "PlasmaState.electron_temperature_ev[k] (sheath coefficient argument)",
+   "role": "reproduction",
+   "unit": "eV"
+  },
+  {
+   "name": "cusp_wall_field",
+   "per": "cusp",
+   "pic_observable": "|B| at (r_w, z_c) of the bound P2 map (scaled)",
+   "plasma_network_v2_parameter": "CuspSheathSpec.wall_field_t (CL-4)",
+   "role": "input",
+   "unit": "T"
+  },
+  {
+   "name": "cusp_electron_density",
+   "per": "cusp",
+   "pic_observable": "window-averaged n_e in the near-wall band of the cusp window",
+   "plasma_network_v2_parameter": "CuspSheathSpec.electron_density_per_m3 (CL-4)",
+   "role": "calibration",
+   "unit": "1/m^3"
+  },
+  {
+   "name": "cell_ionisation_share",
+   "per": "cell",
+   "pic_observable": "S_k / S: volume integral of ionization_rate_per_m3_s over the cell (2 pi r dr dz) over the domain total (the renderer's cusp-plane 'flames')",
+   "plasma_network_v2_parameter": "PlasmaState.ionization_source_current_a[k] / sum (e S_k = I_k)",
+   "role": "reproduction",
+   "unit": "-"
+  },
+  {
+   "name": "cell_ion_wall_loss_fraction",
+   "per": "cell",
+   "pic_observable": "e-weighted wall ion current of the cell over the ionisation current of the cell (bounded above by the collisionless screening P(wall) = 1)",
+   "plasma_network_v2_parameter": "closes ji_k in the ion current rows R06-R11; the quantity the saturated screening-v2 label could not resolve",
+   "role": "calibration",
+   "unit": "-"
+  },
+  {
+   "name": "cell_potential",
+   "per": "cell",
+   "pic_observable": "n_e-weighted phi over the cell",
+   "plasma_network_v2_parameter": "PlasmaState.plasma_potential_v[k]; steps phi_{k+1} - phi_k -> PotentialClosure.interior_step_3_v / _4_v (CL-3-potentials)",
+   "role": "calibration",
+   "unit": "V"
+  },
+  {
+   "name": "cell_temperature",
+   "per": "cell",
+   "pic_observable": "n_e-weighted T_e over the cell",
+   "plasma_network_v2_parameter": "PlasmaState.electron_temperature_ev[k]",
+   "role": "reproduction",
+   "unit": "eV"
+  },
+  {
+   "name": "discharge_current",
+   "per": "design",
+   "pic_observable": "window anode electron + ion current (summary.window_currents_a.discharge_a)",
+   "plasma_network_v2_parameter": "SheathClosureInputs.anode_current_a (input) / row R11 closure",
+   "role": "reproduction",
+   "unit": "A"
+  },
+  {
+   "name": "ionisation_rate",
+   "per": "design",
+   "pic_observable": "window S (neutral_inventory ionization rate)",
+   "plasma_network_v2_parameter": "sum_k I_k / e",
+   "role": "reproduction",
+   "unit": "1/s"
+  },
+  {
+   "name": "utilisation",
+   "per": "design",
+   "pic_observable": "gross e S / (e Q_in) and net (S - recycled) / Q_in (v1.4 ledger)",
+   "plasma_network_v2_parameter": "mass utilisation of the reduced model's beam current ji_1 / (e Q_in)",
+   "role": "reproduction",
+   "unit": "-"
+  },
+  {
+   "name": "anode_ion_fraction",
+   "per": "design",
+   "pic_observable": "window anode ion current / discharge current",
+   "plasma_network_v2_parameter": "anode row R31 (anode sheath: identifies phi_4 - Ua from the anode ion fraction)",
+   "role": "calibration",
+   "unit": "-"
+  },
+  {
+   "name": "beam_current",
+   "per": "plume",
+   "pic_observable": "far-field ion current (summary.plume / window exit_ion_beam_a)",
+   "plasma_network_v2_parameter": "ji_1 (beam ion current leaving cell 1)",
+   "role": "reproduction",
+   "unit": "A"
+  },
+  {
+   "name": "divergence_half_angles",
+   "per": "plume",
+   "pic_observable": "50 / 90 / 95 % current half-angles (plume_ion_current_per_sr_a histogram)",
+   "plasma_network_v2_parameter": "none in the four-cell model (disclosure; beam efficiency input of any thrust estimate)",
+   "role": "disclosure",
+   "unit": "deg"
+  },
+  {
+   "name": "thrust",
+   "per": "plume",
+   "pic_observable": "thrust_total_n of the momentum ledger (development number until the plateau rule holds)",
+   "plasma_network_v2_parameter": "none (downstream performance estimate; the model's beam power P_beam = Ua x ji_1 is the comparable)",
+   "role": "disclosure",
+   "unit": "N"
+  }
+ ],
+ "cost_anchors": [
+  {
+   "case": "steady-state v2 base (channel 61 x 481)",
+   "ms_per_step_measured": 1.98,
+   "ms_per_step_projected": 2.2424589661650773,
+   "nodes": [
+    61,
+    481
+   ],
+   "particles_m": 2.0,
+   "relative_error": 0.13255503341670583
+  },
+  {
+   "case": "steady-state v2 W x 0.7 (channel 61 x 481)",
+   "ms_per_step_measured": 2.44,
+   "ms_per_step_projected": 2.7555589661650775,
+   "nodes": [
+    61,
+    481
+   ],
+   "particles_m": 2.7,
+   "relative_error": 0.12932744514962202
+  },
+  {
+   "case": "plume attempt 8 (241 x 721)",
+   "ms_per_step_measured": 7.08,
+   "ms_per_step_projected": 7.07466681,
+   "nodes": [
+    241,
+    721
+   ],
+   "particles_m": 4.45,
+   "relative_error": -0.0007532754237288275
+  }
+ ],
+ "cost_table_hours_to_3_transits": {
+  "channel": [
+   {
+    "design_id": "divergent-exit-stack",
+    "device_gb_projected": 4.2127175329498865,
+    "dt_s": 1.5e-12,
+    "ms_per_step": 2.2423537327098977,
+    "nodes": [
+     61,
+     481
+    ],
+    "steps_to_transits": 4800000.0,
+    "transit_s": 2.4e-06,
+    "wall_hours": 2.997290209571809
+   },
+   {
+    "design_id": "l1a-gs-v3-056-effcbc8686",
+    "device_gb_projected": 7.460356465683889,
+    "dt_s": 1.5e-12,
+    "ms_per_step": 4.202894281861132,
+    "nodes": [
+     77,
+     342
+    ],
+    "steps_to_transits": 3410198.4725566576,
+    "transit_s": 1.7050992362783289e-06,
+    "wall_hours": 3.9852454355048867
+   },
+   {
+    "design_id": "l1a-gs-v2-047-e3196a8aa5",
+    "device_gb_projected": 3.148216872042367,
+    "dt_s": 1.5e-12,
+    "ms_per_step": 1.4660383685491636,
+    "nodes": [
+     45,
+     519
+    ],
+    "steps_to_transits": 5183402.778643232,
+    "transit_s": 2.5917013893216162e-06,
+    "wall_hours": 2.1176289416972858
+   },
+   {
+    "design_id": "l1a-gs-v3-009-d0c686b4aa",
+    "device_gb_projected": 5.463755292464858,
+    "dt_s": 1.5e-12,
+    "ms_per_step": 2.869699202969519,
+    "nodes": [
+     55,
+     457
+    ],
+    "steps_to_transits": 4557985.106657725,
+    "transit_s": 2.2789925533288623e-06,
+    "wall_hours": 3.639236385051749
+   },
+   {
+    "design_id": "l1a-gs-v3-106-ccec1c8b2f",
+    "device_gb_projected": 9.636960356516806,
+    "dt_s": 1.5e-12,
+    "ms_per_step": 5.5217429071599256,
+    "nodes": [
+     83,
+     405
+    ],
+    "steps_to_transits": 4036716.2519032713,
+    "transit_s": 2.0183581259516356e-06,
+    "wall_hours": 6.198073285204639
+   }
+  ],
+  "channel-33um-1.4ps": [
+   {
+    "design_id": "divergent-exit-stack",
+    "device_gb_projected": 4.478849191377963,
+    "dt_s": 1.4e-12,
+    "ms_per_step": 2.9067220034533054,
+    "nodes": [
+     91,
+     722
+    ],
+    "steps_to_transits": 5142857.142857143,
+    "transit_s": 2.4e-06,
+    "wall_hours": 4.186794810320593
+   },
+   {
+    "design_id": "l1a-gs-v3-056-effcbc8686",
+    "device_gb_projected": 7.632527473683889,
+    "dt_s": 1.4e-12,
+    "ms_per_step": 4.836745653292926,
+    "nodes": [
+     116,
+     513
+    ],
+    "steps_to_transits": 3653784.077739276,
+    "transit_s": 1.7050992362783289e-06,
+    "wall_hours": 4.925934180206377
+   },
+   {
+    "design_id": "l1a-gs-v2-047-e3196a8aa5",
+    "device_gb_projected": 3.3736687487979182,
+    "dt_s": 1.4e-12,
+    "ms_per_step": 1.9946998195490206,
+    "nodes": [
+     67,
+     779
+    ],
+    "steps_to_transits": 5553645.834260605,
+    "transit_s": 2.5917013893216162e-06,
+    "wall_hours": 3.1085772198168113
+   },
+   {
+    "design_id": "l1a-gs-v3-009-d0c686b4aa",
+    "device_gb_projected": 5.679673332464858,
+    "dt_s": 1.4e-12,
+    "ms_per_step": 3.436387862597111,
+    "nodes": [
+     82,
+     685
+    ],
+    "steps_to_transits": 4883555.471418991,
+    "transit_s": 2.2789925533288623e-06,
+    "wall_hours": 4.68826436154425
+   },
+   {
+    "design_id": "l1a-gs-v3-106-ccec1c8b2f",
+    "device_gb_projected": 9.893549164516806,
+    "dt_s": 1.4e-12,
+    "ms_per_step": 6.2884360651965965,
+    "nodes": [
+     124,
+     607
+    ],
+    "steps_to_transits": 4325053.127039219,
+    "transit_s": 2.0183581259516356e-06,
+    "wall_hours": 7.583671082703866
+   }
+  ],
+  "plume-12mm": [
+   {
+    "design_id": "divergent-exit-stack",
+    "device_gb_projected": 8.351833519137244,
+    "dt_s": 1.5e-12,
+    "ms_per_step": 7.111080034725846,
+    "nodes": [
+     241,
+     721
+    ],
+    "steps_to_transits": 6211764.705882352,
+    "transit_s": 3.105882352941176e-06,
+    "wall_hours": 12.360672258448517
+   },
+   {
+    "design_id": "l1a-gs-v3-056-effcbc8686",
+    "device_gb_projected": 15.350291185202794,
+    "dt_s": 1.5e-12,
+    "ms_per_step": 10.553741567822264,
+    "nodes": [
+     222,
+     582
+    ],
+    "steps_to_transits": 4822045.347515427,
+    "transit_s": 2.411022673757713e-06,
+    "wall_hours": 14.182042445349154
+   },
+   {
+    "design_id": "l1a-gs-v2-047-e3196a8aa5",
+    "device_gb_projected": 5.801509122100926,
+    "dt_s": 1.5e-12,
+    "ms_per_step": 4.8572609030672895,
+    "nodes": [
+     176,
+     759
+    ],
+    "steps_to_transits": 6596094.88274768,
+    "transit_s": 3.2980474413738397e-06,
+    "wall_hours": 8.976271390476606
+   },
+   {
+    "design_id": "l1a-gs-v3-009-d0c686b4aa",
+    "device_gb_projected": 10.95011857804593,
+    "dt_s": 1.5e-12,
+    "ms_per_step": 7.849410198644301,
+    "nodes": [
+     190,
+     697
+    ],
+    "steps_to_transits": 5969126.0065517565,
+    "transit_s": 2.9845630032758786e-06,
+    "wall_hours": 13.079904555551831
+   },
+   {
+    "design_id": "l1a-gs-v3-106-ccec1c8b2f",
+    "device_gb_projected": 20.338578052162813,
+    "dt_s": 1.5e-12,
+    "ms_per_step": 13.613886146064699,
+    "nodes": [
+     233,
+     645
+    ],
+    "steps_to_transits": 5447333.4628188005,
+    "transit_s": 2.7236667314094002e-06,
+    "wall_hours": 20.663769736766834
+   }
+  ],
+  "plume-24mm": [
+   {
+    "design_id": "divergent-exit-stack",
+    "device_gb_projected": 9.338113628333234,
+    "dt_s": 1.5e-12,
+    "ms_per_step": 8.251151067921832,
+    "nodes": [
+     241,
+     961
+    ],
+    "steps_to_transits": 7623529.411764705,
+    "transit_s": 3.811764705882353e-06,
+    "wall_hours": 17.680001292062478
+   },
+   {
+    "design_id": "l1a-gs-v3-056-effcbc8686",
+    "device_gb_projected": 16.419824093951544,
+    "dt_s": 1.5e-12,
+    "ms_per_step": 11.613410361670613,
+    "nodes": [
+     222,
+     822
+    ],
+    "steps_to_transits": 6233892.222474194,
+    "transit_s": 3.116946111237097e-06,
+    "wall_hours": 20.231564814016338
+   },
+   {
+    "design_id": "l1a-gs-v2-047-e3196a8aa5",
+    "device_gb_projected": 6.5197537570699176,
+    "dt_s": 1.5e-12,
+    "ms_per_step": 5.706323115884086,
+    "nodes": [
+     176,
+     999
+    ],
+    "steps_to_transits": 8008786.986852125,
+    "transit_s": 4.004393493426063e-06,
+    "wall_hours": 12.863856616675964
+   },
+   {
+    "design_id": "l1a-gs-v3-009-d0c686b4aa",
+    "device_gb_projected": 11.855676983715856,
+    "dt_s": 1.5e-12,
+    "ms_per_step": 8.808375017411272,
+    "nodes": [
+     190,
+     937
+    ],
+    "steps_to_transits": 7380266.906445788,
+    "transit_s": 3.6901334532228948e-06,
+    "wall_hours": 18.209440767480725
+   },
+   {
+    "design_id": "l1a-gs-v3-106-ccec1c8b2f",
+    "device_gb_projected": 21.664238629652832,
+    "dt_s": 1.5e-12,
+    "ms_per_step": 14.879273377297046,
+    "nodes": [
+     233,
+     885
+    ],
+    "steps_to_transits": 6857950.673734329,
+    "transit_s": 3.4289753368671644e-06,
+    "wall_hours": 28.50240220242459
+   }
+  ]
+ },
+ "designs": [
+  {
+   "design_id": "divergent-exit-stack",
+   "field_binding": "modern/experiments/pic2d_design_mini_sweep_v1/fields/divergent-exit-stack/binding.json",
+   "note": "every pic2d run so far; rho_cons 0.60-0.62 under the qualified P2 field; fields exist (authority level-1, padding-1.5)",
+   "optional": false,
+   "priority": 1,
+   "role": "reference",
+   "source": "p2_divergent_exit"
+  },
+  {
+   "design_id": "l1a-gs-v3-056-effcbc8686",
+   "field_binding": "modern/experiments/pic2d_design_mini_sweep_v1/fields/l1a-gs-v3-056-effcbc8686/binding.json",
+   "note": "3 cusps / 4 cells, no exit taper, rho 1.99 (L1a) -> 2.37 (L1b iron), wall |B| 0.21 T; L1b level-0 mesh 33.6 deg",
+   "optional": false,
+   "priority": 2,
+   "role": "hemp-like",
+   "source": "sobol_v3"
+  },
+  {
+   "design_id": "l1a-gs-v2-047-e3196a8aa5",
+   "field_binding": "modern/experiments/pic2d_design_mini_sweep_v1/fields/l1a-gs-v2-047-e3196a8aa5/binding.json",
+   "note": "4 stages, 3 cusps / 4 cells, rho 0.349 (L1a), r_w/L 0.24, 1.68 mm exit taper; screening-v2 P(wall) exists",
+   "optional": false,
+   "priority": 3,
+   "role": "low-rho",
+   "source": "sweep_v2"
+  },
+  {
+   "design_id": "l1a-gs-v3-009-d0c686b4aa",
+   "field_binding": "modern/experiments/pic2d_design_mini_sweep_v1/fields/l1a-gs-v3-009-d0c686b4aa/binding.json",
+   "note": "4 stages, 3 cusps / 4 cells, no exit taper, rho 0.899 (L1a), r_w/L 0.47; no L1b / screening record (new P2 solve gives rho under iron)",
+   "optional": false,
+   "priority": 4,
+   "role": "mid-rho",
+   "source": "sobol_v3"
+  },
+  {
+   "design_id": "l1a-gs-v3-106-ccec1c8b2f",
+   "field_binding": "modern/experiments/pic2d_design_mini_sweep_v1/fields/l1a-gs-v3-106-ccec1c8b2f/binding.json",
+   "note": "5 stages, 4 cusps / 5 cells (the five-stage four-cusp HEMP-like class), no exit taper, rho 2.56 (L1a) -> 2.93 (L1b iron), wall |B| 0.31 T under iron",
+   "optional": true,
+   "priority": 5,
+   "role": "hemp-like-four-cusp",
+   "source": "sobol_v3"
+  }
+ ],
+ "domain_options": {
+  "channel": {
+   "template": "modern/experiments/pic2d_cft_steady_state_v3/protocol.json"
+  },
+  "plume-12mm": {
+   "template": "modern/experiments/pic2d_cft_plume_v1/protocol.json"
+  },
+  "plume-24mm": {
+   "template": "modern/experiments/pic2d_cft_plume_v2_1/protocol.json"
+  }
+ },
+ "experiment_id": "pic2d-design-mini-sweep-v1",
+ "grid_policy": {
+  "dr": "r_w / round(r_w / 50 um)",
+  "dz": "L / round(L / 50 um)",
+  "snapped": [
+   "exit radius",
+   "cone start",
+   "front-face dielectric radius = magnet inner radius",
+   "plume radius = return-yoke outer radius",
+   "plume length"
+  ],
+  "target_cell_m": 5e-05
+ },
+ "operating_point_policy": {
+  "anode_potential_v": 300.0,
+  "cathode_annulus_rule": "r in [0.25 r_w, min(r_w, r_exit)], z in [L + 0.3 mm, L + 1.0 mm]",
+  "electron_source": {
+   "channel": "3 mA / 2 eV exit-plane injection (v1.x rule, template)",
+   "plume": "cathode annulus in the exit flux tube, continuity rule (v2.0 template)"
+  },
+  "feed_rule": "Q_in = c n_g0, c = v_bar A_exit / 4 at the design's exit area (equal initial neutral density)",
+  "macro_weight": 60000.0,
+  "macro_weight_cap_m_particles": 8.0,
+  "n_g0_per_m3": 5.5e+19,
+  "seed": 20260903
+ },
+ "preflight_summary": {
+  "all_passed": true,
+  "design_count": 5,
+  "designs": {
+   "divergent-exit-stack": {
+    "gates": {
+     "cathode_connectivity": true,
+     "cost": true,
+     "field_binding": true,
+     "field_map": true,
+     "grid": true,
+     "identity": true,
+     "mesh_masks": true,
+     "protocol": true
+    },
+    "passed": true
+   },
+   "l1a-gs-v2-047-e3196a8aa5": {
+    "gates": {
+     "cathode_connectivity": true,
+     "cost": true,
+     "field_binding": true,
+     "field_map": true,
+     "grid": true,
+     "identity": true,
+     "mesh_masks": true,
+     "protocol": true
+    },
+    "passed": true
+   },
+   "l1a-gs-v3-009-d0c686b4aa": {
+    "gates": {
+     "cathode_connectivity": true,
+     "cost": true,
+     "field_binding": true,
+     "field_map": true,
+     "grid": true,
+     "identity": true,
+     "mesh_masks": true,
+     "protocol": true
+    },
+    "passed": true
+   },
+   "l1a-gs-v3-056-effcbc8686": {
+    "gates": {
+     "cathode_connectivity": true,
+     "cost": true,
+     "field_binding": true,
+     "field_map": true,
+     "grid": true,
+     "identity": true,
+     "mesh_masks": true,
+     "protocol": true
+    },
+    "passed": true
+   },
+   "l1a-gs-v3-106-ccec1c8b2f": {
+    "gates": {
+     "cathode_connectivity": true,
+     "cost": true,
+     "field_binding": true,
+     "field_map": true,
+     "grid": true,
+     "identity": true,
+     "mesh_masks": true,
+     "protocol": true
+    },
+    "passed": true
+   }
+  },
+  "domain": "channel",
+  "generated_utc": "2026-09-04T02:22:22.224160+00:00"
+ },
+ "preregistration": {
+  "attempt_8_verdict": "recorded in ac248e05 (2026-09-04 11:57 AEST): grid-heating triad gate stop at 4.98 us (S drift 0.253), NO plateau; finite-grid heating from ~2.4 us once the peak-node Delta/lambda_D crossed ~3.2 (CIC threshold pi); the accepted channel-only plateau sat at 3.17 with a residual closing to +0.4 %; resolution decision Delta <= 32.4 um, dt <= 1.48 ps; v2.1 NOT launched",
+  "before_prereg": [
+   "whole-set preflight over every design (fields, mesh, connectivity, stability) - the L1b lesson",
+   "labelled non-evidentiary shakedown of one design on the real field through run/finalize/targets",
+   "decide the open decisions listed in the README",
+   "seal: protocol semantic hash, field bindings, template protocols, code hashes"
+  ],
+  "blocked_on": "the operating-point / grid decision that follows the verdict: the channel-only 33 um / 1.4 ps grid-refinement run (or a lower operating point at 50 um) and the recalibrated peak-Debye / residual-power gates",
+  "state": "NOT preregistered; this file is a DRAFT and is not hash-bound to any run"
+ },
+ "recommended_option": {
+  "closure_runs": "channel",
+  "grid": "the grid the attempt-8 follow-up validates: 50 um / 1.5 ps if the recalibrated peak-Debye gate admits the design's peak, else the 33 um / 1.4 ps refinement variant (cost row channel-33um-1.4ps)",
+  "plume_run": "plume-24mm for the reference design only, and only at an operating point / grid that resolves the peak (attempt 8 did not)",
+  "reason": "the closure targets are channel quantities (cusp losses, cell potentials, ionisation shares); the plume box costs 3.6-6x per transit and answers a different question (thrust, divergence); the accepted plateaus are channel-only"
+ },
+ "recommended_schedule": {
+  "items": [
+   {
+    "design_id": "divergent-exit-stack",
+    "domain": "channel",
+    "kind": "base",
+    "wall_hours": 2.997290209571809
+   },
+   {
+    "design_id": "l1a-gs-v3-056-effcbc8686",
+    "domain": "channel",
+    "kind": "base",
+    "wall_hours": 3.9852454355048867
+   },
+   {
+    "design_id": "l1a-gs-v2-047-e3196a8aa5",
+    "domain": "channel",
+    "kind": "base",
+    "wall_hours": 2.1176289416972858
+   },
+   {
+    "design_id": "l1a-gs-v3-009-d0c686b4aa",
+    "domain": "channel",
+    "kind": "base",
+    "wall_hours": 3.639236385051749
+   },
+   {
+    "design_id": "l1a-gs-v3-106-ccec1c8b2f",
+    "domain": "channel",
+    "kind": "base",
+    "wall_hours": 6.198073285204639
+   },
+   {
+    "design_id": "l1a-gs-v3-056-effcbc8686",
+    "domain": "channel",
+    "kind": "seed-replicate",
+    "wall_hours": 3.9852454355048867
+   },
+   {
+    "design_id": "divergent-exit-stack",
+    "domain": "plume-24mm",
+    "kind": "extra",
+    "wall_hours": 17.680001292062478
+   }
+  ],
+  "note": "serial on one RTX 5090; +~10 % if the particle count keeps growing past the projected plateau (attempt 8 added 0.6 M ions/us); budgets should be set at 1.25x the projected wall so the plateau rule can be evaluated past 3 transits",
+  "option": "channel",
+  "total_days_at_24h": 1.6917800410249058,
+  "total_hours": 40.60272098459774
+ },
+ "refined_grid_schedule": {
+  "items": [
+   {
+    "design_id": "divergent-exit-stack",
+    "domain": "channel-33um-1.4ps",
+    "kind": "base",
+    "wall_hours": 4.186794810320593
+   },
+   {
+    "design_id": "l1a-gs-v3-056-effcbc8686",
+    "domain": "channel-33um-1.4ps",
+    "kind": "base",
+    "wall_hours": 4.925934180206377
+   },
+   {
+    "design_id": "l1a-gs-v2-047-e3196a8aa5",
+    "domain": "channel-33um-1.4ps",
+    "kind": "base",
+    "wall_hours": 3.1085772198168113
+   },
+   {
+    "design_id": "l1a-gs-v3-009-d0c686b4aa",
+    "domain": "channel-33um-1.4ps",
+    "kind": "base",
+    "wall_hours": 4.68826436154425
+   },
+   {
+    "design_id": "l1a-gs-v3-106-ccec1c8b2f",
+    "domain": "channel-33um-1.4ps",
+    "kind": "base",
+    "wall_hours": 7.583671082703866
+   },
+   {
+    "design_id": "l1a-gs-v3-056-effcbc8686",
+    "domain": "channel-33um-1.4ps",
+    "kind": "seed-replicate",
+    "wall_hours": 4.925934180206377
+   }
+  ],
+  "note": "serial on one RTX 5090; +~10 % if the particle count keeps growing past the projected plateau (attempt 8 added 0.6 M ions/us); budgets should be set at 1.25x the projected wall so the plateau rule can be evaluated past 3 transits",
+  "option": "channel-33um-1.4ps",
+  "total_days_at_24h": 1.2257989931165947,
+  "total_hours": 29.419175834798274
+ },
+ "replication_policy": {
+  "base": "one run per design (seed 20260903)",
+  "decision_rule": "a design effect counts only if it exceeds the seed replicate spread AND the reference's seed/W spread",
+  "seed_replicate": "l1a-gs-v3-056-effcbc8686 (seed 20260904) - the HEMP-like design; the reference's seed-b / W x 0.7 pair exists (<= 1.1 % / <= 5.7 %)",
+  "w_replicate": "none in budget; the reference W x 0.7 record is the W-sensitivity statement"
+ },
+ "schema_version": "cft.pic2d.design-mini-sweep.protocol/0.1.0-draft",
+ "status": "DRAFT_NOT_PREREGISTERED_NO_PRODUCTION_LAUNCH",
+ "stopping_rule": {
+  "plateau": "relative drift < 5 % over the trailing 20 % of elapsed simulated time for I_d, N_e and n_g (linear fit), evaluated at every checkpoint, only after >= 3 ion transits, triad inside soft bounds (the accepted steady-state rule, verbatim)",
+  "transit_rule": "2.4 us x L / 24 mm + L_plume / 17 km/s a priori; the measured N_i / L residence supersedes it",
+  "wall_budget": "1.25 x projected wall to 3 transits"
+ }
+}
