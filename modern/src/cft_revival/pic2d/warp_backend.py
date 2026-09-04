@@ -56,6 +56,7 @@ from .simulation import (
     StepTally,
     iedf_max_ev,
     neutral_shape_cells,
+    omega_pe_gate_min_macro_particles,
     peak_node_debye,
 )
 
@@ -103,7 +104,8 @@ STATS_I_PZ = 35             # anode, exit, wall (ions)
 STATS_BODY_FACE_E = 38      # front-face hits (electrons)
 STATS_BODY_FACE_I = 39      # front-face hits (ions)
 STATS_ION_PLUME = 40        # ionisation events downstream of the exit plane
-STATS_SIZE = 41
+STATS_PEAK_DENSITY_RESOLVED = 41   # v2.0.4: single-step peak electron density over nodes holding >= the gate's macro-particle floor (the omega_pe dt gate statistic)
+STATS_SIZE = 42
 
 
 def padded_dim(count: int, block: int) -> int:
@@ -1077,9 +1079,15 @@ if wp is not None:
         partial[k] = acc
 
     @wp.kernel
-    def peak_density_kernel(q_e: wp.array(dtype=F64), inverse_volume: wp.array(dtype=F64), stats: wp.array(dtype=F64), slot: int):
+    def peak_density_kernel(q_e: wp.array(dtype=F64), inverse_volume: wp.array(dtype=F64), min_charge_c: F64, stats: wp.array(dtype=F64), slot_raw: int, slot_resolved: int):
+        # raw = the peak over every plasma node (shot-noise extreme on small-volume nodes); resolved = the peak over nodes whose
+        # deposit holds >= the gate's macro-particle floor (|q_e| >= min_charge_c) - the v2.0.4 omega_pe dt gate statistic
         n = wp.tid()
-        wp.atomic_max(stats, slot, wp.abs(q_e[n]) * inverse_volume[n])
+        q = wp.abs(q_e[n])
+        density = q * inverse_volume[n]
+        wp.atomic_max(stats, slot_raw, density)
+        if q >= min_charge_c:
+            wp.atomic_max(stats, slot_resolved, density)
 
     @wp.kernel
     def sum_kernel(values: wp.array(dtype=F64), count: int, threads: int, partial: wp.array(dtype=F64)):
@@ -1536,6 +1544,8 @@ class WarpBackend:
         inverse_volume = np.zeros(grid.node_shape)
         inverse_volume[masks.plasma_node] = 1.0 / (ELEMENTARY_CHARGE_C * masks.shape_volume_m3[masks.plasma_node])
         self.inverse_volume = f64(inverse_volume)
+        # v2.0.4: occupancy floor of the runtime omega_pe dt statistic as a deposited charge (a run constant: safe inside the CUDA graph)
+        self.omega_pe_gate_min_charge_c = float(omega_pe_gate_min_macro_particles(config) * ELEMENTARY_CHARGE_C * config.macro_weight)
         zeros = lambda dtype=wp.float64: wp.zeros(self.node_count, dtype=dtype, device=dev)  # noqa: E731
         self.acc_e = zeros(wp.int64)
         self.acc_i = zeros(wp.int64)
@@ -1949,7 +1959,8 @@ class WarpBackend:
         self.last_iterations = iterations
         self._mark("poisson")
         wp.launch(efield_kernel, dim=self.node_count, inputs=[self.phi, self.code_r, self.code_z, grid.dr_m, grid.dz_m, self.nz, self.e_r, self.e_z], device=dev)
-        wp.launch(peak_density_kernel, dim=self.node_count, inputs=[self.q_e, self.inverse_volume, self.stats, STATS_PEAK_DENSITY], device=dev)
+        wp.launch(peak_density_kernel, dim=self.node_count, inputs=[self.q_e, self.inverse_volume, self.omega_pe_gate_min_charge_c, self.stats, STATS_PEAK_DENSITY, STATS_PEAK_DENSITY_RESOLVED],
+                  device=dev)
 
         if accumulate:
             wp.launch(axpy_kernel, dim=self.node_count, inputs=[self.d_phi, 1.0, self.phi], device=dev)
@@ -2138,15 +2149,16 @@ class WarpBackend:
         self._compact(electrons, 0, int(slots[0]), expected_e)
         self._compact(ions, 1, int(slots[1]), expected_i)
         self._set_slots(electrons.alive, ions.alive)
-        peak_density = float(stats[STATS_PEAK_DENSITY])
+        peak_density_raw = float(stats[STATS_PEAK_DENSITY])
+        peak_density = float(stats[STATS_PEAK_DENSITY_RESOLVED])
         max_speed2 = float(stats[STATS_MAX_SPEED2])
         self.stats.zero_()
         self.steps_since_sync = 0
         self.injected_since_sync = 0
         self._reserve_capacity()
         self._begin_interval()
-        omega_pe = sqrt(peak_density * ELEMENTARY_CHARGE_C**2 / (EPSILON_0_F_PER_M * ELECTRON_MASS_KG))
-        self.last_tally = StepTally(self.last_iterations, omega_pe * config.dt_s, sqrt(max_speed2), electrons.alive, ions.alive)
+        omega_scale = sqrt(ELEMENTARY_CHARGE_C**2 / (EPSILON_0_F_PER_M * ELECTRON_MASS_KG)) * config.dt_s
+        self.last_tally = StepTally(self.last_iterations, sqrt(peak_density) * omega_scale, sqrt(max_speed2), electrons.alive, ions.alive, sqrt(peak_density_raw) * omega_scale)
         self._mark("sync")
         return self.last_tally
 

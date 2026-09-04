@@ -371,11 +371,38 @@ def momentum_z_kg_m_s(species: Species2D, particles: ParticleArrays) -> float:
 
 @dataclass(slots=True)
 class StepTally:
+    """Per-sync step statistics.
+
+    ``max_omega_pe_dt`` is the runtime omega_pe dt gate statistic (v2.0.4): the peak over the RESOLVED nodes only - nodes whose
+    single-step electron deposit holds at least ``omega_pe_gate_min_macro_particles`` macro-electrons (the peak-Debye gate's
+    sample-size floor, 32 under the v2.0.3 gates; 16 without a gate).  ``max_omega_pe_dt_raw`` is the unfloored peak over every
+    plasma node, recorded alongside: on a small-volume axis node a SINGLE macro-electron reads 1.3e19 m^-3 at 20 um / W 8.2e4, so
+    the raw statistic is a shot-noise extreme value there (the plume-boundary lesson of 2026-09-04), not a plasma frequency.
+    """
+
     poisson_iterations: int
     max_omega_pe_dt: float
     max_electron_speed_m_per_s: float
     electron_count: int
     ion_count: int
+    max_omega_pe_dt_raw: float = 0.0
+
+
+def omega_pe_gate_min_macro_particles(config: PIC2DConfig) -> int:
+    """Occupancy floor of the runtime omega_pe dt statistic: the peak-Debye gate's floor when a gate is configured, else 16."""
+
+    gate = config.peak_debye_gate
+    return int(gate.min_macro_particles_at_peak) if gate is not None else 16
+
+
+def peak_deposit_densities(q_e_abs: np.ndarray, volume_m3: np.ndarray, *, macro_weight: float, min_macro_particles: int) -> tuple[float, float]:
+    """(resolved peak, raw peak) electron number density from a single-step node deposit |q_e| (C) over the node shape volumes."""
+
+    density = q_e_abs / (ELEMENTARY_CHARGE_C * volume_m3)
+    raw = float(np.max(density)) if density.size else 0.0
+    resolved_mask = q_e_abs >= min_macro_particles * ELEMENTARY_CHARGE_C * macro_weight
+    resolved = float(np.max(density[resolved_mask])) if np.any(resolved_mask) else 0.0
+    return resolved, raw
 
 
 @dataclass(frozen=True, slots=True)
@@ -918,9 +945,10 @@ class CPUBackend:
         state.time_s = state.step * dt
         if accumulate:
             self.diagnostics.steps += 1
-        peak_density = float(np.max(np.abs(q_e[masks.plasma_node]) / (ELEMENTARY_CHARGE_C * masks.shape_volume_m3[masks.plasma_node])))
-        omega_pe = sqrt(peak_density * ELEMENTARY_CHARGE_C**2 / (8.8541878128e-12 * ELECTRON_MASS_KG))
-        self.last_tally = StepTally(result.diagnostics.iterations, omega_pe * dt, max_speed, electrons.count, ions.count)
+        peak_resolved, peak_raw = peak_deposit_densities(np.abs(q_e[masks.plasma_node]), masks.shape_volume_m3[masks.plasma_node], macro_weight=self.config.macro_weight,
+                                                         min_macro_particles=omega_pe_gate_min_macro_particles(self.config))
+        omega_scale = sqrt(ELEMENTARY_CHARGE_C**2 / (8.8541878128e-12 * ELECTRON_MASS_KG)) * dt
+        self.last_tally = StepTally(result.diagnostics.iterations, sqrt(peak_resolved) * omega_scale, max_speed, electrons.count, ions.count, sqrt(peak_raw) * omega_scale)
         return self.last_tally
 
     def _accumulate_maps(self, q_e: np.ndarray, q_i: np.ndarray, phi: np.ndarray, electrons: ParticleArrays) -> None:
@@ -1174,6 +1202,8 @@ class SeriesRecord:
     # v2.0: momentum ledger, thrust estimates and plume-boundary sample (plume geometries only)
     momentum: dict[str, Any] | None = None
     plume: dict[str, Any] | None = None
+    # v2.0.4: the unfloored single-step peak omega_pe dt (peak_omega_pe_dt is the resolved-node gate statistic); None for pre-v2.0.4 records
+    peak_omega_pe_dt_raw: float | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -1186,7 +1216,8 @@ class SeriesRecord:
             "neutral": None if self.neutral is None else dict(self.neutral),
             "peak_node": None if self.peak_node is None else dict(self.peak_node),
         } | ({} if self.momentum is None else {"momentum": dict(self.momentum)}) \
-          | ({} if self.plume is None else {"plume": dict(self.plume)})
+          | ({} if self.plume is None else {"plume": dict(self.plume)}) \
+          | ({} if self.peak_omega_pe_dt_raw is None else {"peak_omega_pe_dt_raw": self.peak_omega_pe_dt_raw})
 
 
 # v2.0.2 plume-boundary gate: trailing window of ACCUMULATED steps over which the far-field charge statistic is
@@ -1739,7 +1770,8 @@ class Simulation:
                 and tally.max_omega_pe_dt > config.limits.max_omega_pe_dt
             ):
                 raise PIC2DStabilityError(
-                    f"observed peak omega_pe*dt = {tally.max_omega_pe_dt:.3g} exceeds {config.limits.max_omega_pe_dt}"
+                    f"observed peak omega_pe*dt = {tally.max_omega_pe_dt:.3g} exceeds {config.limits.max_omega_pe_dt} on a node holding >= "
+                    f"{omega_pe_gate_min_macro_particles(config)} macro-electrons (raw single-node peak {tally.max_omega_pe_dt_raw:.3g})"
                 )
             if record:
                 assert tally is not None
@@ -1879,7 +1911,7 @@ class Simulation:
                 step, float(sample["time_s"]), int(sample["electrons"]), int(sample["ions"]),
                 float(plasma_phi.mean()), float(plasma_phi.min()), float(plasma_phi.max()),
                 k_e, k_i, u_e, float(sample["surface_charge_c"]), tally.max_omega_pe_dt,
-                tally.poisson_iterations, currents, ledger, neutral, peak_node, momentum, plume,
+                tally.poisson_iterations, currents, ledger, neutral, peak_node, momentum, plume, tally.max_omega_pe_dt_raw,
             )
         )
         self._last_cumulative = dict(cumulative)
@@ -2121,6 +2153,10 @@ class Simulation:
                 else ("artificial (development only)" if inventory.relaxation_time_s is not None else "off (physical effusion time scale)")
             ),
             "peak_debye_gate": None if self.config.peak_debye_gate is None else self.config.peak_debye_gate.to_dict(),
+            # v2.0.4: the runtime omega_pe dt gate reads the peak over nodes holding >= this many macro-electrons in the step's
+            # deposit (the raw single-node peak is recorded alongside as peak_omega_pe_dt_raw)
+            "omega_pe_dt_gate": {"statistic": "resolved_node_single_step_peak", "min_macro_particles": omega_pe_gate_min_macro_particles(self.config),
+                                 "limit": self.config.limits.max_omega_pe_dt},
             "anomalous": None if self.config.anomalous is None else self.config.anomalous.to_dict(),
             "see": None if self.config.see is None else self.config.see.to_dict(),
             # True once a step graph has been captured, "lazy" when graphs are enabled but none is captured yet (the
