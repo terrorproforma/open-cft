@@ -99,6 +99,39 @@ untouched and the verdict `resolution_limited` (about the 50 um base, which itse
 v2.0.6 accumulated-particle-step floor (64 000 macro-electron-steps): 2.154 at the same node (20, 429); resolved nodes 19 650 -> 42 130; the
 densest axis node (0.38 macro-electrons per step) is resolved and reads 0.79.
 
+## Corrected-ledger re-read of the preregistered acceptance (post hoc; `results/assessment-corrected-ledger.json`)
+
+The recorded `results/assessment.json` stands as the recorded outcome of the one preregistered execution and is not
+modified. `results/assessment-corrected-ledger.json` (+ `.sha256.json`) is a **post-hoc re-read** written by
+`python -m experiments.pic2d_cft_steady_state_v4.assess_corrected_ledger` (`assess_corrected_ledger.py`, this directory):
+it re-evaluates the SAME predeclared rules (a)–(d) with acceptance (b) read from the corrected statistic of
+`results/ledger-corrected.json`, carries both readings side by side, and is bound to the byte SHA-256 of the sidecar, of
+the recorded `assessment.json`, of `summary.json` and of `protocol.json` (it refuses a sidecar that does not describe the
+assessed series, a tampered assessment, a sidecar whose recorded reading is not the assessment's (b), or a protocol that is
+not the one the assessment binds). The bound is **not loosened**: (b) stays "< +2 %".
+
+| acceptance | recorded (`assessment.json`, 08:21 UTC 2026-09-04) | corrected ledger (`assessment-corrected-ledger.json`) |
+| --- | --- | --- |
+| (a) plateau | PASS — `plateau_reached_after_min_transit_times` at 3.033 transits | **unchanged** (not a ledger quantity) |
+| (b) windowed residual / electrode work < +2 % | **PASS** at −7.67 % (cumulative −9.1 %) | **FAIL** at **+2.46 %** (cumulative +1.8 %; first ≥ 2 % checkpoint 4.82 µs; maximum over complete windows +2.46 %; 28 mW of numerical heating on 1.14 W of electrode power in the trailing window; the 5 % hard gate never fires, 2× margin) |
+| (c) convergence vs the 50 µm base | 4/7 within (I_d +10.35 %, peak n_e −21.4 %, T_e,peak −24.5 % exceeded) | **unchanged** (not a ledger quantity); the reference itself reads **+13.0 %** on its corrected ledger (recorded +0.4 %) — it was heating, the 5 % gate would have stopped it at 2.70 µs |
+| (d) verdict | `resolution_limited` (the 50 µm base is resolution-limited; v4 supersedes I_d, peak n_e, T_e,peak) | predeclared (d) tree with corrected (b): **`refinement_heating`** ("(a) but NOT (b): the 33 µm run itself heats above 2 %; the comparison is not a convergence test") |
+
+**Verdict wording (as committed in `verdict_statement`):** *plateau reached; convergence vs 50 µm as recorded
+(resolution_limited for 50 µm); residual precondition (b) FAILED on the corrected ledger → the 33 µm plateau is itself
+heating at +2.5 % of electrode work and is NOT a clean reference; 25 µm (v5) pending.*
+
+What stands and what changes: the 50 µm base's classification as resolution-limited is not rescued by the re-read (the
+base heats at +13 % on the corrected ledger, more than the 33 µm run, and the (c) shifts are not ledger quantities); what
+changes is that the 33 µm plateau carries its own numerical heating power above the predeclared 2 % bound, still rising
+slowly at the stop (+0.6 % at 0.62 µs → +2.0 % at 4.82 µs → +2.46 % at 7.28 µs), so it may not be called a clean
+(energy-conserving) reference and "converged" may not be said of either grid before the 25 µm ladder point
+(`pic2d_cft_steady_state_v5`) reports. Every quoted 33 µm plateau value carries this disclosure. Downstream:
+`pic2d_design_mini_sweep_v1/run.py assess` reads this file when present and cites both readings for its reference caveat;
+the v4-fast solver qualification compares to this run and must evaluate its own (b) on the corrected statistic
+(`NOTE-for-v4-fast-coordinator-corrected-ledger.md`). The dashboard `modern/visualization/pic2d-cft-steady-state-v4.html`
+shows the recorded and the corrected readings side by side (verdict pill, acceptance table, residual time series).
+
 ## Commands (from `modern/`)
 
 ```powershell
@@ -108,6 +141,8 @@ python -m experiments.pic2d_cft_steady_state_v4.run shakedown       # -> shakedo
 python -m experiments.pic2d_cft_steady_state_v4.run launch --expect-commit <prereg sha>   # clean worktree + exclusive lock + run
 python -m experiments.pic2d_cft_steady_state_v4.run status
 python -m experiments.pic2d_cft_steady_state_v4.run assess          # -> results/assessment.json (verdict a-d)
+python -m cft_revival.pic2d.ledger_recompute experiments/pic2d_cft_steady_state_v4/results   # -> results/ledger-corrected.json (v2.0.6 sidecar)
+python -m experiments.pic2d_cft_steady_state_v4.assess_corrected_ledger [--dry-run]         # -> results/assessment-corrected-ledger.json (post-hoc re-read)
 ```
 
 Detached launch from the dedicated worktree (`uni-project-pic2d-ss3`, checked out at the
@@ -197,3 +232,17 @@ no thruster performance.
   (summary, assessment, execution lock, run state, status/series/maps, final checkpoint metadata),
   the .gitignore negations; frames (241 MB), the checkpoint arrays, `series.jsonl` and the logs
   stay untracked in the run worktree.
+* **Ledger correction (model v2.0.6, 2026-09-05 ≈ 01:20 AEST, commit `02013df0`)** — post-hoc sidecar
+  `results/ledger-corrected.json` from the recorded `series.npz`: the windowed residual at the stop is
+  **+2.46 %** on the corrected ledger (recorded −7.67 %); acceptance (b) changes status PASS → FAIL. No
+  recorded file modified (section "Energy-ledger correction" above).
+* **Corrected-ledger re-read (2026-09-05 ≈ 02:10 AEST, this commit)** — `results/assessment-corrected-ledger.json`
+  written by `assess_corrected_ledger.py` from the sidecar, the recorded assessment, `summary.json` and
+  `protocol.json` (all four byte-hash-bound; 7/7 binding checks): (a) PASS unchanged, **(b) FAIL at +2.46 %**
+  (recorded PASS at −7.67 %), (c) unchanged (4/7 within; the 50 µm reference reads +13.0 % corrected), (d)
+  recorded `resolution_limited` stands as recorded; the predeclared tree with the corrected (b) gives
+  `refinement_heating`. Verdict wording: *plateau reached; convergence vs 50 µm as recorded (resolution_limited
+  for 50 µm); residual precondition (b) FAILED on the corrected ledger → the 33 µm plateau is itself heating at
+  +2.5 % of electrode work and is NOT a clean reference; 25 µm (v5) pending.* Dashboard
+  `pic2d-cft-steady-state-v4.html` regenerated with both readings (anchor sidecar regenerated on the anchor
+  machine); tests `tests/pic2d/test_pic2d_steady_state_v4_corrected_ledger.py`.
