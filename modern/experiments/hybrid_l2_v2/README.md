@@ -59,6 +59,13 @@ Each case writes `results/` (base) or `results-<case>/`: `series.jsonl` (untrack
   temporal-coarse had already finished (`max_steps_reached`, 19:37). Host load after: L2 6 cores + others ~4
   of 24 (>= 8 cores free). Wall-time and ms/step figures recorded in every `summary.json` of this campaign are
   therefore contended-host numbers (upper bounds on the true L2 step cost); the cost ratio in `assess` uses them.
+  For the record, the GPU contender visible in the host data is the PIC v4 refinement (`pic2d_cft_steady_state_v4`,
+  GPU), whose `summary.json` was written at 19:31:26 AEST - it was still running when v5 launched at 19:29:53.
+  20:07 AEST: the coordinator's constraint (>= 8 cores free) measured at 7.9-8.3 idle cores with five L2
+  processes, so weight-half (old runner, no STOP hook; `Stop-Process`, checkpoint at step 5000) was stopped as
+  well and a queue runner (outside the repository, `%TEMP%\l2_queue.ps1`) keeps at most FOUR L2 processes alive,
+  resuming weight-half and the four closure cases in that order with `--resume`, `Idle` priority and
+  `OMP/OPENBLAS/MKL_NUM_THREADS=1`.
 * The runner gained the `STOP` file mechanism (a `STOP` file in a case's results directory ends the run at the
   next series record with `checkpoint-latest` and no finalize; `launch --resume` continues it and truncates the
   series to the checkpoint step) and the `sessions.json` entries record `git_head` and BLAS thread pins. The
