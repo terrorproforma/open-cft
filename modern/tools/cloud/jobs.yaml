@@ -20,15 +20,21 @@ defaults:
   cwd: modern                      # experiments are run as `python -m experiments.<x>.run` from modern/
   jobs_dir: ../../../../jobs       # <WORK>/jobs next to the checkout (state.json, logs, worktrees)
   launcher: tmux                   # tmux | setsid | exec
-  slots_per_gpu: 1                 # raise ONLY if bench.sh shows aggregate speed-up > 1.3 at N=2
+  slots_per_gpu: 4                 # bench-mps (2026-09-04): under CUDA MPS four channel-33 processes -> 8.71 ms/step each, aggregate 1.54x
+                                   # (N=2 1.24x, N=8 1.58x saturated); WITHOUT MPS N>1 only time-slices (0.93-0.96x) - keep 1 if the daemon is down
   gpu_memory_gib: 80
   warp_probe: verify               # the wrapper refuses to start if Warp's cuda:0 UUID != nvidia-smi's
   require_clean: false             # set true once the box only carries pushed commits
   env:
     PYTHONPATH: "src:."
+    # CUDA MPS client variables: every process launched here talks to the running MPS control daemon
+    # (`nvidia-cuda-mps-control -d` with these two directories); without them a process gets its own context and time-slices
+    CUDA_MPS_PIPE_DIRECTORY: /tmp/nvidia-mps
+    CUDA_MPS_LOG_DIRECTORY: /tmp/nvidia-log
     # BLAS threads are set per job by the scheduler (floor(CPUs / total slots), cap 16); override here if needed
 
-gpus: [0, 1, 2, 3, 4, 5, 6, 7]
+# the live box is a SINGLE H100 (gpu_1x_h100_sxm5, us-southeast-1); list every index when an 8x instance is used
+gpus: [0]
 
 jobs:
   # ---------------------------------------------------------------- shakedown (launchable at HEAD)
@@ -49,7 +55,7 @@ jobs:
     checkout: worktree
     gpu_memory_gib: 6
     expected_ms_per_step: 2.0
-    enabled: true
+    enabled: false                # never launched on the box (the mini-sweep's own shakedown / MPS replay exercised the path); keep off so `launch` does not take a slot
 
   # ---------------------------------------------------------------- (i) channel-only 33 um replications
   # The 33 um / 1.4 ps refinement is preregistered at 392129e5 (experiments/pic2d_cft_steady_state_v4: 90 x 720,
@@ -111,66 +117,101 @@ jobs:
     expected_ms_per_step: 7.4
     enabled: false
 
-  # ---------------------------------------------------------------- (iii) PIC design mini-sweep (4 primary designs)
-  # The DRAFT experiment is at HEAD since 8704bf7c..6440518d (modern/experiments/pic2d_design_mini_sweep_v1/:
-  # protocol composer on the accepted runner, four material-aware P2 fields under fields/ (LFS), whole-set
-  # preflight green, 13 tests) but NOT preregistered: its `run` refuses without `--allow-launch` (labelled
-  # shakedowns only) and the preregistration commit replaces that guard by the sealed protocol (README s.7 open
-  # decisions: v2.0.3 gates, 50 um vs 33 um). Per-design results: results/<design>-channel-33um/. Cost per the
-  # README at equal W (2.25x fewer particles per cell than the 50 um runs): 4.2 / 4.9 / 3.1 / 4.7 h -> 16.9 h
-  # serial for the four; a W-reduced (fixed particles-per-cell) policy would ~3x these. Fill `commit` with the
-  # prereg commit (and drop `--allow-launch` from any shakedown use) once pushed.
+  # ---------------------------------------------------------------- (iii) PIC design mini-sweep v1 (4 primary designs) - PREREGISTERED channel-33um option
+  # modern/experiments/pic2d_design_mini_sweep_v1/: the steady-state v4 template (model v1.3 closure + v2.0.3 gates), 33.33 um / 1.4 ps,
+  # W = 6e4 x dr dz / (50 um)^2 (particles-per-cell parity; 26 666.7 for the reference = v4), wall budgets 1.5x the projected
+  # 3-transit wall at the H100 CUDA-MPS four-slot rate. Each job's `protocol` is its SEALED per-design run protocol
+  # (protocols/<design>-channel-33um.json, byte-bound between the prereg commit and HEAD); `launch` re-composes it on the
+  # design's field and refuses on any difference, requires the preflight / shakedown / mps-replay records, the MPS pipe
+  # directory (--require-mps) and takes an O_EXCL execution lock in results/<design>-channel-33um/. The four run CONCURRENTLY
+  # on the one H100 (four MPS slots); a fifth process would slow every one of them (N=8: 17.1 ms/step each).
+  # `commit` / `--expect-commit` = the PREREG commit (protocol.json + protocols/ + records); ms/step = H100 MPS-4 projection.
   - id: sweep-reference
-    note: design 1 of 4 - divergent-exit-stack (reference, rho 0.60); 91 x 722 nodes, ~2.9 ms/step, 5.14 M steps
+    note: design 1 of 4 - divergent-exit-stack (reference, rho 0.60); 90 x 720 cells (= steady-state v4), W 26666.7, 4.5 M particles projected, 5.14 M steps to 3 transits (2.40 us)
     module: experiments.pic2d_design_mini_sweep_v1.run
-    args: [run, --design, divergent-exit-stack, --domain, channel, --grid, 33um]
+    args: [launch, --design, divergent-exit-stack, --domain, channel, --grid, 33um, --expect-commit, "291a9227669c8927ea5cf7a6de2eed23fe6f73de", --require-mps]
     gpu: auto
-    commit: null
+    commit: 291a9227669c8927ea5cf7a6de2eed23fe6f73de
     preregistered: true
-    protocol: modern/experiments/pic2d_design_mini_sweep_v1/protocol.json
+    protocol: modern/experiments/pic2d_design_mini_sweep_v1/protocols/divergent-exit-stack-channel-33um.json
     results: modern/experiments/pic2d_design_mini_sweep_v1/results/divergent-exit-stack-channel-33um
     checkout: worktree
-    gpu_memory_gib: 6
-    expected_ms_per_step: 2.9
-    enabled: false
+    gpu_memory_gib: 8
+    expected_ms_per_step: 8.7
+    transit_time_s: 2.4e-6
+    enabled: true
   - id: sweep-056
-    note: design 2 of 4 - l1a-gs-v3-056-effcbc8686 (HEMP-like, rho 2.36); 116 x 513 nodes, ~4.8 ms/step, 3.65 M steps
+    note: design 2 of 4 - l1a-gs-v3-056-effcbc8686 (HEMP-like, rho 2.36); 115 x 512 cells, W 26566.8, 10.2 M particles projected, 3.65 M steps to 3 transits (1.705 us)
     module: experiments.pic2d_design_mini_sweep_v1.run
-    args: [run, --design, l1a-gs-v3-056-effcbc8686, --domain, channel, --grid, 33um]
+    args: [launch, --design, l1a-gs-v3-056-effcbc8686, --domain, channel, --grid, 33um, --expect-commit, "291a9227669c8927ea5cf7a6de2eed23fe6f73de", --require-mps]
     gpu: auto
-    commit: null
+    commit: 291a9227669c8927ea5cf7a6de2eed23fe6f73de
     preregistered: true
-    protocol: modern/experiments/pic2d_design_mini_sweep_v1/protocol.json
+    protocol: modern/experiments/pic2d_design_mini_sweep_v1/protocols/l1a-gs-v3-056-effcbc8686-channel-33um.json
     results: modern/experiments/pic2d_design_mini_sweep_v1/results/l1a-gs-v3-056-effcbc8686-channel-33um
     checkout: worktree
-    gpu_memory_gib: 9
-    expected_ms_per_step: 4.8
-    enabled: false
+    gpu_memory_gib: 15
+    expected_ms_per_step: 16.6
+    transit_time_s: 1.7051e-6
+    enabled: true
   - id: sweep-047
-    note: design 3 of 4 - l1a-gs-v2-047-e3196a8aa5 (low rho 0.38); 67 x 779 nodes, ~2.0 ms/step, 5.55 M steps
+    note: design 3 of 4 - l1a-gs-v2-047-e3196a8aa5 (low rho 0.38, anode-edge boundary cusp disclosed); 66 x 778 cells, W 26655.3, 2.7 M particles projected, 5.55 M steps to 3 transits (2.592 us)
     module: experiments.pic2d_design_mini_sweep_v1.run
-    args: [run, --design, l1a-gs-v2-047-e3196a8aa5, --domain, channel, --grid, 33um]
+    args: [launch, --design, l1a-gs-v2-047-e3196a8aa5, --domain, channel, --grid, 33um, --expect-commit, "291a9227669c8927ea5cf7a6de2eed23fe6f73de", --require-mps]
     gpu: auto
-    commit: null
+    commit: 291a9227669c8927ea5cf7a6de2eed23fe6f73de
     preregistered: true
-    protocol: modern/experiments/pic2d_design_mini_sweep_v1/protocol.json
+    protocol: modern/experiments/pic2d_design_mini_sweep_v1/protocols/l1a-gs-v2-047-e3196a8aa5-channel-33um.json
     results: modern/experiments/pic2d_design_mini_sweep_v1/results/l1a-gs-v2-047-e3196a8aa5-channel-33um
     checkout: worktree
-    gpu_memory_gib: 5
-    expected_ms_per_step: 2.0
-    enabled: false
+    gpu_memory_gib: 6
+    expected_ms_per_step: 5.7
+    transit_time_s: 2.5917e-6
+    enabled: true
   - id: sweep-009
-    note: design 4 of 4 - l1a-gs-v3-009-d0c686b4aa (mid rho 0.92); 82 x 685 nodes, ~3.4 ms/step, 4.88 M steps
+    note: design 4 of 4 - l1a-gs-v3-009-d0c686b4aa (mid rho 0.92); 80 x 684 cells, W 26799.2, 6.7 M particles projected, 4.88 M steps to 3 transits (2.279 us)
     module: experiments.pic2d_design_mini_sweep_v1.run
-    args: [run, --design, l1a-gs-v3-009-d0c686b4aa, --domain, channel, --grid, 33um]
+    args: [launch, --design, l1a-gs-v3-009-d0c686b4aa, --domain, channel, --grid, 33um, --expect-commit, "291a9227669c8927ea5cf7a6de2eed23fe6f73de", --require-mps]
     gpu: auto
-    commit: null
+    commit: 291a9227669c8927ea5cf7a6de2eed23fe6f73de
     preregistered: true
-    protocol: modern/experiments/pic2d_design_mini_sweep_v1/protocol.json
+    protocol: modern/experiments/pic2d_design_mini_sweep_v1/protocols/l1a-gs-v3-009-d0c686b4aa-channel-33um.json
     results: modern/experiments/pic2d_design_mini_sweep_v1/results/l1a-gs-v3-009-d0c686b4aa-channel-33um
     checkout: worktree
-    gpu_memory_gib: 7
-    expected_ms_per_step: 3.4
+    gpu_memory_gib: 11
+    expected_ms_per_step: 11.3
+    transit_time_s: 2.279e-6
+    enabled: true
+  # sealed under the same preregistration, NOT launched in this campaign (a fifth MPS slot slows every process): the 056 seed
+  # replicate of the replication policy and the optional four-cusp design 106 (W capped at 12 M particles, disclosed). Enable
+  # one when a primary design finishes and frees a slot.
+  - id: sweep-056-seed-replicate
+    note: l1a-gs-v3-056-effcbc8686 seed 20260904 (replication policy); same sealed grid / dt / W as sweep-056
+    module: experiments.pic2d_design_mini_sweep_v1.run
+    args: [launch, --design, l1a-gs-v3-056-effcbc8686, --domain, channel, --grid, 33um, --case, seed-replicate, --expect-commit, "291a9227669c8927ea5cf7a6de2eed23fe6f73de", --require-mps]
+    gpu: auto
+    commit: 291a9227669c8927ea5cf7a6de2eed23fe6f73de
+    preregistered: true
+    protocol: modern/experiments/pic2d_design_mini_sweep_v1/protocols/l1a-gs-v3-056-effcbc8686-channel-33um-seed-replicate.json
+    results: modern/experiments/pic2d_design_mini_sweep_v1/results/l1a-gs-v3-056-effcbc8686-channel-33um-seed-replicate
+    checkout: worktree
+    gpu_memory_gib: 15
+    expected_ms_per_step: 16.6
+    transit_time_s: 1.7051e-6
+    enabled: false
+  - id: sweep-106
+    note: optional design 5 - l1a-gs-v3-106-ccec1c8b2f (four cusps, rho 2.93); 123 x 606 cells, W 30877.1 (cap 12 M), 4.33 M steps to 3 transits (2.018 us)
+    module: experiments.pic2d_design_mini_sweep_v1.run
+    args: [launch, --design, l1a-gs-v3-106-ccec1c8b2f, --domain, channel, --grid, 33um, --expect-commit, "291a9227669c8927ea5cf7a6de2eed23fe6f73de", --require-mps]
+    gpu: auto
+    commit: 291a9227669c8927ea5cf7a6de2eed23fe6f73de
+    preregistered: true
+    protocol: modern/experiments/pic2d_design_mini_sweep_v1/protocols/l1a-gs-v3-106-ccec1c8b2f-channel-33um.json
+    results: modern/experiments/pic2d_design_mini_sweep_v1/results/l1a-gs-v3-106-ccec1c8b2f-channel-33um
+    checkout: worktree
+    gpu_memory_gib: 20
+    expected_ms_per_step: 19.0
+    transit_time_s: 2.0184e-6
     enabled: false
 
   # ---------------------------------------------------------------- (iv) plume runs (development)
