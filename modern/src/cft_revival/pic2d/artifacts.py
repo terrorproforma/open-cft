@@ -18,7 +18,7 @@ import numpy as np
 from ..orbit_mc.artifacts import canonical_bytes, content_hash
 from .fields import FIELD_REPLAY_ATOL_OVER_MAX_B, FIELD_REPLAY_RTOL, MagneticFieldMap, compare_field_arrays
 from .models import PIC2DValidationError, ParticleArrays
-from .neutrals import NEUTRAL_LEDGER_KEYS, NeutralState
+from .neutrals import NEUTRAL_LEDGER_KEYS, NEUTRAL_LEDGER_KEYS_V2, NeutralState
 from .simulation import CUMULATIVE_KEYS, PIC2DConfig, SimulationState
 
 SIDECAR_SCHEMA = "cft.pic2d.artifact-sidecar.v1"
@@ -328,7 +328,7 @@ def save_checkpoint(
         "electron_count": state.electrons.count,
         "ion_count": state.ions.count,
         "cumulative_keys": list(CUMULATIVE_KEYS),
-        "neutral_keys": None if state.neutral is None else ["density_per_m3", *NEUTRAL_LEDGER_KEYS],
+        "neutral_keys": None if state.neutral is None else ["density_per_m3", *state.neutral.ledger_keys],   # v1.4 or v2.3.0 layout
         **({"cumulative_extra_keys": extra_keys} if extra_keys else {}),
         "arrays_file": npz_path.name,
         "arrays_sha256": npz_sha,
@@ -452,7 +452,8 @@ def load_checkpoint(
         cumulative |= {key: float(value) for key, value in zip(extra_keys, arrays["cumulative_extra"], strict=True)}
     neutral = None
     if metadata.get("neutral_keys") is not None or "neutral" in arrays:
-        accepted = (["density_per_m3", *NEUTRAL_LEDGER_KEYS], ["density_per_m3", *NEUTRAL_LEDGER_KEYS[:4]])  # v1.4 / v1.3 layouts
+        accepted = (["density_per_m3", *NEUTRAL_LEDGER_KEYS], ["density_per_m3", *NEUTRAL_LEDGER_KEYS[:4]],   # v1.4 / v1.3 layouts
+                    ["density_per_m3", *NEUTRAL_LEDGER_KEYS_V2])                                              # v2.3.0 (fast-neutral sink)
         if metadata.get("neutral_keys") not in accepted or "neutral" not in arrays:
             raise PIC2DValidationError("checkpoint neutral inventory keys differ")
         neutral = NeutralState.from_array(arrays["neutral"])

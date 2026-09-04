@@ -26,6 +26,7 @@ import numpy as np
 
 from . import kernels
 from .fields import MagneticFieldMap
+from .ion_mcc import ION_MCC_KEYS, IonNullCollisionMCC
 from .mcc import MCCConfig, NullCollisionMCC, XenonCrossSections, maxwellian_velocity
 from .mesh import MeshMasks, build_mesh_masks, cell_index
 from .neutrals import NeutralInventory, NeutralInventoryConfig, NeutralState
@@ -799,10 +800,12 @@ class CPUBackend:
         self.ion = xenon_ion_species(config.macro_weight)
         self.poisson = Poisson2D(masks, config.poisson)
         self.mcc = None
+        self.ion_mcc: IonNullCollisionMCC | None = None
         if config.mcc is not None:
             if cross_sections is None:
                 raise PIC2DValidationError("MCC requires cross sections")
             self.mcc = NullCollisionMCC(cross_sections, config.mcc, self.ion)
+            self.ion_mcc = build_ion_mcc(config, self.ion, masks)
         self.state: SimulationState | None = None
         self.diagnostics = DiagnosticAccumulator(masks, iedf_max_ev=iedf_max_ev(config))
         self.diagnostic_generation = 0     # v2.0.2: incremented by every reset_diagnostics (window bridging)
@@ -829,6 +832,8 @@ class CPUBackend:
         if self.mcc is None:
             raise PIC2DValidationError("neutral scale requires MCC")
         self.mcc.set_neutral_scale(scale)
+        if self.ion_mcc is not None:
+            self.ion_mcc.set_neutral_scale(scale)
 
     def set_emission_rate(self, rate_per_step: float) -> None:
         """v2.0: cathode emission rate (macro-electrons per step) for the coming steps (continuity rule)."""
@@ -960,6 +965,18 @@ class CPUBackend:
                 ions = moved.select(keep)
         state.cumulative["field_work_j"] += field_work
 
+        if self.ion_mcc is not None and ion_step and ions.count:
+            # v2.3.0: Xe+ - Xe CEX / MEX on the pushed ions (before this step's births join), RNG stream 4
+            rng_ion = np.random.default_rng([config.seed, state.step, 4])
+            shape = None
+            if masks.has_plume:
+                ci, cj, _, _ = cell_index(grid, ions.r_m, ions.z_m)
+                shape = self.neutral_shape_cell[ci, cj]
+            ion_result = self.ion_mcc.apply(ions, dt * config.ion_subcycle, rng_ion, density_shape=shape)
+            ions = ion_result.ions
+            for key, value in ion_result.tally.to_cumulative().items():
+                add(key, value)
+
         if config.anomalous is not None and electrons.count:
             # v1.4 hook: Bohm-type scattering at nu_an = alpha omega_ce(x) (speed preserved); v2.1.0: the event model is
             # declared (isotropic redirect, or the perpendicular-velocity rotation of Brandt et al. 2016 that keeps v_parallel)
@@ -998,6 +1015,9 @@ class CPUBackend:
             state.cumulative["ionizations"] += tally.ionization
             state.cumulative["excitations"] += tally.excitation
             state.cumulative["elastic"] += tally.elastic
+            if len(tally.excitation_levels) > 1:      # v2.3.0: per-level counts (extra keys, multi-level sets only)
+                for k, count in enumerate(tally.excitation_levels):
+                    add(f"excitations_level_{k + 1}", count)
             # v2.0.6: the tally counts macro events; the ledger is real energy -> times W (the unscaled sum is kept)
             state.cumulative["inelastic_loss_j"] += tally.inelastic_energy_loss_j * config.macro_weight
             add(INELASTIC_LOSS_PER_WEIGHT_KEY, tally.inelastic_energy_loss_j)
@@ -1132,6 +1152,15 @@ class CPUBackend:
         self.diagnostic_generation += 1
 
 
+def build_ion_mcc(config: PIC2DConfig, ion: Species2D, masks: MeshMasks) -> IonNullCollisionMCC | None:
+    """v2.3.0: the Xe+ - Xe null-collision operator when the declared collision set carries an ion-neutral block."""
+
+    if config.mcc is None or config.mcc.collision_set is None or getattr(config.mcc.collision_set, "ion_neutral", None) is None:
+        return None
+    ion_config = config.mcc.collision_set.ion_neutral
+    return IonNullCollisionMCC(ion_config.load(), config.mcc, ion_config, ion, masks)
+
+
 def injection_sample(config: PIC2DConfig, masks: MeshMasks, u: np.ndarray) -> ParticleArrays:
     """Map uniforms ``u`` (shape (7, N)) to exit-plane injected electrons.
 
@@ -1185,9 +1214,9 @@ def plume_neutral_shape(geometry: Grid2D | Any, r_m: np.ndarray, z_m: np.ndarray
     channel's effusion flux ``Phi = n_g v_bar A / 4``: the flux density at distance ``rho`` and
     angle ``theta`` from the aperture axis is ``Phi cos(theta) / (pi rho^2)``, the mean speed
     of the effusing atoms is ``3 pi v_bar / 8``, so ``n / n_g = 2 A cos(theta) / (3 pi^2 rho^2)``,
-    capped at 1/2 (the outgoing half-Maxwellian at the aperture).  Ion-neutral collisions
-    stay off (no hash-bound Xe+-Xe table in the repository); this field only sets the
-    electron-neutral MCC rate in the plume.
+    capped at 1/2 (the outgoing half-Maxwellian at the aperture).  This field sets the
+    electron-neutral MCC rate in the plume and, with the v2.3.0 collision set, the Xe+ - Xe
+    CEX / MEX rate on the same density (plume CEX consumes effused atoms, not the inventory).
     """
 
     geom = geometry.geometry if isinstance(geometry, Grid2D) else geometry
@@ -1766,9 +1795,16 @@ class Simulation:
         self.masks = build_mesh_masks(config.grid)
         self.cross_sections = cross_sections
         probability = 0.0
+        self.ion_mcc_on = False
         if config.mcc is not None:
             if cross_sections is None:
                 raise PIC2DValidationError("MCC configuration requires cross sections")
+            if config.mcc.collision_set is not None:
+                # v2.3.0: the declared set binds the payload hash + process list; other data fails closed
+                config.mcc.collision_set.check_electron(cross_sections)
+                self.ion_mcc_on = getattr(config.mcc.collision_set, "ion_neutral", None) is not None
+            elif not cross_sections.is_legacy_set:
+                raise PIC2DValidationError("a multi-level cross-section set must be declared through MCCConfig.collision_set (identity)")
             probability = NullCollisionMCC(cross_sections, config.mcc, xenon_ion_species(config.macro_weight)).collision_probability(config.dt_s)
         self.stability = require_stable(
             stability_report(
@@ -1809,8 +1845,9 @@ class Simulation:
                 volume_m3=float(self.masks.channel_volume_m3 if self.masks.has_plume else self.masks.plasma_volume_m3),
             )
             # v2.0: the inventory may start below the null-collision ceiling (declared headroom for the
-            # recycling transient above Q/c); the MCC scale is n_g / ceiling from the first step
-            self.neutral_state = NeutralState.initial(self.neutrals.initial_density)
+            # recycling transient above Q/c); the MCC scale is n_g / ceiling from the first step.
+            # v2.3.0: with the ion MCC on, the ledger carries the fast-neutral (CEX) exit sink.
+            self.neutral_state = NeutralState.initial(self.neutrals.initial_density, fast_neutral_sink=self.ion_mcc_on)
             self.backend.set_neutral_scale(self.neutrals.scale(self.neutral_state))
         self._last_momentum: float | None = None
         if config.cathode is not None and config.cathode.current_rule == "continuity":
@@ -1954,10 +1991,31 @@ class Simulation:
             currents["body_face_ion_a"] = extra("body_face_ions") * current_unit
             currents["plume_ionization_rate_per_s"] = extra("ionizations_plume") * config.macro_weight / interval
             currents["cathode_emission_a"] = currents["injected_electron_a"]
+        ion_neutral_loss = 0.0
+        fast_neutral_exit_rate: float | None = None
+        if self.ion_mcc_on:
+            # v2.3.0: Xe+ - Xe collision rates (real events per second) and the fast-neutral bookkeeping of the interval
+            rate = lambda key: extra(key) * config.macro_weight / interval  # noqa: E731
+            currents["cex_rate_per_s"] = rate("cex")
+            currents["mex_rate_per_s"] = rate("mex")
+            currents["cex_plume_rate_per_s"] = rate("cex_plume")
+            currents["fast_neutral_exit_rate_per_s"] = rate("fast_neutral_exit_channel") + rate("fast_neutral_exit_plume")
+            currents["fast_neutral_wall_rate_per_s"] = rate("fast_neutral_wall")
+            currents["fast_neutral_thermal_rate_per_s"] = rate("fast_neutral_thermal")
+            currents["ion_mcc_candidate_rate_per_s"] = rate("ion_mcc_candidates")
+            ion_neutral_loss = extra("ion_neutral_loss_j")
+            # channel-born fast neutrals leaving through the exit aperture drain the channel inventory (atoms/s)
+            fast_neutral_exit_rate = rate("fast_neutral_exit_channel")
+            if extra("ion_mcc_ceiling_violations") > 0.0:
+                raise PIC2DStabilityError(
+                    f"ion MCC null-collision ceiling exceeded on {extra('ion_mcc_ceiling_violations'):.0f} candidates this interval "
+                    "(an ion's relative energy is above the table / the neutral density above the ceiling)"
+                )
         total = k_e + k_i + u_e
         sources = (
             delta["ke_injected_j"] - delta["ke_absorbed_anode_j"] - delta["ke_absorbed_exit_j"]
             - delta["ke_absorbed_wall_j"] - delta["inelastic_loss_j"] + delta["ke_born_ions_j"] + electrode_work
+            - ion_neutral_loss       # v2.3.0: kinetic energy the ions hand to the neutrals in CEX / MEX (0 when off)
         )
         residual = 0.0 if self._last_energy is None else (total - self._last_energy) - sources
         ledger = {
@@ -1972,6 +2030,9 @@ class Simulation:
             "exit_induced_charge_c": q_exit,
             "cumulative": dict(cumulative),
         }
+        if self.ion_mcc_on:
+            ledger["interval_ion_neutral_loss_j"] = ion_neutral_loss
+            ledger["interval_ke_fast_neutral_exit_j"] = extra("ke_fast_neutral_exit_j")
         plasma_phi = phi[masks.plasma_node]
         neutral: dict[str, Any] | None = None
         if self.neutrals is not None and self.neutral_state is not None:
@@ -1982,9 +2043,12 @@ class Simulation:
             # thermal neutrals (when the inventory has wall_recycling); exit ions are the beam.
             # v2.0: only channel ionisation drains the channel inventory (plume births consume effused
             # atoms) and front-face ions are not recycled into the channel.
+            # v2.3.0: CEX fast neutrals leaving the channel through the exit aperture are a sink of the inventory
+            # (the atom left as a neutral; the slow ion born in its place is recycled or beamed like any other ion).
             absorbed_ion_rate = (delta["wall_ions"] + delta["anode_ions"] - extra("body_face_ions")) * config.macro_weight / interval
             channel_ionization_rate = currents["ionization_rate_per_s"] - currents.get("plume_ionization_rate_per_s", 0.0)
-            advance = self.neutrals.advance(self.neutral_state, channel_ionization_rate, interval, absorbed_ion_rate)
+            advance = self.neutrals.advance(self.neutral_state, channel_ionization_rate, interval, absorbed_ion_rate,
+                                            fast_neutral_exit_rate_per_s=fast_neutral_exit_rate)
             self.neutral_state = advance.state
             self.backend.set_neutral_scale(self.neutrals.scale(self.neutral_state))
             feed = self.neutrals.config.feed_atoms_per_s
@@ -2004,6 +2068,8 @@ class Simulation:
                 "interval_ledger_residual_atoms": advance.ledger_residual_atoms,
                 "ledger": dict(advance.state.ledger),
             }
+            if fast_neutral_exit_rate is not None:
+                neutral["fast_neutral_exit_rate_per_s"] = advance.fast_neutral_exit_rate_per_s
         # v1.4: peak-node Debye sample (blocker 1): the grid must resolve the PEAK, not the mean
         gate = config.peak_debye_gate
         peak_node = self.backend.peak_node_sample()
@@ -2086,7 +2152,10 @@ class Simulation:
         collisions_rate = rate("pz_collisions")
         born_rate = rate("pz_born")
         injected_rate = rate("pz_injected")
-        residual = 0.0 if first else d_p - (extra("pz_impulse") + extra("pz_collisions") + extra("pz_born") + extra("pz_injected")
+        # v2.3.0: the ions' momentum change in CEX / MEX (handed to the neutral population) enters the plasma ledger; the
+        # fast neutrals carry part of it out through the exit (thrust) or onto the thruster body (force); 0 when off
+        ion_collisions = extra("pz_ion_collisions")
+        residual = 0.0 if first else d_p - (extra("pz_impulse") + extra("pz_collisions") + ion_collisions + extra("pz_born") + extra("pz_injected")
                                             - extra("pz_exit_electrons") - extra("pz_exit_ions") - extra("pz_wall_electrons")
                                             - extra("pz_wall_ions") - extra("pz_anode_electrons") - extra("pz_anode_ions"))
         cold_gas = 0.0
@@ -2094,11 +2163,24 @@ class Simulation:
             # effusing half-Maxwellian through the aperture: momentum flux n k T / 2 per area = Phi m (pi/4) v_bar
             v_bar = sqrt(8.0 * 1.380649e-23 * self.neutrals.temperature_k / (pi * self.neutrals.mass_kg))
             cold_gas = float(neutral["effusion_rate_per_s"]) * self.neutrals.mass_kg * (pi / 4.0) * v_bar
+        fast_neutral_exit = rate("pz_fast_neutral_exit")
+        fast_neutral_wall = rate("pz_fast_neutral_wall")
         thrust_flux = exit_rate - injected_rate
-        force_on_thruster = absorbed_rate - impulse_rate
+        force_on_thruster = absorbed_rate - impulse_rate + fast_neutral_wall
         thrust_balance = -force_on_thruster
         forces = boundary_forces_n(self.masks, sample["phi_v"])
         closure = (thrust_flux - thrust_balance) / thrust_flux if thrust_flux != 0.0 else 0.0
+        record_v23: dict[str, Any] = {}
+        if self.ion_mcc_on:
+            record_v23 = {
+                "ion_collision_momentum_rate_n": ion_collisions / interval,
+                "fast_neutral_exit_momentum_rate_n": fast_neutral_exit,
+                "fast_neutral_wall_momentum_rate_n": fast_neutral_wall,
+                # momentum that stayed in the (0-D) gas: thermal atoms taken up by CEX ions, MEX recoils, slow CEX neutrals
+                "gas_momentum_rate_n": -ion_collisions / interval - fast_neutral_exit - fast_neutral_wall,
+                "fast_neutral_thrust_n": fast_neutral_exit,
+                "fast_neutral_exit_power_w": extra("ke_fast_neutral_exit_j") / interval,
+            }
         return {
             "momentum_z_kg_m_s": p_now,
             "interval_dp_kg_m_s": d_p,
@@ -2115,9 +2197,11 @@ class Simulation:
             "dp_rate_n": d_p / interval,
             "thrust_flux_n": thrust_flux,
             "cold_gas_thrust_n": cold_gas,
-            "thrust_total_n": thrust_flux + cold_gas,
+            # v2.3.0: + the axial momentum flux of the CEX fast neutrals leaving the domain (0 without the ion MCC)
+            "thrust_total_n": thrust_flux + cold_gas + fast_neutral_exit,
             "force_on_thruster_n": force_on_thruster,
             "thrust_balance_n": thrust_balance,
+            **record_v23,
             "closure_fraction": closure,
             "electrostatic_force_thruster_n": forces["thruster_n"],
             "electrostatic_force_far_field_n": forces["far_field_n"],
@@ -2269,6 +2353,10 @@ class Simulation:
             record["cross_sections"] = self.cross_sections.to_dict()
         if getattr(self.backend, "mcc", None) is not None:
             record["mcc"] = self.backend.mcc.to_dict()
+        if getattr(self.backend, "ion_mcc", None) is not None:
+            # v2.3.0: Xe+ - Xe CEX / MEX operator, its tables and the fast-neutral contract
+            record["ion_mcc"] = self.backend.ion_mcc.to_dict()
+            record["ion_mcc"]["ledger_keys"] = list(ION_MCC_KEYS)
         if self.neutrals is not None:
             record["neutral_inventory"] = self.neutrals.to_dict()
         inventory = self.config.neutral_inventory
@@ -2298,7 +2386,11 @@ class Simulation:
                 "far_field": f"Dirichlet {self.config.potentials.exit_v} V on r = R_plume (z >= z_exit) and z = z_max",
                 "cathode": None if self.config.cathode is None else self.config.cathode.to_dict(),
                 "legacy_exit_plane_injection": self.config.injection is not None,
-                "neutrals": "two-zone: channel inventory (v1.4) + free-molecular cosine-source cone in the plume (electron-neutral MCC only; ion-neutral collisions off)",
+                "neutrals": (
+                    "two-zone: channel inventory (v1.4) + free-molecular cosine-source cone in the plume ("
+                    + ("electron-neutral MCC and Xe+ - Xe CEX / MEX on the same density field (v2.3.0)" if self.ion_mcc_on
+                       else "electron-neutral MCC only; ion-neutral collisions off") + ")"
+                ),
                 "plume_boundary_gate": None if self.config.plume_boundary_gate is None else self.config.plume_boundary_gate.to_dict(),
                 "momentum_ledger_keys": list(MOMENTUM_KEYS),
                 "histograms": {"theta_bins": THETA_BINS, "iedf_bins": IEDF_BINS, "iedf_max_ev": iedf_max_ev(self.config)},

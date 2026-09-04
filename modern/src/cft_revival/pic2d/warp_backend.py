@@ -27,9 +27,11 @@ from typing import Any
 
 import numpy as np
 
+from . import warp_ion_mcc
 from .fields import MagneticFieldMap
+from .ion_mcc import IonNullCollisionMCC
 from .kernels import FIXED_POINT_SCALE
-from .mcc import NullCollisionMCC, XenonCrossSections
+from .mcc import MAX_EXCITATION_LEVELS, NullCollisionMCC, XenonCrossSections
 from .mesh import MeshMasks
 from .models import (
     ELECTRON_MASS_KG,
@@ -55,6 +57,7 @@ from .simulation import (
     PIC2DConfig,
     SimulationState,
     StepTally,
+    build_ion_mcc,
     iedf_max_ev,
     neutral_shape_cells,
     omega_pe_gate_min_macro_particles,
@@ -75,8 +78,10 @@ PARTICLE_BLOCK = 256
 # compiles a module for one block width, so this equals PARTICLE_BLOCK.
 THOMAS_LANES = PARTICLE_BLOCK
 # Per-step RNG streams read from the device seed table (v1.4): 0 = MCC, 1 = injection,
-# 2 = anomalous scattering.  Row = steps since the last host sync.
-SEED_STREAMS = 3
+# 2 = anomalous scattering, 3 = ion-neutral MCC (v2.3.0; the seeds of streams 0-2 are unchanged, so every
+# earlier run replays bitwise).  Row = steps since the last host sync.
+SEED_STREAMS = 4
+SEED_STREAM_IDS = (1, 2, 3, 4)       # stream_seed(seed, step, id) per table column
 
 # Interval statistics slots (float64 device array, read once per host sync).
 STATS_WORK = 0
@@ -106,7 +111,10 @@ STATS_BODY_FACE_E = 38      # front-face hits (electrons)
 STATS_BODY_FACE_I = 39      # front-face hits (ions)
 STATS_ION_PLUME = 40        # ionisation events downstream of the exit plane
 STATS_PEAK_DENSITY_RESOLVED = 41   # v2.0.4: single-step peak electron density over nodes holding >= the gate's macro-particle floor (the omega_pe dt gate statistic)
-STATS_SIZE = 42
+# v2.3.0 (xe_collision_set_v2): ion-neutral MCC block (warp_ion_mcc.ION_STATS_* offsets) and per-level excitation counts
+STATS_ION_MCC = 42
+STATS_EXC_LEVELS = STATS_ION_MCC + warp_ion_mcc.ION_STATS_COUNT
+STATS_SIZE = STATS_EXC_LEVELS + MAX_EXCITATION_LEVELS
 
 
 def padded_dim(count: int, block: int) -> int:
@@ -721,7 +729,9 @@ if wp is not None:
         slots: wp.array(dtype=wp.int32), seed_table: wp.array(dtype=wp.int32), counter: wp.array(dtype=wp.int32),
         probability: F64, nu_max: F64, neutral_density_ctrl: wp.array(dtype=F64),
         table: wp.array(dtype=F64), points: int, step_ev: F64, max_ev: F64,
-        threshold_exc: F64, threshold_ion: F64, b_ev: F64, ion_thermal: F64,
+        # v2.3.0: excitation levels = table rows 1 .. n_exc with thresholds exc_thresholds[k]; ionisation is row n_exc + 1.
+        # One level reproduces the v1.x-v2.0.6 arithmetic exactly; per-level counts go to exc_level_slot + k when n_exc > 1.
+        exc_thresholds: wp.array(dtype=F64), n_exc: int, exc_level_slot: int, threshold_ion: F64, b_ev: F64, ion_thermal: F64,
         ionize: wp.array(dtype=wp.int32), sec_vr: wp.array(dtype=F64), sec_vt: wp.array(dtype=F64), sec_vz: wp.array(dtype=F64),
         ion_vr: wp.array(dtype=F64), ion_vt: wp.array(dtype=F64), ion_vz: wp.array(dtype=F64),
         stats: wp.array(dtype=F64), tally_slot: int, flag_bound: int,
@@ -772,10 +782,14 @@ if wp is not None:
                     cj = wp.clamp(int(wp.floor((z[p] - z_min) / dz)), 0, nz - 1)
                     density = neutral_density * shape_cell[ci * nz + cj]
                 nu0 = density * sigma_lookup(table, points, step_ev, max_ev, energy, 0) * speed
-                nu1 = density * sigma_lookup(table, points, step_ev, max_ev, energy, 1) * speed
-                nu2 = density * sigma_lookup(table, points, step_ev, max_ev, energy, 2) * speed
-                if energy < threshold_exc:
-                    nu1 = F64(0.0)
+                # total excitation frequency over the levels (a single level: 0 + x == x, the legacy value bitwise)
+                nu1 = F64(0.0)
+                for k in range(n_exc):
+                    nu_k = density * sigma_lookup(table, points, step_ev, max_ev, energy, 1 + k) * speed
+                    if energy < exc_thresholds[k]:
+                        nu_k = F64(0.0)
+                    nu1 += nu_k
+                nu2 = density * sigma_lookup(table, points, step_ev, max_ev, energy, 1 + n_exc) * speed
                 if energy < threshold_ion:
                     nu2 = F64(0.0)
                 selector = F64(wp.randf(state)) * nu_max
@@ -791,7 +805,24 @@ if wp is not None:
                     vz[p] = v[2]
                     outcome = 0
                 elif selector < c2:
-                    remaining = wp.max(energy - threshold_exc, F64(0.0))
+                    # which level: the selector's position inside [c1, c2) split by the per-level frequencies (the same
+                    # partition the CPU reference applies with its cumulative sums); one level -> level 0 without a test
+                    level = int(0)
+                    if n_exc > 1:
+                        acc = F64(c1)
+                        chosen = int(-1)
+                        for k in range(n_exc):
+                            nu_k = density * sigma_lookup(table, points, step_ev, max_ev, energy, 1 + k) * speed
+                            if energy < exc_thresholds[k]:
+                                nu_k = F64(0.0)
+                            acc += nu_k
+                            if chosen < 0 and selector < acc:
+                                chosen = k
+                        if chosen < 0:
+                            chosen = n_exc - 1     # round-off at the upper edge: the last level
+                        level = chosen
+                        wp.atomic_add(stats, exc_level_slot + level, F64(1.0))
+                    remaining = wp.max(energy - exc_thresholds[level], F64(0.0))
                     v = isotropic(wp.sqrt(F64(2.0) * remaining * ev / m_e), u2, u3)
                     vr[p] = v[0]
                     vt[p] = v[1]
@@ -1536,10 +1567,12 @@ class WarpBackend:
         self.electron = electron_species(config.macro_weight)
         self.ion = xenon_ion_species(config.macro_weight)
         self.mcc: NullCollisionMCC | None = None
+        self.ion_mcc: IonNullCollisionMCC | None = None
         if config.mcc is not None:
             if cross_sections is None:
                 raise PIC2DValidationError("MCC requires cross sections")
             self.mcc = NullCollisionMCC(cross_sections, config.mcc, self.ion)
+            self.ion_mcc = build_ion_mcc(config, self.ion, masks)      # v2.3.0: None unless the collision set declares it
         self.sync_interval = int(config.sync_steps)
         grid = masks.grid
         self.nr, self.nz = grid.cell_shape
@@ -1649,6 +1682,14 @@ class WarpBackend:
             self.probability = self.mcc.collision_probability(config.dt_s)
             # device-resident instantaneous neutral density (graph-safe; see set_neutral_scale)
             self.neutral_density_ctrl = wp.array(np.array([self.mcc.neutral_density_per_m3]), dtype=wp.float64, device=dev)
+            # v2.3.0: excitation-level thresholds (one for the legacy set) and the ion-neutral table
+            self.exc_thresholds = f64(np.asarray(self.mcc.table.excitation_thresholds_ev))
+            self.exc_count = self.mcc.table.excitation_count
+            if self.ion_mcc is not None:
+                self.ion_table = f64(self.ion_mcc.table.table_m2)
+                self.ion_table_points = self.ion_mcc.table.point_count
+                self.ion_probability = self.ion_mcc.collision_probability(config.dt_s * config.ion_subcycle)
+                self.ion_march_limit = 4 * (self.nr + self.nz) + 8
         else:
             self.probability = 0.0
             self.neutral_density_ctrl = wp.zeros(1, dtype=wp.float64, device=dev)
@@ -1804,6 +1845,8 @@ class WarpBackend:
         if self.mcc is None:
             raise PIC2DValidationError("neutral scale requires MCC")
         self.mcc.set_neutral_scale(scale)
+        if self.ion_mcc is not None:
+            self.ion_mcc.set_neutral_scale(scale)      # the ion kernel reads the same device-resident density
         wp.copy(self.neutral_density_ctrl, wp.array(np.array([self.mcc.neutral_density_per_m3]), dtype=wp.float64, device=self.device))
 
     def set_emission_rate(self, rate_per_step: float) -> None:
@@ -1860,7 +1903,7 @@ class WarpBackend:
 
         base = int(self.state_meta["step"])
         seeds = np.array(
-            [stream_seed(self.config.seed, base + k, stream) for k in range(self.sync_interval) for stream in (1, 2, 3)],
+            [stream_seed(self.config.seed, base + k, stream) for k in range(self.sync_interval) for stream in SEED_STREAM_IDS],
             dtype=np.int32,
         )
         wp.copy(self.seed_table, wp.array(seeds, dtype=wp.int32, device=self.device))
@@ -1949,6 +1992,8 @@ class WarpBackend:
                 import sys
 
                 wp.load_module(module=sys.modules[__name__], device=self.device)   # no module loads inside a capture
+                if self.ion_mcc is not None:
+                    wp.load_module(module=warp_ion_mcc, device=self.device)
             profile, self.profile = self.profile, None
             try:
                 with wp.ScopedCapture(device=self.device) as capture:
@@ -2079,6 +2124,24 @@ class WarpBackend:
                   inputs=[self.acc_wall, ELEMENTARY_CHARGE_C * config.macro_weight / FIXED_POINT_SCALE, self.surface], device=dev)
         self._mark("push")
 
+        if self.ion_mcc is not None and ion_step and i_dim:
+            # v2.3.0: Xe+ - Xe CEX / MEX on the pushed ions (velocities only: the frozen ion charge stays valid), before
+            # this step's births join (as the CPU reference); RNG stream 3 of the seed table; n_g device-resident
+            ion_mcc = self.ion_mcc
+            wp.launch(
+                warp_ion_mcc.ion_mcc_kernel, dim=padded_dim(i_dim, PARTICLE_BLOCK), block_dim=PARTICLE_BLOCK,
+                inputs=[ions.r, ions.z, ions.vr, ions.vt, ions.vz, ions.alive_flags, self.slots, 1,
+                        self.seed_table, SEED_STREAMS, 3, self.step_counter,
+                        self.ion_probability, ion_mcc.nu_max, self.neutral_density_ctrl,
+                        self.ion_table, self.ion_table_points, ion_mcc.table.energy_step_ev, ion_mcc.table.energy_max_ev,
+                        self.ion.mass_kg, self.ion.mass_kg * config.macro_weight, ion_mcc.thermal_speed, ion_mcc.fast_speed_threshold,
+                        self.neutral_shape, self.plasma_cell, 1 if self.has_plume else 0,
+                        grid.dr_m, grid.dz_m, geometry.z_min_m, geometry.z_max_m, geometry.exit_radius_m, self.nr, self.nz, self.ion_march_limit,
+                        self.stats, STATS_ION_MCC],
+                device=dev,
+            )
+            self._mark("ion-mcc")
+
         if config.anomalous is not None and e_dim:
             # v1.4 hook: Bohm-type scattering after the push, before the MCC (as the CPU reference)
             wp.launch(
@@ -2097,7 +2160,7 @@ class WarpBackend:
                 inputs=[electrons.vr, electrons.vt, electrons.vz, electrons.alive_flags, self.slots, self.seed_table, self.step_counter,
                         self.probability, mcc.nu_max, self.neutral_density_ctrl,  # n_g0 x scale, device-resident (graph-safe); ceiling fixed
                         self.table, self.table_points, mcc.table.energy_step_ev, mcc.table.energy_max_ev,
-                        mcc.table.thresholds_ev[1], mcc.table.thresholds_ev[2], 8.7, ion_thermal,
+                        self.exc_thresholds, self.exc_count, STATS_EXC_LEVELS, mcc.table.thresholds_ev[-1], 8.7, ion_thermal,
                         self.ionize, self.sec[0], self.sec[1], self.sec[2], self.ionv[0], self.ionv[1], self.ionv[2],
                         self.stats, STATS_MCC, e_dim,
                         electrons.r, electrons.z, self.neutral_shape, 1 if self.has_plume else 0, geometry.z_max_m,
@@ -2206,13 +2269,30 @@ class WarpBackend:
         cumulative["injected_electrons"] += float(self.injected_since_sync)
         n_ion = int(stats[STATS_MCC + 3])
         if self.mcc is not None:
+            n_exc = float(stats[STATS_MCC + 2])
             cumulative["elastic"] += float(stats[STATS_MCC + 1])
-            cumulative["excitations"] += float(stats[STATS_MCC + 2])
+            cumulative["excitations"] += n_exc
             cumulative["ionizations"] += float(n_ion)
-            # v2.0.6: the MCC counts are macro events; the ledger is real energy -> times W (the unscaled sum is kept)
-            per_weight = (float(stats[STATS_MCC + 2]) * self.mcc.table.thresholds_ev[1] + n_ion * self.mcc.table.thresholds_ev[2]) * EV_J
+            # v2.0.6: the MCC counts are macro events; the ledger is real energy -> times W (the unscaled sum is kept).
+            # v2.3.0: sum over the excitation levels of count x threshold (one level: the v2.0.6 expression bitwise)
+            thresholds = self.mcc.table.thresholds_ev
+            if self.exc_count == 1:
+                loss_ev = n_exc * thresholds[1]
+            else:
+                levels = [float(stats[STATS_EXC_LEVELS + k]) for k in range(self.exc_count)]
+                if sum(levels) != n_exc:
+                    raise PIC2DValidationError(f"per-level excitation counts {levels} do not sum to the excitation tally {n_exc}")
+                loss_ev = 0.0
+                for k, count in enumerate(levels):
+                    loss_ev += count * thresholds[1 + k]
+                    add(f"excitations_level_{k + 1}", count)
+            per_weight = (loss_ev + n_ion * thresholds[-1]) * EV_J
             cumulative["inelastic_loss_j"] += per_weight * config.macro_weight
             add(INELASTIC_LOSS_PER_WEIGHT_KEY, per_weight)
+        if self.ion_mcc is not None:
+            # v2.3.0: ion-neutral tallies (counts exact; energy / momentum sums are float atomics)
+            for offset, key in enumerate(warp_ion_mcc.ION_STATS_KEYS):
+                add(key, stats[STATS_ION_MCC + offset])
         absorbed_e = int(stats[STATS_E_COUNTS] + stats[STATS_E_COUNTS + 1] + stats[STATS_E_COUNTS + 2])
         absorbed_i = int(stats[STATS_I_COUNTS] + stats[STATS_I_COUNTS + 1] + stats[STATS_I_COUNTS + 2])
         expected_e = electrons.alive + n_ion + self.injected_since_sync - absorbed_e

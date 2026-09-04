@@ -46,6 +46,16 @@ effused, artificial) are the exact time integrals of the corresponding terms, so
 The MCC null-collision ceiling stays at the initial density ``n_g0``; the real
 collision frequency is scaled by ``n_g / n_g0``.  ``n_g > n_g0`` (which would break
 the null-collision bound) and ``n_g < 0`` (inventory exhausted) fail closed.
+
+Model v2.3.0 (``xe_collision_set_v2``): with Xe+ - Xe charge exchange on, a CEX event turns a
+thermal atom of the inventory into the (slow) ion and the fast ion into a FAST NEUTRAL that is not a
+particle.  The fast neutrals that leave the channel through the exit aperture (``ion_mcc`` decides
+that by a straight-line flight through the cell mask) are the sixth ledger term ``fast_neutral_exit``
+and the sink ``F`` of the balance ``V dn_g/dt = Q_in + R - S - F - c n_g``; fast neutrals that hit a
+wall thermalise and never left, so they do not enter the balance.  The slow ion born from the atom
+later either leaves as beam or is recycled at a wall like any other ion, so no atom is counted twice.
+The ledger carries the key only when the sink is active (``fast_neutral_exit_rate_per_s`` given), so
+v1.3 / v1.4 inventories and their checkpoints are byte-identical.
 """
 
 from __future__ import annotations
@@ -62,6 +72,9 @@ BOLTZMANN_J_PER_K = 1.380649e-23
 XENON_MASS_KG = 2.1801714e-25
 NEUTRAL_LEDGER_KEYS = ("fed", "ionized", "effused", "artificial", "recycled")
 _V13_LEDGER_KEYS = NEUTRAL_LEDGER_KEYS[:4]
+# v2.3.0: the fast-neutral (CEX) exit sink; present in a state's ledger only when the ion MCC is configured
+FAST_NEUTRAL_EXIT_KEY = "fast_neutral_exit"
+NEUTRAL_LEDGER_KEYS_V2 = (*NEUTRAL_LEDGER_KEYS, FAST_NEUTRAL_EXIT_KEY)
 
 
 @dataclass(frozen=True, slots=True)
@@ -113,14 +126,21 @@ class NeutralState:
     ledger: dict[str, float]
 
     @classmethod
-    def initial(cls, density_per_m3: float) -> "NeutralState":
-        return cls(float(density_per_m3), {key: 0.0 for key in NEUTRAL_LEDGER_KEYS})
+    def initial(cls, density_per_m3: float, *, fast_neutral_sink: bool = False) -> "NeutralState":
+        keys = NEUTRAL_LEDGER_KEYS_V2 if fast_neutral_sink else NEUTRAL_LEDGER_KEYS
+        return cls(float(density_per_m3), {key: 0.0 for key in keys})
 
     def copy(self) -> "NeutralState":
         return NeutralState(self.density_per_m3, dict(self.ledger))
 
+    @property
+    def ledger_keys(self) -> tuple[str, ...]:
+        """v1.4 layout, or the v2.3.0 layout when the fast-neutral sink is carried."""
+
+        return NEUTRAL_LEDGER_KEYS_V2 if FAST_NEUTRAL_EXIT_KEY in self.ledger else NEUTRAL_LEDGER_KEYS
+
     def to_array(self) -> np.ndarray:
-        return np.array([self.density_per_m3, *(self.ledger[key] for key in NEUTRAL_LEDGER_KEYS)], dtype=np.float64)
+        return np.array([self.density_per_m3, *(self.ledger[key] for key in self.ledger_keys)], dtype=np.float64)
 
     @classmethod
     def from_array(cls, values: np.ndarray) -> "NeutralState":
@@ -131,6 +151,8 @@ class NeutralState:
             ledger = {key: float(v) for key, v in zip(_V13_LEDGER_KEYS, values[1:], strict=True)} | {"recycled": 0.0}
         elif values.shape == (1 + len(NEUTRAL_LEDGER_KEYS),):
             ledger = {key: float(v) for key, v in zip(NEUTRAL_LEDGER_KEYS, values[1:], strict=True)}
+        elif values.shape == (1 + len(NEUTRAL_LEDGER_KEYS_V2),):   # v2.3.0 checkpoint: fast-neutral exit sink
+            ledger = {key: float(v) for key, v in zip(NEUTRAL_LEDGER_KEYS_V2, values[1:], strict=True)}
         else:
             raise PIC2DValidationError("neutral state array has the wrong shape or is nonfinite")
         return cls(float(values[0]), ledger)
@@ -172,6 +194,7 @@ class NeutralAdvance:
     recycled_rate_per_s: float = 0.0
     effusion_coefficient_m3_per_s: float = 0.0
     artificial_relaxation_suspended: bool = False
+    fast_neutral_exit_rate_per_s: float = 0.0     # v2.3.0 CEX sink (0 when the ion MCC is off)
 
 
 class NeutralInventory:
@@ -234,37 +257,46 @@ class NeutralInventory:
             return self.effusion_coefficient
         return (q * self.effusion_coefficient + recycled_rate_per_s * self.wall_effusion_coefficient) / (q + recycled_rate_per_s)
 
-    def fixed_point(self, ionization_rate_per_s: float, recycled_rate_per_s: float = 0.0) -> float:
-        """Quasi-steady density where feed + recycling = ionisation + effusion (negative if S exceeds the sources)."""
+    def fixed_point(self, ionization_rate_per_s: float, recycled_rate_per_s: float = 0.0, fast_neutral_exit_rate_per_s: float = 0.0) -> float:
+        """Quasi-steady density where feed + recycling = ionisation + fast-neutral exit + effusion (negative if the sinks exceed the sources)."""
 
         c = self.effective_effusion_coefficient(recycled_rate_per_s)
-        return (self.config.feed_atoms_per_s + recycled_rate_per_s - ionization_rate_per_s) / c
+        return (self.config.feed_atoms_per_s + recycled_rate_per_s - ionization_rate_per_s - fast_neutral_exit_rate_per_s) / c
 
     def scale(self, state: NeutralState) -> float:
         return state.density_per_m3 / self.ceiling
 
     def advance(
         self, state: NeutralState, ionization_rate_per_s: float, interval_s: float, recycled_ion_rate_per_s: float = 0.0,
+        fast_neutral_exit_rate_per_s: float | None = None,
     ) -> NeutralAdvance:
-        """Advance one interval; ``recycled_ion_rate_per_s`` is the wall+anode ion absorption rate (ignored unless recycling is on)."""
+        """Advance one interval; ``recycled_ion_rate_per_s`` is the wall+anode ion absorption rate (ignored unless recycling is on).
+
+        ``fast_neutral_exit_rate_per_s`` (v2.3.0) is the rate at which CEX fast neutrals leave the channel through the exit
+        aperture (atoms/s, from the ion MCC tallies); ``None`` (the default) keeps the v1.4 balance and ledger layout.
+        """
 
         if not isfinite(ionization_rate_per_s) or ionization_rate_per_s < 0.0 or not isfinite(interval_s) or interval_s <= 0.0:
             raise PIC2DValidationError("ionisation rate must be finite and non-negative, interval positive")
         if not isfinite(recycled_ion_rate_per_s) or recycled_ion_rate_per_s < 0.0:
             raise PIC2DValidationError("recycled ion rate must be finite and non-negative")
+        sink_on = fast_neutral_exit_rate_per_s is not None
+        f = 0.0 if fast_neutral_exit_rate_per_s is None else float(fast_neutral_exit_rate_per_s)
+        if not isfinite(f) or f < 0.0:
+            raise PIC2DValidationError("fast-neutral exit rate must be finite and non-negative")
         q, s = self.config.feed_atoms_per_s, ionization_rate_per_s
         rec = self.config.recombination_coefficient * recycled_ion_rate_per_s if self.config.wall_recycling else 0.0
         c = self.effective_effusion_coefficient(rec)
         v, tau = self.volume_m3, self.config.relaxation_time_s
         n0 = state.density_per_m3
-        n_star = (q + rec - s) / c
-        # no fixed point when S > Q + R: the artificial relaxation is suspended for this interval (conservative balance only)
+        n_star = (q + rec - s - f) / c if sink_on else (q + rec - s) / c
+        # no fixed point when S (+ F) > Q + R: the artificial relaxation is suspended for this interval (conservative balance only)
         suspended = tau is not None and n_star < 0.0
         if suspended:
             tau = None
-        # dn/dt = a - r n with a = (Q + R - S)/V + n*/tau  (= r n* when n* is the unclamped fixed point)
+        # dn/dt = a - r n with a = (Q + R - S - F)/V + n*/tau  (= r n* when n* is the unclamped fixed point)
         r = c / v + (0.0 if tau is None else 1.0 / tau)
-        a = (q + rec - s) / v + (0.0 if tau is None else n_star / tau)
+        a = ((q + rec - s - f) if sink_on else (q + rec - s)) / v + (0.0 if tau is None else n_star / tau)
         n_inf = a / r
         growth = -expm1(-r * interval_s)                # 1 - exp(-r dt), accurate for small r dt
         n1 = n_inf + (n0 - n_inf) * (1.0 - growth)
@@ -276,7 +308,8 @@ class NeutralInventory:
         artificial = 0.0 if tau is None else (v / tau) * (integral_n - n_star * interval_s)
         if n1 < 0.0:
             raise PIC2DStabilityError(
-                f"neutral inventory exhausted: n_g would reach {n1:.3g} m^-3 (S = {s:.3g} /s > feed {q:.3g} + recycled {rec:.3g} /s)"
+                f"neutral inventory exhausted: n_g would reach {n1:.3g} m^-3 (S = {s:.3g} /s + fast-neutral exit {f:.3g} /s > "
+                f"feed {q:.3g} + recycled {rec:.3g} /s)"
             )
         if n1 > self.ceiling * (1.0 + 1e-9):
             raise PIC2DStabilityError(f"neutral density {n1:.4g} exceeds the null-collision ceiling {self.ceiling:.4g} m^-3")
@@ -287,9 +320,13 @@ class NeutralInventory:
             "artificial": state.ledger["artificial"] + artificial,
             "recycled": state.ledger.get("recycled", 0.0) + recycled,
         }
-        residual = (fed + recycled - ionized - effused - artificial) - v * (n1 - n0)
+        fast_exit = 0.0
+        if sink_on:
+            fast_exit = f * interval_s
+            ledger[FAST_NEUTRAL_EXIT_KEY] = state.ledger.get(FAST_NEUTRAL_EXIT_KEY, 0.0) + fast_exit
+        residual = (fed + recycled - ionized - effused - artificial - fast_exit) - v * (n1 - n0)
         return NeutralAdvance(
-            NeutralState(n1, ledger), n_star, s, c * n1, 0.0 if tau is None else (v / tau) * (n1 - n_star), residual, rec, c, suspended,
+            NeutralState(n1, ledger), n_star, s, c * n1, 0.0 if tau is None else (v / tau) * (n1 - n_star), residual, rec, c, suspended, f,
         )
 
     def to_dict(self) -> dict[str, Any]:
@@ -319,7 +356,9 @@ class NeutralInventory:
 
 
 __all__ = [
+    "FAST_NEUTRAL_EXIT_KEY",
     "NEUTRAL_LEDGER_KEYS",
+    "NEUTRAL_LEDGER_KEYS_V2",
     "NeutralAdvance",
     "NeutralInventory",
     "NeutralInventoryConfig",

@@ -101,6 +101,14 @@ LEDGER_SCALARS = (
 )
 # v2.0.6 (energy-ledger correction): the W-scaled inelastic sink per interval; absent from pre-v2.0.6 records -> NaN
 LEDGER_SCALARS_V206 = ("interval_inelastic_loss_j",)
+# v2.3.0 (xe_collision_set_v2): the ion-neutral energy sink and the fast-neutral exit energy per interval; absent -> NaN
+LEDGER_SCALARS_V23 = ("interval_ion_neutral_loss_j", "interval_ke_fast_neutral_exit_j")
+NEUTRAL_SCALARS_V23 = ("fast_neutral_exit_rate_per_s",)
+NEUTRAL_LEDGER_KEYS_V23 = ("fast_neutral_exit",)
+MOMENTUM_OPTIONAL_SCALARS_V23 = (
+    "ion_collision_momentum_rate_n", "fast_neutral_exit_momentum_rate_n", "fast_neutral_wall_momentum_rate_n", "gas_momentum_rate_n",
+    "fast_neutral_thrust_n", "fast_neutral_exit_power_w",
+)
 NEUTRAL_SCALARS = (
     "density_per_m3", "fixed_point_per_m3", "scale", "ionization_rate_per_s", "effusion_rate_per_s",
     "artificial_rate_per_s", "interval_ledger_residual_atoms",
@@ -239,7 +247,17 @@ def build_config(protocol: dict[str, Any], *, backend: str = "warp-cuda") -> PIC
     window = int(numerics["averaging_window_steps"])
     if checkpoint_every % sync != 0 or window % checkpoint_every != 0:
         raise PIC2DValidationError("checkpoint_every_steps must be a multiple of device_sync_steps and divide averaging_window_steps")
-    mcc = MCCConfig(operating["neutral_density_per_m3"], operating["neutral_temperature_k"]) if operating["neutral_density_per_m3"] > 0 else None
+    mcc = None
+    if operating["neutral_density_per_m3"] > 0:
+        # v2.3.0: an optional ``operating_point.collision_set`` block selects the hash-bound xenon collision set
+        # (``xe_collision_set_v2``: four excitation levels + Xe+ / Xe CEX and MEX); absent = the legacy lumped set with
+        # collisionless ions, whose config_sha256 is unchanged
+        collision_set = None
+        if operating.get("collision_set") is not None:
+            from cft_revival.pic2d.cross_sections_xe import CollisionSetConfig
+
+            collision_set = CollisionSetConfig.from_protocol(operating["collision_set"])
+        mcc = MCCConfig(operating["neutral_density_per_m3"], operating["neutral_temperature_k"], collision_set=collision_set)
     inventory = None
     if operating.get("neutral_inventory") is not None:
         block = operating["neutral_inventory"]
@@ -637,16 +655,16 @@ def evaluate_peak_debye_window(arrays: dict[str, np.ndarray], config: PIC2DConfi
 # -- records ----------------------------------------------------------------
 
 def records_to_arrays(records: list[dict[str, Any]]) -> dict[str, np.ndarray]:
-    arrays: dict[str, list[float]] = {key: [] for key in SERIES_SCALARS + LEDGER_SCALARS + LEDGER_SCALARS_V206}
+    arrays: dict[str, list[float]] = {key: [] for key in SERIES_SCALARS + LEDGER_SCALARS + LEDGER_SCALARS_V206 + LEDGER_SCALARS_V23}
     current_keys = sorted(records[0]["currents_a"]) if records else []
     for key in current_keys:
         arrays[f"current_{key}"] = []
     with_neutral = bool(records) and records[0].get("neutral") is not None
     with_peak = bool(records) and records[0].get("peak_node") is not None
     if with_neutral:
-        for key in NEUTRAL_SCALARS + NEUTRAL_SCALARS_V14:
+        for key in NEUTRAL_SCALARS + NEUTRAL_SCALARS_V14 + NEUTRAL_SCALARS_V23:
             arrays[f"neutral_{key}"] = []
-        for key in NEUTRAL_LEDGER_KEYS:
+        for key in NEUTRAL_LEDGER_KEYS + NEUTRAL_LEDGER_KEYS_V23:
             arrays[f"neutral_ledger_{key}"] = []
     if with_peak:
         for key in PEAK_NODE_SCALARS:
@@ -658,7 +676,7 @@ def records_to_arrays(records: list[dict[str, Any]]) -> dict[str, np.ndarray]:
     with_momentum = bool(records) and records[0].get("momentum") is not None
     with_plume = bool(records) and records[0].get("plume") is not None
     if with_momentum:
-        for key in MOMENTUM_SCALARS + MOMENTUM_OPTIONAL_SCALARS:
+        for key in MOMENTUM_SCALARS + MOMENTUM_OPTIONAL_SCALARS + MOMENTUM_OPTIONAL_SCALARS_V23:
             arrays[f"momentum_{key}"] = []
     if with_plume:
         for key in PLUME_SCALARS:
@@ -668,7 +686,7 @@ def records_to_arrays(records: list[dict[str, Any]]) -> dict[str, np.ndarray]:
             arrays[key].append(float(record[key]))
         for key in LEDGER_SCALARS:
             arrays[key].append(float(record["ledger"][key]))
-        for key in LEDGER_SCALARS_V206:
+        for key in LEDGER_SCALARS_V206 + LEDGER_SCALARS_V23:
             arrays[key].append(float(record["ledger"].get(key, float("nan"))))
         for key in current_keys:
             arrays[f"current_{key}"].append(float(record["currents_a"][key]))
@@ -676,10 +694,10 @@ def records_to_arrays(records: list[dict[str, Any]]) -> dict[str, np.ndarray]:
             neutral = record["neutral"]
             for key in NEUTRAL_SCALARS:
                 arrays[f"neutral_{key}"].append(float(neutral[key]))
-            for key in NEUTRAL_SCALARS_V14:
+            for key in NEUTRAL_SCALARS_V14 + NEUTRAL_SCALARS_V23:
                 arrays[f"neutral_{key}"].append(float(neutral.get(key, float("nan"))))
-            for key in NEUTRAL_LEDGER_KEYS:
-                arrays[f"neutral_ledger_{key}"].append(float(neutral["ledger"].get(key, 0.0)))  # v1.3 records: no 'recycled'
+            for key in NEUTRAL_LEDGER_KEYS + NEUTRAL_LEDGER_KEYS_V23:
+                arrays[f"neutral_ledger_{key}"].append(float(neutral["ledger"].get(key, 0.0)))  # v1.3 records: no 'recycled'; pre-v2.3.0: no sink
         if with_peak:
             peak = record["peak_node"]
             for key in PEAK_NODE_SCALARS:
@@ -695,7 +713,7 @@ def records_to_arrays(records: list[dict[str, Any]]) -> dict[str, np.ndarray]:
             momentum = record["momentum"]
             for key in MOMENTUM_SCALARS:
                 arrays[f"momentum_{key}"].append(float(momentum[key]))
-            for key in MOMENTUM_OPTIONAL_SCALARS:   # continuity-rule cathode only
+            for key in MOMENTUM_OPTIONAL_SCALARS + MOMENTUM_OPTIONAL_SCALARS_V23:   # continuity-rule cathode / v2.3.0 ion MCC only
                 value = momentum.get(key)
                 arrays[f"momentum_{key}"].append(float("nan") if value is None else float(value))
         if with_plume:
@@ -899,7 +917,10 @@ def load_inputs(config: PIC2DConfig, field_map: MagneticFieldMap | None, cross_s
             psi_field, evidence = build_p2_psi_field(REPOSITORY_ROOT, role="primary")
             field_map = sample_field_map(psi_field, config.grid, evidence)
     if cross_sections is None and config.mcc is not None:
-        cross_sections = XenonCrossSections.from_file()
+        if config.mcc.collision_set is not None:
+            cross_sections = config.mcc.collision_set.load_electron_cross_sections()   # v2.3.0: the declared, hash-checked set
+        else:
+            cross_sections = XenonCrossSections.from_file()
     return field_map, cross_sections
 
 
