@@ -209,6 +209,63 @@ def test_resume_reproduces_uninterrupted_run_bitwise(tiny, tmp_path: Path):
     assert sum(1 for s in status_lines if s.get("event") == "resume") == 1
 
 
+def test_resume_resets_the_terminal_state_and_keeps_the_previous_stop_in_history(tiny, tmp_path: Path):
+    """v2.1 hygiene (plume attempt 8): a resume of a FINISHED run (attempt 7: wall budget, then finalized by the recovery path)
+    must show finished=false and no stop_reason from its first write on, demote the previous terminal block (stop reason,
+    finalized_from_step, finalization_recovery) to ``history``, and end with its own terminal state only."""
+
+    protocol, config, field, xs = tiny
+    results = tmp_path / "results"
+    runner.run_steady_state(protocol, results, backend="cpu", field_map=field, cross_sections=xs, max_steps=80, log=lambda _: None)
+    state_path = results / "run_state.json"
+    state = json.loads(state_path.read_text(encoding="utf-8"))
+    assert state["finished"] is True and state["stop_reason"] == "target_steps_reached"
+    # dress the file as attempt 7 left it: a budget stop finalized by --recover-runner-stop
+    state.update({"stop_reason": "wall_clock_budget_reached", "finalized_from_step": 80,
+                  "finalization_recovery": {"mode": "runner_stop_artifacts_reused", "original_error": {"error": "ValueError: nan"}}})
+    artifacts.write_canonical_json(state_path, state)
+    assert (results / "summary.json").is_file()
+    seen: list[dict] = []
+
+    def log(text: str) -> None:
+        if "resumed from step" in text:      # the state file has been rewritten BEFORE the first step of the new session
+            seen.append(json.loads(state_path.read_text(encoding="utf-8")))
+
+    runner.run_steady_state(protocol, results, backend="cpu", field_map=field, cross_sections=xs, max_steps=160, log=log)
+    assert len(seen) == 1
+    live = seen[0]
+    assert live["finished"] is False and "stop_reason" not in live and "finalized_from_step" not in live and "finalization_recovery" not in live
+    assert live["checkpoint_step"] == 80 and len(live["sessions"]) == 2 and live["sessions"][1]["resumed_from_step"] == 80
+    assert len(live["history"]) == 1
+    demoted = live["history"][0]
+    assert demoted["event"] == "resume" and demoted["step"] == 80 and demoted["superseded_summary_json_on_disk"] is True
+    assert demoted["finished"] is True and demoted["stop_reason"] == "wall_clock_budget_reached" and demoted["finalized_from_step"] == 80
+    assert demoted["finalization_recovery"]["original_error"] == {"error": "ValueError: nan"}
+    # terminal state of the resumed session: its own stop only, the history kept, nothing stale at the top level
+    final = json.loads(state_path.read_text(encoding="utf-8"))
+    assert final["finished"] is True and final["stop_reason"] == "target_steps_reached" and final["checkpoint_step"] == 160
+    assert "finalized_from_step" not in final and "finalization_recovery" not in final and final["history"] == [demoted]
+    summary = artifacts.read_canonical_json(results / "summary.json")
+    assert summary["steps_completed"] == 160 and summary["stop_reason"] == "target_steps_reached" and len(summary["sessions"]) == 2
+    # status() reads the live flag from run_state.json, not from the presence of a (possibly superseded) summary.json
+    report = runner.status(results, protocol)
+    assert report["finished"] is True and report["stop_reason"] == "target_steps_reached" and report["history_entries"] == 1
+    # the finalizer after a resume: a resumed session that died before its stop is finalized with ITS terminal state and the
+    # earlier blocks stay in history (two entries: the resume demotion and the finalize demotion of the stale block)
+    (results / "summary.json").unlink()
+    stale = json.loads(state_path.read_text(encoding="utf-8"))
+    stale.update({"finished": False})       # what a checkpoint write during the next session would leave
+    stale.update({"finalization_error": {"error": "simulated crash after the checkpoint"}})
+    artifacts.write_canonical_json(state_path, stale)
+    runner.finalize(protocol, results, backend="cpu", field_map=field, cross_sections=xs, stop_reason="finalized_after_resume", log=lambda _: None)
+    finalized = json.loads(state_path.read_text(encoding="utf-8"))
+    assert finalized["finished"] is True and finalized["stop_reason"] == "finalized_after_resume" and finalized["finalized_from_step"] == 160
+    assert "finalization_error" not in finalized and "finalization_recovery" not in finalized
+    assert [entry["event"] for entry in finalized["history"]] == ["resume", "finalize"]
+    assert finalized["history"][1]["finalization_error"] == {"error": "simulated crash after the checkpoint"}
+    assert runner.status(results, protocol)["finished"] is True
+
+
 def test_load_state_rebases_interval_bookkeeping():
     grid = Grid2D(CFT_GEOMETRY, 12, 96)
     field = linear_psi_field_map(grid, 2.0)

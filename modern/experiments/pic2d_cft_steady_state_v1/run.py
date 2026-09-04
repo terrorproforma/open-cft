@@ -21,7 +21,10 @@ The run writes, under ``results/``:
 * ``series.jsonl`` - the full series record per sync (the source of ``series.npz``);
 * ``checkpoint/checkpoint-latest.{json,npz}`` - rewritten atomically every
   ``checkpoint_every_steps`` (bitwise-resumable dynamical state incl. n_g);
-* ``run_state.json`` - cumulative wall time, sessions, last checkpoint step;
+* ``run_state.json`` - cumulative wall time, sessions, last checkpoint step; ``finished`` /
+  ``stop_reason`` belong to the CURRENT session only (a resume or a finalize demotes the previous
+  terminal block - stop reason, ``finalized_from_step``, ``finalization_recovery`` /
+  ``finalization_error`` - into the ``history`` list and rewrites the file before its first step);
 * ``run.pid`` - PID of the running process;
 * on any stop: ``summary.json``, ``series.npz``, ``maps.npz``, ``checkpoint-final.*``.
 
@@ -623,6 +626,35 @@ CHECKPOINT_DIR = "checkpoint"
 CHECKPOINT_NAME = "checkpoint-latest"
 
 
+TERMINAL_STATE_KEYS = ("finished", "stop_reason", "finalized_from_step", "finalization_recovery", "finalization_error")
+
+
+def _demote_terminal_state(run_state: dict[str, Any], *, event: str, step: int, utc: str, summary_present: bool) -> dict[str, Any] | None:
+    """Move a previous session's terminal block into ``run_state["history"]`` and reset the live flags.
+
+    v2.1 (plume attempt 8 lesson): a resume used to leave ``finished: true``,
+    ``stop_reason: wall_clock_budget_reached``, ``finalized_from_step`` and the
+    ``finalization_recovery`` block of the session it continued in ``run_state.json``
+    while stepping - only the advancing ``checkpoint_step`` and the new session entry
+    proved the run was live.  The information is kept (one ``history`` entry per
+    demotion, with the event, the step and the time it happened and whether a
+    ``summary.json`` of the superseded stop was on disk), the live keys are reset:
+    ``finished`` False, the other terminal keys removed.  Returns the history entry
+    (None when there was nothing to demote).
+    """
+
+    present = {key: run_state[key] for key in TERMINAL_STATE_KEYS if key in run_state}
+    if not present or (set(present) == {"finished"} and not present["finished"]):
+        run_state["finished"] = False
+        return None
+    entry: dict[str, Any] = {"event": event, "utc": utc, "step": int(step), "superseded_summary_json_on_disk": bool(summary_present)} | present
+    run_state.setdefault("history", []).append(entry)
+    for key in TERMINAL_STATE_KEYS:
+        run_state.pop(key, None)
+    run_state["finished"] = False
+    return entry
+
+
 def save_checkpoint_atomic(results: Path, sim: Simulation, config: PIC2DConfig, field_sha256: str, xs_sha256: str | None) -> Path:
     """Write the checkpoint into a fresh directory, then swap it in (old copy kept until the swap is done)."""
 
@@ -1081,12 +1113,23 @@ def run_steady_state(
         records = [r for r in _read_jsonl(series_path) if r["step"] <= state.step]
         _write_jsonl(series_path, records)  # drop records past the checkpoint (process died between sync and checkpoint)
         session["resumed_from_step"] = int(state.step)
+        run_state["sessions"].append(session)
+        # v2.1 hygiene (attempt 8 lesson): a resumed run is LIVE - the previous session's terminal block
+        # (finished / stop_reason / finalized_from_step / finalization_recovery / finalization_error) is
+        # demoted to ``history`` and the state is written BEFORE the first step (and before the resume is
+        # logged), so a watcher never reads "finished: true, stop_reason: wall_clock_budget_reached" next
+        # to an advancing checkpoint_step
+        demoted = _demote_terminal_state(run_state, event="resume", step=int(state.step), utc=session["started_utc"],
+                                         summary_present=(results / "summary.json").is_file())
+        artifacts.write_canonical_json(state_path, run_state)
         _append_jsonl(status_path, {"event": "resume", "step": int(state.step), "time_s": float(state.time_s), "utc": session["started_utc"]})
-        log(f"[steady-state] resumed from step {state.step} (t = {state.time_s*1e9:.1f} ns), {len(records)} series records kept")
+        log(f"[steady-state] resumed from step {state.step} (t = {state.time_s*1e9:.1f} ns), {len(records)} series records kept"
+            + ("" if demoted is None else f"; previous terminal state ({demoted.get('stop_reason')}) moved to run_state.history"))
         if recorder is not None:
             removed = recorder.reconcile(int(state.step))
             log(f"[steady-state] frames: {recorder.index} kept, {removed} past the checkpoint removed")
-    run_state["sessions"].append(session)
+    else:
+        run_state["sessions"].append(session)
     wall_before = float(run_state["wall_seconds_total"])
 
     stop_reason = "target_steps_reached"
@@ -1303,6 +1346,11 @@ def finalize(
     if state_path.is_file():
         run_state = json.loads(state_path.read_text(encoding="utf-8"))
     session = {"started_utc": datetime.now(timezone.utc).isoformat(), "resumed_from_step": int(state.step), "pid": os.getpid(), "finalize_only": True}
+    # v2.1 hygiene: whatever terminal block the file carried (an earlier finalization, a recovery, a recorded
+    # finalization_error, or the stale block of a run that was resumed by an older runner) goes to history;
+    # the terminal state written below belongs to THIS finalization only
+    _demote_terminal_state(run_state, event="finalize", step=int(state.step), utc=session["started_utc"],
+                           summary_present=(results / "summary.json").is_file())
     if recovery is not None:
         if int(state.step) != int(recovery["step"]):
             raise PIC2DValidationError("checkpoint-final step differs from its metadata")   # pragma: no cover - load_checkpoint binds it
@@ -1434,6 +1482,8 @@ def status(results: Path = RESULTS, protocol: dict[str, Any] | None = None) -> d
     remaining = {f"{k}_transit_times": {"steps": int(k * steps_per_transit), "hours_from_now": (k * steps_per_transit - last["step"]) * ms / 3.6e6}
                  for k in (3, 5, 10)}
     pid_file = results / "run.pid"
+    state_path = results / "run_state.json"
+    run_state = json.loads(state_path.read_text(encoding="utf-8")) if state_path.is_file() else None
     return {
         "last": last,
         "samples": len(samples),
@@ -1441,7 +1491,11 @@ def status(results: Path = RESULTS, protocol: dict[str, Any] | None = None) -> d
         "transit_times_elapsed": last["time_s"] / transit,
         "projection": remaining,
         "pid": int(pid_file.read_text().strip()) if pid_file.is_file() else None,
-        "finished": (results / "summary.json").is_file(),
+        # v2.1: the live flag comes from run_state.json (a resumed run reuses the directory, so a summary.json of the
+        # superseded stop may sit next to an advancing checkpoint); falls back to the summary for pre-run_state runs
+        "finished": bool(run_state["finished"]) if run_state is not None else (results / "summary.json").is_file(),
+        "stop_reason": None if run_state is None else run_state.get("stop_reason"),
+        "history_entries": 0 if run_state is None else len(run_state.get("history", [])),
         "frames_written": len(list_frames(results)),
     }
 
