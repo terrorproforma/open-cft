@@ -158,8 +158,15 @@ modern/experiments/pic2d_cft_steady_state_v4/results/*.pid
 modern/experiments/pic2d_cft_steady_state_v4/results/*.log
 modern/experiments/pic2d_cft_steady_state_v4/results/*.err
 # PIC-2D steady-state v5 (preregistered 25 um ladder point): results stay untracked until the run ends
-# (results-only commit adds the negations); the non-evidentiary shakedown directory is never tracked
+# (results-only commit adds the negations); the non-evidentiary shakedown directory is never tracked.
+# Launch 1 (RTX 5090, PID 43572, lock at 69ff435d) was WITHDRAWN by the user at 21:26:48 AEST 2026-09-04 (compute moved
+# to the Lambda H100): its record - execution lock, run state, checkpoint metadata + sha256 sidecars, status/series,
+# log/err/pid - is tracked under results-launch1-withdrawn/ (not a result, not a failure); the checkpoint arrays
+# (107 MB + the 1.9 MB field anchor) and the 40 frames stay untracked; results/ is reserved for the H100 execution
 modern/experiments/pic2d_cft_steady_state_v5/results*/
+!modern/experiments/pic2d_cft_steady_state_v5/results-launch1-withdrawn/
+!modern/experiments/pic2d_cft_steady_state_v5/results-launch1-withdrawn/checkpoint/
+modern/experiments/pic2d_cft_steady_state_v5/results-launch1-withdrawn/frames/
 # PIC-2D design mini-sweep v1 (preregistered channel-33um option): per-design results/<design>-<option>/ stay untracked
 # until a run ends (results-only commit adds the negations); the shakedown and MPS-replay scratch directories are never tracked
 modern/experiments/pic2d_design_mini_sweep_v1/results*/

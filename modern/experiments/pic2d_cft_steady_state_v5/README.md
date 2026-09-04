@@ -155,3 +155,36 @@ predeclared tolerances and nothing more; no experimental validation, no thruster
   `plateau`) and the PID; the results-only commit (results/, `assessment.json` with the 33 µm primary
   and 50 µm secondary columns, .gitignore negations) follows the stop and is not made by the
   launching agent.
+* **Launch 1 WITHDRAWN by the user at 2026-09-04 21:26:48 AEST (11:26:48 UTC) — compute moved to
+  the cloud (Lambda H100).** User directive (21:23 AEST): the full PIC run belongs on the Lambda
+  H100, not on the local PC, which the run made unusable. The shared runner has no clean-stop
+  channel (no STOP file, no flag, and Windows has no SIGTERM handler to deliver), so the process
+  was ended with `Stop-Process 43572` **at a checkpoint boundary**: the watcher waited for
+  `run_state.json` to report `checkpoint_step 800000` (written 11:26:48.849 UTC, i.e. after
+  `save_checkpoint_atomic` had completed) and issued the stop 12 ms later. **Last checkpoint: step
+  800 000 / t = 0.800 µs** (`checkpoint-latest.json` step 800000, 1 297 563 e⁻ / 1 324 061 Xe⁺,
+  arrays SHA-256 `5e978213…` 106 729 656 B, field anchor `c14d313b…`; both sidecars re-verified
+  against the bytes after the stop); one further 200-step series record (step 800 200) was written
+  before the process died and is not covered by the checkpoint. Stepping wall 6 600 s (1.83 h;
+  1.96 h since the lock), 4 001 status records, 40 frames (0–0.80 µs, 20 ns cadence). **No terminal
+  state**: `run_state.json` stays `finished: false` with no `stop_reason`; no `summary.json`, no
+  `maps.npz`, no assessment. The `finalize --recover-runner-stop` path was deliberately NOT called
+  — it accepts only evidenced stop reasons (`wall_clock_budget_reached`, plateau) and none applies;
+  nothing here is a result and nothing here is a failure of the protocol, the code or the physics.
+  Readings at the stop (v2 / v4 ignition pattern, healthy): I_d 1.1–1.5 mA, I_beam 0.3–0.5 mA, S
+  1.5–1.9e16 s⁻¹, n_g 4.44e19 (5.5 → 4.44e19, still falling toward its fixed point), gross
+  utilisation 0.19, single-step peak n_e 6.4–6.9e17 at 1.0–1.1 cells/λ_D, **window statistic
+  0.70 cells/λ_D (enforced, 11 125 resolved nodes, window peak 3.71e17 at 8.5 eV, node (21, 571))**,
+  windowed residual −14.2 % of the electrode work (cooling side; cumulative −13.5 %), ω_pe Δt
+  0.061–0.083. Cost: 8.25 ms/step mean over the run, 8.8–9.5 ms/step over the last 2 000 records
+  at 1.30 M e⁻ + 1.32 M Xe⁺ with the GPU 100 % ours after the hybrid-l2 processes were stopped
+  (~20:5x AEST). Record: the results directory of this launch is archived in the run worktree as
+  **`results-launch1-withdrawn/`** (renamed from `results/` after the stop, bytes unchanged, so that
+  `results/` stays free for the H100 execution) and tracked in this commit: `execution-lock.json`,
+  `run_state.json` (+ sidecar), `checkpoint/checkpoint-latest.json` (+ the `.json`, `.npz` and
+  `.field.npz` sha256 sidecars), `status.jsonl`, `series.jsonl`, `run.log`, `run.err`, `run.pid`;
+  untracked: `checkpoint/checkpoint-latest.npz` (107 MB), `checkpoint/checkpoint-latest.field.npz`
+  (1.9 MB), `frames/` (40 × 1.6 MB). The checkpoint is history only: launch 2 is a FRESH start on
+  the H100 (one execution on one GPU model for the record; no cross-GPU resume). Local GPU after
+  the stop: `nvidia-smi --query-compute-apps` lists no python / Warp process (only desktop
+  applications hold memory).
