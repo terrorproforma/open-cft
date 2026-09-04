@@ -82,6 +82,22 @@ window-average maps: `finalize` refuses to re-finalize it (that would downgrade 
 instantaneous ones) unless `--allow-refinalize` is passed. `finalize` is for runs that
 were killed or crashed between checkpoints.
 
+## Energy-ledger correction (model v2.0.6, post hoc; recorded values unchanged)
+
+Up to model v2.0.5 the energy ledger's `inelastic_loss_j` lacked the macro weight W (found by the external-validation v0 launch-1 diagnosis, 036bd679), so every recorded interval residual was `H - L_inel` - biased NEGATIVE by the inelastic power - where `H = field work + dU - electrode work` is the true numerical energy creation. The sidecar(s) `ledger-corrected.json` (+ `.sha256.json`) were written by `python -m cft_revival.pic2d.ledger_recompute <results-dir>` from the recorded `series.npz` (corrected residual = H per record; `spec/pic2d/pic2d-model-v2.0.json#gates_v2_0.energy_ledger_correction_v2_0_6`); **the recorded series, maps and summaries are unchanged.** Values below: trailing-400 000-step residual / electrode work at the last record, recorded -> corrected.
+
+| run | sidecar | windowed recorded -> corrected | cumulative recorded -> corrected | 5 % gate on the corrected statistic |
+|---|---|---|---|---|
+| base (`results/`) | `results/ledger-corrected.json` | +0.4 % -> **+13.0 %** | -4.4 % -> +8.3 % | would have fired at 2.70 us |
+| seed-b | `results-seed-b/ledger-corrected.json` | -1.4 % -> **+11.1 %** | -5.8 % -> +7.0 % | 2.76 us |
+| W x 0.7 | `results-w-0.7/ledger-corrected.json` | -4.1 % -> **+7.2 %** | -6.8 % -> +5.0 % | 4.50 us |
+
+The three 50 um plateaus were HEATING numerically at 7-13 % of the electrode power (the corrected window ratio rises monotonically from
++0.8 % in the first complete window; +7.6 -> +135 mW on the base against 0.37 -> 1.03 W of electrode power). This is consistent with the
+`resolution_limited` verdict of `pic2d_cft_steady_state_v4` and the peak Delta/lambda_D 3.17 on the CIC threshold: every quantity quoted from
+these runs is a heated-grid value, and the paper wording must say so. The v2.0.3 calibration statement "negative window ratios throughout" was a
+statement about the biased statistic.
+
 ## Running (from `modern/`)
 
 ```powershell
