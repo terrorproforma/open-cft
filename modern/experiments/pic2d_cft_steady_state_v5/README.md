@@ -182,6 +182,17 @@ the a529b457 shakedown's** (same box, v2.0.4 physics untouched); only the float-
 maximum differs in its last digit (0.39050975731513027 vs …301), the MPS/solo pattern already seen
 in the mini-sweep replay.
 
+## Energy-ledger correction (model v2.0.6, post hoc; recorded values unchanged)
+
+Up to model v2.0.5 the energy ledger's `inelastic_loss_j` lacked the macro weight W (found by the external-validation v0 launch-1 diagnosis, 036bd679), so every recorded interval residual was `H - L_inel` - biased NEGATIVE by the inelastic power - where `H = field work + dU - electrode work` is the true numerical energy creation. The sidecar(s) `ledger-corrected.json` (+ `.sha256.json`) were written by `python -m cft_revival.pic2d.ledger_recompute <results-dir>` from the recorded `series.npz` (corrected residual = H per record; `spec/pic2d/pic2d-model-v2.0.json#gates_v2_0.energy_ledger_correction_v2_0_6`); **the recorded series, maps and summaries are unchanged.** Values below: trailing-400 000-step residual / electrode work at the last record, recorded -> corrected.
+
+`results-launch1-withdrawn/ledger-corrected.json` (from the untracked `series.jsonl` of the withdrawn launch - `series.npz` was never written; the sidecar
+records its sha256): **-14.2 % -> +0.3 %** at 0.80 us (cumulative -13.5 % -> +0.2 %); the count-based per-record correction from the jsonl's cumulative
+ledger agrees with H to 3.4e-5 of max|H|. At 25 um the corrected residual power is an order of magnitude below the 33 um plateau's +2.5 % and
+two orders below the 50 um plateaus' +7-13 % - a resolution ladder in the corrected statistic (0.8 us only; not a plateau value). Launch 2
+(`ss25-base` on the H100) runs pre-v2.0.6 code in its locked worktree: its recorded residuals stay biased by ~-14 % and acceptance (b) MUST be
+evaluated on the sidecar written by the tool, not on `summary.grid_heating_triad`.
+
 ## Commands (from `modern/`)
 
 ```powershell
