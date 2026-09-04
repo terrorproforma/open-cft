@@ -350,6 +350,10 @@ SS25_JOB = "ss25-base"
 # omega_pe_dt_gate_reading block; it enters the slot the reference or 009 frees.
 FINISHED_SWEEP_JOBS = ["sweep-056", "sweep-047"]
 SWEEP_056_LAUNCH2_JOB = "sweep-056-launch2"
+# steady-state v4-fast (solver qualification: the v4 33 um plateau replayed under device-mg + K = 5): its commit is the preregistration
+# commit (read from jobs.yaml), `--require-mps`, the protocol names device-mg / K = 5. It enters a slot freed by the finished runs
+# (sweep-reference / 009 / 047 finished on the plateau rule, ext-val v0 on its triad gate by 14:17 UTC 2026-09-04).
+SS33_FAST_JOB = "ss33-fast"
 
 
 def test_shipped_jobs_yaml_is_the_single_h100_mps_configuration_with_the_preregistered_sweep_enabled() -> None:
@@ -362,7 +366,7 @@ def test_shipped_jobs_yaml_is_the_single_h100_mps_configuration_with_the_preregi
     enabled = [j for j in plan.jobs if j.enabled]
     # steady-state v5 (section ii of the file), the four sweep designs (056 finished on its triad gate at 10:52 UTC 2026-09-04,
     # 047 on the plateau rule at 12:49 UTC), the 056 launch-2 job (amendment 1) and external validation v0
-    assert [j.id for j in enabled] == [SS25_JOB, "sweep-reference", SWEEP_056_LAUNCH2_JOB, "sweep-047", "sweep-009", EXT_VAL_JOB]
+    assert [j.id for j in enabled] == [SS25_JOB, SS33_FAST_JOB, "sweep-reference", SWEEP_056_LAUNCH2_JOB, "sweep-047", "sweep-009", EXT_VAL_JOB]
     for job in plan.jobs:
         assert job.checkout == "worktree"
         if job.id == "sweep-056":
@@ -399,6 +403,17 @@ def test_shipped_jobs_yaml_is_the_single_h100_mps_configuration_with_the_preregi
             assert job.protocol == "modern/experiments/pic2d_cft_steady_state_v5/protocol.json" and (REPOSITORY / job.protocol).is_file()
             assert job.results == "modern/experiments/pic2d_cft_steady_state_v5/results" and job.transit_time_s == pytest.approx(2.4e-6)
             assert job.gpu_memory_gib and job.expected_ms_per_step
+        elif job.id == SS33_FAST_JOB:
+            # the solver-qualification replay: preregistered, `--expect-commit` == `commit` (a full SHA, the prereg commit), --require-mps,
+            # the v4-fast protocol at HEAD selects the multigrid and K = 5 (the two identity differences vs v4)
+            assert job.preregistered is True and job.commit and len(job.commit) == 40 and "PLACEHOLDER" not in job.note
+            assert job.args == ["launch", "--expect-commit", job.commit, "--require-mps"] and job.module == "experiments.pic2d_cft_steady_state_v4_fast.run"
+            assert job.protocol == "modern/experiments/pic2d_cft_steady_state_v4_fast/protocol.json" and (REPOSITORY / job.protocol).is_file()
+            assert job.results == "modern/experiments/pic2d_cft_steady_state_v4_fast/results" and job.transit_time_s == pytest.approx(2.4e-6)
+            assert job.gpu_memory_gib and job.expected_ms_per_step
+            protocol = json.loads((REPOSITORY / job.protocol).read_text(encoding="utf-8"))
+            assert protocol["numerics"]["poisson"]["method"] == "device-mg" and protocol["numerics"]["poisson"]["cycles"] == 14
+            assert protocol["numerics"]["performance"]["moment_sample_interval"] == 5 and protocol["stopping_rule"]["wall_budget_seconds"] == 102100
         elif job.id == "shakedown-ss-v3-graph":
             assert not job.enabled and job.preregistered is False and job.commit   # never relabelled; disabled so `launch` takes no slot
         else:
@@ -429,3 +444,9 @@ def test_shipped_jobs_yaml_is_the_single_h100_mps_configuration_with_the_preregi
     # and the scheduler's own busy-slot accounting refuses it while four jobs are running
     with pytest.raises(schedule.ScheduleError):
         schedule.assign_gpus(plan, [launch2], busy={0: [j.id for j in four]})
+    # 14:17 UTC 2026-09-04: sweep-reference, 009, 047 and ext-val v0 have finished; ss25-base and 056 launch 2 hold two slots -> the
+    # solver-qualification job ss33-fast takes a freed slot (three clients), and a fourth newcomer would still fit, a fifth not
+    fast = next(j for j in enabled if j.id == SS33_FAST_JOB)
+    assert schedule.assign_gpus(plan, [fast], busy={0: [SS25_JOB, SWEEP_056_LAUNCH2_JOB]}) == {fast.id: 0}
+    with pytest.raises(schedule.ScheduleError):
+        schedule.assign_gpus(plan, [fast], busy={0: [j.id for j in four]})

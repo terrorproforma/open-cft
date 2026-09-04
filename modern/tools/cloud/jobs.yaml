@@ -123,6 +123,33 @@ jobs:
     transit_time_s: 2.4e-6
     enabled: true
 
+  # ---------------------------------------------------------------- (ii-b) steady-state v4-FAST - PREREGISTERED solver qualification (Class C item 4)
+  # modern/experiments/pic2d_cft_steady_state_v4_fast/: the accepted v4 33 um protocol bit-for-bit (90 x 720, dt 1.4 ps, W 26666.7, seed
+  # 20260903, v1.3 closure, v2.0.3 gates, frames ON) EXCEPT numerics.poisson = {method: device-mg, cycles 14, ...} (poisson_gmg_v1) and
+  # numerics.performance.moment_sample_interval = 5 (model v2.0.5) - config identity a6275830 vs v4's f10772b2 (exactly the two keys,
+  # test-pinned). Acceptance = the v4 plateau quantities inside the seed-b band (I_d / I_beam / S / util / n_g <= 2 %, peak n_e <= 10 %,
+  # T_e,peak <= 3 %), windowed residual < +2 %, multigrid contract never missed; verdict qualified / not_qualified / heating / no_plateau.
+  # Box preflight 14:35 UTC 2026-09-04 as the 3rd MPS client: 11.11 ms/step at the seed, 13.23 at 4.5 M particles (the v4 solver 3.15 /
+  # 4.56 under the same load - the latency-bound multigrid is 2.9x slower while contended, audit 12.3) -> 18.9 h to 3 transits, budget
+  # 102,100 s = 1.5x. `commit` / `--expect-commit` = the PREREG commit; `--require-mps`; ~1-2.5 GB device pool (no inverse blocks).
+  - id: ss33-fast
+    note: >
+      pic2d_cft_steady_state_v4_fast (solver qualification): the v4 33 um plateau replayed under device-mg (14 cycles) + K = 5;
+      90 x 720, dt 1.4 ps, W 26666.7, ~4.5 M particles at the plateau, 5.14 M steps to 3 transits (2.4 us); box preflight as the
+      3rd MPS client 13.23 ms/step at the plateau load -> 18.9 h, budget 102,100 s (28.4 h).
+    module: experiments.pic2d_cft_steady_state_v4_fast.run
+    args: [launch, --expect-commit, "b09f2b713bb94fa2833c528d169f9300a18900be", --require-mps]
+    gpu: auto
+    commit: b09f2b713bb94fa2833c528d169f9300a18900be
+    preregistered: true
+    protocol: modern/experiments/pic2d_cft_steady_state_v4_fast/protocol.json
+    results: modern/experiments/pic2d_cft_steady_state_v4_fast/results
+    checkout: worktree
+    gpu_memory_gib: 3
+    expected_ms_per_step: 13.2
+    transit_time_s: 2.4e-6
+    enabled: true
+
   # ---------------------------------------------------------------- (iii) PIC design mini-sweep v1 (4 primary designs) - PREREGISTERED channel-33um option
   # modern/experiments/pic2d_design_mini_sweep_v1/: the steady-state v4 template (model v1.3 closure + v2.0.3 gates), 33.33 um / 1.4 ps,
   # W = 6e4 x dr dz / (50 um)^2 (particles-per-cell parity; 26 666.7 for the reference = v4), wall budgets 1.5x the projected
