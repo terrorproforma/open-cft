@@ -281,7 +281,8 @@ def build_protocol(variant: str = PRIMARY_VARIANT, grid: str = PRIMARY_GRID, *, 
     protocol["status"] = STATUS
     protocol["classification"] = "axisymmetric_electrostatic_pic_mcc_code_to_code_comparison_channel_only_static_neutrals_v1_3_closure_v2_0_3_gates_not_validated"
     protocol["model_version"] = ("pic2d v1.3 runner with a STATIC neutral background (the inventory removed = the v1.2 static-background mode; NO wall-ion recycling, no SEE, no anomalous "
-                                 "transport unless the variant switches the v1.4 Bohm hook on) with the v2.0.3 gates (window-mode peak-Debye gate, windowed residual-power gate)")
+                                 "transport unless the variant switches the v1.4 Bohm hook on) with the v2.0.3 gates (window-mode peak-Debye gate, windowed residual-power gate) and the "
+                                 "v2.0.4 runtime omega_pe dt statistic (peak over nodes holding >= the peak-Debye floor of 32 macro-electrons; the raw single-node peak recorded alongside)")
     protocol["option"] = option_tag(variant, grid)
     protocol["variant"] = {"id": variant, **VARIANTS[variant]}
     protocol["template_protocol"] = {"path": TEMPLATE_PATH.relative_to(REPOSITORY).as_posix(), "experiment_id": template.get("experiment_id"), "model_version": template.get("model_version"),
@@ -492,7 +493,14 @@ DECISIONS_VS_DRAFT: list[dict[str, str]] = [
      "why": "a preflight timing at production load beats a cost-table extrapolation (v2.0.3 lesson); the measured rate may only raise the budget, never lower it"},
     {"item": "seed", "draft": "20260903 (the template's)", "preregistered": "20260903 unchanged", "why": "one seed; the seed replicate is a declared follow-up"},
     {"item": "frames", "draft": "ON, 40 000 steps = 28 ns", "preregistered": "unchanged", "why": "the qualitative rows of the comparison spec read the frames"},
-    {"item": "gates", "draft": "v2.0.3 verbatim", "preregistered": "unchanged", "why": "the accepted gate set; the grid argument was made against them"},
+    {"item": "gates", "draft": "v2.0.3 verbatim (window-mode peak-Debye hard pi / soft 2.5, windowed residual power 5 %, triad, omega_pe dt 0.2, Courant, Poisson)",
+     "preregistered": "v2.0.3 thresholds unchanged; the runtime omega_pe dt STATISTIC is the v2.0.4 resolved-node peak (nodes whose single-step deposit holds >= 32 macro-electrons, the "
+                      "peak-Debye gate's own floor; the raw single-node peak is recorded alongside as peak_omega_pe_dt_raw and feeds nothing)",
+     "why": ("found by the launch-box preflight / shakedown (2026-09-04 11:39 UTC): at 20 um / W 82 467 one macro-electron on a small-volume axis node reads 1.3e19 m^-3 (omega_pe dt 0.14 at "
+             "0.7 ps), two read 0.20 - the raw statistic stopped the 12 M-particle timing seed at 0.212 before its first step and read 5.5e18 in the shakedown at 60 000 electrons over "
+             "53 000 nodes (mean 5e14): a shot-noise extreme value decided by the smallest node (the plume-boundary lesson), which would have ended the production run as a spurious "
+             "'omega_pe dt stop' long before any physical densification. The window-mode peak-Debye hard gate (pi at 1.36e19 / 10 eV, interval-averaged, 32-particle floor) binds first "
+             "on this grid and stays the protective density gate; the floored omega_pe dt gate is the fast-transient backstop on resolved nodes. Physics untouched (same-seed replay bitwise)")},
     {"item": "comparison spec", "draft": "12 rows (10 channel-comparable), tolerances 20 % / +-5 V / 0.3 dex, u_D + u_num predicted, u_input declared not propagated",
      "preregistered": "unchanged (comparison-spec.json byte-identical to the draft, see preregistration.records)", "why": "the estimands and tolerances were fixed before any run"},
     {"item": "launch stages", "draft": "`run.py launch` REFUSED unconditionally", "preregistered": "`launch --expect-commit --require-mps` with the mini-sweep discipline; `shakedown` writes "
