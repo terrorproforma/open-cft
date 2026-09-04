@@ -354,6 +354,37 @@ def test_player_payload_validation_requires_the_ionisation_window_declaration():
             video.validate_player_payload(bad)
 
 
+def test_player_payload_accepts_a_preregistered_run_status_and_phrases_its_claim(tmp_path: Path):
+    """v0.2.1: the first preregistered run through the renderer (steady-state v4) was refused by the hard-coded development status."""
+
+    true_rate, volume, plasma = _channel_like()
+    frames, _ = _poisson_frames(true_rate, volume, plasma, n=4, seed=3)
+    grid = _grid_stub(plasma.shape)
+    base = {"experiment_id": "x", "model_version": "v", "claim_boundary": "cb", "provenance": {"config": {"macro_weight": W_MACRO, "dt_s": DT_STEP}},
+            "artifacts": {"frames": {"sha256": "ab"}}}
+    prereg = video.build_player_payload(Path("."), frames, {**base, "status": "preregistered_resolution_convergence_study_not_validated"}, grid, maps=("n_e_per_m3",), factor=1)
+    video.validate_player_payload(prereg)
+    statement = prereg["claim_statement"].lower()
+    assert "preregistered execution" in statement and "not preregistered" not in statement and "frames are diagnostics" in statement
+    assert "not validated" in statement and "not a thruster performance prediction" in statement and "assessment record" in statement
+    development = video.build_player_payload(Path("."), frames, {**base, "status": "development_screening_not_preregistered"}, grid, maps=("n_e_per_m3",), factor=1)
+    video.validate_player_payload(development)
+    assert "not preregistered" in development["claim_statement"].lower()
+    # the two statuses are not interchangeable: a preregistered payload with the development claim (or vice versa) and any other status are refused
+    for status, statement_from in (("preregistered_x", development), ("development_screening_not_preregistered", prereg)):
+        bad = deepcopy(statement_from)
+        bad["status"] = status
+        with pytest.raises(ValueError, match="claim statement"):
+            video.validate_player_payload(bad)
+    for status in ("accepted", "validated", "development", None):
+        bad = deepcopy(prereg)
+        bad["status"] = status
+        with pytest.raises(ValueError, match="status"):
+            video.validate_player_payload(bad)
+    html = video.render_player_html(prereg, "prereg")
+    assert "preregistered execution" in html and "not preregistered" not in html.lower()
+
+
 def test_writers_produce_files(tmp_path: Path):
     images = [np.full((9, 11, 3), c, dtype=np.uint8) for c in (10, 120, 250)]
     path, backend = video.write_video(images, tmp_path / "clip", fps=5, backend="pillow_gif")

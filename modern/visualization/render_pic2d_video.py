@@ -575,7 +575,7 @@ def build_player_payload(results: Path, frames: FrameSet, summary: Mapping[str, 
         "status": summary.get("status"),
         "claim_boundary": summary.get("claim_boundary"),
         "claim_statement": (
-            "Time series of interval-averaged maps from one development run; not preregistered, not validated against experiment, "
+            _claim_lead(summary.get("status")) +
             "not a thruster performance prediction. Each frame averages the recorded interval; the colour scale is fixed across all "
             "frames (log with a floor for the densities; log between two robust percentiles for the ionisation rate) so evolution is "
             "visible without autoscaling; grey cells were sampled by fewer macro-electrons than the declared threshold in that interval. "
@@ -606,12 +606,33 @@ def build_player_payload(results: Path, frames: FrameSet, summary: Mapping[str, 
     }
 
 
+DEVELOPMENT_STATUS = "development_screening_not_preregistered"
+PREREGISTERED_STATUS_PREFIX = "preregistered_"
+
+
+def _is_preregistered(status: Any) -> bool:
+    return isinstance(status, str) and status.startswith(PREREGISTERED_STATUS_PREFIX)
+
+
+def _claim_lead(status: Any) -> str:
+    """The first clause of the player's claim statement: a development run is 'not preregistered'; a preregistered run's frames are
+    diagnostics of its one execution (the verdict lives in the run's ``assessment.json``, never in a video)."""
+
+    if _is_preregistered(status):
+        return ("Time series of interval-averaged maps from the one preregistered execution of the run (frames are diagnostics, not gates; "
+                "the predeclared verdict is in the run's assessment record); not validated against experiment, ")
+    return "Time series of interval-averaged maps from one development run; not preregistered, not validated against experiment, "
+
+
 def validate_player_payload(payload: Mapping[str, Any]) -> None:
     if payload["schema"] != SCHEMA:
         raise ValueError("unsupported player schema")
-    if payload["status"] != "development_screening_not_preregistered":
-        raise ValueError("player payload must carry the development/screening status")
-    for phrase in ("not preregistered", "not validated", "not a thruster performance prediction", "fixed across all"):
+    status = payload["status"]
+    if status != DEVELOPMENT_STATUS and not _is_preregistered(status):
+        raise ValueError("player payload must carry the development/screening status or a preregistered_* run status")
+    required = ("not validated", "not a thruster performance prediction", "fixed across all",
+                "preregistered execution" if _is_preregistered(status) else "not preregistered")
+    for phrase in required:
         if phrase not in payload["claim_statement"].lower():
             raise ValueError(f"claim statement must say '{phrase}'")
     n = payload["frame_count"]
