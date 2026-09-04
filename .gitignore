@@ -294,6 +294,25 @@ modern/experiments/pic2d_external_validation_v0/results/channel-20um-launch1-tri
 modern/experiments/pic2d_external_validation_v0/results/channel-20um-launch1-triad-gate-stop/*.log
 modern/experiments/pic2d_external_validation_v0/results/channel-20um-launch1-triad-gate-stop/*.err
 
+# pic2d anomalous-transport alpha-series v1 (R1): per-case records under results/<case>/ with the v4 record contract
+# (+ triad-stop-diagnosis.json / assessment.json where produced); alpha-1over16 = launch 1 (extinguished under the closure,
+# drift-member triad stop at 1.00 transit, NOT relaunched). Frames, checkpoint arrays, the field anchor, the raw series and
+# logs/pid stay untracked; the shakedown results stay untracked.
+modern/experiments/pic2d_anomalous_transport_v1/results*/
+!modern/experiments/pic2d_anomalous_transport_v1/results/
+!modern/experiments/pic2d_anomalous_transport_v1/results/**
+!modern/experiments/pic2d_anomalous_transport_v1/results/**/maps.npz
+!modern/experiments/pic2d_anomalous_transport_v1/results/**/series.npz
+modern/experiments/pic2d_anomalous_transport_v1/results/**/checkpoint/
+modern/experiments/pic2d_anomalous_transport_v1/results/**/frames/
+modern/experiments/pic2d_anomalous_transport_v1/results/**/video/
+modern/experiments/pic2d_anomalous_transport_v1/results/**/checkpoint-final.npz
+modern/experiments/pic2d_anomalous_transport_v1/results/**/checkpoint-final.field.npz
+modern/experiments/pic2d_anomalous_transport_v1/results/**/series.jsonl
+modern/experiments/pic2d_anomalous_transport_v1/results/**/*.pid
+modern/experiments/pic2d_anomalous_transport_v1/results/**/*.log
+modern/experiments/pic2d_anomalous_transport_v1/results/**/*.err
+
 # pic2d cross-platform test anchors: node field arrays sampled on the anchor platform (~70 KB, hash-bound by
 # their .anchor.json); non-anchor platforms are gated by allclose against them, not by the content hash
 !modern/tests/pic2d/anchors/*.npz
