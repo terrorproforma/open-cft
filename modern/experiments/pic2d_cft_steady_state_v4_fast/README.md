@@ -190,4 +190,50 @@ No new plateau value, no convergence statement, no experimental validation, no t
 
 ## Launch log
 
-*(filled by the launch-log commit after the launch on the box.)*
+* **Launch 1 (2026-09-04 16:28:46 UTC = 02:28:46 AEST 5 Sep, PID 44430, Lambda H100 80GB HBM3
+  `GPU-a800b021`, CUDA MPS, 3 clients)** — the one preregistered execution, through
+  `tools/cloud/schedule.py launch --only ss33-fast` (jobs.yaml `6807f041`): detached worktree
+  `<WORK>/jobs/ss33-fast/tree` at the preregistration commit **`b09f2b71`** (scheduler prereg check
+  `ok` / ancestor of HEAD `6807f041` / protocol `frozen`), `launch --expect-commit b09f2b71… --require-mps`,
+  clean worktree attested, protocol SHA-256 `d353baea…`, configuration identity **`a6275830…`** (device-mg
+  × 14, K = 5 — recorded in the lock), `results/execution-lock.json` acquired 16:28:47 UTC with **2 other MPS
+  clients** (`ss25-base` 32709, `sweep-056-launch2` 38282; the box stays at three PIC clients — `sweep-reference`,
+  009, 047 and ext-val v0 had all finished by 14:17 UTC, so no fourth newcomer was displaced), Warp `cuda:0` UUID
+  cross-checked against nvidia-smi, tmux `pic-ss33-fast`, `CUDA_VISIBLE_DEVICES=0`, 6 BLAS threads; MPS server
+  log: client 44430 ACTIVE, no Xid. Setup: field 2 s, multigrid build < 1 s (no factorisation), graph capture on
+  the first step. First readings (0.021 µs, 15 000 steps, 75 records): **12.2–12.3 ms/step at the seed load**
+  (0.54 M e⁻ + 0.64 M Xe⁺; the v4 run read 2.50 ms/step here on the solo RTX 5090 and the v4 protocol read
+  3.15 ms/step under this very load in the preflight — the contended multigrid penalty as measured), GPU pool
+  844 MiB; I_d 2.4 → 0.85 mA and I_beam 0.2 → 0.5 mA (the seed dump), S 1.3–1.7e16 s⁻¹, n_g 5.5 → 4.99e19 falling
+  toward its fixed point, single-step peak 0.5–0.7 cells / λ_D, window statistic 0.50 (not yet enforced),
+  ω_pe Δt 0.025 — the v4 ignition pattern. **Expectation**: at the contended preflight rates (12.3 seed / 13.2
+  plateau) 3 transits (5 142 858 steps; the v4 verdict fell at 5 200 000) take 17.6–19.1 h → **verdict ≈ 10:05–11:35
+  UTC 5 Sep (20:05–21:35 AEST)**; `sweep-056-launch2` ends in ~3 h and `ss25-base` in ~8 h, after which the run is
+  solo (model ≈ 2.2–2.6 ms/step for this step) and the verdict could fall as early as **≈ 02:30 UTC (12:30 AEST)
+  5 Sep**; **budget end (102 100 s of stepping) ≈ 20:50 UTC 5 Sep (06:50 AEST 6 Sep)**. Watch
+  `<WORK>/jobs/ss33-fast/run.log`, `…/tree/modern/experiments/pic2d_cft_steady_state_v4_fast/results/status.jsonl`
+  (`peak_node.window.cells_per_debye`, `grid_heating_triad.windowed_energy_residual_over_electrode_work` — now the
+  corrected statistic — and `plateau`) and `schedule.py status`; the results-only commit (`results/`,
+  `assessment.json` with verdict (a)–(e), .gitignore negations) is made from the job worktree after the stop, not
+  by the launching agent. If the process ends without a terminal state and `run.log` carries "failed its residual
+  contract", run `assess --runner-crash-log <WORK>/jobs/ss33-fast/run.log` (verdict `not_qualified`, (d) failed).
+* **Contended vs solo, honestly.** Every number above is a GPU *share*: the fast configuration ran 2.9× slower
+  than the v4 solver under the same 3-client load (13.23 vs 4.56 ms/step at the plateau load) because the
+  latency-bound multigrid's 278 dependent launches each wait for an SM slot under MPS. The audit's solo model puts
+  this step at ≈ 2.2–2.6 ms (multigrid solve ≈ 1.1 vs block-Thomas 0.97 ms — *not* faster on the channel grid,
+  as predicted), so the contention factor on this run is ≈ 5–6× (block-Thomas ≈ 2×). **No solo moment arose**
+  (two preregistered clients ran throughout the composition window), so the requested 3-minute solo probe of
+  block-Thomas vs GMG on channel-33 and plume-v2.1-33 was **not run**; the solo figures stay model values until
+  the GPU is idle for ≥ 3 min.
+* **What a `qualified` verdict unlocks — the 33 µm plume run re-derived.** `pic2d_cft_plume_v2_1` at 33 µm
+  (360 × 1440, ≈ 9.8 M electrons at the plume load, ≈ 7.6 M steps to 3 transits at 1.4 ps): the audit's
+  cost model (`0.27 ms + 4.1 µs × launches + 0.30 ms/GB + 0.97 ms per M e⁻`) gives block-Thomas ≈ 17 ms/step
+  (724 launches + 6.0 GB of inverse blocks) vs multigrid ≈ 12 ms/step (446 launches, no blocks) before v2.0.5;
+  with the v2.0.5 born-ledger fold and K = 5 the per-electron term falls to ≈ 0.4 ms/M (this run's preflight
+  measured 0.66 ms/M *contended* vs 0.436 for the v4 code, i.e. the same ordering), so the multigrid step is
+  ≈ **6–7 ms/step solo → 13–15 h to 3 transits** (≈ 25 h at the pre-v2.0.5 model, ≈ 45 h on block-Thomas + 6 GB).
+  Under MPS contention the same step measured **37.8 ms/step** (audit §12.3, 5 clients; block-Thomas 40.7) and
+  this run's ≈ 5× penalty implies ≈ 30–40 ms/step as one of three or four clients → **63–85 h**. Conclusion for
+  the scheduler: the 33 µm plume run on the multigrid is a **solo-GPU job (≈ 13–15 h, ≤ 25 h)** or needs its own
+  H100; as a 4-slot MPS client it is a 3-day job. A `not_qualified` / `heating` / `no_plateau` verdict keeps every
+  protocol on the block-Thomas solve (≈ 45 h solo for that box, 6 GB of inverse blocks, 18–24 s factorisation).
