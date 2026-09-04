@@ -125,6 +125,71 @@ CONVERGENCE_CAVEAT = (
     "are the per-design resolution statement, disclosed with the targets."
 )
 
+# -- amendment 1 (2026-09-04, after the launch-1 stop of design 056): the runtime omega_pe dt gate READING -------------------------
+# Launch 1 of design 056 (PID 19913, code 291a9227) was stopped at 2.07 transits by the grid-heating triad member `omega_pe_dt_drift`
+# (+0.283 > 0.25), which at 291a9227 is the trailing-20 % drift of the RAW single-node single-step peak omega_pe dt (max over EVERY
+# plasma node of the step's electron deposit).  Reconstructed from the record with the resolved-node statistic (the densest node
+# holding >= 32 macro-electrons = the v2.0.4 gate statistic, `peak_node.n_e_peak_per_m3` in every series record) the member read
+# +0.0165 (window-averaged +0.034); the raw argmax was a <= 4-macro-electron AXIS node in 96 % of the trailing records; no heating
+# signature (results/l1a-gs-v3-056-effcbc8686-channel-33um-launch1-triad-gate-stop/triad-stop-diagnosis.json).  Model v2.0.4
+# (79e6a670) reads the gate - and therefore the triad member - on the resolved-node peak and records the raw one as a witness
+# (SeriesRecord.peak_omega_pe_dt_raw, v1_4_options.omega_pe_dt_gate).  Launch 2 of 056 is a FRESH start (same seed, W, grid, dt,
+# operating point, gates, budget) from a commit carrying v2.0.4; the ONLY change to its sealed run protocol is the declaration
+# below (a documentary top-level block the runner does not read: build_config takes named keys only, so the configuration
+# identity is unchanged), keyed to the base case of design 056 so that every other sealed protocol stays byte-identical.
+OMEGA_PE_DT_GATE_READING_V2_0_4 = {
+    "statistic": "resolved_node_single_step_peak",
+    "min_macro_particles": 32,
+    "limit": 0.2,
+    "model": "pic2d model v2.0.4 (79e6a670): the runtime omega_pe dt fail-closed gate and the grid-heating triad member omega_pe_dt_drift read the "
+             "single-step peak over nodes whose electron deposit holds >= 32 macro-electrons (the peak-Debye gate's floor); the raw single-node peak is "
+             "recorded alongside as SeriesRecord.peak_omega_pe_dt_raw",
+    "launch_1": "code 291a9227 (pre-v2.0.4): RAW single-node single-step peak; stopped at 2.07 transits on omega_pe_dt_drift +0.283 (shot-noise "
+                "artefact of 1-3-macro-electron axis nodes, resolved member +0.0165) - record results/l1a-gs-v3-056-effcbc8686-channel-33um-launch1-triad-gate-stop/",
+    "amendment": "protocol.json amendments[0] (2026-09-04): launch 2 of design 056, fresh start under model v2.0.4; this block is the only difference "
+                 "between the launch-1 and launch-2 sealed protocols",
+}
+AMENDED_GATE_READING: dict[tuple[str, str], dict[str, Any]] = {("l1a-gs-v3-056-effcbc8686", "base"): OMEGA_PE_DT_GATE_READING_V2_0_4}
+AMENDMENTS: list[dict[str, Any]] = [
+    {
+        "version": "v1 amendment 1 (design 056 launch 2: gate reading)",
+        "kind": "gate_statistic_reading_and_relaunch",
+        "utc": "2026-09-04T13:30:00Z",
+        "design_id": "l1a-gs-v3-056-effcbc8686",
+        "case": "base",
+        "reason": "Launch 1 of design 056 (PID 19913, 05:53-10:52 UTC 2026-09-04, code 291a9227) was stopped by the grid-heating triad gate at step "
+                  "2,520,000 = 3.528 us = 2.07 transits: omega_pe_dt_drift +0.283 > 0.25 (hard). At 291a9227 the triad member is the trailing-20 % drift "
+                  "of the RAW single-node single-step peak omega_pe dt (max over every plasma node of the electron deposit) - a shot-noise extreme value "
+                  "decided by the smallest-volume node, the same defect the plume-boundary gate (attempt 6) and the external-validation launch-box "
+                  "preflight exposed and that model v2.0.4 (79e6a670, 21:54 AEST) fixed by reading the peak over RESOLVED nodes (>= 32 macro-electrons). "
+                  "Diagnosis from the launch-1 record (triad-stop-diagnosis.json): resolved-node member +0.0165 (window-averaged +0.034) against the raw "
+                  "+0.283; raw argmax on an axis node holding <= 4 macro-electrons in 96.4 % of the trailing records (p95 2.6 particles) while the "
+                  "resolved peak held 157-305; energy residual -7.6 % of the electrode work and flat per 0.4 us segment (cooling side); T_e,dense falling "
+                  "then flat (+3.6 %) while I_d rose 2.75 -> 5.44 mA; Delta/lambda_D window 1.54 (soft 2.5, hard pi). Verdict: SHOT-NOISE ARTEFACT, not "
+                  "heating - the stop is a property of the gate statistic, not of the design.",
+        "changes": [
+            "design 056 is RELAUNCHED (launch 2) as a FRESH start from a commit carrying model v2.0.4: same seed 20260903, W 26566.8, 115 x 512 cells, "
+            "dt 1.4 ps, operating point, v1.3 closure, v2.0.3 gates and cadences, plateau rule, acceptance (a)-(g), wall budget 91,200 s; H100 CUDA-MPS "
+            "slot via tools/cloud/schedule.py (job sweep-056-launch2) once a sweep run frees a slot; the launch-1 record is archived under "
+            "results/l1a-gs-v3-056-effcbc8686-channel-33um-launch1-triad-gate-stop/ and launch 2 runs in the canonical directory",
+            "the sealed run protocol protocols/l1a-gs-v3-056-effcbc8686-channel-33um.json gains ONE top-level block, omega_pe_dt_gate_reading "
+            "(OMEGA_PE_DT_GATE_READING_V2_0_4: statistic resolved_node_single_step_peak, floor 32, limit 0.2, model v2.0.4, launch-1 disclosure); its "
+            "sha256 in preregistration.sealed_run_protocols changes accordingly (launch 1 ran 35760e9b5bcd...); every other sealed protocol is "
+            "byte-identical to the preregistration commit 291a9227",
+            "the runtime omega_pe dt gate keeps its 0.2 threshold and the triad keeps its 5 % soft / 25 % hard drift bounds; only the STATISTIC the gate "
+            "and the member read changes (resolved-node peak instead of the raw single-node peak) - a strictly less shot-noise-prone reading; the raw "
+            "peak is recorded alongside in every series record",
+        ],
+        "unchanged": "grid, dt, W, seed, operating point, physics (v1.3 closure), the v2.0.3 window-mode peak-Debye and windowed residual-power gates, "
+                     "cadences, plateau rule, acceptance, budget, GPU / MPS execution block; the configuration identity of the run (build_config reads named "
+                     "keys only, the new block is documentary); the reference, 047 and 009 runs (locked at 291a9227) keep the raw reading - their records "
+                     "disclose it (047: resolved +0.80 % vs raw +0.98 %, plateau declaration independent of the reading)",
+        "not_changed_because": "the physics, the numerics and the acceptance rule are what the preregistration protects; the gate statistic is a numerical "
+                               "diagnostic whose raw form was shown (twice before this run) to read single macro-particles on axis nodes; same-seed "
+                               "physics replays bitwise (mps-replay.json), so launch 2 reproduces launch 1's physics up to step 2,520,000 and continues",
+    },
+]
+
 
 def load_template(domain: str, grid: str = "50um") -> dict[str, Any]:
     if domain not in DOMAIN_OPTIONS:
@@ -441,6 +506,9 @@ def build_protocol(design_id: str, domain: str, *, built: BuiltDesign | None = N
         "geometry_approximation": f"catalogue radii snapped to the {mapping.snaps['target_cell_m']*1e6:.2f} um grid (geometry.snaps); the clearance gap between the dielectric tube and the magnets is treated as dielectric front face",
         "field": "material-aware level-0 P2 field of the design (linear iron), scaled by the L1a source_strength_scale; not P2-qualified for these designs",
     }
+    # amendment 1: the gate-reading declaration of design 056's relaunch (documentary block; the runner reads named keys only)
+    if preregistered and (design_id, case) in AMENDED_GATE_READING:
+        protocol["omega_pe_dt_gate_reading"] = copy.deepcopy(AMENDED_GATE_READING[(design_id, case)])
     return protocol, mapping
 
 
@@ -582,6 +650,7 @@ def experiment_protocol_document(*, preflight_summary: dict[str, Any] | None = N
         "experiment_id": EXPERIMENT_ID,
         "status": STATUS_PREREGISTERED if preregistered else STATUS,
         "preregistration": preregistration,
+        "amendments": copy.deepcopy(AMENDMENTS) if preregistered else [],
         "designs": [{**d.to_dict(), "field_binding": f"modern/experiments/pic2d_design_mini_sweep_v1/fields/{d.design_id}/binding.json",
                      "launched_in_this_campaign": d.design_id in LAUNCH_SET} for d in design_module.SWEEP_DESIGNS],
         "domain_options": {**{domain: {"template": path.relative_to(REPOSITORY).as_posix(), "status": "draft (costed, not launched)"} for domain, path in TEMPLATES.items()},
@@ -632,7 +701,7 @@ draft_protocol_document = experiment_protocol_document
 write_draft_protocol = write_experiment_protocol
 
 
-__all__ = ["BUDGET_FACTOR", "BUDGET_FACTOR_PREREGISTERED", "CASES", "CONVERGENCE_CAVEAT", "DRAFT_PROTOCOL_PATH", "EXPERIMENT_ID", "GPU_RECORD", "GRID_VARIANTS",
+__all__ = ["AMENDED_GATE_READING", "AMENDMENTS", "BUDGET_FACTOR", "BUDGET_FACTOR_PREREGISTERED", "CASES", "CONVERGENCE_CAVEAT", "DRAFT_PROTOCOL_PATH", "EXPERIMENT_ID", "GPU_RECORD", "GRID_VARIANTS",
            "LAUNCH_SET", "MAX_PROJECTED_PARTICLES_M_H100", "PREREGISTERED_OPTION", "PROTOCOLS_DIR", "REFINED_CHANNEL_TEMPLATE", "SEEDS", "STATUS", "STATUS_PREREGISTERED",
            "TEMPLATES", "admissible_dt", "build_protocol", "compose_all", "compose_run_protocol", "composed_protocol_path", "connected_cathode_annulus",
            "draft_protocol_document", "experiment_protocol_document", "load_template", "macro_weight_for", "option_tag", "protocol_bytes", "template_path",

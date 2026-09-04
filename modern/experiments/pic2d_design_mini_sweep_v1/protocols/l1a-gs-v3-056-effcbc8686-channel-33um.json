@@ -173,6 +173,14 @@
   "step_graph": true,
   "step_graph_note": "v1.4 CUDA-graph step (bitwise-identical to the direct launches; tests/pic2d/test_pic2d_warp_parity.py)"
  },
+ "omega_pe_dt_gate_reading": {
+  "amendment": "protocol.json amendments[0] (2026-09-04): launch 2 of design 056, fresh start under model v2.0.4; this block is the only difference between the launch-1 and launch-2 sealed protocols",
+  "launch_1": "code 291a9227 (pre-v2.0.4): RAW single-node single-step peak; stopped at 2.07 transits on omega_pe_dt_drift +0.283 (shot-noise artefact of 1-3-macro-electron axis nodes, resolved member +0.0165) - record results/l1a-gs-v3-056-effcbc8686-channel-33um-launch1-triad-gate-stop/",
+  "limit": 0.2,
+  "min_macro_particles": 32,
+  "model": "pic2d model v2.0.4 (79e6a670): the runtime omega_pe dt fail-closed gate and the grid-heating triad member omega_pe_dt_drift read the single-step peak over nodes whose electron deposit holds >= 32 macro-electrons (the peak-Debye gate's floor); the raw single-node peak is recorded alongside as SeriesRecord.peak_omega_pe_dt_raw",
+  "statistic": "resolved_node_single_step_peak"
+ },
  "operating_point": {
   "anode_potential_v": 300.0,
   "electron_injection_current_a": 0.003,

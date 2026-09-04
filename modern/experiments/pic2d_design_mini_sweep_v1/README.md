@@ -382,6 +382,40 @@ their own; `refinement_heating` / `no_plateau` -> the reference grid is not cert
 rests on its own residual-power and peak-Debye readings ("at 33 um, uncertified"); `run.py assess` reads the v4
 `assessment.json` when it exists and writes the applicable statement; (g) the 047 anode-edge disclosure.
 
+### 8.5 Amendment 1 (2026-09-04, `protocol.json` `amendments[0]`): design 056 launch 2 under the v2.0.4 gate reading
+
+Launch 1 of design 056 was stopped at 2.07 transits by the triad member `omega_pe_dt_drift` (+0.283 > 0.25), which at the
+preregistration commit `291a9227` is the trailing-20 % drift of the RAW single-node single-step peak omega_pe dt. The
+launch-log entry below and `results/l1a-gs-v3-056-effcbc8686-channel-33um-launch1-triad-gate-stop/triad-stop-diagnosis.json`
+show the stop to be a shot-noise artefact of 1-3-macro-electron axis nodes (resolved-node member +0.0165, no heating
+signature). Model v2.0.4 (`79e6a670`, landed on the branch at 21:54 AEST, after the sweep launch) reads the runtime
+omega_pe dt gate - and therefore the triad member - on the peak over RESOLVED nodes (>= 32 macro-electrons, the peak-Debye
+gate's floor) and records the raw peak alongside (`SeriesRecord.peak_omega_pe_dt_raw`, `v1_4_options.omega_pe_dt_gate`).
+
+What the amendment does, and what it does not:
+
+* **Relaunch**: design 056 launch 2 is a FRESH start (no cross-code resume) from a commit carrying v2.0.4, with the same
+  seed 20260903, W 26 566.8, 115 x 512 cells, dt 1.4 ps, operating point, v1.3 closure, v2.0.3 gates and cadences, plateau
+  rule, acceptance (a)-(g) and wall budget 91 200 s; one of the four H100 CUDA-MPS slots through `tools/cloud/schedule.py`
+  (job `sweep-056-launch2`) once a sweep run frees one. Same-seed physics replays bitwise (`mps-replay.json`), so launch 2
+  reproduces launch 1's physics up to step 2 520 000 and continues - a free regression check on the record.
+* **Sealed protocol identity**: `protocols/l1a-gs-v3-056-effcbc8686-channel-33um.json` gains ONE top-level block,
+  `omega_pe_dt_gate_reading` (`protocol.OMEGA_PE_DT_GATE_READING_V2_0_4`: statistic `resolved_node_single_step_peak`, floor
+  32, limit 0.2, model v2.0.4, the launch-1 disclosure), emitted by the composer for `(design 056, case base)` only
+  (`protocol.AMENDED_GATE_READING`). Re-sealed on the launch box (`compose --grid 33um` in a scratch worktree at `ccee5c60`):
+  sha256 `35760e9b5bcd...` (launch 1) -> `8b876b31eb14...`; the five other sealed protocols are byte-identical to `291a9227`
+  (reference `ec8baa2aa38d`, 047 `b23b66da579a`, 009 `eb54049c6d84`, 106 `2fe6577b6865`, 056 seed replicate `eef171af348e`).
+  The block is documentary - `runner.build_config` reads named keys only - so the run's configuration identity is unchanged;
+  the execution lock of launch 2 names the new protocol hash and the amendment commit.
+* **Unchanged**: thresholds (omega_pe dt 0.2; triad soft 5 % / hard 25 %), grid, dt, W, seed, operating point, physics,
+  the v2.0.3 window-mode peak-Debye and windowed residual-power gates, budget, GPU / MPS execution block. The reference,
+  047 and 009 runs stay locked at `291a9227` with the RAW reading; their records disclose it (047: resolved +0.80 % vs raw
+  +0.98 % at the plateau, declaration independent of the reading). The 056 seed replicate and design 106 are not amended:
+  when launched (necessarily from a commit carrying v2.0.4) they need the same declaration first.
+* **Why this is an amendment and not a new experiment**: the physics, numerics and acceptance rule are what the
+  preregistration protects; the gate statistic is a numerical diagnostic whose raw form had already been shown (attempt 6
+  plume-boundary gate, external-validation launch-box preflight) to read single macro-particles on the smallest nodes.
+
 ## Commands (from `modern/`; CPU unless stated; on the box `PYTHONPATH=src:.` with the MPS variables exported)
 
     $env:PYTHONPATH="$PWD\src;$PWD"; $env:OMP_NUM_THREADS='1'
@@ -506,3 +540,8 @@ preflight for both channel options, run / launch guards, shrunk-cadence protocol
   continued; it needed ~1.13 M more steps to reach 3 transits (~2.5 h at 8 ms/step). Consequence: launch 2 of 056 under
   model v2.0.4 as a protocol AMENDMENT (next entry). What this record is: a gate-stopped run of the sweep (no plateau,
   not assessable, not a failure of the design); the sweep-wide `assess` runs after the reference and 009 finish.
+* **2026-09-04 ~23:40 AEST - AMENDMENT 1 committed (section 8.5, `protocol.json` `amendments[0]`)**: design 056 launch 2
+  under the v2.0.4 gate reading, fresh start, same identity otherwise; `protocols/l1a-gs-v3-056-effcbc8686-channel-33um.json`
+  re-sealed on the box (`35760e9b5bcd` -> `8b876b31eb14`, the only sealed file that changed; `protocol.json` -> `a7229bf997e4`);
+  tests/pic2d/test_pic2d_design_mini_sweep.py 20/20 on the PC. The launch (job `sweep-056-launch2`, `--expect-commit` = the
+  amendment commit) waits for the reference or 009 to free a slot - next entry.

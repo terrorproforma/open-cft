@@ -1,4 +1,21 @@
 {
+ "amendments": [
+  {
+   "case": "base",
+   "changes": [
+    "design 056 is RELAUNCHED (launch 2) as a FRESH start from a commit carrying model v2.0.4: same seed 20260903, W 26566.8, 115 x 512 cells, dt 1.4 ps, operating point, v1.3 closure, v2.0.3 gates and cadences, plateau rule, acceptance (a)-(g), wall budget 91,200 s; H100 CUDA-MPS slot via tools/cloud/schedule.py (job sweep-056-launch2) once a sweep run frees a slot; the launch-1 record is archived under results/l1a-gs-v3-056-effcbc8686-channel-33um-launch1-triad-gate-stop/ and launch 2 runs in the canonical directory",
+    "the sealed run protocol protocols/l1a-gs-v3-056-effcbc8686-channel-33um.json gains ONE top-level block, omega_pe_dt_gate_reading (OMEGA_PE_DT_GATE_READING_V2_0_4: statistic resolved_node_single_step_peak, floor 32, limit 0.2, model v2.0.4, launch-1 disclosure); its sha256 in preregistration.sealed_run_protocols changes accordingly (launch 1 ran 35760e9b5bcd...); every other sealed protocol is byte-identical to the preregistration commit 291a9227",
+    "the runtime omega_pe dt gate keeps its 0.2 threshold and the triad keeps its 5 % soft / 25 % hard drift bounds; only the STATISTIC the gate and the member read changes (resolved-node peak instead of the raw single-node peak) - a strictly less shot-noise-prone reading; the raw peak is recorded alongside in every series record"
+   ],
+   "design_id": "l1a-gs-v3-056-effcbc8686",
+   "kind": "gate_statistic_reading_and_relaunch",
+   "not_changed_because": "the physics, the numerics and the acceptance rule are what the preregistration protects; the gate statistic is a numerical diagnostic whose raw form was shown (twice before this run) to read single macro-particles on axis nodes; same-seed physics replays bitwise (mps-replay.json), so launch 2 reproduces launch 1's physics up to step 2,520,000 and continues",
+   "reason": "Launch 1 of design 056 (PID 19913, 05:53-10:52 UTC 2026-09-04, code 291a9227) was stopped by the grid-heating triad gate at step 2,520,000 = 3.528 us = 2.07 transits: omega_pe_dt_drift +0.283 > 0.25 (hard). At 291a9227 the triad member is the trailing-20 % drift of the RAW single-node single-step peak omega_pe dt (max over every plasma node of the electron deposit) - a shot-noise extreme value decided by the smallest-volume node, the same defect the plume-boundary gate (attempt 6) and the external-validation launch-box preflight exposed and that model v2.0.4 (79e6a670, 21:54 AEST) fixed by reading the peak over RESOLVED nodes (>= 32 macro-electrons). Diagnosis from the launch-1 record (triad-stop-diagnosis.json): resolved-node member +0.0165 (window-averaged +0.034) against the raw +0.283; raw argmax on an axis node holding <= 4 macro-electrons in 96.4 % of the trailing records (p95 2.6 particles) while the resolved peak held 157-305; energy residual -7.6 % of the electrode work and flat per 0.4 us segment (cooling side); T_e,dense falling then flat (+3.6 %) while I_d rose 2.75 -> 5.44 mA; Delta/lambda_D window 1.54 (soft 2.5, hard pi). Verdict: SHOT-NOISE ARTEFACT, not heating - the stop is a property of the gate statistic, not of the design.",
+   "unchanged": "grid, dt, W, seed, operating point, physics (v1.3 closure), the v2.0.3 window-mode peak-Debye and windowed residual-power gates, cadences, plateau rule, acceptance, budget, GPU / MPS execution block; the configuration identity of the run (build_config reads named keys only, the new block is documentary); the reference, 047 and 009 runs (locked at 291a9227) keep the raw reading - their records disclose it (047: resolved +0.80 % vs raw +0.98 %, plateau declaration independent of the reading)",
+   "utc": "2026-09-04T13:30:00Z",
+   "version": "v1 amendment 1 (design 056 launch 2: gate reading)"
+  }
+ ],
  "closure_targets": [
   {
    "name": "cusp_transit_loss_probability",
@@ -873,7 +890,7 @@
    "modern/experiments/pic2d_design_mini_sweep_v1/protocols/l1a-gs-v2-047-e3196a8aa5-channel-33um.json": "b23b66da579aa64bd0f5cfd44c85cef71d286829034ed26166da03255736907b",
    "modern/experiments/pic2d_design_mini_sweep_v1/protocols/l1a-gs-v3-009-d0c686b4aa-channel-33um.json": "eb54049c6d84f84388cd7f83cb1c657c87370fd80dab4ee9b445b7e581d25def",
    "modern/experiments/pic2d_design_mini_sweep_v1/protocols/l1a-gs-v3-056-effcbc8686-channel-33um-seed-replicate.json": "eef171af348e3b621e518986b3c1afa540b7fe6d252187e34bd7457a6deb8ef4",
-   "modern/experiments/pic2d_design_mini_sweep_v1/protocols/l1a-gs-v3-056-effcbc8686-channel-33um.json": "35760e9b5bcd235676a5c64779d3e4f4c10f98c1bc9179dca22603a8830da742",
+   "modern/experiments/pic2d_design_mini_sweep_v1/protocols/l1a-gs-v3-056-effcbc8686-channel-33um.json": "8b876b31eb144f31d541af4a39a91da01b0e8a06d053a721fc7eb54d3ec2657b",
    "modern/experiments/pic2d_design_mini_sweep_v1/protocols/l1a-gs-v3-106-ccec1c8b2f-channel-33um.json": "2fe6577b686557182edc183ef0059a0007898233c5524f85bc302bb7d91d7156"
   },
   "state": "PREREGISTERED at the commit that carries this file (the prereg commit); protocols/<design>-channel-33um[-seed-replicate].json are the sealed per-design run protocols (byte-bound at launch); run.py launch refuses a dirty worktree, an unexpected commit, a recomposition that differs from the sealed file, a missing preflight / shakedown / MPS-replay record, a missing MPS pipe directory (--require-mps) or an existing execution lock"
