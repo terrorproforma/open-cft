@@ -133,4 +133,25 @@ predeclared tolerances and nothing more; no experimental validation, no thruster
 
 ## Launch log
 
-* (to be appended at the launch: UTC, PID, commit, first readings, expected verdict time.)
+* **Launch 1 (2026-09-04 19:29:53 AEST = 09:29:53 UTC, PID 43572)** — the one preregistered
+  execution, from the dedicated run worktree `uni-project/.worktrees/pic2d-ss5` checked out detached
+  at the preregistration commit `69ff435d` (= origin/feat/sota-foundation head at the launch),
+  `launch --expect-commit 69ff435d`: clean worktree attested, protocol SHA-256 `2e81659f…`,
+  configuration identity `efb9bb09…` (warp-cuda), `results/execution-lock.json` acquired at
+  09:29:54 UTC. GPU **shared** at the launch: the eleven `hybrid_l2_v2` CUDA processes of another
+  campaign (launched 18:13 AEST, base case at ~7 400 / 12 000 steps and 0.67 s/step at 19:40) were
+  still running; the local run is not slowed permanently, only while they last. Setup ≈ 7 min (field
+  5 s, factorisation ≈ 6 min, graph capture on the first step). First readings (0.032 µs, 32 000
+  steps, 160 records): **9.2–9.8 ms/step under the contention, 3.97 ms/step in the last interval**
+  (seed load 0.96 M e⁻ + 1.13 M Xe⁺); I_d 2.4 → 0.73 mA and I_beam 0.14 → 0.72 mA (the seed dump),
+  S 1.4–1.7e16 s⁻¹, n_g 5.5 → 4.83e19 heading for its fixed point (the v2 / v4 ignition pattern),
+  single-step peak 0.34–0.50 cells/λ_D, window statistic 0.36–0.38 (not yet enforced, window
+  400 000), ω_pe Δt 0.068–0.073. Expectation: at the solo cost (7.3–7.8 ms/step at the plateau load)
+  3 transits (7 200 000 steps) fall at ≈ 14.6–15.6 h of stepping → **the first plateau verdict can
+  fall from ≈ 10:15–11:15 AEST 2026-09-05 (00:15–01:15 UTC)** if the GPU frees within the first
+  hours; at the fully contended preflight cost (17.4 ms/step) ≈ 34.9 h → ≈ 06:30 AEST 2026-09-06;
+  **budget end (48 h of stepping) ≈ 19:40 AEST 2026-09-06 (09:40 UTC)**. Watch `results/status.jsonl`
+  (`peak_node.window.cells_per_debye`, `grid_heating_triad.windowed_energy_residual_over_electrode_work`,
+  `plateau`) and the PID; the results-only commit (results/, `assessment.json` with the 33 µm primary
+  and 50 µm secondary columns, .gitignore negations) follows the stop and is not made by the
+  launching agent.
