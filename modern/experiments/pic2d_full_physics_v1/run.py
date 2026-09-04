@@ -574,12 +574,22 @@ def neutral_readings(summary: dict[str, Any], series: dict[str, np.ndarray] | No
         if "neutral_axis_density_anode_per_m3" in series and "neutral_axis_density_exit_per_m3" in series:
             a, e = _trailing_mean(series["neutral_axis_density_anode_per_m3"]), _trailing_mean(series["neutral_axis_density_exit_per_m3"])
             out["axis_anode_over_exit_trailing"] = None if not a or not e else a / e
+        # the metastable pool is quantised at weight_ratio x W_n (4.4e5 atoms): at F = 1 no macro-metastable may have spawned in a short run
+        for key in ("neutral_macro_metastables", "neutral_atoms_metastable", "neutral_macro_neutrals", "neutral_pending_atoms"):
+            if key in series and series[key].size:
+                out[f"{key.removeprefix('neutral_')}_final"] = float(series[key][-1])
     if "neutral_density_per_m3" in maps:
         density = np.asarray(maps["neutral_density_per_m3"], dtype=np.float64)
+        inner = max(density.shape[0] // 3, 1)
         out["axis_density_profile_per_m3"] = _axial_profile(density, 1)
-        out["inner_third_density_profile_per_m3"] = _axial_profile(density, max(density.shape[0] // 3, 1))
+        out["inner_third_density_profile_per_m3"] = _axial_profile(density, inner)
         out["profile_z_m"] = [float(grid.geometry.z_min_m + (k + 0.5) * grid.dz_m) for k in range(density.shape[1])]
         out["anode_over_exit_axis_window"] = float(density[0, 0] / density[0, -1]) if density[0, -1] > 0 else None
+        # the single AXIS cell holds 0.4-3 macro-neutrals (pi dr^2 dz): its reading is shot noise; the inner-third (r < 1 mm) column mean is the profile statistic
+        inner_profile = out["inner_third_density_profile_per_m3"]
+        out["anode_over_exit_inner_third_window"] = float(inner_profile[0] / inner_profile[-1]) if inner_profile[-1] > 0 else None
+        out["profile_statistic_note"] = ("anode_over_exit_inner_third_window (window-mean density averaged over the inner third of the radius, first vs last axial cell) is the "
+                                         "profile reading; the axis-cell values are shot-noise witnesses (0.4-3 macro-neutrals per axis cell at W_n 2.2e7)")
         out["cusp_plane_density"] = []
         for z_c in CUSP_PLANES_M:
             j = max(0, min(density.shape[1] - 1, int((z_c - grid.geometry.z_min_m) / grid.dz_m)))
@@ -743,7 +753,8 @@ def run_quantities(results: Path, grid=None, *, anode_v: float = 300.0, space_ch
     if neutrals is not None:
         neutrals["cumulative"] = {k: cumulative.get(k) for k in NEUTRAL_CUMULATIVE_KEYS if k in cumulative}
         out["neutrals"] = neutrals
-        out["neutral_density_anode_over_exit"] = neutrals.get("axis_anode_over_exit_trailing") or neutrals.get("anode_over_exit_axis_window")
+        out["neutral_density_anode_over_exit"] = (neutrals.get("anode_over_exit_inner_third_window") or neutrals.get("axis_anode_over_exit_trailing")
+                                                  or neutrals.get("anode_over_exit_axis_window"))
         out["neutral_depletion_fraction"] = neutrals.get("depletion_fraction")
         meta = neutrals.get("metastables") or {}
         out["metastable_fraction_of_ground"] = meta.get("trailing_20pct_mean_fraction_of_ground")

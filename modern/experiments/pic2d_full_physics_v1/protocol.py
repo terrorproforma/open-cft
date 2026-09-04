@@ -306,9 +306,15 @@ HYPOTHESES_R5: dict[str, dict[str, Any]] = {
     "anode_ion_a": {"sign": "+", "expected": "up", "reason": "slow CEX ions born upstream fall to the anode"},
     "neutral_density_per_m3": {"sign": "+", "expected": "+680 % BY CONSTRUCTION (Knudsen channel mean 2.5e20 vs the depleted 0-D 3.2e19): reported, not judged",
                                "reason": "the operating-point change itself"},
-    "neutral_density_anode_over_exit": {"sign": "+", "expected": "5-10 (the Knudsen ratio incl. the exit end correction; reference 1 by construction)", "reason": "free-molecular closed-end profile"},
+    "neutral_density_anode_over_exit": {"sign": "+", "expected": "5-10 (the Knudsen ratio incl. the exit end correction; reference 1 by construction); read on the window-mean "
+                                        "density averaged over the inner third of the radius (the single axis cell holds 0.4-3 macro-neutrals and is shot noise)",
+                                        "reason": "free-molecular closed-end profile"},
     "neutral_depletion_fraction": {"sign": "+", "expected": "< 0.01 at F = 1 (~0.03 at F = 10)", "reason": "quasi-frozen gas over 3 transits"},
-    "metastable_fraction_of_ground": {"sign": "+", "expected": "0.2-0.5 % channel mean (reference 0 by construction; still filling at F = 1)", "reason": "R5 shakedown 0.27-0.33 %"},
+    "metastable_fraction_of_ground": {"sign": "+", "expected": "0.2-0.5 % channel mean at a filled pool (reference 0 by construction; the R5 shakedown's 0.27-0.33 % was at F = 100). "
+                                      "The pool is QUANTISED at weight_ratio x W_n = 4.4e5 atoms per macro-metastable: at F = 1 a cell produces ~50 pool atoms per sub-step, so "
+                                      "its first macro-metastable spawns after ~2 us and the pool is still filling (and coarsely resolved: ~3 spawns per cell over 3 transits) at "
+                                      "the plateau - the F = 1 fraction reads LOW by construction; at F = 10 the pool fills in ~1 us of plasma time (this is one of the "
+                                      "predeclared F distortions, reported not judged)", "reason": "R5 shakedown 0.27-0.33 % at F = 100"},
     "stepwise_fraction_of_ionization": {"sign": "+", "expected": "3-6 % of S (reference 0 by construction)", "reason": "BEB stepwise ionisation from the 6s pool; R5 shakedown 3.1-3.4 %"},
 }
 HYPOTHESES_FULL_ALPHA0: dict[str, dict[str, Any]] = {
