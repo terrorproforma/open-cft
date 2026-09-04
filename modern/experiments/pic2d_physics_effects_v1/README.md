@@ -1,7 +1,7 @@
 # PIC-2D physics effects v1 — the preregistered SEE(BN) / xenon-collision-set-v2 campaign (roadmap R2 + R3, models v2.2.0 + v2.3.0)
 
-**Status: DRAFT (this commit): package + tests; no preflight / shakedown records, nothing launched.** See §7 for the preregistration
-and launch log once the records exist.
+**Status: PREREGISTERED (the commit carrying this README, the sealed `protocols/*.json` with the measured budgets, the three preflight and
+the three shakedown records); nothing launched at that commit — the launch log is §7.**
 
 Three one-shot executions of the reference design at 33 µm, each isolating one physics change of the completeness audit against the
 RECORDED ss-v4 plateau (`pic2d_cft_steady_state_v4/results`, `0d228ad2`), which is not re-run:
@@ -105,11 +105,50 @@ interaction = shift(combined) − [shift(see-bn) + shift(xe-set-v2)]; `additive`
 `sub_additive` otherwise (sign relative to the sum of parts); the statement is `additive` / `interacting` / `not_evaluable`. No
 interaction sign is predeclared.
 
-## 5. Launch-box preflight and shakedown (non-evidentiary)
+## 5. Launch-box preflight and shakedown (non-evidentiary; H100, 18:25–19:22 UTC 2026-09-04, code `b27da394`, as the 5th CUDA-MPS client beside ss25-base, sweep-056-launch2, ss33-fast and at-alpha-1over16)
 
-Pending at the draft commit: `preflight --case <case> --gpu-timing` (3 cases, as an extra CUDA-MPS client under the current load) and
-`shakedown --case <case>` (100 000 steps of EVERY case through run → finalize → assess case + campaign) on the Lambda H100; the budgets are
-derived from the preflights before the preregistration commit.
+`preflight-<case>.json` (`preflight --case … --gpu-timing`, 2000 timed steps after 200 warm-up, block-Thomas + CUDA-graph step; the rates
+are 5-client rates and therefore upper bounds for a 4-client slot):
+
+| case | factorisation | seed load (645 k e⁻) | plateau load (2.26 M e⁻ + 2.26 M i) | events over the 2200 plateau-load steps | device pool | 3 transits at the plateau load | budget (× 1.5, 10-min ceiling) |
+|---|---|---|---|---|---|---|---|
+| `see-bn` | 157 s | 4.81 ms/step | 6.33 ms/step | 375 k SEE impacts → 228 k emitted (0.61) | 1.38 GB | 9.05 h | **49 200 s (13.7 h)** |
+| `xe-set-v2` | 149 s | 4.54 ms/step | 5.60 ms/step | CEX 85, MEX 759, level-1 excitations 1309 | 1.38 GB | 8.00 h | **43 200 s (12.0 h)** |
+| `see-bn+xe-set-v2` | 162 s | 4.89 ms/step | 6.52 ms/step | 376 k → 230 k SEE; CEX 90, MEX 753 | 1.45 GB | 9.31 h | **50 400 s (14.0 h)** |
+
+Field `abf26c5c4fa6` (max |B| 0.291 T), 45 810 plasma cells. SEE costs ≈ +13 % per step over the collision set alone at this load (6.33 vs
+5.60 ms/step); the collision set itself is within the contention noise of the α-series' 4.77 ms/step measured with one client fewer. The
+host factorisation read 150–160 s here against the α-series' 1.7 s: the box's CPUs were shared by four PIC processes plus this one (the
+BLAS threads oversubscribe) — a one-off cost at launch, not a rate. The budget is the declared 1.5 × measured rule; a wall-budget stop is
+resumable (new session, same identity, disclosed).
+
+`shakedown-<case>.json` (`shakedown --case …`; 100 000 steps of EVERY case with shrunk cadences — series / sync 200, checkpoint 4000,
+window 40 000, frames 2000; every gate, the grid, Δt, W, the effect blocks, field and seed the real ones; the shakedown identity differs
+from the sealed one only through the shrunk cadences, which enter the gate config):
+
+| case | ms/step | run / re-finalize | final e⁻ / Xe⁺ | effect events (cumulative) | peak-Debye window enforced | residual window (W-corrected) | assess |
+|---|---|---|---|---|---|---|---|
+| `see-bn` | 4.97 | 664 s / 162 s | 569 253 / 612 227 | 974 643 SEE impacts → 844 591 emitted (cumulative effective yield 0.86; backscattered 10 %; 0 clamped) | 301/500 records, max 0.52 cells/λ_D, 37 766 resolved nodes | 280 complete, last +0.08 % | `no_plateau` / `inconclusive`; reference consistency 11/11 |
+| `xe-set-v2` | 4.10 | 568 s / 151 s | 554 859 / 600 955 | CEX 4 101, MEX 3 376, candidates 111 022 (null 103 545), fast neutrals 324 exit / 3 103 wall / 674 thermal, 0 unresolved, 0 ceiling violations, levels 16 366 / 14 740 / 29 944 / 13 449 | 301/500, max 0.59, 38 312 nodes | 280 complete, last +0.09 % | `no_plateau` / `inconclusive`; 11/11 |
+| `see-bn+xe-set-v2` | 4.76 | 627 s / 166 s | 568 625 / 611 549 | 981 297 → 851 593 SEE; CEX 4 242, MEX 3 456, fast neutrals 464 / 3 132 / 646 | 301/500, max 0.52, 37 760 nodes | 280 complete, last +0.08 % | `no_plateau` / `inconclusive`; 11/11 |
+
+Every effect path is live (`gate_not_inert_check`: SEE events, CEX events and all four excitation levels non-zero where declared; the
+accumulated-floor peak-Debye window enforced; the residual window completed), `assess --case` formed the shift table, the per-cusp report
+with the SEE / collision columns and the IEDF descriptors against the reference (11/11 pinned quantities recomputed from the v4
+artifacts agree), `assess --campaign` returned `not_evaluable` (no case at (a)), and the re-finalize from the checkpoint ran. The
+`xe-set-v2` shakedown reproduces the R3 shakedown (`6defd5ed`, `pic2d_xe_collision_set_v2_shakedown/shakedown.json`) event for event
+(CEX 4 101, MEX 3 376, fast neutrals 324/3103/674, ionisations 83 452, exit ions 13 309, final ions 600 955): the rebase onto v2.2.0 and
+the K = 5 / Debye-floor declarations are physics-neutral for this case. The `see-bn` shakedown is NOT bitwise vs the R2 shakedown
+(`4ca89e72`: 569 456 / 612 467 final particles) because the rebase moved the SEE seed-table column (4) — the same physics, another stream.
+
+**0.14 µs readings are the seed transient, not physics, and are not quoted as results.** What they show about the DIAGNOSTICS: with SEE the
+per-cusp effective yields read 0.94 / 0.94 / 0.96 (window 60k–100k) with the near-wall drop NEGATIVE at 12.0 and 17.97 mm (`see-bn`: 2 of
+3 cusps flagged space-charge-limited; combined: 3 of 3) — the R2 shakedown's virtual-cathode reading recurs, so the SCL flag will be a
+primary column of the plateau report; wall potential mean 190 V (min −18 V, max 304 V), plasma-minus-wall 12.4 V, emitted mean energy
+6.4 eV, SEE current 19.6 mA against 21.4 mA impacting. With the collision set: CEX/S 5.8 %, fast-neutral exit momentum rate 0.067 µN vs
+exit-ion 1.83 µN over the last 20 000 steps (`series.jsonl` differences work), level shares 22 / 20 / 40 / 18 %, the exit IEDF still the
+seed population (mean 18 eV, 91 % below 30 eV — the "+0.84 confirming" row of the shakedown assessment is that transient, the plateau
+reference reads 0.067).
 
 ## 6. Commands (from `modern/`, `PYTHONPATH=src:.`)
 
@@ -130,7 +169,13 @@ R1 queue is alive).
 
 ## 7. Preregistration and launch log
 
-- Draft (this commit): package + 8 tests; no records, no launch.
+- Draft `b27da394`: package + 8 tests + `tools/cloud/slot_queue.sh`; no records, no launch.
+- **PREREGISTERED** at the commit carrying this README, the sealed `protocols/*.json` with the measured budgets (sha256 `545b2e92…`
+  `see-bn`, `83bd66b9…` `xe-set-v2`, `de0f2fda…` `see-bn+xe-set-v2`; campaign `protocol.json` `1a1d8d94…`), the three preflight records and
+  the three shakedown records (§5). Launch order `see-bn` → `xe-set-v2` → `see-bn+xe-set-v2`, one H100 MPS slot each via
+  `tools/cloud/schedule.py` jobs `pe-see-bn` / `pe-xe-set-v2` / `pe-see-bn+xe-set-v2` (jobs.yaml commit after this one), strictly AFTER
+  the R1 queue (`ext-val-v0-channel-20um-bohm-0.4` → `at-alpha-1over64` → `at-alpha-0.345`) through the chained slot-waiter
+  `slot_queue.sh pe-queue --after $WORK/r1/queue.log` (tmux `pe-queue`), which never calls the scheduler while the R1 queue is alive.
 
 ## 8. Claim boundary
 
