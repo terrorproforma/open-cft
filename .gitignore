@@ -170,6 +170,38 @@ modern/experiments/pic2d_cft_steady_state_v5/results-launch1-withdrawn/frames/
 # PIC-2D design mini-sweep v1 (preregistered channel-33um option): per-design results/<design>-<option>/ stay untracked
 # until a run ends (results-only commit adds the negations); the shakedown and MPS-replay scratch directories are never tracked
 modern/experiments/pic2d_design_mini_sweep_v1/results*/
+# finished runs are tracked records with the steady-state v4 contract (summary with the frames manifest, execution lock, run state,
+# status/series/maps, final checkpoint metadata + npz sidecars, the sealed protocol copy); frames, checkpoint arrays, the field
+# anchor, the raw series and logs/pid stay untracked; every OTHER per-design directory under results/ (running or scratch) stays
+# ignored so a job worktree remains clean. 047 launch 1 = plateau record (canonical directory). 056 launch 1 = triad-gate stop on
+# the pre-v2.0.4 RAW single-node omega_pe dt statistic, archived as -launch1-triad-gate-stop/ (+ triad-stop-diagnosis.json) so
+# that launch 2 (amended gate reading) runs in the canonical directory.
+!modern/experiments/pic2d_design_mini_sweep_v1/results/
+modern/experiments/pic2d_design_mini_sweep_v1/results/*
+!modern/experiments/pic2d_design_mini_sweep_v1/results/l1a-gs-v2-047-e3196a8aa5-channel-33um/
+!modern/experiments/pic2d_design_mini_sweep_v1/results/l1a-gs-v2-047-e3196a8aa5-channel-33um/maps.npz
+!modern/experiments/pic2d_design_mini_sweep_v1/results/l1a-gs-v2-047-e3196a8aa5-channel-33um/series.npz
+modern/experiments/pic2d_design_mini_sweep_v1/results/l1a-gs-v2-047-e3196a8aa5-channel-33um/checkpoint/
+modern/experiments/pic2d_design_mini_sweep_v1/results/l1a-gs-v2-047-e3196a8aa5-channel-33um/frames/
+modern/experiments/pic2d_design_mini_sweep_v1/results/l1a-gs-v2-047-e3196a8aa5-channel-33um/video/
+modern/experiments/pic2d_design_mini_sweep_v1/results/l1a-gs-v2-047-e3196a8aa5-channel-33um/checkpoint-final.npz
+modern/experiments/pic2d_design_mini_sweep_v1/results/l1a-gs-v2-047-e3196a8aa5-channel-33um/checkpoint-final.field.npz
+modern/experiments/pic2d_design_mini_sweep_v1/results/l1a-gs-v2-047-e3196a8aa5-channel-33um/series.jsonl
+modern/experiments/pic2d_design_mini_sweep_v1/results/l1a-gs-v2-047-e3196a8aa5-channel-33um/*.pid
+modern/experiments/pic2d_design_mini_sweep_v1/results/l1a-gs-v2-047-e3196a8aa5-channel-33um/*.log
+modern/experiments/pic2d_design_mini_sweep_v1/results/l1a-gs-v2-047-e3196a8aa5-channel-33um/*.err
+!modern/experiments/pic2d_design_mini_sweep_v1/results/l1a-gs-v3-056-effcbc8686-channel-33um-launch1-triad-gate-stop/
+!modern/experiments/pic2d_design_mini_sweep_v1/results/l1a-gs-v3-056-effcbc8686-channel-33um-launch1-triad-gate-stop/maps.npz
+!modern/experiments/pic2d_design_mini_sweep_v1/results/l1a-gs-v3-056-effcbc8686-channel-33um-launch1-triad-gate-stop/series.npz
+modern/experiments/pic2d_design_mini_sweep_v1/results/l1a-gs-v3-056-effcbc8686-channel-33um-launch1-triad-gate-stop/checkpoint/
+modern/experiments/pic2d_design_mini_sweep_v1/results/l1a-gs-v3-056-effcbc8686-channel-33um-launch1-triad-gate-stop/frames/
+modern/experiments/pic2d_design_mini_sweep_v1/results/l1a-gs-v3-056-effcbc8686-channel-33um-launch1-triad-gate-stop/video/
+modern/experiments/pic2d_design_mini_sweep_v1/results/l1a-gs-v3-056-effcbc8686-channel-33um-launch1-triad-gate-stop/checkpoint-final.npz
+modern/experiments/pic2d_design_mini_sweep_v1/results/l1a-gs-v3-056-effcbc8686-channel-33um-launch1-triad-gate-stop/checkpoint-final.field.npz
+modern/experiments/pic2d_design_mini_sweep_v1/results/l1a-gs-v3-056-effcbc8686-channel-33um-launch1-triad-gate-stop/series.jsonl
+modern/experiments/pic2d_design_mini_sweep_v1/results/l1a-gs-v3-056-effcbc8686-channel-33um-launch1-triad-gate-stop/*.pid
+modern/experiments/pic2d_design_mini_sweep_v1/results/l1a-gs-v3-056-effcbc8686-channel-33um-launch1-triad-gate-stop/*.log
+modern/experiments/pic2d_design_mini_sweep_v1/results/l1a-gs-v3-056-effcbc8686-channel-33um-launch1-triad-gate-stop/*.err
 # PIC-2D plume development run v1 (model v2.0): results stay untracked until the run ends;
 # attempt 3 (no ignition) is kept as a development record: summary (with the frames manifest),
 # run state, status/series/maps, final checkpoint metadata; the frames, the videos, the

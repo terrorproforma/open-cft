@@ -443,3 +443,27 @@ preflight for both channel options, run / launch guards, shrunk-cadence protocol
   `gpu=100%` samples are whole-GPU readings under MPS. Do NOT kill a process (section 8.3, Xid 31). When a job stops:
   `run.py assess --design ID --grid 33um` and `run.py targets ...` from its worktree; results-only commit from the
   worktree on a `results/<id>` branch; cite the ss-v4 verdict (pending at launch) per design.
+* **2026-09-04 12:49:44 UTC (22:49:44 AEST) - design 047 FINISHED on the plateau rule (launch 1, PID 20079, a valid
+  record).** `results/l1a-gs-v2-047-e3196a8aa5-channel-33um/` (results-only commit; the steady-state v4 record contract:
+  summary with the frames manifest, execution lock, run state, status / series / maps, final checkpoint metadata + npz
+  sidecars, the sealed protocol copy; the 278 frames, the 56 MB checkpoint arrays, the field anchor, the 116 MB raw
+  `series.jsonl` and the logs stay in the job worktree `jobs/sweep-047/tree` on the box). Stop
+  `plateau_reached_after_min_transit_times` at step 5,560,000 = 7.784 us = 3.003 transits (2.592 us a priori), 24,888 s
+  wall = 6.91 h, 4.48 ms/step mean under MPS-4 (exit 0, `finished: true`, one session, no resume). Lock: commit
+  `291a9227`, protocol `b23b66da579a`, config `43709022227a`. Plateau block: I_d drift +0.60 %, N_e +2.20 %, n_g +0.11 %
+  (threshold 5 %), triad soft ok (S -0.22 %, T_e,dense +0.21 %, omega_pe dt +0.98 %), peak-Debye soft ok. Trailing-window
+  values (quotable only after `assess`): I_d 1.925 mA (anode e- 1.932, anode ions 0.007), I_beam 0.655 mA, exit electrons
+  1.726 mA, wall e-/ions 1.641 / 1.635 mA, S 1.452e16 /s, n_g 3.76e19 (fixed point 3.55e19; feed 4.60e16 atoms/s),
+  gross = net utilisation 0.316, N_e 0.687 M / N_i 0.700 M (the 2.68 M projection was 3.9x too high: the low-rho design
+  sits at 0.51 of the reference's projected mean density), peak n_e (window, >= 32 macro-electrons) 8.83e17 at z 22.0 mm
+  (the exit-side partial cell), T_e,peak 5.86 eV, T_e,dense 5.73 eV, Delta/lambda_D window 1.69 at the stop (max 2.37
+  during ignition; soft 2.5 never exceeded), windowed energy residual -7.11 % (cooling side; cumulative -7.30 %; the +2 %
+  acceptance bound (b) is met a priori), raw single-node omega_pe dt max 0.115 (limit 0.2). GPU sampler 83/83 samples,
+  no Xid. **Raw-statistic disclosure (v2.0.4, `79e6a670`)**: the code this run executed (`291a9227`) forms the runtime
+  omega_pe dt gate and the triad's `omega_pe_dt_drift` member from the RAW single-node single-step peak; reconstructed
+  from the record (`peak_node.n_e_peak_per_m3` = the >= 32-macro-electron single-step peak, the v2.0.4 statistic) the
+  member reads +0.80 % (window-averaged +0.20 %) against the raw +0.98 %, and the raw argmax sat on an axis node holding
+  <= 4 macro-electrons in only 17 % of the trailing-window records - the plateau declaration does not depend on the
+  reading. `assess` / `targets` are DEFERRED to the sweep-wide assessment after the reference and 009 finish, from a
+  checkout that carries the steady-state v4 `assessment.json` (`0d228ad2`, verdict `resolution_limited`), so that the
+  predeclared caveat (f) is cited from the file, not from a checkout where it reads "pending".
