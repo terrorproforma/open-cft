@@ -84,6 +84,21 @@ the run `no_plateau` (0.058 transits) with every (c) quantity computed against t
 reference, which it re-derived from the v2 artifacts on disk (consistency check). Early dynamics
 match the v2 ignition (I_d 0.7 → 1.3 mA, S 1.5–1.7e16 s⁻¹, n_g 5.5 → 4.46e19 by 0.13 µs).
 
+## Energy-ledger correction (model v2.0.6, post hoc; recorded values unchanged)
+
+Up to model v2.0.5 the energy ledger's `inelastic_loss_j` lacked the macro weight W (found by the external-validation v0 launch-1 diagnosis, 036bd679), so every recorded interval residual was `H - L_inel` - biased NEGATIVE by the inelastic power - where `H = field work + dU - electrode work` is the true numerical energy creation. The sidecar(s) `ledger-corrected.json` (+ `.sha256.json`) were written by `python -m cft_revival.pic2d.ledger_recompute <results-dir>` from the recorded `series.npz` (corrected residual = H per record; `spec/pic2d/pic2d-model-v2.0.json#gates_v2_0.energy_ledger_correction_v2_0_6`); **the recorded series, maps and summaries are unchanged.** Values below: trailing-400 000-step residual / electrode work at the last record, recorded -> corrected.
+
+`results/ledger-corrected.json`: **-7.67 % -> +2.46 %** at the stop (cumulative -9.1 % -> +1.8 %); trajectory +0.6 % (0.62 us) -> +1.0 %
+(2.0 us) -> +2.0 % (4.82 us) -> +2.46 % (7.28 us), i.e. 2.2 -> 28 mW of numerical heating power against 0.38 -> 1.14 W of electrode power;
+maximum over complete windows +2.46 %; cross-check against the final counts exact to 7.8e-5 (the classical-vs-relativistic threshold
+bookkeeping). **Acceptance (b) "windowed residual < +2 %" changes status: recorded PASS -> corrected FAIL.** (The diagnosis' end-state estimate
+of ~+1.9 % used the final-record S and I_d; the exact window recomputation gives +2.46 %.) (a) plateau and (c) convergence tolerances are
+untouched and the verdict `resolution_limited` (about the 50 um base, which itself reads +13.0 % corrected) stands; the 33 um plateau carries
+2.5 % numerical heating power, still rising slowly at the stop, to be disclosed with every quoted value - whether it falls at 25 um is what
+`pic2d_cft_steady_state_v5` measures. The hard 5 % residual-power gate never fires on the corrected statistic (2x margin). Peak-Debye under the
+v2.0.6 accumulated-particle-step floor (64 000 macro-electron-steps): 2.154 at the same node (20, 429); resolved nodes 19 650 -> 42 130; the
+densest axis node (0.38 macro-electrons per step) is resolved and reads 0.79.
+
 ## Commands (from `modern/`)
 
 ```powershell
