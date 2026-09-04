@@ -439,6 +439,75 @@ def trailing_time_drift(time_s: np.ndarray, values: np.ndarray, fraction: float)
     return slope * float(x[-1] - x[0]) / abs(mean)
 
 
+ARMING_SETTLE_QUANTITIES: dict[str, str] = {"discharge_current": "current_discharge_a", "electron_count": "electrons"}
+
+
+def drift_members_arming(arrays: dict[str, np.ndarray], rule: Mapping[str, Any], transit_time_s: float) -> dict[str, Any] | None:
+    """Model v2.1.1: arming of the triad's DRIFT members relative to the run's own discharge (a "settled once" latch).
+
+    ``stopping_rule.grid_heating_triad.drift_members_arming`` (absent -> ``None``: the v1.4 rule
+    ``enforced_after_transit_times`` stands) declares ``min_transit_times`` (2.0), ``settle_quantity``
+    (``discharge_current`` -> the trailing-20 % drift of I_d, or ``electron_count``), ``settle_drift_max`` (the
+    plateau threshold, 0.05) and ``settle_check_cadence_steps`` (the checkpoint cadence).  The drift members are
+    ENFORCED (hard 25 % stop) only once (i) at least ``min_transit_times`` have elapsed AND (ii) the latch has
+    closed: at some record on the check cadence at or after ``min_transit_times`` the settle quantity's
+    trailing-window drift read below ``settle_drift_max`` - the discharge has settled once, so a later drift of
+    S, T_e,dense or omega_pe dt beyond the hard bound is a runaway, not the discharge still moving to its state.
+
+    Why (alpha-series launch 1, 2026-09-05 05:00 AEST): the drift members were calibrated on the alpha = 0 plateaus
+    (I_d drift +0.116 at 1.0 transit, S +0.10, T_e,dense +0.02 on ss-v4) and armed at 1.0 transit; a closure or
+    operating-point change makes the discharge re-equilibrate to a DIFFERENT state, whose trailing-20 % drifts at
+    1.0 transit can legitimately exceed 0.25 while nothing is wrong numerically.  The physics protections - the
+    one-sided windowed residual-POWER gate (>= 5 % of the electrode work, from the first complete window) and the
+    window-mode peak-Debye hard gate (pi cells per lambda_D on the accumulated-floor peak) - are what catch genuine
+    finite-grid heating; they are independent of this arming (ss-v4 read +1.15 % / 0.48 cells per lambda_D at its
+    1.00-transit stop under the old rule - nothing to protect against).  A discharge that never settles (an
+    extinction: the alpha = 1/16 launch 1 decayed from its seed with N_e e-fold 0.88 us and I_d -> 0.06 mA) must be
+    stopped by an ``ignition_gate`` (S / N_e ratios against the post-seed reference window), not by the drift
+    members - the arming block is declared together with one.
+
+    The latch is a pure function of the series (evaluated on the records whose step is a multiple of the declared
+    cadence, exactly the checkpoints the runner evaluates at), so a resume or an offline re-read reproduces it.
+    On the accepted alpha = 0 plateau (ss-v4) the I_d latch closes at 2.66 transits (checkpoint 4 560 000, drift +0.049);
+    047 / 009 / 056-L2 read |I_d drift| < 0.05 from 2.0 transits on.
+    """
+
+    block = rule.get("grid_heating_triad") or {}
+    arming = block.get("drift_members_arming")
+    if arming is None or arrays.get("step") is None or arrays["step"].size < 2:
+        return None
+    min_transits = float(arming.get("min_transit_times", 2.0))
+    settle_max = float(arming.get("settle_drift_max", rule.get("plateau_threshold", 0.05)))
+    quantity = str(arming.get("settle_quantity", "discharge_current"))
+    if quantity not in ARMING_SETTLE_QUANTITIES:
+        raise PIC2DValidationError(f"drift_members_arming.settle_quantity {quantity!r} not in {sorted(ARMING_SETTLE_QUANTITIES)}")
+    cadence = int(arming["settle_check_cadence_steps"])
+    if cadence <= 0:
+        raise PIC2DValidationError("drift_members_arming.settle_check_cadence_steps must be positive")
+    fraction = float(rule["plateau_window_fraction"])
+    time_s = arrays["time_s"]
+    steps = arrays["step"]
+    values = arrays[ARMING_SETTLE_QUANTITIES[quantity]].astype(np.float64)
+    transits_now = float(time_s[-1]) / transit_time_s
+    result: dict[str, Any] = {
+        "latched": False, "armed": False, "transit_times_elapsed": transits_now, "min_transit_times": min_transits,
+        "settle_quantity": quantity, "settle_drift_max": settle_max, "check_cadence_steps": cadence,
+        "current_settle_drift": trailing_time_drift(time_s, values, fraction),
+        "latched_at_step": None, "latched_at_transit_times": None, "drift_at_latch": None,
+    }
+    # the first checkpoint-cadence record at or after min_transit_times whose trailing-window drift reads inside the bound
+    eligible = np.flatnonzero((time_s / transit_time_s >= min_transits) & (np.mod(steps, cadence) == 0))
+    for index in eligible:
+        n = int(index) + 1
+        drift = trailing_time_drift(time_s[:n], values[:n], fraction)
+        if drift is not None and abs(drift) < settle_max:
+            result.update({"latched": True, "latched_at_step": int(steps[index]), "latched_at_transit_times": float(time_s[index]) / transit_time_s,
+                           "drift_at_latch": float(drift)})
+            break
+    result["armed"] = bool(result["latched"] and transits_now >= min_transits)
+    return result
+
+
 def evaluate_plateau(
     time_s: np.ndarray, discharge_a: np.ndarray, electrons: np.ndarray, rule: dict[str, Any], transit_time_s: float,
     neutral_density: np.ndarray | None = None,
@@ -595,6 +664,11 @@ def evaluate_triad(arrays: dict[str, np.ndarray], rule: dict[str, Any], transit_
     The thresholds (hard 5 % from the first complete window, one-sided) are kept: 2x margin over the accepted 33 um
     maxima, and every heating run is caught at its first complete window or earlier than under the biased statistic.
     From v2.0.6 the series carries the corrected residual directly, so this function needs no change.
+
+    v2.1.1 (``drift_members_arming`` in the block, see :func:`drift_members_arming`): the DRIFT members are enforced
+    only once ``min_transit_times`` have elapsed AND the settle latch has closed (the run's own I_d drift has read
+    inside the plateau bound once); ``enforced_after_transit_times`` is then superseded (recorded, not used).  The
+    windowed residual-power member is unchanged: enforced from the first complete window whatever the arming.
     """
 
     block = rule.get("grid_heating_triad")
@@ -616,7 +690,8 @@ def evaluate_triad(arrays: dict[str, np.ndarray], rule: dict[str, Any], transit_
     hard = float(block["hard_drift_max"])
     residual_max = float(block["energy_residual_over_electrode_work_max"])
     enforce_after = float(block.get("enforced_after_transit_times", 1.0))
-    enforced = transits >= enforce_after
+    arming = drift_members_arming(arrays, rule, transit_time_s)
+    enforced = transits >= enforce_after if arming is None else bool(arming["armed"])
     windowed = windowed_energy_residual(arrays, block)
     soft_ok = ratio is not None and abs(ratio) < residual_max and all(v is not None and abs(v) < soft for v in drifts.values())
     if windowed is not None and windowed["window_complete"]:
@@ -644,6 +719,11 @@ def evaluate_triad(arrays: dict[str, np.ndarray], rule: dict[str, Any], transit_
                        "enforced_after_transit_times": enforce_after},
         "window_fraction": fraction,
     }
+    if arming is not None:
+        # v2.1.1: the drift members' arming state (latch) travels with every record; the legacy transit arming is superseded
+        result["drift_members_arming"] = arming
+        result["thresholds"]["drift_members_arming"] = {k: arming[k] for k in ("min_transit_times", "settle_quantity", "settle_drift_max", "check_cadence_steps")}
+        result["thresholds"]["enforced_after_transit_times_superseded_by_arming_latch"] = True
     if windowed is not None:
         result["windowed_energy_residual_over_electrode_work"] = windowed["ratio"]
         result["windowed_energy_residual_window_steps"] = windowed["window_steps"]
@@ -1588,6 +1668,9 @@ def run_steady_state(
                     extra += f" win={window['cells_per_debye']:.2f}(w{window['window_steps']}{'' if window['gate_enforced'] else ' n/e'})"
             if last_triad is not None and last_triad.get("windowed_energy_residual_over_electrode_work") is not None:
                 extra += f" res_w={last_triad['windowed_energy_residual_over_electrode_work']*100:+.1f}%"
+            if last_triad is not None and last_triad.get("drift_members_arming") is not None:   # v2.1.1: drift-member latch state
+                arming = last_triad["drift_members_arming"]
+                extra += f" arm={'ARMED' if arming['armed'] else ('latched' if arming['latched'] else 'unlatched')}"
             if record.momentum is not None:  # v2.0
                 extra += (f" T={record.momentum['thrust_total_n']*1e6:.1f} uN closure={record.momentum['closure_fraction']*100:.0f}%")
             if record.plume is not None:
