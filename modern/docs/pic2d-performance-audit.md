@@ -8,6 +8,9 @@ this document is the only deliverable. All numbers are from the Lambda H100 box
 (`ubuntu@68.209.75.2`, H100 80GB HBM3, driver 580.105.08, Warp 1.14.0 cu12.9) and from the recorded solo
 benchmarks in `/lambda/nfs/h100-files/cft/bench*` (`tools/cloud/bench_gpu_concurrency.py`, same step code).
 
+§12 (added later the same day) is a second exception to "nothing changed" beside §11: it records the built and measured
+`poisson_gmg_v1` multigrid field solve (§8 item 3), selectable per protocol, not used by any preregistered run.
+
 Companion document: `modern/docs/literature/pic-acceleration-methods.md` (cited review of acceleration
 methods, written against the earlier 5090-based cost anatomy "block-Thomas sweeps + inverse-block reads
 + 0.733 ms per M particles"). This audit is the measured H100 cost anatomy that review's options should
@@ -676,3 +679,179 @@ concurrent A/B 185 + 263 s, three concurrent 40k replays 949 s, two concurrent r
 71 s. No process signalled; `dmesg` shows no new Xid; MPS `server.log` clean apart from benign
 "Invalid CUDA_VISIBLE_DEVICES -1" rejections from the CPU-only test pass. Probe script, JSON records and
 logs: `/lambda/nfs/h100-files/cft/perf1/` (not in the repository).
+
+## 12. poisson_gmg_v1 — the geometric multigrid field solve, built and measured (2026-09-04, follow-up to §8 item 3)
+
+Item (a1) of §7/§8 exists: `poisson.method = "device-mg"` (`cft_revival.pic2d.poisson_mg` = hierarchy + numpy
+reference, `cft_revival.pic2d.warp_poisson_mg` = Warp kernels + `WarpPoissonMG`; hook = one branch in
+`WarpBackend.__init__` behind the `WarpBlockThomas` interface, `Poisson2D` dispatch for the CPU backend,
+`numerics.poisson` object in the shared runner). Spec entry `poisson_gmg_v1` in `spec/pic2d/pic2d-model-v2.0.json`.
+Everything below was measured on the box **as an extra MPS client beside four production runs** (mini-sweep ref/009,
+ext-val channel-20um, ss-v5 25 µm; GPU at 100 %), i.e. **contended**, and the solve is latency-bound, so the
+absolute ms are a share of the GPU, not the solo cost; the audit's solo cost model (§10.2) is used for the solo
+statement and is flagged as such. 38.5 GPU-minutes of client time in total (tests 0.4 min, six timing probes 6.3 min,
+six replay sessions 31.9 min); scratch in `/lambda/nfs/h100-files/cft/perf2/` (5.5 MB of JSON/JSONL/logs kept,
+checkpoints deleted, worktree removed); no process signalled, `dmesg | grep -i xid` empty, MPS `server.log` clean.
+
+### 12.1 Design (what was built)
+
+* **Unknowns/operator**: the node mesh of `mesh.py`; unknowns = plasma nodes minus Dirichlet (anode, exit/far field,
+  grounded body conductor); operator `A_uu` = conductance graph Laplacian with the `2πr` finite-volume weighting,
+  homogeneous Neumann into the dielectric solids, Dirichlet couplings moved to the right-hand side exactly as the
+  block-Thomas paths do (`source_kernel`, `apply_dirichlet_kernel` are shared). No permittivity map exists in the
+  model (the dielectric is a perfect insulator with surface charge), so none is coarsened.
+* **Coarsening**: vertex-centred by two in r and z; an axis with an odd number of cells keeps its last node
+  (90 × 720 → 46 × 361 → 24 × 181 → 13 × 91). The coarse unknown set is the image of the fine one, so the bore,
+  the stair-stepped cone, the exit lip, the dielectric flange and the electrodes are represented on every level by
+  the *operator*, not by a re-classified mask.
+* **Transfers**: operator-dependent (Alcouffe–Dendy "black-box") interpolation from the level's own stencil —
+  a fine node between two coarse nodes takes the collapsed-stencil weights (conductance-proportional on level 0),
+  a fine cell-centre node the fine equation through the four corners; a coupling to a Dirichlet node is absent
+  from `A_uu` while its conductance stays in the diagonal (weights decay towards electrodes), a solid neighbour has
+  no conductance (weights reflect across the walls). **One correction was necessary**: at a concave corner of the
+  stair-stepped cone a parent can be a solid node while the 9-point coarse stencil has non-zero diagonal entries
+  towards its side; lumping them into a node that does not exist lost that mass and left a **0.45/cycle slow mode
+  on the cone of channel-33 and plume-50** (channel-50/25 were unaffected because their cone corner stays on a
+  coarse node down to the coarsest level). The mass now goes to the surviving parent, constants are exactly
+  preserved on every pure-Neumann row of every level (pinned by a test), and the contraction is uniform.
+  Restriction = transpose.
+* **Coarse operators**: Galerkin `P^T A P` (a symmetric 9-point stencil; the assembled symmetry is checked to
+  1e-11 as the self-test of the construction), positive diagonals asserted; recursion stops at ≤ 1024 unknowns;
+  the coarsest operator is inverted densely once on the host (307–752 unknowns on the production grids:
+  0.75–4.5 MB, ms to build).
+* **Cycle**: V(2,2), damped Jacobi ω = 0.8 (ω = 0.9 develops a 0.39 mode on the 9-point coarse operators; 0.7 is
+  slower at 0.175; V(1,1) 0.35; V(3,3) 0.073 but more launches), fused residual-and-restrict kernel, **fixed
+  count of 14 cycles**, warm start from the previous potential; one fixed kernel sequence
+  `12 + 14 × ((levels − 1) × 6 + 1)` launches (278 channel-33, 362 plume-50, 446 plume-33) captured inside the step
+  graph. Convergence is *verified*, not iterated: the true residual with the mesh conductances (`matvec_kernel`,
+  independent of the multigrid's arrays) is computed inside the graph every step and a running maximum of the
+  contract ratio `|r|² / max(abs², rel² |rhs|²)` is kept over the sync interval; `verify()` (the existing hook at
+  every host sync) raises `PIC2DConvergenceError` if the last residual or the interval maximum misses the contract.
+  **Decision: fail-closed stop, no per-step fall-back** — a fall-back would need a host synchronisation per step
+  and the block-Thomas graph is not resident when the multigrid is selected; a missed contract is a configuration
+  error (too few cycles for the source) fixed by resuming from the last checkpoint with a larger `mg_cycles`,
+  exactly how a gate stop is handled. The fail-closed path fired once during this work (12 cycles on the 33 µm
+  plume box, below) and did what it should.
+* **Identity**: `PoissonConfig2D.to_dict()` carries a `multigrid` block only for `device-mg`; every recorded
+  `config_sha256` is unchanged, and a protocol naming the multigrid is a different identity (a checkpoint never
+  crosses solvers silently; pinned by tests on the plume-v1 protocol).
+
+### 12.2 Convergence (host reference, numpy; zero start; relative true residual after k V(2,2) cycles)
+
+| grid | unknowns | levels (coarsest unknowns) | source | factor/cycle | after 12 | after 14 |
+|---|---|---|---|---|---|---|
+| channel-50 60 × 480 | 20 779 | 4 (366) | random | 0.127 | 1.6e-11 | 2.7e-13 |
+| channel-33 90 × 720 | 46 469 | 4 (752) | **v4 plateau maps** (`0d228ad2`) | 0.127–0.130 | 1.7e-11 | 2.8e-13 |
+| channel-25 120 × 960 | 82 359 | 5 (366) | random | 0.127 | 1.6e-11 | 2.7e-13 |
+| plume-v2.0-50 240 × 720 | 78 228 | 5 (307) | **attempt-7 / attempt-8 maps** | 0.127–0.133 | 1.7e-11 | 3.0e-13 |
+| plume-v2.1-50 240 × 960 | 135 828 | 5 (532) | smooth synthetic (sheath band at the wall) | 0.14–0.17 | 9.5e-11 | 1.4e-11 |
+| plume-v2.1-33 360 × 1440 | 305 442 | 6 (313) | smooth synthetic | 0.14–0.18 | **2.8e-10 (fails)** | 8.4e-12 |
+| plume-v2.1-33 | | | random | 0.127 | 1.6e-11 | 2.7e-13 |
+
+The residual cone mode (0.14–0.18 with a wall-heavy smooth source on the two largest grids) is what set the default
+at 14 cycles (≥ 12× margin on every grid from a zero start; ≥ 300× on the production grids with the real charge).
+Warm start from the window-averaged `phi_v` of the maps (a pessimistic warm start) begins one decade lower.
+Manufactured solution: order 1.9+ (the `test_pic2d_mesh_poisson` solution); Dirichlet nodes exact; Gauss law with
+surface charge at the scale-aware 1e-9 bound; block-Thomas parity ≤ 1e-8 V from a zero start and ≤ 1e-9 V warm-started
+(channel/plume test grids). Tests: `tests/pic2d/test_pic2d_poisson_mg.py` — 19 CPU (numpy + warp-cpu) + 3 CUDA
+(graph replay bitwise over 100 steps with ionisation/injection, cpu/cuda parity), 25 passed on the box.
+
+### 12.3 Timing and memory on the H100 (contended: extra MPS client beside four production runs)
+
+Solve alone (both solvers bound to the same device charge arrays, 100–200 graph launches, warm start; the real
+window-averaged charge where maps exist):
+
+| grid | BT ms/solve (launches) | GMG ms/solve (launches, cycles) | BT inverse blocks / device | GMG device (+host) | GMG build vs BT factorisation | residual/tol BT / GMG warm / GMG zero |
+|---|---|---|---|---|---|---|
+| channel-33 | 3.97 (184) | 12.1 (240, 12) | 0.38 GB / +354 MiB | +2 MiB (23 MB arrays, 4.5 MB host) | 0.18 s vs 1.05 s | 8.4e-4 / 3.9e-4 / 0.17 |
+| plume-v2.0-50 | 10.3 (484) | 12.0 (312, 12) | 1.00 GB / +962 MiB | +34 MiB (50 MB) | 0.31 s vs 2.6 s | 9.9e-4 / 4.9e-4 / 0.17 |
+| plume-v2.1-50 (240 × 960) | 26.0 (484) | 25.4 (312, 12) | 1.78 GB / +1.73 GiB | +66 MiB (68 MB) | 0.48 s vs 5.8 s | 2.0e-2 / 9.9e-3 / 0.94 |
+| plume-v2.1-33 (360 × 1440) | 22–41 (724; three probes) | 19.0 (446, 14) | **6.00 GB / +5.79 GiB** | +130 MiB (149 MB) | 1.2 s vs 18–24 s | 2.6e-2 / 1.2e-2 / 0.084 |
+
+Production step (bench protocol at production load, `_time_steps`, 1000 steps after 200 warm-up, step graph):
+
+| grid | electrons | BT ms/step (GPU MiB) | GMG ms/step (GPU MiB) | ratio |
+|---|---|---|---|---|
+| channel-33 | 2.26 M | 8.45 (1866) | 19.2 (1514) | **2.3× slower** |
+| plume-v2.0-50 | 4.35 M | 18.4 (3308) | 20.2 (2380) | 1.1× slower |
+| plume-v2.1-50 | 4.35 M | 26.6 (4076) | 21.7 (2412) | 1.23× faster |
+| plume-v2.1-33 | 9.80 M | 40.7 (10 382) | 37.8 (4750) | 1.08× faster |
+
+Reading these honestly: under MPS contention every one of the ~300–450 small dependent kernels waits for an SM
+share (38–81 µs per launch measured, against ≈ 21 µs for the fat block-Thomas row kernels and the audit's 2.5–4 µs
+solo), so the contended numbers penalise the latency-bound multigrid far more than the bandwidth-bound direct solve;
+the contention itself varied by 2× between probes minutes apart (block-Thomas 22 → 41 ms on the same grid).
+**Solo estimate (audit cost model §10.2, `4.1 µs × launches + 0.30 ms/GB`)**: channel-33 GMG ≈ 1.1 ms vs BT 0.97 ms
+(as predicted in §7: not faster on channel grids — 278 launches against 184 and no bytes to save); plume-50
+≈ 1.5 ms vs 2.6 ms (≈ 1.7×; the audit target 2.6 → ≈ 1.0 needs ≈ 30 % fewer launches, see 12.5); plume-v2.1-33
+≈ 1.8 ms vs ≈ 6.5 ms (≈ 3.5×), i.e. the 17 → ≈ 12 ms/step of the §7 table for that box. **These solo figures are
+model values until a solo probe runs** (the box has had four production clients since the multigrid existed; a
+solo probe is a 3-minute job when a slot is free). What is measured beyond doubt: the multigrid removes the
+inverse blocks (0.38–6.0 GB device, the same on the host) and the host factorisation (1–24 s per launch/resume,
+5–12 min on the Windows PC), and its device footprint is 23–149 MB; on the two v2.1 boxes it is already faster
+than the direct solve even under contention.
+
+### 12.4 Class C verification (§9-C items 1–3, and a shortened item 4 proxy)
+
+1. Solver unit tests: see 12.2 (manufactured order, Gauss law, residual contract on the production masks with the real
+   maps, host/device consistency).
+2. **One-step φ parity on real ρ** (warm start from the block-Thomas potential, the production situation):
+   max |Δφ| **3.8e-10 V** channel-33 (v4 maps), **8.5e-10 V** plume-50 (attempt-7 maps) — both ≤ 1e-9 V at the
+   300 V scale; 5.0e-9 V on 240 × 960 and 4.6e-8 V on 360 × 1440 (the contract's 1e-10 |rhs| bounds the potential
+   error more loosely as the unknown count grows — the block-Thomas itself sits at 2–3 % of the tolerance there —
+   so the 1e-9 V figure is a channel/plume-50 statement, not a grid-independent one). Zero-start solves: 4.8e-9 V on
+   both production grids (contract-level).
+3. **Trajectory divergence** (same-seed 60 000-step plume-v2.0-50 replay, below): every series record identical
+   until step 6 400 (|ΔW_field|/W 4e-14 … 5e-13 up to step 2 000, 3e-7 at 5 000); the first divergent record is at
+   step 6 600 (N_e 246 720 vs 246 723, I_d 3 %), |ΔW_field|/W = 1.4e-2 by step 10 000 and 4e-3 … 9e-3 thereafter —
+   the expected chaotic separation after O(5 × 10³) steps from round-off-different fields; bitwise parity is
+   impossible by construction, statistical parity is the criterion.
+4. **Same-seed replay, plume-v2.0-50 production protocol** (`experiments/pic2d_cft_plume_v1/protocol.json`, seed
+   20260903, v2.0.x closure and gates, frames off, checkpoint cadence 20 000 so every ≤ 6-minute MPS session ends on
+   a checkpoint the next resumes from; **60 000 steps = 0.09 µs per solver, three sessions each** — the requested
+   100 000 did not fit the 45-GPU-minute budget at the contended 13.2 (BT) / 17.5 (GMG) ms/step). Pass criteria
+   declared before running: trailing-half means of I_d, S, N_e, n_g and peak n_e within ± 5 % (the particle band);
+   integer tallies of the two runs within the same band; no gate firing in one run only; the multigrid's verified
+   contract ratio < 1 at every sync. Result (trailing 150 records, steps 30 200–60 000; sd = record-to-record scatter
+   of the block-Thomas run):
+
+   | quantity | block-Thomas | multigrid | Δ rel | BT sd/mean |
+   |---|---|---|---|---|
+   | I_d (A) | 2.376e-3 | 2.400e-3 | +1.0 % | 14.5 % |
+   | S (1/s) | 2.785e16 | 2.816e16 | +1.1 % | 9.2 % |
+   | N_e | 257 320 | 257 320 | −0.001 % | 1.1 % |
+   | N_i | 284 000 | 284 040 | +0.015 % | 0.24 % |
+   | n_g (m⁻³) | 5.4433e19 | 5.4372e19 | −0.11 % | 2.4 % |
+   | peak n_e, window-gate statistic (m⁻³) | 1.5636e17 | 1.5487e17 | −0.95 % | 14.0 % |
+   | window gate Δ/λ_D | 0.665 | 0.637 | −4.2 % | 11.6 % |
+   | wall ion current (A) | 3.918e-3 | 3.920e-3 | +0.06 % | 15.6 % |
+   | field energy (J) | 6.691e-9 | 6.685e-9 | −0.08 % | 2.7 % |
+   | electron kinetic energy (J) | 3.539e-8 | 3.552e-8 | +0.36 % | 5.4 % |
+   | thrust total (N) | 3.302e-6 | 3.298e-6 | −0.11 % | 2.7 % |
+   | cumulative ionisations / wall ions | 25 153 / 25 844 | 25 205 / 25 852 | +0.21 % / +0.03 % | — |
+
+   Every declared quantity is inside the ± 5 % band and inside one standard deviation of its own record-to-record
+   scatter; both runs stopped on `wall_clock_budget_reached` at 60 000 with no gate armed or fired (ignition gates
+   arm at 0.75 µs). **The multigrid's interval-worst contract ratio over the 300 sync intervals was
+   8.2e-5** (median 6.6e-5): a warm-started production solve ends ≈ 1.2 × 10⁴ below the contract at 14 cycles —
+   the production margin the fixed count was asked to demonstrate; 11 cycles would still keep > 100× (never fewer:
+   the first solve of a run starts from the vacuum potential of the bind warm-up, and a cold zero start needs ≥ 12).
+   Records: `/lambda/nfs/h100-files/cft/perf2/replay-device-{direct,mg}/{series,status}.jsonl, summary.json`,
+   `replay-device-mg/mg-worst-ratio.jsonl`. **Class C item 4 proper — the full-protocol replay of the accepted v4
+   33 µm plateau under the multigrid to 3 transits within the seed-b band — is a preregistered campaign and has not
+   run**; nothing here admits the multigrid to a preregistration.
+
+### 12.5 What remains before a plume run may use the multigrid
+
+1. A **solo** timing probe (3 min when the box has a free slot) to replace the model values of 12.3 with measured
+   ms/solve and ms/step for channel-33, plume-50 and the two v2.1 boxes.
+2. The **v4 33 µm plateau replay campaign** (§9-C item 4): preregistered, same seed, to 3 transits, acceptance =
+   every plateau quantity inside the recorded seed-b band; ≈ 2 h with the born-ledger and window-diagnostic items of
+   §8 applied, ≈ 5 h without. Only after it passes may a protocol name `numerics.poisson = {"method": "device-mg"}`.
+3. Launch count (the only lever left for the solve): fuse prolongation with the first post-smoothing sweep and the
+   two pre-smoothing sweeps into one kernel (each removes `levels − 1` launches per cycle: 362 → ≈ 250 on plume-50,
+   the audit's 1.0 ms target); measure the cone mode with a wall-heavy real charge (a v2.1 plume run) and, if it
+   persists, trade the 14 cycles for 12 with a red-black level-0 smoother.
+4. The v2.1 33 µm plume box (`pic2d_cft_plume_v2_1`, 360 × 1440) is the run this solver was built for: its 6 GB of
+   inverse blocks and 20-second factorisations are gone and the step is already faster under contention; its
+   cost table should be re-issued after item 1.
