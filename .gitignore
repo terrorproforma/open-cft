@@ -147,6 +147,9 @@ modern/experiments/pic2d_cft_steady_state_v4/results*/
 # PIC-2D design mini-sweep v1 (preregistered channel-33um option): per-design results/<design>-<option>/ stay untracked
 # until a run ends (results-only commit adds the negations); the shakedown and MPS-replay scratch directories are never tracked
 modern/experiments/pic2d_design_mini_sweep_v1/results*/
+# Hybrid L2 v2 (preregistered per-cell hybrid vs the PIC base plateau): every case directory stays untracked until its
+# run ends (the results-only commit adds the negations below); shakedown directories are never tracked
+modern/experiments/hybrid_l2_v2/results*/
 # PIC-2D plume development run v1 (model v2.0): results stay untracked until the run ends;
 # attempt 3 (no ignition) is kept as a development record: summary (with the frames manifest),
 # run state, status/series/maps, final checkpoint metadata; the frames, the videos, the

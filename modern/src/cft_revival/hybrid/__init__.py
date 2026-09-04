@@ -1,4 +1,13 @@
-"""Verified prescribed-field kinetic-ion/fluid-electron hybrid first slice."""
+"""Hybrid workstream: the v1 prescribed-field slice and the L2 v2 per-cell hybrid.
+
+v1 (``models``, ``reference``, ``collisions``, ``electrons``, ``checkpoint``, ``warp_backend``): the
+verification-grade Cartesian Boris/CIC slice with synthetic collisions and checkpoint v1 (exported
+here, dependency-free).  v2 (``cells``, ``rates``, ``pb_solver``, ``ions``, ``l2``, ``checkpoint_v2``,
+``gates``; import them explicitly, they need numpy and ``cft_revival.pic2d``): kinetic Xe+ on the
+PIC's (r,z) mesh, per-cell Boltzmann electrons on the populated flux tubes of the v3.1 cusp cells,
+a self-consistent Poisson-Boltzmann field step, the PIC v1.3 neutral closure, checkpoint v2 bound
+to ``field_source_sha256``, and the GATE-L2 gate functions.
+"""
 
 from .checkpoint import (
     CHECKPOINT_SCHEMA_VERSION,
