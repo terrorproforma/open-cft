@@ -48,6 +48,7 @@ from .poisson import Poisson2D, apply_operator, boundary_potential_array
 from .simulation import (
     CATHODE_RATE_KEY,
     IEDF_BINS,
+    INELASTIC_LOSS_PER_WEIGHT_KEY,
     PEAK_WINDOW_SUM_KEYS,
     THETA_BINS,
     DiagnosticAccumulator,
@@ -2188,7 +2189,10 @@ class WarpBackend:
             cumulative["elastic"] += float(stats[STATS_MCC + 1])
             cumulative["excitations"] += float(stats[STATS_MCC + 2])
             cumulative["ionizations"] += float(n_ion)
-            cumulative["inelastic_loss_j"] += (float(stats[STATS_MCC + 2]) * self.mcc.table.thresholds_ev[1] + n_ion * self.mcc.table.thresholds_ev[2]) * EV_J
+            # v2.0.6: the MCC counts are macro events; the ledger is real energy -> times W (the unscaled sum is kept)
+            per_weight = (float(stats[STATS_MCC + 2]) * self.mcc.table.thresholds_ev[1] + n_ion * self.mcc.table.thresholds_ev[2]) * EV_J
+            cumulative["inelastic_loss_j"] += per_weight * config.macro_weight
+            add(INELASTIC_LOSS_PER_WEIGHT_KEY, per_weight)
         absorbed_e = int(stats[STATS_E_COUNTS] + stats[STATS_E_COUNTS + 1] + stats[STATS_E_COUNTS + 2])
         absorbed_i = int(stats[STATS_I_COUNTS] + stats[STATS_I_COUNTS + 1] + stats[STATS_I_COUNTS + 2])
         expected_e = electrons.alive + n_ion + self.injected_since_sync - absorbed_e

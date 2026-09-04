@@ -99,6 +99,8 @@ LEDGER_SCALARS = (
     "total_energy_j", "interval_residual_j", "interval_sources_j", "interval_electrode_work_j",
     "interval_field_work_j", "anode_induced_charge_c", "exit_induced_charge_c",
 )
+# v2.0.6 (energy-ledger correction): the W-scaled inelastic sink per interval; absent from pre-v2.0.6 records -> NaN
+LEDGER_SCALARS_V206 = ("interval_inelastic_loss_j",)
 NEUTRAL_SCALARS = (
     "density_per_m3", "fixed_point_per_m3", "scale", "ionization_rate_per_s", "effusion_rate_per_s",
     "artificial_rate_per_s", "interval_ledger_residual_atoms",
@@ -111,9 +113,13 @@ PEAK_NODE_SCALARS = (
     "r_m", "z_m",
 )
 # v2.0.3 window-mode peak-Debye gate (peak_node["window"]); NaN in single-step records -> arrays peak_node_window_<key>
+# v2.0.6: + the accumulated particle-steps at the gated peak (NaN without the accumulated floor) and the v2.0.3
+# occupancy-floor witness ``occupancy_floor_peak.cells_per_debye`` -> array peak_node_window_occupancy_floor_cells_per_debye
 PEAK_NODE_WINDOW_SCALARS = (
     "cells_per_debye", "n_e_peak_per_m3", "t_e_peak_ev", "window_steps", "mean_macro_particles_at_peak", "resolved_nodes", "r_m", "z_m",
+    "accumulated_macro_particle_steps_at_peak",
 )
+PEAK_NODE_WINDOW_WITNESS_SCALARS = ("occupancy_floor_cells_per_debye",)
 # v2.0 momentum / thrust ledger and plume-boundary sample (absent from v1.x records -> arrays omitted)
 MOMENTUM_SCALARS = (
     "momentum_z_kg_m_s", "interval_ledger_residual_kg_m_s", "beam_momentum_rate_ions_n", "beam_momentum_rate_electrons_n",
@@ -486,6 +492,19 @@ def evaluate_triad(arrays: dict[str, np.ndarray], rule: dict[str, Any], transit_
     cumulative ratio stays recorded as the witness (``energy_residual_over_electrode_work``) and
     enters the soft (plateau-precondition) check against its bound as before, but no longer stops
     the run.  Without ``residual_window_steps`` the v1.4 cumulative hard gate is unchanged.
+
+    v2.0.6 (2026-09-05, energy-ledger correction): the residual this member reads was biased NEGATIVE by the
+    inelastic power up to v2.0.5 (``inelastic_loss_j`` lacked the macro weight; the recorded residual was
+    ``H - L_inel`` with ``H`` the true numerical energy creation).  The calibration above was made on the biased
+    statistic.  On the corrected statistic (``cft_revival.pic2d.ledger_recompute``, sidecars ``ledger-corrected.json``)
+    the accepted 33 um plateaus read +0.6 % (056 L1), +0.9 % (047) and +2.5 % (ss-v4, still rising) in their
+    end-state windows with maxima below 2.5 %, the 25 um v5 launch 1 +0.3 %; the accepted 50 um channel plateaus
+    read +7.2 % (W x 0.7), +11.1 % (seed-b) and +13.0 % (base) - they were heating and this gate at 5 % would have
+    stopped them at 4.5 / 2.8 / 2.7 us; plume attempts 6-8 read +12.9 % in their FIRST complete window (0.66 us)
+    and attempt 8 never below +4.1 %; the external-validation launch 1 crossed 5 % at 0.34 us (recorded: 0.73 us).
+    The thresholds (hard 5 % from the first complete window, one-sided) are kept: 2x margin over the accepted 33 um
+    maxima, and every heating run is caught at its first complete window or earlier than under the biased statistic.
+    From v2.0.6 the series carries the corrected residual directly, so this function needs no change.
     """
 
     block = rule.get("grid_heating_triad")
@@ -618,7 +637,7 @@ def evaluate_peak_debye_window(arrays: dict[str, np.ndarray], config: PIC2DConfi
 # -- records ----------------------------------------------------------------
 
 def records_to_arrays(records: list[dict[str, Any]]) -> dict[str, np.ndarray]:
-    arrays: dict[str, list[float]] = {key: [] for key in SERIES_SCALARS + LEDGER_SCALARS}
+    arrays: dict[str, list[float]] = {key: [] for key in SERIES_SCALARS + LEDGER_SCALARS + LEDGER_SCALARS_V206}
     current_keys = sorted(records[0]["currents_a"]) if records else []
     for key in current_keys:
         arrays[f"current_{key}"] = []
@@ -634,7 +653,7 @@ def records_to_arrays(records: list[dict[str, Any]]) -> dict[str, np.ndarray]:
             arrays[f"peak_node_{key}"] = []
     with_window = with_peak and records[0]["peak_node"].get("window") is not None   # v2.0.3 window-mode gate
     if with_window:
-        for key in PEAK_NODE_WINDOW_SCALARS:
+        for key in PEAK_NODE_WINDOW_SCALARS + PEAK_NODE_WINDOW_WITNESS_SCALARS:
             arrays[f"peak_node_window_{key}"] = []
     with_momentum = bool(records) and records[0].get("momentum") is not None
     with_plume = bool(records) and records[0].get("plume") is not None
@@ -649,6 +668,8 @@ def records_to_arrays(records: list[dict[str, Any]]) -> dict[str, np.ndarray]:
             arrays[key].append(float(record[key]))
         for key in LEDGER_SCALARS:
             arrays[key].append(float(record["ledger"][key]))
+        for key in LEDGER_SCALARS_V206:
+            arrays[key].append(float(record["ledger"].get(key, float("nan"))))
         for key in current_keys:
             arrays[f"current_{key}"].append(float(record["currents_a"][key]))
         if with_neutral:
@@ -668,6 +689,8 @@ def records_to_arrays(records: list[dict[str, Any]]) -> dict[str, np.ndarray]:
             for key in PEAK_NODE_WINDOW_SCALARS:
                 value = window.get(key)
                 arrays[f"peak_node_window_{key}"].append(float("nan") if value is None else float(value))
+            witness = (window.get("occupancy_floor_peak") or {}).get("cells_per_debye")     # v2.0.6 witness
+            arrays["peak_node_window_occupancy_floor_cells_per_debye"].append(float("nan") if witness is None else float(witness))
         if with_momentum:
             momentum = record["momentum"]
             for key in MOMENTUM_SCALARS:
@@ -733,6 +756,11 @@ def status_from_record(
             line["peak_node"]["window"] = {key: window[key] for key in ("cells_per_debye", "n_e_peak_per_m3", "t_e_peak_ev", "node",
                                                                         "window_steps", "window_complete", "gate_enforced", "soft_exceeded",
                                                                         "mean_macro_particles_at_peak", "resolved_nodes")}
+            if "occupancy_floor_peak" in window:   # v2.0.6 accumulated floor: the gated node's accumulation + the occupancy-floor witness
+                line["peak_node"]["window"]["min_accumulated_macro_particle_steps_at_peak"] = window["min_accumulated_macro_particle_steps_at_peak"]
+                line["peak_node"]["window"]["accumulated_macro_particle_steps_at_peak"] = window["accumulated_macro_particle_steps_at_peak"]
+                line["peak_node"]["window"]["occupancy_floor_peak"] = {
+                    key: window["occupancy_floor_peak"][key] for key in ("cells_per_debye", "node", "resolved_nodes", "mean_macro_particles_at_peak")}
     if triad is not None:
         line["grid_heating_triad"] = {key: triad[key] for key in triad if key not in ("thresholds", "window_fraction")}
     momentum = record.get("momentum")
@@ -1095,7 +1123,10 @@ def write_final_artifacts(
                 "gate": None if gate is None else gate.to_dict(),
                 "note": "peak node = densest node holding >= min_macro_particles_at_peak macro-electrons; the gate fails closed on "
                         "max(dr, dz) / lambda_D there (review blocker 1: resolve the peak, not the mean); v2.0.3 window mode: the gated "
-                        "statistic is the trailing-window (interval-averaged) peak in 'window', the single-step sample is the witness",
+                        "statistic is the trailing-window (interval-averaged) peak in 'window', the single-step sample is the witness; "
+                        "v2.0.6 (gate.min_accumulated_macro_particle_steps_at_peak set): the resolved set is the nodes with that many "
+                        "accumulated macro-electron-steps over the window and the v2.0.3 occupancy-floor peak is the witness "
+                        "(series peak_node_window_occupancy_floor_cells_per_debye)",
             }
     maps_sha = artifacts.write_npz(results / "maps.npz", maps)
     series_sha = artifacts.write_npz(results / "series.npz", arrays) if arrays else None

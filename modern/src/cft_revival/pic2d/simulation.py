@@ -345,7 +345,18 @@ CUMULATIVE_KEYS = (
 def empty_cumulative() -> dict[str, float]:
     """Fixed ledger (v1.x keys) plus the v2.0 momentum/plume tallies (stored as *extra* keys in checkpoints)."""
 
-    return {key: 0.0 for key in CUMULATIVE_KEYS} | {key: 0.0 for key in MOMENTUM_KEYS}
+    return {key: 0.0 for key in CUMULATIVE_KEYS} | {key: 0.0 for key in MOMENTUM_KEYS} | {INELASTIC_LOSS_PER_WEIGHT_KEY: 0.0}
+
+
+# v2.0.6 (2026-09-05, energy-ledger correction): ``inelastic_loss_j`` is the REAL energy the inelastic collisions
+# removed from the electrons, ``W (n_exc E_exc + n_ion E_ion) e`` - like every other ledger term it carries the
+# macro weight.  Up to v2.0.5 both backends added the MCC tally's per-MACRO-event number (no W), so the recorded
+# interval residual was ``H - L_inel`` with ``H = field work + dU_field - electrode work`` the true numerical energy
+# creation and ``L_inel`` the W-scaled inelastic power: every residual in the project read too negative by the
+# inelastic power (7-14 % of the electrode work at the accepted plateaus; the ext-val avalanche read -22 % when H
+# was +50 %).  The unscaled sum is kept under this extra key (``inelastic_loss_j / W`` up to round-off) so old and
+# new records stay comparable; ``cft_revival.pic2d.ledger_recompute`` corrects recorded series post hoc.
+INELASTIC_LOSS_PER_WEIGHT_KEY = "inelastic_loss_per_weight_j"
 
 
 # v2.0 momentum ledger and plume tallies.  They live in the *extra* part of the cumulative
@@ -453,6 +464,24 @@ class PeakDebyeGateConfig:
     ``window_steps + window_snapshot_steps`` accumulated steps; default ``window_steps // 10``.
     Without ``window_steps`` the v1.4 single-step gate and its configuration identity are
     unchanged.
+
+    v2.0.6 (``min_accumulated_macro_particle_steps_at_peak`` set, window mode only): the resolved
+    set of the GATED statistic is the nodes whose ACCUMULATED electron weight over the window,
+    ``sum_t w x steps / moment_samples`` (macro-electron-steps), is at least this floor - the
+    v2.0.2 plume-gate construction.  The v2.0.3 floor on the MEAN occupancy (>= 32 macro-electrons
+    per step) is blind to the small axis nodes: at 20 um / W 82 467 an axis node holds 0.76
+    macro-electrons per step at 1e19 m^-3, so the external-validation launch 1 ran its axis column
+    at 2.9-3.3 cells per lambda_D (past pi) while the gate read 2.26 on the densest node that met
+    the occupancy floor; over a 400 000-step window that column has 300 000 macro-electron-steps
+    of accumulation and IS a resolved estimate of <n_e> and T_e.  Default 64 000 = 32 independent
+    samples x 2000 steps (a conservative electron decorrelation on a node: a 5 eV electron crosses
+    a 33 um node in ~20 steps at 1.4 ps and a gyro-period at 0.05 T is ~500 steps; 2000 steps is
+    the v2.0.2 ion figure, so the floor is never looser than the plume gate's).  A node that can
+    reach pi at all is resolved with a wide margin (>= 0.16 macro-electrons per step over 400 000
+    steps).  The v2.0.3 occupancy-floor peak stays recorded as the witness
+    (``occupancy_floor_peak``).  The key enters ``to_dict`` only when set, so every v2.0.3-v2.0.5
+    identity is unchanged; when set it is part of ``config_sha256`` (it changes which node the
+    hard gate reads, i.e. when a run stops).
     """
 
     max_cells_per_debye: float
@@ -461,6 +490,7 @@ class PeakDebyeGateConfig:
     window_steps: int | None = None
     soft_cells_per_debye: float | None = None
     window_snapshot_steps: int | None = None
+    min_accumulated_macro_particle_steps_at_peak: int | None = None
 
     def __post_init__(self) -> None:
         if not isfinite(self.max_cells_per_debye) or self.max_cells_per_debye <= 0.0:
@@ -478,13 +508,17 @@ class PeakDebyeGateConfig:
                 object.__setattr__(self, "window_snapshot_steps", snapshot)
             if isinstance(snapshot, bool) or not isinstance(snapshot, int) or not 1 <= snapshot <= self.window_steps:
                 raise PIC2DValidationError("window_snapshot_steps must be an integer in [1, window_steps]")
-        elif self.window_snapshot_steps is not None or self.soft_cells_per_debye is not None:
-            raise PIC2DValidationError("soft_cells_per_debye and window_snapshot_steps apply to the window mode (window_steps) only")
+        elif self.window_snapshot_steps is not None or self.soft_cells_per_debye is not None or self.min_accumulated_macro_particle_steps_at_peak is not None:
+            raise PIC2DValidationError("soft_cells_per_debye, window_snapshot_steps and min_accumulated_macro_particle_steps_at_peak apply to "
+                                       "the window mode (window_steps) only")
         if self.soft_cells_per_debye is not None:
             soft = self.soft_cells_per_debye
             if isinstance(soft, bool) or not isinstance(soft, (int, float)) or not isfinite(soft) or not 0.0 < soft <= self.max_cells_per_debye:
                 raise PIC2DValidationError("soft_cells_per_debye must be a finite number in (0, max_cells_per_debye]")
             object.__setattr__(self, "soft_cells_per_debye", float(soft))
+        floor = self.min_accumulated_macro_particle_steps_at_peak
+        if floor is not None and (isinstance(floor, bool) or not isinstance(floor, int) or floor < 1):
+            raise PIC2DValidationError("min_accumulated_macro_particle_steps_at_peak must be a positive integer (macro-electron-steps)")
 
     @property
     def windowed(self) -> bool:
@@ -492,13 +526,25 @@ class PeakDebyeGateConfig:
 
         return self.window_steps is not None
 
+    @property
+    def accumulated_floor(self) -> bool:
+        """v2.0.6: the gated window statistic uses the accumulated particle-step floor (the occupancy floor becomes the witness)."""
+
+        return self.min_accumulated_macro_particle_steps_at_peak is not None
+
     def to_dict(self) -> dict[str, Any]:
         record: dict[str, Any] = {"max_cells_per_debye": self.max_cells_per_debye, "min_macro_particles_at_peak": self.min_macro_particles_at_peak,
                                   "dense_fraction": self.dense_fraction}
         if self.windowed:   # v1.4 / v2.0.0-v2.0.2 identities unchanged when the window mode is off
             record |= {"window_steps": self.window_steps, "window_snapshot_steps": self.window_snapshot_steps,
                        "soft_cells_per_debye": self.soft_cells_per_debye}
+        if self.accumulated_floor:   # v2.0.6: emitted only when declared, so the v2.0.3-v2.0.5 identities are unchanged
+            record["min_accumulated_macro_particle_steps_at_peak"] = self.min_accumulated_macro_particle_steps_at_peak
         return record
+
+
+# v2.0.6 default for new protocols: 32 independent samples x 2000 steps (the v2.0.2 plume-gate figure)
+PEAK_DEBYE_GATE_DEFAULT_ACCUMULATED_FLOOR = 64_000
 
 
 def peak_node_debye(
@@ -951,7 +997,9 @@ class CPUBackend:
             state.cumulative["ionizations"] += tally.ionization
             state.cumulative["excitations"] += tally.excitation
             state.cumulative["elastic"] += tally.elastic
-            state.cumulative["inelastic_loss_j"] += tally.inelastic_energy_loss_j
+            # v2.0.6: the tally counts macro events; the ledger is real energy -> times W (the unscaled sum is kept)
+            state.cumulative["inelastic_loss_j"] += tally.inelastic_energy_loss_j * config.macro_weight
+            add(INELASTIC_LOSS_PER_WEIGHT_KEY, tally.inelastic_energy_loss_j)
 
         if self.emission_rate_per_step > 0.0:
             injected, state.injection_carry = self._inject(state.step, state.injection_carry)
@@ -1446,6 +1494,7 @@ PEAK_WINDOW_SUM_KEYS = ("n_e", "e_weight", "e_vr", "e_vt", "e_vz", "e_v2")
 
 def window_peak_debye(
     masks: MeshMasks, config: "PIC2DConfig", sums: Mapping[str, np.ndarray], steps: int, *, min_mean_occupancy: float,
+    min_accumulated_particle_steps: float | None = None,
 ) -> dict[str, Any]:
     """v2.0.3: peak-node Debye statistic of an accumulated window (``sum_t n_e`` and the electron moment sums over ``steps``).
 
@@ -1456,6 +1505,12 @@ def window_peak_debye(
     were deposited, = ``steps`` unless the v2.0.5 ``moment_sample_interval`` > 1); ``max(dr, dz) / lambda_D``
     there is the gate quantity.  The unrestricted window maximum is reported as ``raw_peak``.  Zero ``steps``
     gives an empty (unresolved) statistic.
+
+    v2.0.6 (``min_accumulated_particle_steps`` given): the GATED peak is the densest plasma node whose accumulated
+    electron weight over the window, ``occupancy x steps`` (macro-electron-steps), reaches the floor - so a small
+    axis node holding 0.8 macro-electrons per step over 400 000 steps IS resolved and IS gated - and the v2.0.3
+    occupancy-floor peak is reported alongside as ``occupancy_floor_peak`` (the witness).  The record layout of a
+    call without the floor is unchanged.
     """
 
     grid = masks.grid
@@ -1464,10 +1519,17 @@ def window_peak_debye(
     out: dict[str, Any] = {"window_steps": int(steps), "min_mean_macro_particles_at_peak": float(min_mean_occupancy)}
     if moment_samples != int(steps):     # K-sampled window (v2.0.5): record the sample count; K = 1 records keep their v2.0.3 layout
         out["window_moment_samples"] = moment_samples
+    if min_accumulated_particle_steps is not None:
+        out["min_accumulated_macro_particle_steps_at_peak"] = float(min_accumulated_particle_steps)
     if steps <= 0 or moment_samples <= 0 or not plasma.any():
-        return out | {"resolved": False, "resolved_nodes": 0, "node": [0, 0], "r_m": 0.0, "z_m": 0.0, "n_e_peak_per_m3": 0.0,
-                      "t_e_peak_ev": 0.0, "debye_length_m": None, "cells_per_debye": 0.0, "mean_macro_particles_at_peak": 0.0,
-                      "raw_peak": {"node": [0, 0], "n_e_per_m3": 0.0, "mean_macro_particles": 0.0}}
+        empty = out | {"resolved": False, "resolved_nodes": 0, "node": [0, 0], "r_m": 0.0, "z_m": 0.0, "n_e_peak_per_m3": 0.0,
+                       "t_e_peak_ev": 0.0, "debye_length_m": None, "cells_per_debye": 0.0, "mean_macro_particles_at_peak": 0.0,
+                       "raw_peak": {"node": [0, 0], "n_e_per_m3": 0.0, "mean_macro_particles": 0.0}}
+        if min_accumulated_particle_steps is not None:
+            empty["accumulated_macro_particle_steps_at_peak"] = 0.0
+            empty["occupancy_floor_peak"] = {"resolved": False, "resolved_nodes": 0, "node": [0, 0], "r_m": 0.0, "z_m": 0.0, "n_e_peak_per_m3": 0.0,
+                                             "t_e_peak_ev": 0.0, "cells_per_debye": 0.0, "mean_macro_particles_at_peak": 0.0}
+        return empty
     n_e_sum = np.asarray(sums["n_e"], dtype=np.float64)
     w = np.asarray(sums["e_weight"], dtype=np.float64)
     with np.errstate(invalid="ignore", divide="ignore"):
@@ -1478,34 +1540,46 @@ def window_peak_debye(
                                     + np.asarray(sums["e_vz"], dtype=np.float64) ** 2) / safe_w**2, 0.0)
         t_e = np.maximum(mean_v2 - drift2, 0.0) * ELECTRON_MASS_KG / (3.0 * EV_J)
     occupancy = w / moment_samples
+    accumulated = occupancy * float(steps)              # macro-electron-steps over the window (K-sampling folded in)
     raw_flat = int(np.argmax(n_e))
-    resolved_mask = plasma & (occupancy >= float(min_mean_occupancy))
-    resolved = bool(resolved_mask.any())
-    flat = int(np.argmax(np.where(resolved_mask, n_e, -1.0))) if resolved else raw_flat
-    i, j = np.unravel_index(flat, n_e.shape)
-    n_peak = float(n_e[i, j])
-    t_peak = float(t_e[i, j])
     cell = max(grid.dr_m, grid.dz_m)
-    debye: float | None
-    if n_peak > 0.0 and t_peak > 0.0:
-        debye = sqrt(EPSILON_0_F_PER_M * t_peak * EV_J / (n_peak * ELEMENTARY_CHARGE_C**2))
-        cells_per_debye = cell / debye
-    else:
-        debye, cells_per_debye = None, 0.0
+
+    def _peak(resolved_mask: np.ndarray) -> dict[str, Any]:
+        resolved = bool(resolved_mask.any())
+        flat = int(np.argmax(np.where(resolved_mask, n_e, -1.0))) if resolved else raw_flat
+        i, j = np.unravel_index(flat, n_e.shape)
+        n_peak = float(n_e[i, j])
+        t_peak = float(t_e[i, j])
+        debye: float | None
+        if n_peak > 0.0 and t_peak > 0.0:
+            debye = sqrt(EPSILON_0_F_PER_M * t_peak * EV_J / (n_peak * ELEMENTARY_CHARGE_C**2))
+            cells_per_debye = cell / debye
+        else:
+            debye, cells_per_debye = None, 0.0
+        return {
+            "resolved": resolved,
+            "resolved_nodes": int(resolved_mask.sum()),
+            "node": [int(i), int(j)],
+            "r_m": float(i * grid.dr_m),
+            "z_m": float(grid.geometry.z_min_m + j * grid.dz_m),
+            "n_e_peak_per_m3": n_peak,
+            "t_e_peak_ev": t_peak,
+            "debye_length_m": debye,
+            "cells_per_debye": float(cells_per_debye),
+            "mean_macro_particles_at_peak": float(occupancy[i, j]),
+            "accumulated_macro_particle_steps_at_peak": float(accumulated[i, j]),
+        }
+
     raw_i, raw_j = np.unravel_index(raw_flat, n_e.shape)
-    return out | {
-        "resolved": resolved,
-        "resolved_nodes": int(resolved_mask.sum()),
-        "node": [int(i), int(j)],
-        "r_m": float(i * grid.dr_m),
-        "z_m": float(grid.geometry.z_min_m + j * grid.dz_m),
-        "n_e_peak_per_m3": n_peak,
-        "t_e_peak_ev": t_peak,
-        "debye_length_m": debye,
-        "cells_per_debye": float(cells_per_debye),
-        "mean_macro_particles_at_peak": float(occupancy[i, j]),
-        "raw_peak": {"node": [int(raw_i), int(raw_j)], "n_e_per_m3": float(n_e[raw_i, raw_j]), "mean_macro_particles": float(occupancy[raw_i, raw_j])},
-    }
+    raw_peak = {"node": [int(raw_i), int(raw_j)], "n_e_per_m3": float(n_e[raw_i, raw_j]), "mean_macro_particles": float(occupancy[raw_i, raw_j])}
+    occupancy_peak = _peak(plasma & (occupancy >= float(min_mean_occupancy)))
+    if min_accumulated_particle_steps is None:
+        occupancy_peak.pop("accumulated_macro_particle_steps_at_peak")           # v2.0.3 layout unchanged
+        return out | occupancy_peak | {"raw_peak": raw_peak}
+    gated = _peak(plasma & (accumulated >= float(min_accumulated_particle_steps)))
+    witness = {key: occupancy_peak[key] for key in ("resolved", "resolved_nodes", "node", "r_m", "z_m", "n_e_peak_per_m3", "t_e_peak_ev",
+                                                    "cells_per_debye", "mean_macro_particles_at_peak")}
+    return out | gated | {"raw_peak": raw_peak, "occupancy_floor_peak": witness}
 
 
 class PeakDebyeWindow:
@@ -1523,12 +1597,15 @@ class PeakDebyeWindow:
     ``window_steps / snapshot_steps + 2`` snapshots.
     """
 
-    def __init__(self, masks: MeshMasks, config: "PIC2DConfig", window_steps: int, snapshot_steps: int, min_mean_occupancy: float) -> None:
+    def __init__(self, masks: MeshMasks, config: "PIC2DConfig", window_steps: int, snapshot_steps: int, min_mean_occupancy: float,
+                 min_accumulated_particle_steps: float | None = None) -> None:
         self.masks = masks
         self.config = config
         self.window_steps = int(window_steps)
         self.snapshot_steps = int(snapshot_steps)
         self.min_mean_occupancy = float(min_mean_occupancy)
+        # v2.0.6: the accumulated particle-step floor of the gated statistic (None: the v2.0.3 occupancy floor gates)
+        self.min_accumulated_particle_steps = None if min_accumulated_particle_steps is None else float(min_accumulated_particle_steps)
         shape = masks.grid.node_shape
         self._carry = {key: np.zeros(shape) for key in PEAK_WINDOW_SUM_KEYS} | {"moment_samples": np.zeros(1)}
         self._carry_steps = 0
@@ -1580,7 +1657,8 @@ class PeakDebyeWindow:
                 break
         window_steps = total_steps - base[1]
         window = {key: totals[key] - base[3][key] for key in totals}
-        out = window_peak_debye(self.masks, self.config, window, window_steps, min_mean_occupancy=self.min_mean_occupancy)
+        out = window_peak_debye(self.masks, self.config, window, window_steps, min_mean_occupancy=self.min_mean_occupancy,
+                                min_accumulated_particle_steps=self.min_accumulated_particle_steps)
         out |= {
             "window_records": int(max(self._records - base[2], 0)), "window_start_step": int(base[0]),
             "window_complete": bool(window_steps >= self.window_steps), "window_steps_required": self.window_steps,
@@ -1751,7 +1829,8 @@ class Simulation:
         if config.peak_debye_gate is not None and config.peak_debye_gate.windowed:
             gate = config.peak_debye_gate
             self._peak_debye_window = PeakDebyeWindow(self.masks, config, gate.window_steps, gate.window_snapshot_steps,
-                                                      float(gate.min_macro_particles_at_peak))
+                                                      float(gate.min_macro_particles_at_peak),
+                                                      gate.min_accumulated_macro_particle_steps_at_peak)   # v2.0.6 floor (None: v2.0.3)
             self._peak_debye_window.reset(self.backend.peak_window_sums(), self.backend.step_index)
 
     @property
@@ -1886,6 +1965,8 @@ class Simulation:
             "interval_residual_j": residual,
             "interval_field_work_j": delta["field_work_j"],
             "interval_electrode_work_j": electrode_work,
+            # v2.0.6: the W-scaled inelastic sink of this interval (recorded so a series can be re-audited without counts)
+            "interval_inelastic_loss_j": delta["inelastic_loss_j"],
             "anode_induced_charge_c": q_anode,
             "exit_induced_charge_c": q_exit,
             "cumulative": dict(cumulative),
@@ -2228,12 +2309,14 @@ __all__ = [
     "CATHODE_RATE_KEY",
     "CPUBackend",
     "CUMULATIVE_KEYS",
+    "INELASTIC_LOSS_PER_WEIGHT_KEY",
     "CathodeConfig",
     "DiagnosticAccumulator",
     "FarFieldChargeWindow",
     "IEDF_BINS",
     "InjectionConfig",
     "MOMENTUM_KEYS",
+    "PEAK_DEBYE_GATE_DEFAULT_ACCUMULATED_FLOOR",
     "PEAK_WINDOW_SUM_KEYS",
     "PIC2DConfig",
     "PLUME_GATE_MIN_ACCUMULATED_MACRO_PARTICLES_PER_NODE",

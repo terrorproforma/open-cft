@@ -225,6 +225,16 @@ class MCCConfig:
 
 @dataclass(frozen=True, slots=True)
 class MCCTally:
+    """Per-step event counts of the null-collision operator (MACRO-particle events).
+
+    ``inelastic_energy_loss_j`` is the threshold energy removed from the colliding macro-electrons,
+    ``(n_exc E_exc + n_ion E_ion) e`` - per macro event, i.e. WITHOUT the macro weight ``W`` (the
+    operator does not know it).  The simulation's energy ledger multiplies it by ``W`` before it
+    enters ``cumulative["inelastic_loss_j"]`` (model v2.0.6, 2026-09-05: up to v2.0.5 the ledger
+    took this number as it is, so every recorded residual was biased negative by the inelastic
+    power; the unscaled sum is kept as ``inelastic_loss_per_weight_j`` for continuity).
+    """
+
     candidates: int
     elastic: int
     excitation: int
@@ -368,7 +378,7 @@ class NullCollisionMCC:
             new_ions = ParticleArrays(ion_r.copy(), ion_z.copy(), ivx, ivy, ivz)
         n_exc = int(np.count_nonzero(excitation))
         n_ion = int(np.count_nonzero(ionization))
-        loss = (n_exc * thresholds[1] + n_ion * thresholds[2]) * EV_J
+        loss = (n_exc * thresholds[1] + n_ion * thresholds[2]) * EV_J      # per macro event; the ledger applies W (v2.0.6)
         tally = MCCTally(n_candidates, int(np.count_nonzero(elastic)), n_exc, n_ion, int(np.count_nonzero(null)), loss)
         updated = ParticleArrays(electrons.r_m.copy(), electrons.z_m.copy(), vx, vy, vz)
         return MCCResult(updated, new_electrons, new_ions, ion_r, ion_z, tally)
