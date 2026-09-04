@@ -329,6 +329,28 @@ def preflight(case: str, *, backend: str = "warp-cuda", timing_steps: int = 2000
 shakedown_protocol = pe.shakedown_protocol
 
 
+def _strip_text(value: Any) -> Any:
+    """Drop the documentary keys (``*_note``, ``*_justification``, the wall budget) so two protocols compare on what the run computes and when it stops."""
+
+    if isinstance(value, dict):
+        return {k: _strip_text(v) for k, v in value.items() if not (k.endswith("_note") or k.endswith("_justification") or k in ("wall_budget_seconds", "note", "declared", "rule", "report"))}
+    if isinstance(value, list):
+        return [_strip_text(v) for v in value]
+    return value
+
+
+def _same_shakedown_run(existing: dict[str, Any], current: dict[str, Any], *, backend: str) -> bool:
+    """The same shakedown RUN: identical configuration identity (physics, gates, cadences), identical stopping rule (minus texts and the wall budget, which a 100k-step
+    run never reaches) and identical frame cadence - the seals' documentary texts and budgets may differ between a draft and the preregistration."""
+
+    if artifacts.config_identity(runner.build_config(existing, backend=backend)) != artifacts.config_identity(runner.build_config(current, backend=backend)):
+        return False
+    enforced = lambda p: _strip_text({k: v for k, v in p["stopping_rule"].items() if k != "acceptance"})   # noqa: E731 - the acceptance block documents the assessment, not the run
+    if enforced(existing) != enforced(current):
+        return False
+    return existing["numerics"].get("frame_recorder") == current["numerics"].get("frame_recorder") and existing["numerics"]["checkpoint_every_steps"] == current["numerics"]["checkpoint_every_steps"]
+
+
 def shakedown(case: str, *, results: Path | None = None, backend: str = "warp-cuda", max_steps: int = SHAKEDOWN_OVERRIDES["max_steps"], reuse_run: bool = False,
               log: Callable[[str], None] = _log) -> dict[str, Any]:
     """100 000-step real-input run of the case (cadences shrunk) through finalize -> assess (case + campaign) -> refinalize; ``reuse_run`` skips the stepping when the
@@ -342,8 +364,9 @@ def shakedown(case: str, *, results: Path | None = None, backend: str = "warp-cu
     if reuse_run:
         if not (results / "summary.json").is_file() or not shake_protocol_path.is_file():
             raise PIC2DValidationError(f"--reuse-run needs a completed run in {results}")
-        if artifacts.read_canonical_json(shake_protocol_path) != p:
-            raise PIC2DValidationError("--reuse-run refused: the existing run's shakedown protocol differs from the current one")
+        existing = artifacts.read_canonical_json(shake_protocol_path)
+        if not _same_shakedown_run(existing, p, backend=backend):
+            raise PIC2DValidationError("--reuse-run refused: the existing run's shakedown protocol is a different run (configuration identity, stopping rule or cadences differ)")
         summary_path = results / "summary.json"
         summary = artifacts.read_canonical_json(summary_path)
         run_seconds = float(sum(float(s.get("wall_seconds", 0.0) or 0.0) for s in (summary.get("sessions") or [])) or summary.get("wall_seconds_total") or 0.0)
