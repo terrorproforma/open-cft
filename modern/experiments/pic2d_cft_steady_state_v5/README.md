@@ -143,6 +143,26 @@ this process). It replaces the RTX 5090 record of 19:00 AEST (kept above for com
 * The a-priori stability gate is identical to the 5090 preflight (ω_pe Δt 0.036, ω_ce Δt 0.051,
   Δ/λ_D 0.75, Courant 0.47).
 
+### Shakedown on the launch box (`shakedown.json`, 11:44–11:57 UTC, `a529b457`; non-evidentiary)
+
+The same shrunk-cadence protocol as the 5090 shakedown (with the amended 117 000 s budget in the
+stopping rule) run for 100 000 steps from the scratch worktree at the amendment commit, through the
+full path: runner → 25 checkpoints → 2 window resets → 50 frames → `maps.npz` / `series.npz` /
+`summary.json` → `assess` (reference consistency 7/7 primary, 7/7 secondary). It started as the
+**6th GPU client** (three sweep runs + the external-validation v0 shakedown PID 26944, which ended
+during the run + this) and finished 787 s later at **7.78 ms/step** (6.9–7.7 in the log at 0.96–
+0.98 M e⁻; 10.4 in one interval while the ext-val shakedown ran), 982 052 e⁻ / 1 072 788 Xe⁺ at the
+end. Window-mode peak-Debye gate **enforced in 301 of 500 records** (687 resolved nodes, max 0.39
+cells per λ_D, soft margin held), windowed residual complete in 280 records (−11.7 % of the
+electrode work), assessment `no_plateau` (0.042 transits) with every (c) quantity computed against
+the pinned 33.3 µm reference and the 50 µm column reported. Early dynamics as on the 5090 (I_d 0.6 →
+1.4 mA, S 1.5–1.8e16 s⁻¹, n_g 5.5 → 4.5e19 by 0.1 µs). Compared with the 5090 shakedown (981 874 e⁻ /
+1 072 331 Xe⁺, 301/500, 0.39, −11.6 %): the same gate counts and readings to the stated digits, with
+particle counts differing at the 2e-4 level — the P2 field map is CPU-derived and differs at ULP level
+between Linux/OpenBLAS and Windows (`0ac8d9b8`), so a cross-platform bitwise replay is not expected
+and not claimed; the physics is platform-consistent to the diagnostic precision that matters here.
+The `results-shakedown/` directory stays untracked (scratch worktree on the box).
+
 ## Commands (from `modern/`)
 
 ```powershell
