@@ -35,4 +35,36 @@ Each case writes `results/` (base) or `results-<case>/`: `series.jsonl` (untrack
 
 ## Launch log
 
-(filled at launch; results-only commits add the case directories)
+* 2026-09-04 18:13-18:15 AEST - launch 1 of all eleven cases from the preregistration commit `386c9070`
+  (clean worktree `.worktrees/hybrid-l2-v2`, `--expect-commit 386c9070`, O_EXCL lock per case), detached
+  (`Start-Process`, `OPENBLAS_NUM_THREADS=2`), eleven CPU processes side by side on the 24-core host while the
+  PIC v4 refinement (GPU) was finishing and another project loaded ~4 cores: PIDs base 26832, spatial-fine 9144,
+  temporal-fine 51792, spatial-coarse 2604, temporal-coarse 804, weight-half 28976, seed-b 14364, closure-g-low
+  32076, closure-g-high 25564, closure-w-low 12224, closure-w-high 50540. Step cost under this contention:
+  150-250 ms/step at 1 us rising to 600-900 ms/step at 3.5 us as the ion count grew (330 k macro-ions in the
+  base case at 3.7 us against the ~200 k projected from the PIC plateau density). Process priorities were
+  raised for base / spatial-fine / temporal-fine and lowered for the four closure-sensitivity cases at 18:35.
+* **Contention record (coordinator directive 19:45 AEST).** The eleven L2 processes were flagged at 19:45 as
+  `warp-cuda:0` processes at 100 % on the local RTX 5090 competing with the preregistered PIC run
+  `pic2d_cft_steady_state_v5` (PID 43572, launched 19:29 in `.worktrees/pic2d-ss5`, budget set to 48 h because its
+  preflight timing was contended). What the host showed at 19:46: `nvidia-smi --query-compute-apps` lists no L2
+  PID (the L2 runner is numpy-only - it never calls `wp.init()` and holds no CUDA context; GPU-minutes consumed by
+  L2: 0), but the eleven processes at ~1 core each plus `OPENBLAS_NUM_THREADS=2` put the 24-core host at 94-96 %
+  load, and the PIC v5 host thread (0.3 cores, GPU-bound) shared that saturated CPU. So the earlier stage of every
+  case (18:13-19:46) ran under CPU contention on both sides, and the PIC v5 preflight timing was taken with the L2
+  processes loading the host. Action taken at 19:46: all L2 processes set to `Idle` priority (they yield the CPU
+  to any normal-priority thread, i.e. to the PIC host thread); the four closure-sensitivity cases stopped
+  (`Stop-Process`, last checkpoints 19:39-19:45; series records past the checkpoint are dropped on `--resume`);
+  six primary cases (base, spatial-fine, temporal-fine, spatial-coarse, weight-half, seed-b) kept running -
+  temporal-coarse had already finished (`max_steps_reached`, 19:37). Host load after: L2 6 cores + others ~4
+  of 24 (>= 8 cores free). Wall-time and ms/step figures recorded in every `summary.json` of this campaign are
+  therefore contended-host numbers (upper bounds on the true L2 step cost); the cost ratio in `assess` uses them.
+* The runner gained the `STOP` file mechanism (a `STOP` file in a case's results directory ends the run at the
+  next series record with `checkpoint-latest` and no finalize; `launch --resume` continues it and truncates the
+  series to the checkpoint step) and the `sessions.json` entries record `git_head` and BLAS thread pins. The
+  simulation code (`cft_revival.hybrid`) is unchanged since `386c9070`; `summary.json` records `git_head` at
+  finalize time, which for sessions finalized after this commit is the runner commit, not `386c9070`.
+* The `assess` stage gained the read-only `--pic-v4-results` option after the preregistration commit (the PIC
+  33 um refinement `pic2d_cft_steady_state_v4` reached its plateau at 7.28 us / 5.2 M steps / 18,013 s while
+  the L2 cases were running); it adds an INFORMATIONAL column and changes nothing in the model, the protocol
+  or the gate evaluation.

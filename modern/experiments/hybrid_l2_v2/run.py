@@ -186,7 +186,24 @@ def _append_jsonl(path: Path, record: dict[str, Any]) -> None:
 def _read_jsonl(path: Path) -> list[dict[str, Any]]:
     if not path.is_file():
         return []
-    return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+    lines = [line for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+    records = []
+    for index, line in enumerate(lines):
+        try:
+            records.append(json.loads(line))
+        except json.JSONDecodeError:
+            if index == len(lines) - 1:
+                break  # a torn final line from an abrupt stop; every earlier line must parse
+            raise
+    return records
+
+
+def _write_jsonl(path: Path, records: list[dict[str, Any]]) -> None:
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    with tmp.open("w", encoding="utf-8", newline="\n") as handle:
+        for record in records:
+            handle.write(json.dumps(record, sort_keys=True, allow_nan=True) + "\n")
+    os.replace(tmp, path)
 
 
 def neutral_ledger_closure(sim: HybridL2Simulation) -> dict[str, float]:
@@ -320,17 +337,25 @@ def run_case(protocol: dict[str, Any], case: dict[str, Any], results: Path, *, f
     series_path = results / "series.jsonl"
     status_path = results / "status.jsonl"
     checkpoint_json = results / "checkpoint-latest.json"
+    stop_file = results / "STOP"
     if resume:
         if not checkpoint_json.is_file():
             raise HybridValidationError("--resume needs checkpoint-latest.json")
         report = load_checkpoint_v2(checkpoint_json, sim)
-        sim.series = _read_jsonl(series_path)
+        # a run stopped between two checkpoints has series records past the checkpoint step; drop them so the
+        # resumed run re-produces (not duplicates) that stretch.  The truncated file is the canonical series.
+        kept = [r for r in _read_jsonl(series_path) if int(r["step"]) <= int(report["step"])]
+        dropped = len(_read_jsonl(series_path)) - len(kept)
+        _write_jsonl(series_path, kept)
+        sim.series = kept
         sessions = json.loads((results / "sessions.json").read_text(encoding="utf-8")) if (results / "sessions.json").is_file() else []
-        log(f"[run] resumed {results.name} at step {report['step']} (field replay {report['field']['mode']})")
+        _append_jsonl(status_path, {"utc": utc_now(), "event": "resume", "step": int(report["step"]), "series_records_dropped": dropped})
+        log(f"[run] resumed {results.name} at step {report['step']} (field replay {report['field']['mode']}; {dropped} series records past the checkpoint dropped)")
     else:
         if series_path.exists() or checkpoint_json.exists():
             raise HybridValidationError(f"{results} already holds a run; use --resume or a fresh directory")
-    sessions.append({"pid": os.getpid(), "started_utc": utc_now(), "resumed_from_step": sim.state.step, "host": socket.gethostname()})
+    sessions.append({"pid": os.getpid(), "started_utc": utc_now(), "resumed_from_step": sim.state.step, "host": socket.gethostname(),
+                     "git_head": git_head(), "blas_threads": {k: os.environ.get(k) for k in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS")}})
     (results / "sessions.json").write_text(json.dumps(sessions, indent=1), encoding="utf-8", newline="\n")
     log(f"[run] {results.name}: grid {grid.cell_shape} dt {config.dt_s:.2e} W {config.macro_weight:g} seed {config.seed}; field {field.source_sha256[:12]} "
         f"({field_kind}), populated {int(sim.populated_node.sum())}/{int(sim.masks.plasma_node.sum())} nodes, setup {setup_seconds:.1f} s")
@@ -345,6 +370,15 @@ def run_case(protocol: dict[str, Any], case: dict[str, Any], results: Path, *, f
                 _append_jsonl(series_path, record)
                 if sim.state.step % config.checkpoint_every_steps == 0:
                     save_checkpoint_v2(results, "checkpoint-latest", sim)
+                if stop_file.exists():
+                    # the runner's stop mechanism: a STOP file in the results directory ends the run at the next series
+                    # record with a checkpoint (no finalize); `launch --resume` continues it later.  The file is consumed.
+                    save_checkpoint_v2(results, "checkpoint-latest", sim)
+                    stop_file.unlink()
+                    _append_jsonl(status_path, {"utc": utc_now(), "event": "stop_requested", "step": sim.state.step, "time_s": sim.state.time_s,
+                                                "wall_seconds_session": time.perf_counter() - t_run})
+                    log(f"[run] {results.name} STOP requested: checkpoint-latest written at step {sim.state.step}; resume with --resume")
+                    return results / "checkpoint-latest.json"
                 plateau = sim.plateau()
                 now = time.perf_counter()
                 if now - last_status > 30.0 or (plateau is not None and plateau["reached"]):
@@ -543,7 +577,7 @@ def l2_quantities(results: Path) -> dict[str, Any]:
 
 
 def assess(protocol: dict[str, Any], *, cases: list[tuple[str, Path]] | None = None, output: Path | None = None, log: Log = _print,
-           require_reference_consistency: bool = True) -> dict[str, Any]:
+           require_reference_consistency: bool = True, pic_v4_results: str | Path | None = None) -> dict[str, Any]:
     """GATE-L2 metrics over the finished cases; the base case (or the single given case) carries the comparison."""
 
     if cases is None:
@@ -619,11 +653,26 @@ def assess(protocol: dict[str, Any], *, cases: list[tuple[str, Path]] | None = N
                                                                     or per_case[n]["summary"]["stop_reason"] != "plateau_reached_after_min_transit_times"))
     gate = gates.evaluate_l2_gates(conservation=conservation, spatial=spatial, temporal=temporal, comparison=comparison, uncertainty=uncertainty, failed_cases=failed)
     pic_v4 = None
-    if (PIC_V4 / "summary.json").is_file():
-        v4 = json.loads((PIC_V4 / "summary.json").read_text(encoding="utf-8"))
-        pic_v4 = {"stop_reason": v4.get("stop_reason"), "window_currents_a": v4.get("window_currents_a"),
-                  "discharge_relative_to_l2": (headline["quantities"]["discharge_current_a"] - v4["window_currents_a"]["discharge_a"]) / v4["window_currents_a"]["discharge_a"]
-                  if v4.get("window_currents_a") else None, "note": "pic2d_cft_steady_state_v4 (33 um refinement) present at assessment time; informational"}
+    v4_dir = PIC_V4 if pic_v4_results is None else Path(pic_v4_results)
+    if (v4_dir / "summary.json").is_file() and (v4_dir / "maps.npz").is_file():
+        # the 33 um refinement of the PIC base plateau, read-only and INFORMATIONAL (its own preregistered assessment is not ours):
+        # the same per-cell extraction on the L2 partition gives a second reference column and the PIC's own grid sensitivity
+        base_case = resolve_case(protocol, "base")
+        v4_run = closure.pic_run_targets(v4_dir, real_partition(case_grid(protocol, base_case), protocol))
+        v4_q = closure.scalar_quantities(v4_run)
+        v4_summary = json.loads((v4_dir / "summary.json").read_text(encoding="utf-8"))
+        pic_v4 = {
+            "results_dir": str(v4_dir), "stop_reason": v4_summary.get("stop_reason"), "steps": v4_summary.get("steps_completed"),
+            "simulated_time_s": v4_summary.get("simulated_time_s"), "wall_seconds_total": v4_summary.get("wall_seconds_total"),
+            "maps_sha256": v4_run["maps_sha256"], "summary_sha256": v4_run["summary_sha256"],
+            "quantities": v4_q,
+            "l2_relative_to_v4": {k: ((headline["quantities"][k] - v4_q[k]) / abs(v4_q[k]) if v4_q.get(k) not in (None, 0.0) and np.isfinite(v4_q[k])
+                                      and headline["quantities"].get(k) is not None else None) for k in pinned},
+            "v4_relative_to_base": {k: ((v4_q[k] - pinned[k]["reference"]) / abs(pinned[k]["reference"]) if pinned[k]["reference"] != 0.0 and np.isfinite(v4_q[k]) else None)
+                                    for k in pinned},
+            "note": "pic2d_cft_steady_state_v4 (33 um / 1.4 ps refinement of the base plateau) finished before this assessment; informational only - "
+                    "its acceptance is judged by its own preregistered protocol, not here",
+        }
     cost = {"l2_wall_seconds": summary["wall_seconds_total"], "l2_ms_per_step": summary["ms_per_step"], "l2_steps": summary["steps_completed"],
             "pic_base_wall_seconds": protocol["pic_reference"]["base_cost"]["wall_seconds_total"], "pic_base_steps": protocol["pic_reference"]["base_cost"]["steps"],
             "pic_base_device": protocol["pic_reference"]["base_cost"]["device"],
@@ -674,6 +723,7 @@ def main(argv: list[str] | None = None) -> int:
     sub.add_parser("status")
     ass = sub.add_parser("assess")
     ass.add_argument("--no-reference-check", action="store_true")
+    ass.add_argument("--pic-v4-results", default=None, help="read-only path of a finished pic2d_cft_steady_state_v4 results directory (informational)")
     args = parser.parse_args(argv)
     protocol = load_protocol()
     if args.command == "preflight":
@@ -685,7 +735,7 @@ def main(argv: list[str] | None = None) -> int:
     elif args.command == "status":
         print(json.dumps(status(protocol), indent=1, default=str))
     else:
-        assess(protocol, require_reference_consistency=not args.no_reference_check)
+        assess(protocol, require_reference_consistency=not args.no_reference_check, pic_v4_results=args.pic_v4_results)
     return 0
 
 

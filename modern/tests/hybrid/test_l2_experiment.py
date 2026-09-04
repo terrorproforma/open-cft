@@ -74,3 +74,32 @@ def test_synthetic_run_finalize_assess_path(protocol: dict, tmp_path: Path) -> N
     with pytest.raises(Exception, match="already holds a run"):
         run.run_case(protocol, case, results, field_kind="synthetic", max_steps=5, log=lambda _: None)
     shutil.rmtree(results)
+
+
+def test_stop_file_and_resume_after_abrupt_stop(protocol: dict, tmp_path: Path) -> None:
+    """The STOP file ends a run at the next series record with a checkpoint and no finalize; a run torn between
+    checkpoints (series past the checkpoint step, torn last line) resumes from the checkpoint without duplicates."""
+    case = {**run.resolve_case(protocol, "spatial-coarse"), "name": "test-resume", "series_interval_steps": 5, "averaging_window_steps": 20,
+            "checkpoint_every_steps": 20, "residual_window_steps": 20}
+    results = tmp_path / "results-resume"
+    results.mkdir()
+    (results / "STOP").write_text("", encoding="utf-8")
+    logs: list[str] = []
+    out = run.run_case(protocol, case, results, field_kind="synthetic", max_steps=60, log=logs.append)
+    assert out == results / "checkpoint-latest.json" and not (results / "summary.json").exists() and not (results / "STOP").exists()
+    assert json.loads(out.read_text(encoding="utf-8"))["step"] == 5 and any("STOP requested" in line for line in logs)
+    series = results / "series.jsonl"
+    assert [r["step"] for r in run._read_jsonl(series)] == [5]
+    # emulate an abrupt stop of a later session: records past the checkpoint and a torn final line
+    with series.open("a", encoding="utf-8", newline="\n") as handle:
+        handle.write(json.dumps({"step": 10, "fake": True}) + "\n" + json.dumps({"step": 15, "fake": True}) + "\n" + '{"step": 20, "torn')
+    logs.clear()
+    summary_path = run.run_case(protocol, case, results, field_kind="synthetic", max_steps=60, log=logs.append, resume=True)
+    assert any("resumed results-resume at step 5" in line and "2 series records past the checkpoint dropped" in line for line in logs)
+    records = run._read_jsonl(series)
+    assert [r["step"] for r in records] == [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60] and not any(r.get("fake") for r in records)
+    assert json.loads(summary_path.read_text(encoding="utf-8"))["steps_completed"] == 60
+    events = [r for r in run._read_jsonl(results / "status.jsonl") if r.get("event") in ("stop_requested", "resume")]
+    assert [(e["event"], e["step"]) for e in events] == [("stop_requested", 5), ("resume", 5)] and events[-1]["series_records_dropped"] == 2
+    assert [s["resumed_from_step"] for s in json.loads((results / "sessions.json").read_text(encoding="utf-8"))] == [0, 5]
+    shutil.rmtree(results)
