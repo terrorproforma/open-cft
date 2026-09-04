@@ -3,12 +3,20 @@
 **Status: plan, not an implementation and not a result.** Written 2026-09-05 against
 `feat/sota-foundation` at `036bd679` after reading (read-only) the user's welding AI subsystem
 `Reality-Simulator/ai` and this repository's surrogate / active-learning / optimisation /
-validation / experiment-runtime stack and the PIC records that exist today. Nothing in this
-document is preregistered; every number about *our* data is quoted from a recorded artifact and
-every number about cost is a projection with its anchor named. The brief: apply "the same
-principle and architecture" as the welding reality model - a learned surrogate trained on simulator
-outputs, used to accelerate design optimisation - to the PIC-MCC plasma simulator
-(`cft_revival.pic2d`).
+validation / experiment-runtime stack and the PIC records that exist today. **Revised 2026-09-05
+against `8c70cff0`** after user feedback: (i) the `Reality-Simulator/ai` docs describe *two
+competing model cores* (a Fourier/tensorised neural-operator core and a latent-token
+*transformer* core), and the transformer-core idea traces to Arena Physica's Heaviside models -
+section 1.5 documents the two cores and their decision criteria as written there, section 1.6
+studies Heaviside-0 / Heaviside-1 / Atlas RF Studio from the public sources and states what they
+change in our recommendation; (ii) **the order of work is fixed by the user**: (1) finish the 2-D
+PIC physics, (2) design the 3-D PIC and verify that it works, (3) *then* the AI run - section 5
+is reordered accordingly (Phase 0 2-D physics, Phase 1 3-D design + verification, Phase 2 data
+plane, Phase 3 AI campaign, Phase 4 optimisation). Nothing in this document is preregistered;
+every number about *our* data is quoted from a recorded artifact and every number about cost is a
+projection with its anchor named. The brief: apply "the same principle and architecture" as the
+welding reality model - a learned surrogate trained on simulator outputs, used to accelerate
+design optimisation - to the PIC-MCC plasma simulator (`cft_revival.pic2d`, later a 3-D code).
 
 The short answer, before the detail:
 
@@ -20,18 +28,31 @@ The short answer, before the detail:
 * **The architecture only partly carries over**: the welding model is a *time-stepping world model*
   (state + future controls -> future 3-D fields, GRU control sequence, ConvGRU rollout, a
   real-time sensor student). Our object is a *steady-state design operator* (geometry field map +
-  operating point -> time-averaged 2-D plateau fields and their scalars). The neural-operator
+  operating point -> time-averaged plateau fields and their scalars). The neural-operator
   backbone, the heteroscedastic heads, the deep ensemble, the multi-fidelity residual and the
   verification queue map one-to-one; the rollout, control-sequence and real-time layers have no
   analogue and are dropped.
-* **The data reality decides the order**: today there are plateaus for **four distinct designs at
-  one operating point** (three qualified 33 um channel plateaus recorded or record-pending, one
-  running), at 4-7 GPU-h per channel plateau and 17-50 GPU-h per plume run. No field-operator
-  network can be trained on that; a scalar GP cannot be gated on it either. What CAN be built now
-  is the dataset contract, the ingestion, the label-noise floor and the campaign generator, so
-  that the first 30-100 qualified PIC plateaus (roughly 150-1000 GPU-h including replicates and
-  the runs that never plateau; USD 0.5k-3k at the Lambda rate) land directly in a training set
-  instead of in ad-hoc result directories. That is the plan below.
+* **Heaviside changes three things in the recommendation, not the principle** (section 1.6.4):
+  (1) *fields-first supervision* - the plateau maps, not the scalars, are the primary training
+  target wherever maps exist, because Arena's own ablation is that dense field supervision is what
+  buys out-of-distribution generalisation; the scalar GP stays as the noise-floor instrument and
+  acquisition model. (2) A *tokenised transformer-core operator* over the canonical grid
+  (geometry / field-map / mask patch tokens + operating-point, closure and fidelity tokens +
+  arbitrary-point query decoder) becomes the declared level-(b) target once >= 100-300 map sets
+  exist, and the same tokeniser is the 2-D -> 3-D transfer path (the 2-D model is the m = 0
+  slice); FNO stays in the ladder as the cheaper rung, POD-GP below it. (3) *Held-out design
+  FAMILIES* and a frozen "challenge" split (Arena's EMVal discipline), on top of the repository's
+  held-out designs. Solver-in-the-loop verification is what Arena calls the verifier's rule and
+  what this repository already enforces (F3 promotion).
+* **The data reality and the user's order decide the schedule**: today there are plateaus for
+  **four distinct designs at one operating point**, at 4-7 GPU-h per 33 um channel plateau and
+  17-50 GPU-h per plume run; with the v2.0.6 ledger correction (`4b53012d`) the 33 um v4 plateau
+  fails acceptance (b) at +2.46 % and every 50 um plateau was heating (+7-13 %). No field-operator
+  network can be trained on that; a scalar GP cannot be gated on it either; and a 3-D label will
+  cost ~10-80x a 2-D label (section 5, Phase 1 table). What CAN be built now is the 2-D physics
+  itself (Phase 0), the 3-D design and its verification programme (Phase 1), and the dataset
+  contract that both codes will write into (Phase 2), so that the first 30-100 qualified plateaus
+  land directly in a training set instead of in ad-hoc result directories.
 
 ---
 
@@ -80,7 +101,7 @@ Three levels (`docs/ARCHITECTURE.md` section 1):
 | **Uncertainty = heteroscedastic heads + deep ensemble + explicit multi-fidelity residual** | `surrogate/model.py` (every head returns mean and `log_variance.clamp(-12, 6)`), `physics/pino_losses.py` (`gaussian_negative_log_likelihood`), `surrogate/ensemble.py` (`SurrogateEnsemble`: epistemic = variance of member means, aleatoric = mean of member variances, >= 2 members), `surrogate/multifidelity.py` (`MultiFidelitySurrogate`: `prediction_f = base + residual_f`, variances added, fidelity graph validated), `surrogate/uncertainty.py` | Aleatoric and epistemic are separate outputs; fidelities are explicit ids in a parent chain, never pooled as equivalent labels. | Our labels have a *measured* aleatoric band (seed + particle weight) and a *systematic* grid rung: the same decomposition, with the grid rung as the fidelity axis. |
 | **Physics-informed losses** | `physics/pino_losses.py` (`compute_physics_informed_loss`: field MSE (masked), objective MSE, Gaussian NLL, energy balance, filler-mass balance, boundary, constitutive, phase-simplex, **sensitivity** = model Jacobian vs paired-intervention finite difference), `physics/energy.py`, `physics/mass.py` | Conservation and constitutive consistency as loss terms; "sensitivity matching" proves the network *uses* a parameter. | Our cheap exact operators: the discrete Gauss law (the PIC's own Poisson stencil), the ion current ledger, S = integral of the ionisation map. |
 | **Training** | `training.py` (`train_surrogate_step`), `scripts/train_dataset_surrogate.py`, `scripts/evaluate_dataset_surrogate.py` | Checkpoints embed dataset / registry / normalisation / layout identity; evaluation refuses a bundle with different lineage. | Reuse the rule verbatim. |
-| **Dataset campaign generator** | `data/campaign.py`, `scripts/prepare_dataset_campaign.py`, `configs/datasets/s355_gmaw_tfillet_pilot_campaign.json`, `docs/DATASET_GENERATION_CAMPAIGN.md` | Deterministic Latin hypercube over declared axes (each with scope, bounds, transform, unit); scenario-level vs programme-level variables; replicates; snapshot schedule; hash-addressed plan; `simulation_queue.jsonl` one task per line; manifest template marked `planned_not_generated`. Pilot: 16 scenarios x 4 programmes x 2 replicates = 128 episodes, bounds explicitly non-authoritative. | This is the shape of our Phase-2 campaign generator, fed into `tools/cloud/schedule.py`. |
+| **Dataset campaign generator** | `data/campaign.py`, `scripts/prepare_dataset_campaign.py`, `configs/datasets/s355_gmaw_tfillet_pilot_campaign.json`, `docs/DATASET_GENERATION_CAMPAIGN.md` | Deterministic Latin hypercube over declared axes (each with scope, bounds, transform, unit); scenario-level vs programme-level variables; replicates; snapshot schedule; hash-addressed plan; `simulation_queue.jsonl` one task per line; manifest template marked `planned_not_generated`. Pilot: 16 scenarios x 4 programmes x 2 replicates = 128 episodes, bounds explicitly non-authoritative. | This is the shape of our Phase-3 campaign generator, fed into `tools/cloud/schedule.py`. |
 | **Optimisation under uncertainty + mandatory verification** | `optimisation/planner.py` (`OfflineWeldPlanner`: CEM -> projected Adam hybrid over structured programme knots), `optimisation/objectives.py` (`RiskAwareObjective`: minimise / maximise / target / bounds + aleatoric sd + epistemic sd + CVaR over ensemble samples), `optimisation/verification.py` (`VerificationQueue`: best and most uncertain candidates re-run in the simulator; `DISAGREEMENT` -> active-learning priority), `optimisation/surrogate_adapter.py`, `configs/optimisation/default.yaml` (aleatoric 0.10, epistemic 1.00, CVaR 0.50 at alpha 0.90; `reality_simulator_required: true`) | The surrogate accelerates search; the simulator remains the authority; the most important metric is "the probability that surrogate-selected programmes reproduce their predicted quality when re-evaluated by the oracle" (`paper/latex/sections/03_training_optimisation_control.tex`). | Our `cft_revival.optimization` already has the F0-F3 fidelity ladder, "every non-F3 promoted candidate is rejected pending highest-fidelity reevaluation" (`optimization/guardrails.py`), and constrained qLogNEHVI (`optimization/botorch_adapter.py`). The welding queue and our campaign are the same idea. |
 | **Validation and governance** | `docs/VALIDATION_PLAN.md`, `docs/TRAINING_PLAN.md`, `paper/latex/sections/04_protocol_status_conclusion.tex` | Per-mode approval; machine-readable operating envelope; held-out geometry / parameter / material / resolution; uncertainty must correlate with error; optimiser-exploitation tests; no replacement claim without envelope + signed report + exact checkpoint + dataset provenance + fallback policy. Mandatory baselines: persistence, linear, U-Net, FNO/TFNO, U-FNO; data-only vs PINO; single vs ensemble. | Matches our evidence rules (preregistered held-out designs, gates, claim boundaries). |
 | **Real-time student, distillation, anomaly gate** | `realtime/*`, `docs/PLANNING_AND_REALTIME.md`, `docs/REALTIME_MODEL_PLAN.md` | Privileged teacher -> sensor-only student; bounded corrections; deadline-aware runtime. | **No analogue** (we have no closed-loop hardware). Dropped. |
@@ -109,7 +130,153 @@ Goldak source dimensions, convection, emissivity, ...).
   U-FNO.
 * Their first decisive experiment is a *field* prediction (next second of enthalpy). Ours cannot
   be: with < 50 plateaus the first decisive experiment is a *scalar* prediction with a measured
-  noise floor (section 5, Phase 1).
+  noise floor (section 5, Phase 2) - although, after Heaviside (1.6), the maps of those same
+  plateaus are ingested and fitted (POD-GP) from the first batch, not deferred.
+
+### 1.5 `Reality-Simulator/ai`: the two competing models
+
+Read again for this revision (`docs/`, `IMPLEMENTATION_STATUS.md`, `TODO.md`, the paper draft
+and its LaTeX sections, `configs/`, and the model code; there is no ADR directory - the decision
+record is `docs/ARCHITECTURE.md` "Decision date: 2026-08-29" and `docs/README.md`'s normative
+order; paths relative to `Reality-Simulator/ai`). The documents contain **one system with three
+levels**
+(`docs/ARCHITECTURE.md` section 1: oracle, large surrogate, small real-time student - "two learned
+models instead of one", `docs/ARCHITECTURE_DETAIL.md` section 12.3) and, *inside the large
+surrogate*, **two competing spatial cores** that the plan keeps side by side and refuses to choose
+between before data exist. The user's phrase "two competing models" is read here as these two
+cores; the other pairings are noted at the end of this section.
+
+| | **Core A - grid neural operator** | **Core B - latent-token transformer** |
+| --- | --- | --- |
+| lineage named in the docs | Anandkumar programme: FNO 2010.08895, TFNO (Kossaifi), PINO 2111.03794, GINO 2309.00583; `docs/FULL_PHYSICS_SURROGATE_PLAN.md` section 1 "Yes: the proposed physics-model backbone directly uses the research lineage associated with Anima Anandkumar", section 2 table | Universal Physics Transformers (Alkin et al. 2402.12365), "anchored/branched UPT-style decoders", CoDA-NO codomain attention (Rahman et al. 2403.12553), Poseidon (2405.19101); `FULL_PHYSICS_SURROGATE_PLAN.md` section 3 table ("What comes from other research lines"), `paper/latex/sections/01_introduction_related.tex` subsection "Physics foundation models and hybrid simulation" |
+| what it is | dense complex spectral weights on a regular voxel grid (FNO), CP-factorised spectral quadrants (TFNO), U-Net hierarchy with spectral bottleneck (U-FNO), plus a plain 3-D U-Net as the local baseline; shape-preserving `[batch, channels, z, y, x]` operator | geometry, material and state compressed into **latent tokens**; local and global branches that "exchange latent tokens through cross-attention"; **codomain attention** across field-family tokens; **arbitrary-point query decoders** instead of full-grid decode; `FULL_PHYSICS_SURROGATE_PLAN.md` section 7 rule 9 "local/global compression rather than an unstructured full-voxel transformer", 7.1 "latent tokens for long-range coupling; arbitrary point-query decoders", 14.2 "the scalable target may use UPT latent tokens, geometry anchors, multigrid FNO blocks, graph tokens ..., arbitrary query decoders", 14.3 step 3, section 15 |
+| status in the code | **implemented** behind one contract: `src/reality_ai/surrogate/{fno.py, tfno.py, ufno.py, unet.py, backbone_factory.py (BackboneFamily), configurable_model.py (ConfigurableFullPhysicsSurrogate)}`; `configs/surrogate/model_ladder.yaml` candidates `unet3d / fno3d / tfno3d / ufno3d`; `scripts/benchmark_surrogate_architectures.py` | **partially implemented, as ablations only**: `CodomainAttentionFusion3d` (`multiphysics_fusion.py`: an `nn.TransformerEncoder` over the *field-family* tokens at each voxel, chunked over positions), attention over property tokens in `MaterialFunctionEncoder` (`material_encoder.py`), a "typed token context for inspection or future attention blocks" in `heterogeneous_encoder.py` (`docs/EXPORTER_AND_HETEROGENEOUS_STATE.md`); the grid-`sample` `query_decoder.py` is the arbitrary-point decoder. **No latent-token transformer backbone exists in the code**; `IMPLEMENTATION_STATUS.md`: "Production selection or validation of CoDA-style attention; it is implemented as an ablation candidate, not assumed superior" |
+| the docs' own verdict | "U-FNO is the current leading hypothesis for the fixed-grid weld model, but it must beat U-Net, FNO, and TFNO on accuracy, stability, speed, and memory before becoming the default" (`docs/SURROGATE_ARCHITECTURES.md`); "Do not begin with a colossal transformer. The FNO baseline is the cleanest test of whether the simulator data supports accurate field-level surrogate prediction" (`FULL_PHYSICS_SURROGATE_PLAN.md` 13.4) | "Add CoDA-style functional attention when channel concatenation demonstrably under-models cross-field interactions ...; add stronger latent compression when full-grid inference misses memory or latency targets" (`ARCHITECTURE_DETAIL.md` 4.1); model-size ladder "1 small local FNO baseline; 2 local/global two-branch; 3 codomain coupling; 4 latent query architecture; 5 multi-material pretraining; 6 larger foundation model only when scaling curves justify it" (`FULL_PHYSICS_SURROGATE_PLAN.md` 42.4); baseline 9 "UPT-style latent model" vs 10 "proposed local/global multiphysics model" (33.1) |
+| training objective | identical for both: masked field MSE + objective MSE + Gaussian NLL + energy / mass / boundary / constitutive / phase-simplex + **sensitivity** (Jacobian vs paired interventions) (`physics/pino_losses.py`; 7.4 loss list) | same; the transformer core adds nothing to the loss - the competition is about the representation |
+| data pipeline | identical for both: registry-generated channel layout, fail-closed unknown state, Zarr episodes with SHA-256 identity, whole-scenario splits, deterministic LHS campaign (`data/*`, `docs/DATA_PLANE.md`, `docs/DATASET_GENERATION_CAMPAIGN.md`) | same |
+| evaluation | `docs/SURROGATE_ARCHITECTURES.md` "Required evaluation": hold constant registry, layout, splits, normalisation, horizons, optimizer-step or compute budget, parameter budget; compare field error by variable / region / horizon, interface and spectral error, conservation, free-running rollout drift, geometry and parameter holdouts, resolution transfer, calibration, latency per inference mode, peak memory; `model_ladder.yaml` `required_comparisons`; `docs/VALIDATION_PLAN.md` ablations ("fixed-grid versus geometry-conditioned encoding; simple field fusion versus CoDA-style coupling") | same list; plus the risk sentence in `paper/latex/sections/04_protocol_status_conclusion.tex`: "Geometry and cross-field attention may add cost without measurable benefit" |
+
+**Decision criteria as documented there** (none has been exercised: `IMPLEMENTATION_STATUS.md`
+"Actual training on weldsim output and resulting validated model selection" is *not implemented*;
+the only datasets are synthetic):
+
+1. Core A is the default; every Core-B mechanism must "beat a simpler controlled baseline"
+   (`ARCHITECTURE_DETAIL.md` 4.1 last line) on the identical dataset / layout / splits / compute.
+2. Attention across fields is admitted only on a *measured* under-modelling of cross-field
+   interactions, a required transfer across physical or material systems, or a measured
+   sample-efficiency gain from masked multiphysics pretraining (4.1 "Add CoDA-style functional
+   attention when ...").
+3. Latent compression (the UPT route) is admitted only when full-grid inference misses memory or
+   latency targets, larger parts or finer resolutions are needed, or sparse queries dominate the
+   workload (4.1 "Add stronger latent compression when ...").
+4. Scaling to a "larger foundation model" only "when scaling curves justify it" (42.4 item 6).
+5. Losing architectures are kept as reproducible baselines (`SURROGATE_ARCHITECTURES.md`
+   "Advancement order" item 7).
+
+Other pairings a reader could mean by "two competing models", for completeness: (i) the *large
+surrogate vs the small real-time student* - complementary, not competing (`ARCHITECTURE.md`
+sections 3 and 6); (ii) *U-FNO vs FNO/TFNO* inside Core A - a within-family ladder decided by the
+same evaluation list; (iii) *data-only vs PINO-constrained*, *single vs ensemble*, *Tier-0 vs
+multi-fidelity residual* - training ablations, not architectures (`VALIDATION_PLAN.md`,
+`paper/ARCHITECTURE_PAPER_DRAFT.md` section 13.3 "Architecture comparisons"). The Arena Physica
+pair Heaviside / Marconi
+(forward / inverse) is a different kind of pair again - see 1.6.
+
+**What this means for us.** The welding plan's rule is *operator first, attention when the data
+justify it*, and it wrote that rule while expecting thousands of episodes. Our expected label count
+is one to two orders of magnitude smaller (section 3), so the rule binds harder here, not looser:
+the transformer core is the *target* of the ladder, and the criterion for reaching it is the same
+measured one (held-out-family error at fixed compute), with the additional honesty that at 30-100
+designs a transformer has no chance of beating a GP on scalars and the comparison is only
+meaningful at the field level with >= 100-300 map sets (1.6.4).
+
+### 1.6 Heaviside / RF Studio (Arena Physica)
+
+Sources read (2026-09-05): the two company posts the user pointed at -
+"Introducing Atlas RF Studio: Toward a Foundation Model for Electromagnetics", Bryant et al.,
+2026-03-31, <https://www.arenaphysica.com/publications/rf-studio>, and "Introducing Heaviside-1",
+Bryant et al., 2026-09-01, <https://www.arenaphysica.com/publications/heaviside-1> - plus the
+public benchmark dataset card `ArenaPhysica/EMVal` on Hugging Face
+(<https://huggingface.co/datasets/ArenaPhysica/EMVal>). A search for a technical report, arXiv
+preprint or peer-reviewed paper on Heaviside-0/1 or Marconi-0 found none as of this date; there
+is no independent replication. Everything below that is not on the dataset card is **a company
+claim** and is marked so.
+
+#### 1.6.1 What the models are (as stated)
+
+| | Heaviside-0 (2026-03) | Heaviside-1 (2026-09) | Marconi-0 (2026-03) |
+| --- | --- | --- | --- |
+| role | **forward** model: geometry + materials -> S-parameters ("characterize") | forward model: 3-D geometry + materials + excitation -> complex E and H **near-fields at arbitrary probe locations** (S-parameters derived) | **inverse** model: target S-parameters + port locations -> geometry ("design") |
+| architecture (stated) | "a transformer-based neural network" - *no further detail*: tokenisation of the 2.5-D layer stack (a stack of 2-D metal/dielectric images), attention layout, frequency conditioning are undisclosed | geometry encoder "overhauled" to ingest "fully 3D complex structures" with "invisible material properties like conductivity, permittivity"; **350 M parameters** ("roughly the size of GPT-2"), > 10x Heaviside-0; the backbone is not restated (continuity with the transformer is implied, not asserted) | conditional **diffusion** model over a pixelated 2-layer canvas (cites Dall-EM and pixelated inverse design); generates candidates in parallel, Heaviside ranks them, iterative refinement = "thinking time" |
+| inputs | 2-layer 8 x 8 mm boards, ground vias, 3 dielectric choices; procedural variants of 25 expert templates + random "organic" structures | 3-D structures (BGA solder balls, hairpin filters shown); materials; excitation pattern (ports) | target S-parameters, ports, optional template conditioning |
+| outputs | complex S-parameters at 51 frequencies 1-20 GHz, all port pairs | E, H at 10 000 probe locations x 100 frequencies x 2 ports per design; S-parameters; (far-field "in the coming months") | a geometry |
+| training data (claimed) | **3 M simulated designs**, "over 20 years of combined simulation time"; S-parameter labels for all, full-wave **field labels for 10 000 designs (0.3 %)**; measured VNA data from their lab "steers the model" (amount not stated) | **250 k unique 3-D field simulations**, "500 B total field samples, > 20 TB"; the solver is not named (commercial full-wave solvers, HFSS is the example used in the text) | trained on the same simulated corpus |
+| speed (claimed) | 13 ms per board, 0.3 ms batched (1024) vs ~4 min per commercial-solver run: "18 000x to 800 000x" | "10^5x faster than commercial solvers"; Atlas Fields Studio renders fields "in milliseconds" | seconds to minutes of "thinking time" |
+| accuracy (claimed, vs the solver) | magnitude weighted-MAE "well under 1 dB" (their metric: sigmoid weight centred at -20 dB); RMSE (re+im) and phase MAE also reported; frontier LLMs used as the only external baseline | EMVal-SP in-distribution ~0.06 RMSE, ~0.45 dB, ~0.09 rad; **near-field**: ~19 % global relative L2, ~22 % median local error in-distribution; **~33 % / ~28 % on unseen geometry families**; median vector alignment ~98 %; "accuracy stays within 1 dB" (S-parameters) | evaluated by re-simulating its designs in the solver: better than frontier LLMs on the same metrics; no absolute yield figure |
+| generalisation (claimed) | ablation: adding field labels on 0.3 % of designs cut in-distribution validation loss 15 % and "modestly" improved out-of-distribution (held-out template families) | **central claim**: a Heaviside-1 trained on fields + S-parameters equals an S-only twin in-distribution but is "substantially better" out-of-distribution (0.99 dB -> 0.53 dB in the TL;DR); OOD = *design templates* excluded from training | "alien structures" that meet spec but are outside Heaviside-0's reliable envelope |
+| uncertainty / verification | **no uncertainty output is described**; the design loop keeps the solver for "production-level accuracy"; the models are called the *verifier* for the AI design loop ("Verifier's rule") | same - EMVal reports error distributions with bootstrap intervals, not per-prediction uncertainty | candidates are verified by Heaviside, final designs by the solver, fabricated designs by VNA |
+| stated limits | 2.5-D planar only; S-parameters only; weaker far from the training distribution | "a limited set of geometries, board sizes, frequency ranges, material properties, and field probe distances"; OOD near-field error ~33 % | many generated candidates are "too far outside of the familiar design space for Heaviside-0 to accurately characterize" |
+
+#### 1.6.2 What is public and checkable vs what is marketing
+
+* **Checkable**: the EMVal v0 *public* split (dataset card, HF): 500 boards, 8 x 8 mm, three
+  layers (35 um Cu signal / 200-203 um dielectric / 35 um Cu ground), two laminates (low-loss RF
+  on 281 boards, FR4-class on 219), 1-2 ports, 79 boards with 2-64 plated vias, no solder balls;
+  101 frequencies 1-20 GHz; 10 000-probe 3-D cloud of complex E and H per board (~41 GB) plus
+  S-parameters (~7 MB); labels are **full-wave simulation outputs, not measurements**; license
+  CC BY-NC 4.0 (marked "pending legal review"); metric definitions (global relative L2, median
+  local error, median local alignment; RMSE / weighted MAE for S-parameters). The metric
+  definitions and the public-split numbers in the Heaviside-1 post can therefore be re-scored by
+  anyone with a competing model. The Atlas Fields Studio beta is public; it was not exercised for
+  this note.
+* **Company claims, not independently verifiable**: the training corpus sizes (3 M / 250 k
+  designs, 500 B samples, "20 years of simulation"), the solver used and its settings, the
+  speed-ups, the architecture beyond "transformer-based", the private standard / challenge splits
+  and every number reported on them, the measured-data pipeline's contribution, and the
+  "electromagnetic superintelligence" framing. No paper, no model weights, no code.
+* **Method that IS verifiable in principle and is the useful part**: (i) fields as the primary
+  supervision target with S-parameters as a derived downstream head; (ii) the OOD protocol -
+  hold out *template families*, not just designs; (iii) forward verifier + generative proposer in
+  a tight loop, with the slow solver kept as the final authority; (iv) a public, versioned
+  benchmark with frozen metrics.
+
+#### 1.6.3 Mapping to our case
+
+| Heaviside element | maps well to our PIC surrogate | does not map / must be adapted |
+| --- | --- | --- |
+| geometry + materials + excitation -> steady-state fields at arbitrary points | yes: our design *is* a field map (`B_r`, `B_z`) plus masks on the grid; the operating point is the excitation; the plateau maps (`n_e`, `n_i`, `phi`, `T_e`, ionisation) and wall profiles are the fields; a query decoder gives wall-profile and sheath queries (2.3) | our fields are **time-averaged stochastic plateaus** with a measured 5-12 % particle-resolution band and shot-noise per node (`sample_count_e`), not deterministic solver outputs; every label is gate-qualified (plateau rule, residual power, Debye margin) or it is not a label |
+| transformer core over a canonical representation with material / boundary conditioning | yes in form: patch tokens over the canonical `(r / r_w, z / L_ch)` grid + condition tokens (`V`, feed, injection, closure id, grid rung, code = 2-D / 3-D) + query decoder; natural 3-D extension (theta patches or azimuthal Fourier modes as tokens; the 2-D model = the m = 0 slice) | **scale**: 250 k designs vs our 30-100; a 350 M-parameter model is out of the question; a small (1-10 M) transformer with strong regularisation is only testable at >= 100-300 map sets and must beat FNO and POD-GP on held-out families at fixed compute (1.5 criteria) |
+| field supervision -> generalisation | yes, and it is the strongest external argument for our level (b): train on maps, derive scalars by integration; the maps exist for every plateau already (`maps.npz`) | Arena's ablation is at 3 M / 250 k designs; at our scale the mechanism (dense supervision regularises the representation) plausibly holds but is unproven - our own ablation (scalar-only vs field-supervised at equal design count) is a Phase-3 deliverable, not an assumption |
+| solver-in-the-loop verification ("verifier's rule") | already enforced: F0-F3 ladder, "every non-F3 promoted candidate is rejected pending highest-fidelity reevaluation" (`optimization/guardrails.py`), preregistered PIC batches | Arena's verifier is *the fast model* and the solver is the final check; for us the PIC is both label source and verifier because no model of ours will be trusted as a verifier before Phase 4 |
+| generative proposer (Marconi) + forward verifier (Heaviside) tandem | our analogue is acquisition (qLogNEHVI / qLogNParEGO on the surrogate posterior) + surrogate objective-only mode + PIC F3; a diffusion proposer over the v1.1 geometry parameters is possible later | a diffusion model over 11 design parameters buys nothing over Sobol + BO at our scale; over field maps it would need thousands of maps; **deferred**, not adopted |
+| public benchmark with frozen metrics and an OOD "challenge" split | adopt the *form*: a frozen set of PIC records (by design family) as our benchmark, band-aware metrics (4.5), a challenge family (e.g. 3-stage or 5-stage designs, or a new operating point) never used in training | our "public" is the repository's hash-bound record; there is no external community to score it |
+| no per-prediction uncertainty | **not adopted**: our labels are noisy and few; heteroscedastic heads, ensembles, GP posteriors and the AR1 rung discrepancy stay (4.3) | - |
+| measured (VNA) data steering the model | the analogue is *external validation* of the PIC (Brandt 2016 route, ext-val v0) - the surrogate inherits whatever the PIC's experimental standing is | no experimental thruster data of ours exists |
+
+#### 1.6.4 What the transformer core buys over the FNO / GP ladder at our data scale - honestly
+
+* **Scalars, N = 30-100 designs**: nothing. A GP with per-row known noise on 6-9 physical features
+  is the right model and also the *instrument* that measures the noise floor (3.3); ridge and
+  trees are the baselines; a transformer at this N is a random function with 10^6 parameters. This
+  does not change.
+* **Fields, N = 30-100 map sets** (~65 k-90 k nodes each): POD-GP on the canonical grid is the
+  model; an FNO *may* fit and *may* beat POD-GP on held-out designs (the weld plan's own first
+  experiment); a transformer with patch tokens at this N will over-fit unless heavily
+  regularised and pretrained on cheap fidelities (P2 field -> orbit_mc wall-hit maps, 50 um
+  screening runs). Test it as the last rung, report it, do not expect it to win.
+* **Fields, N >= 100-300 map sets (2-D) or once 3-D records exist**: here the transformer core is
+  the *declared target* for three concrete reasons. (a) *Conditioning*: tokens are the clean way
+  to carry heterogeneous conditions - operating point, closure id, grid rung, code dimensionality,
+  per-cusp descriptors - without tiling scalars into channels; the weld plan's `encode_static_context`
+  cache is the same idea. (b) *Geometry across families*: attention does not assume a fixed
+  aspect ratio or periodicity; an FNO on a canonical `(r / r_w, z / L_ch)` grid implicitly assumes
+  the physics is stationary in normalised coordinates, which a 3-stage and a 5-stage channel are
+  not; patch tokens with physical-coordinate embeddings do not. (c) *2-D -> 3-D transfer*: with
+  azimuthal Fourier modes (or theta patches) as extra tokens, a 3-D record is a superset of a 2-D
+  record and the pretrained 2-D weights initialise the m = 0 path - the transfer-learning route
+  the user asked for (scratchpad 2026-09-05 01:37). None of (a)-(c) is a measured advantage yet;
+  all three are hypotheses to be decided by the 1.5 criteria on our own held-out families.
+* **What it never buys**: label count, band width, or the right to skip PIC verification.
 
 ---
 
@@ -198,10 +365,10 @@ noise.
 
 | record | design | grid / W | verdict / status | label status for a surrogate |
 | --- | --- | --- | --- | --- |
-| steady-state v2 base (`24ab82f4`) | reference (`divergent-exit-stack`, rho 0.60) | 50 um / 6e4 | plateau; classified **resolution-limited** by v4 (`0d228ad2`); with the ledger correction (section 3.2) it was **heating (~+13 %)** | low-fidelity rung only, flagged heating |
-| v2 seed-b (`41ccb1ef`), W x0.7 (`542496fb`) | reference | 50 um | plateaus; <= 1.1 % seed spread, +5.7 % `I_d` / -12 % peak `n_e` at W x0.7 | the **only replicate pair** in the project -> the aleatoric band |
-| steady-state **v4** (`0d228ad2`) | reference | 33.3 um / 2.667e4 | plateau at 3.03 transits, residual -7.7 %, `resolution_limited` verdict on the 50 um base; ss-v4 corrected end state ~+1.9 % | **qualified 33 um label** (pending the v5 caveat) |
-| mini-sweep **047** (`b424ea37`) | `l1a-gs-v2-047` (rho 0.38) | 33 um / parity | plateau at 3.00 transits, `I_d` 1.925 mA, residual -7.1 % (corrected ~+2.6 %); `assess` / `targets` deferred | qualified 33 um label (assessment pending) |
+| steady-state v2 base (`24ab82f4`) | reference (`divergent-exit-stack`, rho 0.60) | 50 um / 6e4 | plateau; classified **resolution-limited** by v4 (`0d228ad2`); ledger corrected post hoc (`3ec2af92`, v2.0.6): **heating at +13.0 %** of the electrode power | low-fidelity rung only, flagged heating |
+| v2 seed-b (`41ccb1ef`), W x0.7 (`542496fb`) | reference | 50 um | plateaus; <= 1.1 % seed spread, +5.7 % `I_d` / -12 % peak `n_e` at W x0.7; corrected residuals +11.1 % / +7.2 % (heating) | the **only replicate pair** in the project -> the aleatoric band (of a heating rung: the band is quoted, its rung is not a label) |
+| steady-state **v4** (`0d228ad2`) | reference | 33.3 um / 2.667e4 | plateau at 3.03 transits, residual recorded -7.7 %, **corrected +2.46 %** (`02013df0`, v2.0.6): predeclared acceptance (b) "< +2 %" **PASS -> FAIL**; (a) plateau, (c) convergence and the `resolution_limited` verdict on the 50 um base stand | 33 um label with a **disclosed (b) failure at +2.46 %** - usable as `provisional_ledger` only under a declared tolerance, or re-run under v2.0.6 |
+| mini-sweep **047** (`b424ea37`) | `l1a-gs-v2-047` (rho 0.38) | 33 um / parity | plateau at 3.00 transits, `I_d` 1.925 mA, residual recorded -7.1 %, **corrected +0.9 %** (`c95919a3`): (b) pass; `assess` / `targets` deferred | qualified 33 um label (assessment pending) |
 | mini-sweep **009** | `l1a-gs-v3-009` (rho 0.92) | 33 um | plateau at 3.02 transits 23:59 AEST 09-04; **record commit pending** | qualified when recorded |
 | mini-sweep **reference** | reference | 33 um | past 3 transits ~00:10 AEST 09-05 (numerical replication of v4 on the H100); record pending | replicate of v4 across GPUs (numerical, not bitwise) |
 | mini-sweep **056** launch 2 (`ee35bc84`) | `l1a-gs-v3-056` (rho 2.36, HEMP-like) | 33 um | running, ETA 06:00-08:00 AEST 09-05 (launch 1 gate-stopped on a shot-noise artefact, `ccee5c60`, no plateau) | pending |
@@ -212,8 +379,10 @@ noise.
 
 Count: **four distinct designs with a qualified or imminent 33 um channel plateau (reference,
 047, 009, 056), all at ONE operating point (300 V, `n_g0` 5.5e19, 3 mA @ 2 eV), one closure (v1.3,
-no recycling); one replicate pair at 50 um; zero plume plateaus; zero experimentally validated
-points.** That is the whole training set. A 7-D surrogate needs on the order of 10 points per
+no recycling); one replicate pair at 50 um (a heating rung under v2.0.6); zero plume plateaus;
+zero experimentally validated points; and the reference's 33 um plateau itself fails its
+predeclared residual acceptance by 0.46 percentage points under the corrected ledger.** That is
+the whole training set. A 7-D surrogate needs on the order of 10 points per
 dimension for an *initial* GP design (Loeppky, Sacks and Welch 2009, Technometrics 51:366-376,
 doi:10.1198/TECH.2009.08040 - an informal rule they support with evidence, not a guarantee, and
 one that assumes a smooth response without regime boundaries); four points fit nothing and
@@ -277,12 +446,16 @@ The PIC labels have a *different* noise structure, and the plan is built on it:
    uncertified", the mini-sweep's acceptance (f) verbatim).
 3. **Only qualified runs are labels.** Qualification = plateau rule held AND residual-power
    acceptance (b) AND the peak-Debye soft margin AND the ledger *as corrected*: the
-   `inelastic_loss_j` macro-weight bug (scratchpad 2026-09-05 00:50) biased every recorded
-   residual negative by the inelastic power (7-14 % of electrode work) - v2 base was heating
-   (+13 %), ss-v4 ~+1.9 %, 047 ~+2.6 %, 056 L1 ~+0.7 %. Until the ledger fix lands and the
-   corrected residual is recomputed for each record, the "qualified" flag is *provisional* and
-   the dataset stores both the recorded and the corrected residual. Gate-stopped, heating and
-   no-plateau runs are **not** regression labels; they are *classification* labels (section 4.3).
+   `inelastic_loss_j` macro-weight bug biased every recorded residual negative by the inelastic
+   power (7-14 % of electrode work). The fix is **model v2.0.6** (`4b53012d`; spec entries in
+   `8c70cff0`) with post-hoc `ledger-corrected.json` sidecars for 13 runs: v2 base +13.0 %,
+   seed-b +11.1 %, W x0.7 +7.2 % (all heating), ss-v4 **+2.46 % -> acceptance (b) FAIL**, 047
+   +0.9 %, 056 L1 +0.6 %, plume attempts 3-8 +11 to +67 %, ext-val v0 +61.7 %; thresholds kept at
+   5 % hard / 2 % acceptance. Records executed on pre-v2.0.6 code (009, reference replication,
+   056 L2, v5) carry `provisional_ledger` until their sidecar is written; the dataset stores both
+   the recorded and the corrected residual and the label status names which one qualified it.
+   Gate-stopped, heating and no-plateau runs are **not** regression labels; they are
+   *classification* labels (section 4.3).
 4. **Replicate policy** (Binois, Huang, Gramacy and Ludkovski 2019, already cited in
    `docs/literature/surrogate-mdo-validation-blockers.md` section 1.2): one seed replicate per
    design family (HEMP-like / mid / low rho) per campaign batch, one W x0.7 replicate per batch,
@@ -384,8 +557,9 @@ verified-hypervolume stall, calibration checked, no pending work).
 | whole-scenario split | reuse | split by *design id*; all rungs, seeds, W, frames, closures of a design in one split; `surrogates.validation.grouped_spatial_split` enforces the transitive closure |
 | normalisation fit on train only, unit-aware | reuse | log for positive quantities; per-quantity bands in the same space |
 | campaign generator (LHS, scenario vs programme scope, replicates, queue) | reuse the shape | design-scope axes (geometry) vs operating-point axes; batch = one preregistration; emits per-design sealed protocols (the mini-sweep composer `protocol.py` already does this for 5 designs) + a `jobs.yaml` block for `tools/cloud/schedule.py` |
-| FNO backbone + heteroscedastic heads | **adapt to 2-D**, use only at Phase 3 | 2-D spectral convolution on `[batch, channels, r, z]`; the 3-D code is a direct template |
-| U-Net / TFNO / U-FNO ladder | defer | only if the FNO fails the Phase-3 gates and > 100 maps exist |
+| FNO backbone + heteroscedastic heads (Core A, 1.5) | **adapt to 2-D**, use only at Phase 3 | 2-D spectral convolution on `[batch, channels, r, z]`; the 3-D code is a direct template; the middle rung of the field ladder (POD-GP -> FNO -> token transformer) |
+| latent-token / attention core (Core B, 1.5; Heaviside, 1.6) | **adopt as the declared level-(b) target**, testable only at >= 100-300 map sets | patch tokens over the canonical grid (geometry / field / mask channels) + condition tokens (operating point, closure id, rung, code dimensionality, per-cusp descriptors) + arbitrary-point query decoder (the weld `query_decoder.py` idea) + heteroscedastic heads; 1-10 M parameters, ensemble of 3-5; azimuthal modes / theta patches as extra tokens for 3-D records (the 2-D model is the m = 0 slice); admitted only by the 1.5 criteria on held-out families |
+| U-Net / TFNO / U-FNO ladder | defer | only if the FNO fails at the sheaths and > 100 maps exist; the transformer rung supersedes U-FNO as the "sharp interfaces + global coupling" candidate |
 | GINO point-to-grid geometry encoder | **not needed** | our geometry is already a field on the grid; the P2 solve is the encoder |
 | material-function encoder | drop (fixed propellant) | - |
 | GRU control-sequence encoder | drop | operating point is a static vector: MLP context |
@@ -415,20 +589,44 @@ verified-hypervolume stall, calibration checked, no pending work).
 * What it is for: the optimiser's objective-only mode, the campaign's acquisition, and the
   measured noise floor.
 
-**Level (b), fields - N >= 50-100 map sets: a 2-D operator, with a POD-GP baseline.**
+**Level (b), fields - fitted from the FIRST batch (POD-GP), networks at N >= 100-300 map sets;
+the transformer core is the declared target.** (Revised after 1.6: fields are the primary
+supervision target wherever maps exist; the scalar heads are integrals of decoded fields, checked
+against the level-(a) GP.)
 
-* Baseline first: `surrogates.PODFieldSurrogate` on the canonical grid (POD over log-density /
-  potential / log-ionisation maps; GPs on the modal coefficients; mesh hash bound) - it is the
-  right model for tens of snapshots and it gives pointwise variance.
-* Then the network: 2-D FNO (adapted from `Reality-Simulator/ai/src/reality_ai/surrogate/fno.py`)
+* Baseline first, and from the first batch: `surrogates.PODFieldSurrogate` on the canonical grid
+  (POD over log-density / potential / log-ionisation maps; GPs on the modal coefficients; mesh
+  hash bound) - it is the right model for tens of snapshots and it gives pointwise variance.
+* Middle rung: 2-D FNO (adapted from `Reality-Simulator/ai/src/reality_ai/surrogate/fno.py`)
   with inputs `[B_r, B_z, |B|, masks, r / r_w, z / L_ch]` + tiled operating-point context, outputs
   `[log n_e, log n_i, phi / V, T_e, log1p S_map]` each with a log-variance head; masked Gaussian
   NLL where the *target variance floor* per node is the shot-noise variance from `sample_count_e`
   (band-aware by construction); physics terms as in 4.1; ensemble of 3-5 (different seeds and
-  member-wise bootstrap of designs). U-FNO only if the FNO fails on interfaces (sheaths are 1-3
-  cells wide: the same "local interfaces vs global coupling" argument the welding ladder makes).
-* Scalar consistency: the integrals of the decoded fields (S, N_e) must agree with the scalar
-  heads within the band; disagreement is a diagnostic the dashboard shows.
+  member-wise bootstrap of designs).
+* Target rung, the **tokenised transformer-core operator** (1.6.4): the canonical grid cut into
+  patches (e.g. 8 x 8 nodes on a 128 x 1024 grid = 2048 patch tokens; coarser patches first),
+  each patch token = linear embedding of the static channels + a physical-coordinate embedding
+  `(r, z, r / r_w, z / L_ch)`; condition tokens = operating point, closure id, grid rung, code
+  dimensionality (2-D / 3-D), per-cusp descriptors (rho, wall `|B|`, plane position), N stages;
+  an encoder of 4-8 pre-norm blocks (1-10 M parameters); outputs by (i) patch de-embedding to the
+  grid for full-field mode and (ii) an arbitrary-point query decoder (cross-attention from a
+  coordinate query to the latent tokens) for wall profiles, sheath drops, cusp leak widths and
+  the sparse-query mode; heteroscedastic heads and the same masked NLL / physics terms as the
+  FNO. Regularisation and pretraining are mandatory at our N: dropout on tokens, weight decay,
+  masked-patch pretraining on the *cheap* fidelities (P2 field maps for hundreds of catalogued
+  designs; orbit_mc wall-hit maps; 50 um screening maps) before fine-tuning on qualified
+  plateaus. For 3-D records (Phase 1 onward) the azimuthal Fourier modes `m = 0, 1, ..., M` of each
+  field become additional tokens; a 2-D record is exactly the `m = 0` subset, so 2-D pretrained
+  weights initialise the 3-D model.
+* Selection: the three rungs are compared on the identical dataset / splits / normalisation /
+  compute (the `Reality-Simulator/ai` "Required evaluation" list, 1.5) on **held-out design
+  families** (4.5); a rung is adopted only if it beats the rung below on the band-normalised
+  field error of the held-out family, keeps Gauss-law and integral consistency inside bounds and
+  is calibrated. U-FNO is dropped from the ladder; the transformer rung is the "sharp interfaces +
+  global coupling" candidate (sheaths are 1-3 cells wide).
+* Scalar consistency: the integrals of the decoded fields (S, N_e, wall currents, `I_beam`) must
+  agree with the level-(a) GP and the recorded scalars within the band; disagreement is a
+  diagnostic the dashboard shows and a reason to distrust the field model, not the GP.
 
 ### 4.3 Conditioning, uncertainty and the feasibility head
 
@@ -469,10 +667,16 @@ it, never as a sub-process on the H100 beside PIC clients without a slot.
 
 ### 4.5 Evaluation protocol (consistent with the repository's evidence rules)
 
-1. **Preregistered held-out designs**: before any fit, a maximin subset of >= 20 % of the labelled
-   designs (whole designs, all rungs / seeds / frames) is sealed in the protocol as the assessment
-   role; a second small extrapolation role outside the training hull is *reported, not gated*
-   (the surrogate v1 / v2 partition design, inherited by hash).
+1. **Preregistered held-out designs AND a held-out design family**: before any fit, a maximin
+   subset of >= 20 % of the labelled designs (whole designs, all rungs / seeds / frames / codes)
+   is sealed in the protocol as the assessment role; a second small extrapolation role outside
+   the training hull is *reported, not gated* (the surrogate v1 / v2 partition design, inherited
+   by hash). Added after 1.6 (Arena's EMVal "standard" vs "challenge" splits, where "challenge"
+   excludes whole design *templates*): a **challenge role** = one whole design family never seen
+   in training (e.g. the 3-stage or 5-stage family, or one operating point), whose error is
+   reported as the out-of-distribution number every version must quote; the field-supervised vs
+   scalar-only ablation (1.6.3) is evaluated on this role. The frozen record set with its metric
+   definitions is the repository's own benchmark, versioned like EMVal.
 2. **Gates in physical units against the band**: for each gated scalar, held-out RMSE (log space)
    <= 1.5x the pooled replicate floor of that quantity at that rung; 90 % coverage in
    [0.85, 0.97] with its binomial standard error; the reliability-ceiling check; the classifier's
@@ -486,7 +690,7 @@ it, never as a sub-process on the H100 beside PIC clients without a slot.
    one closure, one rung, with the v5 verdict quoted; `surrogates.validation.OODDetector` flags
    every query outside it and the optimiser is refused there (guardrail, not a warning).
 5. **Verdicts**: `accepted_surrogate_for_channel_quantities_at_33um` / `rejected_surrogate` /
-   `noise_floor_only` (Phase 1's expected verdict), each with what the next version needs, as in
+   `noise_floor_only` (Phase 2's expected verdict), each with what the next version needs, as in
    `wall_loss_geometry_surrogate_v2/README.md`.
 
 ### 4.6 How it plugs into the optimisation loop
@@ -515,89 +719,299 @@ it, never as a sub-process on the H100 beside PIC clients without a slot.
 
 ## 5. Phased plan, prerequisites, costs, risks, claims
 
-### Phase 0 - now (in progress; prerequisites, no surrogate work)
+**Order fixed by the user (2026-09-05): (1) finish the 2-D PIC physics, (2) design the 3-D PIC
+and verify that it works, (3) then the AI run.** The phases below follow that order. Phase 0 and
+Phase 1 are PIC work with no surrogate content; they are in this document because they decide
+which simulator generates the labels, what the labels' bands and caveats are, and what the
+tokeniser of 4.2 must carry. Every cost is a projection anchored on a recorded number; the
+anchor is named in each row.
 
-* PIC physics completeness and correctness: the ledger `inelastic_loss_j` macro-weight fix and the
-  particle-side identity check; occupancy floors in accumulated particle-steps on every density
-  gate; wall-ion recycling as a declared closure; the plume model qualified (a plateau at an
-  admissible operating point / grid); STOP-file / SIGTERM handler in the shared runner.
-* Qualified fast solver: v2.0.5 measured solo; GMG Poisson solo probe and its v4 replay campaign;
-  a re-priced cost model.
-* Convergence ladder: v5 verdict (25 um) -> the rung caveat every 33 um label carries.
-* Mini-sweep closure: records for 009 / reference / 056, the sweep-wide `assess` citing v4, and
-  `targets` for all four - the first four rows of the label ledger.
-* Freeze the **record contract** the ingestion will read: schema versions of `summary.json`,
-  `assessment.json`, `maps.npz` keys, the closure-target JSON; any later change bumps the version
-  and the ingestion refuses unknown keys.
-* Cost: already budgeted elsewhere (running); no new GPU-h for the surrogate.
-* Exit criterion: >= 4 qualified 33 um labels with corrected residuals and a frozen contract.
+### Phase 0 - finish the 2-D physics (physics completeness audit -> implementations -> qualified fast solver -> ladder verdicts)
 
-### Phase 1 - dataset schema, ingestion of existing records, scalar baseline to measure the noise floor
+The content is the physics completeness audit `modern/docs/pic2d-physics-completeness-audit.md`
+(`0901138a`, 2026-09-05; 11 graded gaps, ranked roadmap R0-R6, 151 resolved references) and the
+acceleration review `modern/docs/literature/pic-acceleration-methods.md`. This plan does not restate
+them; it fixes the order and the exit criteria the later phases depend on.
 
-* Build `cft_revival/pic_dataset` (or `surrogates/pic_records.py`): the record registry, the
-  ingestion, the label ledger, the dataset manifest with lineage hashes, the canonical-grid
-  resampler with its error record, split assignment by design id. Tests: fail-closed on a
-  tampered sidecar, an unknown key, a mixed rung, a design straddling splits.
-* Noise-floor study on what exists: seed-b / W x0.7 / v4-vs-H100-replication pairs (reference),
-  the 056 seed replicate when run; per-quantity band table in log space; the split-half reliability
-  where two replicates exist. This is the number the gates will be built on.
-* Scalar baseline: GP + ridge + trees + mean on the 4-6 labelled designs, **labelled
-  `noise_floor_only` / plumbing evidence**, not a surrogate claim; leave-one-design-out error
-  reported against the band to show what four points cannot do.
-* Cost: CPU only, ~1 week of work; 0 GPU-h.
+1. **Audit (done, `0901138a`)**: "physics first" gaps R1 anomalous transport (absent by construction
+   in (r,z); every HEMPT PIC imposes a Bohm closure), R2 SEE from the dielectric at the cusps
+   (cusp sheath drops -10 to -45 %), R3 the full e-Xe set (four excitation levels) + Xe+/Xe CEX and
+   MEX with a fast-neutral thrust tally, R4 Coulomb collisions; second wave R5 spatial neutrals +
+   metastable pool, R6 diagnostics (Xe2+, neutraliser gas, beta map, sputter yield). Section 6 of
+   the audit states what the 2-D model can never claim (a self-consistent anomalous mobility,
+   azimuthal structure, instability heating) - that list is the specification of what Phase 1
+   must answer.
+2. **Implementations, in the audit's rank order**, each as a declared closure change with its own
+   `pic2d-model-v2.x` spec entry, on/off comparison against the accepted reference plateau
+   (`0d228ad2`) at the same seed / grid / W / gates, and the expected sign of every change written
+   down before the run (audit section 5). Prerequisite R0 (the v2.0.6 ledger, `4b53012d`) has
+   landed. The Bohm alpha closure (R1) is the one that makes every 2-D label *conditional on a
+   declared alpha*; the label ledger of Phase 2 carries alpha as part of the closure id.
+3. **Qualified fast solver**: v2.0.5 measured solo; GMG Poisson (`poisson_gmg_v1`, `9c2e4222`) solo
+   probe and its v4 replay campaign; launch fusion + cell sort (shared with the Coulomb kernel);
+   mixed precision; an explicit energy-conserving gather trial only against the explicit 33 / 25 um
+   ladder (the review's protocol: bitwise where claimed, +-5 % band otherwise). A re-priced cost
+   model from measured solo ms/step. Nothing in the surrogate plan depends on the speed-ups; the
+   3-D cost table below is quoted at today's rate and again at the review's 2-3.5x.
+4. **Ladder verdicts**: v5 (25 um, `69ff435d`, running) decides whether 33 um carries a grid band;
+   every closure change (R1-R5) re-runs the reference at 33 um and, for the final combined closure,
+   the 33 / 25 um pair, so the closure that generates labels has its own `converged /
+   resolution_limited` verdict. The mini-sweep closure (009 / reference / 056 records, sweep-wide
+   `assess`, `targets` for all four) and the like-for-like external validation
+   (`channel-20um-bohm-0.4-see`, the audit's single most valuable run) belong here.
+5. **Record contract freeze**: schema versions of `summary.json`, `assessment.json`, `maps.npz`
+   keys, the closure-target JSON, `ledger-corrected.json`; any later change bumps the version and
+   the Phase-2 ingestion refuses unknown keys. The contract must already reserve the fields a 3-D
+   record will add (section Phase 1, item 6).
+6. **STOP-file / SIGTERM handler** in the shared runner; occupancy floors in accumulated
+   particle-steps on every density gate (v2.0.4 / v2.0.6, audit them all at once); plume
+   qualification (a plateau at an admissible operating point / grid; under v2.0.6 every 50 um plume
+   attempt read >= +11 % of the electrode power in its first complete window and +17 to +67 % at
+   its end, `37665d70` - the 50 um plume grid with the flux-tube cathode was never conservative).
+
+Cost (anchors: audit section 5; ss-v4 5.0 h on the 5090; H100 ~1x per process, MPS-4 1.54x
+aggregate): audit roadmap runs R1-R6 ~15 runs, **75-90 GPU-h**; ladder re-runs for the final
+closure (33 + 25 um on the reference, 25 um at 15-35 GPU-h) and two more design points
+**60-120 GPU-h**; ext-val like-for-like 20 um **12-30 GPU-h**; plume qualification attempt at
+v2.1 / 50 um or 33 um **20-50 GPU-h**. **Total ~170-290 GPU-h, USD 0.5-0.9k, 4-8 weeks wall** -
+dominated by developer time (the audit's 20-30 developer days for R0-R5), not GPU.
+
+Exit criteria: the R1-R4 closures implemented, each with an on/off record whose signs match or
+whose mismatch is written up as a finding; a 33 um reference plateau under the combined closure
+with acceptance (b) passing on the *corrected* ledger; its 25 um rung verdict; the ext-val
+comparison recorded (agreement or a recorded miss); the record contract frozen at a version. Only
+then is "a 2-D label" defined.
+
+### Phase 1 - 3-D PIC: design + verification (placeholder; the design doc is forthcoming)
+
+The 3-D design itself is a separate document (`modern/docs/pic3d-design.md`, not yet written).
+This section fixes **what "verify it works" must mean** before any 3-D result is used for
+anything, the resolution / cost reality on our grids, and the decomposition the design must
+support. The audit's section 6 (iii) is the seed of the cost estimate; the numbers below re-derive
+it from the v4 record.
+
+**Geometry fact that shapes the design**: our channel is axisymmetric (bore radius 2 mm to z =
+18 mm, cone to 3 mm at z = 24 mm; masks from the P2 mesh regions). The 3-D mesh is therefore the
+2-D mask x theta; the masks, the dielectric, the anode and the far plane do not depend on theta.
+Consequently the Poisson operator separates in theta: an FFT in theta turns the 3-D solve into
+`N_theta / 2 + 1` independent 2-D `(r, z)` solves of `(1/r d/dr r d/dr + d^2/dz^2 - m^2 / r^2) phi_m
+= -rho_m / eps_0` with the *existing* masks and boundary rows; the `m = 0` problem *is* today's
+solver, and every other `m` differs only by a positive diagonal term (better conditioned). The
+block-Thomas column factorisation and the GMG both extend per mode; the RUB code in the LANDMARK
+r-theta benchmark used exactly "FFT in the azimuthal direction and a tridiagonal solver in the
+radial direction for each of the azimuthal harmonics" (Villafana et al. 2021, section 3). The
+particle side is the 3-D Boris push our `orbit_mc` already performs (3-D positions and velocities
+in the axisymmetric field), a theta coordinate on every particle (today: `v_theta` without
+theta), 8-node CIC in `(r, theta, z)` with the Verboncoeur axis volumes, and a periodic theta
+(full annulus or a `2 pi / n` sector).
+
+**What "verify it works" must mean** (every item preregistered with a pass band before the run):
+
+1. *Manufactured solutions.* 3-D Poisson on the masked cylinder with `phi = J_m(k r) cos(m theta)
+   sin(k_z z)` for several `m`, second-order convergence per mode and exact reproduction of the
+   2-D solver at `m = 0` (bitwise: the same factorisation). Boris push against `orbit_mc` orbits in
+   the P2 field (the 1e-10 energy gate the orbit code already passes), including orbits with
+   `v_theta != 0` that cross sector boundaries. Charge conservation of the 8-node deposit to
+   round-off; Gauss law with the surface charge on the theta-extruded wall nodes.
+2. *Axisymmetric-limit replay.* Start from the theta-uniform 2-D plateau checkpoint (reference,
+   33 um), `N_theta` small (8-16, azimuthal cell 0.8-1.6 mm >> any unstable wavelength), run
+   0.5-1 us. Pass band: theta-averaged `I_d`, `S`, `n_g`, peak `n_e`, `T_e,peak` inside the 2-D
+   particle-resolution band (5.7 / 4.6 / 4.0 / 11.9 / 9.3 %); the `m != 0` field energy stays at
+   the particle-noise floor (no numerical azimuthal instability of the scheme). Cost 5-10 GPU-h.
+3. *LANDMARK benchmarks in the code's slab limit* (both are in the repository's literature review
+   with DOIs; parameters verified against the papers 2026-09-05). (a) **Axial-azimuthal**, Charoy
+   et al. 2019 (doi:10.1088/1361-6595/ab46c5): 2.5 cm x 1.28 cm, 500 x 256 cells of 50 um,
+   `dt` 5 ps, 4e6 steps = 20 us, 200 V, prescribed cosine ionisation source `S_0 = 5.23e23
+   m^-3 s^-1`, collisionless, 75 / 150 / 300 ppc; seven codes agreed within ~5 % on the
+   time-averaged profiles; their computing times were 2.5-21 days on 32-448 CPU cores or 9-14
+   days on one or two V100s (2019 hardware). (b) **Radial-azimuthal**, Villafana et al. 2021
+   (doi:10.1088/1361-6595/ac0a4a): 1.28 x 1.28 cm, 256 x 256 cells of 50 um, `dt` 15 ps, 30 us,
+   `B_z` 200 G, virtual axial `E_x` 10 kV/m, grounded walls, 100 ppc initial (~212 at steady
+   state), collisionless, ECDI + MTSI; seven codes within 5 %; 12-306 h on CPU codes, hours on
+   the GPU code. (Note for the brief: the *r-theta* case is Villafana 2021; Charoy 2019 is
+   *z-theta*.) Pass band: time-averaged profiles inside the published seven-code envelope; the
+   dominant azimuthal wavelength and frequency inside the reported spread; the ppc convergence
+   trend reproduced. Our projected cost at ~1e9 particle-steps per second per H100 (the audit's
+   measured anchor, consistent with the v4 record: 4.5 M particles at 3.5 ms/step): (a) 20-80 M
+   particles x 4e6 steps = 1-3 GPU-days per case, (b) 14-28 M x 2e6 = 8-16 GPU-h per case;
+   **~100-150 GPU-h for both with one ppc-convergence pair each**.
+4. *Sector convergence on our own channel.* One design (reference), 90 deg -> 180 deg -> 360 deg
+   at fixed `r dtheta`, same seed family; pass band: theta-averaged plateau scalars inside the
+   particle band, the `m`-spectrum of the fluctuations converged in its resolved range. This is
+   the check that a sector is admissible for labels.
+5. *Measured scaling.* ms/step vs `N_theta` and vs GPU count on the real reference field before any
+   preregistered 3-D run (the L1b v1 and mini-sweep lessons: preflight at production load, budget
+   at 1.5x).
+6. *Record contract for 3-D.* The 2-D contract plus: `theta_cells`, `sector_fraction`,
+   theta-averaged maps (the same keys as `maps.npz`, so a 3-D record's `m = 0` slice ingests as a
+   2-D record does), the azimuthal mode spectra of `n_e`, `phi`, `E_theta` per `(r, z)` band, the
+   `m != 0` energy fraction, the instability-driven cross-field current (the Reynolds-stress /
+   `<n E_theta>` term) as a map - this last quantity is the effective anomalous mobility the 2-D
+   alpha closure will be calibrated against.
+
+**Resolution / cost table for our grids** (reference channel, `dr = dz` 33.3 um, 90 x 720 =
+64 800 cells, ~4.5 M macro-particles at parity in 2-D, `dt` 1.4 ps; anchors: v4 record
+`0d228ad2` - 5 142 858 steps = 3 transits, 1 714 286 steps = 1 transit; 3.5 ms/step; ~1e9
+particle-steps/s/GPU; 64 B per particle). "Full" = 360 deg; the azimuthal cell `r dtheta` is
+what the Debye gate sees, and it is smallest at the peak-density radius `r ~ 0.7 mm` (window
+peak `lambda_D` 15.5 um at 1.29e18 m^-3 / 5.6 eV) and largest at the lip `r = 3 mm`.
+
+| `N_theta` (full annulus) | `r dtheta` at r = 0.7 / 2 / 3 mm | `r dtheta / lambda_D` at the peak (hard gate pi, soft 2.5) | cells | particles (parity) | memory | ms/step, 1 GPU (projected) | GPU-h: warm 1 transit / cold 3 transits | wall on 8 H100 (ideal decomposition) | USD (3/GPU-h) |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 64 | 69 / 196 / 295 um | **4.4 - inadmissible** | 4.1 M | 290 M | 18 GB | ~220 | 105 / 315 | 13 / 39 h | 315 / 945 |
+| 128 | 34 / 98 / 147 um | 2.2 (soft margin ok) | 8.3 M | 580 M | 37 GB | ~440 | 210 / 630 | 26 / 79 h | 630 / 1,890 |
+| 256 | 17 / 49 / 74 um | 1.1 | 16.6 M | 1.15 G | 74 GB (does not fit one 80 GB card with sort buffers) | ~870 | 415 / 1,240 | 52 / 155 h | 1,245 / 3,720 |
+| **90 deg sector, 64 theta cells** (= the 256 row's `r dtheta`) | 17 / 49 / 74 um | 1.1 | 4.1 M | 290 M | 18 GB | ~220 | **105 / 315** | **13 / 39 h** | **315 / 945** |
+| 45 deg sector, 64 theta cells (= a 512 row's `r dtheta`) | 8.6 / 25 / 37 um | 0.55 | 4.1 M | 290 M | 18 GB | ~220 | 105 / 315 | 13 / 39 h | 315 / 945 |
+
+Reading: a full annulus at `N_theta = 64` is ruled out by the same finite-grid-heating gate that
+ruled out 50 um in 2-D; `N_theta = 128` is the coarsest admissible full annulus and `256`
+the comfortable one; a **90 deg periodic sector with 64 theta cells has the resolution of the 256
+row at a quarter of its cost**, and it is the unit this plan costs a "3-D anchor" at: **~100-300
+GPU-h, USD 300-950, 0.5-1.6 days wall on the 8-GPU box** - i.e. **10-80x a 2-D label** (4-11 GPU-h). The
+sector is only admissible if item 4 above passes; the unstable azimuthal wavelengths at our
+`B` (0.1-0.5 T, ten times the Hall-thruster benchmarks') are expected to be tens of um, i.e.
+`lambda_D`-scale, so a 4.7 mm arc (90 deg at the lip) holds many wavelengths - a hypothesis the
+sector-convergence run tests, not a result. "Warm 1 transit" assumes the run starts from the
+theta-uniform 2-D plateau and only the azimuthal modes must saturate; whether the theta-averaged
+plateau rule is then re-satisfied within one transit is itself a predeclared outcome. The audit's
+independent estimate (18 M cells, ~550 M electrons, ~23 days on one H100 for 5 us at full annulus;
+a 30 deg wedge 8x cheaper) agrees with the 256 row within a factor 2. The acceleration review's
+2-3.5x would scale every GPU-h figure down by the same factor once *measured* on the 3-D code.
+
+**Multi-GPU decomposition needs** (design requirements, not decisions): theta-slab decomposition
+of particles (each GPU owns a contiguous theta range; migration per step is a small fraction - the
+azimuthal drift `E / B ~ 1e4-1e6 m/s` moves an electron 0.01-1 um per step against 17-74 um cells)
+with ghost-node deposit exchange; the Poisson FFT in theta needs an all-to-all transpose of the
+charge array (65 611 nodes x `N_theta` x 8 B = 34-134 MB per step; sub-millisecond over NVLink on
+the H100 SXM box, tens of ms over PCIe / MPS-shared cards - the box choice matters); mode-parallel
+2-D solves (each GPU owns a range of `m`); the diagnostics that today run inside one CUDA graph
+(window accumulators, ledgers, peak-Debye statistics) need a reduction across GPUs at the record
+cadence only. The single-GPU path must remain the reference (bitwise replay of the 2-D code at
+`m = 0` is the regression test). Memory: the 128 row fits one card only just; 256 needs two.
+
+Cost of Phase 1 (GPU): manufactured + axisymmetric-limit checks 10-20 GPU-h; LANDMARK pair with
+ppc convergence 100-150 GPU-h; scaling measurements 20-50 GPU-h; sector-convergence triplet on the
+reference (90 / 180 / 360 deg, warm start) 100 + 200 + 400 = ~700 GPU-h if all three are run at 64
+theta cells per 90 deg (or ~350 if the 360 deg leg is skipped after 90 / 180 agree); one first
+3-D reference anchor at the chosen sector 100-300 GPU-h. **Total ~600-1,200 GPU-h, USD 1.8-3.6k,
+2-4 weeks wall on the 8-GPU box after the code exists** - the code (design doc, kernels,
+decomposition, tests) is weeks of developer time on top and is the real cost.
+
+Exit criteria: items 1-5 recorded with their pass bands met (or a recorded miss); a 3-D record
+contract; **one 3-D anchor of the reference design** with its theta-averaged plateau, its
+`m`-spectrum and its effective cross-field current map; and the number that decides Phase 3:
+**the 3-D-vs-2-D shift of `I_d`, `S`, utilisation, peak `n_e` on the reference, in units of the
+2-D particle band.**
+
+### Phase 2 - dataset schema, ingestion, noise floor (from 2-D and 3-D records)
+
+* Build `cft_revival/pic_dataset` (or `surrogates/pic_records.py`): the record registry (semantic
+  ids for every `summary.json` scalar, `maps.npz` array, closure target, ledger sidecar, 3-D
+  spectrum; unit, support, disposition), the ingestion, the label ledger (one row per record x
+  quantity: value, band, rung, **closure id incl. alpha**, seed, W, **code = 2-D / 3-D, sector**,
+  verdict, `label_status` in {qualified, provisional_ledger, classifier_only}), the dataset
+  manifest with lineage hashes, the canonical-grid resampler with its error record, split
+  assignment by design id **and design family** (4.5). Tests: fail-closed on a tampered sidecar,
+  an unknown key, a mixed rung, a mixed closure, a design straddling splits, a 3-D record whose
+  `m = 0` slice does not ingest as a 2-D record.
+* Noise-floor study on what exists after Phase 0: seed / W / cross-GPU replication pairs
+  (reference), the 056 seed replicate, the alpha-series (a *closure* band, reported separately
+  from the particle band); per-quantity band table in log space; split-half reliability where two
+  replicates exist. The 3-D anchor's theta-averaged scalars enter as a **fidelity**, not as noise.
+* Scalar baseline: GP + ridge + trees + mean on the labelled designs, **`noise_floor_only` /
+  plumbing evidence**; leave-one-design-out error against the band. **POD-GP on the maps of the
+  same designs from this phase on** (1.6 change 1): pointwise band-normalised error and the
+  scalar-from-field consistency check, also `noise_floor_only`.
+* Cost: CPU only, 1-2 weeks of work; 0 GPU-h.
 * Exit: the manifest reproduces byte-for-byte from the records; the floor table is recorded; the
-  campaign generator (Phase 2) knows which quantities need replicates.
+  campaign generator knows which quantities need replicates; the challenge family is chosen and
+  sealed.
 
-### Phase 2 - PIC campaign generator on the H100 (design sampler, prereg per batch, scheduler)
+### Phase 3 - AI campaign (labels, then models)
+
+**Which simulator generates the labels** is decided by Phase 1's exit number, not in advance.
+Three options, with the decision rule and the cost of each:
+
+| option | labels | when it is the right choice | cost for target A (24-30 designs) / target B (70-100) of 3.5 |
+| --- | --- | --- | --- |
+| **A. 2-D labels, calibrated closure, 3-D anchors as the caveat** | 2-D 33 um plateaus under the Phase-0 combined closure with alpha *calibrated on the 3-D anchors* (a constant, or an `(r, z)` map from the anchors' effective cross-field current); 3-5 3-D anchors across rho (reference + 047 + 056 + one operating point) | the 3-D-vs-2-D shift on the reference is within the 2-D particle band **or** a one-parameter / one-map alpha closure reproduces the anchors' theta-averaged `I_d`, `S`, peak `n_e` within the band on a held-out anchor | 2-D 120-250 / 400-800 GPU-h + anchors 3-5 x 100-300 = 300-1,500 -> **A: 420-1,750 GPU-h (USD 1.3-5.3k); B: 700-2,300 GPU-h (USD 2.1-6.9k)** |
+| **B. 3-D labels at scaled resolution for every design** | 90 deg sector, 64 theta cells, warm-started from a 2-D plateau; 1 transit | the shift exceeds the band **and** no closure reproduces it **and** the budget allows | 24-30 x 100-300 = **2,400-9,000 GPU-h (USD 7-27k)** for A; 70-100 x 100-300 = **7,000-30,000 GPU-h (USD 21-90k)** for B - **not affordable at today's rate**; only if the 3-D step measures >= 5x faster than projected |
+| **C. multi-fidelity: 2-D low, 3-D high** | 70-100 2-D labels (low fidelity) + 8-12 3-D labels (high fidelity) in the AR1 / multi-task residual (`TwoFidelityAR1`, BoTorch `MultiTaskGP`, the weld `MultiFidelitySurrogate` idea); the surrogate's *target* fidelity is 3-D | the shift exceeds the band and the closure does not reproduce it, but the shift is *smooth in the design features* (the residual is learnable from ~10 points) | 400-800 + 8-12 x 100-300 = **1,200-4,400 GPU-h (USD 3.6-13k)**; the field-level model is then a 2-D model plus a scalar 3-D correction, and the transformer core's 3-D tokens are trained on 8-12 records - i.e. not trained |
+
+Decision rule, in order: (1) run the reference anchor (Phase 1 exit) and two more anchors (047
+low-rho, 056 HEMP-like: 200-600 GPU-h); (2) compute the shifts in band units; (3) fit the alpha
+closure on two anchors, test on the third; (4) choose A if the test passes, C if it fails and the
+residual is smooth, and declare B unaffordable unless the measured 3-D rate says otherwise. The
+choice, the three anchors and the test are one preregistered experiment. Whatever the choice, the
+**label is what the chosen simulator says under its declared closure at its declared rung and
+sector**, and the surrogate is "of that model" - never of the thruster.
+
+Then the campaign as before, with the label source fixed:
 
 * Sampler: scrambled Sobol on the declared box (4-cusp family first; then N stages, `V`, feed),
-  the whole-set feasibility screen of section 3.4 before the prereg commit, boundary challenges,
-  replicate allocation from Phase 1's floor.
-* Per batch (8-16 designs + 2-4 replicates): one preregistration (protocol.json binding the sealed
+  the whole-set feasibility screen of 3.4 before the prereg commit, boundary challenges, replicate
+  allocation from Phase 2's floor; the challenge family excluded from every batch until the final
+  evaluation.
+* Per batch (8-16 designs + 2-4 replicates): one preregistration (protocol binding the sealed
   per-design protocols, preflight, shakedown on ONE real design through run -> finalize -> assess
   -> targets, MPS replay), launched through `tools/cloud/schedule.py` at MPS-4 per GPU; results
-  committed from the job worktrees on `results/<id>` branches; the ingestion of Phase 1 runs on
-  each batch as it lands. Never kill a client under MPS; budgets at 1.5x the measured early rate.
-* After batch 1 (16 + 4 runs, ~80-160 GPU-h, USD 250-500, 2-4 days on one H100 under MPS-4 or
-  under a day on eight): the first *gated* scalar attempt (target A of 3.5). After batches 2-4 (operating-point
-  axes; cumulative 70-100 labels, 400-800 GPU-h, USD 1.2k-2.4k): target B.
-* Exit: the acquisition loop (GP posterior -> next batch) runs from the label ledger with the
-  stopping policy's diagnostics visible; the scalar surrogate has a verdict under the Phase-1 gates.
+  committed from the job worktrees; the Phase-2 ingestion runs on each batch as it lands. Never
+  kill a client under MPS; budgets at 1.5x the measured early rate.
+* Models, in ladder order and gated as 4.5: the scalar GP (noise floor + acquisition) from batch 1;
+  POD-GP on the maps from batch 1; the 2-D FNO and the tokenised transformer-core operator only
+  once >= 100 map sets exist (option A / C target B), pretrained on the cheap fidelities (P2 field
+  maps of the 224 catalogued designs, orbit_mc wall-hit maps, 50 um screening maps) and compared
+  at fixed compute on the held-out family; the field-supervised vs scalar-only ablation (1.6.3)
+  reported on the challenge family. Training on the local 5090 or one H100-hour; never beside a
+  preregistered run.
+* After batch 1 (16 + 4 runs, 80-160 GPU-h, USD 250-500): the first *gated* scalar attempt and
+  the first POD-GP field verdict (target A). After batches 2-4 (cumulative 70-100 labels): target
+  B, the network rungs, the ablation.
+* Cost: option A (recommended if its test passes): **700-2,300 GPU-h, USD 2.1-6.9k** through
+  target B, plus 5-20 GPU-h of training; option C: 1,200-4,400 GPU-h.
+* Exit: the acquisition loop runs from the label ledger with the stopping policy's diagnostics
+  visible; each rung has a verdict under the 4.5 gates on the held-out designs *and* the challenge
+  family; the field-supervision ablation is recorded.
 
-### Phase 3 - field-operator surrogate
-
-* POD-GP baseline on the canonical-grid maps of Phase 2, then the 2-D FNO ensemble with the
-  shot-noise-weighted NLL and the Gauss-law / integral consistency terms; U-FNO only on a measured
-  failure at the sheaths. Training on the local 5090 (minutes to an hour; the maps are ~1 M nodes x 5
-  channels per design) or one H100-hour; never beside a preregistered run.
-* Gates as 4.5; a dashboard of predicted vs PIC maps on the held-out designs with the band shown.
-* Cost: ~5-10 GPU-h; the data are Phase 2's.
-* Exit: a verdict; if rejected, the POD-GP or the scalar GP remains the optimiser's F2 source.
-
-### Phase 4 - optimisation with UQ and held-out PIC confirmation
+### Phase 4 - optimisation with solver-in-the-loop verification
 
 * The campaign of 4.6 on the accepted F2 source: a constrained multi-objective acquisition
-  proposes 8-12 candidates per round; each round is a preregistered PIC batch (F3); disagreement
-  feeds the next round; two rounds minimum before any front is drawn.
+  proposes 8-12 candidates per round; each round is a preregistered PIC batch (F3, the label
+  simulator of Phase 3); disagreement beyond the band feeds the next round; two rounds minimum
+  before any front is drawn. **The final shortlist (2-3 designs) is verified in 3-D** at the
+  Phase-1 sector regardless of which option Phase 3 chose - that is the solver-in-the-loop rule
+  applied to the highest fidelity we have, and it is where an option-A closure is caught if it
+  drifted off the anchors.
 * Plume objectives only if Phase 0's plume qualification succeeded and target D of 3.5 has been
   paid for; otherwise the channel-quantity objective set, declared as such.
-* Cost: 2-3 rounds x 10 designs x 4-11 GPU-h = 100-300 GPU-h (USD 300-900) for channel
-  confirmation; plume confirmation 20-50 GPU-h per point on top.
-* Exit: an F3-verified Pareto set with bands, the surrogate-vs-PIC disagreement table, and the
-  claim envelope; the paper admission would be a `numerical-campaign` gate with the surrogate as
-  a *tool* of the campaign, not as a finding.
+* Cost: 2-3 rounds x 10 designs x 4-11 GPU-h = 100-300 GPU-h (USD 300-900) for 2-D channel
+  confirmation; 3-D shortlist verification 2-3 x 100-300 = **200-900 GPU-h (USD 0.6-2.7k)**; plume
+  confirmation 20-50 GPU-h per point on top.
+* Exit: an F3-verified Pareto set with bands (and its 3-D verification of the shortlist), the
+  surrogate-vs-PIC disagreement table, and the claim envelope; the paper admission would be a
+  `numerical-campaign` gate with the surrogate as a *tool* of the campaign, not as a finding.
 
 ### Cost summary
 
-| phase | GPU-h | USD (3/GPU-h) | wall (1 H100, MPS-4) | wall (8 H100) |
+| phase | GPU-h | USD (3/GPU-h) | wall (8 H100 box, USD 24/h) | dominant cost |
 | --- | --- | --- | --- | --- |
-| 0 | (already running) | - | - | - |
-| 1 | 0 | 0 | 1 week CPU | - |
-| 2 | 300-800 | 900-2,400 | 8-22 days | 1-3 days |
-| 3 | 5-10 | 15-30 | hours | hours |
-| 4 (channel) | 100-300 | 300-900 | 3-8 days | 0.5-1 day |
-| 4 (+ plume) | +400-1,200 | +1,200-3,600 | weeks | 2-6 days |
-| **first useful loop (1 -> 4 channel)** | **~400-1,100** | **~1.2k-3.3k** | **~2-4 weeks** | **~2-4 days** |
+| 0 - 2-D physics | 170-290 | 0.5-0.9k | 4-8 weeks | developer time (audit R0-R5: 20-30 days) |
+| 1 - 3-D design + verification | 600-1,200 | 1.8-3.6k | 2-4 weeks GPU after the code exists | developer time (design doc, kernels, decomposition) |
+| 2 - data plane + noise floor | 0 | 0 | 1-2 weeks CPU | - |
+| 3 - AI campaign, option A (2-D labels + 3-5 3-D anchors) through target B | 700-2,300 | 2.1-6.9k | 2-4 weeks | GPU |
+| 3 - option C instead | 1,200-4,400 | 3.6-13k | 4-8 weeks | GPU |
+| 3 - option B (all 3-D) | 7,000-30,000 | 21-90k | months | **unaffordable at today's rate** |
+| 4 - optimisation + 2-D F3 + 3-D shortlist | 300-1,200 | 0.9-3.6k | 1-2 weeks | GPU |
+| 4 (+ plume) | +400-1,200 | +1.2-3.6k | +1-2 weeks | GPU |
+| **first useful loop (0 -> 4, option A, channel)** | **~1,800-5,000** | **~5.4-15k** | **~3-5 months** | developer time in 0-1, GPU in 3-4 |
+
+Against the previous revision (400-1,100 GPU-h, 2-4 weeks): the increase is the user's order -
+the 2-D physics has to be finished and the 3-D code built and verified *before* a single label is
+paid for - plus the 3-D anchors that make a 2-D label defensible. The 2-D-label part alone
+(Phase 3's 2-D campaign 400-800 GPU-h + Phase 4's 2-D confirmation 100-300 GPU-h = 500-1,100
+GPU-h) is unchanged from the previous revision; everything else is the price of the 3-D anchors
+and of verifying the shortlist at the highest fidelity we will have.
 
 ### Risks
 
@@ -614,6 +1028,11 @@ it, never as a sub-process on the H100 beside PIC clients without a slot.
 | cross-platform hash drift (Windows vs Linux ULP) | field-map hash `d30d2d24 -> 1f124047` | dataset manifest hashes stored bytes, not derived arrays; scale-aware tolerances for derived maps |
 | H100 operations (MPS Xid 31, no clean stop) | 2026-09-04 incidents | scheduler rules of `PLAN.md` / mini-sweep 8.3; STOP-file handler in Phase 0 |
 | the plume model is not qualified in time | no plume plateau after 8 attempts | thrust heads are gated behind qualification; the channel objective set is the declared fallback |
+| the 3-D-vs-2-D shift is large and not reproducible by any alpha closure (option C or B forced) | audit section 6: 2-D reduced models "significantly overestimate" the mobility; no 3-D PIC of a cusped-field thruster exists to bound it | the three-anchor preregistered test decides before any 2-D campaign is paid for; option C keeps the 3-D count at 8-12; option B is declared unaffordable rather than attempted piecemeal |
+| the 3-D sector is inadmissible (m-spectrum not converged at 90 deg) | hypothesis only; the unstable wavelengths at 0.1-0.5 T are estimated, not measured | Phase 1 item 4 (90 / 180 / 360 deg) before any 3-D anchor is used as a label or a calibration point |
+| the 3-D step is slower than the ~1e9 particle-steps/s projection (8-node CIC, theta sort, transposes) | 2-D perf audit: the step is latency-bound; MPS inflates tiny kernels 7-10x | Phase 1 item 5 measures solo before any prereg; budgets at 1.5x; the cost table is re-issued from the measurement |
+| the transformer rung over-fits or is selected by taste | Reality-Simulator/ai's own risk sentence; our v1/v2 selection instability | the 1.5 criteria verbatim: same data / splits / compute, held-out family, beat the rung below or it is not adopted; POD-GP remains the model otherwise |
+| Arena's field-supervision result does not transfer to tens of designs | their ablation is at 250 k designs | our own ablation (field-supervised vs scalar-only at equal design count) is a Phase-3 deliverable on the challenge family; fields-first is a design choice, not a claimed gain |
 
 ### What must NOT be claimed (at any phase)
 
@@ -624,7 +1043,14 @@ it, never as a sub-process on the H100 beside PIC clients without a slot.
   verdict and says "at 33 um, <verdict>".
 * Experimental validity: the PIC is not externally validated (ext-val v0 inconclusive); the
   surrogate is a surrogate of *this* model under *this* closure (electrostatic, axisymmetric, no
-  anomalous transport by construction, 0-D neutral inventory, no SEE).
+  anomalous transport by construction, 0-D neutral inventory, no SEE) until Phase 0 changes the
+  closure - and then of *that* closure, with its alpha.
+* A self-consistent anomalous mobility, azimuthal structure or instability heating from any 2-D
+  label (audit section 6); "3-D-verified" for anything but the designs actually run in 3-D at the
+  recorded sector and resolution; a 3-D number from a sector whose convergence (Phase 1 item 4)
+  was not recorded.
+* Anything Arena Physica claims about Heaviside as if it were established: the figures in 1.6 are
+  company statements on a company benchmark; the only checkable object is the public EMVal split.
 * A design rule or ranking from the four mini-sweep points, or from any front not verified at F3;
   a single-closure ranking (MDO v2: CL-1 vs CL-2 Jaccard 0).
 * Surrogate uncertainty as physical uncertainty: it is emulator + numerical band; model-form
@@ -649,17 +1075,24 @@ it, never as a sub-process on the H100 beside PIC clients without a slot.
 * Cloud execution: `modern/tools/cloud/{PLAN.md, schedule.py, jobs.yaml, bench_gpu_concurrency.py, bootstrap_lambda.sh}`.
 * Prior surrogate record: `modern/experiments/wall_loss_geometry_surrogate_v1/`, `_v2/`, `modern/experiments/l0_surrogate_v9/`, `modern/experiments/l1a_field_surrogate_v2/`; the reasons in `modern/docs/literature/surrogate-mdo-validation-blockers.md` sections 1.1-1.4.
 * Performance and acceleration: `modern/docs/pic2d-performance-audit.md`; `modern/docs/literature/pic-acceleration-methods.md`.
+* Physics completeness (Phase 0): `modern/docs/pic2d-physics-completeness-audit.md` (`0901138a`); ledger correction v2.0.6 `modern/src/cft_revival/pic2d/ledger_recompute.py` and the `ledger-corrected.json` sidecars under each `results/`; `modern/docs/literature/pic-mcc-blockers.md` (Charoy 2019 ref. 19, Villafana 2021 ref. 110, Zhao and Zhao 2026 ref. 116).
+* 3-D design (Phase 1): `modern/docs/pic3d-design.md` - **forthcoming, not yet written**; the 3-D orbit integrator that verifies the pusher: `modern/src/cft_revival/orbit_mc/`.
 
 ## 7. File references (`Reality-Simulator/ai`, read-only)
 
-`README.md`; `IMPLEMENTATION_STATUS.md`; `TODO.md`; `docs/ARCHITECTURE.md`; `docs/FULL_PHYSICS_SURROGATE_PLAN.md`;
-`docs/SURROGATE_ARCHITECTURES.md`; `docs/DATA_PLANE.md`; `docs/PLANNING_AND_REALTIME.md`; `docs/TRAINING_PLAN.md`;
-`docs/VALIDATION_PLAN.md`; `docs/DATASET_GENERATION_CAMPAIGN.md`; `paper/latex/sections/03_training_optimisation_control.tex`,
-`04_protocol_status_conclusion.tex`; `configs/surrogate/{baseline.yaml, model_ladder.yaml}`;
+`README.md`; `IMPLEMENTATION_STATUS.md`; `TODO.md`; `docs/README.md` (normative order); `docs/ARCHITECTURE.md`;
+`docs/ARCHITECTURE_DETAIL.md` (sections 4, 4.1, 12); `docs/FULL_PHYSICS_SURROGATE_PLAN.md` (sections 1-3, 7.1, 13.4,
+14.2-14.3, 15, 33, 42.4); `docs/SURROGATE_ARCHITECTURES.md`; `docs/LITERATURE_REVIEW.md`; `docs/DATA_PLANE.md`;
+`docs/EXPORTER_AND_HETEROGENEOUS_STATE.md`; `docs/PLANNING_AND_REALTIME.md`; `docs/TRAINING_PLAN.md`;
+`docs/VALIDATION_PLAN.md`; `docs/DATASET_GENERATION_CAMPAIGN.md`; `paper/latex/sections/01_introduction_related.tex`,
+`02_export_representation_architecture.tex`, `03_training_optimisation_control.tex`,
+`04_protocol_status_conclusion.tex`, `05_appendix_references.tex`; `paper/ARCHITECTURE_PAPER_DRAFT.md`;
+`configs/surrogate/{baseline.yaml, model_ladder.yaml}`;
 `configs/datasets/{production.yaml, s355_gmaw_tfillet_pilot_campaign.json}`; `configs/optimisation/default.yaml`;
 `src/reality_ai/surrogate/{model.py, fno.py, unet.py, tfno.py, ufno.py, backbone_factory.py, configurable_model.py,
 control_encoder.py, objective_decoder.py, query_decoder.py, field_decoder.py, ensemble.py, multifidelity.py,
-uncertainty.py, geometry_encoder.py, material_encoder.py, multiphysics_fusion.py, latent_dynamics.py}`;
+uncertainty.py, geometry_encoder.py, material_encoder.py, multiphysics_fusion.py (CodomainAttentionFusion3d),
+heterogeneous_encoder.py, latent_dynamics.py}`;
 `src/reality_ai/physics/{pino_losses.py, energy.py, mass.py}`; `src/reality_ai/training.py`;
 `src/reality_ai/data/{physics_registry.py, layout.py, campaign.py, splits.py, episode_dataset.py, bundle.py,
 manifests.py, npy_store.py, zarr_store.py}`; `src/reality_ai/common/normalisation.py`;
@@ -675,3 +1108,20 @@ surrogate-assisted CFT optimisation lineage (Yeo and Ogawa 2022, `pic-mcc-blocke
 Added here: the initial-design sample-size rule, Loeppky, Sacks and Welch, "Choosing the Sample
 Size of a Computer Experiment: A Practical Guide", Technometrics 51(4):366-376 (2009),
 doi:10.1198/TECH.2009.08040.
+
+Added in the 2026-09-05 revision (sections 1.5, 1.6, Phase 1):
+
+* Transformer / latent-token cores cited by `Reality-Simulator/ai`: Alkin et al., "Universal
+  Physics Transformers", arXiv:2402.12365; Herde et al., "Poseidon: Efficient Foundation Models for
+  PDEs", arXiv:2405.19101; Rahman et al., CoDA-NO, arXiv:2403.12553 (already above).
+* Arena Physica (company publications, no peer review; accessed 2026-09-05): Bryant et al.,
+  "Introducing Atlas RF Studio: Toward a Foundation Model for Electromagnetics", 2026-03-31,
+  <https://www.arenaphysica.com/publications/rf-studio>; Bryant et al., "Introducing Heaviside-1",
+  2026-09-01, <https://www.arenaphysica.com/publications/heaviside-1>; dataset card
+  `ArenaPhysica/EMVal` (v0 public split, 500 boards), <https://huggingface.co/datasets/ArenaPhysica/EMVal>.
+* LANDMARK benchmarks for the 3-D verification (both already in `pic-mcc-blockers.md`): Charoy et
+  al., "2D axial-azimuthal particle-in-cell benchmark for low-temperature partially magnetized
+  plasmas", Plasma Sources Sci. Technol. 28, 105010 (2019), doi:10.1088/1361-6595/ab46c5;
+  Villafana et al., "2D radial-azimuthal particle-in-cell benchmark for E x B discharges", Plasma
+  Sources Sci. Technol. 30, 075002 (2021), doi:10.1088/1361-6595/ac0a4a. Parameters quoted in
+  Phase 1 were read from the published tables (Table 1 of each) on 2026-09-05.
