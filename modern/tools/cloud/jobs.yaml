@@ -353,6 +353,25 @@ jobs:
     gpu_memory_gib: 18
     expected_ms_per_step: 12.5
     transit_time_s: 1.4e-6
+    enabled: true                 # FINISHED (launch 1, 13:56 UTC 2026-09-04: residual-power gate stop, genuine heating; record 036bd679); never relaunched
+  # AMENDMENT 1 (a1065ce4; protocol.json amendments[0], README section 12): launch 2 of the campaign = the sealed bohm-0.4 option brought to model
+  # v2.1.0 (bohm_perpendicular_rotation at alpha 0.4 = Brandt 2016's own event model and D_perp coefficient) + the v2.0.6 gates (accumulated-floor
+  # Debye gate 64 000, W-corrected ledger) + K = 5; grid / dt / W 82 466.8 / seed / operating point / thresholds unchanged. Box preflight 16:56 UTC
+  # as the 4th MPS client: 2.71 ms/step at the seed, 7.22 at the 12 M-particle load -> 12.0 h to 3 transits; budget stays the cost-model 46.0 h.
+  # Enters the slot that frees after at-alpha-1over16 (never a 5th client). `commit` / `--expect-commit` = the amendment commit.
+  - id: ext-val-v0-channel-20um-bohm-0.4
+    note: external validation v0 AMENDMENT 1 launch 2 - brandt2016-micro-hempt-v1 channel-only 75 x 700 at 20 um with the reference's Bohm closure (rotation model, alpha 0.4), dt 0.7 ps, W 82466.8, 12 M particles projected, 6.0 M steps to 3 transits (1.4 us), preflight 7.22 ms/step, budget 46.0 h
+    module: experiments.pic2d_external_validation_v0.run
+    args: [launch, --variant, bohm-0.4, --grid, 20um, --expect-commit, "a1065ce46a5a00f4e759df899b1bc2c48ec11a34", --require-mps]
+    gpu: auto
+    commit: a1065ce46a5a00f4e759df899b1bc2c48ec11a34
+    preregistered: true
+    protocol: modern/experiments/pic2d_external_validation_v0/protocols/brandt2016-micro-hempt-v1-channel-20um-bohm-0.4.json
+    results: modern/experiments/pic2d_external_validation_v0/results/channel-20um-bohm-0.4
+    checkout: worktree
+    gpu_memory_gib: 4
+    expected_ms_per_step: 7.2
+    transit_time_s: 1.4e-6
     enabled: true
 
   # ---------------------------------------------------------------- (iv) plume runs (development)

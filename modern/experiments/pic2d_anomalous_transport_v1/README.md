@@ -131,6 +131,17 @@ Launch order (one H100 MPS slot each, as the scheduler frees them): `alpha-1over
   shakedown record (§5). Launch order alpha-1over16 → alpha-1over64 → alpha-0.345, one H100 MPS slot each via
   `tools/cloud/schedule.py` jobs `at-alpha-1over16` / `at-alpha-1over64` / `at-alpha-0.345` (jobs.yaml commit after this one); the
   ext-val `bohm-0.4` launch 2 takes the slot after the first α job.
+- PREREG commit **`057841cf`** (pushed; the `--expect-commit` of every case). jobs.yaml `b14a9350`.
+- **LAUNCH 1 — `alpha-1over16`: PID 46438, 17:08:39 UTC 2026-09-04 (03:08 AEST 5 Sep)**, `schedule.py launch --only at-alpha-1over16`,
+  detached worktree `jobs/at-alpha-1over16/tree` at `057841cf`, execution lock 17:08:42 UTC (clean worktree, protocol `b59b4402…`, config
+  `90cf53f1aef1…`, MPS pipe present, Warp UUID = nvidia-smi), `results/alpha-1over16/`. Took the free 4th scheduler slot beside ss25-base
+  (PID 32709), sweep-056-launch2 (38282) and ss33-fast (44430); a transient 5th GPU client (another agent's `pic2d_xe_collision_set_v2_shakedown`,
+  PID 45799, started 17:01 UTC) was on the device at launch — disclosed, not ours, not signalled. First records: 4.72 ms/step at the 490 k-electron
+  seed load (the preflight's 3.70 was measured with 4 clients), I_d 3.8–3.9 mA, S 2.5–2.7e16 /s in the ignition transient. ETA 3 transits ≈ 6.7 h
+  at the seed rate (≈ 23:50 UTC / 09:50 AEST 5 Sep), later at the plateau load (4.8–6 ms/step → 7–9 h); budget end 17:08 + 10.3 h ≈ 03:30 UTC
+  (13:30 AEST) 5 Sep.
+- Next: the ext-val `bohm-0.4` launch 2 (amendment 1, `a1065ce4`) takes the next slot that frees (sweep-056-launch2 ETA ≈ 21:30 UTC), then
+  `at-alpha-1over64`, then `at-alpha-0.345` (enable in jobs.yaml as slots free; never a 5th scheduler client).
 
 ## 8. Claim boundary
 
