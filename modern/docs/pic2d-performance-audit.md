@@ -63,6 +63,10 @@ be weighed against; §6.1 reconciles the two cost models.
   plume-33 (v2.1 box) ≈ 17 ms (model) → ≈ 10 ms → ≈ 4 ms (≈ ×4).**
 * Probe cost on the box: four short MPS-client processes, 291 s of wall time in total (≈ 4.9 GPU-minutes
   as an extra client; no process was signalled; `dmesg` shows no Xid).
+* **Status (2026-09-04, later the same day): recommendations (1) and (2) are implemented as model v2.0.5**
+  (`f80c6441`; the box verified `a156fd84`, the same file contents before the rebase; spec `pic2d-model-v2.0.json#performance_v2_0_5`); the measured outcome — contended A/B on the
+  H100 under identical MPS load, per-kernel tables before/after, the physics-bitwise replays and the
+  fitted-solo estimate — is in §11. Recommendation (3) is untouched.
 
 ## 2. Method and honesty notes
 
@@ -569,3 +573,106 @@ client time; the actual SM share was smaller), 1.8–3.3 GB device memory each, 
 `dmesg | grep -i xid` empty before and after; MPS `server.log` shows clean client connect/exit only.
 No process on the box was signalled. Scratch checkpoints/frames were deleted; the JSON/log records
 stay in `/lambda/nfs/h100-files/cft/perf-audit/` (≈ 80 kB).
+
+## 11. Measured outcome of recommendations (1) and (2): model v2.0.5
+
+Implemented 2026-09-04 in `modern/src/cft_revival/pic2d/warp_backend.py` / `simulation.py` /
+`frames.py` and the shared runner (`f80c6441`, verified on the box as `a156fd84` before the rebase; spec entry `pic2d-model-v2.0.json#performance_v2_0_5`,
+tests `tests/pic2d/test_pic2d_v205_performance.py`). What changed, in the terms of §3.1:
+
+* rows 23–28 (`energy_sum` / 2 × `momentum_sum` / 3 × `deferred_add`) are gone: `mcc_kernel` tile-reduces
+  `ke_born` and `pz_born` next to its seven tallies (the values it already holds in registers);
+* rows 29–30 (born `deposit_fixed`, `deposit_unit`) are fused into `spawn_kernel` (int64 fixed point →
+  `acc_i` bitwise the old separate deposit); `deposit_unit_kernel`, `deferred_add_kernel` and the
+  `born_r/z/flag` arrays are deleted. Per step: −5 launches, −5 capacity-sized flag passes;
+* rows 14–16 (`abs_axpy` × 2, `deposit_moment`) run on a second stream inside the captured step, forked
+  after row 6 and joined before row 17 (CUDA graph fork/join through `wp.Event`; graph-capturable in
+  Warp 1.14 — no fallback was needed); row 16 is additionally sampled every K accumulated steps
+  (`PIC2DConfig.moment_sample_interval`, default 1; K = 5 recommended; `moment_samples` travels with the
+  window sums; K ≠ 1 enters `config_sha256`). Row 13 (`d_phi += phi`) stays after the solve.
+
+### 11.1 Measured, contended (the only measurement possible while four preregistered runs own the GPU)
+
+Identical-contention A/B: old (`ce1d96cb`, step code = `a529b457` = this audit's), new K = 1 and new K = 5
+launched together as three extra MPS clients next to the four production runs (7 clients), production
+load through `tools/cloud/bench_gpu_concurrency` `CONFIGS`, the v4 `_time_steps` over 4000 (channel) /
+2000 (plume) graph steps:
+
+| load | old ms/step | new K = 1 | new K = 5 | contended speed-up |
+|---|---|---|---|---|
+| channel-33 (2.02 M e, 2.26 M i) | 13.48 | 11.12 | 11.12 | **×1.21** |
+| plume-v2.0-50 (4.15 M e, 4.35 M i) | 26.00 | 23.81 | 23.82 | **×1.09** |
+| channel-33, sequential probes, 5 clients | 8.15 | 6.40 | 6.71 | ×1.21–1.27 (background varies) |
+| channel-33 replay from the seed (0.55 M e, 7 clients, 40 000 steps) | 8.84 | 7.21 | 7.21 | ×1.23 |
+| channel-33 resume at the plateau load (1.94 M e, 8 clients, 6 000 steps) | 11.11 | 9.03 | – | ×1.23 |
+
+Per-kernel table, channel-33 production load, direct launches (graph off), CUDA-event timing over 300
+steps, 5 clients (compare §6.2; contended numbers, same inflation pattern):
+
+| kernel (calls/step) | old ms/step | new K = 1 | new K = 5 |
+|---|---|---|---|
+| `block_backward` + `block_forward` (182) | 7.17 | 7.10 | 8.08 (background) |
+| `deferred_add_kernel` (3) | **1.04** | – | – |
+| `momentum_sum_kernel` (2) | **0.79** | – | – |
+| `energy_sum_kernel` (1) | **0.38** | – | – |
+| `deposit_unit_kernel` (1) + born `deposit_fixed` (1) | 0.09 + ≈ 0.09 | – | – |
+| `deposit_moment_kernel` (1 → 0.21) | 0.69 | 0.69 | **0.15** |
+| `push_kernel` (1.12) | 0.38 | 0.37 | 0.39 |
+| `mcc_kernel` (1) | 0.14 | 0.24 (+ KE of the born ion, 2 more tile sums) | 0.23 |
+| `deposit_fixed_kernel` (2.13 → 1.13) | 0.28 | 0.20 | 0.21 |
+| `spawn_kernel` (1) | 0.07 | 0.06 (+ born deposits) | 0.06 |
+| memcpy DtoH (0.16) | 0.57 | 0.42 | 0.52 |
+| kernel sum | 12.20 | 9.78 | 10.45 |
+
+The 2.3 ms of removed kernels show up as −1.75 … −2.4 ms in the contended graph step; K = 5 removes a
+further 0.55 ms of direct-launch kernel time but is invisible in the contended graph step (noise ±5 %):
+under 7-client MPS the step is set by the 182 / 482 dependent sweep launches waiting for scheduling slots,
+and the saturated SMs leave nothing for the fork to overlap into. Both effects are solo effects.
+
+### 11.2 Fitted solo (model, ±25 %; a one-minute solo probe when the GPU is free settles it)
+
+§10.2 cost model with the removed kernels' solo attribution (born-ledger sums 0.40 ms per M e + the
+0.20–0.35 ms `deferred_add` chain; flag passes 0.03) and the additions (`mcc` +0.03–0.05, `spawn` +0.01):
+
+| load | audit solo anchor | (1) alone | (1)+(2) fork, ≥ 70 % overlap | (1)+(2) K = 5 |
+|---|---|---|---|---|
+| channel-33 | 3.31 ms | ≈ 2.2–2.3 (×1.45–1.5) | ≈ 1.7 (×1.9) | ≈ 1.7–1.8 (×1.85) |
+| plume-v2.0-50 | 7.20 ms | ≈ 5.0–5.2 (×1.4) | ≈ 4.1–4.3 (×1.7) | ≈ 4.2 (×1.7) |
+
+### 11.3 Verification (Class A / A′, executed on the H100 as an extra MPS client; budget-scaled)
+
+Budget: ≤ 30 GPU-minutes, every probe ≤ 5–6 min, four preregistered runs untouched. The §9 lengths were
+scaled to the budget: 40 000-step same-seed replays from the seed (not 100 000) and a 6 000-step resume of
+an anchored production checkpoint (not 400 000); every record of every run was compared.
+
+1. Graph vs direct (K = 1 and 5, 200 steps, `test_forked_step_graph_replays_the_direct_launches`): particles,
+   φ, surface charge, counts bitwise; born/momentum ledger and window moment sums to 1e-12. Passed on cuda:0.
+2. Old vs new, channel-33 v4 protocol from the seed, 40 000 steps (200 records, 2 frames, 1 checkpoint):
+   `checkpoint-final` particle arrays / φ / surface charge bitwise; every series physics key (counts, I_d,
+   I_beam, S, n_g, φ statistics, surface charge, kinetic energies) bitwise on 200/200 records; final counts
+   545 869 e / 618 323 i in both; `maps.npz` n_e / n_i / φ / ionisation / fluxes bitwise (18/19 keys — the
+   19th is the new `moment_samples` array). Ledger scalars: `ke_born_ions_j` 3.9e-16, `pz_born` 8.7e-16
+   relative (declared ≤ 1e-12); derived `interval_sources_j` 2.3e-14, `interval_residual_j` 1.5e-13;
+   float-atomic diagnostics ≤ 3.1e-15 (the recorded MPS-replay pattern).
+3. K = 1 vs K = 5 on the same 40 000 steps: physics and per-step maps bitwise; `moment_samples` 40 000 vs
+   8 000 (sample-count ratio 0.2000); peak-Debye window statistic over 200 records: `cells_per_debye`
+   relative difference median 1.7e-5, max 1.6e-3; `t_e_peak` median 3.4e-5, max 3.1e-3; same peak node
+   200/200; `n_e_peak` identical; `t_e_ev` map on nodes with mean occupancy ≥ 32 in both (185 nodes) median
+   1.9e-5, p95 4.8e-5, max 7.3e-5; occupancy ≥ 4 (35 467 nodes) median 6.0e-5, p95 5.5e-4. An electron
+   sits on a 33 µm node for ≈ 24 steps, so every 5th step keeps almost all the independent information.
+4. Anchored resume: `checkpoint-latest` of the running mini-sweep reference design (channel-33 production run
+   at `291a9227`, step 4 600 000 = 6.44 µs, 1.94 M e + 1.96 M i, I_d 3.81 mA; post-`0ac8d9b8` field
+   anchor; read-only copy), 6 000 steps with old and new code (`require_same_code=False`, field replay
+   bitwise): `checkpoint-final.npz` byte-identical (sha256 equal, cumulative ledger included); series physics
+   bitwise; only `peak_node` float-atomic statistics differ (≤ 1.2e-15).
+5. cpu / warp-cpu / cuda parity: the new tests (K = 3 vs 1 bitwise on cpu and warp-cpu; sampled sums exactly
+   the sampled per-step moments; born tallies vs particle sums 1e-12; fused deposit bitwise) plus the
+   unchanged parity suite. Box: 8 CUDA modules on cuda:0 79 passed / 71 s; whole `tests/pic2d` CPU-only 270
+   passed, 12 skipped (9 CUDA-only = run in the CUDA pass, 3 node.js-absent). Local (Windows, CUDA hidden):
+   273 passed, 9 skipped.
+
+GPU use: 1698 s of client wall time (28.3 client-minutes; SM share ≈ 1/7–1/8 per probe): timing 94 s,
+concurrent A/B 185 + 263 s, three concurrent 40k replays 949 s, two concurrent resumes 136 s, CUDA tests
+71 s. No process signalled; `dmesg` shows no new Xid; MPS `server.log` clean apart from benign
+"Invalid CUDA_VISIBLE_DEVICES -1" rejections from the CPU-only test pass. Probe script, JSON records and
+logs: `/lambda/nfs/h100-files/cft/perf1/` (not in the repository).
