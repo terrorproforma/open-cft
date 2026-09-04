@@ -126,4 +126,23 @@ no thruster performance.
 
 ## Launch log
 
-* (to be appended at the launch: UTC, PID, commit, first readings, expected verdict time.)
+* **Launch 1 (2026-09-04 13:11:55 AEST = 03:11:55 UTC, PID 18068)** — the one preregistered
+  execution, from the dedicated worktree `uni-project-pic2d-ss3` checked out detached at the
+  preregistration commit `392129e5` (origin/feat/sota-foundation head at the launch; the gates
+  commit is `ceb9b172`), `launch --expect-commit 392129e5`: clean worktree attested, protocol
+  SHA-256 `82d3f281…`, configuration identity `f10772b2…` (warp-cuda), `results/execution-lock.json`
+  acquired at 03:11:56 UTC; GPU free before the launch (no compute process, 5.5 GB of desktop apps).
+  Setup ≈ 2.5 min (field 3 s, factorisation ≈ 100 s, graph capture on the first step). First readings
+  (0.086 µs, 61 200 steps, 306 records): **2.50 ms/step mean** (median 2.47) at the seed load
+  (0.55 M e⁻ + 0.61 M Xe⁺), GPU 99 %; I_d 1.25 → 1.46 mA, S 1.4–1.7e16 s⁻¹, n_g 5.5 → 4.54e19 heading
+  for its fixed point (the v2 attempt-2 ignition pattern), single-step peak 0.45–0.56 cells/λ_D,
+  window statistic 0.52 over 61 200 steps (191 resolved nodes; not yet enforced, window 400 000),
+  windowed residual −8.3 % of the electrode work (window incomplete; the seed-transient value of
+  every accepted run), ω_pe Δt 0.085–0.089. Expectation from the preflight: the step cost rises to
+  ≈ 4.4 ms at the plateau load, so 3 transits (5 142 858 steps) fall at ≈ 5.5–6.2 h of stepping →
+  **the first plateau verdict can fall from ≈ 18:45–19:30 AEST (08:45–09:30 UTC)**; the v2 verdict
+  time (3.2 transits, 5 485 714 steps) ≈ 19:15–20:00 AEST; **budget end (24 h of stepping) ≈ 13:15
+  AEST 2026-09-05 (03:15 UTC)**. Watch `results/status.jsonl` (`peak_node.window.cells_per_debye`,
+  `grid_heating_triad.windowed_energy_residual_over_electrode_work`, `plateau`) and the PID; the
+  results-only commit (results/, `assessment.json`, .gitignore negations) follows the stop and is
+  not made by the launching agent.
