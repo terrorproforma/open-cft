@@ -1,7 +1,7 @@
 {
  "all_passed": true,
  "experiment_id": "pic2d-external-validation-v0",
- "generated_utc": "2026-09-04T07:38:27.680131+00:00",
+ "generated_utc": "2026-09-04T12:07:21.562665+00:00",
  "grid_argument": {
   "debye_length_at_published_m": 7.433941994700463e-06,
   "decision": "PRIMARY = 20 um (the published resolution; 75 x 700 channel cells = the reference's channel block exactly, 1024 x 256 = its whole box): at the published density and temperature it sits at 2.69 cells / lambda_D - under the v2.0.3 HARD gate (pi) and over the SOFT plateau precondition (2.5) - so a plateau at exactly the published density would be recorded as 'resolution margin not met' but the code-to-code numbers exist at the same grid as the reference. The ss-v4 option (33.3 um) is INADMISSIBLE a priori: 4.48 cells / lambda_D at the published density, i.e. our own hard gate stops the run once the peak reaches ~5e18 at 10 eV; a comparison with the reference could never form. 15 um / 0.5 ps meets the soft margin (2.02) at the published density and is the declared resolution follow-up at 1.8x the cells and 1.4x the steps (2.5x the cost).",
@@ -79,6 +79,180 @@
     "soft_level_density_at_10ev_per_m3": 1.534000741819444e+19
    }
   ]
+ },
+ "launch_box_timing": {
+  "backend": "warp-cuda",
+  "compute_apps_after": [
+   {
+    "pid": 14519,
+    "used_memory_mib": 66.0
+   },
+   {
+    "pid": 19764,
+    "used_memory_mib": 1674.0
+   },
+   {
+    "pid": 20079,
+    "used_memory_mib": 1066.0
+   },
+   {
+    "pid": 20189,
+    "used_memory_mib": 1482.0
+   },
+   {
+    "pid": 29375,
+    "used_memory_mib": 1930.0
+   },
+   {
+    "pid": 29805,
+    "used_memory_mib": 3242.0
+   }
+  ],
+  "compute_apps_before": [
+   {
+    "pid": 14519,
+    "used_memory_mib": 66.0
+   },
+   {
+    "pid": 19764,
+    "used_memory_mib": 1674.0
+   },
+   {
+    "pid": 20079,
+    "used_memory_mib": 1066.0
+   },
+   {
+    "pid": 20189,
+    "used_memory_mib": 1482.0
+   },
+   {
+    "pid": 29375,
+    "used_memory_mib": 1930.0
+   }
+  ],
+  "concurrent_mps_client_pids": [
+   19764,
+   20079,
+   20189,
+   29375
+  ],
+  "concurrent_mps_clients": 4,
+  "cross_sections_sha256": "4d37732ce6972058c9dd06db805a7ae1db5a572d290a298b334de1aa6789cbf4",
+  "cuda_mps_pipe_directory": "/tmp/nvidia-mps",
+  "cuda_visible_devices": "0",
+  "factorisation_seconds": 1.1625515510022524,
+  "field": {
+   "max_b_t": 0.7722572209267208,
+   "seconds": 0.036659176999819465,
+   "sha256": "4f2342f810838641c35ba17b2b47dd93cf9d473d46bb3f7cb05508ba64feafab",
+   "source_sha256": "0562cb3ffd975138b94ff2fa6582af125d8be78b3aebe4b87ff18e3287d6ce59"
+  },
+  "gpu": [
+   {
+    "driver_version": "580.105.08",
+    "memory_total_mib": 81559.0,
+    "name": "NVIDIA H100 80GB HBM3",
+    "uuid": "GPU-a800b021-6364-473f-5177-cd6ae7ce0005"
+   }
+  ],
+  "memory": {
+   "device_after_loaded_run": {
+    "free_bytes": 75084726272,
+    "total_bytes": 85017624576
+   },
+   "device_after_seed_run": {
+    "free_bytes": 77534199808,
+    "total_bytes": 85017624576
+   },
+   "device_before": {
+    "free_bytes": 77943144448,
+    "total_bytes": 85017624576
+   },
+   "device_used_by_loaded_run_bytes": 2858418176,
+   "device_used_by_seed_run_bytes": 408944640
+  },
+  "mps_pipe_present": true,
+  "non_evidentiary": true,
+  "option": "channel-20um",
+  "passed": true,
+  "projection": {
+   "budget_over_3_transit_wall_at_plateau_load": 2.2016161053477563,
+   "cost_model_hours_to_3_transits_mps4": 30.588724440790923,
+   "cost_model_ms_per_step_mps4": 18.337411215336274,
+   "hours_to_3_transits_at_plateau_load": 20.893742505001374,
+   "hours_to_3_transits_at_seed_load": 8.531811271671659,
+   "note": "measured with 4 other CUDA-MPS client(s) active (the mini-sweep runs); the per-process rate falls toward the solo rate as they finish, so these hours are upper bounds for the contention present at the measurement and the budget ratio is the conservative one",
+   "steps_to_3_transits": 5999999.999999998,
+   "wall_budget_seconds": 165600.0
+  },
+  "protocol": {
+   "case_id": "brandt2016-micro-hempt-v1-channel-20um-w82466.8-ng2e20-static-inj1.8mA-1eV-v1.3-closure-v2.0.3-gates",
+   "cells": [
+    75,
+    700
+   ],
+   "dt_s": 7e-13,
+   "macro_weight": 82466.8,
+   "nodes": [
+    76,
+    701
+   ],
+   "wall_budget_seconds": 165600.0
+  },
+  "schema_version": "cft.pic2d.external-validation-v0.launch-box-timing/1.0.0",
+  "stability_gate": {
+   "cell_debye_ratio": 2.690362665495329,
+   "debye_length_m": 7.433941994700464e-06,
+   "dt_s": 7e-13,
+   "max_b_t": 0.7722572209267208,
+   "max_collision_probability": 0.00010879899360272116,
+   "max_electron_speed_m_per_s": 11854980.41078976,
+   "omega_ce_dt": 0.09507830162462133,
+   "omega_ce_rad_per_s": 135826145178.03046,
+   "omega_pe_dt": 0.12487904553354108,
+   "omega_pe_rad_per_s": 178398636476.48724,
+   "particle_courant": 0.4149243143776416,
+   "reference_density_per_m3": 1e+19,
+   "reference_electron_temperature_ev": 10.0,
+   "stable": true,
+   "violations": []
+  },
+  "timing_plateau_load": {
+   "accumulation": true,
+   "ms_per_step": 12.536245503000828,
+   "particles_after": {
+    "electrons": 5819177,
+    "ions": 6011387
+   },
+   "particles_before": {
+    "electrons": 6000001,
+    "ions": 6000001
+   },
+   "seconds": 25.072491006001655,
+   "seed_density_per_m3": 5e+18,
+   "step_graph": true,
+   "steps": 2000,
+   "warmup_steps": 200
+  },
+  "timing_seed_load": {
+   "accumulation": true,
+   "ms_per_step": 5.119086763002997,
+   "particles_after": {
+    "electrons": 48975,
+    "ions": 60407
+   },
+   "particles_before": {
+    "electrons": 60000,
+    "ions": 60000
+   },
+   "seconds": 10.238173526005994,
+   "step_graph": true,
+   "steps": 2000,
+   "warmup_steps": 200
+  },
+  "timing_steps": 2000,
+  "utc": "2026-09-04T12:06:17.582415+00:00",
+  "warmup_steps": 200
  },
  "launch_set": [
   "channel-20um"
@@ -251,11 +425,11 @@
       "rule": "composed 0.70 ps: omega_pe dt = 0.2 at 2.56e+19 m^-3 (declared expected peak 2.5e+19); 0.125 at the published 1e19"
      },
      "dt_s": 7e-13,
-     "field_map_sha256": "2e5696b7439a5587a2525f8c701acb4b4b5c0d25e55183157db3a78611b0c578",
+     "field_map_sha256": "4f2342f810838641c35ba17b2b47dd93cf9d473d46bb3f7cb05508ba64feafab",
      "field_source_sha256": "0562cb3ffd975138b94ff2fa6582af125d8be78b3aebe4b87ff18e3287d6ce59",
      "hard_debye_density_at_10ev_per_m3": 1.363572048655945e+19,
      "hard_pi_met": true,
-     "max_b_t": 0.7722572209267222,
+     "max_b_t": 0.7722572209267208,
      "omega_pe_dt_gate_density_per_m3": 2.564961495164214e+19,
      "passed": true,
      "plasma_nodes_sampled": 53276,
@@ -266,11 +440,11 @@
       "cell_debye_ratio": 2.690362665495329,
       "debye_length_m": 7.433941994700464e-06,
       "dt_s": 7e-13,
-      "max_b_t": 0.7722572209267222,
+      "max_b_t": 0.7722572209267208,
       "max_collision_probability": 0.0,
       "max_electron_speed_m_per_s": 11854980.41078976,
-      "omega_ce_dt": 0.09507830162462151,
-      "omega_ce_rad_per_s": 135826145178.03073,
+      "omega_ce_dt": 0.09507830162462133,
+      "omega_ce_rad_per_s": 135826145178.03046,
       "omega_pe_dt": 0.12487904553354108,
       "omega_pe_rad_per_s": 178398636476.48724,
       "particle_courant": 0.4149243143776416,
@@ -344,7 +518,7 @@
     "protocol": {
      "anode_potential_v": 400.0,
      "anomalous": null,
-     "case_id": "brandt2016-micro-hempt-v1-channel-20um-w82466.8-ng2e20-static-inj1.8mA-1eV-v1.3-closure-v2.0.3-gates-draft",
+     "case_id": "brandt2016-micro-hempt-v1-channel-20um-w82466.8-ng2e20-static-inj1.8mA-1eV-v1.3-closure-v2.0.3-gates",
      "cells": [
       75,
       700
@@ -369,12 +543,12 @@
      "ion_transit_time_s": 1.3999999999999997e-06,
      "macro_weight": 82466.8,
      "macro_weight_parity": 9600.0,
-     "model_version": "pic2d v1.3 runner with a STATIC neutral background (the inventory removed = the v1.2 static-background mode; NO wall-ion recycling, no SEE, no anomalous transport unless the variant switches the v1.4 Bohm hook on) with the v2.0.3 gates (window-mode peak-Debye gate, windowed residual-power gate)",
+     "model_version": "pic2d v1.3 runner with a STATIC neutral background (the inventory removed = the v1.2 static-background mode; NO wall-ion recycling, no SEE, no anomalous transport unless the variant switches the v1.4 Bohm hook on) with the v2.0.3 gates (window-mode peak-Debye gate, windowed residual-power gate) and the v2.0.4 runtime omega_pe dt statistic (peak over nodes holding >= the peak-Debye floor of 32 macro-electrons; the raw single-node peak recorded alongside)",
      "neutral_density_per_m3": 2e+20,
      "particles_projected_m": 12.0,
      "passed": true,
      "static_neutrals": true,
-     "status": "DRAFT_NOT_PREREGISTERED_NOT_LAUNCHED_external_validation_v0_code_to_code_brandt2016",
+     "status": "preregistered_external_validation_v0_channel_20um_h100_mps4_code_to_code_brandt2016_not_validated",
      "steps_to_3_transits": 5999999.999999998,
      "template": "modern/experiments/pic2d_cft_steady_state_v4/protocol.json",
      "wall_budget_hours": 46.0,
@@ -403,7 +577,7 @@
    "grid": "20um",
    "option": "channel-20um",
    "passed": true,
-   "seconds": 3.4604231999837793,
+   "seconds": 4.415403977000096,
    "variant": "base"
   },
   {
@@ -571,11 +745,11 @@
       "rule": "composed 0.70 ps: omega_pe dt = 0.2 at 2.56e+19 m^-3 (declared expected peak 2.5e+19); 0.125 at the published 1e19"
      },
      "dt_s": 7e-13,
-     "field_map_sha256": "2e5696b7439a5587a2525f8c701acb4b4b5c0d25e55183157db3a78611b0c578",
+     "field_map_sha256": "4f2342f810838641c35ba17b2b47dd93cf9d473d46bb3f7cb05508ba64feafab",
      "field_source_sha256": "0562cb3ffd975138b94ff2fa6582af125d8be78b3aebe4b87ff18e3287d6ce59",
      "hard_debye_density_at_10ev_per_m3": 1.363572048655945e+19,
      "hard_pi_met": true,
-     "max_b_t": 0.7722572209267222,
+     "max_b_t": 0.7722572209267208,
      "omega_pe_dt_gate_density_per_m3": 2.564961495164214e+19,
      "passed": true,
      "plasma_nodes_sampled": 53276,
@@ -586,11 +760,11 @@
       "cell_debye_ratio": 2.690362665495329,
       "debye_length_m": 7.433941994700464e-06,
       "dt_s": 7e-13,
-      "max_b_t": 0.7722572209267222,
+      "max_b_t": 0.7722572209267208,
       "max_collision_probability": 0.0,
       "max_electron_speed_m_per_s": 11854980.41078976,
-      "omega_ce_dt": 0.09507830162462151,
-      "omega_ce_rad_per_s": 135826145178.03073,
+      "omega_ce_dt": 0.09507830162462133,
+      "omega_ce_rad_per_s": 135826145178.03046,
       "omega_pe_dt": 0.12487904553354108,
       "omega_pe_rad_per_s": 178398636476.48724,
       "particle_courant": 0.4149243143776416,
@@ -667,7 +841,7 @@
       "alpha": 0.4,
       "model": "bohm_isotropic_scattering"
      },
-     "case_id": "brandt2016-micro-hempt-v1-channel-20um-bohm-0.4-w82466.8-ng2e20-static-inj1.8mA-1eV-v1.3-closure-v2.0.3-gates-draft",
+     "case_id": "brandt2016-micro-hempt-v1-channel-20um-bohm-0.4-w82466.8-ng2e20-static-inj1.8mA-1eV-v1.3-closure-v2.0.3-gates",
      "cells": [
       75,
       700
@@ -692,12 +866,12 @@
      "ion_transit_time_s": 1.3999999999999997e-06,
      "macro_weight": 82466.8,
      "macro_weight_parity": 9600.0,
-     "model_version": "pic2d v1.3 runner with a STATIC neutral background (the inventory removed = the v1.2 static-background mode; NO wall-ion recycling, no SEE, no anomalous transport unless the variant switches the v1.4 Bohm hook on) with the v2.0.3 gates (window-mode peak-Debye gate, windowed residual-power gate)",
+     "model_version": "pic2d v1.3 runner with a STATIC neutral background (the inventory removed = the v1.2 static-background mode; NO wall-ion recycling, no SEE, no anomalous transport unless the variant switches the v1.4 Bohm hook on) with the v2.0.3 gates (window-mode peak-Debye gate, windowed residual-power gate) and the v2.0.4 runtime omega_pe dt statistic (peak over nodes holding >= the peak-Debye floor of 32 macro-electrons; the raw single-node peak recorded alongside)",
      "neutral_density_per_m3": 2e+20,
      "particles_projected_m": 12.0,
      "passed": true,
      "static_neutrals": true,
-     "status": "DRAFT_NOT_PREREGISTERED_NOT_LAUNCHED_external_validation_v0_code_to_code_brandt2016",
+     "status": "preregistered_external_validation_v0_channel_20um_h100_mps4_code_to_code_brandt2016_not_validated",
      "steps_to_3_transits": 5999999.999999998,
      "template": "modern/experiments/pic2d_cft_steady_state_v4/protocol.json",
      "wall_budget_hours": 46.0,
@@ -726,7 +900,7 @@
    "grid": "20um",
    "option": "channel-20um-bohm-0.4",
    "passed": true,
-   "seconds": 3.3543420000059996,
+   "seconds": 4.275770303000172,
    "variant": "bohm-0.4"
   },
   {
@@ -894,11 +1068,11 @@
       "rule": "composed 0.50 ps: omega_pe dt = 0.2 at 5.03e+19 m^-3 (declared expected peak 2.5e+19); 0.089 at the published 1e19"
      },
      "dt_s": 5e-13,
-     "field_map_sha256": "9d2a0f90a4280402db00c64d63ccf7aa70eb3ed85e37cf797d226cd2bc94754e",
+     "field_map_sha256": "ff9361ff9040d9e6ea493e14263fb25f016cfa450144cca4da22f0eec020ed0b",
      "field_source_sha256": "749cd1a7ea51fe0a0905630f8ee2466ec9b8ba6d34516100ddc3df62de266ee3",
      "hard_debye_density_at_10ev_per_m3": 2.422396875637684e+19,
      "hard_pi_met": true,
-     "max_b_t": 0.7722559753983117,
+     "max_b_t": 0.7722559753983104,
      "omega_pe_dt_gate_density_per_m3": 5.027324530521861e+19,
      "passed": true,
      "plasma_nodes_sampled": 94334,
@@ -909,11 +1083,11 @@
       "cell_debye_ratio": 2.018492889439153,
       "debye_length_m": 7.433941994700464e-06,
       "dt_s": 5e-13,
-      "max_b_t": 0.7722559753983117,
+      "max_b_t": 0.7722559753983104,
       "max_collision_probability": 0.0,
       "max_electron_speed_m_per_s": 11854980.41078976,
-      "omega_ce_dt": 0.06791296305600088,
-      "omega_ce_rad_per_s": 135825926112.00177,
+      "omega_ce_dt": 0.06791296305600078,
+      "omega_ce_rad_per_s": 135825926112.00156,
       "omega_pe_dt": 0.08919931823824362,
       "omega_pe_rad_per_s": 178398636476.48724,
       "particle_courant": 0.395166013692992,
@@ -987,7 +1161,7 @@
     "protocol": {
      "anode_potential_v": 400.0,
      "anomalous": null,
-     "case_id": "brandt2016-micro-hempt-v1-channel-15um-w82466.8-ng2e20-static-inj1.8mA-1eV-v1.3-closure-v2.0.3-gates-draft",
+     "case_id": "brandt2016-micro-hempt-v1-channel-15um-w82466.8-ng2e20-static-inj1.8mA-1eV-v1.3-closure-v2.0.3-gates",
      "cells": [
       100,
       933
@@ -1012,12 +1186,12 @@
      "ion_transit_time_s": 1.3999999999999997e-06,
      "macro_weight": 82466.8,
      "macro_weight_parity": 5401.9,
-     "model_version": "pic2d v1.3 runner with a STATIC neutral background (the inventory removed = the v1.2 static-background mode; NO wall-ion recycling, no SEE, no anomalous transport unless the variant switches the v1.4 Bohm hook on) with the v2.0.3 gates (window-mode peak-Debye gate, windowed residual-power gate)",
+     "model_version": "pic2d v1.3 runner with a STATIC neutral background (the inventory removed = the v1.2 static-background mode; NO wall-ion recycling, no SEE, no anomalous transport unless the variant switches the v1.4 Bohm hook on) with the v2.0.3 gates (window-mode peak-Debye gate, windowed residual-power gate) and the v2.0.4 runtime omega_pe dt statistic (peak over nodes holding >= the peak-Debye floor of 32 macro-electrons; the raw single-node peak recorded alongside)",
      "neutral_density_per_m3": 2e+20,
      "particles_projected_m": 12.0,
      "passed": true,
      "static_neutrals": true,
-     "status": "DRAFT_NOT_PREREGISTERED_NOT_LAUNCHED_external_validation_v0_code_to_code_brandt2016",
+     "status": "preregistered_external_validation_v0_channel_20um_h100_mps4_code_to_code_brandt2016_not_validated",
      "steps_to_3_transits": 8399999.999999998,
      "template": "modern/experiments/pic2d_cft_steady_state_v4/protocol.json",
      "wall_budget_hours": 69.5,
@@ -1046,21 +1220,21 @@
    "grid": "15um",
    "option": "channel-15um",
    "passed": true,
-   "seconds": 4.515059199999087,
+   "seconds": 6.0326923669999815,
    "variant": "base"
   }
  ],
  "platform": {
-  "gpu_used": false,
-  "host": "DESKTOP-31AD96J",
-  "machine": "AMD64",
-  "note": "CPU-only preflight (a preregistered run re-runs it on the launch box)",
+  "gpu_used": true,
+  "host": "68-209-75-2",
+  "machine": "x86_64",
+  "note": "launch-box preflight: the CPU gates plus the GPU timing of the primary option (launch_box_timing)",
   "numpy": "2.5.2",
-  "python": "3.12.10",
-  "release": "11",
-  "system": "Windows"
+  "python": "3.12.14",
+  "release": "6.8.0-1046-nvidia",
+  "system": "Linux"
  },
- "schema_version": "cft.pic2d.external-validation-v0.preflight/0.1.0-draft",
- "seconds": 11.367471699981252,
- "status": "whole-set preflight of a DRAFT (not preregistered, not launched) code-to-code comparison; derived-float gates are re-run on the launch platform before any launch"
+ "schema_version": "cft.pic2d.external-validation-v0.preflight/1.0.0",
+ "seconds": 14.724438662997272,
+ "status": "whole-set preflight of the code-to-code comparison; derived-float gates are re-run on the launch platform before any launch; launch-box GPU timing of the primary option included"
 }

@@ -1,13 +1,14 @@
-# pic2d external validation v0 - DRAFT (code-to-code vs Brandt et al. 2016; NOT preregistered, NOT launched)
+# pic2d external validation v0 - code-to-code vs Brandt et al. 2016 (PREREGISTERED option `channel-20um`, Lambda H100)
 
-**Status: DRAFT.** Everything in this directory is preparation for the roadmap's "External validation v0 - code-to-code vs Brandt 2016"
-step (`LITERATURE_SYNTHESIS.md` 5.7 / 7a; `paper/evidence/result-gates.json` GATE-L3 stays closed): the reference case extracted from the
-paper and its companion thesis, the reconstruction of its magnet stack on the parametric CFT geometry v1.1, the material-aware P2 field with
-published-anchor gates, the run protocols composed on the steady-state v4 template at the published 20 um resolution, the ASME V&V 20
-comparison spec, the whole-set preflight and the tests. No GPU was used. Nothing is hash-bound to a run; `run.py launch` refuses. The
-coordinator preregisters (this record + a launch-box preflight + a labelled shakedown, committed) and launches from that commit. The claim
-ceiling of the whole exercise is **cross-model agreement** (the reference is a published model output, `EvidenceKind.PUBLISHED_EXTERNAL`):
-it validates nothing against hardware and opens no physics level.
+**Status: PREREGISTERED (section 9); one execution on the Lambda H100 from the preregistration commit.** This directory is the roadmap's
+"External validation v0 - code-to-code vs Brandt 2016" step (`LITERATURE_SYNTHESIS.md` 5.7 / 7a; `paper/evidence/result-gates.json`
+GATE-L3 stays closed): the reference case extracted from the paper and its companion thesis (section 1-2), the reconstruction of its
+magnet stack on the parametric CFT geometry v1.1 (3), the material-aware P2 field with published-anchor gates (4), the ASME V&V 20
+comparison spec (5), the run protocols composed on the steady-state v4 template at the published 20 um resolution (6), the whole-set
+preflight (7), the declared inconclusiveness conditions (8) and the preregistration record produced on the launch box (9). Sections 1-8
+are the DRAFT of 2026-09-04 17:44 AEST (`645c7de4..7fa9e6c6`) with the numbers unchanged; what changed between the draft and the
+preregistration is listed in section 9.3. The claim ceiling of the whole exercise is **cross-model agreement** (the reference is a published
+model output, `EvidenceKind.PUBLISHED_EXTERNAL`): it validates nothing against hardware and opens no physics level.
 
 ## 1. Reference: which paper, why, alternatives
 
@@ -180,8 +181,10 @@ difference).
 | device memory | 17.4 GB projected (12 M particles + 0.3 GB inverse blocks) | same | 17.8 GB |
 | acceptance | (a) plateau, (b) windowed residual < +2 %, (c) comparison rows; verdicts comparison_quotable / comparison_resolution_flagged / plateau_with_heating / no_plateau | same | same |
 
-Draft protocol hashes (sha256, 12): `channel-20um` `41dbe84e0eee`, `channel-20um-bohm-0.4` `23c8392a773b`, `channel-15um` `77afa105c8a0`
-(`protocol.json preregistration.sealed_run_protocols_draft`; they are drafts, not sealed).
+Draft protocol hashes (sha256, 12) at `7fa9e6c6`: `channel-20um` `41dbe84e0eee`, `channel-20um-bohm-0.4` `23c8392a773b`, `channel-15um`
+`77afa105c8a0`. The SEALED hashes (recomposed on the launch box at the preregistration commit, `protocol.json preregistration.sealed_run_protocols`)
+differ from the drafts only by the blocks section 9.3 names (status, schema, `execution`, `wall_budget_basis`, `model_version`, the case id
+without `-draft`); grid, dt, W, operating point, gates, frames, seed, transit, budget (46.0 h) and acceptance are the draft's.
 
 ## 7. Whole-set preflight (`preflight.py`, `preflight-channel-20um.json`; CPU, 14 s; 3/3 options PASS)
 
@@ -210,21 +213,120 @@ launch box (derived floats are platform-specific; `field_source_sha256` is the p
    discriminate at the tolerance level and is reported as such.
 9. The plume angle and the exit-cusp electron energy are not compared in v0 (channel-only); no "plume validation" statement is available.
 
-## Commands (from `modern/`; CPU unless stated)
+## 9. Preregistration record (channel-20um, Lambda H100, 2026-09-04 22:00-22:30 AEST)
+
+### 9.1 What is sealed and how the launch is guarded
+
+`protocol.json` (schema `cft.pic2d.external-validation-v0.protocol/1.0.0`, status
+`preregistered_external_validation_v0_channel_20um_h100_mps4_code_to_code_brandt2016_not_validated`) binds by sha256: the three sealed run
+protocols under `protocols/` (`channel-20um` = the launch set; `channel-20um-bohm-0.4` and `channel-15um` sealed, not launched), the
+launch-box whole-set preflight `preflight-channel-20um.json` (with the GPU timing block), the shakedown `shakedown-channel-20um.json`, the
+comparison spec and the field binding. `run.py launch --expect-commit <prereg sha> --require-mps` refuses: HEAD != the commit, a dirty
+worktree, an option outside the launch set, `protocol.json` / the sealed protocol / the two records differing from HEAD's blobs, a
+`protocol.json` whose status is not `preregistered*`, a preflight that did not pass every option or whose launch-box timing did not pass
+(budget must cover the measured 3-transit wall), a shakedown that did not pass, a missing MPS pipe directory, a recomposition on the launch
+platform that differs from the sealed bytes, an existing `execution-lock.json` (O_EXCL, in `results/channel-20um/`). The scheduler job is
+`ext-val-v0-channel-20um` in `tools/cloud/jobs.yaml` (detached worktree at the preregistration commit, `merge-base --is-ancestor` + byte-identical
+protocol checks, Warp UUID cross-check, the MPS client variables).
+
+### 9.2 Records produced on the launch box (`ubuntu@68.209.75.2`, H100 80GB HBM3 `GPU-a800b021-6364-473f-5177-cd6ae7ce0005`, driver 580.105.08, Python 3.12.14, numpy 2.5.2, warp-lang 1.14.0)
+
+* **Whole-set preflight with GPU timing** (`preflight-channel-20um.json`, `run.py preflight --gpu-timing --timing-steps 2000`, 12:06-12:07 UTC
+  at code `183e32a8`, all 3 options PASS): the CPU gates of section 7 re-run on the box (field binding re-verified through `field_source_sha256` `0562cb3ffd97...` -
+  the platform-independent binding; the sampled map's content hash is Linux-specific and provenance only - mesh 52 500 plasma cells, dt 0.7 ps
+  admitted at the map's 0.772 T (omega_ce dt 0.095), node map 76 x 701, comparison spec, cost row), then the GPU timing of the primary option
+  on the real field: host factorisation 1.2 s (7.1 s in the first attempt under CPU contention), **seed load 5.12 ms/step** (60 000 seed
+  electrons; 5.58 in the first attempt) and **plateau load 12.54 ms/step** (6.0 M electrons + 6.0 M ions = the 12 M-particle cap, a synthetic
+  uniform 5e18 seed; 13.07 in the first attempt) over 2000 production steps after 200 warm-up steps, measured with **4 other CUDA-MPS clients
+  active** (the three mini-sweep runs + another agent's GPU job; 5 in the first attempt). Projection: 6.0 M steps to 3 transits -> **20.9 h at
+  the measured plateau-load rate** (budget / 3-transit wall 2.20); the cost model's MPS-4 projection is 30.6 h at 18.3 ms/step, so the
+  measured box is FASTER than the model even under heavier-than-MPS-4 contention and the budget basis stays the (slower) cost model: 46.0 h.
+  The per-process rate will fall further toward the solo rate (~7 ms/step by the model) as the sweep runs finish - these hours are upper bounds
+  for the contention present at the measurement.
+* **Shakedown** (`shakedown-channel-20um.json`, `run.py shakedown` at code `183e32a8`, 12:07-12:16 UTC: the primary option on its real field,
+  100 000 steps at the shrunk cadences 200 / 4000 / 40 000 / frames 2000, the FULL production path run -> `assess` -> `compare` -> re-finalize,
+  as the fifth MPS client (4 others: the three sweep runs + another agent's job) for 522 s at 5.20 ms/step): stop `target_steps_reached`,
+  50 frames, 69 562 electrons + 78 642 ions at 0.07 us (the plasma is still the seed transient; the earlier run at `42e30aaa` replayed these
+  counts exactly), windowed residual-power window complete in 280 records (last -16.6 %, cooling side, as every accepted seed window), the
+  window-mode peak-Debye statistic computed in all 500 records but ENFORCED in none (0 resolved nodes: at W 82 467 on 20 um nodes no node
+  reaches the 32-macro-electron window occupancy in a 0.07 us transient; at the published 1e19 a mid-radius cell holds 229 macro-electrons,
+  so the gate becomes live once the local density passes ~1.4e18 m^-3 - the production run must show `resolved_nodes > 0`, the v2.0.2 lesson,
+  recorded in `gate_not_inert_check`), `assess` -> `no_plateau` (expected at 0.07 us), `compare` formed all **10 channel-comparable rows**
+  (non-evidentiary numbers of a transient: I_a 1.86 mA, potential drops 71 / 226 V, peak n_i 5.0e18, wall ion energy 228 eV - they mean
+  nothing; the stage is exercised), then the externally-stopped path (`finalize --allow-refinalize`) ran on the scratch directory (1.6 s;
+  maps downgraded to instantaneous as designed).
+* **Defect found and fixed before the freeze - model v2.0.4 (`79e6a670`, tests `test_pic2d_v204_omega_pe_gate.py`).** The FIRST box
+  preflight (11:39 UTC, code `05e8d68b`) died in the plateau-load timing: `observed peak omega_pe*dt = 0.212 exceeds 0.2` before the first
+  timed step, and the first shakedown read a single-step peak density of 5.5e18 with 60 000 electrons spread over 53 000 nodes (mean 5e14).
+  Cause: the runtime omega_pe dt gate read the peak over EVERY plasma node of the single-step electron deposit; on a 20 um axis node
+  (V = pi (dr/2)^2 dz = 6.3e-15 m^3) ONE macro-electron of W 82 467 reads 1.3e19 m^-3 (omega_pe dt 0.14 at 0.7 ps) and two read 0.20 - a
+  shot-noise extreme value decided by the smallest node (the plume-boundary lesson of 04:20 the same day), which would have ended the
+  production run as a spurious "omega_pe dt stop" (inconclusiveness condition 2) long before any physical densification. v2.0.4: the gate
+  statistic is the peak over the RESOLVED nodes (single-step deposit >= the peak-Debye gate's own floor, 32 macro-electrons), the raw
+  single-node peak is recorded alongside (`peak_omega_pe_dt_raw` in every series record, `v1_4_options.omega_pe_dt_gate` in the provenance);
+  CPU and Warp backends, warp-cpu parity tested; the physics is untouched (a run that never trips replays bitwise). The window-mode
+  peak-Debye hard gate (pi = 1.36e19 at 10 eV on this grid, interval-averaged, 32-particle floor) binds first and stays the protective
+  density gate; the floored omega_pe dt gate is the fast-transient backstop on resolved nodes. Consequence for the triad: its
+  `omega_pe_dt_drift` member now reads the resolved statistic (the mini-sweep runs, locked at `291a9227`, keep the raw one).
+* **Slot / contention disclosure.** Design 056 of the mini-sweep stopped on its grid-heating triad gate at 10:52 UTC (omega_pe dt drift
+  0.283 > 0.25 at 2.07 transits, exit 0, `finished: true`; the sweep is NOT assessed here - that happens after all four), so one of the four
+  MPS slots was free before this preregistration: the shakedown and the timing ran in that slot (a fourth client, never a fifth), and the
+  launch enters it while the reference, 047 and 009 runs continue. Other agents' GPU jobs (the steady-state v5.1 shakedown, a profiling
+  job) were active on the same GPU during the timing (5-6 clients in total) - the rates above are therefore pessimistic for the four-slot
+  configuration. No Xid event was raised (`dmesg | grep Xid` clean).
+
+### 9.3 Decisions vs the draft (`protocol.json preregistration.decisions_vs_draft`)
+
+| item | draft (17:44 AEST) | preregistered | why |
+| --- | --- | --- | --- |
+| launch box / GPU model | H100 MPS-4 assumed for the cost row only | NVIDIA H100 80GB HBM3, one of four CUDA-MPS slots, recorded in every sealed protocol (`execution`) with the launch discipline and the scheduler job | the mini-sweep record (`291a9227`) put the GPU model, the slot and the shared-GPU caveats into the preregistration |
+| slot | launch when 047 frees (~01:00 AEST) or solo after the sweep | the slot 056 freed at 10:52 UTC; three sweep runs active at launch | a slot became free earlier; still a four-client configuration |
+| shakedown GPU use | a launch-box shakedown before the freeze | ran as the fourth MPS client for ~8 min, twice (before and after the v2.0.4 fix) | the sweep budgets are MPS-4 upper bounds; a fourth client costs them nothing beyond their declared configuration |
+| wall budget | 46.0 h = 1.5 x the cost-model MPS-4 projection | 1.5 x max(cost model, MEASURED plateau-load rate), 10 min rounding, basis recorded (`stopping_rule.wall_budget_basis`); measured 12.5-13.1 ms/step < model 18.3 -> **46.0 h unchanged** | a preflight timing at production load beats a cost-table extrapolation; the measured rate may only raise the budget |
+| gates | v2.0.3 verbatim | v2.0.3 thresholds unchanged; the omega_pe dt STATISTIC is the v2.0.4 resolved-node peak | the launch-box finding above |
+| seed / frames / operating point / grid / dt / W / transit / acceptance / comparison spec | as drafted | unchanged (comparison-spec.json byte-identical: `543c81fcff01...`) | fixed before any run |
+| launch stages | `launch` refused unconditionally | `preflight --gpu-timing`, `shakedown`, `launch --expect-commit --require-mps`, `status`, `finalize` | the v4 / mini-sweep discipline |
+
+### 9.4 What the run will and will not settle
+
+The two things most likely to make the comparison inconclusive, as section 8 declares them: (i) a **hard peak-Debye stop** - the interval-
+averaged peak crossing pi cells / lambda_D (1.36e19 x T_e / 10 eV on 20 um) because our closure (no Bohm transport, no SEE) confines better than
+the reference's; then the run is resolution-limited at the published grid and only the 15 um sibling can form E; (ii) **no plateau within the
+46 h budget** (or a plateau sitting between the soft 2.5 and hard pi levels, which flags every row "resolution margin not met"). A third,
+structural one: rows whose 2 u_val already exceeds the tolerance (the potential steps: 6.4 V > 5 V; I_a: the reference's own 4.3 vs 4.7 mA)
+cannot discriminate whatever the run does, and every current / potential row discrepant in the closure-predicted direction measures the closure
+difference, not the kernels (the bohm-0.4 variant is the discriminating follow-up).
+
+## Commands (from `modern/`; CPU unless stated; on the box `PYTHONPATH=src:.` with the MPS variables exported)
 
     $env:PYTHONPATH="$PWD\src;$PWD"; $env:OMP_NUM_THREADS='1'
     python -m experiments.pic2d_external_validation_v0.run reference          # the reference record
     python -m experiments.pic2d_external_validation_v0.run fields             # P2 solve (+ no-ring sensitivity), ~6 min, RSS <= 150 MB
     python -m experiments.pic2d_external_validation_v0.run regate             # recompute the gates from the bound checkpoint
-    python -m experiments.pic2d_external_validation_v0.run preflight          # whole-set preflight -> preflight-channel-20um.json
-    python -m experiments.pic2d_external_validation_v0.run compose            # comparison-spec.json + protocols/*.json + protocol.json
+    python -m experiments.pic2d_external_validation_v0.run preflight          # whole-set preflight (CPU gates) -> preflight-channel-20um.json
+    python -m experiments.pic2d_external_validation_v0.run compose            # comparison-spec.json + protocols/*.json + protocol.json (run on the launch box before the freeze)
     python -m experiments.pic2d_external_validation_v0.run cost
     python -m experiments.pic2d_external_validation_v0.run protocol --variant base --grid 20um --with-field
-    # GPU (coordinator): labelled shakedown, then the preregistered launch after the freeze
-    python -m experiments.pic2d_external_validation_v0.run run --allow-launch --shrunk-cadences --max-steps 100000 --label shakedown
-    python -m experiments.pic2d_external_validation_v0.run assess|compare --results-dir results/channel-20um
+    # GPU, launch box: the preregistration records, then the one preregistered launch (via tools/cloud/schedule.py)
+    python -m experiments.pic2d_external_validation_v0.run preflight --gpu-timing --timing-steps 2000   # + launch_box_timing block
+    python -m experiments.pic2d_external_validation_v0.run shakedown                                    # run -> assess -> compare -> re-finalize -> shakedown-channel-20um.json
+    python -m experiments.pic2d_external_validation_v0.run launch --expect-commit <prereg sha> --require-mps
+    python -m experiments.pic2d_external_validation_v0.run status|assess|compare [--results-dir results/channel-20um]
+    # labelled development runs only (never evidence)
+    python -m experiments.pic2d_external_validation_v0.run run --allow-launch --shrunk-cadences --max-steps 100000 --label development
 
-Tests: `tests/pic2d/test_pic2d_external_validation_v0.py` (18: reference DOI / record / u_D budgets; geometry under the v1.1 contract, frames,
+Tests: `tests/pic2d/test_pic2d_external_validation_v0.py` (21: reference DOI / record / u_D budgets; geometry under the v1.1 contract, frames,
 approximations, PIC mapping at 20 / 33 um and the plume box; comparison-spec schema + metric incl. the log-scale and non-discriminating rows;
-protocol composition on the v4 template with static neutrals, dt / W / budget policies, the bohm variant, the grid argument, the cost row; field
-binding gates + genealogy + bracket, node map offset / scale / refusals, regate; preflight; run / launch guards; draft protocols = recomposition).
+protocol composition on the v4 template with static neutrals, dt / W / budget policies incl. the measured-rate basis, the bohm variant, the grid
+argument, the cost row; field binding gates + genealogy + bracket, node map offset / scale / refusals, regate; preflight + `timing_passed`; run /
+launch guards incl. the launch-set and clean-worktree refusals; the shrunk-cadence protocol; sealed protocols = recomposition) and
+`tests/pic2d/test_pic2d_v204_omega_pe_gate.py` (5).
+
+## Launch log
+
+* 2026-09-04 17:44 AEST - DRAFT prepared (`645c7de4..7fa9e6c6`): reference, geometry, field (CPU), comparison spec, protocols, CPU preflight;
+  no GPU.
+* 2026-09-04 21:30-22:30 AEST (11:30-12:30 UTC), Lambda H100 `68.209.75.2`, code `05e8d68b` -> `183e32a8`: the preregistration stages
+  (`preflight --gpu-timing`, `shakedown`, `launch`, `status`, `finalize`) landed; the first box preflight exposed the omega_pe dt shot-noise
+  defect -> model v2.0.4 (`79e6a670`); the records of section 9.2 produced (preflight + timing, shakedown, compose) on the box in the slot
+  design 056 had freed, as the fourth MPS client (other agents' GPU jobs made it the fifth or sixth at times; disclosed).

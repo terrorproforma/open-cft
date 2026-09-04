@@ -144,7 +144,18 @@
   "determinism": "MPS does not change a process's own kernel order: the mini-sweep's replay on this box (mps-replay.json, 291a9227) showed the physics state bitwise between concurrent MPS processes and solo processes, float-atomic diagnostic accumulators at <= 2.2e-13 - the same pattern solo-vs-solo",
   "gpu": "NVIDIA H100 80GB HBM3",
   "instance": "Lambda gpu_1x_h100_sxm5 (us-southeast-1), ubuntu@68.209.75.2, driver 580.105.08 (CUDA 13.0), 26 vCPU, 221 GiB RAM",
-  "launch_box_timing": null,
+  "launch_box_timing": {
+   "concurrent_mps_clients": 5,
+   "factorisation_seconds": 7.1,
+   "host": "ubuntu@68.209.75.2 (NVIDIA H100 80GB HBM3, GPU-a800b021-6364-473f-5177-cd6ae7ce0005, driver 580.105.08)",
+   "hours_to_3_transits_at_plateau_load": 21.8,
+   "ms_per_step_at_plateau_load": 13.07,
+   "ms_per_step_at_seed_load": 5.58,
+   "note": "measured under SIX-way GPU sharing (five other CUDA-MPS clients), i.e. heavier contention than the four-slot configuration the run executes in; the per-process rate falls toward the solo rate (~7 ms/step by the cost model) as the sweep runs finish, so the measured value is an upper bound for the launch configuration and the cost-model MPS-4 rate (slower) stays the budget basis: 46.0 h",
+   "record": "modern/experiments/pic2d_external_validation_v0/preflight-channel-20um.json launch_box_timing (first box preflight at 42e30aaa; the sealed record is the re-run at the preregistration commit and may differ in the last digits and in the client count)",
+   "timing_steps": 2000,
+   "utc": "2026-09-04T11:56:14Z"
+  },
   "provenance_caveats": [
    "the runner's gpu_utilisation_percent_samples (nvidia-smi, 300 s) read the WHOLE GPU under MPS - shared-GPU readings, not per process",
    "ms/step per process under MPS depends on how many slots are busy: the measured launch-box rate below was taken with the sweep runs active and the run speeds up as they finish; wall-clock projections are per-slot upper bounds, the budget is a cap, not a cost",
@@ -692,7 +703,7 @@
  },
  "preflight_summary": {
   "all_passed": true,
-  "generated_utc": "2026-09-04T07:38:27.680131+00:00",
+  "generated_utc": "2026-09-04T12:07:21.562665+00:00",
   "launch_set_passed": true,
   "options": {
    "channel-15um": {
@@ -766,14 +777,14 @@
    }
   },
   "platform": {
-   "gpu_used": false,
-   "host": "DESKTOP-31AD96J",
-   "machine": "AMD64",
-   "note": "CPU-only preflight (a preregistered run re-runs it on the launch box)",
+   "gpu_used": true,
+   "host": "68-209-75-2",
+   "machine": "x86_64",
+   "note": "launch-box preflight: the CPU gates plus the GPU timing of the primary option (launch_box_timing)",
    "numpy": "2.5.2",
-   "python": "3.12.10",
-   "release": "11",
-   "system": "Windows"
+   "python": "3.12.14",
+   "release": "6.8.0-1046-nvidia",
+   "system": "Linux"
   }
  },
  "preregistration": {
@@ -815,10 +826,10 @@
     "why": "the qualitative rows of the comparison spec read the frames"
    },
    {
-    "draft": "v2.0.3 verbatim",
+    "draft": "v2.0.3 verbatim (window-mode peak-Debye hard pi / soft 2.5, windowed residual power 5 %, triad, omega_pe dt 0.2, Courant, Poisson)",
     "item": "gates",
-    "preregistered": "unchanged",
-    "why": "the accepted gate set; the grid argument was made against them"
+    "preregistered": "v2.0.3 thresholds unchanged; the runtime omega_pe dt STATISTIC is the v2.0.4 resolved-node peak (nodes whose single-step deposit holds >= 32 macro-electrons, the peak-Debye gate's own floor; the raw single-node peak is recorded alongside as peak_omega_pe_dt_raw and feeds nothing)",
+    "why": "found by the launch-box preflight / shakedown (2026-09-04 11:39 UTC): at 20 um / W 82 467 one macro-electron on a small-volume axis node reads 1.3e19 m^-3 (omega_pe dt 0.14 at 0.7 ps), two read 0.20 - the raw statistic stopped the 12 M-particle timing seed at 0.212 before its first step and read 5.5e18 in the shakedown at 60 000 electrons over 53 000 nodes (mean 5e14): a shot-noise extreme value decided by the smallest node (the plume-boundary lesson), which would have ended the production run as a spurious 'omega_pe dt stop' long before any physical densification. The window-mode peak-Debye hard gate (pi at 1.36e19 / 10 eV, interval-averaged, 32-particle floor) binds first on this grid and stays the protective density gate; the floored omega_pe dt gate is the fast-transient backstop on resolved nodes. Physics untouched (same-seed replay bitwise)"
    },
    {
     "draft": "12 rows (10 channel-comparable), tolerances 20 % / +-5 V / 0.3 dex, u_D + u_num predicted, u_input declared not propagated",
@@ -849,16 +860,20 @@
     "sha256": "1b3bdf5dce6de34e5fd42db6aed0dcdaf13637ea605e5e54e8c691750b2c2730"
    },
    "preflight": {
-    "bytes": 38018,
+    "bytes": 43074,
     "path": "modern/experiments/pic2d_external_validation_v0/preflight-channel-20um.json",
-    "sha256": "3312ca729e489e53e3e782da188beb53a70de2a539bcad2cdb4049a4bd0c6911"
+    "sha256": "52c5841eb99265c0348a529b48cb5f326829c311c8503c93880783936ee2aca5"
    },
-   "shakedown": null
+   "shakedown": {
+    "bytes": 6803,
+    "path": "modern/experiments/pic2d_external_validation_v0/shakedown-channel-20um.json",
+    "sha256": "258f0c3e740a8d00cdbc2adbb7df4bcd998a29cabfdf85adee74535abf8ccc0a"
+   }
   },
   "sealed_run_protocols": {
-   "modern/experiments/pic2d_external_validation_v0/protocols/brandt2016-micro-hempt-v1-channel-15um.json": "f84f4b2c2848921899e3dc219063c9c0199c207d5d078932f296fe612037ce7e",
-   "modern/experiments/pic2d_external_validation_v0/protocols/brandt2016-micro-hempt-v1-channel-20um-bohm-0.4.json": "317fb46ce90a19dfe18e35d9d9e55cec3287466e00b94c715e737ca522b99db7",
-   "modern/experiments/pic2d_external_validation_v0/protocols/brandt2016-micro-hempt-v1-channel-20um.json": "9554ba4ea4b6c515aec7726d9acbe5205305d7e135f62da428d5d803adbb5f90"
+   "modern/experiments/pic2d_external_validation_v0/protocols/brandt2016-micro-hempt-v1-channel-15um.json": "7a6b7139cae0486006b21bf155dbcd87ba51babe91b660bc04db2b412272158a",
+   "modern/experiments/pic2d_external_validation_v0/protocols/brandt2016-micro-hempt-v1-channel-20um-bohm-0.4.json": "b1a0d3b559778406e843545afab88eca42b905cff13b4a65da2150a476183972",
+   "modern/experiments/pic2d_external_validation_v0/protocols/brandt2016-micro-hempt-v1-channel-20um.json": "3ec0d405520fb2b6b2efe05486dfaaef334ea410609aa2d0ef71dc5c50b7a243"
   },
   "state": "PREREGISTERED: the launch set is sealed by this file (sha256 of every run protocol under protocols/, of the whole-set preflight with the launch-box GPU timing, of the shakedown record, of the comparison spec and of the field binding). ONE execution of `channel-20um` from the commit that carries this file, through `run.py launch --expect-commit <sha> --require-mps` (tools/cloud/schedule.py job `ext-val-v0-channel-20um`); the sensitivity variant and the 15 um follow-up are sealed, not launched"
  },
@@ -1364,7 +1379,86 @@
   "why_this_reference": "the only published HEMP PIC-MCC case near our scale (14 x 1.5 mm channel vs our 24 x 2 mm; 400 V vs 300 V; mA-class) whose full text is open access and which states its operating point, grid, time step, super-particle ratio, boundary conditions and SCALAR results in the text; the same code family (Greifswald PIC-MCC) as every other HEMP PIC paper; the companion thesis publishes the magnet stack so the field is reconstructable without author contact; and the case has a second published run (thesis chapter 7) that bounds the reference's own reproducibility. The cost of the case at device scale is affordable (section 'protocol')."
  },
  "schema_version": "cft.pic2d.external-validation-v0.protocol/1.0.0",
- "shakedown_summary": null,
+ "shakedown_summary": {
+  "assessment": {
+   "a_plateau": {
+    "passed": false,
+    "rule": "stop_reason == plateau_reached_after_min_transit_times under stopping_rule.plateau (>= 3 x 1.40 us, drifts of I_d and N_e < 5 %, triad soft, peak-Debye soft 2.5)"
+   },
+   "b_residual_power": {
+    "bound": 0.02,
+    "passed": true,
+    "rule": "summary.grid_heating_triad.windowed_energy_residual_over_electrode_work < +0.02 (one-sided) at the stop",
+    "value": -0.1693211301335372
+   },
+   "verdict": "no_plateau"
+  },
+  "comparison": {
+   "note": "non-evidentiary numbers of a 0.07 us transient: the stage is exercised, the values mean nothing",
+   "quotable": false,
+   "rows_compared": 10,
+   "rows_not_compared": [
+    {
+     "quantity_id": "plume_peak_angle_deg",
+     "reason": "not comparable under the channel-only protocol (needs the plume box)"
+    },
+    {
+     "quantity_id": "electron_energy_near_exit_cusp_ev",
+     "reason": "not comparable under the channel-only protocol (needs the plume box)"
+    }
+   ],
+   "s_values": {
+    "anode_electron_current_a": 0.001856375639572554,
+    "beam_fraction_of_feed": 0.010817073766233766,
+    "cell_potentials_v": [
+     411.9430752621113,
+     340.886407992653,
+     115.31305655528284
+    ],
+    "ion_beam_current_a": 0.0001906394912016553,
+    "ion_density_channel_mean_per_m3": 8.719654021311358e+16,
+    "ion_density_typical_per_m3": 5.004848873140635e+18,
+    "net_ionisation_fraction": 0.10533259454545453,
+    "plasma_potential_near_anode_above_anode_v": 11.943075262111279,
+    "potential_drop_first_cusp_v": 71.05666726945827,
+    "potential_drop_second_cusp_v": 225.57335143737015,
+    "wall_ion_current_density_max_a_per_m2": 215.29246650998266,
+    "wall_ion_energy_max_ev": 228.26691917821654
+   },
+   "verdicts": [
+    "agreement_within_u_val",
+    "discrepancy"
+   ]
+  },
+  "concurrent_mps_clients": 4,
+  "frames": 50,
+  "gate_not_inert_check": {
+   "expected_live_at_published_density": true,
+   "peak_window_computed_at_least_once": true,
+   "peak_window_enforced_at_least_once": false,
+   "peak_window_enforcement_note": "enforcement needs a node whose window-mean occupancy reaches the 32-macro-electron floor; at W 8.2e4 on 20 um nodes that happens once the local density passes ~1.4e18 m^-3 at mid radius (229 macro-electrons per mid-radius cell at the published 1e19), not in a 0.07 us shakedown from the 5e16 seed - the production run must show resolved_nodes > 0 (v2.0.2 lesson)",
+   "peak_window_resolved_nodes_last": 0,
+   "residual_window_completed_at_least_once": true
+  },
+  "git_head": "183e32a82a8919c8e90edc823d659196c8b89639",
+  "host": "68-209-75-2",
+  "ms_per_step": 5.20020994382001,
+  "non_evidentiary": true,
+  "option": "channel-20um",
+  "passed": true,
+  "refinalize": {
+   "assessment_sha256_before": "92fe6a0b5e63530a6da2d2ec7ef7aca7f069fb282f25996efc8e60fe2b0f3f18",
+   "comparison_sha256_before": "14301cedb75b5868d477c01bc83377a4305ff408cc306b945bf0fb1af90fcb93",
+   "maps_downgraded_to_instantaneous_as_designed": true,
+   "maps_kind_after": "instantaneous_checkpoint",
+   "ran_after_assess_and_compare": true,
+   "seconds": 1.6336265140053001,
+   "stop_reason_after": "shakedown_refinalize"
+  },
+  "steps_completed": 100000,
+  "stop_reason": "target_steps_reached",
+  "utc": "2026-09-04T12:16:09.073560+00:00"
+ },
  "status": "preregistered_external_validation_v0_channel_20um_h100_mps4_code_to_code_brandt2016_not_validated",
  "variants": {
   "base": {
