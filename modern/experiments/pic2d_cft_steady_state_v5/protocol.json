@@ -265,6 +265,17 @@
       ],
       "unchanged": "grid (120 x 960, 25 um), dt 1.0 ps, W 1.5e4, operating point, v1.3 closure, seed, v2.0.3 gates and cadences, plateau rule, acceptance (a)-(d), tolerances, primary (v4) and secondary (v2) references, claim boundary: the configuration identity efb9bb09c2d28fdfee02f7bb19f0fdd3ec12ff3a6b573659c7d17656bc9ad5b0 (which excludes the stopping rule) is byte-for-byte the preregistered one; the preflight and the shakedown were re-run on the launch box (H100, MPS) before the launch-2 commit and replace the RTX 5090 records in preflight.json / shakedown.json (the 5090 numbers stay quoted in README.md)",
       "not_changed_because": "the physics, the numerics and the acceptance rule are what the preregistration protects; the GPU model was never a declared parameter (the 5090 appears only in the cost model and the budget derivation), and the same-seed physics replays bitwise under MPS (mini-sweep mps-replay record)"
+    },
+    {
+      "version": "v5.1 (code-version disclosure)",
+      "kind": "shared_code_at_launch",
+      "utc": "2026-09-04T12:10:00Z",
+      "reason": "Between the v5.1 amendment / H100 shakedown (a529b457) and the launch, the branch received model v2.0.4 (79e6a670, another agent): the RUNTIME omega_pe dt gate (threshold 0.2, unchanged) now reads the single-step peak over RESOLVED nodes (electron deposit >= the peak-Debye gate's 32-macro-particle floor) and records the raw single-node peak as a witness (SeriesRecord.peak_omega_pe_dt_raw, v1_4_options.omega_pe_dt_gate); cft_revival/pic2d/simulation.py and warp_backend.py changed (a stats slot, kernel threshold constant, graph-safe), physics untouched. The branch is linear, so the launch commit necessarily contains it.",
+      "changes": [
+        "none to this protocol's declared parameters; the declared gates remain the v2.0.3 window-mode peak-Debye gate and the windowed residual-power gate; the omega_pe dt fail-closed gate keeps its 0.2 threshold but is evaluated on the resolved-node peak (v2.0.4) instead of the raw single-node peak (v2.0.3) - a strictly less shot-noise-prone reading; launch 1 (withdrawn) ran the v2.0.3 reading at 0.06-0.08, far from the threshold",
+        "the H100 shakedown is RE-RUN at the launch commit's code (shakedown.json replaced again) so that the code the shakedown exercised is the code the one execution runs"
+      ],
+      "unchanged": "configuration identity efb9bb09c2d28fdfee02f7bb19f0fdd3ec12ff3a6b573659c7d17656bc9ad5b0; the H100 preflight record (timing / memory / a-priori gate at a529b457) is kept - v2.0.4 adds one reduction slot and does not change the step cost beyond noise (the re-run shakedown's ms/step is the check)"
     }
   ],
   "launch_platform": {

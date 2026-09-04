@@ -163,6 +163,18 @@ between Linux/OpenBLAS and Windows (`0ac8d9b8`), so a cross-platform bitwise rep
 and not claimed; the physics is platform-consistent to the diagnostic precision that matters here.
 The `results-shakedown/` directory stays untracked (scratch worktree on the box).
 
+### Code version at the launch (`amendments[1]`) and the re-run shakedown
+
+Between `a529b457` and the launch the branch received **model v2.0.4** (`79e6a670`, another agent):
+the runtime ω_pe Δt fail-closed gate (threshold 0.2, unchanged) reads the single-step peak over
+*resolved* nodes (electron deposit ≥ the 32-macro-particle floor) and records the raw single-node
+peak as a witness; `simulation.py` / `warp_backend.py` changed (one reduction slot, graph-safe),
+physics untouched. The branch is linear, so the launch commit contains it; the protocol's declared
+gates are unchanged (v2.0.3 window-mode peak-Debye + windowed residual-power), the configuration
+identity is unchanged, and launch 1 had read the raw statistic at 0.06–0.08 anyway. So that the
+shakedown exercises the code the execution runs, the H100 shakedown was **re-run at the launch
+commit** and `shakedown.json` replaced again (numbers in the launch log below and in the record).
+
 ## Commands (from `modern/`)
 
 ```powershell
