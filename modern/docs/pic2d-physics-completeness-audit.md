@@ -117,7 +117,7 @@ add them.**
 | e-Xe excitation | ONE lumped level, 8.32 eV loss, isotropic (`mcc.py:345-349`) | sum of the four Biagi levels 8.315 / 9.447 / 9.917 / 11.7 eV (builder `spec/pic2d/build_xenon_cross_sections.py:297-304`); Szabo 2001 convention | as above; per-event loss under-estimated by <= 3.4 eV (spec notes) |
 | e-Xe single ionisation | 12.13 eV; Vahedi-Surendra secondary energy, B = 8.7 eV; both electrons isotropic; ion born at the event with a 300 K Maxwellian (`mcc.py:355-368`; GPU `:784-819, 875-887`) | Biagi-v7.1 | `test_mcc_run_creates_ions_and_reports_rates`; ionisation-rate maps integrate to S (renderer tests) |
 | ion-neutral CEX / MEX / elastic | ABSENT (declared OFF: `mcc.py:8-10`, `simulation.py:1139-1141`, spec v2.0 `neutrals_v2_0.ion_neutral`) | - | - |
-| e-e / e-i Coulomb | ABSENT | - | - |
+| e-e / e-i Coulomb | ABSENT at `0901138a`; **IMPLEMENTED 2026-09-05 as model v2.4.0 `coulomb_v1`** (§11): Takizuka-Abe binary pairing per cell with Nanbu's cumulative angle, e-e + e-i (i-i optional), NRL local Coulomb logarithm, every `cycle_steps` = 10 steps, both backends (`coulomb.py`, `warp_coulomb.py`; GPU pairing through a cell-sorted slot permutation, particles never reordered) | NRL Formulary logarithms; Takizuka & Abe 1977; Nanbu 1997; Perez 2012 A(s) fit | `test_pic2d_v24_coulomb.py` (17 tests: Trubnikov / Spitzer / two-temperature relaxation, pairwise conservation, off bitwise, graph bitwise) |
 | Xe2+, metastables, stepwise ionisation, volume recombination | ABSENT (single species `xenon_ion_species`, `models.py:298-299`) | - | - |
 | neutrals | 0-D quasi-steady inventory `V dn_g/dt = Q_in + R - S - c n_g (- artificial relaxation)`, exact per-interval integration, five atom ledgers; wall-ion recycling R with gamma = 1 at T_w (v1.4); plume: analytic capped-cosine effusion shape as an MCC density factor only (`neutrals.py`; `simulation.py:1131-1167`); density in a device array so the CUDA graph sees it (`warp_backend.py:750-753`) | Szabo 2001 / Brandt 2016 recycling convention (spec v1.4) | 17 tests in `test_pic2d_neutral_inventory.py`; graph-staleness regression test |
 | dielectric wall (Poisson) | finite-volume Gauss law; no conductance into solid cells -> homogeneous Neumann (zero field inside the dielectric) + accumulated surface charge on the plasma-side wall nodes as a RHS source; wall nodes float (`poisson.py:1-11`, `mesh.py:161-203`, `simulation.py:869-871`) | - | Gauss law with volume + surface charge (`test_pic2d_mesh_poisson.py`, MG path) |
@@ -158,7 +158,7 @@ define the standard for the instability physics an axisymmetric code cannot carr
 | a | SEE from the dielectric (BN / Al2O3) | scaffold, emission refused at `0901138a`; **implemented v2.2.0 (§10), runs pending** | Brandt 2016: 50 % re-emitted at 90 % energy (crude); Matyash 2010: wall contact confined to the cusps | cusp sheath drops -10 to -45 % (delta 0.3-0.9); wall electron power x1.5-2; T_e,peak -10 to -25 %; I_d +10 to +30 % (near-wall conductivity); ion wall energy down | M-L (3-5 d) | +2-4 % (wall kernel + emission spawn) | 2 |
 | b | dielectric permittivity + backing (floating capacitor vs Neumann) | Neumann + surface charge (zero field inside the solid) | Brandt 2016: epsilon_r in the solver, 1 mm dielectric, grounded elements behind | DC floating condition identical (Gamma_e = Gamma_i locally); differences are the charging transient (~0.1-1 ms with a backing, ~10-100 ns without) and tangential coupling near the exit lip / anode edge (~2 % of the sheath charge, estimate §9) | M (1-2 d) | ~0 (a few more conductances) | 9 |
 | c | anomalous cross-field transport (azimuthal ECDI) | Bohm hook OFF by default; `bohm-0.4` sealed, never run | every HEMPT PIC imposes it (Brandt 2016 D = 0.4 kT_e/eB "derived from a 3D simulation"; Szabo 2001/2014 Bohm bracket); 2D-theta / 3D benchmarks compute it | the central limitation: without it the ext-val point avalanches; with alpha in {1/64, 1/16, 0.345} expect I_d up (+20 to +60 %, closure-set), peak n_e and S down (-30 to -60 % at Brandt's point), cusp sheath drops down, per-cusp wall loss up; plateau existence becomes robust (a leak path bounds n_e) | S-M (hook exists; perpendicular-rotation variant 1 d; alpha-series protocol 1 d) | +1-2 % (one more per-electron kernel) | 1 |
-| d | Coulomb collisions (e-e, e-i) | ABSENT | Brandt 2016 include "coulomb" collisions; Tskhakaya 2007 method | nu_ee/nu_en = 0.15-0.4 at 1e18 m^-3 / 5-10 eV, 1.4-3.4 at 1e19 (estimate); tau_ee 0.06 us at 1e19 << transit: EEDF Maxwellianised, tail refilled -> S +5 to +20 % at our plateau, first-order at Brandt's point; T_e,peak -5 % | L (3-5 d: cell sort + Takizuka-Abe / Nanbu pairing, subcycled) | +15-30 % if every step; +2-3 % subcycled every 10-20 steps | 4 |
+| d | Coulomb collisions (e-e, e-i) | ABSENT at `0901138a`; **implemented v2.4.0 (§11), runs pending** | Brandt 2016 include "coulomb" collisions; Tskhakaya 2007 method | nu_ee/nu_en = 0.15-0.4 at 1e18 m^-3 / 5-10 eV, 1.4-3.4 at 1e19 (estimate); tau_ee 0.06 us at 1e19 << transit: EEDF Maxwellianised, tail refilled -> S +5 to +20 % at our plateau, first-order at Brandt's point; T_e,peak -5 % | L (3-5 d: cell sort + Takizuka-Abe / Nanbu pairing, subcycled) - DONE | measured on the H100 (§11) | 4 |
 | e1 | multi-level excitation (4 Biagi levels) | lumped 8.32 eV | Biagi set has 4 levels | inelastic power +~15 %; T_e -3 to -5 %; S -3 to -5 % | S (0.5-1 d; data already bound) | ~0 | 3a |
 | e2 | metastables + stepwise ionisation (+ radiation trapping) | ABSENT | not in Brandt 2016; CR models exist for HET optics (Karabadzhak 2006) | estimate: stepwise/ground = 0.18-0.23 at n_e 1e18-1e19 (uncertain x3); channel optically thick to resonance radiation (k_0 L >> 1), so the whole 6s manifold is effectively metastable -> S +10 to +25 %, utilisation up, n_g down | L (3-5 d for a 0-D metastable pool mirroring `neutrals.py`; data: Hyman 1979, Ton-That 1977, Erwin 2004, Jung 2005) | +1 % | 5b |
 | e3 | double ionisation Xe2+ (from Xe and from Xe+) | ABSENT | not in Brandt 2016 | 0.3-2 % of ionisation events at T_e 7-15 eV from ground (estimate; Rejoub 2002, Syage 1992 ratios); HET measurements: of order 10 % of the ion current in Xe2+ at 300-1000 V (Hofer 2006); thrust -1.5 % per 5 % Xe2+ current, I_d +1-3 % | M (1-2 d second ion species) | +1 % | 6 |
@@ -580,7 +580,7 @@ the purpose of stating them is that a result of the opposite sign is a finding, 
 | R2 | SEE from the dielectric: BN (Villemant 2019 fit) and Al2O3 (declared) Vaughan yields, Sydorenko backscatter split, 2 eV secondaries, space-charge limit emergent (no cap); `pic2d-model-v2.2` - **CODE LANDED 2026-09-05 (§10), runs not scheduled** | M-L | 2 channel-33 (BN, Al2O3) at the R1-chosen alpha | cusp sheath drops DOWN 10-45 %; wall electron power UP x1.5-2; T_e,peak DOWN 10-25 %; I_d UP 10-30 %; peak n_e DOWN 5-15 %; wall ion energy DOWN; Al2O3 > BN in every effect | slab sheath drop vs analytic with delta; ledger closes with emission; on/off/material triad with stated signs |
 | R3a | four excitation levels | S | folded into R3b's run | T_e DOWN 3-5 %; S DOWN 3-5 %; inelastic power UP ~15 % | total excitation frequency unchanged; ledger |
 | R3b | Xe+ + Xe CEX + MEX with fast-neutral thrust tally; `xenon-ion-neutral-cross-sections-v1.json` | M | 1 channel-33 + 1 plume-v2.1 | I_d, S ~unchanged (< 5 %); IEDF gains a low-energy population 15-30 % of exit ions; anode ion current UP; divergence UP; ion thrust DOWN by the exchanged fraction, total (ion + fast neutral) ~unchanged | CEX fraction = 1 - exp(-L/lambda) on a slab; momentum ledger closes with the neutral term |
-| R4 | Coulomb collisions (Takizuka-Abe / Nanbu, cell sort, subcycled) | L | 1 channel-33; 1 ext-val (`bohm-0.4` + Coulomb + SEE = the like-for-like Brandt comparison) | S UP 5-20 % (more at 1e19); T_e,peak DOWN ~5 %; EEDF Maxwellian tail; I_d UP few % | bi-Maxwellian relaxation at the Trubnikov rate; pairwise conservation; on/off pair |
+| R4 | Coulomb collisions (Takizuka-Abe / Nanbu, cell-sorted slot permutation, every 10 steps); `pic2d-model-v2.4` - **CODE LANDED 2026-09-05 (§11), runs not scheduled** | L | 1 channel-33; 1 ext-val (`bohm-0.4` + Coulomb + SEE = the like-for-like Brandt comparison) | S UP 5-20 % (more at 1e19); T_e,peak DOWN ~5 %; EEDF Maxwellian tail; I_d UP few % | bi-Maxwellian relaxation at the Trubnikov rate (done: 0.96-1.05); pairwise conservation (done); on/off pair |
 | R5a | spatial free-molecular neutrals (Katz-Mikellides view factors) with wall accommodation, Picard-iterated per window | L | 1 channel-33 (+ 1 plume) | ionisation moves UPSTREAM (anode-side cusp flames brighten, exit cusp dims); exit n_g DOWN; S, utilisation +-10 %; the 0-D fixed point replaced by a converged map | Clausing conductance vs analytic; uniform limit = 0-D to round-off; atom ledger |
 | R5b | metastable pool + stepwise ionisation (0-D first) | L | 1 channel-33 | S UP 10-25 %; utilisation UP; n_g DOWN; T_e slightly DOWN | metastable ledger; CR fixed point vs analytic; on/off pair |
 | R6 | diagnostics and small species: Xe2+ (M), neutraliser gas source (S), beta / B_induced map (S), sputter-yield post-processor (S-M), cathode-closure pair fixed vs continuity (0 code) | S-M | 1 plume-v2.1 (Xe2+ + neutraliser gas); 1 plume pair for the cathode closure | Xe2+: I_d +1-3 %, thrust -1.5 % per 5 % current fraction; neutraliser gas: plume CEX and cold-gas thrust UP; beta map: < 1e-2 everywhere except within 0.1 mm of the nulls; cathode pair: the I_d difference is the declared closure sensitivity | recorded maps; pair difference reported, not tuned |
@@ -898,3 +898,46 @@ sheath drops DOWN 10-45 %, wall electron power UP x1.5-2, T_e,peak DOWN 10-25 %,
 space-charge-limited is read from the recorded per-cell effective yield, not assumed. Gap (b) - permittivity
 and grounded backing - stays open (DC floating condition identical; charging transient and exit-lip coupling
 declared).
+
+## 11. Status update 2026-09-05 - gap (d) implemented as model v2.4.0 `coulomb_v1` (R4)
+
+*What landed* (`modern/spec/pic2d/pic2d-model-v2.4.json`, `cft_revival.pic2d.coulomb` / `warp_coulomb`,
+`modern/docs/pic2d-coulomb-v1.md`, `tests/pic2d/test_pic2d_v24_coulomb.py`). Electron-electron and electron-ion
+Coulomb collisions (ion-ion implemented, off by default) as the Takizuka-Abe 1977 binary-pair Monte Carlo inside
+each mesh cell with Nanbu's 1997 cumulative scattering angle (`coth A - 1/A = exp(-s)`,
+`s = (ln Lambda / 4 pi) (q_a q_b / eps0 m_ab)^2 n Delta t / g^3`; A(s) by the exact-mean form below 0.2, the
+Perez 2012 polynomial to 3, `3 exp(-s)` to 6, isotropic beyond), exact centre-of-mass kinematics (pair momentum and
+classical energy to round-off, equal macro weights), the NRL Coulomb logarithm from the cell's own n and T
+(floors 0.01 eV / 2.0), applied every `cycle_steps` = 10 steps (`Delta t_c` = 14 ps at 1.4 ps: peak-cell
+`s ~ 4e-5` at our 1e18 plateau, `~4e-4` at Brandt's 1e19; under half a 33 um cell crossing of a 5 eV electron)
+to the pushed populations before the MCC stages. Odd cell counts use the Takizuka-Abe triplet; e-i pairs put
+every electron once against a cell ion at the field density n_i (the ions collide N_e / N_i times: both rates
+physical). The GPU pairs through a per-cycle cell-sorted PERMUTATION of the slots with a deterministic within-cell
+rank (slot order), so no particle is reordered and the per-particle RNG streams of MCC / injection / anomalous /
+ion-MCC / SEE keep their keys: Coulomb off replays bitwise (the v2.2.0 pin re-asserted), Coulomb on draws from a
+new seed-table column (stream id 6); the stage is inside the CUDA graph (graph = direct bitwise with e-e + e-i +
+i-i on). Ledger: `pz_coulomb` (zero by construction) and `ke_coulomb_j` (the O((v/c)^2) relativistic remainder
+of a classically elastic operator, ~1e-9 of K_e per record, booked so the identity closes to round-off);
+counts, sums of s and ln Lambda, per-record mean nu_ee / nu_ei / nu_ii and nu_ee / nu_en; per-cell frequency maps
+(`coulomb_nu_ee_per_s`, `coulomb_nu_ei_per_s`) in maps.npz / frames with the per-cusp column reading.
+
+*Verification.* Bi-Maxwellian isotropization at the Trubnikov / NRL rate: log-decay ratio 0.963 (T_par 8 /
+T_perp 4 eV) and 1.048 (5.5 / 4.75 eV) at N 200k and mean s 0.043 (test tolerance 10 %; numpy reference and
+the Warp stage on the cpu device, cuda on the box); Lorentz slowing-down of a drifting electron population on
+cold Xe+: measured / bounded expectation 0.959, initial slope = Braginskii `2.91e-6 n lnL T^-3/2`; two-temperature
+e-i exchange: the Landau integral of the formed pairs = Spitzer's `nu_eps` within 8 % over m_i / m_e = 10-1000,
+realised / expected 1.003 (200 cycles); the heavy-ion per-collision bound `4 m_e / M` holds; without like-particle
+collisions the temperature decay falls to 0.74 of Spitzer because the e-i operator alone does not keep the
+electrons Maxwellian (physical). The once-per-cycle pairing is coarse for `s >~ 1` (0.79-0.83 of Trubnikov at mean
+s 0.3-0.8), hence the recorded per-record mean s and large-s fraction. Discharge conservation on cpu / warp-cpu /
+cuda: `pz_coulomb` < 1e-9 of the represented momentum, particle-side identity to 1e-6.
+
+*Cost and shakedown* (`experiments/pic2d_coulomb_v1_shakedown/`, filled from the H100 session): the probe and the
+100k-step shakedown against the R3 (Coulomb-off) twin are recorded in that directory's README and
+`shakedown.json` / `cost.json`; the audit's a-priori figure was +15-30 % per step every step, +2-3 % amortised
+over 10-20 steps.
+
+*Hypotheses for the R4 runs* (unchanged directions from §4.d, restated in the spec as predeclared): S UP 5-20 %
+at our plateau (more at 1e19), T_e,peak DOWN ~5 %, I_d UP a few %, EEDF tail Maxwellianised; nu_ee / nu_en
+0.15-0.4 at 1e18 and 1.4-3.4 at 1e19 are read from the series and the per-cusp maps, not assumed; the
+like-for-like Brandt comparison is the ext-val `bohm-0.4` + Coulomb + SEE run.
