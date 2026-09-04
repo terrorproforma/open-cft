@@ -416,6 +416,21 @@ What the amendment does, and what it does not:
   preregistration protects; the gate statistic is a numerical diagnostic whose raw form had already been shown (attempt 6
   plume-boundary gate, external-validation launch-box preflight) to read single macro-particles on the smallest nodes.
 
+## Energy-ledger correction (model v2.0.6, post hoc; recorded values unchanged)
+
+Up to model v2.0.5 the energy ledger's `inelastic_loss_j` lacked the macro weight W (found by the external-validation v0 launch-1 diagnosis, 036bd679), so every recorded interval residual was `H - L_inel` - biased NEGATIVE by the inelastic power - where `H = field work + dU - electrode work` is the true numerical energy creation. The sidecar(s) `ledger-corrected.json` (+ `.sha256.json`) were written by `python -m cft_revival.pic2d.ledger_recompute <results-dir>` from the recorded `series.npz` (corrected residual = H per record; `spec/pic2d/pic2d-model-v2.0.json#gates_v2_0.energy_ledger_correction_v2_0_6`); **the recorded series, maps and summaries are unchanged.** Values below: trailing-400 000-step residual / electrode work at the last record, recorded -> corrected.
+
+| design | sidecar | windowed recorded -> corrected | cumulative recorded -> corrected | acceptance (b) < +2 % |
+|---|---|---|---|---|
+| 047 (plateau, 3.003 transits) | `results/l1a-gs-v2-047-e3196a8aa5-channel-33um/ledger-corrected.json` | -7.1 % -> **+0.9 %** | -7.3 % -> +0.7 % | pass -> pass |
+| 056 launch 1 (triad stop, shot noise) | `results/l1a-gs-v3-056-effcbc8686-channel-33um-launch1-triad-gate-stop/ledger-corrected.json` | -7.6 % -> **+0.6 %** | -8.9 % -> +0.5 % | pass -> pass |
+| 009, reference, 056 launch 2 | results not committed at 036bd679 - run the tool when they land | | | |
+
+Both corrected trajectories are flat (047 +0.0 % at 0.62 us -> +0.9 % at 7.78 us; 056 L1 +0.5 -> +0.6 %), well inside the 5 % gate and the 2 %
+acceptance. The running / pending designs (009, reference, 056 launch 2) execute pre-v2.0.6 code in their locked worktrees: their recorded
+`grid_heating_triad.windowed_energy_residual_over_electrode_work` stays biased by about -8 % and acceptance (b) must be evaluated on the
+sidecar written by the tool. The whole-sweep `assess` should cite the sidecars.
+
 ## Commands (from `modern/`; CPU unless stated; on the box `PYTHONPATH=src:.` with the MPS variables exported)
 
     $env:PYTHONPATH="$PWD\src;$PWD"; $env:OMP_NUM_THREADS='1'
