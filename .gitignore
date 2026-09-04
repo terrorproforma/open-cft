@@ -141,9 +141,22 @@ modern/experiments/pic2d_cft_steady_state_v2/results*/*.log
 modern/experiments/pic2d_cft_steady_state_v2/results*/*.err
 # PIC-2D steady-state v3 (model v1.4): results stay untracked until the run ends
 modern/experiments/pic2d_cft_steady_state_v3/results*/
-# PIC-2D steady-state v4 (preregistered 33 um refinement): results stay untracked until the run ends
-# (results-only commit adds the negations); the non-evidentiary shakedown directory is never tracked
+# PIC-2D steady-state v4 (preregistered 33 um refinement): the one execution (launch 1, PID 18068) is a tracked
+# record: summary (with the frames manifest), assessment (verdict), execution lock, run state, status/series/maps,
+# final checkpoint metadata; the frames, the videos, the checkpoint arrays, the raw series and the logs/pid stay
+# untracked; the non-evidentiary shakedown directory is never tracked
 modern/experiments/pic2d_cft_steady_state_v4/results*/
+!modern/experiments/pic2d_cft_steady_state_v4/results/
+!modern/experiments/pic2d_cft_steady_state_v4/results/maps.npz
+!modern/experiments/pic2d_cft_steady_state_v4/results/series.npz
+modern/experiments/pic2d_cft_steady_state_v4/results/checkpoint/
+modern/experiments/pic2d_cft_steady_state_v4/results/frames/
+modern/experiments/pic2d_cft_steady_state_v4/results/video/
+modern/experiments/pic2d_cft_steady_state_v4/results/checkpoint-final.npz*
+modern/experiments/pic2d_cft_steady_state_v4/results/series.jsonl
+modern/experiments/pic2d_cft_steady_state_v4/results/*.pid
+modern/experiments/pic2d_cft_steady_state_v4/results/*.log
+modern/experiments/pic2d_cft_steady_state_v4/results/*.err
 # PIC-2D design mini-sweep v1 (preregistered channel-33um option): per-design results/<design>-<option>/ stay untracked
 # until a run ends (results-only commit adds the negations); the shakedown and MPS-replay scratch directories are never tracked
 modern/experiments/pic2d_design_mini_sweep_v1/results*/

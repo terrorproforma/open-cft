@@ -146,3 +146,39 @@ no thruster performance.
   `grid_heating_triad.windowed_energy_residual_over_electrode_work`, `plateau`) and the PID; the
   results-only commit (results/, `assessment.json`, .gitignore negations) follows the stop and is
   not made by the launching agent.
+* **Finish (2026-09-04 18:13:59 AEST = 08:13:59 UTC, PID 18068, one session)** — stop
+  `plateau_reached_after_min_transit_times` at step **5 200 000 = 7.280 µs = 3.033 transits**
+  (transit = the protocol's 2.4 µs, the measured v2 ion residence time kept in `budget_v1_3`; ≥ 3
+  required = 5 142 858 steps; the rule is evaluated at the 40 000-step checkpoints and the trailing
+  drifts first satisfied it at 5.2 M). 18 013 s of stepping (5.00 h; **3.46 ms/step mean**, 2.50 →
+  4.1–4.2 ms/step as the particle count grew to 1.99 M e⁻ + 2.00 M Xe⁺), 260 frames (28 ns),
+  finalizer clean (no `finalization_error`; 8/60 nvidia-smi samples timed out, NaN-safe), GPU 99 %.
+  Trailing-20 % drifts: I_d +3.0 %, N_e +4.9 %, n_g −0.5 % (threshold 5 %); triad soft members
+  S +0.6 %, T_e,dense −2.0 %, ω_pe Δt +1.5 %; **`plateau.peak_debye_soft_ok` true**: window
+  Δ/λ_D **2.15** at the stop (trailing mean 2.10, 0 of the enforced records above the soft 2.5;
+  single-step witness 2.37, run maximum 2.46; hard π never approached; λ_D 15.5 µm at the window
+  peak); windowed residual **−7.7 %** of the electrode work (cumulative −9.1 %; cooling side, as
+  every accepted 50 µm run); ω_pe Δt 0.096. Last records: I_d 3.7–4.0 mA, I_beam 2.1–2.7 mA,
+  S 3.5–3.9e16 s⁻¹, n_g 3.19e19, utilisation 0.41–0.44.
+* **Assessment (`results/assessment.json`, `run.py assess`, 08:21 UTC): verdict
+  `resolution_limited`.** (a) plateau ✓. (b) windowed residual −7.67 % < +2 % ✓. (c) vs the 50 µm
+  base (`24ab82f4`; reference consistency re-derived from the v2 artifacts on disk 7/7):
+  I_d **3.801 vs 3.444 mA, +10.35 % (tolerance 10 %) ✗**; I_beam 2.459 vs 2.291 mA, +7.3 % ✓;
+  S 3.595e16 vs 3.930e16 s⁻¹, −8.5 % ✓; utilisation 0.420 vs 0.460, −8.5 % ✓; n_g 3.188e19 vs
+  2.973e19, +7.2 % ✓; peak n_e **1.287e18 vs 1.637e18 m⁻³, −21.4 % (tolerance 20 %) ✗**; T_e at
+  the peak **5.58 vs 7.39 eV, −24.5 % (tolerance 20 %) ✗** — at the same location (window peak
+  node (20, 429) = r 0.67 mm, z 14.3 mm; v2 node (14, 286) = r 0.70 mm, z 14.3 mm). Bands of the
+  50 µm convergence pair for comparison: seed-b I_d −0.1 %, I_beam +0.7 %, S −0.8 %, n_g +0.7 %,
+  peak n_e −8.2 %, T_e,peak −1.1 %; W×0.7 I_d +5.7 %, I_beam +3.6 %, S −4.6 %, n_g +4.0 %, peak n_e
+  −11.9 %, T_e,peak −9.3 %. (d) **The 50 µm base plateau is RESOLUTION-LIMITED** at the predeclared
+  tolerances: the v4 values supersede the v2 values for I_d, peak n_e and T_e,peak; S, utilisation,
+  n_g and I_beam agree within 10 %. Reading (not part of the predeclared rule): the refined run's
+  peak is cooler and less dense at the same place while its residual is on the cooling side — the
+  50 µm base sat at Δ/λ_D 3.17, where attempt 8 located the CIC heating onset; the v4 shifts point
+  in the direction of the W×0.7 shifts at about twice their size, so grid and particle-weight
+  effects remain entangled (W changed with the grid), and the protocol's declared W-only variant
+  at 50 µm stays open. Whether 33 µm is itself converged is the object of the next ladder point
+  (25 µm / 1.0 ps / W 1.5e4, `pic2d_cft_steady_state_v5`). Results-only commit: `results/`
+  (summary, assessment, execution lock, run state, status/series/maps, final checkpoint metadata),
+  the .gitignore negations; frames (241 MB), the checkpoint arrays, `series.jsonl` and the logs
+  stay untracked in the run worktree.
