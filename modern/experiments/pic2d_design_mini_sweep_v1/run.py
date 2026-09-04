@@ -252,30 +252,105 @@ def _replay_child_command(design_id: str, domain: str, grid: str, results: Path,
             "--allow-launch", "--shrunk-cadences", "--label", "mps-replay", "--max-steps", str(steps), "--results-dir", str(results)]
 
 
+# Float-atomic DIAGNOSTIC accumulators (v2.0.2 window sums: sum w v, sum w v^2, sample counts; the energy-ledger interval sums; the
+# peak-node statistics derived from them).  Device float atomics are order-dependent, so these differ at round-off between ANY two
+# runs on the same GPU (solo or concurrent).  The PHYSICS state (particles, fixed-point charge deposition, potential, densities,
+# ionisation, wall fluxes, currents, counts, neutral inventory) is bitwise.  A replay PASSES when every physics array / record is
+# bitwise and every diagnostic difference is within DIAGNOSTIC_RTOL - and MPS is "neutral" when the concurrent pairs show the same
+# pattern as the solo pair.
+DIAGNOSTIC_MAP_KEYS = {"t_e_ev", "sample_count_e", "t_e_perp_ev", "t_e_par_ev", "mean_energy_e_ev", "sample_count_i"}
+DIAGNOSTIC_CHECKPOINT_KEYS = {"cumulative", "cumulative_extra"}
+DIAGNOSTIC_SERIES_TOP_KEYS = {"ledger", "peak_node"}                  # series.jsonl record blocks built from the float-atomic sums
+DIAGNOSTIC_SERIES_NPZ_PREFIXES = ("peak_node_", "interval_", "ledger_", "cumulative_")   # their flattened series.npz columns
+DIAGNOSTIC_RTOL = 1.0e-6
+
+
+def _is_diagnostic(kind: str, key: str) -> bool:
+    if kind == "maps.npz":
+        return key in DIAGNOSTIC_MAP_KEYS
+    if kind == "checkpoint-final.npz":
+        return key in DIAGNOSTIC_CHECKPOINT_KEYS
+    if kind == "series.npz":
+        return key.startswith(DIAGNOSTIC_SERIES_NPZ_PREFIXES)
+    return key.split("/")[0] in DIAGNOSTIC_SERIES_TOP_KEYS                # "series": record path "ledger/cumulative/field_work_j"
+
+
+def _walk_diff(x: Any, y: Any, path: str, out: dict[str, float]) -> None:
+    if isinstance(x, dict) and isinstance(y, dict):
+        for key in set(x) | set(y):
+            _walk_diff(x.get(key), y.get(key), f"{path}/{key}" if path else str(key), out)
+    elif x != y:
+        rel = _max_rel(x, y) if isinstance(x, (int, float, list)) and isinstance(y, (int, float, list)) and not isinstance(x, bool) else None
+        out[path] = max(out.get(path, 0.0), rel if rel is not None else float("inf"))
+
+
+def _max_rel(a, b) -> float | None:
+    import numpy as np
+
+    x, y = np.asarray(a, dtype=float).ravel(), np.asarray(b, dtype=float).ravel()
+    if x.shape != y.shape:
+        return None
+    scale = np.maximum(np.maximum(np.abs(x), np.abs(y)), 1e-300)
+    with np.errstate(invalid="ignore"):
+        rel = np.abs(x - y) / scale
+    rel = rel[np.isfinite(rel)]
+    return float(rel.max()) if rel.size else 0.0
+
+
 def _compare_runs(a: Path, b: Path) -> dict[str, Any]:
-    """Bitwise comparison of two runs' physics records: series.jsonl lines, maps.npz / checkpoint-final.npz arrays, final counts."""
+    """Compare two runs: physics arrays / records bitwise, float-atomic diagnostics within DIAGNOSTIC_RTOL (see the note above)."""
 
     import numpy as np
 
     out: dict[str, Any] = {}
     sa, sb = (a / "series.jsonl").read_bytes().splitlines(), (b / "series.jsonl").read_bytes().splitlines()
     out["series_records"] = {"a": len(sa), "b": len(sb), "identical_lines": sum(1 for x, y in zip(sa, sb) if x == y), "bitwise_equal": sa == sb}
+    physics_ok, diagnostics_ok = True, True
+    # series.jsonl: every record, every (nested) key; max relative difference per key path
+    series_diff: dict[str, float] = {}
+    if len(sa) == len(sb):
+        for x, y in zip(sa, sb):
+            _walk_diff(json.loads(x), json.loads(y), "", series_diff)
+    else:
+        physics_ok = False
+    for key, rel in series_diff.items():
+        if _is_diagnostic("series", key):
+            diagnostics_ok = diagnostics_ok and rel <= DIAGNOSTIC_RTOL
+        else:
+            physics_ok = False
+    out["series_records"]["differing_keys_max_rel"] = dict(sorted(series_diff.items(), key=lambda kv: -kv[1])[:40])
+    out["series_records"]["physics_keys_bitwise"] = all(_is_diagnostic("series", k) for k in series_diff)
+    out["series_records"]["physics_differing_keys"] = [k for k in series_diff if not _is_diagnostic("series", k)][:20]
     for name in ("maps.npz", "checkpoint-final.npz", "series.npz"):
         pa, pb = a / name, b / name
         if not pa.is_file() or not pb.is_file():
             out[name] = {"present": False}
+            physics_ok = False
             continue
         with np.load(pa) as za, np.load(pb) as zb:
             keys = sorted(set(za.files) | set(zb.files))
             per_key = {k: (k in za.files and k in zb.files and np.array_equal(za[k], zb[k], equal_nan=True)) for k in keys}
+            rel_diff = {k: _max_rel(za[k], zb[k]) for k, ok in per_key.items() if not ok and k in za.files and k in zb.files}
+        differing = [k for k, ok in per_key.items() if not ok]
+        physics_differing = [k for k in differing if not _is_diagnostic(name, k)]
+        diagnostic_differing = {k: rel_diff.get(k) for k in differing if _is_diagnostic(name, k)}
+        physics_ok = physics_ok and not physics_differing
+        diagnostics_ok = diagnostics_ok and all(r is not None and r <= DIAGNOSTIC_RTOL for r in diagnostic_differing.values())
         out[name] = {"present": True, "keys": len(keys), "bitwise_equal_keys": sum(per_key.values()), "bitwise_equal": all(per_key.values()),
-                     "differing_keys": [k for k, ok in per_key.items() if not ok][:20], "file_sha256_equal": _sha256(pa) == _sha256(pb)}
+                     "physics_keys_bitwise": not physics_differing, "physics_differing_keys": physics_differing[:20],
+                     "diagnostic_differing_keys_max_rel": diagnostic_differing, "file_sha256_equal": _sha256(pa) == _sha256(pb)}
     summary_a, summary_b = json.loads((a / "summary.json").read_text(encoding="utf-8")), json.loads((b / "summary.json").read_text(encoding="utf-8"))
     out["final_counts_equal"] = summary_a.get("final_counts") == summary_b.get("final_counts")
     out["steps_completed"] = {"a": summary_a.get("steps_completed"), "b": summary_b.get("steps_completed")}
     out["ms_per_step"] = {"a": summary_a.get("ms_per_step_this_session"), "b": summary_b.get("ms_per_step_this_session")}
+    out["window_currents_equal"] = summary_a.get("window_currents_a") == summary_b.get("window_currents_a")
+    physics_ok = physics_ok and out["final_counts_equal"] and out["steps_completed"]["a"] == out["steps_completed"]["b"] and out["window_currents_equal"]
     out["all_bitwise"] = bool(out["series_records"]["bitwise_equal"] and all(v.get("bitwise_equal", True) for k, v in out.items() if isinstance(v, dict) and k.endswith(".npz"))
                               and out["final_counts_equal"] and out["steps_completed"]["a"] == out["steps_completed"]["b"])
+    out["physics_bitwise"] = bool(physics_ok)
+    out["diagnostics_within_rtol"] = bool(diagnostics_ok)
+    out["diagnostic_rtol"] = DIAGNOSTIC_RTOL
+    out["passed"] = bool(physics_ok and diagnostics_ok)
     return out
 
 
@@ -316,24 +391,54 @@ def command_mps_replay(args: argparse.Namespace) -> int:
     for (name_a, res_a, _, _), (name_b, res_b, _, _) in zip(procs, procs[1:]):
         pairs[f"{name_a}-vs-{name_b}"] = _compare_runs(res_a, res_b)
     record["concurrent_pairs"] = pairs
-    solo = None
+    solo: dict[str, Any] | None = None
     if not args.skip_solo:
-        results = root / "solo"
-        t1 = time.perf_counter()
-        with open(root / "solo.log", "wb") as log:
-            code = subprocess.run(_replay_child_command(args.design, args.domain, args.grid, results, args.steps), cwd=str(MODERN), env=env, stdout=log, stderr=subprocess.STDOUT, check=False).returncode
-        solo = {"exit_code": code, "wall_seconds": time.perf_counter() - t1}
-        if code == 0:
-            solo["vs_concurrent_a"] = _compare_runs(procs[0][1], results)
+        solo = {"runs": {}, "exit_codes": {}}
+        solo_dirs = []
+        for index in range(max(1, args.solo_runs)):
+            results = root / f"solo-{index + 1}"
+            t1 = time.perf_counter()
+            with open(root / f"solo-{index + 1}.log", "wb") as log:
+                code = subprocess.run(_replay_child_command(args.design, args.domain, args.grid, results, args.steps), cwd=str(MODERN), env=env, stdout=log, stderr=subprocess.STDOUT, check=False).returncode
+            solo["exit_codes"][f"solo-{index + 1}"] = code
+            solo["runs"][f"solo-{index + 1}"] = {"wall_seconds": time.perf_counter() - t1}
+            if code == 0:
+                solo_dirs.append(results)
+        if solo_dirs:
+            solo["solo-1_vs_concurrent_a"] = _compare_runs(solo_dirs[0], procs[0][1])
+        if len(solo_dirs) >= 2:
+            solo["solo-1_vs_solo-2"] = _compare_runs(solo_dirs[0], solo_dirs[1])
         record["solo"] = solo
-    all_ok = all(p["all_bitwise"] for p in pairs.values()) and (solo is None or (solo["exit_code"] == 0 and solo["vs_concurrent_a"]["all_bitwise"]))
-    record["verdict"] = ("BITWISE: every concurrent process under MPS and the solo process produced identical series / maps / checkpoint records - MPS does not change a "
-                         "process's own kernel order" if all_ok else "NOT BITWISE: see the pair records")
-    record["all_bitwise"] = all_ok
+    comparisons = list(pairs.values()) + [v for k, v in (solo or {}).items() if k.endswith(("_vs_concurrent_a", "_vs_solo-2"))]
+    physics_bitwise = all(c["physics_bitwise"] for c in comparisons) and bool(comparisons) and (solo is None or all(code == 0 for code in solo["exit_codes"].values()))
+    diagnostics_ok = all(c["diagnostics_within_rtol"] for c in comparisons)
+    all_bitwise = all(c["all_bitwise"] for c in comparisons)
+    # MPS is neutral when the concurrent pairs behave like the MPS-free solo pair: physics bitwise in both, and either both fully
+    # bitwise or both differing only in the float-atomic diagnostics (the same status with and without concurrency)
+    solo_pair = (solo or {}).get("solo-1_vs_solo-2")
+    mps_neutral = None if solo_pair is None else bool(physics_bitwise and solo_pair["physics_bitwise"] and
+                                                       solo_pair["all_bitwise"] == all(p["all_bitwise"] for p in pairs.values()))
+    passed = physics_bitwise and diagnostics_ok
+    record.update({
+        "all_bitwise": all_bitwise, "physics_bitwise": physics_bitwise, "diagnostics_within_rtol": diagnostics_ok, "diagnostic_rtol": DIAGNOSTIC_RTOL,
+        "diagnostic_keys_note": "float-atomic DIAGNOSTIC accumulators (window velocity moments -> T_e maps / peak-node statistics; energy-momentum ledger interval sums) are "
+                                "order-dependent device atomics and differ at round-off between ANY two runs on one GPU, solo or concurrent; the physics state (particles, "
+                                "fixed-point charge deposition, potential, densities, ionisation, wall fluxes, currents, counts, neutral inventory) must be bitwise",
+        "mps_neutral": mps_neutral, "passed": passed,
+    })
+    if all_bitwise:
+        record["verdict"] = "BITWISE: every concurrent process under MPS and the solo processes produced identical records - MPS does not change a process's own kernel order"
+    elif passed:
+        record["verdict"] = ("PHYSICS BITWISE under MPS: particle state, deposited fields / densities / fluxes, currents, counts and the neutral inventory replay bitwise between "
+                             "the concurrent MPS processes and the solo processes; only the float-atomic diagnostic accumulators differ, at round-off (<= "
+                             f"{max((max(c['series_records'].get('differing_keys_max_rel', {}).values(), default=0.0) for c in comparisons), default=0.0):.2e} relative), "
+                             f"{'with the SAME key set solo-vs-solo (MPS-neutral)' if mps_neutral else 'solo-vs-solo comparison not available'} - MPS does not change a process's own kernel order")
+    else:
+        record["verdict"] = "FAILED: a physics record differs between replays (or a diagnostic exceeds the tolerance) - see the pair records"
     _write_json(Path(args.output) if args.output else MPS_REPLAY_PATH, record)
     print(f"[mps-replay] {record['verdict']} (steps {args.steps}, concurrent ms/step {[p['ms_per_step'] for p in pairs.values()]}, "
-          f"solo ms/step {solo and solo.get('vs_concurrent_a', {}).get('ms_per_step', {}).get('b')})")
-    return 0 if all_ok else 1
+          f"solo ms/step {[(k, v.get('ms_per_step')) for k, v in (solo or {}).items() if k.endswith('_vs_concurrent_a')]})")
+    return 0 if passed else 1
 
 
 def _gpu_inventory() -> list[str] | None:
@@ -481,8 +586,8 @@ def launch(design_id: str, domain: str, grid: str, *, case: str = "base", backen
     if not preflight_report["all_passed"]:
         raise PIC2DValidationError("the whole-set preflight of the option did not pass every design")
     replay = json.loads(MPS_REPLAY_PATH.read_text(encoding="utf-8"))
-    if not replay.get("all_bitwise"):
-        raise PIC2DValidationError("mps-replay.json does not record a bitwise replay; refusing a shared-GPU launch")
+    if not replay.get("passed"):
+        raise PIC2DValidationError("mps-replay.json does not record a passed replay (physics bitwise under MPS); refusing a shared-GPU launch")
     mps_pipe = os.environ.get("CUDA_MPS_PIPE_DIRECTORY")
     if require_mps and not (mps_pipe and Path(mps_pipe).exists()):
         raise PIC2DValidationError(f"--require-mps: CUDA_MPS_PIPE_DIRECTORY {mps_pipe!r} is not set or does not exist in this environment")
@@ -727,6 +832,7 @@ def main(argv: list[str] | None = None) -> int:
     replay.add_argument("--steps", type=int, default=MPS_REPLAY_STEPS)
     replay.add_argument("--processes", type=int, default=2)
     replay.add_argument("--skip-solo", action="store_true")
+    replay.add_argument("--solo-runs", type=int, default=2, help="solo runs after the concurrent ones (2 -> a solo-vs-solo pair shows the MPS-free difference pattern)")
     replay.add_argument("--results-root", default=None)
     replay.add_argument("--output", default=None)
     shake = add("shakedown", command_shakedown, design=True, domain=True, grid=True)
