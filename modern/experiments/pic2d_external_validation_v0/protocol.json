@@ -177,7 +177,19 @@
    "timing_steps": 2000,
    "utc": "2026-09-04T11:56:14Z"
   },
-  "launch_box_timing_bohm_0_4": null,
+  "launch_box_timing_bohm_0_4": {
+   "concurrent_mps_clients": 3,
+   "device_used_by_loaded_run_gb": 2.62,
+   "factorisation_seconds": 1.3,
+   "host": "ubuntu@68.209.75.2 (NVIDIA H100 80GB HBM3, GPU-a800b021-6364-473f-5177-cd6ae7ce0005, driver 580.105.08)",
+   "hours_to_3_transits_at_plateau_load": 12.0,
+   "ms_per_step_at_plateau_load": 7.22,
+   "ms_per_step_at_seed_load": 2.71,
+   "note": "measured in the FOUR-client configuration the run executes in (three preregistered runs + this process); faster than the launch-1 base measurement (13.07 ms/step under six-way sharing, pre-v2.0.5 code) and than the cost model, so by the budget rule (the measured rate may only RAISE the budget) the cost-model MPS-4 rate stays the basis: 46.0 h = 3.8x the measured 3-transit wall",
+   "record": "modern/experiments/pic2d_external_validation_v0/preflight-channel-20um-bohm-0.4.json launch_box_timing (code c1508c06: model v2.1.0 rotation closure, v2.0.6 gates, K = 5)",
+   "timing_steps": 2000,
+   "utc": "2026-09-04T16:56:52Z"
+  },
   "provenance_caveats": [
    "the runner's gpu_utilisation_percent_samples (nvidia-smi, 300 s) read the WHOLE GPU under MPS - shared-GPU readings, not per process",
    "ms/step per process under MPS depends on how many slots are busy: the measured launch-box rate below was taken with the sweep runs active and the run speeds up as they finish; wall-clock projections are per-slot upper bounds, the budget is a cap, not a cost",
@@ -890,17 +902,25 @@
     "path": "modern/experiments/pic2d_external_validation_v0/preflight-channel-20um.json",
     "sha256": "52c5841eb99265c0348a529b48cb5f326829c311c8503c93880783936ee2aca5"
    },
-   "preflight_bohm_0_4": null,
+   "preflight_bohm_0_4": {
+    "bytes": 43083,
+    "path": "modern/experiments/pic2d_external_validation_v0/preflight-channel-20um-bohm-0.4.json",
+    "sha256": "d4e243a3cceaf8717e2529795ba0b65672727930d12bf491eece90b2e6161d76"
+   },
    "shakedown": {
     "bytes": 6803,
     "path": "modern/experiments/pic2d_external_validation_v0/shakedown-channel-20um.json",
     "sha256": "258f0c3e740a8d00cdbc2adbb7df4bcd998a29cabfdf85adee74535abf8ccc0a"
    },
-   "shakedown_bohm_0_4": null
+   "shakedown_bohm_0_4": {
+    "bytes": 7260,
+    "path": "modern/experiments/pic2d_external_validation_v0/shakedown-channel-20um-bohm-0.4.json",
+    "sha256": "d7b172ad02c58c021bd6db3ba03adbafbc68b9253f85501c50b350ad300401b6"
+   }
   },
   "sealed_run_protocols": {
    "modern/experiments/pic2d_external_validation_v0/protocols/brandt2016-micro-hempt-v1-channel-15um.json": "7a6b7139cae0486006b21bf155dbcd87ba51babe91b660bc04db2b412272158a",
-   "modern/experiments/pic2d_external_validation_v0/protocols/brandt2016-micro-hempt-v1-channel-20um-bohm-0.4.json": "c1e2dd5583505e7ba71fc4face8ca0d43a81697adbaee6b05ff93cf667440406",
+   "modern/experiments/pic2d_external_validation_v0/protocols/brandt2016-micro-hempt-v1-channel-20um-bohm-0.4.json": "1aaa080d41cdd5c172f59630bc92a623c79e844b93bcc97b16a7c11e1c4d0a38",
    "modern/experiments/pic2d_external_validation_v0/protocols/brandt2016-micro-hempt-v1-channel-20um.json": "3ec0d405520fb2b6b2efe05486dfaaef334ea410609aa2d0ef71dc5c50b7a243"
   },
   "state": "PREREGISTERED: the launch set is sealed by this file (sha256 of every run protocol under protocols/, of the whole-set preflight with the launch-box GPU timing, of the shakedown record, of the comparison spec and of the field binding). ONE execution of `channel-20um` from the commit that carries this file, through `run.py launch --expect-commit <sha> --require-mps` (tools/cloud/schedule.py job `ext-val-v0-channel-20um`); the sensitivity variant and the 15 um follow-up are sealed, not launched"

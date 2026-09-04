@@ -1,0 +1,198 @@
+{
+ "artifacts": {
+  "maps_npz_sha256": "e27b5cfd24a729e86cf7e112c5f790a088b8aeca610900ee2347daf79293479e",
+  "series_npz_sha256": "9d3f2510193fd783dfe7c2204e4878c45d2142b6ce2b814d7763767eb371e51e"
+ },
+ "assessment": {
+  "a_plateau": {
+   "passed": false,
+   "rule": "stop_reason == plateau_reached_after_min_transit_times under stopping_rule.plateau (>= 3 x 1.40 us, drifts of I_d and N_e < 5 %, triad soft, peak-Debye soft 2.5)"
+  },
+  "b_residual_power": {
+   "bound": 0.02,
+   "passed": true,
+   "rule": "summary.grid_heating_triad.windowed_energy_residual_over_electrode_work < +0.02 (one-sided) at the stop",
+   "value": -0.002966482086376636
+  },
+  "verdict": "no_plateau"
+ },
+ "comparison": {
+  "note": "non-evidentiary numbers of a 0.07 us transient: the stage is exercised, the values mean nothing",
+  "quotable": false,
+  "rows_compared": 10,
+  "rows_not_compared": [
+   {
+    "quantity_id": "plume_peak_angle_deg",
+    "reason": "not comparable under the channel-only protocol (needs the plume box)"
+   },
+   {
+    "quantity_id": "electron_energy_near_exit_cusp_ev",
+    "reason": "not comparable under the channel-only protocol (needs the plume box)"
+   }
+  ],
+  "s_values": {
+   "anode_electron_current_a": 0.0017346306179635762,
+   "beam_fraction_of_feed": 0.02474004,
+   "cell_potentials_v": [
+    407.8235107886441,
+    401.13525894760716,
+    388.76625464221877
+   ],
+   "ion_beam_current_a": 0.00043601705413447893,
+   "ion_density_channel_mean_per_m3": 6.403240727565645e+16,
+   "ion_density_typical_per_m3": 2.0456390086500332e+18,
+   "net_ionisation_fraction": 0.09842466129870128,
+   "plasma_potential_near_anode_above_anode_v": 7.823510788644114,
+   "potential_drop_first_cusp_v": 6.6882518410369585,
+   "potential_drop_second_cusp_v": 12.369004305388387,
+   "wall_ion_current_density_max_a_per_m2": 160.21764949580108,
+   "wall_ion_energy_max_ev": 278.9858860440659
+  },
+  "verdicts": [
+   "agreement_within_u_val",
+   "discrepancy"
+  ]
+ },
+ "concurrent_mps_client_pids": [
+  32709,
+  38282,
+  44430
+ ],
+ "concurrent_mps_clients": 3,
+ "cuda_mps_pipe_directory": "/tmp/nvidia-mps",
+ "field": {
+  "kind": "p2-direct-node-sample-external-validation-v0",
+  "max_b_t": 0.7722572209267208,
+  "sha256": "4f2342f810838641c35ba17b2b47dd93cf9d473d46bb3f7cb05508ba64feafab",
+  "source_sha256": "0562cb3ffd975138b94ff2fa6582af125d8be78b3aebe4b87ff18e3287d6ce59"
+ },
+ "final_counts": {
+  "electrons": 45686,
+  "ions": 62641
+ },
+ "frames": 50,
+ "gate_not_inert_check": {
+  "expected_live_at_published_density": true,
+  "peak_window_computed_at_least_once": true,
+  "peak_window_enforced_at_least_once": true,
+  "peak_window_enforcement_note": "enforcement needs a node whose window-mean occupancy reaches the 32-macro-electron floor; at W 8.2e4 on 20 um nodes that happens once the local density passes ~1.4e18 m^-3 at mid radius (229 macro-electrons per mid-radius cell at the published 1e19), not in a 0.07 us shakedown from the 5e16 seed - the production run must show resolved_nodes > 0 (v2.0.2 lesson)",
+  "peak_window_resolved_nodes_last": 10506,
+  "residual_window_completed_at_least_once": true
+ },
+ "git_head": "c1508c06886baf14bb73580c4f39a9d1f3dcb37c",
+ "gpu": [
+  "NVIDIA H100 80GB HBM3, GPU-a800b021-6364-473f-5177-cd6ae7ce0005, 580.105.08, 81559 MiB"
+ ],
+ "host": "68-209-75-2",
+ "ms_per_step": 2.8089671560900022,
+ "non_evidentiary": true,
+ "omega_pe_dt_gate": {
+  "limit": 0.2,
+  "max_raw": 0.0,
+  "max_resolved": 0.0,
+  "statistic": "v2.0.4 resolved-node single-step peak (nodes holding >= the peak-Debye floor of macro-electrons); raw single-node peak recorded alongside"
+ },
+ "option": "channel-20um-bohm-0.4",
+ "overrides": {
+  "averaging_window_steps": 40000,
+  "checkpoint_every_steps": 4000,
+  "device_sync_steps": 200,
+  "frame_cadence_steps": 2000,
+  "max_steps": 100000,
+  "peak_debye_window_snapshot_steps": 4000,
+  "peak_debye_window_steps": 40000,
+  "residual_window_steps": 40000,
+  "series_interval_steps": 200
+ },
+ "passed": true,
+ "peak_debye_window": {
+  "enforced_records": 301,
+  "last": {
+   "accumulated_macro_particle_steps_at_peak": 68685.65509519726,
+   "cells_per_debye": 0.33367827379620546,
+   "gate_enforced": true,
+   "mean_macro_particles_at_peak": 1.7171413773799313,
+   "min_accumulated_macro_particle_steps_at_peak": 64000.0,
+   "n_e_peak_per_m3": 1.0433731121994323e+17,
+   "node": [
+    27,
+    120
+   ],
+   "occupancy_floor_peak": {
+    "cells_per_debye": 0.36423879904178547,
+    "mean_macro_particles_at_peak": 0.24689047420651986,
+    "node": [
+     3,
+     160
+    ],
+    "resolved_nodes": 0
+   },
+   "resolved_nodes": 10506,
+   "soft_exceeded": false,
+   "t_e_peak_ev": 6.782744152847572,
+   "window_complete": true,
+   "window_steps": 40000
+  },
+  "max_cells_per_debye_enforced": 0.3376991340340692,
+  "records": 500
+ },
+ "plateau_keys": [
+  "discharge_current_drift",
+  "drifts_within_threshold",
+  "electron_count_drift",
+  "min_transit_times",
+  "peak_debye_soft_ok",
+  "reached",
+  "threshold",
+  "tracked",
+  "transit_times_elapsed",
+  "triad_soft_ok",
+  "window_fraction"
+ ],
+ "protocol": {
+  "case_id": "brandt2016-micro-hempt-v1-channel-20um-bohm-0.4-w82466.8-ng2e20-static-inj1.8mA-1eV-v1.3-closure-v2.1.0-bohm-rotation-v2.0.6-gates",
+  "cells": [
+   75,
+   700
+  ],
+  "dt_s": 7e-13,
+  "macro_weight": 82466.8,
+  "model_version": "pic2d v1.3 runner with a STATIC neutral background (the inventory removed = the v1.2 static-background mode; NO wall-ion recycling, no SEE) + model v2.1.0 anomalous cross-field transport (Bohm-type perpendicular-velocity rotation, nu_an = alpha omega_ce, Brandt et al. 2016 event model) with the v2.0.6 gates (window-mode peak-Debye gate with the accumulated-particle-step floor, windowed residual-power gate on the W-corrected ledger), the v2.0.4 runtime omega_pe dt statistic and the v2.0.5 K = 5 moment sampling (amendment 1)",
+  "static_neutrals": true,
+  "wall_budget_seconds": 165600.0
+ },
+ "refinalize": {
+  "assessment_sha256_before": "2358f494db083ba6aee0e8707fd5ee2a7105fd43b1aa1ca5121518b09ed0aa4e",
+  "comparison_sha256_before": "e835fd55e76778e21dbac031ff4132a418042a0c3e424b6a7d4e3e588a355bac",
+  "maps_downgraded_to_instantaneous_as_designed": true,
+  "maps_kind_after": "instantaneous_checkpoint",
+  "ran_after_assess_and_compare": true,
+  "seconds": 1.8405512379977154,
+  "stop_reason_after": "shakedown_refinalize"
+ },
+ "results_dir": "results-shakedown-channel-20um-bohm-0.4",
+ "run_seconds": 282.8786235360021,
+ "schema_version": "cft.pic2d.external-validation-v0.shakedown/1.0.0",
+ "steps_completed": 100000,
+ "stop_reason": "target_steps_reached",
+ "summary_keys_present": {
+  "grid_heating_triad": true,
+  "ledger": true,
+  "neutral_inventory": false,
+  "peak_node_debye": true,
+  "plateau": true,
+  "window_currents_a": true
+ },
+ "utc": "2026-09-04T17:02:27.840783+00:00",
+ "windowed_residual": {
+  "last": {
+   "energy_residual_over_electrode_work": -0.00447272204811652,
+   "windowed_energy_residual_electrode_work_j": 2.048781298247418e-08,
+   "windowed_energy_residual_j": -6.907910069406406e-12,
+   "windowed_energy_residual_over_electrode_work": -0.0003371716676306844,
+   "windowed_energy_residual_window_complete": true,
+   "windowed_energy_residual_window_steps": 40000
+  },
+  "records_with_complete_window": 280
+ }
+}

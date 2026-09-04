@@ -38,7 +38,19 @@
   "inverse_blocks_gb": 0.298771808,
   "ion_transit_note": "2.4 us x 14 mm / 24 mm (the measured reference residence scaled with the channel length); superseded by the measured N_i / L residence",
   "ion_transit_time_s": 1.3999999999999997e-06,
-  "launch_box_timing": null,
+  "launch_box_timing": {
+   "concurrent_mps_clients": 3,
+   "device_used_by_loaded_run_gb": 2.62,
+   "factorisation_seconds": 1.3,
+   "host": "ubuntu@68.209.75.2 (NVIDIA H100 80GB HBM3, GPU-a800b021-6364-473f-5177-cd6ae7ce0005, driver 580.105.08)",
+   "hours_to_3_transits_at_plateau_load": 12.0,
+   "ms_per_step_at_plateau_load": 7.22,
+   "ms_per_step_at_seed_load": 2.71,
+   "note": "measured in the FOUR-client configuration the run executes in (three preregistered runs + this process); faster than the launch-1 base measurement (13.07 ms/step under six-way sharing, pre-v2.0.5 code) and than the cost model, so by the budget rule (the measured rate may only RAISE the budget) the cost-model MPS-4 rate stays the basis: 46.0 h = 3.8x the measured 3-transit wall",
+   "record": "modern/experiments/pic2d_external_validation_v0/preflight-channel-20um-bohm-0.4.json launch_box_timing (code c1508c06: model v2.1.0 rotation closure, v2.0.6 gates, K = 5)",
+   "timing_steps": 2000,
+   "utc": "2026-09-04T16:56:52Z"
+  },
   "launches_ms": 0.76,
   "macro_weight": 82466.8,
   "macro_weight_parity": 9600.0,
@@ -98,7 +110,19 @@
   "determinism": "MPS does not change a process's own kernel order: the mini-sweep's replay on this box (mps-replay.json, 291a9227) showed the physics state bitwise between concurrent MPS processes and solo processes, float-atomic diagnostic accumulators at <= 2.2e-13 - the same pattern solo-vs-solo",
   "gpu": "NVIDIA H100 80GB HBM3",
   "instance": "Lambda gpu_1x_h100_sxm5 (us-southeast-1), ubuntu@68.209.75.2, driver 580.105.08 (CUDA 13.0), 26 vCPU, 221 GiB RAM",
-  "launch_box_timing": null,
+  "launch_box_timing": {
+   "concurrent_mps_clients": 3,
+   "device_used_by_loaded_run_gb": 2.62,
+   "factorisation_seconds": 1.3,
+   "host": "ubuntu@68.209.75.2 (NVIDIA H100 80GB HBM3, GPU-a800b021-6364-473f-5177-cd6ae7ce0005, driver 580.105.08)",
+   "hours_to_3_transits_at_plateau_load": 12.0,
+   "ms_per_step_at_plateau_load": 7.22,
+   "ms_per_step_at_seed_load": 2.71,
+   "note": "measured in the FOUR-client configuration the run executes in (three preregistered runs + this process); faster than the launch-1 base measurement (13.07 ms/step under six-way sharing, pre-v2.0.5 code) and than the cost model, so by the budget rule (the measured rate may only RAISE the budget) the cost-model MPS-4 rate stays the basis: 46.0 h = 3.8x the measured 3-transit wall",
+   "record": "modern/experiments/pic2d_external_validation_v0/preflight-channel-20um-bohm-0.4.json launch_box_timing (code c1508c06: model v2.1.0 rotation closure, v2.0.6 gates, K = 5)",
+   "timing_steps": 2000,
+   "utc": "2026-09-04T16:56:52Z"
+  },
   "launch_discipline": "run.py launch --expect-commit <prereg sha> --require-mps: HEAD == prereg commit, clean worktree, protocol.json and protocols/<option>.json blobs == HEAD, recomposed protocol == sealed file byte for byte, preflight-channel-20um.json (whole set passed + launch-box GPU timing passed) and shakedown-channel-20um.json (passed) present, O_EXCL execution-lock.json in results/<option>/, MPS pipe directory present",
   "one_execution": "ONE detached launch from a worktree at the preregistration commit; a wall-budget stop may be resumed (--resume: new session, same identity, disclosed in run_state.sessions); no parameter change after the freeze; a non-ignition or a gate stop is a recorded outcome (comparison-spec inconclusive_conditions)",
   "provenance_caveats": [
@@ -301,9 +325,9 @@
   "plateau_window_fraction": 0.2,
   "wall_budget_basis": {
    "basis": "cost model (H100 MPS-4 anchor scaled by nodes + particles)",
-   "concurrent_mps_clients_at_measurement": null,
+   "concurrent_mps_clients_at_measurement": 3,
    "cost_model_ms_per_step": 18.337411215336274,
-   "measured_ms_per_step_at_plateau_load": null,
+   "measured_ms_per_step_at_plateau_load": 7.22,
    "ms_per_step": 18.337411215336274
   },
   "wall_budget_note": "1.5 x the projected wall to 3 transits at one of four H100 CUDA-MPS slots (30.6 h at 18.3 ms/step, basis 'cost model (H100 MPS-4 anchor scaled by nodes + particles)'; cost model 30.6 h at 18.3 ms/step; 6.00 M steps; solo-H100 equivalent 11.9 h), rounded up to 10 min; cumulative over resumes. The reference's 76 us would cost 554 h at this rate - not budgeted; the plateau rule decides",

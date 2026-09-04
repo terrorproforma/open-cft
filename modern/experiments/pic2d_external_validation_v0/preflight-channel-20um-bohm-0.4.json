@@ -1,0 +1,1231 @@
+{
+ "all_passed": true,
+ "experiment_id": "pic2d-external-validation-v0",
+ "generated_utc": "2026-09-04T16:57:39.268604+00:00",
+ "grid_argument": {
+  "debye_length_at_published_m": 7.433941994700463e-06,
+  "decision": "PRIMARY = 20 um (the published resolution; 75 x 700 channel cells = the reference's channel block exactly, 1024 x 256 = its whole box): at the published density and temperature it sits at 2.69 cells / lambda_D - under the v2.0.3 HARD gate (pi) and over the SOFT plateau precondition (2.5) - so a plateau at exactly the published density would be recorded as 'resolution margin not met' but the code-to-code numbers exist at the same grid as the reference. The ss-v4 option (33.3 um) is INADMISSIBLE a priori: 4.48 cells / lambda_D at the published density, i.e. our own hard gate stops the run once the peak reaches ~5e18 at 10 eV; a comparison with the reference could never form. 15 um / 0.5 ps meets the soft margin (2.02) at the published density and is the declared resolution follow-up at 1.8x the cells and 1.4x the steps (2.5x the cost).",
+  "published_density_per_m3": 1e+19,
+  "published_temperature_ev": 10.0,
+  "reference_scaling_note": "the reference's own 20 um is the ORIGINAL-SYSTEM value of a self-similar scaled run (factor 4 / 8): in its scaled plasma the cell was ~1 lambda_D (thesis: dr / lambda_D = 0.95); at device scale the same 20 um is 2.7 lambda_D at 1e19 / 10 eV - the reference resolved its Debye length by scaling, we resolve ours by the gate; neither run is 'better resolved' than the other in its own frame (closure_differences)",
+  "rows": [
+   {
+    "admissible_hard_pi": true,
+    "cell_m": 2e-05,
+    "cells": [
+     75,
+     700
+    ],
+    "cells_per_debye_at_published": 2.690362665495329,
+    "dt_s": 7e-13,
+    "electron_courant_400ev": 0.41516787065119076,
+    "grid": "20um",
+    "hard_gate_density_at_10ev_per_m3": 1.363572048655945e+19,
+    "nodes": [
+     76,
+     701
+    ],
+    "omega_pe_dt_at_published": 0.12487904553354108,
+    "omega_pe_dt_gate_density_per_m3": 2.564961495164214e+19,
+    "relative_cell_count": 1.0,
+    "relative_steps_to_3_transits": 1.0,
+    "soft_2p5_met": false,
+    "soft_level_density_at_10ev_per_m3": 8.634920871964233e+18
+   },
+   {
+    "admissible_hard_pi": false,
+    "cell_m": 3.3333333333333335e-05,
+    "cells": [
+     45,
+     420
+    ],
+    "cells_per_debye_at_published": 4.483937775825549,
+    "dt_s": 7e-13,
+    "electron_courant_400ev": 0.24910072239071446,
+    "grid": "33um",
+    "hard_gate_density_at_10ev_per_m3": 4.908859375161402e+18,
+    "nodes": [
+     46,
+     421
+    ],
+    "omega_pe_dt_at_published": 0.12487904553354108,
+    "omega_pe_dt_gate_density_per_m3": 2.564961495164214e+19,
+    "relative_cell_count": 0.36,
+    "relative_steps_to_3_transits": 1.0,
+    "soft_2p5_met": false,
+    "soft_level_density_at_10ev_per_m3": 3.1085715139071247e+18
+   },
+   {
+    "admissible_hard_pi": true,
+    "cell_m": 1.5e-05,
+    "cells": [
+     100,
+     933
+    ],
+    "cells_per_debye_at_published": 2.0184928894391536,
+    "dt_s": 5e-13,
+    "electron_courant_400ev": 0.39539797204875304,
+    "grid": "15um",
+    "hard_gate_density_at_10ev_per_m3": 2.422396875637684e+19,
+    "nodes": [
+     101,
+     934
+    ],
+    "omega_pe_dt_at_published": 0.08919931823824362,
+    "omega_pe_dt_gate_density_per_m3": 5.027324530521861e+19,
+    "relative_cell_count": 1.7771428571428571,
+    "relative_steps_to_3_transits": 1.4000000000000001,
+    "soft_2p5_met": true,
+    "soft_level_density_at_10ev_per_m3": 1.534000741819444e+19
+   }
+  ]
+ },
+ "launch_box_timing": {
+  "backend": "warp-cuda",
+  "compute_apps_after": [
+   {
+    "pid": 14519,
+    "used_memory_mib": 66.0
+   },
+   {
+    "pid": 32709,
+    "used_memory_mib": 1930.0
+   },
+   {
+    "pid": 38282,
+    "used_memory_mib": 1418.0
+   },
+   {
+    "pid": 44430,
+    "used_memory_mib": 844.0
+   },
+   {
+    "pid": 45176,
+    "used_memory_mib": 3018.0
+   }
+  ],
+  "compute_apps_before": [
+   {
+    "pid": 14519,
+    "used_memory_mib": 66.0
+   },
+   {
+    "pid": 32709,
+    "used_memory_mib": 1930.0
+   },
+   {
+    "pid": 38282,
+    "used_memory_mib": 1418.0
+   },
+   {
+    "pid": 44430,
+    "used_memory_mib": 844.0
+   }
+  ],
+  "concurrent_mps_client_pids": [
+   32709,
+   38282,
+   44430
+  ],
+  "concurrent_mps_clients": 3,
+  "cross_sections_sha256": "4d37732ce6972058c9dd06db805a7ae1db5a572d290a298b334de1aa6789cbf4",
+  "cuda_mps_pipe_directory": "/tmp/nvidia-mps",
+  "cuda_visible_devices": "0",
+  "factorisation_seconds": 1.2992585459942347,
+  "field": {
+   "max_b_t": 0.7722572209267208,
+   "seconds": 0.03677798100397922,
+   "sha256": "4f2342f810838641c35ba17b2b47dd93cf9d473d46bb3f7cb05508ba64feafab",
+   "source_sha256": "0562cb3ffd975138b94ff2fa6582af125d8be78b3aebe4b87ff18e3287d6ce59"
+  },
+  "gpu": [
+   {
+    "driver_version": "580.105.08",
+    "memory_total_mib": 81559.0,
+    "name": "NVIDIA H100 80GB HBM3",
+    "uuid": "GPU-a800b021-6364-473f-5177-cd6ae7ce0005"
+   }
+  ],
+  "memory": {
+   "device_after_loaded_run": {
+    "free_bytes": 77375406080,
+    "total_bytes": 85017624576
+   },
+   "device_after_seed_run": {
+    "free_bytes": 79589998592,
+    "total_bytes": 85017624576
+   },
+   "device_before": {
+    "free_bytes": 79998943232,
+    "total_bytes": 85017624576
+   },
+   "device_used_by_loaded_run_bytes": 2623537152,
+   "device_used_by_seed_run_bytes": 408944640
+  },
+  "mps_pipe_present": true,
+  "non_evidentiary": true,
+  "option": "channel-20um-bohm-0.4",
+  "passed": true,
+  "projection": {
+   "budget_over_3_transit_wall_at_plateau_load": 3.8251684196955145,
+   "cost_model_hours_to_3_transits_mps4": 30.588724440790923,
+   "cost_model_ms_per_step_mps4": 18.337411215336274,
+   "hours_to_3_transits_at_plateau_load": 12.025614287504137,
+   "hours_to_3_transits_at_seed_load": 4.514313399170835,
+   "note": "measured with 3 other CUDA-MPS client(s) active (the mini-sweep runs); the per-process rate falls toward the solo rate as they finish, so these hours are upper bounds for the contention present at the measurement and the budget ratio is the conservative one",
+   "steps_to_3_transits": 5999999.999999998,
+   "wall_budget_seconds": 165600.0
+  },
+  "protocol": {
+   "case_id": "brandt2016-micro-hempt-v1-channel-20um-bohm-0.4-w82466.8-ng2e20-static-inj1.8mA-1eV-v1.3-closure-v2.1.0-bohm-rotation-v2.0.6-gates",
+   "cells": [
+    75,
+    700
+   ],
+   "dt_s": 7e-13,
+   "macro_weight": 82466.8,
+   "nodes": [
+    76,
+    701
+   ],
+   "wall_budget_seconds": 165600.0
+  },
+  "schema_version": "cft.pic2d.external-validation-v0.launch-box-timing/1.0.0",
+  "stability_gate": {
+   "cell_debye_ratio": 2.690362665495329,
+   "debye_length_m": 7.433941994700464e-06,
+   "dt_s": 7e-13,
+   "max_b_t": 0.7722572209267208,
+   "max_collision_probability": 0.00010879899360272116,
+   "max_electron_speed_m_per_s": 11854980.41078976,
+   "omega_ce_dt": 0.09507830162462133,
+   "omega_ce_rad_per_s": 135826145178.03046,
+   "omega_pe_dt": 0.12487904553354108,
+   "omega_pe_rad_per_s": 178398636476.48724,
+   "particle_courant": 0.4149243143776416,
+   "reference_density_per_m3": 1e+19,
+   "reference_electron_temperature_ev": 10.0,
+   "stable": true,
+   "violations": []
+  },
+  "timing_plateau_load": {
+   "accumulation": true,
+   "ms_per_step": 7.215368572502484,
+   "particles_after": {
+    "electrons": 5806249,
+    "ions": 6012105
+   },
+   "particles_before": {
+    "electrons": 6000001,
+    "ions": 6000001
+   },
+   "seconds": 14.430737145004969,
+   "seed_density_per_m3": 5e+18,
+   "step_graph": true,
+   "steps": 2000,
+   "warmup_steps": 200
+  },
+  "timing_seed_load": {
+   "accumulation": true,
+   "ms_per_step": 2.7085880395025015,
+   "particles_after": {
+    "electrons": 48262,
+    "ions": 60572
+   },
+   "particles_before": {
+    "electrons": 60000,
+    "ions": 60000
+   },
+   "seconds": 5.417176079005003,
+   "step_graph": true,
+   "steps": 2000,
+   "warmup_steps": 200
+  },
+  "timing_steps": 2000,
+  "utc": "2026-09-04T16:56:52.305312+00:00",
+  "warmup_steps": 200
+ },
+ "launch_set": [
+  "channel-20um-bohm-0.4"
+ ],
+ "launch_set_passed": true,
+ "option_count": 3,
+ "options": [
+  {
+   "gates": {
+    "comparison_spec": {
+     "channel_comparable_rows": [
+      "anode_electron_current_a",
+      "net_ionisation_fraction",
+      "ion_beam_current_a",
+      "beam_fraction_of_feed",
+      "plasma_potential_near_anode_above_anode_v",
+      "potential_drop_first_cusp_v",
+      "potential_drop_second_cusp_v",
+      "ion_density_typical_per_m3",
+      "wall_ion_energy_max_ev",
+      "wall_ion_current_density_max_a_per_m2"
+     ],
+     "closure_differences": 9,
+     "inconclusive_conditions": 9,
+     "passed": true,
+     "plume_only_rows": [
+      "plume_peak_angle_deg",
+      "electron_energy_near_exit_cusp_ev"
+     ],
+     "problems": []
+    },
+    "cost": {
+     "device_gb_projected": 17.398771808000003,
+     "factorisation_s": 86.94929482970869,
+     "hours_to_3_transits_h100_solo_equivalent": 11.851300810883597,
+     "hours_to_3_transits_mps4": 30.588724440790923,
+     "hours_to_reference_time_mps4": 553.9062467108719,
+     "ms_per_step_h100_mps4_per_process": 18.337411215336274,
+     "ms_per_step_h100_solo_equivalent": 7.094957037391876,
+     "ms_per_step_rtx5090_model": 9.975455517419674,
+     "particles_projected_m": 12.0,
+     "passed": true,
+     "steps_to_3_transits": 5999999.999999998,
+     "transit_s": 1.3999999999999997e-06
+    },
+    "field_binding": {
+     "axis_max_t": 0.6976769195389555,
+     "axis_max_z_m": 0.005550000000000023,
+     "b_at_17mm_t": 0.0529309927952164,
+     "exit_null_m": 0.015848489539744628,
+     "gate_genealogy_entries": 2,
+     "hash_checks": {
+      "axial_offset_m": true,
+      "checkpoint_file_sha256": true,
+      "checkpoint_payload_sha256": true,
+      "geometry_sha256": true,
+      "mesh_sha256": true,
+      "run_sha256": true,
+      "sidecar_file_sha256": true
+     },
+     "interior_nulls_m": [
+      0.002634115551341434,
+      0.00836574598900689
+     ],
+     "low_field_contour_radius_m_descriptor": [
+      0.0009000000000000001,
+      0.0009000000000000001
+     ],
+     "no_ring_bracket": {
+      "axis_max_t": {
+       "no_rings": 0.6880959306370279,
+       "with_rings": 0.6976769195389555
+      },
+      "b_at_17mm_t": {
+       "no_rings": 0.03611802645441612,
+       "with_rings": 0.0529309927952164
+      },
+      "exit_null_m": {
+       "no_rings": 0.016125534498032123,
+       "with_rings": 0.015848489539744628
+      },
+      "interior_nulls_m": {
+       "no_rings": [
+        0.00251636985324451,
+        0.008483441666497305
+       ],
+       "shifts_m": [
+        0.00011774569809692428,
+        0.00011769567749041546
+       ],
+       "with_rings": [
+        0.002634115551341434,
+        0.00836574598900689
+       ]
+      },
+      "low_field_contour_radius_m": {
+       "no_rings": [
+        0.001,
+        0.001
+       ],
+       "with_rings": [
+        0.0009000000000000001,
+        0.0009000000000000001
+       ]
+      },
+      "reading": "the reference's rings (r 2.5-8 mm, saturating steel) lie between 'no ring' and the represented full-radius linear ring; the difference between the two columns bounds the effect of approximations A2 (end rings absent), A3 (ring radius) and A4 (linear iron) on the gate quantities",
+      "wall_cusp_b_t": {
+       "no_rings": [
+        0.401787406577012,
+        0.4017455195918795
+       ],
+       "with_rings": [
+        0.49104111342167883,
+        0.4905304795529647
+       ]
+      }
+     },
+     "passed": true,
+     "production_gates": {
+      "D6_wall_cusp_field": null,
+      "G1_scale": true,
+      "G2_interior_nulls": true,
+      "G3_exit_null": true,
+      "G4_exit_point": true,
+      "G5_axis_maximum": true,
+      "G7_mesh_solver_coverage": true,
+      "all_passed": true,
+      "genealogy": [
+       {
+        "gate": "G5",
+        "original_rule": "the channel's axis |B| maximum lies within +-0.5 mm of z = 11 mm (the paper's anchor location)",
+        "outcome_on_first_solve": "FAIL: axis maximum 0.698 T at 5.55 mm (magnet-2 centre); the 11 mm anchor is a local maximum (0.601 T at 11.15 mm)",
+        "reason": "the paper's 'e.g. at Z = 11 mm' names an example point of the maximum LEVEL, not the location of the global maximum; the thesis gives the maximum itself (0.7 T), which the calibrated field reproduces at the interior magnet - a second anchor the original rule ignored",
+        "revised_rule": "a local axis maximum within +-0.5 mm of EACH interior magnet centre (5.5, 11.0 mm) and the channel's axis maximum within 0.7 +- 0.07 T (thesis 'about 0.7 T')",
+        "revised_when": "draft phase 2026-09-04, before any PIC composition; nothing preregistered"
+       },
+       {
+        "gate": "G6",
+        "original_rule": "wall |B| (r = r_w) within +-0.5 mm of each interior cusp plane in [0.10, 0.35] T ('about 0.2 T and lower' near the cusps)",
+        "outcome_on_first_solve": "FAIL: 0.49 T at both cusps (0.40 T without rings)",
+        "reason": "the reference publishes no wall field at the cusps for this device: 'near the magnetic cusps the flux is about 0.2 T and lower' describes the low-field region around the axis null through which electrons cross (the sentence continues 'the increase in gyration radii enables the electrons to overcome the cusp structure'), and the thesis' Fig. 2.3 'point A = 0.2 T' is an illustrative section, not this stack; a gate on an unpublished number tests nothing",
+        "revised_rule": "DESCRIPTOR D6 (reported, not gated): wall |B| on each cusp plane, the radius of the 0.2 T contour on that plane, the mirror ratio wall / axis-peak",
+        "revised_when": "draft phase 2026-09-04, as G5"
+       }
+      ]
+     },
+     "regate_passed": {
+      "G1_scale": true,
+      "G2_interior_nulls": true,
+      "G3_exit_null": true,
+      "G4_exit_point": true,
+      "G5_axis_maximum": true
+     },
+     "scale_matches_binding": true,
+     "source_strength_scale": 1.0814067281519844,
+     "wall_cusp_b_t_descriptor": [
+      0.49104111342167883,
+      0.4905304795529647
+     ]
+    },
+    "field_map": {
+     "axial_offset_m": 0.0025,
+     "cells_per_debye_at_published": 2.690362665495329,
+     "dt_policy": {
+      "omega_ce": {
+       "max_b_t": 0.772257221,
+       "omega_ce_dt": 0.0950783016,
+       "rule": "composed dt kept: omega_ce dt 0.095 <= 0.95 x 0.2"
+      },
+      "rule": "composed 0.70 ps: omega_pe dt = 0.2 at 2.56e+19 m^-3 (declared expected peak 2.5e+19); 0.125 at the published 1e19"
+     },
+     "dt_s": 7e-13,
+     "field_map_sha256": "4f2342f810838641c35ba17b2b47dd93cf9d473d46bb3f7cb05508ba64feafab",
+     "field_source_sha256": "0562cb3ffd975138b94ff2fa6582af125d8be78b3aebe4b87ff18e3287d6ce59",
+     "hard_debye_density_at_10ev_per_m3": 1.363572048655945e+19,
+     "hard_pi_met": true,
+     "max_b_t": 0.7722572209267208,
+     "omega_pe_dt_gate_density_per_m3": 2.564961495164214e+19,
+     "passed": true,
+     "plasma_nodes_sampled": 53276,
+     "provenance_kind": "p2-direct-node-sample-external-validation-v0",
+     "soft_margin_2p5_met": false,
+     "source_strength_scale": 1.0814067281519844,
+     "stability": {
+      "cell_debye_ratio": 2.690362665495329,
+      "debye_length_m": 7.433941994700464e-06,
+      "dt_s": 7e-13,
+      "max_b_t": 0.7722572209267208,
+      "max_collision_probability": 0.0,
+      "max_electron_speed_m_per_s": 11854980.41078976,
+      "omega_ce_dt": 0.09507830162462133,
+      "omega_ce_rad_per_s": 135826145178.03046,
+      "omega_pe_dt": 0.12487904553354108,
+      "omega_pe_rad_per_s": 178398636476.48724,
+      "particle_courant": 0.4149243143776416,
+      "reference_density_per_m3": 1e+19,
+      "reference_electron_temperature_ev": 10.0,
+      "stable": true,
+      "violations": []
+     }
+    },
+    "geometry": {
+     "approximations": [
+      "A1",
+      "A2",
+      "A3",
+      "A4",
+      "A5",
+      "A6",
+      "A7",
+      "A8",
+      "A9"
+     ],
+     "config_id": "brandt2016-micro-hempt-v1",
+     "geometry_sha256": "15a19234992a2ffd8231a455b4a01619222fdde53a39b7057c13d51b377147d1",
+     "passed": true,
+     "stages": 3
+    },
+    "grid": {
+     "axial_offset_m": 0.0025,
+     "cells": [
+      75,
+      700
+     ],
+     "dr_m": 2e-05,
+     "dz_m": 2e-05,
+     "node_shape": [
+      76,
+      701
+     ],
+     "passed": true,
+     "snaps": {
+      "bore_cells": 75,
+      "channel_cells": 700,
+      "cone_start": {
+       "cells": 700,
+       "error_m": 0.0,
+       "snapped_m": 0.014,
+       "value_m": 0.014
+      },
+      "dr_m": 2e-05,
+      "dz_m": 2e-05,
+      "exit_radius": {
+       "cells": 75,
+       "error_m": 0.0,
+       "snapped_m": 0.0015,
+       "value_m": 0.0015
+      },
+      "target_cell_m": 2e-05
+     },
+     "worst_snap_in_cells": 0.0
+    },
+    "mesh_masks": {
+     "dirichlet_nodes": 152,
+     "passed": true,
+     "plasma_cells": 52500,
+     "plasma_nodes": 53276,
+     "plasma_volume_m3": 9.896016858807849e-08,
+     "unknown_nodes": 53124,
+     "wall_nodes": 0,
+     "wall_representation": "exact radial grid line in the straight bore; one-cell stair-step in the cone"
+    },
+    "protocol": {
+     "anode_potential_v": 400.0,
+     "anomalous": null,
+     "case_id": "brandt2016-micro-hempt-v1-channel-20um-w82466.8-ng2e20-static-inj1.8mA-1eV-v1.3-closure-v2.0.3-gates",
+     "cells": [
+      75,
+      700
+     ],
+     "dt_s": 7e-13,
+     "frame_recorder": {
+      "cadence_steps": 40000,
+      "precision": "float32"
+     },
+     "gates_v2_0_3": {
+      "peak_debye_hard": 3.141592653589793,
+      "peak_debye_soft": 2.5,
+      "peak_debye_window_mode": true,
+      "residual_window_steps": 400000,
+      "windowed_residual_power_max": 0.05
+     },
+     "hours_to_3_transits_mps4": 30.588724440790923,
+     "injection": {
+      "electron_current_a": 0.0018,
+      "electron_temperature_ev": 1.0
+     },
+     "ion_transit_time_s": 1.3999999999999997e-06,
+     "macro_weight": 82466.8,
+     "macro_weight_parity": 9600.0,
+     "model_version": "pic2d v1.3 runner with a STATIC neutral background (the inventory removed = the v1.2 static-background mode; NO wall-ion recycling, no SEE, no anomalous transport unless the variant switches the v1.4 Bohm hook on) with the v2.0.3 gates (window-mode peak-Debye gate, windowed residual-power gate) and the v2.0.4 runtime omega_pe dt statistic (peak over nodes holding >= the peak-Debye floor of 32 macro-electrons; the raw single-node peak recorded alongside)",
+     "neutral_density_per_m3": 2e+20,
+     "particles_projected_m": 12.0,
+     "passed": true,
+     "static_neutrals": true,
+     "status": "preregistered_external_validation_v0_channel_20um_h100_mps4_code_to_code_brandt2016_not_validated",
+     "steps_to_3_transits": 5999999.999999998,
+     "template": "modern/experiments/pic2d_cft_steady_state_v4/protocol.json",
+     "wall_budget_hours": 46.0,
+     "wall_budget_seconds": 165600.0
+    },
+    "reference": {
+     "doi": "10.2322/tastj.14.Pb_235",
+     "missing_setup": [],
+     "passed": true,
+     "reported_quantities": [
+      "anode_electron_current_a",
+      "beam_fraction_of_feed",
+      "electron_energy_near_exit_cusp_ev",
+      "ion_beam_current_a",
+      "ion_density_typical_per_m3",
+      "net_ionisation_fraction",
+      "plasma_potential_near_anode_above_anode_v",
+      "plume_peak_angle_deg",
+      "potential_drop_first_cusp_v",
+      "potential_drop_second_cusp_v",
+      "wall_ion_current_density_max_a_per_m2",
+      "wall_ion_energy_max_ev"
+     ]
+    }
+   },
+   "grid": "20um",
+   "option": "channel-20um",
+   "passed": true,
+   "seconds": 4.351687521004351,
+   "variant": "base"
+  },
+  {
+   "gates": {
+    "comparison_spec": {
+     "channel_comparable_rows": [
+      "anode_electron_current_a",
+      "net_ionisation_fraction",
+      "ion_beam_current_a",
+      "beam_fraction_of_feed",
+      "plasma_potential_near_anode_above_anode_v",
+      "potential_drop_first_cusp_v",
+      "potential_drop_second_cusp_v",
+      "ion_density_typical_per_m3",
+      "wall_ion_energy_max_ev",
+      "wall_ion_current_density_max_a_per_m2"
+     ],
+     "closure_differences": 9,
+     "inconclusive_conditions": 9,
+     "passed": true,
+     "plume_only_rows": [
+      "plume_peak_angle_deg",
+      "electron_energy_near_exit_cusp_ev"
+     ],
+     "problems": []
+    },
+    "cost": {
+     "device_gb_projected": 17.398771808000003,
+     "factorisation_s": 86.94929482970869,
+     "hours_to_3_transits_h100_solo_equivalent": 11.851300810883597,
+     "hours_to_3_transits_mps4": 30.588724440790923,
+     "hours_to_reference_time_mps4": 553.9062467108719,
+     "ms_per_step_h100_mps4_per_process": 18.337411215336274,
+     "ms_per_step_h100_solo_equivalent": 7.094957037391876,
+     "ms_per_step_rtx5090_model": 9.975455517419674,
+     "particles_projected_m": 12.0,
+     "passed": true,
+     "steps_to_3_transits": 5999999.999999998,
+     "transit_s": 1.3999999999999997e-06
+    },
+    "field_binding": {
+     "axis_max_t": 0.6976769195389555,
+     "axis_max_z_m": 0.005550000000000023,
+     "b_at_17mm_t": 0.0529309927952164,
+     "exit_null_m": 0.015848489539744628,
+     "gate_genealogy_entries": 2,
+     "hash_checks": {
+      "axial_offset_m": true,
+      "checkpoint_file_sha256": true,
+      "checkpoint_payload_sha256": true,
+      "geometry_sha256": true,
+      "mesh_sha256": true,
+      "run_sha256": true,
+      "sidecar_file_sha256": true
+     },
+     "interior_nulls_m": [
+      0.002634115551341434,
+      0.00836574598900689
+     ],
+     "low_field_contour_radius_m_descriptor": [
+      0.0009000000000000001,
+      0.0009000000000000001
+     ],
+     "no_ring_bracket": {
+      "axis_max_t": {
+       "no_rings": 0.6880959306370279,
+       "with_rings": 0.6976769195389555
+      },
+      "b_at_17mm_t": {
+       "no_rings": 0.03611802645441612,
+       "with_rings": 0.0529309927952164
+      },
+      "exit_null_m": {
+       "no_rings": 0.016125534498032123,
+       "with_rings": 0.015848489539744628
+      },
+      "interior_nulls_m": {
+       "no_rings": [
+        0.00251636985324451,
+        0.008483441666497305
+       ],
+       "shifts_m": [
+        0.00011774569809692428,
+        0.00011769567749041546
+       ],
+       "with_rings": [
+        0.002634115551341434,
+        0.00836574598900689
+       ]
+      },
+      "low_field_contour_radius_m": {
+       "no_rings": [
+        0.001,
+        0.001
+       ],
+       "with_rings": [
+        0.0009000000000000001,
+        0.0009000000000000001
+       ]
+      },
+      "reading": "the reference's rings (r 2.5-8 mm, saturating steel) lie between 'no ring' and the represented full-radius linear ring; the difference between the two columns bounds the effect of approximations A2 (end rings absent), A3 (ring radius) and A4 (linear iron) on the gate quantities",
+      "wall_cusp_b_t": {
+       "no_rings": [
+        0.401787406577012,
+        0.4017455195918795
+       ],
+       "with_rings": [
+        0.49104111342167883,
+        0.4905304795529647
+       ]
+      }
+     },
+     "passed": true,
+     "production_gates": {
+      "D6_wall_cusp_field": null,
+      "G1_scale": true,
+      "G2_interior_nulls": true,
+      "G3_exit_null": true,
+      "G4_exit_point": true,
+      "G5_axis_maximum": true,
+      "G7_mesh_solver_coverage": true,
+      "all_passed": true,
+      "genealogy": [
+       {
+        "gate": "G5",
+        "original_rule": "the channel's axis |B| maximum lies within +-0.5 mm of z = 11 mm (the paper's anchor location)",
+        "outcome_on_first_solve": "FAIL: axis maximum 0.698 T at 5.55 mm (magnet-2 centre); the 11 mm anchor is a local maximum (0.601 T at 11.15 mm)",
+        "reason": "the paper's 'e.g. at Z = 11 mm' names an example point of the maximum LEVEL, not the location of the global maximum; the thesis gives the maximum itself (0.7 T), which the calibrated field reproduces at the interior magnet - a second anchor the original rule ignored",
+        "revised_rule": "a local axis maximum within +-0.5 mm of EACH interior magnet centre (5.5, 11.0 mm) and the channel's axis maximum within 0.7 +- 0.07 T (thesis 'about 0.7 T')",
+        "revised_when": "draft phase 2026-09-04, before any PIC composition; nothing preregistered"
+       },
+       {
+        "gate": "G6",
+        "original_rule": "wall |B| (r = r_w) within +-0.5 mm of each interior cusp plane in [0.10, 0.35] T ('about 0.2 T and lower' near the cusps)",
+        "outcome_on_first_solve": "FAIL: 0.49 T at both cusps (0.40 T without rings)",
+        "reason": "the reference publishes no wall field at the cusps for this device: 'near the magnetic cusps the flux is about 0.2 T and lower' describes the low-field region around the axis null through which electrons cross (the sentence continues 'the increase in gyration radii enables the electrons to overcome the cusp structure'), and the thesis' Fig. 2.3 'point A = 0.2 T' is an illustrative section, not this stack; a gate on an unpublished number tests nothing",
+        "revised_rule": "DESCRIPTOR D6 (reported, not gated): wall |B| on each cusp plane, the radius of the 0.2 T contour on that plane, the mirror ratio wall / axis-peak",
+        "revised_when": "draft phase 2026-09-04, as G5"
+       }
+      ]
+     },
+     "regate_passed": {
+      "G1_scale": true,
+      "G2_interior_nulls": true,
+      "G3_exit_null": true,
+      "G4_exit_point": true,
+      "G5_axis_maximum": true
+     },
+     "scale_matches_binding": true,
+     "source_strength_scale": 1.0814067281519844,
+     "wall_cusp_b_t_descriptor": [
+      0.49104111342167883,
+      0.4905304795529647
+     ]
+    },
+    "field_map": {
+     "axial_offset_m": 0.0025,
+     "cells_per_debye_at_published": 2.690362665495329,
+     "dt_policy": {
+      "omega_ce": {
+       "max_b_t": 0.772257221,
+       "omega_ce_dt": 0.0950783016,
+       "rule": "composed dt kept: omega_ce dt 0.095 <= 0.95 x 0.2"
+      },
+      "rule": "composed 0.70 ps: omega_pe dt = 0.2 at 2.56e+19 m^-3 (declared expected peak 2.5e+19); 0.125 at the published 1e19"
+     },
+     "dt_s": 7e-13,
+     "field_map_sha256": "4f2342f810838641c35ba17b2b47dd93cf9d473d46bb3f7cb05508ba64feafab",
+     "field_source_sha256": "0562cb3ffd975138b94ff2fa6582af125d8be78b3aebe4b87ff18e3287d6ce59",
+     "hard_debye_density_at_10ev_per_m3": 1.363572048655945e+19,
+     "hard_pi_met": true,
+     "max_b_t": 0.7722572209267208,
+     "omega_pe_dt_gate_density_per_m3": 2.564961495164214e+19,
+     "passed": true,
+     "plasma_nodes_sampled": 53276,
+     "provenance_kind": "p2-direct-node-sample-external-validation-v0",
+     "soft_margin_2p5_met": false,
+     "source_strength_scale": 1.0814067281519844,
+     "stability": {
+      "cell_debye_ratio": 2.690362665495329,
+      "debye_length_m": 7.433941994700464e-06,
+      "dt_s": 7e-13,
+      "max_b_t": 0.7722572209267208,
+      "max_collision_probability": 0.0,
+      "max_electron_speed_m_per_s": 11854980.41078976,
+      "omega_ce_dt": 0.09507830162462133,
+      "omega_ce_rad_per_s": 135826145178.03046,
+      "omega_pe_dt": 0.12487904553354108,
+      "omega_pe_rad_per_s": 178398636476.48724,
+      "particle_courant": 0.4149243143776416,
+      "reference_density_per_m3": 1e+19,
+      "reference_electron_temperature_ev": 10.0,
+      "stable": true,
+      "violations": []
+     }
+    },
+    "geometry": {
+     "approximations": [
+      "A1",
+      "A2",
+      "A3",
+      "A4",
+      "A5",
+      "A6",
+      "A7",
+      "A8",
+      "A9"
+     ],
+     "config_id": "brandt2016-micro-hempt-v1",
+     "geometry_sha256": "15a19234992a2ffd8231a455b4a01619222fdde53a39b7057c13d51b377147d1",
+     "passed": true,
+     "stages": 3
+    },
+    "grid": {
+     "axial_offset_m": 0.0025,
+     "cells": [
+      75,
+      700
+     ],
+     "dr_m": 2e-05,
+     "dz_m": 2e-05,
+     "node_shape": [
+      76,
+      701
+     ],
+     "passed": true,
+     "snaps": {
+      "bore_cells": 75,
+      "channel_cells": 700,
+      "cone_start": {
+       "cells": 700,
+       "error_m": 0.0,
+       "snapped_m": 0.014,
+       "value_m": 0.014
+      },
+      "dr_m": 2e-05,
+      "dz_m": 2e-05,
+      "exit_radius": {
+       "cells": 75,
+       "error_m": 0.0,
+       "snapped_m": 0.0015,
+       "value_m": 0.0015
+      },
+      "target_cell_m": 2e-05
+     },
+     "worst_snap_in_cells": 0.0
+    },
+    "mesh_masks": {
+     "dirichlet_nodes": 152,
+     "passed": true,
+     "plasma_cells": 52500,
+     "plasma_nodes": 53276,
+     "plasma_volume_m3": 9.896016858807849e-08,
+     "unknown_nodes": 53124,
+     "wall_nodes": 0,
+     "wall_representation": "exact radial grid line in the straight bore; one-cell stair-step in the cone"
+    },
+    "protocol": {
+     "anode_potential_v": 400.0,
+     "anomalous": {
+      "alpha": 0.4,
+      "model": "bohm_perpendicular_rotation"
+     },
+     "case_id": "brandt2016-micro-hempt-v1-channel-20um-bohm-0.4-w82466.8-ng2e20-static-inj1.8mA-1eV-v1.3-closure-v2.1.0-bohm-rotation-v2.0.6-gates",
+     "cells": [
+      75,
+      700
+     ],
+     "dt_s": 7e-13,
+     "frame_recorder": {
+      "cadence_steps": 40000,
+      "precision": "float32"
+     },
+     "gates_v2_0_3": {
+      "peak_debye_hard": 3.141592653589793,
+      "peak_debye_soft": 2.5,
+      "peak_debye_window_mode": true,
+      "residual_window_steps": 400000,
+      "windowed_residual_power_max": 0.05
+     },
+     "hours_to_3_transits_mps4": 30.588724440790923,
+     "injection": {
+      "electron_current_a": 0.0018,
+      "electron_temperature_ev": 1.0
+     },
+     "ion_transit_time_s": 1.3999999999999997e-06,
+     "macro_weight": 82466.8,
+     "macro_weight_parity": 9600.0,
+     "model_version": "pic2d v1.3 runner with a STATIC neutral background (the inventory removed = the v1.2 static-background mode; NO wall-ion recycling, no SEE) + model v2.1.0 anomalous cross-field transport (Bohm-type perpendicular-velocity rotation, nu_an = alpha omega_ce, Brandt et al. 2016 event model) with the v2.0.6 gates (window-mode peak-Debye gate with the accumulated-particle-step floor, windowed residual-power gate on the W-corrected ledger), the v2.0.4 runtime omega_pe dt statistic and the v2.0.5 K = 5 moment sampling (amendment 1)",
+     "neutral_density_per_m3": 2e+20,
+     "particles_projected_m": 12.0,
+     "passed": true,
+     "static_neutrals": true,
+     "status": "preregistered_external_validation_v0_channel_20um_h100_mps4_code_to_code_brandt2016_not_validated",
+     "steps_to_3_transits": 5999999.999999998,
+     "template": "modern/experiments/pic2d_cft_steady_state_v4/protocol.json",
+     "wall_budget_hours": 46.0,
+     "wall_budget_seconds": 165600.0
+    },
+    "reference": {
+     "doi": "10.2322/tastj.14.Pb_235",
+     "missing_setup": [],
+     "passed": true,
+     "reported_quantities": [
+      "anode_electron_current_a",
+      "beam_fraction_of_feed",
+      "electron_energy_near_exit_cusp_ev",
+      "ion_beam_current_a",
+      "ion_density_typical_per_m3",
+      "net_ionisation_fraction",
+      "plasma_potential_near_anode_above_anode_v",
+      "plume_peak_angle_deg",
+      "potential_drop_first_cusp_v",
+      "potential_drop_second_cusp_v",
+      "wall_ion_current_density_max_a_per_m2",
+      "wall_ion_energy_max_ev"
+     ]
+    }
+   },
+   "grid": "20um",
+   "option": "channel-20um-bohm-0.4",
+   "passed": true,
+   "seconds": 4.252254646002257,
+   "variant": "bohm-0.4"
+  },
+  {
+   "gates": {
+    "comparison_spec": {
+     "channel_comparable_rows": [
+      "anode_electron_current_a",
+      "net_ionisation_fraction",
+      "ion_beam_current_a",
+      "beam_fraction_of_feed",
+      "plasma_potential_near_anode_above_anode_v",
+      "potential_drop_first_cusp_v",
+      "potential_drop_second_cusp_v",
+      "ion_density_typical_per_m3",
+      "wall_ion_energy_max_ev",
+      "wall_ion_current_density_max_a_per_m2"
+     ],
+     "closure_differences": 9,
+     "inconclusive_conditions": 9,
+     "passed": true,
+     "plume_only_rows": [
+      "plume_peak_angle_deg",
+      "electron_energy_near_exit_cusp_ev"
+     ],
+     "problems": []
+    },
+    "cost": {
+     "device_gb_projected": 17.804863648,
+     "factorisation_s": 273.31308261140606,
+     "hours_to_3_transits_h100_solo_equivalent": 17.950881096657184,
+     "hours_to_3_transits_mps4": 46.26877466795563,
+     "hours_to_reference_time_mps4": 837.1192567691032,
+     "ms_per_step_h100_mps4_per_process": 19.795253050241538,
+     "ms_per_step_h100_solo_equivalent": 7.659012948256484,
+     "ms_per_step_rtx5090_model": 10.768513828909594,
+     "particles_projected_m": 12.0,
+     "passed": true,
+     "steps_to_3_transits": 8399999.999999998,
+     "transit_s": 1.3999999999999997e-06
+    },
+    "field_binding": {
+     "axis_max_t": 0.6976769195389555,
+     "axis_max_z_m": 0.005550000000000023,
+     "b_at_17mm_t": 0.0529309927952164,
+     "exit_null_m": 0.015848489539744628,
+     "gate_genealogy_entries": 2,
+     "hash_checks": {
+      "axial_offset_m": true,
+      "checkpoint_file_sha256": true,
+      "checkpoint_payload_sha256": true,
+      "geometry_sha256": true,
+      "mesh_sha256": true,
+      "run_sha256": true,
+      "sidecar_file_sha256": true
+     },
+     "interior_nulls_m": [
+      0.002634115551341434,
+      0.00836574598900689
+     ],
+     "low_field_contour_radius_m_descriptor": [
+      0.0009000000000000001,
+      0.0009000000000000001
+     ],
+     "no_ring_bracket": {
+      "axis_max_t": {
+       "no_rings": 0.6880959306370279,
+       "with_rings": 0.6976769195389555
+      },
+      "b_at_17mm_t": {
+       "no_rings": 0.03611802645441612,
+       "with_rings": 0.0529309927952164
+      },
+      "exit_null_m": {
+       "no_rings": 0.016125534498032123,
+       "with_rings": 0.015848489539744628
+      },
+      "interior_nulls_m": {
+       "no_rings": [
+        0.00251636985324451,
+        0.008483441666497305
+       ],
+       "shifts_m": [
+        0.00011774569809692428,
+        0.00011769567749041546
+       ],
+       "with_rings": [
+        0.002634115551341434,
+        0.00836574598900689
+       ]
+      },
+      "low_field_contour_radius_m": {
+       "no_rings": [
+        0.001,
+        0.001
+       ],
+       "with_rings": [
+        0.0009000000000000001,
+        0.0009000000000000001
+       ]
+      },
+      "reading": "the reference's rings (r 2.5-8 mm, saturating steel) lie between 'no ring' and the represented full-radius linear ring; the difference between the two columns bounds the effect of approximations A2 (end rings absent), A3 (ring radius) and A4 (linear iron) on the gate quantities",
+      "wall_cusp_b_t": {
+       "no_rings": [
+        0.401787406577012,
+        0.4017455195918795
+       ],
+       "with_rings": [
+        0.49104111342167883,
+        0.4905304795529647
+       ]
+      }
+     },
+     "passed": true,
+     "production_gates": {
+      "D6_wall_cusp_field": null,
+      "G1_scale": true,
+      "G2_interior_nulls": true,
+      "G3_exit_null": true,
+      "G4_exit_point": true,
+      "G5_axis_maximum": true,
+      "G7_mesh_solver_coverage": true,
+      "all_passed": true,
+      "genealogy": [
+       {
+        "gate": "G5",
+        "original_rule": "the channel's axis |B| maximum lies within +-0.5 mm of z = 11 mm (the paper's anchor location)",
+        "outcome_on_first_solve": "FAIL: axis maximum 0.698 T at 5.55 mm (magnet-2 centre); the 11 mm anchor is a local maximum (0.601 T at 11.15 mm)",
+        "reason": "the paper's 'e.g. at Z = 11 mm' names an example point of the maximum LEVEL, not the location of the global maximum; the thesis gives the maximum itself (0.7 T), which the calibrated field reproduces at the interior magnet - a second anchor the original rule ignored",
+        "revised_rule": "a local axis maximum within +-0.5 mm of EACH interior magnet centre (5.5, 11.0 mm) and the channel's axis maximum within 0.7 +- 0.07 T (thesis 'about 0.7 T')",
+        "revised_when": "draft phase 2026-09-04, before any PIC composition; nothing preregistered"
+       },
+       {
+        "gate": "G6",
+        "original_rule": "wall |B| (r = r_w) within +-0.5 mm of each interior cusp plane in [0.10, 0.35] T ('about 0.2 T and lower' near the cusps)",
+        "outcome_on_first_solve": "FAIL: 0.49 T at both cusps (0.40 T without rings)",
+        "reason": "the reference publishes no wall field at the cusps for this device: 'near the magnetic cusps the flux is about 0.2 T and lower' describes the low-field region around the axis null through which electrons cross (the sentence continues 'the increase in gyration radii enables the electrons to overcome the cusp structure'), and the thesis' Fig. 2.3 'point A = 0.2 T' is an illustrative section, not this stack; a gate on an unpublished number tests nothing",
+        "revised_rule": "DESCRIPTOR D6 (reported, not gated): wall |B| on each cusp plane, the radius of the 0.2 T contour on that plane, the mirror ratio wall / axis-peak",
+        "revised_when": "draft phase 2026-09-04, as G5"
+       }
+      ]
+     },
+     "regate_passed": {
+      "G1_scale": true,
+      "G2_interior_nulls": true,
+      "G3_exit_null": true,
+      "G4_exit_point": true,
+      "G5_axis_maximum": true
+     },
+     "scale_matches_binding": true,
+     "source_strength_scale": 1.0814067281519844,
+     "wall_cusp_b_t_descriptor": [
+      0.49104111342167883,
+      0.4905304795529647
+     ]
+    },
+    "field_map": {
+     "axial_offset_m": 0.0025,
+     "cells_per_debye_at_published": 2.018492889439153,
+     "dt_policy": {
+      "omega_ce": {
+       "max_b_t": 0.772255975,
+       "omega_ce_dt": 0.0679129631,
+       "rule": "composed dt kept: omega_ce dt 0.068 <= 0.95 x 0.2"
+      },
+      "rule": "composed 0.50 ps: omega_pe dt = 0.2 at 5.03e+19 m^-3 (declared expected peak 2.5e+19); 0.089 at the published 1e19"
+     },
+     "dt_s": 5e-13,
+     "field_map_sha256": "ff9361ff9040d9e6ea493e14263fb25f016cfa450144cca4da22f0eec020ed0b",
+     "field_source_sha256": "749cd1a7ea51fe0a0905630f8ee2466ec9b8ba6d34516100ddc3df62de266ee3",
+     "hard_debye_density_at_10ev_per_m3": 2.422396875637684e+19,
+     "hard_pi_met": true,
+     "max_b_t": 0.7722559753983104,
+     "omega_pe_dt_gate_density_per_m3": 5.027324530521861e+19,
+     "passed": true,
+     "plasma_nodes_sampled": 94334,
+     "provenance_kind": "p2-direct-node-sample-external-validation-v0",
+     "soft_margin_2p5_met": true,
+     "source_strength_scale": 1.0814067281519844,
+     "stability": {
+      "cell_debye_ratio": 2.018492889439153,
+      "debye_length_m": 7.433941994700464e-06,
+      "dt_s": 5e-13,
+      "max_b_t": 0.7722559753983104,
+      "max_collision_probability": 0.0,
+      "max_electron_speed_m_per_s": 11854980.41078976,
+      "omega_ce_dt": 0.06791296305600078,
+      "omega_ce_rad_per_s": 135825926112.00156,
+      "omega_pe_dt": 0.08919931823824362,
+      "omega_pe_rad_per_s": 178398636476.48724,
+      "particle_courant": 0.395166013692992,
+      "reference_density_per_m3": 1e+19,
+      "reference_electron_temperature_ev": 10.0,
+      "stable": true,
+      "violations": []
+     }
+    },
+    "geometry": {
+     "approximations": [
+      "A1",
+      "A2",
+      "A3",
+      "A4",
+      "A5",
+      "A6",
+      "A7",
+      "A8",
+      "A9"
+     ],
+     "config_id": "brandt2016-micro-hempt-v1",
+     "geometry_sha256": "15a19234992a2ffd8231a455b4a01619222fdde53a39b7057c13d51b377147d1",
+     "passed": true,
+     "stages": 3
+    },
+    "grid": {
+     "axial_offset_m": 0.0025,
+     "cells": [
+      100,
+      933
+     ],
+     "dr_m": 1.5e-05,
+     "dz_m": 1.5005359056806002e-05,
+     "node_shape": [
+      101,
+      934
+     ],
+     "passed": true,
+     "snaps": {
+      "bore_cells": 100,
+      "channel_cells": 933,
+      "cone_start": {
+       "cells": 933,
+       "error_m": 0.0,
+       "snapped_m": 0.014,
+       "value_m": 0.014
+      },
+      "dr_m": 1.5e-05,
+      "dz_m": 1.5005359056806002e-05,
+      "exit_radius": {
+       "cells": 100,
+       "error_m": 0.0,
+       "snapped_m": 0.0015,
+       "value_m": 0.0015
+      },
+      "target_cell_m": 1.5e-05
+     },
+     "worst_snap_in_cells": 0.0
+    },
+    "mesh_masks": {
+     "dirichlet_nodes": 202,
+     "passed": true,
+     "plasma_cells": 93300,
+     "plasma_nodes": 94334,
+     "plasma_volume_m3": 9.896016858807849e-08,
+     "unknown_nodes": 94132,
+     "wall_nodes": 0,
+     "wall_representation": "exact radial grid line in the straight bore; one-cell stair-step in the cone"
+    },
+    "protocol": {
+     "anode_potential_v": 400.0,
+     "anomalous": null,
+     "case_id": "brandt2016-micro-hempt-v1-channel-15um-w82466.8-ng2e20-static-inj1.8mA-1eV-v1.3-closure-v2.0.3-gates",
+     "cells": [
+      100,
+      933
+     ],
+     "dt_s": 5e-13,
+     "frame_recorder": {
+      "cadence_steps": 40000,
+      "precision": "float32"
+     },
+     "gates_v2_0_3": {
+      "peak_debye_hard": 3.141592653589793,
+      "peak_debye_soft": 2.5,
+      "peak_debye_window_mode": true,
+      "residual_window_steps": 400000,
+      "windowed_residual_power_max": 0.05
+     },
+     "hours_to_3_transits_mps4": 46.26877466795563,
+     "injection": {
+      "electron_current_a": 0.0018,
+      "electron_temperature_ev": 1.0
+     },
+     "ion_transit_time_s": 1.3999999999999997e-06,
+     "macro_weight": 82466.8,
+     "macro_weight_parity": 5401.9,
+     "model_version": "pic2d v1.3 runner with a STATIC neutral background (the inventory removed = the v1.2 static-background mode; NO wall-ion recycling, no SEE, no anomalous transport unless the variant switches the v1.4 Bohm hook on) with the v2.0.3 gates (window-mode peak-Debye gate, windowed residual-power gate) and the v2.0.4 runtime omega_pe dt statistic (peak over nodes holding >= the peak-Debye floor of 32 macro-electrons; the raw single-node peak recorded alongside)",
+     "neutral_density_per_m3": 2e+20,
+     "particles_projected_m": 12.0,
+     "passed": true,
+     "static_neutrals": true,
+     "status": "preregistered_external_validation_v0_channel_20um_h100_mps4_code_to_code_brandt2016_not_validated",
+     "steps_to_3_transits": 8399999.999999998,
+     "template": "modern/experiments/pic2d_cft_steady_state_v4/protocol.json",
+     "wall_budget_hours": 69.5,
+     "wall_budget_seconds": 250200.0
+    },
+    "reference": {
+     "doi": "10.2322/tastj.14.Pb_235",
+     "missing_setup": [],
+     "passed": true,
+     "reported_quantities": [
+      "anode_electron_current_a",
+      "beam_fraction_of_feed",
+      "electron_energy_near_exit_cusp_ev",
+      "ion_beam_current_a",
+      "ion_density_typical_per_m3",
+      "net_ionisation_fraction",
+      "plasma_potential_near_anode_above_anode_v",
+      "plume_peak_angle_deg",
+      "potential_drop_first_cusp_v",
+      "potential_drop_second_cusp_v",
+      "wall_ion_current_density_max_a_per_m2",
+      "wall_ion_energy_max_ev"
+     ]
+    }
+   },
+   "grid": "15um",
+   "option": "channel-15um",
+   "passed": true,
+   "seconds": 5.962391932000173,
+   "variant": "base"
+  }
+ ],
+ "platform": {
+  "gpu_used": true,
+  "host": "68-209-75-2",
+  "machine": "x86_64",
+  "note": "launch-box preflight: the CPU gates plus the GPU timing of the primary option (launch_box_timing)",
+  "numpy": "2.5.2",
+  "python": "3.12.14",
+  "release": "6.8.0-1046-nvidia",
+  "system": "Linux"
+ },
+ "schema_version": "cft.pic2d.external-validation-v0.preflight/1.0.0",
+ "seconds": 14.566936083996552,
+ "status": "whole-set preflight of the code-to-code comparison; derived-float gates are re-run on the launch platform before any launch; launch-box GPU timing of the primary option included"
+}

@@ -410,6 +410,59 @@ Nothing recorded is modified; the sidecar hash-binds the recorded `series.npz`. 
 seen late") is confirmed and quantified by the correction. Any future launch (parity weight, `bohm-0.4`) executes model ≥ v2.0.6 and
 reads the corrected statistic natively.
 
+## 12. Amendment 1 — `channel-20um-bohm-0.4` LAUNCH 2 of the campaign (model v2.1.0 closure, v2.0.6 gates; 2026-09-05)
+
+**What and why** (`protocol.json` `amendments[0]`, mirrored in the sealed run protocol). Section 10's route to a conclusive v0 was
+(i) the v2.0.6 ledger fix, (ii) the accumulated-particle-step Debye floor, then (iii) the sealed `bohm-0.4` variant — the one sealed
+option that can plausibly reach a resolvable plateau at 20 µm because the reference's own D⊥ coefficient confines less. (i) and (ii)
+landed (`4b53012d`, `8c70cff0`). The physics completeness audit (`0901138a` §4.c) then found that the sealed variant used the v1.4
+**isotropic** redirect, which also randomises v∥ — a bracket of Brandt's model, not the model: Brandt et al. 2016 (p. Pb_237) rotate
+"only the component of the velocity vector perpendicular to the local magnetic field direction … to ensure that the speed of the
+electrons along the magnetic field lines does not change". Model v2.1.0 (`cft_revival.pic2d.sensitivity`,
+`tests/pic2d/test_pic2d_v210_anomalous_transport.py`) implements that event (`bohm_perpendicular_rotation`) in both backends and
+verifies D⊥ = (kT_e/eB) α/(1 + α²) by a diffusion test. For a code-to-code comparison the reference's own event model is the right
+closure to seal, so the amendment switches the option to it before its first execution.
+
+**Changes to the sealed `channel-20um-bohm-0.4` protocol** (`3ec0d405…`-era hash `b1a0d3b5…` → **`1aaa080d41cd…`**):
+`numerics.anomalous_collisions = {model: bohm_perpendicular_rotation, alpha: 0.4}` (ν_an = 0.4 ω_ce — the D⊥ coefficient read as a
+rate, the natural mapping of a selection probability that depends on |B| only; exact Green-Kubo D⊥ = 0.345 kT_e/eB disclosed as before;
+ν_an Δt = 0.034 at 0.7 T); `numerics.peak_debye_gate.min_accumulated_macro_particle_steps_at_peak = 64000` (v2.0.6: the near-axis
+column launch 1 densified past π unresolved is gate-able); `numerics.performance.moment_sample_interval = 5` (v2.0.5); the W-corrected
+ledger is code (acceptance (b) and the 5 % gate read the corrected statistic natively); `LAUNCH_SET = (bohm-0.4, 20um)` with the base's
+one execution on record (`LAUNCH_HISTORY`; no launch 2 of the base at 20 µm, section 10's rule); `model_version` / `classification` /
+`case.id` / `simplifications` text; config identity `a5ac7611af82…`. **Unchanged:** grid 75 × 700 at 20 µm, Δt 0.7 ps, **W 82 466.8**
+(the 12 M-particle cap — parity would be 103 M particles, beyond the cap; section 10 names the parity weight as the alternative to a
+weaker closure, not a lower W within the cap, so the 8.6× parity weight stays a declared limit of this run), seed 20260903, the operating
+point, frames, the v2.0.3 thresholds (hard π / soft 2.5, 5 % residual power, triad drift bounds with their **1.0-transit arming** —
+"nothing about the drift members' arming needs to change", section 10), the v2.0.4 ω_pe Δt statistic, the plateau rule, acceptance
+(a)–(e), the comparison spec (byte-identical) and the inconclusiveness conditions. The base (`3ec0d405…`) and 15 µm (`7a6b7139…`)
+sealed protocols are byte-identical to `3dc12cf6`.
+
+**Launch-box preflight** (`preflight-channel-20um-bohm-0.4.json`, `preflight --variant bohm-0.4 --grid 20um --gpu-timing`,
+16:56:52 UTC 2026-09-04, code `c1508c06`, the 4th CUDA-MPS client beside ss25-base, sweep-056-launch2 and ss33-fast): whole-set CPU
+gates 3/3 options PASS; GPU timing PASS — factorisation 1.3 s, **2.71 ms/step at the 60 000-electron seed, 7.22 ms/step at the 12 M-particle
+plateau load** (6.0 M e⁻ + 6.0 M i; 2.62 GB) → 12.0 h to 3 transits (6.0 M steps). Faster than the cost model (18.3 ms/step, 30.6 h) and
+than launch 1's six-way-shared measurement (13.07), so by the budget rule the cost-model basis stands: **budget 165 600 s = 46.0 h**
+(3.8× the measured 3-transit wall).
+
+**Shakedown** (`shakedown-channel-20um-bohm-0.4.json`, `shakedown --variant bohm-0.4 --grid 20um`, 16:57–17:02 UTC, code `c1508c06`,
+4th MPS client): 100 000 steps at shrunk cadences from the real field and seed, 2.81 ms/step, 283 s, 50 frames, `target_steps_reached` at
+0.07 µs; the **accumulated-floor peak-Debye window enforced with 10 506 resolved nodes** (launch 1's shakedown could not enforce it — the
+mean-occupancy floor resolved nothing at this load), windowed residual complete (−0.03 %, W-corrected); `assess` → `no_plateau` (b True);
+`compare` → 10 channel rows formed, `quotable: false` (0.07 µs transient, numbers mean nothing); re-finalize path OK; **passed**. The
+shakedown ran on the composition without the `LAUNCH_BOX_TIMING_BOHM` block (filled from this preflight before the amendment commit);
+the sealed protocol differs from it only in `execution.launch_box_timing` / `budget_external_validation_v0.launch_box_timing` (outside
+`config_sha256`; identity unchanged).
+
+**Expected outcome (declared).** The inconclusiveness conditions of section 8 stay in force — the 20 µm / W 82 466.8 envelope (hard π at
+1.36e19 × T_e/10 eV) may still be reached if the closure does not bound n_e enough. Discriminating outcomes: (i) a plateau under the
+reference's closure with I_a toward 4.3 mA and n_i toward 1e19 (rows inside V&V20 tolerance, or recorded misses), which would put the
+remaining differences on SEE / the neutral profile / W parity (audit R2, R5a); (ii) another heating or envelope stop, which would say the
+reference's static-DSMC steady state is not reachable at this W with its transport closure alone.
+
+**Launch log.** Launch 2 enters an MPS slot after the anomalous-transport α-series' first job (`at-alpha-1over16`, 17:08 UTC) as the
+scheduler job `ext-val-v0-channel-20um-bohm-0.4` (jobs.yaml) — details appended here at the launch.
+
 ## Commands (from `modern/`; CPU unless stated; on the box `PYTHONPATH=src:.` with the MPS variables exported)
 
     $env:PYTHONPATH="$PWD\src;$PWD"; $env:OMP_NUM_THREADS='1'

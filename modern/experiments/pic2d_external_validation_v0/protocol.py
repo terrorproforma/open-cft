@@ -93,7 +93,21 @@ LAUNCH_BOX_TIMING: dict[str, Any] | None = {
 }
 # amendment 1: the bohm-0.4 option's own launch-box timing (`preflight --variant bohm-0.4 --gpu-timing`, written to preflight-channel-20um-bohm-0.4.json); None until
 # measured (the composition then falls back to the cost model + the base measurement). Filled before the amendment commit; the sealed record may differ in the last digits.
-LAUNCH_BOX_TIMING_BOHM: dict[str, Any] | None = None
+LAUNCH_BOX_TIMING_BOHM: dict[str, Any] | None = {
+    "utc": "2026-09-04T16:56:52Z",
+    "host": "ubuntu@68.209.75.2 (NVIDIA H100 80GB HBM3, GPU-a800b021-6364-473f-5177-cd6ae7ce0005, driver 580.105.08)",
+    "record": "modern/experiments/pic2d_external_validation_v0/preflight-channel-20um-bohm-0.4.json launch_box_timing (code c1508c06: model v2.1.0 rotation closure, v2.0.6 gates, K = 5)",
+    "timing_steps": 2000,
+    "ms_per_step_at_seed_load": 2.71,                 # 60 000 seed electrons (5e16 m^-3 / 5 eV), 2000 steps after 200 warm-up
+    "ms_per_step_at_plateau_load": 7.22,              # 6.0 M e- + 6.0 M i (synthetic uniform 5e18 seed = the 12 M-particle cap), 2000 steps after 200 warm-up
+    "concurrent_mps_clients": 3,                      # ss25-base, sweep-056-launch2, ss33-fast (the four-client configuration with this process)
+    "factorisation_seconds": 1.3,
+    "device_used_by_loaded_run_gb": 2.62,
+    "hours_to_3_transits_at_plateau_load": 12.0,      # 6.0 M steps x 7.22 ms; the cost model's MPS-4 projection is 30.6 h at 18.3 ms/step
+    "note": ("measured in the FOUR-client configuration the run executes in (three preregistered runs + this process); faster than the launch-1 base measurement (13.07 ms/step "
+             "under six-way sharing, pre-v2.0.5 code) and than the cost model, so by the budget rule (the measured rate may only RAISE the budget) the cost-model MPS-4 rate "
+             "stays the basis: 46.0 h = 3.8x the measured 3-transit wall"),
+}
 LAUNCH_BOX_TIMINGS: dict[str, dict[str, Any] | None] = {"base": LAUNCH_BOX_TIMING, "bohm-0.4": LAUNCH_BOX_TIMING_BOHM}
 
 AMENDMENTS: list[dict[str, Any]] = [
