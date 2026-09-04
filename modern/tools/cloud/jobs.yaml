@@ -1,0 +1,213 @@
+# Job map for the Lambda 8x H100 box (see PLAN.md for the costed schedule and the fill order).
+#
+# Every job = experiment module + args + env, pinned to one GPU by schedule.py. `commit` is the
+# commit the job RUNS FROM: the exact preregistration commit for a preregistered experiment
+# (preregistered: true), or - for a declared development run - any commit at or after its
+# protocol freeze (normally the branch head at launch time). It must be reachable from HEAD and
+# the protocol file must be byte-identical between it and HEAD, or the job is refused.
+# `checkout: worktree` runs the job from a detached worktree at that commit under
+# <jobs_dir>/<id>/tree so that results/ directories never collide (a runner RESUMES from any
+# checkpoint it finds in its results dir) and so `_bind_preregistration`-style checks (detached
+# HEAD == prereg commit, clean tree) hold. Results are committed from that tree afterwards.
+#
+# `enabled: false` + `commit: null` marks a slot whose experiment is not yet at HEAD: fill in the
+# module / commit once the preregistration (or protocol) commit is pushed, set enabled: true.
+version: 1
+
+defaults:
+  repo: ../../..                   # repository root, relative to this file (modern/tools/cloud/)
+  python: .venv-pic/bin/python     # relative to the repository root (bootstrap_lambda.sh creates it)
+  cwd: modern                      # experiments are run as `python -m experiments.<x>.run` from modern/
+  jobs_dir: ../../../../jobs       # <WORK>/jobs next to the checkout (state.json, logs, worktrees)
+  launcher: tmux                   # tmux | setsid | exec
+  slots_per_gpu: 1                 # raise ONLY if bench.sh shows aggregate speed-up > 1.3 at N=2
+  gpu_memory_gib: 80
+  warp_probe: verify               # the wrapper refuses to start if Warp's cuda:0 UUID != nvidia-smi's
+  require_clean: false             # set true once the box only carries pushed commits
+  env:
+    PYTHONPATH: "src:."
+    # BLAS threads are set per job by the scheduler (floor(CPUs / total slots), cap 16); override here if needed
+
+gpus: [0, 1, 2, 3, 4, 5, 6, 7]
+
+jobs:
+  # ---------------------------------------------------------------- shakedown (launchable at HEAD)
+  - id: shakedown-ss-v3-graph
+    note: >
+      NON-EVIDENTIARY shakedown of the production path on the box: channel-only model v1.4 (CUDA-graph
+      step, recycling, peak-node gate) for 4000 steps in its own worktree. Verifies LFS inputs, the
+      host factorisation, Warp/CUDA, the frame-less runner artifacts and the GPU provenance chain.
+      Its results live only in the job worktree and are discarded.
+    module: experiments.pic2d_cft_steady_state_v3.run
+    args: [run, --max-steps, "4000", --wall-budget-seconds, "900"]
+    gpu: auto
+    commit: 392129e5              # branch head when this file was written (current runner code, v2.0.3 gates);
+                                  # the v3 protocol has been frozen since 112bb250, so the frozen check passes
+    preregistered: false
+    protocol: modern/experiments/pic2d_cft_steady_state_v3/protocol.json
+    results: modern/experiments/pic2d_cft_steady_state_v3/results
+    checkout: worktree
+    gpu_memory_gib: 6
+    expected_ms_per_step: 2.0
+    enabled: true
+
+  # ---------------------------------------------------------------- (i) channel-only 33 um replications
+  # The 33 um / 1.4 ps refinement is preregistered at 392129e5 (experiments/pic2d_cft_steady_state_v4: 90 x 720,
+  # W 2.667e4, v2.0.3 gates, 24 h budget; preflight 2.54 ms/step at the seed, 4.36 at the 4.5 M plateau load ->
+  # 6.2-6.6 h; its ONE base execution runs on the local 5090 from a dedicated worktree). v4's `launch` stage
+  # (clean worktree, --expect-commit, protocol blob == HEAD, O_EXCL execution-lock.json in results/, --resume)
+  # has no --case: the seed-b / W x 0.7 replications need their own preregistration (v4 variants or a v4.1
+  # sibling). Replace args/commit once it is pushed, then enable.
+  - id: ss33-seed-b
+    note: >
+      Channel-only 33 um / 1.4 ps refinement, seed b (RNG-seed replication of the v4 base). ~6.2-6.6 h at the
+      5090 rate (4.4 ms/step at the plateau load, 5.14-5.49 M steps), ~4 GB.
+    module: experiments.pic2d_cft_steady_state_v4.run
+    args: [launch, --expect-commit, "<replication prereg sha>", --case, seed-b]   # PLACEHOLDER: v4 launch has no --case yet
+    gpu: auto
+    commit: null
+    preregistered: true
+    protocol: modern/experiments/pic2d_cft_steady_state_v4/protocol.json
+    results: modern/experiments/pic2d_cft_steady_state_v4/results-seed-b
+    checkout: worktree
+    gpu_memory_gib: 4
+    expected_ms_per_step: 4.4
+    enabled: false
+
+  - id: ss33-w-0.7
+    note: >
+      Channel-only 33 um / 1.4 ps refinement, W x 0.7 (particle-resolution sensitivity at the refined grid;
+      ~6.4 M macro-particles -> ~5.4 ms/step, ~7.7 h at the 5090 rate). Same prerequisite as ss33-seed-b.
+    module: experiments.pic2d_cft_steady_state_v4.run
+    args: [launch, --expect-commit, "<replication prereg sha>", --case, w-0.7]    # PLACEHOLDER
+    gpu: auto
+    commit: null
+    preregistered: true
+    protocol: modern/experiments/pic2d_cft_steady_state_v4/protocol.json
+    results: modern/experiments/pic2d_cft_steady_state_v4/results-w-0.7
+    checkout: worktree
+    gpu_memory_gib: 5
+    expected_ms_per_step: 5.4
+    enabled: false
+
+  # ---------------------------------------------------------------- (ii) 25 um point of the Delta ladder
+  - id: ss25-base
+    note: >
+      Channel-only 25 um (120 x 960), dt 1.0 ps, W 1.5e4 (particles per cell as the base -> ~8 M
+      macro-particles at the plateau): third point of the 50/33/25 convergence ladder. Needs its own protocol
+      (a 25 um sibling of v4: dt, cells and W are not --case keys) committed and, to count as evidence,
+      preregistered with the v4 gates and acceptance rules. 7.2-7.7 M steps; ~7.4 ms/step by the
+      v4-calibrated cost model (15-16 h) up to 17.3 ms/step by the plume-README model (35-37 h) - the
+      benchmark's channel-25um configuration settles it on day 1.
+    module: experiments.pic2d_cft_steady_state_v5.run                 # PLACEHOLDER (25 um sibling of v4)
+    args: [launch, --expect-commit, "<prereg sha>"]
+    gpu: auto
+    commit: null
+    preregistered: true
+    protocol: modern/experiments/pic2d_cft_steady_state_v5/protocol.json
+    results: modern/experiments/pic2d_cft_steady_state_v5/results
+    checkout: worktree
+    gpu_memory_gib: 14
+    expected_ms_per_step: 7.4
+    enabled: false
+
+  # ---------------------------------------------------------------- (iii) PIC design mini-sweep (4 primary designs)
+  # The DRAFT experiment is at HEAD since 8704bf7c..6440518d (modern/experiments/pic2d_design_mini_sweep_v1/:
+  # protocol composer on the accepted runner, four material-aware P2 fields under fields/ (LFS), whole-set
+  # preflight green, 13 tests) but NOT preregistered: its `run` refuses without `--allow-launch` (labelled
+  # shakedowns only) and the preregistration commit replaces that guard by the sealed protocol (README s.7 open
+  # decisions: v2.0.3 gates, 50 um vs 33 um). Per-design results: results/<design>-channel-33um/. Cost per the
+  # README at equal W (2.25x fewer particles per cell than the 50 um runs): 4.2 / 4.9 / 3.1 / 4.7 h -> 16.9 h
+  # serial for the four; a W-reduced (fixed particles-per-cell) policy would ~3x these. Fill `commit` with the
+  # prereg commit (and drop `--allow-launch` from any shakedown use) once pushed.
+  - id: sweep-reference
+    note: design 1 of 4 - divergent-exit-stack (reference, rho 0.60); 91 x 722 nodes, ~2.9 ms/step, 5.14 M steps
+    module: experiments.pic2d_design_mini_sweep_v1.run
+    args: [run, --design, divergent-exit-stack, --domain, channel, --grid, 33um]
+    gpu: auto
+    commit: null
+    preregistered: true
+    protocol: modern/experiments/pic2d_design_mini_sweep_v1/protocol.json
+    results: modern/experiments/pic2d_design_mini_sweep_v1/results/divergent-exit-stack-channel-33um
+    checkout: worktree
+    gpu_memory_gib: 6
+    expected_ms_per_step: 2.9
+    enabled: false
+  - id: sweep-056
+    note: design 2 of 4 - l1a-gs-v3-056-effcbc8686 (HEMP-like, rho 2.36); 116 x 513 nodes, ~4.8 ms/step, 3.65 M steps
+    module: experiments.pic2d_design_mini_sweep_v1.run
+    args: [run, --design, l1a-gs-v3-056-effcbc8686, --domain, channel, --grid, 33um]
+    gpu: auto
+    commit: null
+    preregistered: true
+    protocol: modern/experiments/pic2d_design_mini_sweep_v1/protocol.json
+    results: modern/experiments/pic2d_design_mini_sweep_v1/results/l1a-gs-v3-056-effcbc8686-channel-33um
+    checkout: worktree
+    gpu_memory_gib: 9
+    expected_ms_per_step: 4.8
+    enabled: false
+  - id: sweep-047
+    note: design 3 of 4 - l1a-gs-v2-047-e3196a8aa5 (low rho 0.38); 67 x 779 nodes, ~2.0 ms/step, 5.55 M steps
+    module: experiments.pic2d_design_mini_sweep_v1.run
+    args: [run, --design, l1a-gs-v2-047-e3196a8aa5, --domain, channel, --grid, 33um]
+    gpu: auto
+    commit: null
+    preregistered: true
+    protocol: modern/experiments/pic2d_design_mini_sweep_v1/protocol.json
+    results: modern/experiments/pic2d_design_mini_sweep_v1/results/l1a-gs-v2-047-e3196a8aa5-channel-33um
+    checkout: worktree
+    gpu_memory_gib: 5
+    expected_ms_per_step: 2.0
+    enabled: false
+  - id: sweep-009
+    note: design 4 of 4 - l1a-gs-v3-009-d0c686b4aa (mid rho 0.92); 82 x 685 nodes, ~3.4 ms/step, 4.88 M steps
+    module: experiments.pic2d_design_mini_sweep_v1.run
+    args: [run, --design, l1a-gs-v3-009-d0c686b4aa, --domain, channel, --grid, 33um]
+    gpu: auto
+    commit: null
+    preregistered: true
+    protocol: modern/experiments/pic2d_design_mini_sweep_v1/protocol.json
+    results: modern/experiments/pic2d_design_mini_sweep_v1/results/l1a-gs-v3-009-d0c686b4aa-channel-33um
+    checkout: worktree
+    gpu_memory_gib: 7
+    expected_ms_per_step: 3.4
+    enabled: false
+
+  # ---------------------------------------------------------------- (iv) plume runs (development)
+  - id: plume-v2.1-33um
+    note: >
+      Plume v2.1 box (48 x 12 mm) at 33.3 um / 1.4 ps: 360 x 1440 cells, ~61 min host factorisation, 6.0 GB
+      of inverse blocks, ~16.6 GB GPU, 22.4 ms/step -> 47.5-51 h at the 5090 rate: the critical path.
+      NEEDS a protocol revision (dt and the v2.0.3 gates are not --case keys): commit it, point `commit`
+      at it. Development run (not preregistered) unless a prereg is written first.
+    module: experiments.pic2d_cft_plume_v2_1.run
+    args: [run, --wall-budget-seconds, "200000"]
+    gpu: auto
+    commit: null                   # ceb9b172 recalibrated the 50 um protocol (v2.0.3 gates); the 33 um revision is not committed yet
+    preregistered: false
+    protocol: modern/experiments/pic2d_cft_plume_v2_1/protocol.json
+    results: modern/experiments/pic2d_cft_plume_v2_1/results
+    checkout: worktree
+    gpu_memory_gib: 17
+    expected_ms_per_step: 22.4
+    enabled: false
+
+  - id: plume-v2.1-50um-3mA
+    note: >
+      Second plume point at 50 um with a current-limited cathode (`operating_point.cathode.max_current_a`
+      0.003 = the base injection current) so that peak n_e stays <= 1.4e18 (Delta/lambda_D <= 2.5 at
+      T_e 10 eV). 240 x 960, 8.2 ms/step, ~17-20 h at the 5090 rate, ~8.8 GB. NEEDS its own protocol file
+      (a separate experiment dir or a variant mechanism that covers the cathode clamp: the frozen-protocol
+      check binds ONE path to ONE blob at HEAD, so this and plume-v2.1-33um cannot share protocol.json)
+      committed first. Development run.
+    module: experiments.pic2d_cft_plume_v2_1_current_limited.run    # PLACEHOLDER
+    args: [run, --wall-budget-seconds, "86400"]
+    gpu: auto
+    commit: null
+    preregistered: false
+    protocol: modern/experiments/pic2d_cft_plume_v2_1_current_limited/protocol.json
+    results: modern/experiments/pic2d_cft_plume_v2_1_current_limited/results
+    checkout: worktree
+    gpu_memory_gib: 9
+    expected_ms_per_step: 8.2
+    enabled: false

@@ -1,0 +1,21 @@
+# Pinned Python environment for the PIC-MCC path (cft_revival.pic2d + the steady-state runner) on the
+# Lambda box. The repository carries no lock file (modern/pyproject.toml declares only ranges:
+# warp-lang>=1.14,<2 and numpy>=1.24,<3), so these pins mirror the local anchor environment that
+# produced every recorded ms/step (RTX 5090, Python 3.12.10, 2026-09-04):
+#
+#   warp-lang 1.14.0   PyPI wheel, built with CUDA Toolkit 12.9 (statically embeds NVRTC, links only
+#                      libcuda.so.1) -> needs an NVIDIA driver >= 525 (CUDA 12.x). No CUDA toolkit is
+#                      required on the host. A "+cu13" wheel exists on GitHub Releases (driver >= 580);
+#                      not used here so the build configuration matches the local anchors.
+#   numpy     2.5.2    host Poisson factorisation (np.linalg.inv per block -> OpenBLAS threads)
+#   pytest    9.1.1    modern/tests/pic2d
+#   pillow    12.3.0   the frame/video renderer tests in tests/pic2d import PIL (the runner itself does not);
+#                      ffmpeg is optional (the renderer falls back to a Pillow GIF)
+#   pyyaml    6.0.3    tools/cloud/schedule.py (jobs.yaml); not needed by the PIC code itself
+#
+# Install: uv pip install -r modern/tools/cloud/requirements-pic.txt   (see bootstrap_lambda.sh)
+warp-lang==1.14.0
+numpy==2.5.2
+pytest==9.1.1
+pillow==12.3.0
+pyyaml==6.0.3
