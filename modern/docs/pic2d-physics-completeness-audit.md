@@ -323,6 +323,21 @@ discriminating comparison against Brandt's 10 rows (V&V20 tolerances 20 % / +-5 
 ledger fix and the particle-step Debye floor in place (R0) it should reach a plateau rather than
 avalanche.
 
+*Status (2026-09-05, model v2.1.0; spec entry `anomalous_transport_v2_1_0`).* The audit of the v1.4 hook
+against the paper confirmed the event statistics (exact Poisson probability at the local |B| per electron
+per step, elastic, tallied, a separate exact-Poisson process outside the null-collision budget - equivalent
+to O(nu_an dt x nu_mcc dt)) and the one defect named above (the isotropic event). `bohm_perpendicular_rotation`
+is implemented in both backends (`sensitivity.rotate_about_field`, `bohm_kernel` mode 1) and verified: |v|
+and v_parallel to round-off, <|dX|^2> = 2 r_L^2, and the DIFFUSION test - test electrons in a uniform 0.05 T
+without E spread at D_perp = (kT_e/eB) alpha/(1 + alpha^2) within 5 % for alpha = 1/16 and 0.345 under BOTH
+event models (the 0.345 case 10.6 % below the naive alpha kT_e/eB); CUDA graph vs direct bitwise with the
+hook on; alpha = 0 keeps the ss-v4 identity byte for byte. The alpha-series is preregistered as
+`experiments/pic2d_anomalous_transport_v1` (rotation model, alpha in {1/64, 1/16, 0.345} on the ss-v4
+template with the v2.0.6 gates and K = 5; alpha = 0 = the recorded ss-v4 plateau, whose (b) fails at +2.46 %
+on the corrected ledger; hypotheses = the signs of this section; verdict trend_confirmed / not / inconclusive),
+and the ext-val `bohm-0.4` option is amended to the rotation model + v2.0.6 gates (amendment 1) - both
+launched on the H100 as MPS slots free (their READMEs carry the launch logs).
+
 ### 4.d Coulomb collisions
 
 *Consequence (estimate, §9).* With the NRL rate nu_ee = 2.91e-6 n[cm^-3] ln Lambda T_e^-3/2, and the
@@ -561,7 +576,7 @@ the purpose of stating them is that a result of the opposite sign is a finding, 
 | rank | item | effort | H100 runs | expected change of the reference plateau (direction; rough size) | what admits it |
 |---|---|---|---|---|---|
 | R0 | ledger W fix + gate recalibration + post-hoc residual sidecars (v2.0.6) - **DONE** (`4b53012d`, `8c70cff0`, 2026-09-05 01:40) | S | 0 (post hoc) | none physical; recorded residuals shifted + by the inelastic power (7-14 % of electrode work); the corrected ss-v4 reads +2.46 % (acceptance (b) FAIL), the 50 um base +13.0 % | particle-side identity closes to round-off on three backends (v2.0.6 tests); physics bitwise |
-| R1 | anomalous transport: `bohm_rotation` variant + predeclared alpha-series {0, 1/64, 1/16, 0.345} on the ss-v4 template; then the sealed ext-val `bohm-0.4` channel-20um run | S-M | 3 channel-33 (15 GPU-h) + 1 channel-20um (12 h solo / 30 h slot) | I_d UP monotone in alpha (+20 to +60 % at 1/16); peak n_e DOWN (-15 to -40 % at ours, -30 to -60 % at Brandt's); S, utilisation DOWN; T_e,peak DOWN; cusp sheath drops DOWN; per-cusp wall electron loss UP; ext-val: plateau instead of avalanche, I_a toward 4.3 mA, n_i toward 1e19 | monotone series with the stated signs; ext-val rows inside V&V20 tolerance or a recorded miss; residual-power gate silent |
+| R1 | anomalous transport: `bohm_rotation` variant + predeclared alpha-series {0, 1/64, 1/16, 0.345} on the ss-v4 template; then the sealed ext-val `bohm-0.4` channel-20um run - **code DONE, campaigns PREREGISTERED and launching** (model v2.1.0, `experiments/pic2d_anomalous_transport_v1`, ext-val amendment 1; 2026-09-05) | S-M | 3 channel-33 (15 GPU-h) + 1 channel-20um (12 h solo / 30 h slot) | I_d UP monotone in alpha (+20 to +60 % at 1/16); peak n_e DOWN (-15 to -40 % at ours, -30 to -60 % at Brandt's); S, utilisation DOWN; T_e,peak DOWN; cusp sheath drops DOWN; per-cusp wall electron loss UP; ext-val: plateau instead of avalanche, I_a toward 4.3 mA, n_i toward 1e19 | monotone series with the stated signs; ext-val rows inside V&V20 tolerance or a recorded miss; residual-power gate silent |
 | R2 | SEE from the dielectric: digitised BN and Al2O3 Vaughan yields, backscatter fraction, 2 eV secondaries, Hobbs-Wesson cap; `pic2d-model-v2.2` | M-L | 2 channel-33 (BN, Al2O3) at the R1-chosen alpha | cusp sheath drops DOWN 10-45 %; wall electron power UP x1.5-2; T_e,peak DOWN 10-25 %; I_d UP 10-30 %; peak n_e DOWN 5-15 %; wall ion energy DOWN; Al2O3 > BN in every effect | slab sheath drop vs analytic with delta; ledger closes with emission; on/off/material triad with stated signs |
 | R3a | four excitation levels | S | folded into R3b's run | T_e DOWN 3-5 %; S DOWN 3-5 %; inelastic power UP ~15 % | total excitation frequency unchanged; ledger |
 | R3b | Xe+ + Xe CEX + MEX with fast-neutral thrust tally; `xenon-ion-neutral-cross-sections-v1.json` | M | 1 channel-33 + 1 plume-v2.1 | I_d, S ~unchanged (< 5 %); IEDF gains a low-energy population 15-30 % of exit ions; anode ion current UP; divergence UP; ion thrust DOWN by the exchanged fraction, total (ion + fast neutral) ~unchanged | CEX fraction = 1 - exp(-L/lambda) on a slab; momentum ledger closes with the neutral term |
