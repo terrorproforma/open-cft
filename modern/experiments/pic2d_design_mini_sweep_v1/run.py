@@ -34,13 +34,14 @@ import copy
 import hashlib
 import json
 import os
-from pathlib import Path
 import shutil
 import socket
 import subprocess
 import sys
 import time
 from datetime import datetime, timezone
+from itertools import pairwise
+from pathlib import Path
 from typing import Any
 
 from . import cost as cost_module
@@ -49,7 +50,15 @@ from . import fields as field_module
 from . import preflight as preflight_module
 from . import protocol as protocol_module
 from .closure import extract_targets, load_maps
-from .protocol import CASES, GRID_VARIANTS, build_protocol, compose_run_protocol, composed_protocol_path, option_tag, protocol_bytes
+from .protocol import (
+    CASES,
+    GRID_VARIANTS,
+    build_protocol,
+    compose_run_protocol,
+    composed_protocol_path,
+    option_tag,
+    protocol_bytes,
+)
 
 HERE = Path(__file__).resolve().parent
 MODERN = HERE.parents[1]
@@ -62,6 +71,9 @@ SHAKEDOWN_SCHEMA = "cft.pic2d.design-mini-sweep.shakedown/1.0.0"
 MPS_REPLAY_SCHEMA = "cft.pic2d.design-mini-sweep.mps-replay/1.0.0"
 MPS_REPLAY_PATH = HERE / "mps-replay.json"
 STEADY_STATE_V4_ASSESSMENT = MODERN / "experiments" / "pic2d_cft_steady_state_v4" / "results" / "assessment.json"
+STEADY_STATE_V4_CORRECTED_LEDGER = STEADY_STATE_V4_ASSESSMENT.with_name("assessment-corrected-ledger.json")   # post-hoc re-read (model v2.0.6)
+LEDGER_SIDECAR_NAME = "ledger-corrected.json"                                                                   # cft_revival.pic2d.ledger_recompute
+ACCEPTANCE_B_BOUND = 0.02
 
 # shakedown / replay: the real protocol with only the cadences shrunk (every gate, the grid, dt, W, field and seed are the real ones) - the v4 values
 SHRUNK_CADENCES = {
@@ -375,7 +387,7 @@ def command_mps_replay(args: argparse.Namespace) -> int:
     t0 = time.perf_counter()
     for name in names:
         results = root / f"concurrent-{name}"
-        log = open(root / f"concurrent-{name}.log", "wb")
+        log = open(root / f"concurrent-{name}.log", "wb")  # noqa: SIM115 - handed to Popen, closed after wait() below
         procs.append((name, results, subprocess.Popen(_replay_child_command(args.design, args.domain, args.grid, results, args.steps), cwd=str(MODERN), env=env,
                                                      stdout=log, stderr=subprocess.STDOUT), log))
     exit_codes = {}
@@ -389,7 +401,7 @@ def command_mps_replay(args: argparse.Namespace) -> int:
         print(f"[mps-replay] {record['verdict']}: {exit_codes}", file=sys.stderr)
         return 1
     pairs = {}
-    for (name_a, res_a, _, _), (name_b, res_b, _, _) in zip(procs, procs[1:]):
+    for (name_a, res_a, _, _), (name_b, res_b, _, _) in pairwise(procs):
         pairs[f"{name_a}-vs-{name_b}"] = _compare_runs(res_a, res_b)
     record["concurrent_pairs"] = pairs
     solo: dict[str, Any] | None = None
@@ -593,7 +605,7 @@ def launch(design_id: str, domain: str, grid: str, *, case: str = "base", backen
     if require_mps and not (mps_pipe and Path(mps_pipe).exists()):
         raise PIC2DValidationError(f"--require-mps: CUDA_MPS_PIPE_DIRECTORY {mps_pipe!r} is not set or does not exist in this environment")
     # the sealed protocol must be what this checkout composes on THIS platform (field-derived dt policy included)
-    protocol, mapping, field_map = compose_run_protocol(design_id, domain, grid, case)
+    protocol, _mapping, field_map = compose_run_protocol(design_id, domain, grid, case)
     recomposed = protocol_bytes(protocol)
     sealed_bytes = sealed_path.read_bytes()
     if recomposed != sealed_bytes:
@@ -665,17 +677,87 @@ def command_status(args: argparse.Namespace) -> int:
     return 0
 
 
+def _sha256_of(path: Path) -> str:
+    from hashlib import sha256
+
+    return sha256(path.read_bytes()).hexdigest()
+
+
+def steady_state_v4_corrected_ledger(recorded_assessment_sha: str | None) -> dict[str, Any] | None:
+    """The v4 post-hoc re-read on the corrected energy ledger (model v2.0.6), if it exists and binds the recorded assessment.
+
+    Carries the SECOND reading beside the recorded verdict: (b) recorded vs corrected, the (d) outcome on the corrected
+    ledger and the verdict statement (the 33 um reference plateau heats at +2.46 % of the electrode work; not a clean reference).
+    """
+
+    if not STEADY_STATE_V4_CORRECTED_LEDGER.is_file():
+        return None
+    try:
+        record = json.loads(STEADY_STATE_V4_CORRECTED_LEDGER.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    bound_sha = ((record.get("inputs") or {}).get("assessment") or {}).get("sha256")
+    b = record.get("b_residual_power") or {}
+    return {
+        "path": STEADY_STATE_V4_CORRECTED_LEDGER.relative_to(REPOSITORY_ROOT).as_posix(), "sha256": _sha256_of(STEADY_STATE_V4_CORRECTED_LEDGER),
+        "utc": record.get("utc"), "binds_recorded_assessment": (recorded_assessment_sha is not None and bound_sha == recorded_assessment_sha),
+        "verdict_recorded": record.get("verdict_recorded"), "verdict_on_corrected_ledger": record.get("verdict_on_corrected_ledger"),
+        "b_recorded": (b.get("recorded") or {}).get("windowed_residual_over_electrode_work"), "b_recorded_passed": (b.get("recorded") or {}).get("passed"),
+        "b_corrected": (b.get("corrected") or {}).get("windowed_residual_over_electrode_work"), "b_corrected_passed": (b.get("corrected") or {}).get("passed"),
+        "verdict_statement": record.get("verdict_statement"),
+    }
+
+
 def steady_state_v4_verdict() -> dict[str, Any]:
-    """The reference's 50 -> 33 um convergence verdict (steady-state v4 assessment.json) if it exists in this checkout, else 'pending'."""
+    """The reference's 50 -> 33 um convergence verdict (steady-state v4 assessment.json) if it exists in this checkout, else 'pending';
+    with the corrected-ledger re-read (assessment-corrected-ledger.json) beside it when present."""
 
     if STEADY_STATE_V4_ASSESSMENT.is_file():
         try:
             record = json.loads(STEADY_STATE_V4_ASSESSMENT.read_text(encoding="utf-8"))
-            return {"status": "available", "verdict": record.get("verdict"), "path": STEADY_STATE_V4_ASSESSMENT.relative_to(REPOSITORY_ROOT).as_posix(),
-                    "utc": record.get("utc"), "c_convergence_all_within": (record.get("c_convergence") or {}).get("all_within")}
+            out = {"status": "available", "verdict": record.get("verdict"), "path": STEADY_STATE_V4_ASSESSMENT.relative_to(REPOSITORY_ROOT).as_posix(),
+                   "utc": record.get("utc"), "c_convergence_all_within": (record.get("c_convergence") or {}).get("all_within"),
+                   "b_residual_power_recorded": (record.get("b_residual_power") or {}).get("windowed_residual_over_electrode_work")}
+            out["corrected_ledger"] = steady_state_v4_corrected_ledger(_sha256_of(STEADY_STATE_V4_ASSESSMENT))
+            if out["corrected_ledger"] is None:
+                out["corrected_ledger_note"] = ("assessment-corrected-ledger.json not present in this checkout: the recorded (b) of v4 is the pre-v2.0.6 "
+                                                "statistic (biased by the omitted inelastic power); re-read once the v4 re-read is checked out")
+            return out
         except (OSError, json.JSONDecodeError):
             pass
-    return {"status": "pending", "verdict": None, "note": "pic2d_cft_steady_state_v4 (392129e5) has not recorded its assessment in this checkout; the caveat applies in full"}
+    return {"status": "pending", "verdict": None, "corrected_ledger": None,
+            "note": "pic2d_cft_steady_state_v4 (392129e5) has not recorded its assessment in this checkout; the caveat applies in full"}
+
+
+def own_corrected_ledger(results: Path, *, summary: dict[str, Any]) -> dict[str, Any] | None:
+    """This run's ``ledger-corrected.json`` (model v2.0.6 post-hoc sidecar) if present and bound to the run's series; else None."""
+
+    path = results / LEDGER_SIDECAR_NAME
+    if not path.is_file():
+        return None
+    from cft_revival.pic2d.models import PIC2DValidationError
+
+    record = json.loads(path.read_text(encoding="utf-8"))
+    hash_sidecar = path.with_name(path.name + ".sha256.json")
+    digest = _sha256_of(path)
+    if hash_sidecar.is_file() and json.loads(hash_sidecar.read_text(encoding="utf-8")).get("byte_sha256") != digest:
+        raise PIC2DValidationError(f"{path}: hash sidecar mismatch")
+    series_sha = ((summary.get("artifacts") or {}).get("series_npz_sha256"))
+    if series_sha is not None and ((record.get("inputs") or {}).get("series") or {}).get("sha256") != series_sha:
+        raise PIC2DValidationError(f"{path}: describes another series than this run's summary")
+    end = record["end_state_window"]
+    recorded_in_summary = ((summary.get("grid_heating_triad") or {}).get("windowed_energy_residual_over_electrode_work"))
+    if recorded_in_summary is not None and end.get("recorded_ratio") is not None and abs(end["recorded_ratio"] - recorded_in_summary) > 1e-9 * max(abs(recorded_in_summary), 1e-12):
+        raise PIC2DValidationError(f"{path}: recorded reading differs from the run's summary")
+    gate = record["threshold_crossings"]["0.05"]["corrected_first_crossing_at_checkpoint"]
+    return {
+        "path": path.name, "sha256": digest, "generated_by": record.get("generated_by"), "series_sha256": record["inputs"]["series"]["sha256"],
+        "windowed_residual_over_electrode_work": end["corrected_ratio"], "window_complete": bool(end["window_complete"]),
+        "cumulative_witness": record["cumulative"]["corrected_over_electrode"], "omitted_inelastic_over_electrode_work_in_window": end["omitted_ratio"],
+        "max_over_complete_windows": record["max_over_complete_windows"]["corrected"],
+        "hard_gate_0p05_would_have_fired": gate is not None, "hard_gate_0p05_first_crossing": gate,
+        "already_w_scaled": bool((record.get("cross_check_vs_final_counts") or {}).get("already_w_scaled")),
+    }
 
 
 def assess_run(protocol: dict[str, Any], results: Path, *, mapping=None, log=lambda text: print(text, flush=True)) -> dict[str, Any]:
@@ -712,7 +794,21 @@ def assess_run(protocol: dict[str, Any], results: Path, *, mapping=None, log=lam
     }
     a_plateau = run["stop_reason"] == "plateau_reached_after_min_transit_times"
     windowed = run["windowed_residual_over_electrode_work"]
-    b_ok = windowed is not None and bool(run["windowed_residual_window_complete"]) and windowed < 0.02
+    b_recorded_ok = windowed is not None and bool(run["windowed_residual_window_complete"]) and windowed < ACCEPTANCE_B_BOUND
+    # model v2.0.6: a run that executed pre-v2.0.6 code recorded a residual biased by the omitted inelastic power; when its
+    # ledger-corrected.json sidecar is present, (b) is evaluated on the corrected statistic (declared in the v2.0.6 spec before the
+    # pending runs reported) and the recorded reading is kept beside it; without a sidecar the recorded statistic decides and the
+    # record says so
+    corrected = own_corrected_ledger(results, summary=summary)
+    if corrected is not None and not corrected["already_w_scaled"]:
+        corrected_value = corrected["windowed_residual_over_electrode_work"]
+        b_ok = corrected_value is not None and corrected["window_complete"] and corrected_value < ACCEPTANCE_B_BOUND
+        b_basis = "corrected statistic (ledger-corrected.json, model v2.0.6 post hoc); the recorded statistic is kept beside it"
+    else:
+        b_ok = b_recorded_ok
+        b_basis = ("recorded statistic (this run executed model >= v2.0.6: the recorded residual already carries W)" if corrected is not None
+                   else "recorded statistic (NO ledger-corrected.json sidecar found: if this run executed pre-v2.0.6 code its residual is biased negative "
+                        "by the inelastic power - run `python -m cft_revival.pic2d.ledger_recompute <results-dir>` and re-assess)")
     if a_plateau and b_ok:
         verdict = "closure_quotable"
     elif a_plateau:
@@ -720,29 +816,47 @@ def assess_run(protocol: dict[str, Any], results: Path, *, mapping=None, log=lam
     else:
         verdict = "no_plateau"
     v4 = steady_state_v4_verdict()
+    v4_corrected = v4.get("corrected_ledger")
+    convergence_statements = {
+        "converged": "the 33 um values of this design carry the v4 tolerances as their grid band (10 % I_d / S / n_g / utilisation / I_beam, 20 % peak n_e / T_e,peak)",
+        "resolution_limited": "the 33 um values of this design are the resolved numbers but carry NO grid band of their own (the 33 um grid is not itself certified)",
+        "refinement_heating": "the reference grid is not certified: quotability rests on this design's own residual-power and peak-Debye readings; design comparisons are 'at 33 um, uncertified'",
+        "no_plateau": "the reference grid is not certified: quotability rests on this design's own residual-power and peak-Debye readings; design comparisons are 'at 33 um, uncertified'",
+        None: "PENDING: the steady-state v4 verdict is not yet recorded; this assessment must be re-read once it is (the caveat applies in full)",
+    }
     record = {
         "schema_version": ASSESSMENT_SCHEMA, "utc": utc_now(), "experiment_id": protocol["experiment_id"], "design_id": protocol.get("design_id"), "results_dir": results.name,
         "git_head_now": _runner().git_head(), "run": run,
         "a_plateau": {"passed": a_plateau, "stop_reason": run["stop_reason"], "ion_transit_times": run["ion_transit_times"], "plateau": run["plateau"], "rule": acceptance.get("a_plateau")},
-        "b_residual_power": {"passed": b_ok, "windowed_residual_over_electrode_work": windowed, "window_complete": run["windowed_residual_window_complete"], "bound": 0.02, "one_sided": True,
-                             "cumulative_witness": run["cumulative_residual_over_electrode_work"], "rule": acceptance.get("b_residual_power")},
+        "b_residual_power": {"passed": b_ok, "basis": b_basis, "bound": ACCEPTANCE_B_BOUND, "one_sided": True, "rule": acceptance.get("b_residual_power"),
+                             "windowed_residual_over_electrode_work": windowed, "window_complete": run["windowed_residual_window_complete"],
+                             "cumulative_witness": run["cumulative_residual_over_electrode_work"], "passed_recorded_statistic": b_recorded_ok,
+                             "recorded": {"windowed_residual_over_electrode_work": windowed, "window_complete": run["windowed_residual_window_complete"],
+                                          "cumulative_witness": run["cumulative_residual_over_electrode_work"], "passed": b_recorded_ok,
+                                          "statistic": "summary.grid_heating_triad.windowed_energy_residual_over_electrode_work"},
+                             "corrected": None if corrected is None else {**corrected, "passed": (corrected["windowed_residual_over_electrode_work"] is not None
+                                                                                                 and corrected["window_complete"]
+                                                                                                 and corrected["windowed_residual_over_electrode_work"] < ACCEPTANCE_B_BOUND)}},
         "verdict": verdict, "verdict_rule": (acceptance.get("d_verdicts") or {}).get(verdict),
         "closure_targets_quotable": verdict == "closure_quotable",
         "peak_debye_window": {"cells_per_debye_last": run["cells_per_debye_window_last"], "trailing_mean": run["cells_per_debye_window_trailing_mean"], "soft_ok": run["peak_debye_soft_ok"]},
         "steady_state_v4_verdict": v4,
         "convergence_caveat": acceptance.get("f_convergence_caveat", protocol_module.CONVERGENCE_CAVEAT),
-        "convergence_statement": {
-            "converged": "the 33 um values of this design carry the v4 tolerances as their grid band (10 % I_d / S / n_g / utilisation / I_beam, 20 % peak n_e / T_e,peak)",
-            "resolution_limited": "the 33 um values of this design are the resolved numbers but carry NO grid band of their own (the 33 um grid is not itself certified)",
-            "refinement_heating": "the reference grid is not certified: quotability rests on this design's own residual-power and peak-Debye readings; design comparisons are 'at 33 um, uncertified'",
-            "no_plateau": "the reference grid is not certified: quotability rests on this design's own residual-power and peak-Debye readings; design comparisons are 'at 33 um, uncertified'",
-            None: "PENDING: the steady-state v4 verdict is not yet recorded; this assessment must be re-read once it is (the caveat applies in full)",
-        }[v4.get("verdict")],
+        "convergence_statement": convergence_statements[v4.get("verdict")],
+        "convergence_statement_corrected_ledger": (
+            None if v4_corrected is None else
+            f"on the corrected ledger (model v2.0.6, {v4_corrected['path']}) the reference's acceptance (b) reads "
+            f"{100.0 * v4_corrected['b_corrected']:+.2f} % ({'pass' if v4_corrected['b_corrected_passed'] else 'FAIL'}; recorded "
+            f"{100.0 * v4_corrected['b_recorded']:+.2f} % {'pass' if v4_corrected['b_recorded_passed'] else 'FAIL'}) and the predeclared (d) tree gives "
+            f"'{v4_corrected['verdict_on_corrected_ledger']}' beside the recorded '{v4_corrected['verdict_recorded']}': {v4_corrected['verdict_statement']}. "
+            f"For this design: {convergence_statements[v4_corrected['verdict_on_corrected_ledger']]}"),
         "design_specific": acceptance.get("g_design_specific"),
         "claim_boundary": protocol.get("claim_boundary"),
     }
     artifacts.write_canonical_json(results / "assessment.json", record)
-    log(f"[assess] {results.name}: verdict {verdict} (a {a_plateau}, b {b_ok} [{windowed}]); v4 verdict {v4.get('verdict') or 'pending'}")
+    log(f"[assess] {results.name}: verdict {verdict} (a {a_plateau}, b {b_ok} [recorded {windowed}; corrected "
+        f"{None if corrected is None else corrected['windowed_residual_over_electrode_work']}]); v4 verdict {v4.get('verdict') or 'pending'}"
+        + ("" if v4_corrected is None else f" / on the corrected ledger {v4_corrected['verdict_on_corrected_ledger']} ((b) {100.0 * v4_corrected['b_corrected']:+.2f} %)"))
     return record
 
 

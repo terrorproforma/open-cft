@@ -12,7 +12,14 @@ import pytest
 
 from cft_revival.pic2d.models import PIC2DValidationError
 from experiments.pic2d_cft_steady_state_v1 import run as runner
-from experiments.pic2d_design_mini_sweep_v1 import closure, cost, designs, fields, preflight, protocol
+from experiments.pic2d_design_mini_sweep_v1 import (
+    closure,
+    cost,
+    designs,
+    fields,
+    preflight,
+    protocol,
+)
 from experiments.pic2d_design_mini_sweep_v1 import run as sweep_run
 
 PRIMARY = [d for d in designs.SWEEP_DESIGNS if not d.optional]
@@ -503,3 +510,101 @@ def test_shrunk_protocol_keeps_grid_dt_weight_and_gate_thresholds():
     assert shrunk["case"]["macro_weight"] == full["case"]["macro_weight"] and shrunk["numerics"]["peak_debye_gate"]["max_cells_per_debye"] == pi
     runner.build_config(shrunk, backend="cpu")
     assert sweep_run.steady_state_v4_verdict()["status"] in ("available", "pending")
+
+
+# -- assess: acceptance (b) on the corrected ledger (model v2.0.6) and the v4 reference caveat with both readings --------------------------------
+
+def _fake_assessable_run(tmp_path, *, name: str, recorded_windowed: float = -0.075, stop: str = "plateau_reached_after_min_transit_times",
+                         corrected_windowed: float | None = None, series_sha: str = "a" * 64, sidecar_series_sha: str | None = None):
+    """summary.json + maps.npz (what assess_run reads) and, optionally, a ledger-corrected.json sidecar with the given corrected reading."""
+
+    from cft_revival.pic2d import artifacts
+
+    results = tmp_path / name
+    results.mkdir()
+    n = np.zeros((5, 7))
+    t = np.zeros((5, 7))
+    n[2, 3] = 1e18
+    t[2, 3] = 6.0
+    artifacts.write_npz(results / "maps.npz", {"n_e_per_m3": n, "t_e_ev": t})
+    summary = {
+        "stop_reason": stop, "ion_transit_times": 3.1, "steps_completed": 5_000_000, "plateau": {"reached": stop.startswith("plateau")},
+        "window_currents_a": {"discharge_a": 2e-3, "exit_ion_beam_a": 1e-3},
+        "neutral_inventory": {"trailing_20pct_mean_ionization_rate_per_s": 1.5e16, "propellant_utilisation_trailing": 0.3, "net_utilisation_trailing": 0.2,
+                              "trailing_20pct_mean_density_per_m3": 3.7e19},
+        "grid_heating_triad": {"windowed_energy_residual_over_electrode_work": recorded_windowed, "windowed_energy_residual_window_complete": True,
+                               "energy_residual_over_electrode_work": recorded_windowed},
+        "peak_node_debye": {"window": {"cells_per_debye_window_last": 1.7, "trailing_20pct_mean_cells_per_debye_window": 1.7, "soft_ok": True}},
+        "sessions": [{}], "git_head": "deadbeef", "protocol_sha256": "1" * 64, "provenance": {"config_sha256": "2" * 64, "runtime": {}},
+        "artifacts": {"series_npz_sha256": series_sha},
+    }
+    artifacts.write_canonical_json(results / "summary.json", summary)
+    if corrected_windowed is not None:
+        sidecar = {
+            "schema": "cft.pic2d.ledger-corrected/1.0.0", "generated_by": "python -m cft_revival.pic2d.ledger_recompute",
+            "inputs": {"series": {"file": "series.npz", "sha256": sidecar_series_sha or series_sha}},
+            "end_state_window": {"recorded_ratio": recorded_windowed, "corrected_ratio": corrected_windowed, "window_complete": True,
+                                 "omitted_ratio": corrected_windowed - recorded_windowed, "recorded_ratio_matches_summary": True},
+            "cumulative": {"corrected_over_electrode": corrected_windowed - 0.002},
+            "max_over_complete_windows": {"corrected": {"ratio": corrected_windowed, "step": 5_000_000, "time_s": 7e-6}},
+            "threshold_crossings": {"0.05": {"corrected_first_crossing_at_checkpoint": None if corrected_windowed < 0.05 else {"step": 1, "time_s": 1e-6, "ratio": 0.05}}},
+            "cross_check_vs_final_counts": {"already_w_scaled": False},
+        }
+        artifacts.write_canonical_json(results / sweep_run.LEDGER_SIDECAR_NAME, sidecar)
+    return results
+
+
+@needs_bindings
+def test_assess_evaluates_b_on_the_corrected_ledger_when_the_sidecar_exists_and_keeps_the_recorded_reading(tmp_path):
+    from cft_revival.pic2d import artifacts
+
+    proto, _ = protocol.build_protocol(designs.REFERENCE_DESIGN_ID, "channel", grid="33um")
+    quiet = lambda _: None
+    # no sidecar: the recorded statistic decides and the record says a sidecar is missing
+    plain = sweep_run.assess_run(proto, _fake_assessable_run(tmp_path, name="plain"), log=quiet)
+    assert plain["verdict"] == "closure_quotable" and plain["b_residual_power"]["passed"] is True and plain["b_residual_power"]["corrected"] is None
+    assert "NO ledger-corrected.json" in plain["b_residual_power"]["basis"] and plain["b_residual_power"]["passed_recorded_statistic"] is True
+    assert plain["b_residual_power"]["recorded"]["windowed_residual_over_electrode_work"] == -0.075 and plain["b_residual_power"]["bound"] == 0.02
+    # a sidecar whose corrected reading is above the bound flips (b) and the verdict; the recorded reading stays beside it
+    heating = sweep_run.assess_run(proto, _fake_assessable_run(tmp_path, name="heating", corrected_windowed=0.03), log=quiet)
+    assert heating["verdict"] == "plateau_with_heating" and heating["b_residual_power"]["passed"] is False and heating["closure_targets_quotable"] is False
+    assert heating["b_residual_power"]["passed_recorded_statistic"] is True and heating["b_residual_power"]["recorded"]["passed"] is True
+    assert heating["b_residual_power"]["corrected"]["passed"] is False and heating["b_residual_power"]["corrected"]["windowed_residual_over_electrode_work"] == 0.03
+    assert heating["b_residual_power"]["basis"].startswith("corrected statistic")
+    # a sidecar below the bound keeps the pass, on the corrected basis
+    clean = sweep_run.assess_run(proto, _fake_assessable_run(tmp_path, name="clean", corrected_windowed=0.009), log=quiet)
+    assert clean["verdict"] == "closure_quotable" and clean["b_residual_power"]["passed"] is True and clean["b_residual_power"]["corrected"]["passed"] is True
+    assert clean["b_residual_power"]["corrected"]["sha256"] == artifacts.read_canonical_json(tmp_path / "clean" / "ledger-corrected.json.sha256.json")["byte_sha256"]
+    written = artifacts.read_canonical_json(tmp_path / "clean" / "assessment.json")
+    assert written["b_residual_power"]["corrected"]["windowed_residual_over_electrode_work"] == 0.009
+    # a sidecar that describes another series is refused (fail closed)
+    with pytest.raises(PIC2DValidationError, match="another series"):
+        sweep_run.assess_run(proto, _fake_assessable_run(tmp_path, name="foreign", corrected_windowed=0.009, sidecar_series_sha="f" * 64), log=quiet)
+    # no plateau stays no_plateau whatever the ledger says
+    stopped = sweep_run.assess_run(proto, _fake_assessable_run(tmp_path, name="stopped", stop="grid_heating_triad_gate_stopped_run", corrected_windowed=0.009), log=quiet)
+    assert stopped["verdict"] == "no_plateau"
+
+
+def test_v4_reference_caveat_carries_both_readings(monkeypatch, tmp_path):
+    v4 = sweep_run.steady_state_v4_verdict()
+    if v4["status"] != "available" or v4.get("corrected_ledger") is None:
+        pytest.skip("the steady-state v4 record with its corrected-ledger re-read is not checked out")
+    corrected = v4["corrected_ledger"]
+    assert v4["verdict"] == corrected["verdict_recorded"] == "resolution_limited" and corrected["verdict_on_corrected_ledger"] == "refinement_heating"
+    assert corrected["binds_recorded_assessment"] is True and len(corrected["sha256"]) == 64
+    assert corrected["b_recorded"] == pytest.approx(-0.0767, abs=1e-3) and corrected["b_recorded_passed"] is True
+    assert corrected["b_corrected"] == pytest.approx(0.0246, abs=1e-3) and corrected["b_corrected_passed"] is False
+    assert "FAILED on the corrected ledger" in corrected["verdict_statement"] and "NOT a clean reference" in corrected["verdict_statement"]
+    # the assessment record carries the recorded statement and the corrected-ledger statement side by side
+    if _bindings_present():
+        proto, _ = protocol.build_protocol(designs.REFERENCE_DESIGN_ID, "channel", grid="33um")
+        record = sweep_run.assess_run(proto, _fake_assessable_run(tmp_path, name="ref", corrected_windowed=0.009), log=lambda _: None)
+        assert record["steady_state_v4_verdict"]["corrected_ledger"]["verdict_on_corrected_ledger"] == "refinement_heating"
+        assert record["convergence_statement"].startswith("the 33 um values of this design are the resolved numbers but carry NO grid band")
+        statement = record["convergence_statement_corrected_ledger"]
+        assert "+2.46 % (FAIL; recorded -7.67 % pass)" in statement and "'refinement_heating' beside the recorded 'resolution_limited'" in statement
+        assert "NOT a clean reference" in statement and "the reference grid is not certified" in statement
+    # without the re-read file the recorded reading is flagged as the pre-v2.0.6 statistic
+    monkeypatch.setattr(sweep_run, "STEADY_STATE_V4_CORRECTED_LEDGER", tmp_path / "absent.json")
+    pending = sweep_run.steady_state_v4_verdict()
+    assert pending["corrected_ledger"] is None and "not present in this checkout" in pending["corrected_ledger_note"]
