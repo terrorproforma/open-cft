@@ -335,20 +335,35 @@ def test_launch_records_a_nonzero_exit_code(repo: dict[str, object], tmp_path: P
 
 
 # ------------------------------------------------------------------------------------------ shipped jobs.yaml
-def test_shipped_jobs_yaml_is_valid_and_only_the_shakedown_is_enabled() -> None:
+SWEEP_PREREG_COMMIT = "291a9227669c8927ea5cf7a6de2eed23fe6f73de"
+SWEEP_JOBS = ["sweep-reference", "sweep-056", "sweep-047", "sweep-009"]
+
+
+def test_shipped_jobs_yaml_is_the_single_h100_mps_configuration_with_the_preregistered_sweep_enabled() -> None:
     pytest.importorskip("yaml")
     plan = schedule.build_plan(schedule.load_jobs_file(schedule.DEFAULT_JOBS_FILE), source=schedule.DEFAULT_JOBS_FILE)
     assert plan.defaults.repo == REPOSITORY
-    assert plan.gpus == list(range(8)) and plan.defaults.slots_per_gpu == 1
+    # the live box: one H100, four CUDA-MPS slots (bench-mps 2026-09-04), MPS client variables exported to every job
+    assert plan.gpus == [0] and plan.defaults.slots_per_gpu == 4
+    assert plan.defaults.env["CUDA_MPS_PIPE_DIRECTORY"] == "/tmp/nvidia-mps" and plan.defaults.env["CUDA_MPS_LOG_DIRECTORY"] == "/tmp/nvidia-log"
     enabled = [j for j in plan.jobs if j.enabled]
-    assert [j.id for j in enabled] == ["shakedown-ss-v3-graph"]
+    assert [j.id for j in enabled] == SWEEP_JOBS
     for job in plan.jobs:
         assert job.checkout == "worktree"
-        if job.enabled:
-            assert job.commit and (REPOSITORY / job.protocol).is_file()
+        if job.id.startswith("sweep-"):
+            # every sealed mini-sweep slot (launched or not) names the preregistration commit and its own sealed run protocol
+            assert job.commit == SWEEP_PREREG_COMMIT and job.preregistered is True and (REPOSITORY / job.protocol).is_file(), job.id
+            assert job.args[:1] == ["launch"] and "--require-mps" in job.args and job.args[job.args.index("--expect-commit") + 1] == SWEEP_PREREG_COMMIT
+            assert job.protocol.startswith("modern/experiments/pic2d_design_mini_sweep_v1/protocols/") and job.transit_time_s and job.gpu_memory_gib
+        elif job.id == "shakedown-ss-v3-graph":
+            assert not job.enabled and job.preregistered is False and job.commit   # never relabelled; disabled so `launch` takes no slot
         else:
-            assert job.commit is None, f"{job.id}: disabled slots must not name a commit yet"
-    shakedown = enabled[0]
-    check = schedule.prereg_check(REPOSITORY, shakedown.commit, shakedown.protocol)
-    assert check["ok"] is True, check["problems"]
-    assert shakedown.preregistered is False   # a shakedown is never relabelled
+            assert not job.enabled and job.commit is None, f"{job.id}: disabled placeholder slots must not name a commit yet"
+    # the four launched jobs fit the memory rule and the prereg check holds for each (commit reachable, sealed protocol frozen)
+    assert sum(j.gpu_memory_gib for j in enabled) <= 0.9 * plan.defaults.gpu_memory_gib
+    for job in enabled:
+        check = schedule.prereg_check(REPOSITORY, job.commit, job.protocol)
+        assert check["ok"] is True, (job.id, check["problems"])
+    assert schedule.assign_gpus(plan, enabled) == {j.id: 0 for j in enabled}
+    with pytest.raises(schedule.ScheduleError):        # a fifth concurrent job would exceed the four MPS slots
+        schedule.assign_gpus(plan, enabled + [next(j for j in plan.jobs if j.id == "sweep-106")])
