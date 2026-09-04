@@ -105,9 +105,17 @@ def interval_maps(sums_end: Mapping[str, np.ndarray], sums_start: Mapping[str, n
     for key in DiagnosticAccumulator.SUM_KEYS + ("steps",):
         end = np.asarray(sums_end[key])
         diff[key] = end.copy() if sums_start is None else end - np.asarray(sums_start[key])
+    # v2.0.5: the moment sample count is additive like the sums (absent in pre-v2.0.5 snapshots: one sample per step)
+    end_samples = np.asarray(sums_end["moment_samples"] if "moment_samples" in sums_end else sums_end["steps"])
+    if sums_start is None:
+        diff["moment_samples"] = end_samples.copy()
+    else:
+        diff["moment_samples"] = end_samples - np.asarray(sums_start["moment_samples"] if "moment_samples" in sums_start else sums_start["steps"])
     steps = int(diff["steps"].reshape(-1)[0])
     if steps <= 0:
         raise PIC2DValidationError("a frame needs a positive number of accumulated steps")
+    # (a frame without a moment sample - a cadence shorter than the sampling interval, excluded by the runner's
+    #  alignment rule - carries zero sample counts and zero T_e, not an error: the moment maps are ratios)
     return DiagnosticAccumulator.from_sums(masks, diff, iedf_max_ev).to_arrays(macro_weight, dt_s)
 
 

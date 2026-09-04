@@ -222,28 +222,6 @@ if wp is not None:
             wp.atomic_add(vz_sum, n, w * vz[p])
             wp.atomic_add(v2_sum, n, w * v2)
 
-    @wp.kernel
-    def deposit_unit_kernel(
-        r: wp.array(dtype=F64), z: wp.array(dtype=F64), flags: wp.array(dtype=wp.int32),
-        slots: wp.array(dtype=wp.int32), slot: int,
-        dr: F64, dz: F64, z_min: F64, nr: int, nz: int, out: wp.array(dtype=F64),
-    ):
-        p = wp.tid()
-        if p >= slots[slot] or flags[p] == 0:
-            return
-        fr = r[p] / dr
-        fz = (z[p] - z_min) / dz
-        i = wp.clamp(int(wp.floor(fr)), 0, nr - 1)
-        j = wp.clamp(int(wp.floor(fz)), 0, nz - 1)
-        s = fr - F64(i)
-        t = fz - F64(j)
-        stride = nz + 1
-        base = i * stride + j
-        wp.atomic_add(out, base, (F64(1.0) - s) * (F64(1.0) - t))
-        wp.atomic_add(out, base + stride, s * (F64(1.0) - t))
-        wp.atomic_add(out, base + 1, (F64(1.0) - s) * t)
-        wp.atomic_add(out, base + stride + 1, s * t)
-
     # ------------------------------------------------------------------ field solve
     @wp.kernel
     def source_kernel(
@@ -341,13 +319,6 @@ if wp is not None:
         for k in range(count):
             acc += partial[k]
         out[slot] = acc
-
-    @wp.kernel
-    def deferred_add_kernel(partial: wp.array(dtype=F64), count: int, out: wp.array(dtype=F64), slot: int):
-        acc = F64(0.0)
-        for k in range(count):
-            acc += partial[k]
-        out[slot] = out[slot] + acc
 
     @wp.kernel
     def alpha_kernel(scalars: wp.array(dtype=F64)):
@@ -741,6 +712,9 @@ if wp is not None:
         # v2.0: positions + cell-centred neutral density shape (two-zone field), plume-birth and momentum tallies
         r: wp.array(dtype=F64), z: wp.array(dtype=F64), shape_cell: wp.array(dtype=F64), has_plume: int, z_exit: F64,
         dr: F64, dz: F64, z_min: F64, nr: int, nz: int, mass_weight: F64,
+        # v2.0.5: born-ledger tallies (ion kinetic energy, axial momentum of the ionisation products) reduced
+        # here with the other tallies instead of three strided sums + single-thread adds after the spawn
+        ion_mass_weight: F64, ke_born_slot: int, pz_born_slot: int,
     ):
         # No early returns: the five tallies (candidates, elastic, excitation,
         # ionisation, null) are reduced per block with tile sums.
@@ -753,6 +727,8 @@ if wp is not None:
         outcome = 4  # 0 elastic, 1 excitation, 2 ionisation, 3 null, 4 no candidate
         dpz = F64(0.0)
         plume_birth = F64(0.0)
+        ke_born = F64(0.0)
+        pz_born = F64(0.0)
         active = 0
         if p < slots[0]:
             if alive[p] != 0:
@@ -827,13 +803,20 @@ if wp is not None:
                     u10 = F64(wp.randf(state))
                     rad1 = wp.sqrt(F64(-2.0) * wp.log(u7))
                     rad2 = wp.sqrt(F64(-2.0) * wp.log(u9))
-                    ion_vr[p] = ion_thermal * rad1 * wp.cos(F64(6.283185307179586) * u8)
-                    ion_vt[p] = ion_thermal * rad1 * wp.sin(F64(6.283185307179586) * u8)
-                    ion_vz[p] = ion_thermal * rad2 * wp.cos(F64(6.283185307179586) * u10)
+                    ivr = ion_thermal * rad1 * wp.cos(F64(6.283185307179586) * u8)
+                    ivt = ion_thermal * rad1 * wp.sin(F64(6.283185307179586) * u8)
+                    ivz = ion_thermal * rad2 * wp.cos(F64(6.283185307179586) * u10)
+                    ion_vr[p] = ivr
+                    ion_vt[p] = ivt
+                    ion_vz[p] = ivz
                     ionize[p] = 1
                     outcome = 2
                     if has_plume != 0 and z[p] >= z_exit:
                         plume_birth = F64(1.0)
+                    # v2.0.5: the same per-particle values the removed energy_sum / momentum_sum kernels
+                    # formed from ion_v* / sec_vz after the spawn (summation order differs -> round-off)
+                    ke_born = kinetic_energy(ivr, ivt, ivz, ion_mass_weight)
+                    pz_born = ion_mass_weight * ivz + mass_weight * sv[2]
                 else:
                     outcome = 3
                 if outcome < 3:
@@ -857,6 +840,8 @@ if wp is not None:
         wp.tile_atomic_add(stats, wp.tile_sum(wp.tile(n_flag)), offset=tally_slot + 4)
         wp.tile_atomic_add(stats, wp.tile_sum(wp.tile(dpz)), offset=STATS_PZ_COLLISIONS)
         wp.tile_atomic_add(stats, wp.tile_sum(wp.tile(plume_birth)), offset=STATS_ION_PLUME)
+        wp.tile_atomic_add(stats, wp.tile_sum(wp.tile(ke_born)), offset=ke_born_slot)
+        wp.tile_atomic_add(stats, wp.tile_sum(wp.tile(pz_born)), offset=pz_born_slot)
 
     @wp.kernel
     def spawn_kernel(
@@ -869,13 +854,15 @@ if wp is not None:
         e_vz: wp.array(dtype=F64), e_alive: wp.array(dtype=wp.int32),
         i_r: wp.array(dtype=F64), i_z: wp.array(dtype=F64), i_vr: wp.array(dtype=F64), i_vt: wp.array(dtype=F64),
         i_vz: wp.array(dtype=F64), i_alive: wp.array(dtype=wp.int32),
-        born_r: wp.array(dtype=F64), born_z: wp.array(dtype=F64), born_flag: wp.array(dtype=wp.int32),
         stats: wp.array(dtype=F64), overflow_slot: int,
+        # v2.0.5: the born ion joins the frozen ion charge here (exact int64 fixed point, order independent ->
+        # bitwise the former separate born deposit) and, when accumulating, the ionisation-rate window map
+        dr: F64, dz: F64, z_min: F64, nr: int, nz: int, scale: F64,
+        ion_accumulator: wp.array(dtype=wp.int64), accumulate: int, ionization_map: wp.array(dtype=F64),
     ):
         # ``slots[0]``/``slots[1]`` are the electron/ion slot counts *before* this
         # step's births; ``spawn_commit_kernel`` advances them afterwards.
         p = wp.tid()
-        born_flag[p] = 0
         if p >= slots[0] or ionize[p] == 0:
             return
         k = offsets[p]
@@ -885,21 +872,43 @@ if wp is not None:
             # fail closed at the next host sync instead of writing out of bounds
             wp.atomic_add(stats, overflow_slot, F64(1.0))
             return
-        e_r[de] = r[p]
-        e_z[de] = z[p]
+        rp = r[p]
+        zp = z[p]
+        e_r[de] = rp
+        e_z[de] = zp
         e_vr[de] = sec_vr[p]
         e_vt[de] = sec_vt[p]
         e_vz[de] = sec_vz[p]
         e_alive[de] = 1
-        i_r[di] = r[p]
-        i_z[di] = z[p]
+        i_r[di] = rp
+        i_z[di] = zp
         i_vr[di] = ion_vr[p]
         i_vt[di] = ion_vt[p]
         i_vz[di] = ion_vz[p]
         i_alive[di] = 1
-        born_r[p] = r[p]
-        born_z[p] = z[p]
-        born_flag[p] = 1
+        # bilinear deposit of the born ion at the parent's position (identical arithmetic to deposit_fixed_kernel /
+        # deposit_unit_kernel over the former born_r / born_z / born_flag arrays)
+        fr = rp / dr
+        fz = (zp - z_min) / dz
+        i = wp.clamp(int(wp.floor(fr)), 0, nr - 1)
+        j = wp.clamp(int(wp.floor(fz)), 0, nz - 1)
+        s = fr - F64(i)
+        t = fz - F64(j)
+        w00 = (F64(1.0) - s) * (F64(1.0) - t)
+        w10 = s * (F64(1.0) - t)
+        w01 = (F64(1.0) - s) * t
+        w11 = s * t
+        stride = nz + 1
+        base = i * stride + j
+        wp.atomic_add(ion_accumulator, base, wp.int64(wp.rint(w00 * scale)))
+        wp.atomic_add(ion_accumulator, base + stride, wp.int64(wp.rint(w10 * scale)))
+        wp.atomic_add(ion_accumulator, base + 1, wp.int64(wp.rint(w01 * scale)))
+        wp.atomic_add(ion_accumulator, base + stride + 1, wp.int64(wp.rint(w11 * scale)))
+        if accumulate != 0:
+            wp.atomic_add(ionization_map, base, w00)
+            wp.atomic_add(ionization_map, base + stride, w10)
+            wp.atomic_add(ionization_map, base + 1, w01)
+            wp.atomic_add(ionization_map, base + stride + 1, w11)
 
     @wp.kernel
     def spawn_commit_kernel(
@@ -1580,6 +1589,18 @@ class WarpBackend:
         self.step_graph_active = False
         self.step_graphs: dict[tuple, Any] = {}
         self.graph_captures = 0
+        # v2.0.5: inside the captured step the window-diagnostic branch (density accumulators + electron moment
+        # deposition, which read the pre-push state and nothing the field solve writes) is forked onto a second
+        # stream right after the charge deposits and joined before the push, so its float atomics overlap the
+        # latency-bound block-Thomas chain instead of extending it (CUDA graph fork/join through events).
+        self.side_stream = wp.Stream(self.device) if self.device.is_cuda else None
+        self.fork_event = wp.Event(self.device) if self.device.is_cuda else None
+        self.join_event = wp.Event(self.device) if self.device.is_cuda else None
+        self.diagnostic_forks = 0
+        # v2.0.5: the electron moment deposition (20 float64 atomics per electron) is sampled every
+        # ``moment_sample_interval`` accumulated steps; ``moment_samples`` counts the samples of the window
+        self.moment_sample_interval = int(config.moment_sample_interval)
+        self.moment_samples = 0
         # diagnostics (device)
         self.d_n_e, self.d_n_i, self.d_phi, self.d_w, self.d_vr, self.d_vt, self.d_vz, self.d_v2, self.d_ion = (zeros() for _ in range(9))
         self.d_wall_e = wp.zeros(self.nz, dtype=wp.float64, device=dev)
@@ -1647,9 +1668,6 @@ class WarpBackend:
         self.offsets = wp.zeros(capacity, dtype=wp.int32, device=dev)
         self.sec = [wp.zeros(capacity, dtype=wp.float64, device=dev) for _ in range(3)]
         self.ionv = [wp.zeros(capacity, dtype=wp.float64, device=dev) for _ in range(3)]
-        self.born_r = wp.zeros(capacity, dtype=wp.float64, device=dev)
-        self.born_z = wp.zeros(capacity, dtype=wp.float64, device=dev)
-        self.born_flag = wp.zeros(capacity, dtype=wp.int32, device=dev)
         self.tmp = [wp.zeros(capacity, dtype=wp.float64, device=dev) for _ in range(5)]
         self.tmp_alive = wp.zeros(capacity, dtype=wp.int32, device=dev)
         self.partial_particles = wp.zeros(REDUCTION_THREADS, dtype=wp.float64, device=dev)
@@ -1861,11 +1879,14 @@ class WarpBackend:
         ion_step = (step_index + 1) % config.ion_subcycle == 0
         redo_ions = self.ions_dirty
         n_bound = electrons.bound
+        # v2.0.5: electron moments every K-th accumulated step (K = 1: every step, the v1.4-v2.0.4 behaviour);
+        # the phase is anchored on the window's accumulated-step count, so a window reset restarts it
+        moments = bool(accumulate) and self.diag_steps % self.moment_sample_interval == 0
 
         if self.step_graph:
-            self._step_graph_launch(ion_step, redo_ions, accumulate)
+            self._step_graph_launch(ion_step, redo_ions, accumulate, moments)
         else:
-            self._launch_step(ion_step, redo_ions, accumulate, fixed_shape=False)
+            self._launch_step(ion_step, redo_ions, accumulate, moments=moments, fixed_shape=False)
         if self.device_direct is not None and self.steps_since_sync + 1 >= self.sync_interval:
             self.device_direct.queue_residual_check()  # read and enforced in _sync (outside the captured step)
 
@@ -1881,17 +1902,19 @@ class WarpBackend:
         meta["time_s"] = meta["step"] * config.dt_s
         if accumulate:
             self.diag_steps += 1
+            if moments:
+                self.moment_samples += 1
         self.steps_since_sync += 1
         if self.steps_since_sync >= self.sync_interval:
             return self._sync()
         return None
 
-    def _step_graph_launch(self, ion_step: bool, redo_ions: bool, accumulate: bool) -> None:
+    def _step_graph_launch(self, ion_step: bool, redo_ions: bool, accumulate: bool, moments: bool) -> None:
         """Replay (capturing on first use) the CUDA graph of this step variant for the current particle arrays."""
 
         electrons = self.species["e"]
         ions = self.species["i"]
-        key = (ion_step, redo_ions, accumulate, electrons.r.ptr, ions.r.ptr, electrons.capacity, ions.capacity)
+        key = (ion_step, redo_ions, accumulate, moments, electrons.r.ptr, ions.r.ptr, electrons.capacity, ions.capacity)
         graph = self.step_graphs.get(key)
         if graph is None:
             if not self.step_graphs:
@@ -1901,7 +1924,7 @@ class WarpBackend:
             profile, self.profile = self.profile, None
             try:
                 with wp.ScopedCapture(device=self.device) as capture:
-                    self._launch_step(ion_step, redo_ions, accumulate, fixed_shape=True)
+                    self._launch_step(ion_step, redo_ions, accumulate, moments=moments, fixed_shape=True)
             finally:
                 self.profile = profile
             graph = capture.graph
@@ -1911,7 +1934,7 @@ class WarpBackend:
         wp.capture_launch(graph)
         self._mark("graph-step")
 
-    def _launch_step(self, ion_step: bool, redo_ions: bool, accumulate: bool, *, fixed_shape: bool) -> None:
+    def _launch_step(self, ion_step: bool, redo_ions: bool, accumulate: bool, *, moments: bool | None = None, fixed_shape: bool) -> None:
         """Issue every device operation of one step.
 
         With ``fixed_shape`` the launch dimensions are the array capacities and nothing
@@ -1919,6 +1942,10 @@ class WarpBackend:
         flags), so the sequence can be captured into a CUDA graph and replayed; without
         it the dimensions are the host upper bounds (v1.0-v1.3 behaviour).  Both paths
         run the same kernels with the same device-side seeds and injection control.
+
+        ``moments`` (v2.0.5) says whether this accumulated step deposits the electron moments
+        (``None``: whenever ``accumulate``).  In the captured path the window-diagnostic branch
+        runs on the side stream (fork after the charge deposits, join before the push).
         """
 
         config = self.config
@@ -1930,6 +1957,8 @@ class WarpBackend:
         mcc = self.mcc
         e_dim = electrons.capacity if fixed_shape else electrons.bound
         i_dim = ions.capacity if fixed_shape else ions.bound
+        if moments is None:
+            moments = bool(accumulate)
 
         self._mark("other")
         self._deposit(electrons, 0, self.acc_e, self.q_e, self.electron.charge_c * config.macro_weight, dim=e_dim)
@@ -1937,6 +1966,31 @@ class WarpBackend:
         # (exact integer accumulation), so a full redeposit is only needed after a push.
         self._deposit(ions, 1, self.acc_i, self.q_i, self.ion.charge_c * config.macro_weight, redo=redo_ions, dim=i_dim)
         self._mark("deposit")
+
+        def window_branch() -> None:
+            # density accumulators from this step's deposits and (every K-th accumulated step) the electron moments at
+            # the pre-push positions / velocities: independent of the field solve, so it can overlap the Poisson chain
+            wp.launch(abs_axpy_kernel, dim=self.node_count, inputs=[self.d_n_e, self.inverse_volume, self.q_e], device=dev)
+            wp.launch(abs_axpy_kernel, dim=self.node_count, inputs=[self.d_n_i, self.inverse_volume, self.q_i], device=dev)
+            if moments and e_dim:
+                wp.launch(deposit_moment_kernel, dim=e_dim,
+                          inputs=[electrons.r, electrons.z, electrons.alive_flags, self.slots, 0, electrons.vr, electrons.vt, electrons.vz,
+                                  grid.dr_m, grid.dz_m, grid.geometry.z_min_m, self.nr, self.nz,
+                                  self.d_w, self.d_vr, self.d_vt, self.d_vz, self.d_v2], device=dev)
+
+        forked = False
+        if accumulate:
+            if fixed_shape and self.side_stream is not None:
+                # fork: the side stream waits for everything issued so far on the capture stream (the deposits)
+                main_stream = wp.get_stream(dev)
+                self.side_stream.wait_stream(main_stream, self.fork_event)
+                with wp.ScopedStream(self.side_stream, sync_enter=False, sync_exit=False):
+                    window_branch()
+                forked = True
+                self.diagnostic_forks += 1
+            else:
+                window_branch()
+                self._mark("window")
         if self.gpu_poisson is not None:
             if fixed_shape:
                 raise PIC2DValidationError("the PCG field solve has a host convergence loop and cannot be graph-captured")
@@ -1964,13 +2018,9 @@ class WarpBackend:
 
         if accumulate:
             wp.launch(axpy_kernel, dim=self.node_count, inputs=[self.d_phi, 1.0, self.phi], device=dev)
-            wp.launch(abs_axpy_kernel, dim=self.node_count, inputs=[self.d_n_e, self.inverse_volume, self.q_e], device=dev)
-            wp.launch(abs_axpy_kernel, dim=self.node_count, inputs=[self.d_n_i, self.inverse_volume, self.q_i], device=dev)
-            if e_dim:
-                wp.launch(deposit_moment_kernel, dim=e_dim,
-                          inputs=[electrons.r, electrons.z, electrons.alive_flags, self.slots, 0, electrons.vr, electrons.vt, electrons.vz,
-                                  grid.dr_m, grid.dz_m, grid.geometry.z_min_m, self.nr, self.nz,
-                                  self.d_w, self.d_vr, self.d_vt, self.d_vz, self.d_v2], device=dev)
+        if forked:
+            # join: the push overwrites the positions / velocities the moment deposition reads
+            wp.get_stream(dev).wait_stream(self.side_stream, self.join_event)
         self._mark("field+diag")
 
         geometry = grid.geometry
@@ -2023,37 +2073,27 @@ class WarpBackend:
                         self.ionize, self.sec[0], self.sec[1], self.sec[2], self.ionv[0], self.ionv[1], self.ionv[2],
                         self.stats, STATS_MCC, e_dim,
                         electrons.r, electrons.z, self.neutral_shape, 1 if self.has_plume else 0, geometry.z_max_m,
-                        grid.dr_m, grid.dz_m, geometry.z_min_m, self.nr, self.nz, ELECTRON_MASS_KG * config.macro_weight],
+                        grid.dr_m, grid.dz_m, geometry.z_min_m, self.nr, self.nz, ELECTRON_MASS_KG * config.macro_weight,
+                        # v2.0.5: born-ledger tallies (ke_born_ions_j, pz_born) tile-reduced inside the MCC kernel
+                        self.ion.mass_kg * config.macro_weight, STATS_KE_BORN, STATS_PZ_BORN],
                 device=dev,
             )
             self._mark("mcc")
             wp.utils.array_scan(self.ionize[:e_dim], self.offsets[:e_dim], inclusive=False)
+            # v2.0.5: the spawn also deposits the born ion into the frozen ion charge (exact int64 add, so q_i is
+            # bitwise the former separate deposit) and into the ionisation-rate window map; the three strided
+            # born-ledger sums + single-thread adds and the two born flag passes of v1.x-v2.0.4 are gone
             wp.launch(
                 spawn_kernel, dim=e_dim,
                 inputs=[self.ionize, self.offsets, self.slots, electrons.capacity, ions.capacity, electrons.r, electrons.z,
                         self.sec[0], self.sec[1], self.sec[2], self.ionv[0], self.ionv[1], self.ionv[2],
                         electrons.r, electrons.z, electrons.vr, electrons.vt, electrons.vz, electrons.alive_flags,
                         ions.r, ions.z, ions.vr, ions.vt, ions.vz, ions.alive_flags,
-                        self.born_r, self.born_z, self.born_flag, self.stats, STATS_OVERFLOW],
+                        self.stats, STATS_OVERFLOW,
+                        grid.dr_m, grid.dz_m, geometry.z_min_m, self.nr, self.nz, FIXED_POINT_SCALE,
+                        self.acc_i, 1 if accumulate else 0, self.d_ion],
                 device=dev,
             )
-            wp.launch(energy_sum_kernel, dim=REDUCTION_THREADS,
-                      inputs=[self.ionv[0], self.ionv[1], self.ionv[2], self.born_flag, self.slots, 0, REDUCTION_THREADS,
-                              self.ion.mass_kg * config.macro_weight, self.partial_particles], device=dev)
-            wp.launch(deferred_add_kernel, dim=1, inputs=[self.partial_particles, REDUCTION_THREADS, self.stats, STATS_KE_BORN], device=dev)
-            # v2.0 momentum ledger: axial momentum of the born ions and secondary electrons
-            for velocity, mass in ((self.ionv[2], self.ion.mass_kg), (self.sec[2], self.electron.mass_kg)):
-                wp.launch(momentum_sum_kernel, dim=REDUCTION_THREADS,
-                          inputs=[velocity, self.born_flag, self.slots, 0, REDUCTION_THREADS, mass * config.macro_weight, self.partial_particles],
-                          device=dev)
-                wp.launch(deferred_add_kernel, dim=1, inputs=[self.partial_particles, REDUCTION_THREADS, self.stats, STATS_PZ_BORN], device=dev)
-            # newly born ions join the frozen ion charge immediately (exact integer add)
-            wp.launch(deposit_fixed_kernel, dim=e_dim,
-                      inputs=[self.born_r, self.born_z, self.born_flag, self.slots, 0, grid.dr_m, grid.dz_m, grid.geometry.z_min_m,
-                              self.nr, self.nz, FIXED_POINT_SCALE, self.acc_i], device=dev)
-            if accumulate:
-                wp.launch(deposit_unit_kernel, dim=e_dim, inputs=[self.born_r, self.born_z, self.born_flag, self.slots, 0, grid.dr_m, grid.dz_m,
-                                                                 grid.geometry.z_min_m, self.nr, self.nz, self.d_ion], device=dev)
             wp.launch(spawn_commit_kernel, dim=1, inputs=[self.ionize, self.offsets, self.slots, electrons.capacity, ions.capacity], device=dev)
         self._mark("spawn")
 
@@ -2258,14 +2298,16 @@ class WarpBackend:
         """v2.0.3 peak-Debye gate: the electron window sums (``sum_t n_e``, ``sum_t w``, ``sum_t w v_r/v_theta/v_z``,
         ``sum_t w v^2``) over the whole node map, the accumulated step count and the reset generation - the device
         accumulators behind ``maps.npz`` / the frames, read at the series-record sync (six node arrays per record,
-        next to the five single-step gate moments); no per-step sync."""
+        next to the five single-step gate moments); no per-step sync.  v2.0.5: the dict also carries the additive
+        ``moment_samples`` count (the moment sums are over the sampled steps)."""
 
         self.flush()
         shape = self.masks.grid.node_shape
         arrays = (self.d_n_e, self.d_w, self.d_vr, self.d_vt, self.d_vz, self.d_v2)
         self.sync_count += len(arrays)
-        return ({key: array.numpy().reshape(shape).copy() for key, array in zip(PEAK_WINDOW_SUM_KEYS, arrays)},
-                int(self.diag_steps), self.diagnostic_generation)
+        sums = {key: array.numpy().reshape(shape).copy() for key, array in zip(PEAK_WINDOW_SUM_KEYS, arrays)}
+        sums["moment_samples"] = np.array([self.moment_samples], dtype=np.int64)
+        return sums, int(self.diag_steps), self.diagnostic_generation
 
     def surface_charge_map(self) -> np.ndarray:
         self.flush()
@@ -2276,6 +2318,7 @@ class WarpBackend:
         shape = self.masks.grid.node_shape
         acc = DiagnosticAccumulator(self.masks, self.iedf_max_ev)
         acc.steps = self.diag_steps
+        acc.moment_samples = self.moment_samples
         acc.side_electrons = self.d_side_e.numpy()
         acc.side_ions = self.d_side_i.numpy()
         acc.theta_ions = self.d_theta_i.numpy()
@@ -2303,6 +2346,7 @@ class WarpBackend:
                       self.d_side_e, self.d_side_i, self.d_theta_i, self.d_iedf_i):
             array.zero_()
         self.diag_steps = 0
+        self.moment_samples = 0
         self.diagnostic_generation += 1
 
 

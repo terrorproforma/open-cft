@@ -238,6 +238,13 @@ def build_config(protocol: dict[str, Any], *, backend: str = "warp-cuda") -> PIC
     plume_gate = None
     if numerics.get("plume_boundary_gate") is not None:
         plume_gate = PlumeBoundaryGateConfig(**{k: v for k, v in numerics["plume_boundary_gate"].items() if not k.endswith("_note")})
+    # v2.0.5: optional performance block - electron-moment sampling interval K (absent = 1 = every accumulated step,
+    # the v2.0.x identity); K must divide the sync interval so every frame / window / checkpoint boundary (all multiples
+    # of device_sync_steps, and the accumulators are reset at window boundaries) holds a whole number of samples
+    performance = numerics.get("performance") or {}
+    moment_sample_interval = int(performance.get("moment_sample_interval", 1))
+    if moment_sample_interval < 1 or sync % moment_sample_interval != 0:
+        raise PIC2DValidationError("performance.moment_sample_interval must be a positive divisor of device_sync_steps")
     return PIC2DConfig(
         grid=grid,
         potentials=BoundaryPotentials(operating["anode_potential_v"], operating["exit_plane_potential_v"]),
@@ -264,6 +271,7 @@ def build_config(protocol: dict[str, Any], *, backend: str = "warp-cuda") -> PIC
         neutral_inventory=inventory,
         peak_debye_gate=peak_gate,
         anomalous=anomalous,
+        moment_sample_interval=moment_sample_interval,
     )
 
 

@@ -205,10 +205,18 @@ class PIC2DConfig:
     cathode: "CathodeConfig | None" = None
     # v2.0: fail-closed charge pile-up gate on the far-field boundary (plume geometries)
     plume_boundary_gate: "PlumeBoundaryGateConfig | None" = None
+    # v2.0.5 (performance): the window electron-moment deposition (sum w, sum w v, sum w v^2 -> T_e / drift maps,
+    # the peak-Debye window's occupancy floor and T_e) is sampled every K-th ACCUMULATED step; the per-step
+    # accumulators (n_e, n_i, phi, ionisation, wall / exit / side fluxes, histograms) are untouched.  K = 1 is the
+    # v1.4-v2.0.4 behaviour and leaves the configuration identity unchanged; K != 1 enters ``to_dict`` (and so
+    # ``config_sha256``) because the window statistics become sampled estimators.  Dynamics never depend on K.
+    moment_sample_interval: int = 1
 
     def __post_init__(self) -> None:
         if not isfinite(self.dt_s) or self.dt_s <= 0.0:
             raise PIC2DValidationError("dt_s must be positive")
+        if isinstance(self.moment_sample_interval, bool) or not isinstance(self.moment_sample_interval, int) or self.moment_sample_interval < 1:
+            raise PIC2DValidationError("moment_sample_interval must be a positive integer")
         if self.plume_boundary_gate is not None and not self.grid.geometry.has_plume:
             raise PIC2DValidationError("the plume boundary gate requires a plume geometry")
         if self.cathode is not None:
@@ -272,8 +280,10 @@ class PIC2DConfig:
           | ({} if self.anomalous is None else {"anomalous": self.anomalous.to_dict()}) \
           | ({} if self.see is None else {"see": self.see.to_dict()}) \
           | ({} if self.cathode is None else {"cathode": self.cathode.to_dict()}) \
-          | ({} if self.plume_boundary_gate is None else {"plume_boundary_gate": self.plume_boundary_gate.to_dict()})
-        # (each key is present only when its option is on, so v1.0-v1.3 config identities are unchanged)
+          | ({} if self.plume_boundary_gate is None else {"plume_boundary_gate": self.plume_boundary_gate.to_dict()}) \
+          | ({} if self.moment_sample_interval == 1 else {"moment_sample_interval": self.moment_sample_interval})
+        # (each key is present only when its option is on, so v1.0-v1.3 config identities are unchanged;
+        #  v2.0.5: K = 1 keeps every v2.0.x identity, K != 1 is part of the identity)
 
     @property
     def emission_peak_current_a(self) -> float:
@@ -559,6 +569,10 @@ class DiagnosticAccumulator:
         nz = masks.grid.axial_cells
         nr = masks.grid.radial_cells
         self.steps = 0
+        # v2.0.5: number of steps at which the electron moments (e_weight, e_v*, e_v2) were deposited; equals
+        # ``steps`` for moment_sample_interval = 1.  The moment maps are ratios (v2 / w etc.), so they need no
+        # normalisation; the occupancy ``e_weight / moment_samples`` is the mean macro-electron count per node.
+        self.moment_samples = 0
         self.n_e = np.zeros(shape)
         self.n_i = np.zeros(shape)
         self.phi = np.zeros(shape)
@@ -593,9 +607,13 @@ class DiagnosticAccumulator:
         "theta_ions", "iedf_ions",
     )
 
+    # additive scalar counters that ride along with the sums (differenced like them by the frame recorder)
+    COUNT_KEYS = ("steps", "moment_samples")
+
     def raw_sums(self) -> dict[str, np.ndarray]:
         out = {key: np.asarray(getattr(self, key)).copy() for key in self.SUM_KEYS}
         out["steps"] = np.array([self.steps], dtype=np.int64)
+        out["moment_samples"] = np.array([self.moment_samples], dtype=np.int64)
         return out
 
     @classmethod
@@ -604,6 +622,8 @@ class DiagnosticAccumulator:
         for key in cls.SUM_KEYS:
             setattr(acc, key, np.asarray(sums[key], dtype=np.float64).copy())
         acc.steps = int(np.asarray(sums["steps"]).reshape(-1)[0])
+        # sums recorded before v2.0.5 carry no sample count: the moments were deposited at every accumulated step
+        acc.moment_samples = int(np.asarray(sums["moment_samples"]).reshape(-1)[0]) if "moment_samples" in sums else acc.steps
         return acc
 
     def record_exit(self, is_electron: bool, r_m: np.ndarray, z_m: np.ndarray, energy_ev: np.ndarray) -> None:
@@ -679,6 +699,8 @@ class DiagnosticAccumulator:
             "exit_ion_current_density_a_per_m2": self.exit_ions * electron_weight * ELEMENTARY_CHARGE_C / (exit_area * window_s),
             "exit_electron_current_density_a_per_m2": self.exit_electrons * electron_weight * ELEMENTARY_CHARGE_C / (exit_area * window_s),
             "window_steps": np.array([self.steps]),
+            # v2.0.5: steps at which the electron moments were sampled (sample_count_e / moment_samples = mean occupancy)
+            "moment_samples": np.array([self.moment_samples]),
         }
 
 
@@ -708,6 +730,7 @@ def instantaneous_maps(config: PIC2DConfig, masks: MeshMasks, state: SimulationS
         diag.e_vz += kernels.deposit_node_moment(masks, electrons, electrons.vz_m_per_s)
         diag.e_v2 += kernels.deposit_node_moment(masks, electrons, electrons.speed_squared())
     diag.steps = 1
+    diag.moment_samples = 1
     return diag.to_arrays(config.macro_weight, config.dt_s)
 
 
@@ -959,6 +982,11 @@ class CPUBackend:
             diag.n_e += np.abs(q_e) / (ELEMENTARY_CHARGE_C * volume)
             diag.n_i += np.abs(q_i) / (ELEMENTARY_CHARGE_C * volume)
         diag.phi += phi
+        # v2.0.5: the electron moments every K-th accumulated step (same phase rule as the Warp backend: the
+        # window's accumulated-step count before this step is a multiple of K)
+        if diag.steps % self.config.moment_sample_interval != 0:
+            return
+        diag.moment_samples += 1
         if electrons.count:
             ones = np.ones(electrons.count)
             diag.e_weight += kernels.deposit_node_moment(masks, electrons, ones)
@@ -1042,7 +1070,9 @@ class CPUBackend:
         accumulated step count and the reset generation (same accumulation as ``diagnostic_sums``)."""
 
         diag = self.diagnostics
-        return {key: np.asarray(getattr(diag, key)).copy() for key in PEAK_WINDOW_SUM_KEYS}, int(diag.steps), self.diagnostic_generation
+        sums = {key: np.asarray(getattr(diag, key)).copy() for key in PEAK_WINDOW_SUM_KEYS}
+        sums["moment_samples"] = np.array([diag.moment_samples], dtype=np.int64)     # v2.0.5: additive sample count
+        return sums, int(diag.steps), self.diagnostic_generation
 
     def surface_charge_map(self) -> np.ndarray:
         assert self.state is not None
@@ -1421,16 +1451,20 @@ def window_peak_debye(
 
     ``<n_e>`` = ``sum_t n_e / steps`` per node; T_e is the window's moment temperature
     ``m_e (sum v^2 / sum w - |sum v / sum w|^2) / 3e`` (exactly ``maps.npz`` ``t_e_ev``); the peak is the
-    densest plasma node whose mean occupancy ``sum w / steps`` is at least ``min_mean_occupancy``
-    macro-electrons (the v1.4 floor, now on the window mean); ``max(dr, dz) / lambda_D`` there is the gate
-    quantity.  The unrestricted window maximum is reported as ``raw_peak``.  Zero ``steps`` gives an
-    empty (unresolved) statistic.
+    densest plasma node whose mean occupancy ``sum w / moment_samples`` is at least ``min_mean_occupancy``
+    macro-electrons (the v1.4 floor, now on the window mean; ``moment_samples`` = the steps at which the moments
+    were deposited, = ``steps`` unless the v2.0.5 ``moment_sample_interval`` > 1); ``max(dr, dz) / lambda_D``
+    there is the gate quantity.  The unrestricted window maximum is reported as ``raw_peak``.  Zero ``steps``
+    gives an empty (unresolved) statistic.
     """
 
     grid = masks.grid
     plasma = masks.plasma_node
+    moment_samples = int(np.asarray(sums["moment_samples"]).reshape(-1)[0]) if "moment_samples" in sums else int(steps)
     out: dict[str, Any] = {"window_steps": int(steps), "min_mean_macro_particles_at_peak": float(min_mean_occupancy)}
-    if steps <= 0 or not plasma.any():
+    if moment_samples != int(steps):     # K-sampled window (v2.0.5): record the sample count; K = 1 records keep their v2.0.3 layout
+        out["window_moment_samples"] = moment_samples
+    if steps <= 0 or moment_samples <= 0 or not plasma.any():
         return out | {"resolved": False, "resolved_nodes": 0, "node": [0, 0], "r_m": 0.0, "z_m": 0.0, "n_e_peak_per_m3": 0.0,
                       "t_e_peak_ev": 0.0, "debye_length_m": None, "cells_per_debye": 0.0, "mean_macro_particles_at_peak": 0.0,
                       "raw_peak": {"node": [0, 0], "n_e_per_m3": 0.0, "mean_macro_particles": 0.0}}
@@ -1443,7 +1477,7 @@ def window_peak_debye(
         drift2 = np.where(w > 0.0, (np.asarray(sums["e_vr"], dtype=np.float64) ** 2 + np.asarray(sums["e_vt"], dtype=np.float64) ** 2
                                     + np.asarray(sums["e_vz"], dtype=np.float64) ** 2) / safe_w**2, 0.0)
         t_e = np.maximum(mean_v2 - drift2, 0.0) * ELECTRON_MASS_KG / (3.0 * EV_J)
-    occupancy = w / steps
+    occupancy = w / moment_samples
     raw_flat = int(np.argmax(n_e))
     resolved_mask = plasma & (occupancy >= float(min_mean_occupancy))
     resolved = bool(resolved_mask.any())
@@ -1496,13 +1530,21 @@ class PeakDebyeWindow:
         self.snapshot_steps = int(snapshot_steps)
         self.min_mean_occupancy = float(min_mean_occupancy)
         shape = masks.grid.node_shape
-        self._carry = {key: np.zeros(shape) for key in PEAK_WINDOW_SUM_KEYS}
+        self._carry = {key: np.zeros(shape) for key in PEAK_WINDOW_SUM_KEYS} | {"moment_samples": np.zeros(1)}
         self._carry_steps = 0
         self._last: tuple[dict[str, np.ndarray], int, int] | None = None
         self._records = 0
         self._next_snapshot_at = 0
-        # ring entries: (step, cumulative accumulated steps, record index, cumulative totals)
+        # ring entries: (step, cumulative accumulated steps, record index, cumulative totals incl. "moment_samples")
         self._ring: deque[tuple[int, int, int, dict[str, np.ndarray]]] = deque(maxlen=self.window_steps // self.snapshot_steps + 2)
+
+    @staticmethod
+    def _totals(sums: Mapping[str, np.ndarray], steps: int) -> dict[str, np.ndarray]:
+        """The additive quantities of a reading: the six node maps + the moment sample count (v2.0.5; = steps before it)."""
+
+        totals = {key: np.asarray(sums[key], dtype=np.float64).copy() for key in PEAK_WINDOW_SUM_KEYS}
+        totals["moment_samples"] = np.asarray(sums.get("moment_samples", [steps]), dtype=np.float64).reshape(-1)[:1].copy()
+        return totals
 
     def reset(self, reading: tuple[dict[str, np.ndarray], int, int], step: int) -> None:
         """Forget the history (fresh start / loaded checkpoint) and seed the ring with the current totals."""
@@ -1511,10 +1553,11 @@ class PeakDebyeWindow:
         self._ring.clear()
         for key in PEAK_WINDOW_SUM_KEYS:
             self._carry[key][...] = 0.0
+        self._carry["moment_samples"] = np.zeros(1)
         self._carry_steps = 0
         self._records = 0
         self._last = reading
-        self._ring.append((int(step), int(steps), 0, {key: np.asarray(sums[key], dtype=np.float64).copy() for key in PEAK_WINDOW_SUM_KEYS}))
+        self._ring.append((int(step), int(steps), 0, self._totals(sums, int(steps))))
         self._next_snapshot_at = int(steps) + self.snapshot_steps
 
     def update(self, reading: tuple[dict[str, np.ndarray], int, int], step: int) -> dict[str, Any]:
@@ -1522,12 +1565,13 @@ class PeakDebyeWindow:
         steps = int(steps)
         if self._last is not None and int(self._last[2]) != int(generation):
             # the accumulators were reset since the previous record: carry the last reading (the completed window)
-            for key in PEAK_WINDOW_SUM_KEYS:
-                self._carry[key] += np.asarray(self._last[0][key], dtype=np.float64)
+            last = self._totals(self._last[0], int(self._last[1]))
+            for key, value in last.items():
+                self._carry[key] += value
             self._carry_steps += int(self._last[1])
         self._last = reading
         self._records += 1
-        totals = {key: self._carry[key] + np.asarray(sums[key], dtype=np.float64) for key in PEAK_WINDOW_SUM_KEYS}
+        totals = {key: self._carry[key] + value for key, value in self._totals(sums, steps).items()}
         total_steps = self._carry_steps + steps
         base = self._ring[0] if self._ring else (int(step), total_steps, self._records, totals)
         for entry in reversed(self._ring):
@@ -1535,7 +1579,7 @@ class PeakDebyeWindow:
                 base = entry
                 break
         window_steps = total_steps - base[1]
-        window = {key: totals[key] - base[3][key] for key in PEAK_WINDOW_SUM_KEYS}
+        window = {key: totals[key] - base[3][key] for key in totals}
         out = window_peak_debye(self.masks, self.config, window, window_steps, min_mean_occupancy=self.min_mean_occupancy)
         out |= {
             "window_records": int(max(self._records - base[2], 0)), "window_start_step": int(base[0]),
