@@ -1,0 +1,364 @@
+{
+  "schema_version": "cft-revival.pic2d-cft-steady-state-v4-fast.protocol/0.1.0",
+  "experiment_id": "pic2d-cft-steady-state-v4-fast",
+  "status": "preregistered_solver_qualification_same_seed_replay_of_the_accepted_v4_plateau_not_validated",
+  "classification": "axisymmetric_electrostatic_pic_mcc_solver_qualification_device_mg_14_cycles_moment_sampling_k5_same_seed_replay_of_the_accepted_v4_33um_plateau_quasi_steady_neutral_inventory_v1_3_closure_v2_0_3_gates_not_validated",
+  "model_version": "pic2d v1.3 closure (v1.2 runner + quasi-steady 0-D neutral inventory, NO wall-ion recycling: bit-for-bit the v2 base physics) with the v2.0.3 gates (window-mode peak-Debye gate, windowed residual-power gate); PLUS model v2.0.5 performance (born-ledger tallies folded into the MCC kernel, born deposits fused into the spawn, window diagnostics on a side stream, electron-moment sampling interval K = 5) and the poisson_gmg_v1 field solve (numerics.poisson.method device-mg: fixed 14 V(2,2) damped-Jacobi cycles, in-graph true residual, fail-closed verify() at every host sync) - the two changes under qualification; the code at the launch also carries model v2.0.4 (omega_pe dt gate on the resolved-node peak, threshold unchanged) and v2.0.6 (energy-ledger inelastic loss W-scaled: the series records the CORRECTED residual H natively; optional accumulated peak-Debye floor NOT declared here) - neither enters config_sha256",
+  "model_spec": "modern/spec/pic2d/pic2d-model-v1.3.json (physics) + modern/spec/pic2d/pic2d-model-v2.0.json gates_v2_0 (v2.0.3 gates) + modern/spec/pic2d/pic2d-model-v2.0.json performance_v2_0_5 (K = 5) + modern/spec/pic2d/pic2d-model-v2.0.json poisson_gmg_v1 (device-mg) + energy_ledger_correction_v2_0_6 (the residual the run records and acceptance (b) reads)",
+  "design_id": "divergent-exit-stack",
+  "field_authority": "modern/spec/pic2d/p2-field-authority-v1.json (role primary)",
+  "cross_sections": "modern/spec/pic2d/xenon-cross-sections-v1.json",
+  "geometry": {
+    "bore_radius_m": 0.002,
+    "z_min_m": 0.0,
+    "z_max_m": 0.024,
+    "cone_start_z_m": 0.018,
+    "exit_radius_m": 0.003,
+    "source": "P2 mesh regions injector-zone/channel-straight/channel-divergent-exit of divergent-exit-stack.level-1; unchanged from v2"
+  },
+  "operating_point": {
+    "anode_potential_v": 300.0,
+    "exit_plane_potential_v": 0.0,
+    "neutral_density_per_m3": 5.5e+19,
+    "neutral_density_role": "initial density AND MCC null-collision ceiling n_g0 (= Q_in / c, the zero-ionisation fixed point); the instantaneous n_g(t) is the inventory state",
+    "neutral_temperature_k": 300.0,
+    "neutral_inventory": {
+      "feed_atoms_per_s": 8.551102004120011e+16,
+      "relaxation_time_s": 3e-08,
+      "feed_justification": "ATTEMPT 2: Q_in = c n_g0 with c = v_bar A_exit / 4 = 1.5547e-3 m^3/s (xenon at 300 K, v_bar = 220.0 m/s, A_exit = pi (3 mm)^2) and n_g0 = 5.5e19 m^-3: 8.55e16 atoms/s = 0.01864 mg/s. Expected fixed point where nu_iz tau = 1: n_g ~ 3.4e19 with S = Q_in - c n_g = 3.3e16 s^-1 (38 % utilisation) and n_eq = S / (V nu_iz) ~ 2.3e17 (0.58 n_max) if the plasma electrons carry the ionisation; lower if the beam does. Attempt 1 used n_g0 = 5e19 (Q_in = 7.77e16 = 0.01695 mg/s; fixed point at 3.4e19 would have been S = 2.5e16, n_eq ~ 1.8e17) and did not ignite - see 'attempts'",
+      "relaxation_justification": "tau_g = 30 ns is artificial: << ion transit 2.4 us (n_g quasi-steady on plasma time scales), << physical effusion time V/c = 221 us, = 100 series intervals (averages the interval shot noise of S). Only the fixed point is physical; the artificial term has its own ledger so the atom balance closes to round-off"
+    },
+    "electron_injection_current_a": 0.003,
+    "electron_injection_temperature_ev": 2.0,
+    "electron_injection_justification": "kept from v1.2: v2 ignited from this injection at 1e20 and the v1.2 reference did not at 1.5e19 (beam mirrored back); attempt 1 at 5e19 with the 1e16 seed also did not ignite (91-96 % of the beam returned), so attempt 2 changes the seed, not the injection",
+    "seed_plasma_density_per_m3": 5e+16,
+    "seed_electron_temperature_ev": 5.0,
+    "seed_ion_temperature_ev": 0.0,
+    "seed_justification": "ATTEMPT 2: the seed used by the v1 and v2 snapshots (5e16 m^-3, 5 eV; 286 k macro-particles per species at W = 6e4), which ignited at 1e20 with the beam fully absorbed from the first 100 ns (exit return 0.9 -> 0.26 mA, anode 3.2-3.6 mA, nu_iz 2.8-4.2e6 s^-1, T_e rising 8 -> 10 eV). Attempt 1 used 1e16 and the seed cooled (T_e 7.9 -> 5.0 eV) with nu_iz falling 1.16e6 -> 5.6e5 s^-1 and 91-96 % of the beam mirroring back; a 5x denser seed builds the plasma potential structure that traps the beam electrons (the beam-transmission jump between 5e19 and 1e20 was 23x in ionisations per injected electron, far more than the 2x in collisionality, pointing at the potential structure rather than the collision rate). The seed is a documented initial condition, not a sustained source: it is not replenished",
+    "unchanged_note": "EVERY operating-point key is bit-for-bit the v2 attempt-2 value (300 V, 0 V exit, n_g0 5.5e19, feed 8.551e16 /s, tau_g 30 ns, exit-plane injection 3 mA @ 2 eV, seed 5e16 m^-3 @ 5 eV, cold ions); the refinement changes the grid, the time step and the macro-weight only"
+  },
+  "numerics": {
+    "dt_s": 1.4e-12,
+    "dt_justification": "1.4 ps (v2: 1.5 ps): omega_pe dt at the v2 window peak 1.64e18 m^-3 is 0.101 (0.108 at 1.5 ps; gate 0.2); the attempt-8 resolution analysis asked dt <= 1.48 ps for omega_pe dt <= 0.16 (20 % under the gate) at the plume peak 3.7e18 - adopted here so the refinement also has time-step margin; electron Courant at 400 eV: 1.19e7 m/s x 1.4 ps = 16.6 um = 0.50 cells of 33.3 um (gate 1 cell); omega_ce dt at the channel max |B| 0.291 T: 0.072. Step-count conversions: 200-step series interval = 0.28 ns, 40000-step checkpoint = 56 ns, 400000-step window = 0.56 us, one ion transit (2.4 us) = 1 714 286 steps, 3 transits = 5 142 858 steps",
+    "ion_subcycle": 8,
+    "poisson": {
+      "method": "device-mg",
+      "cycles": 14,
+      "pre_sweeps": 2,
+      "post_sweeps": 2,
+      "omega": 0.8,
+      "coarsest_max_unknowns": 1024
+    },
+    "device_sync_steps": 200,
+    "series_interval_steps": 200,
+    "neutral_update_note": "the inventory is advanced at every series interval (= sync interval) with the ionisations tallied over that interval",
+    "deposition": "bilinear, fixed-point 2^-40 integer accumulation",
+    "stability_limits": {
+      "max_omega_pe_dt": 0.2,
+      "max_omega_ce_dt": 0.2,
+      "max_cell_debye_ratio": 2.0,
+      "max_particle_courant": 1.0,
+      "max_collision_probability": 0.1
+    },
+    "stability_reference": {
+      "density_per_m3": 4e+17,
+      "electron_temperature_ev": 8.0,
+      "max_electron_energy_ev": 400.0
+    },
+    "averaging_window_steps": 400000,
+    "averaging_window_note": "consecutive 400000-step (0.56 us at 1.4 ps) windows; the reported maps are the last completed window (or the current one if at least half full); the v2.0.3 gates read the same 400000-step window",
+    "checkpoint_every_steps": 40000,
+    "checkpoint_note": "checkpoint-latest.{json,npz} rewritten atomically every 40000 steps (56 ns); n_g and the atom ledgers are in the checkpoint arrays; series.jsonl / status.jsonl appended at every 200-step sync",
+    "peak_debye_gate": {
+      "max_cells_per_debye": 3.141592653589793,
+      "min_macro_particles_at_peak": 32,
+      "dense_fraction": 0.5,
+      "window_steps": 400000,
+      "window_snapshot_steps": 40000,
+      "soft_cells_per_debye": 2.5,
+      "max_cells_per_debye_note": "v2.0.3 window-mode gate (spec/pic2d/pic2d-model-v2.0.json gates_v2_0.peak_debye_gate_v2_0_3): the gated statistic is max(dr, dz) / lambda_D at the densest node of the trailing 400000-step (0.56 us) interval average among nodes with mean occupancy >= 32 macro-electrons, with the window's moment T_e (the maps.npz construction). HARD pi (the Birdsall-Langdon CIC finite-grid-instability threshold; plume attempt 8 heated from ~3.2, the v2 base plateau sat at 3.17), fail-closed once the window is complete. SOFT 2.5 (20 % margin) is a plateau precondition (plateau.peak_debye_soft_ok), never a stop. Expected here: the v2 base peak 1.64e18 m^-3 / 7.39 eV gives lambda_D 15.8 um -> 33.3 um / 15.8 um = 2.11 (a 16 % margin to the soft level; the soft level is reached if the resolved peak densifies by 40 % at fixed T_e, e.g. 2.3e18 at 7.4 eV, or cools to 5.3 eV at 1.64e18); the hard level needs 3.6e18 at 7.4 eV. A plateau above 2.5 is recorded as 'resolution margin not met' (acceptance (a) fails, run continues to the budget) - a legitimate outcome, not a defect.",
+      "min_macro_particles_at_peak_note": "mean occupancy over the window; the v2 peak node (14, 286) held ~300 macro-electrons per step at W 6e4 (node volume 1.1e-11 m^3); at W 2.667e4 on the 33.3 um grid the corresponding node (r 0.7 mm: volume 2pi r dr dz = 4.9e-12 m^3) holds ~300 as well (same particles per cell); axis nodes (volume pi (dr/2)^2 dz / ... ~ 1e-14 m^3) stay below the floor"
+    },
+    "step_graph": true,
+    "step_graph_note": "v1.4 CUDA-graph step (bitwise-identical to the direct launches; tests/pic2d/test_pic2d_warp_parity.py)",
+    "frame_recorder": {
+      "cadence_steps": 20000,
+      "precision": "float32"
+    },
+    "frame_recorder_note": "v2.0 frame recorder ON (28 ns frames = exact interval averages from the window accumulators; ~1.8 MB/frame uncompressed on the 91 x 721 node grid; 3 transits = 257 frames ~0.25-0.45 GB compressed): the first frames of a channel-only steady-state run (the v2 plateau has none), for the resolution comparison of the ionisation structure at the cusp planes and for a video; frames are diagnostics, not gates",
+    "poisson_note": "poisson_gmg_v1 (spec/pic2d/pic2d-model-v2.0.json poisson_gmg_v1; docs/pic2d-performance-audit.md section 12): Warp-native geometric multigrid on the unchanged masked cylindrical finite-volume node operator - vertex-centred coarsening by two (90 x 720 -> 46 x 361 -> 24 x 181 -> 13 x 91, 4 levels, 752 coarsest unknowns inverted densely once), operator-dependent (Alcouffe-Dendy) interpolation with the concave cone-corner mass sent to the surviving parent, Galerkin 9-point coarse operators, V(2,2) damped Jacobi omega 0.8, FIXED 14 cycles warm-started from the previous potential (measured contraction 0.127-0.130 per cycle on the v4 plateau charge maps: 2.8e-13 of |rhs| after 14 cycles from a zero start; the production warm start ran 1.2e4 below the contract in the plume-50 replay). The CONTRACT is the same as the block-Thomas solve the v4 run used: true residual |Q - A phi| <= 1e-10 |rhs| with the mesh conductances, computed inside the captured step EVERY step with a running interval maximum of the contract ratio, read by verify() at every 200-step host sync; a miss raises PIC2DConvergenceError (fail-closed stop, no per-step fall-back). 278 launches per solve (block-Thomas 184); no inverse blocks (0.38 GB) and no host factorisation (1 s on the box). The v4 run's key was the descriptive string 'device block-Thomas direct (exact to round-off, true-residual contract 1e-10 |rhs| verified at every host sync)' -> PoissonConfig2D(method device-direct); this OBJECT selects device-mg and adds the 'multigrid' block to config_sha256 - a different configuration identity, disclosed",
+    "performance": {
+      "moment_sample_interval": 5
+    },
+    "performance_note": "model v2.0.5 (spec/pic2d/pic2d-model-v2.0.json performance_v2_0_5): the electron velocity moments that feed the window T_e maps, the gated cells_per_debye and sample_count_e are deposited every 5th accumulated step (phase on the window's accumulated-step count; moment_samples travels with the sums); the per-step accumulators (n_e, n_i, phi, ionisation, fluxes, histograms) and every physics kernel are untouched, so n_e_peak, the far-field statistics, the maps and every flux are bitwise the K = 1 values and only the T_e-derived statistics become sampled estimators (measured K = 1 vs 5 on the v4 protocol, 40 000 steps: gated cells_per_debye relative difference median 1.7e-5 / max 1.6e-3, same peak node 200/200, t_e_ev map on resolved nodes median 1.9e-5 / max 7.3e-5). K = 5 divides device_sync_steps 200. K != 1 enters config_sha256 (a diagnostics-contract change that must not be silent) - the second of the two identity differences vs v4, disclosed. The other v2.0.5 items (born-ledger fold, fused born deposit, side-stream diagnostics) are physics-bitwise code changes verified by the Class A replay of the v4 protocol (particles / phi / counts / I_d / S bitwise over 40 000 steps; ledger scalars <= 8.7e-16 relative) and do not enter the identity"
+  },
+  "budget_v1_3": {
+    "n_max_per_m3": 4e+17,
+    "n_eq_projected_per_m3": 2.3e+17,
+    "n_eq_projected_range_per_m3": [
+      1.1e+17,
+      3.2e+17
+    ],
+    "n_eq_projected_over_n_max": "0.28-0.8 (attempt 2, n_g0 = 5.5e19: 0.58 at the nu_iz tau = 1 fixed point)",
+    "particles_at_projected_n_eq": "2 x 2.3e17 x 3.432e-7 / 6e4 = 2.6 M (e- + Xe+)",
+    "t_e_for_lambda_d_ev": 8.0,
+    "lambda_d_min_m": 3.32e-05,
+    "omega_pe_max_rad_per_s": 35700000000.0,
+    "omega_pe_dt": 0.05,
+    "b_max_t": 0.2914,
+    "omega_ce_dt_at_b_max": 0.0769,
+    "gate_trip_node_density_per_m3": 5.6e+18,
+    "dr_m": 3.3333333333333335e-05,
+    "dz_m": 3.3333333333333335e-05,
+    "cell_over_lambda_d_min": 1.0,
+    "macro_weight": 26666.7,
+    "particles_at_n_eq": "2 n V / W with V = 3.432e-7 m^3: 1.26 M at 1.1e17, 1.72 M at 1.5e17, 3.2 M at 2.9e17 (e- + Xe+)",
+    "ppc_at_n_eq_r_1mm": 27,
+    "ion_transit_time_s": 2.4e-06,
+    "ion_transit_note": "the MEASURED ion residence time of the v2 fine cases (2.35-2.43 us) - kept, so 'transit' means the same time as in v2",
+    "neutral_fixed_point_per_m3": 3.4e+19,
+    "neutral_fixed_point_range_per_m3": [
+      2.3e+19,
+      3.4e+19
+    ],
+    "neutral_physical_time_constant_s": 0.0002208,
+    "neutral_artificial_relaxation_time_s": 3e-08,
+    "grid_note": "90 x 720 cells over r <= 3 mm, 0 <= z <= 24 mm: dr = dz = 33.33 um exactly (3 mm / 90, 24 mm / 720); bore radius 2 mm = 60 cells, cone start 18 mm = 540 cells, exit radius 3 mm = 90 cells - every geometry line on a grid line; 91 x 721 = 65 611 nodes; v2: 60 x 480 (50 um). Refinement ratio 1.5 per axis, 2.25 in cells",
+    "macro_weight_note": "W = 6e4 / 2.25 = 26 666.7: the same macro-particles per cell as the v2 base (the grid-refinement study keeps the particle resolution per cell fixed, so the total macro-particle count scales x2.25: ~2.25 M e- + 2.25 M Xe+ at the v2 plateau density 2.13e17 mean); the seed 5e16 m^-3 gives 643 k per species at t = 0",
+    "omega_pe_dt_note": "at the design ceiling 4e17 with dt 1.4 ps (v2: 0.0535 at 1.5 ps); at the v2 window peak 1.64e18: 0.101",
+    "expected_plateau_quantities": "the v4 33 um plateau values (reference_run.quantities) within the seed-b particle-resolution band (stopping_rule.acceptance.c_replay_tolerances)",
+    "expected_cells_per_debye_at_peak_window": 2.11,
+    "cost_model": {
+      "source": "launch-box preflight (preflight.json, 2026-09-04 14:34-14:36 UTC, Lambda H100 80GB HBM3 GPU-a800b021, driver 580.105.08, CUDA MPS; this process the THIRD client beside ss25-base PID 32709 and sweep-056-launch2 PID 38282, GPU 100 % utilised before; sweep-reference had just finished): fast protocol (device-mg 14 cycles, K = 5) 11.11 ms/step at the seed load (0.55 M e- + 0.65 M Xe+) and 13.23 ms/step at the synthetic 4.5 M-particle plateau load (2.26 M + 2.26 M; 0.660 ms per M particles), multigrid build 0.6 s, 278 launches per solve, 23.2 MB device + 4.5 MB host arrays, interval-worst contract ratio 7.5e-9 / 8.0e-9 over the timed steps (contract 1; the plume-50 replay read 8.2e-5); the v4 protocol (block-Thomas device-direct, K = 1) timed right after under the same load: 3.15 / 4.56 ms/step (0.436 ms per M), factorisation 1.4 s",
+      "contended_ratio_fast_over_v4": "3.53 at the seed load, 2.90 at the plateau load: the fast configuration is 2.9x SLOWER than the v4 solver while contended - the latency-bound multigrid's 278 dependent small launches each wait for an SM share under MPS (38-81 us per launch vs 3-4 us solo, audit section 12.3); K = 5 cannot compensate (its gain is a solo effect). The audit's solo cost model (4.1 us x launches + 0.30 ms/GB + particle terms) gives channel-33 multigrid ~1.1 ms vs block-Thomas 0.97 ms per solve - NOT faster on the channel grid, as predicted in audit sections 7 and 12 - so the channel run qualifies the numerics for the plume box where the multigrid is already faster under contention (v2.1-33: 37.8 vs 40.7 ms/step) and frees 6 GB; the solo numbers stay model values until a solo probe runs (none was possible: the box carried two preregistered clients throughout)",
+      "a_priori_ms_per_step_at_plateau": "13.2 contended (3 clients); solo model ~2.2-2.6 ms (multigrid solve ~1.1 + v2.0.5 step ~1.1-1.5 at 4.5 M particles) - model value, +-25 %",
+      "steps_to_3_transits": 5142858,
+      "steps_to_v4_verdict_time": "7.28 us = 5 200 000 steps (the v4 verdict fell at 3.03 transits)",
+      "a_priori_hours_to_3_transits": "18.9 h at the contended plateau-load rate (15.9 h at the contended seed-load rate; 19.1 h to the v4 verdict time). The contention will change during the run: sweep-056-launch2 ends in ~6 h and ss25-base in ~11 h (faster), while an external-validation launch 2 may take a freed slot (a heavier client)",
+      "wall_budget_rule": "1.5 x the contended plateau-load projection = 1.5 x 18.90 h = 28.36 h = 102 086 s -> 102 100 s (rounded up to the next 100 s); the run stops at the plateau (v4: 3.03 transits), so the budget is a cap",
+      "gpu_memory_estimate_gb": "~1.5-2.5: the multigrid's 23 MB of arrays replace the 0.38 GB inverse blocks; the preflight's device pool grew 0.34 GB (seed run) / 0.95 GB (4.5 M-particle run) plus the CUDA context and graphs; host peak working set 1.07 GB",
+      "measured_reference": "the v4 run itself: 2.50 ms/step at the seed load and 4.05 ms/step at the end on the RTX 5090 (solo), 3.46 ms/step mean over 5.2 M steps, 5.0 h to the plateau"
+    }
+  },
+  "case": {
+    "id": "refined-33um-dt1.4ps-w2.667e4-ng0-5.5e19-seed5e16-inventory-v1.3-closure-REPLAY-device-mg14-k5",
+    "radial_cells": 90,
+    "axial_cells": 720,
+    "macro_weight": 26666.7,
+    "seed": 20260903,
+    "seed_note": "seed 20260903 = the v4 seed (same-seed replay). The RNG draws are identical to the v4 run's until round-off differences in phi (block-Thomas vs 14-cycle multigrid, ~1e-10 V one-step) separate the trajectories after O(5e3) steps (Class C item 3 record: identical series until step 6 400, first divergent record 6 600 on the plume-50 replay); bitwise parity with v4 is impossible by construction and is NOT claimed - the plateau STATISTICS are the criterion",
+    "replay_of": {
+      "experiment": "modern/experiments/pic2d_cft_steady_state_v4",
+      "results_commit": "0d228ad2",
+      "run_git_head": "392129e5",
+      "protocol_sha256_prefix": "82d3f2814de1",
+      "config_sha256": "f10772b25b030e2ba9d86cbd48b9972b9e143cce689e0b0ee8d4d6f10ccc685f"
+    }
+  },
+  "stopping_rule": {
+    "plateau": "relative drift < 5 % over the trailing 20 % of the elapsed simulated time for the discharge current, the plasma electron count AND the neutral density (linear fit, drift = slope x window / |mean|), evaluated at every checkpoint; may only be declared after >= 3 ion transit times (3 x 2.4 us = 7.2 us = 5 142 858 steps); additionally the grid-heating triad must be inside its soft bounds (plateau.triad_soft_ok) AND the window-mode peak-Debye soft margin must hold (plateau.peak_debye_soft_ok: trailing-window Delta/lambda_D at the peak <= 2.5) - the v2 base rule plus the v2.0.3 preconditions",
+    "plateau_threshold": 0.05,
+    "plateau_window_fraction": 0.2,
+    "min_transit_times": 3,
+    "wall_budget_seconds": 102100,
+    "wall_budget_note": "102 100 s = 28.4 h cumulative over resumes (run_state.json) = 1.5 x the launch-box preflight's contended plateau-load projection (preflight.json, 14:34-14:36 UTC 2026-09-04, Lambda H100 under CUDA MPS as the 3rd client beside ss25-base 32709 and sweep-056-launch2 38282): 13.23 ms/step at the synthetic 4.5 M-particle load x 5 142 858 steps = 18.90 h to 3 transits (15.9 h at the seed-load rate 11.11 ms/step; 19.1 h to the 7.28 us v4 verdict time) -> 1.5 x 18.90 h = 28.36 h = 102 086 s, rounded up to the next 100 s. The contention is not constant (sweep-056-launch2 ends in ~6 h, ss25-base in ~11 h -> faster; an external-validation launch 2 may take a freed slot -> a heavier client), so the 1.5x margin covers a mix, not a fixed rate. For comparison the v4 protocol (block-Thomas, K = 1) timed under the same load ran 4.56 ms/step (6.5 h to 3 transits): the multigrid is 2.9x slower while contended (latency-bound, 278 dependent launches per solve under MPS), which is the honest contended cost of this qualification run and says nothing about the solo cost (audit section 12.3). The run stops at the plateau (v4: 3.03 transits), so the budget is a cap; a budget stop without a plateau is a recorded outcome (verdict no_plateau; resumable on the SAME GPU model, new session under the same identity, disclosed)",
+    "fail_closed": "runtime omega_pe dt gate (0.2), v2.0.3 window-mode peak-node Debye gate (hard pi cells per lambda_D on the 400000-step interval-averaged peak, once the window is complete), grid-heating triad hard drift bounds (S, T_e,dense, omega_pe dt drifts >= 0.25 after one transit) and the v2.0.3 windowed residual-power bound (trailing-400000-step ledger residual >= 5 % of the electrode work, one-sided, from the first complete window), one-cell Courant crossing, Poisson residual contract, neutral inventory exhaustion or ceiling violation: PIC2DStabilityError / triad stop ends the run with the artifacts written; the windowed residual-power gate (5 %, one-sided) reads the v2.0.6 CORRECTED statistic natively (the v4 run's recorded -7.67 % was biased by the unscaled inelastic loss; corrected +2.46 % at its stop, max +2.46 % over complete windows, never near 5 % - 2x margin: gate_recalibration_v2_0_6); PLUS the multigrid residual contract: verify() at every 200-step sync reads the in-graph true residual of the last step and the interval maximum of |r|^2 / (1e-10 |rhs|)^2 and raises PIC2DConvergenceError if either misses. NOTE (disclosed): the shared runner catches PIC2DStabilityError only; a PIC2DConvergenceError propagates out of the step loop, so a contract miss ends the process WITHOUT a terminal state (run_state finished=false, no summary.json; the last checkpoint and the run log carry the evidence). The predeclared handling is `assess --runner-crash-log <log>`: it records verdict not_qualified with acceptance (d) failed; a resume with more cycles would be a different configuration identity and is NOT permitted under this preregistration",
+    "ignition_check": "the seed and injection are exactly the v4 run's (same seed): S growing and N_e rising by ~1 us with n_g heading toward ~3.2e19; NO adjustment is allowed under this preregistration - a non-ignition is a recorded outcome (verdict no_plateau), not a reason to relaunch",
+    "grid_heating_triad": {
+      "energy_residual_over_electrode_work_max": 0.1,
+      "soft_drift_max": 0.05,
+      "hard_drift_max": 0.25,
+      "enforced_after_transit_times": 1.0,
+      "residual_window_steps": 400000,
+      "windowed_energy_residual_over_electrode_work_max": 0.05,
+      "note": "v1.4 triad drift members (soft 5 % = plateau precondition; hard 25 % after one transit) + v2.0.3 windowed residual-power hard gate (one-sided, 5 % of the electrode work over the trailing 400000 steps, from the first complete window); the cumulative ratio is recorded as the witness with its 10 % bound as a plateau precondition only. Calibration: the v2 base window ratios were -12.7 % (seed window) rising monotonically to -0.2 % at the plateau (max +0.37 %); seed-b -12.8 -> -1.5 %; w-0.7 -12.7 -> -4.2 %; attempt 8 crossed +5 % at ~3.1 us and reached +54.8 %"
+    },
+    "acceptance": {
+      "declared": "predeclared before the launch (Class C item 4 of docs/pic2d-performance-audit.md section 9: the statistical replay of the accepted 33 um plateau with the new solver); evaluated by `run.py assess` against reference_run.quantities = the v4 run's assessment.json / summary.json / maps.npz on disk (re-derived at assessment time and refused if they disagree with the pinned values); the verdict is one of the e_verdict values and is recorded in results/assessment.json (results-only commit)",
+      "a_plateau": "stop_reason == plateau_reached_after_min_transit_times under the rule above (>= 3 transits, trailing-20 % drifts of I_d, N_e, n_g < 5 %, triad soft bounds, peak-Debye soft margin 2.5) - the SAME rule, thresholds and preconditions the v4 run stopped under",
+      "b_residual_power": "|summary.grid_heating_triad.windowed_energy_residual_over_electrode_work (the trailing 400000-step ratio at the stop, recorded NATIVELY CORRECTED by the v2.0.6 code) - v4_corrected| <= 0.01 with v4_corrected = +0.0246 (reference_run.quantities.windowed_residual_over_electrode_work_corrected_v2_0_6 = the v2.0.6 post-hoc ledger correction of the v4 run, results/ledger-corrected.json end_state_window.corrected_ratio; the v4 run RECORDED -7.67 % because its inelastic loss lacked the macro weight): the replay must reproduce the v4 plateau's numerical heating power (+2.46 % of the electrode work, 28 mW on 1.14 W) within +-1 percentage point, two-sided - a solver change that heats OR cools the discharge by more than 1 pp changed the energy ledger and is not a faithful replay. Band derivation: the 50 um same-W seed pair differs by 1.9 pp at a 12 % heating level (base +13.0 vs seed-b +11.1 %, ~16 % relative); at the 33 um level of 2.46 % the seed scatter is ~0.4 pp, so 1 pp is ~2.5x the seed-pair spread while a 40 % change of the heating power is still caught. The project acceptance value (< +2 %, kept in gate_recalibration_v2_0_6) is REPORTED beside it (project_acceptance_b_below_0p02) and NOT judged: the v4 plateau itself fails it at +2.46 % (02013df0), so a faithful replay is expected to fail it too - that is a statement about the 33 um grid, not about the solver. The hard 5 % gate (one-sided, corrected statistic) stays armed and would end the run (verdict no_plateau) - v4's trajectory rose +0.6 % (0.62 us) -> +2.0 % (4.82 us) -> +2.46 % (7.28 us), 2x below it",
+      "c_replay_tolerances": {
+        "discharge_current_a": 0.02,
+        "exit_ion_beam_a": 0.02,
+        "ionization_rate_per_s": 0.02,
+        "gross_utilisation": 0.02,
+        "neutral_density_per_m3": 0.02,
+        "peak_n_e_window_per_m3": 0.1,
+        "t_e_peak_window_ev": 0.03,
+        "note": "relative |fast - v4| / |v4| on the trailing-20 % / window quantities (I_d, I_beam: summary.window_currents_a; S, utilisation, n_g: summary.neutral_inventory trailing means; peak n_e and T_e,peak: the window maps at the densest node - the v4 assessment's own extraction). TOLERANCE = the v2 PARTICLE-RESOLUTION band of the same-W seed pair (seed-b vs base, 50 um: I_d -0.08 % window / -0.9 % trailing-20 %, I_beam +0.68 %, S -0.80 %, utilisation -0.80 %, n_g +0.73 %, peak n_e -8.19 %, T_e,peak -1.1 %), rounded up to whole percent with >= 2x headroom on the currents / rates (0.7-0.9 % -> 2 %), peak n_e 8.2 % -> 10 %, T_e,peak 1.1 % -> 3 % (the K = 5 sampling moves T_e-derived statistics by <= 1.6e-3 relative, negligible against 3 %). Every tolerance lies BELOW the W x0.7 band (+5.68 / +3.55 / -4.64 / -4.64 / +3.95 / -11.89 / -9.3 %) and far below the v4 convergence tolerances (10 / 20 %): a pass means the solver + sampling change is indistinguishable from a seed change and well inside a particle-weight change; the plume-50 60 000-step replay (Class C item 4 proxy) read I_d +1.0 %, S +1.1 %, n_g -0.11 %, peak n_e -0.95 %. The seed-b and W x0.7 bands are recorded per quantity beside each row (reference_run.bands) for the report; the window Delta/lambda_D and the windowed residual are reported with their v4 values, not judged (Delta/lambda_D follows from peak n_e and T_e,peak)"
+      },
+      "d_field_solve_contract": "the multigrid's residual contract (1e-10 |rhs|, in-graph true residual every step, interval maximum read by verify() at every sync) was never missed over the whole run: the run reached a runner terminal state (summary.json written by the shared runner, so no PIC2DConvergenceError escaped the step loop) AND summary.provenance.config.poisson names method device-mg with 14 cycles / 2+2 sweeps / omega 0.8 (the declared configuration). A contract miss (process ends without a terminal state; run log carries 'failed its residual contract') is classified by `assess --runner-crash-log` as (d) FAILED -> verdict not_qualified",
+      "e_verdict": {
+        "qualified": "(a) AND (b) AND every (c) tolerance met AND (d) -> the v4 33 um plateau is REPRODUCED under device-mg + K = 5 within the seed-b band: poisson_gmg_v1 and performance_v2_0_5 (K = 5) are QUALIFIED for preregistered protocols on this channel grid family (a protocol may name numerics.poisson = {method: device-mg, cycles: 14, ...} and moment_sample_interval 5, citing this record); the fast run's own numbers are a replay record, NOT a new plateau value - the v4 values stay the quoted ones. Unlocks: the 33 um plume run (pic2d_cft_plume_v2_1, 360 x 1440) on the multigrid (6 GB of inverse blocks and the 18-24 s factorisation gone; cost re-derived from this run's measured contended ms/step and the audit's solo model)",
+        "not_qualified": "(a) AND (b) AND (d) but at least one (c) tolerance exceeded, OR (d) failed (contract missed) -> the solver / sampling change moves a plateau quantity beyond the seed-b band (or the fixed-cycle solve missed its contract): NOT admitted to preregistered protocols; the quantities that moved are recorded; follow-up = a seed-b replay under device-mg (is it the solver or the seed scatter?) and/or more cycles - each a new preregistration",
+        "heating": "(a) but NOT (b) -> the replay's corrected residual power at the stop lies outside the +-1 pp band around the v4 plateau's +2.46 % (heating side OR cooling side; the record states which): the solver / sampling change altered the energy ledger of the discharge; NOT admitted; diagnosis first (the corrected residual trajectories of the two runs at every checkpoint, ledger-corrected.json of v4 vs the replay's series)",
+        "no_plateau": "NOT (a): budget stop / gate stop / soft-margin block / non-ignition -> 'inconclusive within the budget' with the stop reason, the trailing drifts and the trailing-window quantities reported; a resume is a new session under the same identity (disclosed), never a re-preregistration; NOT admitted"
+      }
+    }
+  },
+  "simplifications": [
+    "neutrals: 0-D quasi-steady inventory, uniform in space (no neutral flow field, no local depletion where the ionisation is, no wall accommodation); feed prescribed, exit-plane thermal effusion at 300 K; the transient toward the fixed point is artificial (tau_g = 30 ns vs the physical 221 us) and only the fixed point is physical",
+    "no ion-neutral collisions (elastic or charge exchange)",
+    "electron-neutral: isotropic elastic without the 2 m_e/M energy loss, one lumped 8.32 eV excitation, single ionisation with Vahedi-Surendra secondary energy and isotropic emission",
+    "dielectric wall: perfectly absorbing with accumulated surface charge, zero field in the dielectric backing (perfect insulator), no secondary electron emission, no sputtering",
+    "exit plane: Dirichlet 0 V cathode/neutraliser reference; electrons injected there as a flux-weighted half-Maxwellian at fixed current",
+    "anode: perfectly absorbing conductor at fixed potential",
+    "cone wall represented as a one-cell stair-step of the plasma cell mask",
+    "prescribed static B from the P2 solution (no plasma-induced field); bilinear node interpolation of the C1 bicubic psi field",
+    "ions pushed every 8 steps with 8 dt (frozen in between; births added to the ion charge immediately)",
+    "electrostatic only, azimuthally symmetric: no azimuthal instabilities/anomalous transport",
+    "momentum-conserving bilinear scheme: energy is not exactly conserved; the ledger (with electrode work) residual is reported; a resume restarts the interval ledger",
+    "3 mA injection at 0.017 mg/s feed: a real CFT runs at 0.1-1 A and 0.1-1 mg/s; the self-consistent fixed point of the ionisation-depletion balance, not the absolute current or flow, is the object of this run",
+    "development/screening run: not preregistered, no experimental validation, not a performance prediction",
+    "preregistered resolution-convergence study of a development model: no experimental validation, not a performance prediction",
+    "same-seed replay of ONE run (the v4 execution) with ONE solver configuration (14 cycles) and ONE sampling interval (K = 5): the comparison is a two-run statistical parity check against a single-pair particle-resolution band, not a seed ensemble; a pass qualifies the numerics for this grid family and operating point, not universally",
+    "the field-solve difference is round-off-level (one-step phi parity 3.8e-10 V on the v4 maps): the runs diverge chaotically after O(5e3) steps, so agreement is judged on plateau statistics and the same-seed choice only fixes the ignition path, not the trajectory",
+    "preregistered solver-qualification replay of a development model: no experimental validation, not a performance prediction"
+  ],
+  "claim_boundary": "preregistered same-seed replay of the accepted pic2d_cft_steady_state_v4 33.3 um plateau (0d228ad2) with the poisson_gmg_v1 multigrid field solve (device-mg, 14 cycles) and the model v2.0.5 electron-moment sampling interval K = 5 - the only two configuration differences - under the v1.3 closure, the v2 operating point and the v2.0.3 gates; the outcome QUALIFIES or does not qualify the two numerics changes for preregistered protocols at the predeclared seed-b-band tolerances; it produces no new plateau value (the v4 values remain the quoted ones), no convergence statement, no experimental validation and no thruster performance prediction; the neutral transient is artificial and only the fixed point is physical",
+  "reference_run": {
+    "experiment": "modern/experiments/pic2d_cft_steady_state_v4",
+    "results_dir": "modern/experiments/pic2d_cft_steady_state_v4/results",
+    "commit": "0d228ad2",
+    "commit_note": "results-only record commit; the run's own git_head is the preregistration commit 392129e5 (execution lock)",
+    "run_git_head": "392129e5",
+    "protocol_sha256_prefix": "82d3f2814de1",
+    "config_sha256_prefix": "f10772b25b03",
+    "grid": "90 x 720 cells, 33.33 x 33.33 um, dt 1.4 ps, W 2.667e4",
+    "plateau": "3.033 transits (7.28 us, 5.2 M steps, 5.0 h), stop plateau_reached_after_min_transit_times; window [4.8 M, 5.2 M] steps; verdict vs the 50 um base: resolution_limited",
+    "quantities": {
+      "discharge_current_a": 0.0038010467448668056,
+      "exit_ion_beam_a": 0.002459451019275531,
+      "ionization_rate_per_s": 3.595103394972527e+16,
+      "gross_utilisation": 0.42042574082736567,
+      "neutral_density_per_m3": 3.188052351202036e+19,
+      "peak_n_e_window_per_m3": 1.2865916916958026e+18,
+      "t_e_peak_window_ev": 5.576634628596099,
+      "peak_node": [
+        20,
+        429
+      ],
+      "cells_per_debye_at_peak_window": 2.153742870834135,
+      "windowed_residual_over_electrode_work_last": -0.0766734225349462,
+      "cumulative_residual_over_electrode_work": -0.0914437227528608,
+      "windowed_residual_over_electrode_work_corrected_v2_0_6": 0.02458578453535502,
+      "cumulative_residual_over_electrode_work_corrected_v2_0_6": 0.018055971797087077,
+      "windowed_residual_note": "windowed_residual_over_electrode_work_last -0.0767 and cumulative -0.0914 are the values the v4 run RECORDED (pre-v2.0.6 ledger: inelastic loss without the macro weight); the *_corrected_v2_0_6 values are the post-hoc correction (results/ledger-corrected.json, commit 02013df0: end_state_window.corrected_ratio, cumulative.corrected_over_electrode) = the true H / electrode work the replay's v2.0.6 code records natively; acceptance (b) compares against the corrected value"
+    },
+    "v4_shifts_vs_the_50um_base": {
+      "discharge_current_a": "+10.35 % (EXCEEDED 10 %)",
+      "exit_ion_beam_a": "+7.34 % (within 10 %)",
+      "gross_utilisation": "-8.52 % (within 10 %)",
+      "ionization_rate_per_s": "-8.52 % (within 10 %)",
+      "neutral_density_per_m3": "+7.25 % (within 10 %)",
+      "peak_n_e_window_per_m3": "-21.42 % (EXCEEDED 20 %)",
+      "t_e_peak_window_ev": "-24.50 % (EXCEEDED 20 %)"
+    },
+    "convergence_pair_50um": {
+      "seed-b (results-seed-b, seed 20260904, 2.5 transits at budget)": {
+        "I_d": "-0.1 % (window) / -0.9 % (trailing 20 %)",
+        "S": "-0.8 %",
+        "n_g": "+0.7 %",
+        "peak_n_e": "-8.2 %",
+        "T_e_peak": "-1.1 %"
+      },
+      "w-0.7 (results-w-0.7, W 4.2e4, 3.05 transits, plateau)": {
+        "I_d": "+5.7 % (window) / +4.7 %",
+        "S": "-4.6 %",
+        "n_g": "+4.0 %",
+        "peak_n_e": "-11.9 %",
+        "T_e_peak": "-9.3 %"
+      },
+      "use": "the particle-resolution band of the 50 um plateau: I_d/S/n_g within ~5 %, peak n_e / T_e,peak within ~12 %; the convergence tolerances below are 2x these bands"
+    },
+    "role": "the accepted v4 33 um plateau = the run being replayed; PRIMARY and only judged reference",
+    "ledger_corrected_sidecar": {
+      "path": "modern/experiments/pic2d_cft_steady_state_v4/results/ledger-corrected.json",
+      "commit": "02013df0",
+      "schema": "cft.pic2d.ledger-corrected/1.0.0",
+      "series_sha256": "8c21f7c5e498b7a8d8cd074200e8f1b0c96ecee16adf95922fd6331f9be805df",
+      "max_corrected_over_complete_windows": {
+        "ratio": 0.024602379133809398,
+        "step": 5194800,
+        "time_s": 7.27272e-06
+      },
+      "corrected_2pct_first_crossing_at_checkpoint": {
+        "ratio": 0.020019317111565876,
+        "step": 3440000,
+        "time_s": 4.816e-06
+      },
+      "corrected_5pct_first_crossing": null,
+      "acceptance_b_below_0p02": {
+        "corrected_passes": false,
+        "declared_in_protocol": true,
+        "recorded_passes": true
+      }
+    },
+    "assessment": {
+      "path": "modern/experiments/pic2d_cft_steady_state_v4/results/assessment.json",
+      "verdict": "resolution_limited",
+      "utc": "2026-09-04T08:21:44.873797+00:00",
+      "run_config_sha256": "f10772b25b030e2ba9d86cbd48b9972b9e143cce689e0b0ee8d4d6f10ccc685f",
+      "run_protocol_sha256": "82d3f2814de1596e5f92240b1b773b19b1f6893cfc02754b6c56210f8222c6cf",
+      "steps_completed": 5200000,
+      "stop_reason": "plateau_reached_after_min_transit_times",
+      "peak_node": [
+        20,
+        429
+      ],
+      "note": "assess() re-derives every pinned quantity from summary.json + maps.npz AND cross-checks the assessment.json run block; a disagreement is refused"
+    },
+    "bands": {
+      "note": "the v2 50 um particle-resolution pairs (relative to the v2 base, from the v4 assessment): seed-b = same W, seed 20260904; w-0.7 = W 4.2e4, same seed. The (c) tolerances are the seed-b band rounded up (see acceptance.c_replay_tolerances.note)",
+      "seed_b": {
+        "discharge_current_a": -0.0008,
+        "exit_ion_beam_a": 0.0068,
+        "ionization_rate_per_s": -0.008,
+        "gross_utilisation": -0.008,
+        "neutral_density_per_m3": 0.0073,
+        "peak_n_e_window_per_m3": -0.0819,
+        "t_e_peak_window_ev": -0.011,
+        "discharge_current_trailing_20pct": -0.009
+      },
+      "w_0_7": {
+        "discharge_current_a": 0.0568,
+        "exit_ion_beam_a": 0.0355,
+        "ionization_rate_per_s": -0.0464,
+        "gross_utilisation": -0.0464,
+        "neutral_density_per_m3": 0.0395,
+        "peak_n_e_window_per_m3": -0.1189,
+        "t_e_peak_window_ev": -0.093
+      }
+    }
+  },
+  "preregistration": {
+    "protocol": "this file is frozen at the preregistration commit; summary.json records protocol_sha256 and git_head; run.py launch refuses a dirty worktree, a HEAD that is not the recorded preregistration commit, or an existing execution lock",
+    "preflight": "preflight.json (launch box: real P2 field on the 90 x 720 grid, mesh, multigrid hierarchy build, memory, ms/step over >= 2000 steps at the seed load and at a synthetic ~4.5 M-particle load for THIS protocol AND for the v4 protocol under the same MPS contention - the honest contended A/B; the concurrent MPS client count is recorded) - non-evidentiary; the wall budget is derived from it before the freeze",
+    "shakedown": "shakedown.json: a short real-input run (results-shakedown/, 100 000 steps, a few checkpoints and one completed window) through run -> finalize artifacts -> assess on the launch box as an MPS client, so the multigrid path, the K = 5 window statistics, the assessment and the export stages have executed on real data before the freeze - non-evidentiary, its results directory is not committed",
+    "one_execution": "one detached launch on the Lambda H100 as a CUDA-MPS client through tools/cloud/schedule.py (job ss33-fast) from a detached worktree at the preregistration commit (`launch --expect-commit <sha> --require-mps`); a wall-budget stop may be resumed (new session, same identity, disclosed in run_state.sessions); no parameter is changed after the freeze",
+    "qualification_chain": {
+      "class_a_a_prime_performance_v2_0_5": "spec performance_v2_0_5.verification_h100_2026_09_04: old vs new code on the v4 protocol 40 000 steps physics bitwise; K = 1 vs 5 physics bitwise, T_e-derived statistics <= 1.6e-3; anchored production resume 6 000 steps checkpoint byte-identical",
+      "class_c_items_1_3_poisson_gmg_v1": "spec poisson_gmg_v1.class_c_verification: contract on the production masks with the real v4 maps; one-step phi parity 3.8e-10 V on the v4 maps; chaotic divergence record; 60 000-step plume-50 same-seed replay inside the +-5 % band (interval-worst contract ratio 8.2e-5)",
+      "class_c_item_4_this_run": "the preregistered statistical replay of the accepted v4 33 um plateau to 3 transits with acceptance = the seed-b band; ONLY a `qualified` verdict here lets a later preregistered protocol name device-mg / K = 5"
+    }
+  },
+  "launch_platform": {
+    "gpu": "NVIDIA H100 80GB HBM3 (Lambda gpu_1x_h100_sxm5, us-southeast-1, driver 580.105.08, CUDA 13.0 driver / Warp 1.14.0 cu12.9 wheel, Python 3.12.14, Linux)",
+    "sharing": "CUDA MPS client (CUDA_MPS_PIPE_DIRECTORY=/tmp/nvidia-mps) beside the running preregistered PIC jobs (four slots per GPU; the client count at the preflight, the shakedown and the launch is recorded in preflight.json / shakedown.json / the execution lock); under MPS the physics state replays bitwise and only float-atomic diagnostic accumulators differ at <= 2e-13 (mini-sweep mps-replay.json; v2.0.5 replay) - and the contended ms/step is a GPU share, not the solo cost (the latency-bound multigrid is penalised x2-3 under contention: audit section 12.3)",
+    "scheduler": "modern/tools/cloud/schedule.py job ss33-fast (jobs.yaml): detached worktree at the preregistration commit under <WORK>/jobs/ss33-fast/tree, tmux, CUDA_VISIBLE_DEVICES=0, BLAS threads per slot; `launch --expect-commit <sha> --require-mps` with the v4 clean-worktree / protocol-blob / lock discipline",
+    "reference_platform": "the v4 run executed on an RTX 5090 (Windows); the P2 field map is CPU-derived and differs at ULP level between Windows and Linux/OpenBLAS (0ac8d9b8), so even an identical solver would not replay v4 bitwise across the two boxes - another reason the criterion is statistical"
+  },
+  "solver_under_test": {
+    "what_changes_vs_v4": [
+      "numerics.poisson: descriptive string (block-Thomas device-direct) -> {method: device-mg, cycles 14, pre_sweeps 2, post_sweeps 2, omega 0.8, coarsest_max_unknowns 1024}",
+      "numerics.performance.moment_sample_interval: absent (1) -> 5"
+    ],
+    "what_is_bit_for_bit_v4": [
+      "geometry, grid 90 x 720 (33.33 um), dt 1.4 ps, W 26 666.7, seed 20260903, operating point (300 V, n_g0 5.5e19, feed 8.551e16 /s, tau_g 30 ns, injection 3 mA @ 2 eV, seed plasma 5e16 @ 5 eV), v1.3 closure, stability limits / reference, ion subcycle 8, sync / series 200, window 400 000, checkpoint 40 000, frames ON 20 000, v2.0.3 gates (window peak-Debye hard pi / soft 2.5, windowed residual-power 5 %, triad), plateau rule (5 % / 20 % / 3 transits of 2.4 us)"
+    ],
+    "identity": "config_sha256 differs from v4's f10772b25b03... by exactly the two keys above (pinned by tests/pic2d/test_pic2d_steady_state_v4_fast.py)",
+    "not_declared_on_purpose": "the v2.0.6 accumulated peak-Debye floor (numerics.peak_debye_gate.min_accumulated_macro_particle_steps_at_peak, recommended 64 000 for NEW protocols) is NOT declared: it would be a third identity difference and would change which node the hard gate reads; this replay keeps the v4 gate verbatim (v2.0.3 occupancy floor). The v2.0.6 post-hoc reading of the v4 final window is identical under both floors (2.154 at node (20, 429); the densest axis node reads 0.79), so nothing is lost for this grid; the replay's maps can be re-read under the accumulated floor post hoc",
+    "expected_cost": "contended (extra MPS client beside four production runs, audit 12.3): channel-33 block-Thomas 8.45 vs multigrid 19.2 ms/step at 2.26 M electrons (the multigrid's 278 dependent small launches wait for SM shares: 38-81 us each vs 3-4 us solo); v2.0.5 K = 5 recovers x1.21 contended. Solo cost-model estimate: multigrid ~1.1 vs block-Thomas 0.97 ms per solve (NOT faster on the channel grid, as predicted - the channel run qualifies the solver for the plume box where it is 1.7-3.5x); the preflight measures the actual contended step under the load at hand",
+    "what_qualified_unlocks": "pic2d_cft_plume_v2_1 at 33 um (360 x 1440, ~9.8 M electrons) on device-mg: audit 12.3 measured 37.8 ms/step contended (block-Thomas 40.7) and estimates ~12 ms/step solo (block-Thomas ~17); the launch log re-derives the plume hours from this run's measured contended channel-33 rate scaled by the audit's solo model"
+  }
+}

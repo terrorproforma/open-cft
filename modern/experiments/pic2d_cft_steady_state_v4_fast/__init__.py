@@ -1,0 +1,1 @@
+"""Steady-state v4-fast: preregistered solver-qualification replay of the accepted v4 33.3 um plateau under the poisson_gmg_v1 multigrid (device-mg, 14 cycles) and the v2.0.5 moment-sampling interval K = 5."""
