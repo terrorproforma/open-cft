@@ -463,7 +463,8 @@ def _fake_run(root, *, ledger_bump: float = 0.0, electrons_bump: int = 0, t_e_bu
                 "ledger": {"interval_residual_j": 1e-9 * (1.0 + ledger_bump), "cumulative": {"field_work_j": 2e-7 * (1.0 + ledger_bump)}},
                 "peak_node": {"t_e_peak_ev": 7.0 * (1.0 + t_e_bump)}} for i in range(3)]
     (root / "series.jsonl").write_bytes(b"".join(json.dumps(r, sort_keys=True).encode() + b"\n" for r in records))
-    np.savez(root / "maps.npz", n_e_per_m3=np.full((3, 4), 1e17 * (1.0 + n_e_bump)), t_e_ev=np.full((3, 4), 7.0 * (1.0 + t_e_bump)), window_steps=np.array([600]))
+    np.savez(root / "maps.npz", n_e_per_m3=np.full((3, 4), 1e17 * (1.0 + n_e_bump)), t_e_ev=np.full((3, 4), 7.0 * (1.0 + t_e_bump)), window_steps=np.array([600]),
+             wall_electron_flux_per_m2_s=np.full(4, 1e22), wall_electron_mean_energy_ev=np.full(4, 20.0 * (1.0 + t_e_bump)))
     np.savez(root / "checkpoint-final.npz", positions=np.arange(6.0), cumulative=np.array([1.0 + ledger_bump]))
     np.savez(root / "series.npz", electrons=np.array([1000, 1001, 1002]) + electrons_bump, interval_residual_j=np.array([1e-9 * (1.0 + ledger_bump)] * 3))
     (root / "summary.json").write_text(json.dumps({"final_counts": {"electrons": 1002 + electrons_bump}, "steps_completed": 600, "ms_per_step_this_session": 2.0,
@@ -479,7 +480,7 @@ def test_replay_comparison_separates_physics_from_float_atomic_diagnostics(tmp_p
     diag = sweep_run._compare_runs(tmp_path / "a", tmp_path / "c")
     assert not diag["all_bitwise"] and diag["physics_bitwise"] and diag["diagnostics_within_rtol"] and diag["passed"]
     assert set(diag["series_records"]["differing_keys_max_rel"]) == {"ledger/interval_residual_j", "ledger/cumulative/field_work_j", "peak_node/t_e_peak_ev"}
-    assert diag["maps.npz"]["physics_keys_bitwise"] and set(diag["maps.npz"]["diagnostic_differing_keys_max_rel"]) == {"t_e_ev"}
+    assert diag["maps.npz"]["physics_keys_bitwise"] and set(diag["maps.npz"]["diagnostic_differing_keys_max_rel"]) == {"t_e_ev", "wall_electron_mean_energy_ev"}
     assert diag["checkpoint-final.npz"]["physics_keys_bitwise"] and set(diag["checkpoint-final.npz"]["diagnostic_differing_keys_max_rel"]) == {"cumulative"}
     assert diag["series.npz"]["physics_keys_bitwise"]
     _fake_run(tmp_path / "d", electrons_bump=1)                          # a physics difference fails

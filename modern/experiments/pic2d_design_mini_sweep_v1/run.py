@@ -258,7 +258,8 @@ def _replay_child_command(design_id: str, domain: str, grid: str, results: Path,
 # ionisation, wall fluxes, currents, counts, neutral inventory) is bitwise.  A replay PASSES when every physics array / record is
 # bitwise and every diagnostic difference is within DIAGNOSTIC_RTOL - and MPS is "neutral" when the concurrent pairs show the same
 # pattern as the solo pair.
-DIAGNOSTIC_MAP_KEYS = {"t_e_ev", "sample_count_e", "t_e_perp_ev", "t_e_par_ev", "mean_energy_e_ev", "sample_count_i"}
+DIAGNOSTIC_MAP_KEYS = {"t_e_ev", "sample_count_e", "t_e_perp_ev", "t_e_par_ev", "mean_energy_e_ev", "sample_count_i",
+                       "wall_electron_mean_energy_ev", "wall_ion_mean_energy_ev"}     # energy sums per wall cell (float atomics); the FLUXES (counts) are physics
 DIAGNOSTIC_CHECKPOINT_KEYS = {"cumulative", "cumulative_extra"}
 DIAGNOSTIC_SERIES_TOP_KEYS = {"ledger", "peak_node"}                  # series.jsonl record blocks built from the float-atomic sums
 DIAGNOSTIC_SERIES_NPZ_PREFIXES = ("peak_node_", "interval_", "ledger_", "cumulative_")   # their flattened series.npz columns
