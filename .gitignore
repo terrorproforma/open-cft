@@ -361,3 +361,9 @@ modern/experiments/pic2d_anomalous_transport_v1/results/**/*.err
 # git worktrees for agents live INSIDE the repo, never beside it
 .worktrees/
 
+# roadmap status dashboard build toolchain (pinned in package.json / package-lock.json; `npm ci` restores it)
+modern/visualization/roadmap-status/node_modules/
+
+# agent memory (learning scratchpad, devlog and their archives) is COMMITTED by policy; nothing here excludes it
+!.cursor/memory/
+

@@ -1,0 +1,28 @@
+{
+  "name": "open-cft-roadmap-status-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Builds modern/visualization/roadmap-status.html - the Open CFT roadmap status canvas as one self-contained offline HTML file (React + ReactDOM + the compiled canvas inlined; no CDN).",
+  "type": "module",
+  "engines": {
+    "node": ">=24.15.0"
+  },
+  "scripts": {
+    "build": "node build.mjs",
+    "sync": "node build.mjs --sync",
+    "verify": "node verify.mjs",
+    "check": "tsc -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.7",
+    "esbuild": "0.28.2",
+    "jsdom": "30.0.1",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "typescript": "5.9.3"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true
+  }
+}

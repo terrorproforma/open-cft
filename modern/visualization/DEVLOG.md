@@ -3,6 +3,35 @@
 Scope: the standalone dashboards under `modern/visualization/`. Experiment-local
 dashboards keep their own logs next to their generators.
 
+## 2026-09-05 13:50 AEST - roadmap status dashboard (offline build of the Cursor canvas)
+
+- New `roadmap-status.html` (2,407,224 bytes): the project's roadmap status canvas
+  (`open-cft-roadmap-status.canvas.tsx` - eight-rung evidence ladder, 44 rows, tabs Overview /
+  Phases / Stage ladder / Experiments / Critical path / Literature roadmap / Actions / Evidence /
+  Details) as ONE self-contained file: React 19.2.8 + ReactDOM + the compiled canvas inlined by
+  esbuild 0.28.2, dark theme, opens from `file://`, fetches nothing. Build tree
+  `roadmap-status/` - `roadmap-status.canvas.tsx` (verbatim copy of the canvas, CRLF -> LF only),
+  `cursor-canvas.tsx` (stand-in for the `cursor/canvas` runtime: the 19 primitives the canvas
+  uses + `useHostTheme()` fixed to the SDK's dark tokens), `entry.tsx`, `template.html`,
+  `build.mjs` (`--sync` copies the live canvas; byte-deterministic output; sidecar
+  `roadmap-status.anchor-platform.json` with sha256 of HTML / canvas / shim + toolchain versions),
+  `verify.mjs` (jsdom 30.0.1 headless run), `tsconfig.json` (`tsc --noEmit` of the copy against
+  the shim), pinned `package.json` / `package-lock.json` (node_modules ignored), README.
+- The header chips are derived from `ladderRows` at runtime (0/44 externally validated · 17 in
+  the paper · 36/44 merged · N/44 on main); the fourth now reads `mergeTruth.mainMergedAt`
+  (origin/main's SHA once fast-forwarded onto feat/sota-foundation; "" before) instead of a
+  hard-coded "0 on main" - the same edit in the live canvas, TypeScript check clean.
+- Test `tests/visualization/test_roadmap_status_dashboard.py` (9 tests): canvas copy is the
+  canvas (single `cursor/canvas` import, default export, LF, no BOM); Python recount of the ladder
+  (highest rung without a gap, merged state) gives the pinned chips; all 44 row ids and names
+  reach the inline script; self-contained (one inline script, no external script / stylesheet /
+  network call; only github.com anchors and React DOM's namespace / error-decoder constants as
+  URLs), LF, no BOM, 1.5-6 MB; sidecar pins the sha256; head comment carries the input hashes;
+  `node --check` of the inline script; byte-exact rebuild and the jsdom run (chips, nine tabs, 44
+  rows, first row expands, no runtime errors) when the pinned toolchain is installed.
+- Headless Edge (`--headless=new`, 1500 px) renders the Overview from `file://` with the dark
+  theme, chips, stage strip and tables; screenshot `%TEMP%\roadmap-status-shot.png`.
+
 ## 2026-09-03 21:30 AEST - L1a geometry sweep v3 dashboard (HEMP-like regime)
 
 - New `generate_l1a_geometry_sweep_v3_dashboard.py` + `l1a-geometry-sweep-v3.template.html`

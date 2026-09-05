@@ -101,6 +101,10 @@ Open `visualization/first-results.html`,
 `visualization/geometry-designs.html`, or
 `visualization/axisymmetric-results.html` directly in a browser. Their
 generators, JavaScript checks, and offline scans are deterministic test gates.
+`visualization/roadmap-status.html` is the programme-level status dashboard
+(the eight-rung evidence ladder with a citation behind every rung), an offline
+React build of the roadmap canvas; `visualization/roadmap-status/README.md`
+explains how it is regenerated and verified.
 The manuscript under `../paper/` has separate policy, generated-table, and
 two-clean-build checks; its L1--L3 evidence gates remain closed.
 

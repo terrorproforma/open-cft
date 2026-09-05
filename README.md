@@ -27,6 +27,13 @@ The browser-tested, self-contained viewers are
 [`geometry-designs.html`](modern/visualization/geometry-designs.html), and
 [`axisymmetric-results.html`](modern/visualization/axisymmetric-results.html).
 The last displays the three accepted L1a artifacts and their limitations.
+Where the whole programme stands is
+[`roadmap-status.html`](modern/visualization/roadmap-status.html): the
+eight-rung evidence ladder over every workstream (specified -> code -> tests ->
+real inputs -> preregistered run -> accepted -> in the paper -> externally
+validated, with a merged flag and a citation behind every rung), built offline
+from the roadmap canvas by
+[`modern/visualization/roadmap-status/`](modern/visualization/roadmap-status/README.md).
 
 The Python, C++17, and Warp CPU/CUDA implementations of the cusp kernel have
 correctness tests covering endpoints, tiny ratios, signed zero, subnormal

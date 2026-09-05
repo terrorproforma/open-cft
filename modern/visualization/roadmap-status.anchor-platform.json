@@ -1,0 +1,17 @@
+{
+ "schema": "cft-roadmap-status-dashboard-anchor/1.0.0",
+ "html_file": "roadmap-status.html",
+ "html_sha256": "f5a4690880d9f463a7c9f711ea7166a2aba6069aff51df1a29621cf907c5a2f0",
+ "html_bytes": 2407224,
+ "canvas_file": "roadmap-status/roadmap-status.canvas.tsx",
+ "canvas_sha256": "677a2f55694c3d51a79381ada264fa54dfa9749f5e2c79e00e72b3ea55ee4190",
+ "canvas_bytes": 2378577,
+ "shim_file": "roadmap-status/cursor-canvas.tsx",
+ "shim_sha256": "62b455c15fe5a1dbdabc48263fc8a85e2ac41b123165129876675a46df0e6f96",
+ "toolchain": {
+  "esbuild": "0.28.2",
+  "react": "19.2.8",
+  "react-dom": "19.2.8"
+ },
+ "policy": "the build is byte-deterministic given the canvas copy, the shim, the template and the pinned toolchain (package-lock.json); a byte-exact rebuild is asserted on every platform. The Node.js version is not part of the identity (esbuild output does not depend on it)."
+}
