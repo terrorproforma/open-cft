@@ -39,3 +39,26 @@ python -m experiments.l1a_geometry_sweep_v3.run validate
 
 Dashboard: `modern/visualization/l1a-geometry-sweep-v3.html`
 (`generate_l1a_geometry_sweep_v3_dashboard.py`).
+
+## Post-hoc audit note: the sealed source contract is verified against the frozen commit
+
+`experiment.verify_shakedown_record` is the PRE-execution gate: it requires the live worktree to
+equal the code the shakedown proved (`*_sha256_current`), which is what `prepare` and the one
+`execute` need; it is sealed under `experiment_code_sha256` and unchanged. After the terminal
+bundle existed, `cft_revival.experiment_runtime` moved at `bb756418` (2026-09-03: pinned-descriptor
+cap and `recovery.py` for the geometry-screening-v2 EMFILE), so the record's
+`dependency_source_sha256` stopped equalling the LIVE tree although nothing about the evidence
+changed - a live-tree assertion can only hold until the next commit to a shared package.
+
+`frozen_contract.py` (post-execution; not in `EXPERIMENT_CODE_FILES`, nothing sealed is edited)
+therefore asks the honest question: do the sealed digests describe the code at the commit the
+immutable execution lock names (1923ef7601bcc07acafa28ce54db687f025922b6)? `verify_recorded_shakedown` recomputes
+`experiment_code_sha256`, `dependency_source_sha256` and `field_pipeline_source_sha256` from the
+Git blobs at that commit, using the file inventories the shakedown record and the bundle's
+`artifacts/source-binding.json` carry, and requires equality with the sealed values (all three
+recompute exactly). The live tree's digests are RECORDED beside them
+(`live_tree.*_current`, `drift`, added / removed / changed files - today: `recovery.py` added;
+`experiment_runtime/__init__.py`, `filesystem.py`, `lifecycle.py` changed) and never asserted equal;
+`strict_live_tree=True` restores the pre-execution semantics. A tampered record, a missing blob
+or a commit this repository cannot resolve fails closed. Shared plumbing:
+`cft_revival.provenance` (`modern/src/cft_revival/provenance/`).

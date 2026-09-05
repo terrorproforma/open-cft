@@ -6,14 +6,18 @@ import re
 
 import pytest
 
-from cft_revival.experiment_runtime.canonical import semantic_sha256
+from cft_revival.experiment_runtime.canonical import semantic_sha256, strict_json_file
+from cft_revival.provenance import FrozenCommitError
 
 from experiments.cusp_topology_search_v3 import experiment as E
 from experiments.cusp_topology_search_v3 import fields as F
+from experiments.cusp_topology_search_v3 import frozen_contract as FC
 from experiments.cusp_topology_search_v3.topology import TopologyPolicy
 
 HEX64 = re.compile(r"^[0-9a-f]{64}$")
 DOI = re.compile(r"^10\.\d{4,9}/\S+$")
+# the commit the immutable execution lock names (preregistration = execution commit of v3)
+FROZEN_COMMIT = "691599340355818ff64d3834d45110768a751589"
 
 
 @pytest.fixture(scope="module")
@@ -140,23 +144,62 @@ def test_code_and_dependency_hashes_are_lf_bound(value: dict) -> None:
     assert sealed["four_cell_v2"]["recorded_protocol_sha256"] != sealed["four_cell_v2"]["lf_protocol_sha256"]
 
 
-def test_verify_shakedown_record_rejects_tampering(value: dict) -> None:
+def _recorded_shakedown() -> dict:
+    """The frozen shakedown record, or skip while the lifecycle has not reached it."""
+
     if not E.SHAKEDOWN_PATH.is_file():
         pytest.skip("shakedown not recorded yet")
-    from cft_revival.experiment_runtime.canonical import strict_json_file
+    if not FC.EXECUTION_LOCK_PATH.is_file():
+        pytest.skip("not executed yet: the live-tree gate E.verify_shakedown_record applies until then")
+    return strict_json_file(E.SHAKEDOWN_PATH)
 
-    record = strict_json_file(E.SHAKEDOWN_PATH)
-    checks = E.verify_shakedown_record(value, record)
-    assert all(checks.values())
-    tampered = dict(record)
-    tampered["passed"] = False
+
+def test_shakedown_record_binds_to_the_frozen_commit_and_reports_live_drift(value: dict) -> None:
+    """The sealed digests are evidence about the EXECUTION commit, not about today's worktree.
+
+    (a) every sealed digest must recompute from that commit's blobs (the seal was honest);
+    (b) the live tree's digest is RECORDED with a drift flag, never asserted equal - shared
+    packages legitimately move on after a campaign (experiment_runtime at bb756418).
+    """
+
+    record = _recorded_shakedown()
+    report = FC.verify_recorded_shakedown(value, record)
+    assert all(report["checks"].values()), report["checks"]
+    assert report["frozen_commit"] == FROZEN_COMMIT
+    for key in FC.SEALED_HASH_KEYS:
+        scope = report["scopes"][key]
+        assert scope["commit"] == FROZEN_COMMIT and scope["sealed_sha256"] == record[key], key
+        assert scope["sealed_matches_frozen_commit"], key
+        assert scope["file_count"] >= (6 if key == "experiment_code_sha256" else 30), key
+        live = scope["live"]
+        assert HEX64.match(live["sha256"]) and live["sha256"] == report["live_tree"][f"{key}_current"], key
+        assert live["drift"] == (live["sha256"] != record[key]) == bool(live["added"] or live["removed"] or live["changed"]), key
+    assert report["live_tree"]["drift"] is any(report["scopes"][key]["live"]["drift"] for key in FC.SEALED_HASH_KEYS)
+    assert report["live_tree"]["drifted"] == sorted(key for key in FC.SEALED_HASH_KEYS if report["scopes"][key]["live"]["drift"])
+    # the pre-execution (strict) mode is the only one under which drift is a failure
+    if report["live_tree"]["drift"]:
+        with pytest.raises(ValueError, match="_current"):
+            FC.verify_recorded_shakedown(value, record, strict_live_tree=True)
+    else:
+        assert FC.verify_recorded_shakedown(value, record, strict_live_tree=True)["checks"]
+
+
+def test_verify_shakedown_record_rejects_tampering(value: dict) -> None:
+    record = _recorded_shakedown()
+    for field, bogus, check in (
+        ("passed", False, "passed"),
+        ("protocol_semantic_sha256", "0" * 64, "protocol_semantic_sha256_current"),
+        ("experiment_code_sha256", "0" * 64, "experiment_code_sha256_frozen"),
+        ("dependency_source_sha256", "0" * 64, "dependency_source_sha256_frozen"),
+        ("field_pipeline_source_sha256", "0" * 64, "field_pipeline_source_sha256_frozen"),
+        ("dependency_source_files", record["dependency_source_files"][:-1], "bundle_dependency_inventory_equals_record"),
+        ("shakedown_plan", {**record["shakedown_plan"], "design_keys": record["shakedown_plan"]["design_keys"][:-1]}, "plan_matches_protocol"),
+    ):
+        with pytest.raises(ValueError, match=check):
+            FC.verify_recorded_shakedown(value, {**record, field: bogus})
+    # a record naming a commit this repository does not hold fails closed rather than passing vacuously
+    with pytest.raises(FrozenCommitError):
+        FC.verify_recorded_shakedown(value, record, commit="0" * 40)
+    # the sealed pre-execution gate keeps refusing a tampered record as well
     with pytest.raises(ValueError, match="passed"):
-        E.verify_shakedown_record(value, tampered)
-    tampered = dict(record)
-    tampered["protocol_semantic_sha256"] = "0" * 64
-    with pytest.raises(ValueError, match="protocol_semantic_sha256_current"):
-        E.verify_shakedown_record(value, tampered)
-    tampered = dict(record)
-    tampered["shakedown_plan"] = {**record["shakedown_plan"], "design_keys": record["shakedown_plan"]["design_keys"][:-1]}
-    with pytest.raises(ValueError, match="plan_matches_protocol"):
-        E.verify_shakedown_record(value, tampered)
+        E.verify_shakedown_record(value, {**record, "passed": False})
