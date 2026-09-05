@@ -7,6 +7,10 @@ are recomputed from value / reference / tolerance and must agree with the assess
 be the one the gate functions produce from the embedded metrics.  No timestamps or paths of the
 generating machine are embedded (identical inputs give identical bytes); the page is self-contained
 (no network access, SVG/canvas only) and states its claim boundary on every view.
+
+The dashboard is built from the TRACKED record only: the base case carries ``series.npz``; the four
+other finished cases are recorded by their ``summary.json`` alone (PARKED record, 2026-09-04), so their
+series are not embedded (``cases[<name>]["series"] is None``) and the series panel draws the base case.
 """
 
 from __future__ import annotations
@@ -28,7 +32,7 @@ if str(SRC) not in sys.path:
 if str(MODERN) not in sys.path:
     sys.path.insert(0, str(MODERN))
 
-from cft_revival.hybrid import gates
+from cft_revival.hybrid import gates  # noqa: E402
 
 EXPERIMENT = MODERN / "experiments" / "hybrid_l2_v2"
 RESULTS = EXPERIMENT / "results"
@@ -121,9 +125,8 @@ def build_payload(experiment: Path = EXPERIMENT, pic_v2: Path = PIC_V2) -> dict[
             cases[name] = {"finished": False}
             continue
         summary = _verified_json(directory / "summary.json")
-        series = _verified_npz(directory / "series.npz")
         k_cells = len(protocol["cells"]["partition"]["cells"])
-        cases[name] = {
+        case: dict[str, Any] = {
             "finished": True, "summary_sha256": _file_sha256(directory / "summary.json"), "stop_reason": summary["stop_reason"],
             "steps": summary["steps_completed"], "simulated_time_s": summary["simulated_time_s"], "ion_transit_times": summary["ion_transit_times"],
             "wall_seconds": summary["wall_seconds_total"], "ms_per_step": summary["ms_per_step"], "case": summary["case"],
@@ -131,7 +134,12 @@ def build_payload(experiment: Path = EXPERIMENT, pic_v2: Path = PIC_V2) -> dict[
             "windowed_energy_residual": summary["windowed_energy_residual"], "charge_identity_max_relative": summary["charge_identity_max_relative"],
             "neutral_ledger_closure_relative": summary["neutral_inventory"]["ledger_closure"]["closure_relative_to_inventory"],
             "final_counts": summary["final_counts"], "peak_n_e_per_m3": summary["window_maps_summary"]["peak_n_e_per_m3"],
-            "series": _round({
+            "series": None,
+        }
+        if name == "base":
+            # only the base case's series.npz is part of the tracked record (see the module docstring)
+            series = _verified_npz(directory / "series.npz")
+            case["series"] = _round({
                 "time_us": _decimate(series["time_s"]) * 1e6, "discharge_ma": _decimate(series["current_discharge_a"]) * 1e3,
                 "beam_ma": _decimate(series["current_exit_ion_beam_a"]) * 1e3, "wall_ion_ma": _decimate(series["current_wall_ion_a"]) * 1e3,
                 "ionization_rate_per_s": _decimate(series["current_ionization_rate_per_s"]), "neutral_density_per_m3": _decimate(series["neutral_density_per_m3"]),
@@ -139,8 +147,8 @@ def build_payload(experiment: Path = EXPERIMENT, pic_v2: Path = PIC_V2) -> dict[
                 "cell_potential_v": [_decimate(series[f"cell{k}_potential_v"]) for k in range(k_cells)],
                 "cell_temperature_ev": [_decimate(series[f"cell{k}_temperature_ev"]) for k in range(k_cells)],
                 "residual_ratio": _decimate(np.where(series["interval_electrode_work_j"] != 0.0, series["interval_residual_j"] / np.where(series["interval_electrode_work_j"] != 0.0, series["interval_electrode_work_j"], 1.0), 0.0)),
-            }, 5),
-        }
+            }, 5)
+        cases[name] = case
     base_summary = _verified_json(results / "summary.json")
     l2_maps = _map_block(_verified_npz(results / "maps.npz"), base_summary["provenance"]["config"]["grid"])
     pic_summary = _verified_json(pic_v2 / "summary.json")
@@ -223,7 +231,7 @@ canvas{width:100%;height:auto;background:#0b0f14;border-radius:6px} .muted{color
 <section><h2>Axis potential (L2 vs PIC) and wall ion flux</h2><canvas id="axis" width="720" height="360"></canvas></section>
 <section><h2>L2 base: potential and log10 n_e</h2><canvas id="mapl2" width="720" height="420"></canvas></section>
 <section><h2>PIC base plateau: potential and log10 n_e</h2><canvas id="mappic" width="720" height="420"></canvas></section>
-<section class="wide"><h2>Series of every finished case (I_d, S, n_g, cell T_e, energy residual)</h2><canvas id="series" width="1440" height="420"></canvas></section>
+<section class="wide"><h2>Series of the base case (I_d, S, n_g, cell T_e, energy residual) - the only case whose series.npz is part of the tracked record</h2><canvas id="series" width="1440" height="420"></canvas></section>
 <section class="wide"><h2>Refinement families, input sensitivity and cost</h2><table id="levels"></table><div id="cost" class="muted small"></div></section>
 <section class="wide"><h2>Claim boundary</h2><div id="boundary" class="boundary"></div></section>
 </main>
@@ -273,7 +281,7 @@ const cell=(arr,y0,h,vmin,vmax,label)=>{const W=680/nz,H=h/nr;for(let i=0;i<nr;i
 const pm=Math.max(...M.phi_v.flat());cell(M.phi_v,20,170,-20,pm,'phi [V] '+title+' (0..'+pm.toFixed(0)+' V)');const ne=M.log10_n_e;cell(ne,220,170,15,18.5,'log10 n_e [m^-3] '+title+' (15..18.5)');
 x.setLineDash([3,3]);x.strokeStyle='#ffffffaa';D.partition.cusp_z_m.forEach(z=>{const px=40+z/0.024*680;x.beginPath();x.moveTo(px,20);x.lineTo(px,390);x.stroke()});x.setLineDash([])}
 heat('mapl2',D.maps.l2,'L2');heat('mappic',D.maps.pic,'PIC');
-function series(){const cv=document.getElementById('series'),x=cv.getContext('2d');x.fillStyle='#0b0f14';x.fillRect(0,0,cv.width,cv.height);const names=Object.keys(D.cases).filter(n=>D.cases[n].finished);
+function series(){const cv=document.getElementById('series'),x=cv.getContext('2d');x.fillStyle='#0b0f14';x.fillRect(0,0,cv.width,cv.height);const names=Object.keys(D.cases).filter(n=>D.cases[n].finished&&D.cases[n].series);
 const cols=['#4ea1ff','#ffb347','#9be49f','#ff9b9d','#c9a0ff','#7fd8ff','#ffd27f','#b8f2b0','#ffb3c1','#d0b3ff','#a0e0ff'];
 const panel=(x0,w,key,title,ymin,ymax,pick)=>{x.fillStyle='#e6edf3';x.font='12px sans-serif';x.fillText(title,x0+6,14);const tmax=Math.max(...names.map(n=>D.cases[n].series.time_us.slice(-1)[0]));
 names.forEach((n,ci)=>{const s=D.cases[n].series;const ys=pick?pick(s):s[key];x.strokeStyle=cols[ci%cols.length];x.lineWidth=n==='base'?2:1;x.beginPath();ys.forEach((v,i)=>{const px=x0+s.time_us[i]/tmax*w,py=400-(v-ymin)/(ymax-ymin)*370;i?x.lineTo(px,py):x.moveTo(px,py)});x.stroke()});

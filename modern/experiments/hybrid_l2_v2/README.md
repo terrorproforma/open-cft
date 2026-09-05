@@ -106,3 +106,21 @@ Each case writes `results/` (base) or `results-<case>/`: `series.jsonl` (untrack
   33 um refinement `pic2d_cft_steady_state_v4` reached its plateau at 7.28 us / 5.2 M steps / 18,013 s while
   the L2 cases were running); it adds an INFORMATIONAL column and changes nothing in the model, the protocol
   or the gate evaluation.
+
+## Post-hoc audit note (2026-09-05 - merge of the PARKED record into main)
+
+* `origin/feat/hybrid-l2-v2` @ `277fc911` (merge-base `5da74ee6`) was merged into `feat/sota-foundation` / `main`
+  with a merge commit that preserves the six branch commits. The verdict (`not_evaluable`, comparison FAIL 24/28),
+  `protocol.json`, `preflight.json`, `shakedown.json`, every file under `results*/` and every `.sha256.json` sidecar
+  are byte-identical to the branch. `cft_revival.hybrid`, `run.py`, `closure.py` and the 96 hybrid tests are unchanged
+  and pass against main's tree (CPU-only). No hybrid test asserts a sealed digest against the live tree, so the
+  `frozen_contract` binding used by other experiments was not needed here.
+* One post-hoc change, in the visualization only: `modern/visualization/generate_hybrid_l2_v2_dashboard.py` read
+  `series.npz` of every finished case, but the record tracks `series.npz` for the base case alone (the four other
+  finished cases are recorded by their `summary.json`), so `hybrid-l2-v2.html` could not be regenerated from a clean
+  checkout and its four tests errored (`FileNotFoundError: results-seed-b/series.npz`). The generator now embeds
+  the base case's series only and reads nothing outside the tracked record; `hybrid-l2-v2.html` was regenerated.
+  The embedded payload differs from the branch's dashboard ONLY in `cases.{seed-b, spatial-coarse, spatial-fine,
+  temporal-coarse}.series` (600 decimated points each, dropped); verdict, identity hashes, comparison table, GATE-L2
+  metrics, level spreads, cost, the base series and both map blocks are identical. The four cases' summaries (stop
+  reason, steps, window currents, cells, plateau, energy residual) stay embedded. No recorded value changed.
