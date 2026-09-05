@@ -80,6 +80,7 @@ from cft_revival.pic2d.simulation import (
     SeriesRecord,
     Simulation,
     instantaneous_maps,
+    omega_pe_gate_min_macro_particles,
 )
 from experiments.pic2d_cft_snapshot_v1.run import _exit_areas, _file_sha256, git_head
 from experiments.pic2d_cft_steady_state_v1.gpu_sampler import DEFAULT_INTERVAL_SECONDS, GpuUtilisationSampler
@@ -152,6 +153,9 @@ PEAK_NODE_SCALARS = (
     "n_e_peak_per_m3", "t_e_peak_ev", "debye_length_m", "cells_per_debye", "macro_particles_at_peak", "t_e_dense_ev",
     "r_m", "z_m",
 )
+# v2.1.2: definedness of the T_e,dense statistic (resolved dense set) + the unfloored witness + the floor the record was formed
+# with; absent from pre-v2.1.2 records -> NaN (evaluate_triad then falls back to the macro_particles_at_peak >= floor proxy)
+PEAK_NODE_SCALARS_V212 = ("t_e_dense_resolved", "t_e_dense_resolved_node_count", "t_e_dense_raw_ev", "min_particles_for_peak")
 # v2.0.3 window-mode peak-Debye gate (peak_node["window"]); NaN in single-step records -> arrays peak_node_window_<key>
 # v2.0.6: + the accumulated particle-steps at the gated peak (NaN without the accumulated floor) and the v2.0.3
 # occupancy-floor witness ``occupancy_floor_peak.cells_per_debye`` -> array peak_node_window_occupancy_floor_cells_per_debye
@@ -622,7 +626,62 @@ def cathode_connectivity_check(protocol: dict[str, Any], field_map: MagneticFiel
     return summary
 
 
-def evaluate_triad(arrays: dict[str, np.ndarray], rule: dict[str, Any], transit_time_s: float) -> dict[str, Any] | None:
+def resolved_trailing_drift(time_s: np.ndarray, values: np.ndarray, resolved: np.ndarray, fraction: float) -> tuple[float | None, float | None]:
+    """v2.1.2: :func:`trailing_time_drift` of a statistic that is defined only on the records flagged ``resolved``.
+
+    Returns ``(drift, resolved_fraction)``: the drift over the trailing ``fraction`` of the elapsed time when EVERY record in
+    that window carries a resolved reading, else ``None`` (the statistic is undefined over the window - a drift of a shot-noise
+    or zero-filled series is not a drift); ``resolved_fraction`` is the share of the window's records that are resolved (None
+    when the window holds no record).  The window is exactly the one :func:`trailing_time_drift` fits.
+    """
+
+    if time_s.size == 0:
+        return None, None
+    t_end = float(time_s[-1])
+    mask = time_s >= t_end - fraction * t_end
+    if not mask.any():
+        return None, None
+    share = float(np.mean(resolved[mask]))
+    if share < 1.0:
+        return None, share
+    return trailing_time_drift(time_s, values, fraction), share
+
+
+def t_e_dense_resolved_mask(arrays: Mapping[str, np.ndarray], min_macro_particles: int | None) -> tuple[np.ndarray, str]:
+    """v2.1.2: per-record definedness of the T_e,dense statistic and how it was determined.
+
+    Records written by model v2.1.2 or later carry ``peak_node.t_e_dense_resolved`` (the resolved dense set was non-empty).
+    Older records have no flag; there ``macro_particles_at_peak >= floor`` is an EXACT proxy for "a node reached the
+    occupancy floor" (the peak node is the densest resolved node when one exists, else the raw single-particle maximum,
+    which by construction holds fewer than the floor) - the floor is the one the record was formed with,
+    ``numerics.peak_debye_gate.min_macro_particles_at_peak`` (16 without a gate) = :func:`omega_pe_gate_min_macro_particles`.
+    Without the floor (offline callers that do not pass it) a legacy series keeps its pre-v2.1.2 reading (every record
+    counted as resolved) and the triad record says so (``t_e_dense_definedness`` = ``legacy_unfloored``).  A resume of an
+    older run under v2.1.2 mixes both kinds of record; each is read by its own rule.  Synthetic arrays without a peak-node
+    block are resolved everywhere.
+    """
+
+    values = arrays["peak_node_t_e_dense_ev"]
+    flag = arrays.get("peak_node_t_e_dense_resolved")
+    resolved = np.ones(values.shape, dtype=bool)
+    method = "synthetic"
+    flagged = np.zeros(values.shape, dtype=bool) if flag is None else np.isfinite(flag)
+    if flagged.any():
+        resolved[flagged] = flag[flagged] > 0.5
+        method = "record_flag"
+    unflagged = ~flagged
+    particles = arrays.get("peak_node_macro_particles_at_peak")
+    if unflagged.any() and particles is not None:
+        if min_macro_particles is not None:
+            resolved[unflagged] = particles[unflagged] >= float(min_macro_particles)
+            method = "record_flag+legacy_proxy" if flagged.any() else "legacy_proxy"
+        else:
+            method = "record_flag+legacy_unfloored" if flagged.any() else "legacy_unfloored"
+    return resolved, method
+
+
+def evaluate_triad(arrays: dict[str, np.ndarray], rule: dict[str, Any], transit_time_s: float, *,
+                   t_e_dense_min_macro_particles: int | None = None) -> dict[str, Any] | None:
     """v1.4 grid-heating triad (literature review, blocker 1, change (d)3), recorded and gated.
 
     (i) energy-ledger residual over the electrode work (cumulative; the momentum-conserving
@@ -669,6 +728,27 @@ def evaluate_triad(arrays: dict[str, np.ndarray], rule: dict[str, Any], transit_
     only once ``min_transit_times`` have elapsed AND the settle latch has closed (the run's own I_d drift has read
     inside the plateau bound once); ``enforced_after_transit_times`` is then superseded (recorded, not used).  The
     windowed residual-power member is unchanged: enforced from the first complete window whatever the arming.
+
+    v2.1.2 (2026-09-05, external-validation v0 bohm-0.4 launch 2, record cd9bb41c): the two SINGLE-STEP-DEPOSIT members
+    read their statistic only where it is DEFINED.  The T_e,dense member reads ``peak_node_t_e_dense_ev`` - from v2.1.2
+    the density-weighted T_e over the nodes that hold >= the occupancy floor (32 macro-electrons under the v2.0.3+
+    gates) in the single-step deposit, see ``cft_revival.pic2d.simulation.peak_node_debye`` - and the omega_pe dt member
+    reads ``peak_omega_pe_dt`` (the v2.0.4 resolved-node peak, 0.0 when no node reaches the floor).  Each member is a
+    drift only when EVERY record of the trailing window carries a resolved reading (``t_e_dense_resolved`` /
+    ``peak_omega_pe_dt > 0``); otherwise it is ``None``: recorded, never enforced, and - as for any ``None`` member since
+    v1.4 - it does not certify a plateau (``soft_ok`` False; the run continues to its budget, the assessment reads
+    ``no_plateau``).  The single-step reading was chosen because that is what the member's statistic IS: the S member
+    reads an interval-integrated whole-domain rate and the I_d / N_e / n_g plateau members read integral quantities
+    (immune to node shot noise by construction), while T_e,dense and omega_pe dt are node statistics of one deposit; the
+    window-averaged peak (accumulated-particle-step floor) is the peak-Debye gate's statistic and stays its own member.
+    Legacy series (no ``t_e_dense_resolved`` key) are read through the exact proxy ``macro_particles_at_peak >= floor``
+    when the caller passes ``t_e_dense_min_macro_particles`` (the runner passes the configuration's floor); without it
+    they keep their recorded reading (``t_e_dense_definedness`` names the rule that was applied).  Witnesses recorded:
+    ``t_e_dense_drift_unfloored`` (the pre-v2.1.2 statistic where the series carries it) and the resolved share of the
+    window for both members.  Re-read of the records: ss-v4 / attempt 8 / sweep 047-009-reference-056 / alpha 1/64 are
+    resolved at every record (readings unchanged; attempt 8 is still stopped by the residual member); alpha 1/16 and
+    0.345 and the ext-val L2 are unresolved over their whole trailing windows -> the T_e,dense member reads ``None``
+    (the 1/16 stop stands on its S member -0.618; the ext-val L2 stop -0.328 does not reproduce - an artefact).
     """
 
     block = rule.get("grid_heating_triad")
@@ -680,12 +760,25 @@ def evaluate_triad(arrays: dict[str, np.ndarray], rule: dict[str, Any], transit_
     residual = float(arrays["interval_residual_j"][1:].sum())
     electrode = float(arrays["interval_electrode_work_j"][1:].sum())
     ratio = residual / electrode if abs(electrode) > 0.0 else None
+    # v2.1.2: the single-step-deposit members are drifts only where their statistic is defined over the whole window
+    omega_values = arrays["peak_omega_pe_dt"]
+    omega_drift, omega_share = resolved_trailing_drift(time_s, omega_values, omega_values > 0.0, fraction)
     drifts = {
         "ionisation_rate_drift": trailing_time_drift(time_s, arrays["current_ionization_rate_per_s"], fraction),
-        "omega_pe_dt_drift": trailing_time_drift(time_s, arrays["peak_omega_pe_dt"], fraction),
+        "omega_pe_dt_drift": omega_drift,
     }
+    definedness: dict[str, Any] = {"omega_pe_dt_resolved_share_of_window": omega_share, "omega_pe_dt_definedness": "resolved_node_peak_gt_0"}
     if "peak_node_t_e_dense_ev" in arrays:
-        drifts["t_e_dense_drift"] = trailing_time_drift(time_s, arrays["peak_node_t_e_dense_ev"], fraction)
+        te_resolved, te_method = t_e_dense_resolved_mask(arrays, t_e_dense_min_macro_particles)
+        te_drift, te_share = resolved_trailing_drift(time_s, arrays["peak_node_t_e_dense_ev"], te_resolved, fraction)
+        drifts["t_e_dense_drift"] = te_drift
+        definedness |= {"t_e_dense_resolved_share_of_window": te_share, "t_e_dense_definedness": te_method,
+                        "t_e_dense_floor_macro_particles": t_e_dense_min_macro_particles}
+        raw = arrays.get("peak_node_t_e_dense_raw_ev")
+        if raw is not None and np.isfinite(raw).all():
+            definedness["t_e_dense_drift_unfloored"] = trailing_time_drift(time_s, raw, fraction)
+        elif te_method in ("legacy_proxy", "legacy_unfloored"):
+            definedness["t_e_dense_drift_unfloored"] = trailing_time_drift(time_s, arrays["peak_node_t_e_dense_ev"], fraction)
     soft = float(block["soft_drift_max"])
     hard = float(block["hard_drift_max"])
     residual_max = float(block["energy_residual_over_electrode_work_max"])
@@ -718,6 +811,7 @@ def evaluate_triad(arrays: dict[str, np.ndarray], rule: dict[str, Any], transit_
         "thresholds": {"energy_residual_over_electrode_work_max": residual_max, "soft_drift_max": soft, "hard_drift_max": hard,
                        "enforced_after_transit_times": enforce_after},
         "window_fraction": fraction,
+        "single_step_members_definedness": definedness,      # v2.1.2
     }
     if arming is not None:
         # v2.1.1: the drift members' arming state (latch) travels with every record; the legacy transit arming is superseded
@@ -829,7 +923,7 @@ def records_to_arrays(records: list[dict[str, Any]]) -> dict[str, np.ndarray]:
         for key in METASTABLE_SCALARS_V25:
             arrays[f"metastable_{key}"] = []
     if with_peak:
-        for key in PEAK_NODE_SCALARS:
+        for key in PEAK_NODE_SCALARS + PEAK_NODE_SCALARS_V212:
             arrays[f"peak_node_{key}"] = []
     with_window = with_peak and records[0]["peak_node"].get("window") is not None   # v2.0.3 window-mode gate
     if with_window:
@@ -882,6 +976,9 @@ def records_to_arrays(records: list[dict[str, Any]]) -> dict[str, np.ndarray]:
             peak = record["peak_node"]
             for key in PEAK_NODE_SCALARS:
                 arrays[f"peak_node_{key}"].append(float("nan") if peak[key] is None else float(peak[key]))
+            for key in PEAK_NODE_SCALARS_V212:     # v2.1.2 keys: NaN in older records
+                value = peak.get(key)
+                arrays[f"peak_node_{key}"].append(float("nan") if value is None else float(value))
         if with_window:
             window = record["peak_node"].get("window") or {}
             for key in PEAK_NODE_WINDOW_SCALARS:
@@ -962,6 +1059,9 @@ def status_from_record(
     if peak is not None:  # v1.4 peak-node Debye sample
         line["peak_node"] = {key: peak[key] for key in ("n_e_peak_per_m3", "t_e_peak_ev", "cells_per_debye", "macro_particles_at_peak",
                                                         "t_e_dense_ev", "z_m", "r_m")}
+        if "t_e_dense_resolved" in peak:    # v2.1.2: definedness of the T_e,dense statistic travels with the status line
+            line["peak_node"]["t_e_dense_resolved"] = peak["t_e_dense_resolved"]
+            line["peak_node"]["t_e_dense_resolved_node_count"] = peak["t_e_dense_resolved_node_count"]
         if "gate_enforced" in peak:
             line["peak_node"]["gate_enforced"] = peak["gate_enforced"]
             line["peak_node"]["gate_max_cells_per_debye"] = peak["gate_max_cells_per_debye"]
@@ -1372,7 +1472,7 @@ def write_final_artifacts(
     if records:
         plateau = evaluate_plateau(arrays["time_s"], arrays["current_discharge_a"], arrays["electrons"], rule, transit_time,
                                    arrays.get("neutral_density_per_m3"))
-        triad = evaluate_triad(arrays, rule, transit_time)
+        triad = evaluate_triad(arrays, rule, transit_time, t_e_dense_min_macro_particles=omega_pe_gate_min_macro_particles(config))
         if triad is not None:
             plateau["triad_soft_ok"] = triad["soft_ok"]
             plateau["reached"] = bool(plateau["reached"] and triad["soft_ok"])
@@ -1391,6 +1491,10 @@ def write_final_artifacts(
                 "trailing_20pct_mean_n_e_peak_per_m3": float(np.mean(arrays["peak_node_n_e_peak_per_m3"][-n_tail:])),
                 "trailing_20pct_mean_t_e_peak_ev": float(np.mean(arrays["peak_node_t_e_peak_ev"][-n_tail:])),
                 "trailing_20pct_mean_t_e_dense_ev": float(np.mean(arrays["peak_node_t_e_dense_ev"][-n_tail:])),
+                # v2.1.2: share of the trailing records whose T_e,dense statistic is resolved (None for pre-v2.1.2 records)
+                "trailing_20pct_t_e_dense_resolved_fraction": (
+                    float(np.mean(arrays["peak_node_t_e_dense_resolved"][-n_tail:] > 0.5))
+                    if "peak_node_t_e_dense_resolved" in arrays and np.isfinite(arrays["peak_node_t_e_dense_resolved"][-n_tail:]).all() else None),
                 "trailing_20pct_mean_macro_particles_at_peak": float(np.mean(arrays["peak_node_macro_particles_at_peak"][-n_tail:])),
                 "trailing_20pct_mean_peak_z_m": float(np.mean(arrays["peak_node_z_m"][-n_tail:])),
                 "gate": None if gate is None else gate.to_dict(),
@@ -1737,7 +1841,7 @@ def run_steady_state(
                 break
         last_plateau = evaluate_plateau(arrays["time_s"], arrays["current_discharge_a"], arrays["electrons"], rule, transit_time,
                                         arrays.get("neutral_density_per_m3"))
-        last_triad = evaluate_triad(arrays, rule, transit_time)
+        last_triad = evaluate_triad(arrays, rule, transit_time, t_e_dense_min_macro_particles=omega_pe_gate_min_macro_particles(config))
         if last_triad is not None:
             # v1.4: the grid-heating triad is a fail-closed gate once enforced, and a plateau precondition always
             if last_triad["hard_failures"]:
@@ -1964,8 +2068,9 @@ def _runner_stop_recovery_preflight(results: Path, protocol: dict[str, Any], sto
         transit = float(protocol_budget(protocol)["ion_transit_time_s"])
         plateau = evaluate_plateau(arrays["time_s"], arrays["current_discharge_a"], arrays["electrons"], rule, transit,
                                    arrays.get("neutral_density_per_m3"))
-        triad = evaluate_triad(arrays, rule, transit)
-        debye_window = evaluate_peak_debye_window(arrays, build_config(protocol, backend="cpu"))
+        recovery_config = build_config(protocol, backend="cpu")
+        triad = evaluate_triad(arrays, rule, transit, t_e_dense_min_macro_particles=omega_pe_gate_min_macro_particles(recovery_config))
+        debye_window = evaluate_peak_debye_window(arrays, recovery_config)
         if not plateau["reached"] or (triad is not None and not triad["soft_ok"]) or (debye_window is not None and not debye_window["soft_ok"]):
             raise PIC2DValidationError(f"the recorded series does not satisfy the plateau rule; refusing '{stop_reason}'")
         evidence = f"plateau rule holds on the recorded series at step {step} ({plateau['transit_times_elapsed']:.2f} transits)"

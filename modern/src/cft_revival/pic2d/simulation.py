@@ -666,6 +666,21 @@ def peak_node_debye(
     axis nodes would otherwise dominate the argmax; the unrestricted maximum is reported
     as ``raw_peak``).  Also returns the density-weighted T_e over the densest nodes
     (n >= dense_fraction * n_peak).
+
+    v2.1.2 (2026-09-05, found by the external-validation v0 bohm-0.4 launch-2 stop): ``t_e_dense_ev`` is now
+    the RESOLVED-node reading - the density-weighted T_e over the nodes that hold at least ``min_particles``
+    macro-electrons in this single-step deposit AND reach ``dense_fraction`` of the resolved peak density.  Up to
+    v2.1.1 the dense set was unfloored (every node at >= dense_fraction of the peak, and when no node reached the
+    floor the peak itself fell back to the raw single-particle maximum): at 20 um / W 82 467 the "densest node"
+    held 0.24-1.5 macro-electrons, its moment temperature was 0 to round-off in 73 % of the trailing records and
+    shot noise otherwise, and the runner's ``t_e_dense_drift`` member stopped a numerically clean marginal
+    discharge on the drift of that undefined statistic (-0.328) while the sibling omega_pe dt member was
+    correctly ``None`` under its v2.0.4 floor.  Same rule as v2.0.4: when no node reaches the floor the statistic
+    is UNDEFINED - ``t_e_dense_ev`` is 0.0 and ``t_e_dense_resolved`` False (``t_e_dense_resolved_node_count`` 0)
+    - and the runner's drift member reads ``None`` (unenforced) instead of a drift.  The unfloored statistic is
+    kept as the witness (``t_e_dense_raw_ev`` over ``dense_node_count_raw`` nodes; on a fully resolved dense set
+    the two readings coincide).  Diagnostic only: physics, deposition and every configuration identity are
+    untouched; the series record gains four keys.
     """
 
     plasma = masks.plasma_node
@@ -675,8 +690,10 @@ def peak_node_debye(
         drift2 = np.where(weight > 0.0, (vr**2 + vt**2 + vz**2) / np.maximum(weight, 1e-300) ** 2, 0.0)
         t_e = np.maximum(mean_v2 - drift2, 0.0) * ELECTRON_MASS_KG / (3.0 * EV_J)
     raw_flat = int(np.argmax(n_e))
-    qualified = np.where(weight >= float(min_particles), n_e, -1.0)
-    flat = int(np.argmax(qualified)) if np.any(qualified >= 0.0) else raw_flat
+    resolved = plasma & (weight >= float(min_particles))
+    qualified = np.where(resolved, n_e, -1.0)
+    any_resolved = bool(np.any(qualified >= 0.0))
+    flat = int(np.argmax(qualified)) if any_resolved else raw_flat
     i, j = np.unravel_index(flat, n_e.shape)
     n_peak = float(n_e[i, j])
     t_peak = float(t_e[i, j])
@@ -689,9 +706,14 @@ def peak_node_debye(
         cells_per_debye = cell / debye
     else:
         debye, cells_per_debye = None, 0.0      # no plasma at the peak: lambda_D undefined (None keeps the JSON finite)
-    dense = n_e >= dense_fraction * n_peak if n_peak > 0.0 else np.zeros_like(plasma)
-    dense_weight = n_e[dense]
-    t_dense = float(np.sum(t_e[dense] * dense_weight) / dense_weight.sum()) if dense_weight.sum() > 0.0 else 0.0
+
+    def _dense_t_e(dense_mask: np.ndarray) -> float:
+        dense_weight = n_e[dense_mask]
+        return float(np.sum(t_e[dense_mask] * dense_weight) / dense_weight.sum()) if dense_weight.sum() > 0.0 else 0.0
+
+    # v2.1.2: the gated statistic reads the resolved dense set; the unfloored (pre-v2.1.2) reading is the witness
+    dense = resolved & (n_e >= dense_fraction * n_peak) if any_resolved and n_peak > 0.0 else np.zeros_like(plasma)
+    dense_raw = n_e >= dense_fraction * n_peak if n_peak > 0.0 else np.zeros_like(plasma)
     return {
         "node": [int(i), int(j)],
         "r_m": float(i * grid.dr_m),
@@ -703,8 +725,12 @@ def peak_node_debye(
         "cells_per_debye": cells_per_debye,
         "dz_per_debye": grid.dz_m / debye if debye is not None else 0.0,
         "dr_per_debye": grid.dr_m / debye if debye is not None else 0.0,
-        "t_e_dense_ev": t_dense,
+        "t_e_dense_ev": _dense_t_e(dense),
         "dense_node_count": int(dense.sum()),
+        "t_e_dense_resolved": bool(dense.any()),
+        "t_e_dense_resolved_node_count": int(dense.sum()),
+        "t_e_dense_raw_ev": _dense_t_e(dense_raw),
+        "dense_node_count_raw": int(dense_raw.sum()),
         "min_particles_for_peak": int(min_particles),
         "raw_peak": {"node": [int(k) for k in np.unravel_index(raw_flat, n_e.shape)], "n_e_per_m3": float(n_e.flat[raw_flat]),
                      "macro_particles": float(weight.flat[raw_flat])},
@@ -3002,6 +3028,10 @@ class Simulation:
             # deposit (the raw single-node peak is recorded alongside as peak_omega_pe_dt_raw)
             "omega_pe_dt_gate": {"statistic": "resolved_node_single_step_peak", "min_macro_particles": omega_pe_gate_min_macro_particles(self.config),
                                  "limit": self.config.limits.max_omega_pe_dt},
+            # v2.1.2: the T_e,dense statistic of the grid-heating triad reads the density-weighted T_e over the nodes holding >= this
+            # many macro-electrons in the step's deposit (undefined -> t_e_dense_resolved False; the unfloored reading is the witness)
+            "t_e_dense_statistic": {"statistic": "resolved_dense_set_single_step", "min_macro_particles": omega_pe_gate_min_macro_particles(self.config),
+                                    "dense_fraction": self.config.peak_debye_gate.dense_fraction if self.config.peak_debye_gate is not None else 0.5},
             "anomalous": None if self.config.anomalous is None else self.config.anomalous.to_dict(),
             "see": None if self.config.see is None else self.config.see.to_dict(),
             "coulomb": None if self.config.coulomb is None else self.config.coulomb.to_dict(),

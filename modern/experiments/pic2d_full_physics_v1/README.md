@@ -89,6 +89,19 @@ full-physics-alpha0 `7587b0f3`, full-physics-alpha1over16 `198fb4c6`, full-physi
 
 * **(a) plateau**: the v4 rule (≥ 3 transits, trailing-20 % drifts of I_d / N_e / n_g < 5 %, triad soft bounds, Debye soft margin 2.5); the triad's
   drift members arm by the v2.1.1 latch.
+  * *Documentary note (2026-09-05, model v2.1.2; the sealed protocols and `--expect-commit b45f6728` are untouched):* this campaign runs **v2.1.1**
+    code, in which the triad's **T_e,dense drift member is unprotected** — `peak_node.t_e_dense_ev` is the density-weighted T_e over EVERY node at
+    ≥ half the single-step peak density, with no occupancy floor, so on a discharge whose densest single-step node holds fewer than 32
+    macro-electrons it is the drift of an undefined statistic (the ext-val `bohm-0.4` launch 2 was stopped by exactly that at 1.26 transits:
+    record `cd9bb41c`, T_e,dense = 0 to round-off in 73 % of its trailing records; model v2.1.2 gives the member the v2.0.4 resolved-node reading,
+    spec `triad_te_dense_floor_v2_1_2`). Here the cases run the ss-v4 template (W 2.667e4, 45 810 cells, 5.6e5–8.7e5 electrons at the 0.14 µs
+    shakedowns), at which ss-v4 / 047 / 009 / reference were resolved at every record, so the artefact class is unlikely — but not excluded for an
+    α case that re-equilibrates to a lower density under the latch. **Rule:** a `grid_heating_triad_gate_stopped_run` on `t_e_dense_drift` in this
+    campaign is NOT a heating verdict until classified heating / re-equilibration / extinction / artefact from the record: read
+    `peak_node_macro_particles_at_peak` over the trailing window (< 32 at every record ⇒ the statistic was undefined ⇒ artefact, as in `cd9bb41c`),
+    the residual-power and accumulated-floor Debye readings (the physics protections), and the S / I_d / N_e trajectories; the v2.1.2 runner's
+    `evaluate_triad(..., t_e_dense_min_macro_particles=32)` re-reads the recorded series under the protected reading. No relaunch before that
+    classification; a relaunch under v2.1.2 would be an amendment (a new `--expect-commit`), recorded here.
 * **(b) corrected residual** < +2 % (one-sided; the reference reads +2.46 % = FAIL).
 * **(c) shift table vs ss-v4** with the 50 µm particle band (I_d 5.7 %, I_beam 5.7 %, S 4.6 %, utilisation 4.6 %, n_g 4.0 %, peak n_e 11.9 %, T_e,peak 9.3 %),
   absolute bands for the IEDF low-energy fraction (0.03) and the ionisation centroid (1 mm); plus anode ion current, wall electron power, wall-ion
