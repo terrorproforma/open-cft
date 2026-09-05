@@ -205,6 +205,32 @@ modern/experiments/pic2d_design_mini_sweep_v1/results/l1a-gs-v3-056-effcbc8686-c
 modern/experiments/pic2d_design_mini_sweep_v1/results/l1a-gs-v3-056-effcbc8686-channel-33um-launch1-triad-gate-stop/*.pid
 modern/experiments/pic2d_design_mini_sweep_v1/results/l1a-gs-v3-056-effcbc8686-channel-33um-launch1-triad-gate-stop/*.log
 modern/experiments/pic2d_design_mini_sweep_v1/results/l1a-gs-v3-056-effcbc8686-channel-33um-launch1-triad-gate-stop/*.err
+# 009 launch 1 = plateau record (canonical directory), same contract (+ ledger-corrected.json, assessment.json, closure-targets.json)
+!modern/experiments/pic2d_design_mini_sweep_v1/results/l1a-gs-v3-009-d0c686b4aa-channel-33um/
+!modern/experiments/pic2d_design_mini_sweep_v1/results/l1a-gs-v3-009-d0c686b4aa-channel-33um/maps.npz
+!modern/experiments/pic2d_design_mini_sweep_v1/results/l1a-gs-v3-009-d0c686b4aa-channel-33um/series.npz
+modern/experiments/pic2d_design_mini_sweep_v1/results/l1a-gs-v3-009-d0c686b4aa-channel-33um/checkpoint/
+modern/experiments/pic2d_design_mini_sweep_v1/results/l1a-gs-v3-009-d0c686b4aa-channel-33um/frames/
+modern/experiments/pic2d_design_mini_sweep_v1/results/l1a-gs-v3-009-d0c686b4aa-channel-33um/video/
+modern/experiments/pic2d_design_mini_sweep_v1/results/l1a-gs-v3-009-d0c686b4aa-channel-33um/checkpoint-final.npz
+modern/experiments/pic2d_design_mini_sweep_v1/results/l1a-gs-v3-009-d0c686b4aa-channel-33um/checkpoint-final.field.npz
+modern/experiments/pic2d_design_mini_sweep_v1/results/l1a-gs-v3-009-d0c686b4aa-channel-33um/series.jsonl
+modern/experiments/pic2d_design_mini_sweep_v1/results/l1a-gs-v3-009-d0c686b4aa-channel-33um/*.pid
+modern/experiments/pic2d_design_mini_sweep_v1/results/l1a-gs-v3-009-d0c686b4aa-channel-33um/*.log
+modern/experiments/pic2d_design_mini_sweep_v1/results/l1a-gs-v3-009-d0c686b4aa-channel-33um/*.err
+# reference (divergent-exit-stack) launch 1 = plateau record (canonical directory), same contract
+!modern/experiments/pic2d_design_mini_sweep_v1/results/divergent-exit-stack-channel-33um/
+!modern/experiments/pic2d_design_mini_sweep_v1/results/divergent-exit-stack-channel-33um/maps.npz
+!modern/experiments/pic2d_design_mini_sweep_v1/results/divergent-exit-stack-channel-33um/series.npz
+modern/experiments/pic2d_design_mini_sweep_v1/results/divergent-exit-stack-channel-33um/checkpoint/
+modern/experiments/pic2d_design_mini_sweep_v1/results/divergent-exit-stack-channel-33um/frames/
+modern/experiments/pic2d_design_mini_sweep_v1/results/divergent-exit-stack-channel-33um/video/
+modern/experiments/pic2d_design_mini_sweep_v1/results/divergent-exit-stack-channel-33um/checkpoint-final.npz
+modern/experiments/pic2d_design_mini_sweep_v1/results/divergent-exit-stack-channel-33um/checkpoint-final.field.npz
+modern/experiments/pic2d_design_mini_sweep_v1/results/divergent-exit-stack-channel-33um/series.jsonl
+modern/experiments/pic2d_design_mini_sweep_v1/results/divergent-exit-stack-channel-33um/*.pid
+modern/experiments/pic2d_design_mini_sweep_v1/results/divergent-exit-stack-channel-33um/*.log
+modern/experiments/pic2d_design_mini_sweep_v1/results/divergent-exit-stack-channel-33um/*.err
 # PIC-2D plume development run v1 (model v2.0): results stay untracked until the run ends;
 # attempt 3 (no ignition) is kept as a development record: summary (with the frames manifest),
 # run state, status/series/maps, final checkpoint metadata; the frames, the videos, the
