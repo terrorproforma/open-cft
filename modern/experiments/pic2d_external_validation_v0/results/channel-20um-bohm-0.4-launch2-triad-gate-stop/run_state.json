@@ -1,0 +1,1 @@
+{"checkpoint_step":2520000,"checkpoint_time_s":1.7640000000000002e-06,"finished":true,"frames_written":63,"sessions":[{"pid":49403,"resumed_from_step":0,"started_utc":"2026-09-04T19:07:27.212393+00:00","wall_budget_seconds":165600.0}],"stop_reason":"grid_heating_triad_gate_stopped_run","wall_seconds_total":7886.505332797002}

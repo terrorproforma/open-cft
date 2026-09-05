@@ -293,6 +293,21 @@ modern/experiments/pic2d_external_validation_v0/results/channel-20um-launch1-tri
 modern/experiments/pic2d_external_validation_v0/results/channel-20um-launch1-triad-gate-stop/*.pid
 modern/experiments/pic2d_external_validation_v0/results/channel-20um-launch1-triad-gate-stop/*.log
 modern/experiments/pic2d_external_validation_v0/results/channel-20um-launch1-triad-gate-stop/*.err
+# channel-20um-bohm-0.4 launch 2 (amendment 1) = drift-member (T_e,dense) ARTEFACT stop at 1.26 transits on a marginal sustained
+# low-density discharge, archived as results/channel-20um-bohm-0.4-launch2-triad-gate-stop/ (same contract + ledger-corrected.json
+# witness + triad-stop-diagnosis.json) so that the canonical results/channel-20um-bohm-0.4/ stays free.
+!modern/experiments/pic2d_external_validation_v0/results/channel-20um-bohm-0.4-launch2-triad-gate-stop/
+!modern/experiments/pic2d_external_validation_v0/results/channel-20um-bohm-0.4-launch2-triad-gate-stop/maps.npz
+!modern/experiments/pic2d_external_validation_v0/results/channel-20um-bohm-0.4-launch2-triad-gate-stop/series.npz
+modern/experiments/pic2d_external_validation_v0/results/channel-20um-bohm-0.4-launch2-triad-gate-stop/checkpoint/
+modern/experiments/pic2d_external_validation_v0/results/channel-20um-bohm-0.4-launch2-triad-gate-stop/frames/
+modern/experiments/pic2d_external_validation_v0/results/channel-20um-bohm-0.4-launch2-triad-gate-stop/video/
+modern/experiments/pic2d_external_validation_v0/results/channel-20um-bohm-0.4-launch2-triad-gate-stop/checkpoint-final.npz
+modern/experiments/pic2d_external_validation_v0/results/channel-20um-bohm-0.4-launch2-triad-gate-stop/checkpoint-final.field.npz
+modern/experiments/pic2d_external_validation_v0/results/channel-20um-bohm-0.4-launch2-triad-gate-stop/series.jsonl
+modern/experiments/pic2d_external_validation_v0/results/channel-20um-bohm-0.4-launch2-triad-gate-stop/*.pid
+modern/experiments/pic2d_external_validation_v0/results/channel-20um-bohm-0.4-launch2-triad-gate-stop/*.log
+modern/experiments/pic2d_external_validation_v0/results/channel-20um-bohm-0.4-launch2-triad-gate-stop/*.err
 
 # pic2d anomalous-transport alpha-series v1 (R1): per-case records under results/<case>/ with the v4 record contract
 # (+ triad-stop-diagnosis.json / assessment.json where produced); alpha-1over16 = launch 1 (extinguished under the closure,

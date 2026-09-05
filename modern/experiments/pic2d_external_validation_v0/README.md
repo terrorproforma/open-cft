@@ -1,6 +1,8 @@
 # pic2d external validation v0 - code-to-code vs Brandt et al. 2016 (PREREGISTERED option `channel-20um`, Lambda H100)
 
-**Status: PREREGISTERED (section 9); one execution on the Lambda H100 from the preregistration commit.** This directory is the roadmap's
+**Status: PREREGISTERED (section 9); two executions on the Lambda H100 — launch 1 `channel-20um` (section 10: heating stop, INCONCLUSIVE) and
+launch 2 `channel-20um-bohm-0.4` under amendment 1 (section 14: drift-member ARTEFACT stop on a marginal sustained low-density discharge,
+INCONCLUSIVE; no launch 3 now — it waits for the full-physics model).** This directory is the roadmap's
 "External validation v0 - code-to-code vs Brandt 2016" step (`LITERATURE_SYNTHESIS.md` 5.7 / 7a; `paper/evidence/result-gates.json`
 GATE-L3 stays closed): the reference case extracted from the paper and its companion thesis (section 1-2), the reconstruction of its
 magnet stack on the parametric CFT geometry v1.1 (3), the material-aware P2 field with published-anchor gates (4), the ASME V&V 20
@@ -496,6 +498,77 @@ at 0.5 µs — nor yet a decay); I_d drift +0.01, S drift +0.11, residual window
    (§8 conditions apply) and no amendment follows.
 4. `tools/cloud/jobs.yaml` keeps the job at `a1065ce4` (running); the α-series' `r1-queue` waiter continues behind it.
 
+## 14. Launch 2 outcome (`channel-20um-bohm-0.4`): STOPPED by the T_e,dense drift member at 1.26 transits — a gate ARTEFACT on a marginal, sustained low-density discharge; INCONCLUSIVE; no launch 3 now (2026-09-05 10:45 AEST)
+
+Record: `results/channel-20um-bohm-0.4-launch2-triad-gate-stop/` (v4 contract: summary with the frames manifest, execution lock, run state,
+status / series / maps, final checkpoint metadata + sha256 sidecars, the sealed protocol copy; `assessment.json` / `comparison.json` from
+`run.py assess` / `compare --results-dir`; `ledger-corrected.json` from `ledger_recompute` as the witness that the ledger is natively
+W-corrected (`already_w_scaled: true`; recorded +0.250 %, H recomputed +0.252 %); `triad-stop-diagnosis.json` with the analysis script
+embedded). Bytes verified against the box's `sha256sum`. Frames (63), the particle checkpoint (5.9 MB), the field anchor and `series.jsonl`
+stay on the box (`/lambda/nfs/h100-files/cft/jobs/ext-val-v0-channel-20um-bohm-0.4/`). The canonical `results/channel-20um-bohm-0.4/` is
+free for a future execution.
+
+**Stop.** PID 49403, launched 19:07:11 UTC 2026-09-04, exited 21:18:54 UTC, `grid_heating_triad_gate_stopped_run` at step **2 520 000 =
+1.764 µs = 1.26 transits** (of 1.40 µs), 63 frames, 7887 s wall (2.19 h) at 3.1 ms/step as the fourth MPS client, exit 0, `finished: true`, no
+Xid. Member: **`t_e_dense_drift −0.328`** (hard 0.25); the S member read +0.001, the resolved ω_pe Δt member was **undefined** (`None`: no node
+ever held ≥ 32 macro-electrons). The drift members had armed at 1.0 transit (step 2 000 000, the sealed rule of §12); this was the 14th
+40 000-step checkpoint after arming — the T_e,dense member had random-walked between −0.21 and +0.22 at the previous 13.
+
+**Classification (heating / re-equilibration / extinction / artefact, `triad-stop-diagnosis.json#verdict`):**
+
+* **The STOP is (c) an ARTEFACT of an undefined statistic.** In the trailing 20 % of the run the densest node held **0.24–1.5 macro-electrons
+  (median 0.62)**: the whole inventory is 5.55e4 macro-electrons over 52 500 plasma cells — about one per cell at W 82 467 — so the
+  single-step "dense node" is a one-particle node whose density reads 4–8e18 (one macro-electron on a 20 µm node, the v2.0.4 lesson) and whose
+  temperature is **0 to round-off in 73 % of the records** (median 4.6e-16 eV, p95 1.5 eV, max 33 eV). The member is the trailing-20 % drift of
+  that noise. Its sibling, the ω_pe Δt member, carries the v2.0.4 occupancy floor and was correctly undefined; the T_e,dense member has no
+  floor (code follow-up, not a physics finding). Under the model v2.1.1 latch (≥ 2 transits AND I_d settled) none of the drift members would
+  have been armed at 1.26 transits.
+* **The DISCHARGE is (b) a RE-EQUILIBRATION to a marginal, sustained LOW-DENSITY state — not (d) extinction.** N_e 5.75e4 (seed) → 4.6e4
+  (0.05 µs) → **3.87e4 at 0.3 µs** (the minimum; 0.91 of the 0.05–0.2 µs reference at 0.5 µs) → 4.1e4 (0.5) → 5.0e4 (1.0) → 5.45e4 (1.4, arming)
+  → **5.55e4 at the stop** (ratio 1.27, still rising at +1.5 % per trailing window); N_i 5.3e4 → 7.07e4; S/S_ref 1.50 ± 0.03 from 0.5 µs on;
+  trailing drifts I_d +0.7 %, N_e +1.5 % (inside the plateau threshold at 1.26 < 3 transits, so no declaration). Neither the α-series'
+  extinction signature (N_e monotone down from the seed, the injected current returning through the exit plane — here **0.19 of the 1.80 mA
+  returns**) nor launch 1's avalanche (N_e ratio 3.46 at 0.5 µs, 13.4 at 0.7 µs).
+* **Not (a) heating**: windowed residual power **+0.25 %** of the electrode work (natively W-corrected; maximum over complete windows +0.30 %;
+  cumulative +0.14 %); accumulated-floor peak **0.53 cells/λ_D** (trailing mean 0.51; ~30 000 resolved nodes at 2.6–3.6 mean macro-electrons;
+  the 4.48 in the window statistics is the seed-deposit record before the first complete window). Numerically the cleanest run of the
+  campaign.
+
+**Where the discharge sat (trailing 400 000-step window; `window_currents_a`).** Injected 1.80 mA → anode electron current **1.75 mA** (0.19 mA
+returns through the exit plane): the injected beam reaches the anode almost entirely instead of being trapped. Ionisation S = 1.53e16 /s =
+2.45 mA-equivalent → wall electrons **2.28 mA** / wall ions **2.28 mA**, ion beam **0.097 mA**, anode ions 0.035 mA; the balances close to the
++0.04 mA of slow inventory growth. Peak n_e (window, resolved) 2.35e17 at T_e 6.1 eV; resolved n_i 4.7e17, channel mean 7.7e16. The anomalous
+hook ran at **ν_an = 0.4 ω_ce at ⟨|B|⟩ 0.52–0.60 T** over the inventory (4.2e10 events per electron per second; field maximum 0.77 T) — the
+electrons sit in the strong-field region and the leak carries the beam to the anode; a weak, wall-loss-dominated discharge.
+
+**vs Brandt 2016 (`comparison.json`, 10 channel rows formed, `quotable: false` — a 1.26-transit run without a plateau, §8 condition 1; the
+rows say where the model sits, they are not a comparison result):** I_a **1.71 mA vs 4.3** (E −2.59 mA against the 0.86 mA tolerance; 0.40×);
+net ionisation fraction 0.097 vs 0.24; I_beam 0.097 vs 2.5 mA (0.04×); resolved n_i 4.7e17 vs ~1e19 (−1.32 dex against 0.3; 0.05×);
+near-anode potential +9.7 V above the anode vs ~5 (the one row inside u_val); cusp drops 17 / 93 V vs ~10 / ~5; wall ion energy 329 vs 160 eV;
+wall ion current density 65 vs 640 A/m². Launch 1 (α = 0) sat at 2.6 mA / 9.3e18 and avalanching at its 0.52-transit heating stop; launch 2
+(α = 0.4) sits at 1.7 mA / 5e17 and marginally sustained: the reference's transport coefficient turns the avalanche into a weak discharge, and
+neither is the Brandt discharge.
+
+**Verdict: INCONCLUSIVE** (§8 condition 1; conditions 2 and 4 do NOT apply — this run was numerically clean). **The model with Brandt's
+transport coefficient (ν_an = 0.4 ω_ce, perpendicular rotation) does not sustain the Brandt discharge at their density either, at this grid /
+W: it settles at ~40 % of the anode current and ~5 % of the peak density.** Remaining gaps, all outside this protocol: **SEE** from the
+dielectric (absent — the audit's rank-2 effect; the R2 shakedown doubled I_d with SEE(BN) on the reference design), **spatial neutrals** (static
+uniform 2e20 here vs the reference's DSMC / Knudsen profile with its anode-side maximum — R5), **W parity** (8.6× the parity weight → ~1
+macro-electron per cell at this density, which is also what made the stop).
+
+**Decision: NO launch 3 now; the ext-val launch 3 waits for the full-physics model.** §13 rule 2 (a drift-member stop with a re-equilibrating
+discharge → launch 3 under an amendment 2 with the v2.1.1 latch + an ignition gate) is formally satisfied, but a launch 3 with this identity
+replays bitwise to 1.26 transits and continues toward the same weak state (I_a 1.7 mA, n_i ~5e17, N_e growing +1.5 % per window): the plateau
+it would declare (~10–12 h of GPU) quantifies a miss by 2.5× in I_a and 20× in density, not a validation, and the miss cannot be attributed to
+the closure while SEE and the neutral profile are absent. The right launch 3 is a **Brandt-geometry case of the full-physics model**
+(`pic2d_full_physics_v1`, `b45f6728`: SEE(BN) + Knudsen spatial neutrals + Coulomb + this closure, all in code) — composed as its own
+preregistration, sealed at **particle parity** (at n_e ~ 1e17–1e19 a W of ~1e4 keeps the count inside the 12 M cap on the low-density branch and
+removes the one-particle-per-cell statistics that ended this run; if the discharge densifies toward 1e19 the cap binds and the 33 µm-style
+Debye margin must be re-derived) with the **v2.1.1 arming latch + an ignition gate calibrated on this seed transient** (N_e ratio 0.91 at 0.5 µs
+is the sustained branch's reading; launch 1's 3.46 the avalanche's). Nothing of launch 2 is relaunched; its record is the campaign's launch-2
+outcome. `tools/cloud/jobs.yaml` job `ext-val-v0-channel-20um-bohm-0.4` remains at `a1065ce4` and cannot relaunch (execution lock present) —
+disable it when the jobs file is next edited.
+
     $env:PYTHONPATH="$PWD\src;$PWD"; $env:OMP_NUM_THREADS='1'
     python -m experiments.pic2d_external_validation_v0.run reference          # the reference record
     python -m experiments.pic2d_external_validation_v0.run fields             # P2 solve (+ no-ring sensitivity), ~6 min, RSS <= 150 MB
@@ -565,3 +638,16 @@ launch guards incl. the launch-set and clean-worktree refusals; the shrunk-caden
   recommended as sealed (same W -> fewer particles per cell; the avalanche exceeds its envelope too); recommended route in section 10.
   `tools/cloud/jobs.yaml` job `ext-val-v0-channel-20um` remains enabled but cannot relaunch (execution lock present) - disable it when the
   jobs file is next edited. Slot freed at 13:56 UTC (the scheduler's four slots: ss25-base, sweep-056-launch2, sweep-reference, one free).
+* **2026-09-05 05:07:11 AEST (2026-09-04 19:07:11 UTC) - LAUNCH 2 of `channel-20um-bohm-0.4`** (amendment 1, section 12; commit `a1065ce4`,
+  sealed protocol `1aaa080d41cd`, config `a5ac7611af82`): details in section 12's launch log (PID 49403, r1-queue slot-waiter, fourth MPS client).
+* **2026-09-05 07:18:54 AEST (2026-09-04 21:18:54 UTC) - launch 2 STOPPED by the grid-heating triad's `t_e_dense_drift` member (-0.328) at
+  1.26 transits - a gate ARTEFACT on a marginal, sustained low-density discharge; INCONCLUSIVE; no launch 3 now (section 14).**
+  `grid_heating_triad_gate_stopped_run` at step 2,520,000 = 1.764 us, 63 frames, 7,887 s wall, 3.1 ms/step, exit 0, `finished: true`, no Xid.
+  The member read the trailing drift of an undefined statistic (the densest node held ~0.6 macro-electrons; T_e,dense 0 to round-off in 73 %
+  of the trailing records; the sibling omega_pe dt member was correctly undefined under its v2.0.4 floor); the discharge itself had
+  re-equilibrated to a weak sustained state (N_e 3.87e4 at 0.3 us -> 5.55e4 at the stop, S/S_ref 1.50 flat, I_d / N_e drifts +0.7 % / +1.5 %),
+  numerically clean (residual +0.25 %, 0.53 cells / lambda_D). Where it sat: I_a 1.71 mA (ref 4.3), I_beam 0.10 (2.5), resolved n_i 4.7e17 (~1e19),
+  injected 1.80 mA -> anode 1.75 mA, ionisation 2.45 mA-equivalent -> walls 2.28 / 2.28 mA. `assess` -> `no_plateau`; `compare` -> 10 rows,
+  `quotable: false`. Record commit: results-only (v4 contract + assessment / comparison / ledger witness / diagnosis) under
+  `results/channel-20um-bohm-0.4-launch2-triad-gate-stop/`, `.gitignore` negations, section 14. The slot freed at 21:18 UTC went to the
+  alpha-series `at-alpha-1over64` (21:28 UTC; that run extinguished - its README section 10).
