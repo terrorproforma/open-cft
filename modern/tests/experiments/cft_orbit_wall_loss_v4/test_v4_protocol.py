@@ -460,6 +460,44 @@ def test_convergence_report_handles_three_levels_without_raising() -> None:
 
 
 def test_manufactured_production_preflight_passes_without_outcomes() -> None:
-    report = manufactured_gate_report(protocol())
-    assert report["passed"]
-    assert all(report["checks"].values())
+    """Manufactured gates on this machine, CUDA parity from the record when no device is present.
+
+    The protocol's backend-parity gate binds BOTH devices; ``backend_parity(device="cuda:0")``
+    reports ``not_evaluated`` on a CPU-only host (``CUDA_VISIBLE_DEVICES=-1`` locally) and the
+    preflight must then fail CLOSED - a campaign may not start without the parity evidence. The
+    one execution evaluated it on the anchor GPU; that recorded artifact is the frozen evidence.
+    """
+
+    value = protocol()
+    report = manufactured_gate_report(value)
+    hardware_independent = {name: ok for name, ok in report["checks"].items() if name != "cuda_parity"}
+    assert all(hardware_independent.values()), hardware_independent
+    assert report["cpu_parity"]["status"] == "evaluated"
+    cuda = report["cuda_parity"]
+    if cuda["status"] == "evaluated":
+        assert report["checks"]["cuda_parity"] and report["passed"]
+    else:
+        assert cuda == {"status": "not_evaluated", "reason": cuda["reason"], "device": "cuda:0"} and cuda["reason"]
+        assert report["checks"]["cuda_parity"] is False and report["passed"] is False
+    if not EXECUTED:
+        return
+    recorded_path = experiment.RESULTS_ROOT / "artifacts" / "manufactured-gates.json"
+    sidecar = strict_json_file(recorded_path.with_name(recorded_path.name + ".sha256.json"))
+    assert sidecar["byte_sha256"] == hashlib.sha256(recorded_path.read_bytes()).hexdigest()
+    recorded = strict_json_file(recorded_path)
+    assert recorded["passed"] is True and all(recorded["checks"].values())
+    assert recorded["cuda_parity"]["status"] == "evaluated" and recorded["cuda_parity"]["device"] == "cuda:0"
+    assert recorded["cuda_parity"]["maximum_relative_velocity_difference"] <= value["gates"]["maximum_cpu_cuda_relative_velocity_difference"]
+    # the hardware-independent manufactured solutions replay against the record (platform ULP tolerance)
+    assert {name: ok for name, ok in recorded["checks"].items() if name != "cuda_parity"} == hardware_independent
+    for section in ("uniform_b", "helix_convergence", "varying_e_convergence", "mirror", "wall_event", "cpu_parity"):
+        live_section, recorded_section = report[section], recorded[section]
+        assert set(live_section) == set(recorded_section), section
+        for key, recorded_value in recorded_section.items():
+            live_value = live_section[key]
+            if isinstance(recorded_value, list):
+                assert len(live_value) == len(recorded_value) and all(math.isclose(a, b, rel_tol=1e-9, abs_tol=1e-15) for a, b in zip(live_value, recorded_value, strict=True)), (section, key)
+            elif isinstance(recorded_value, float):
+                assert math.isclose(live_value, recorded_value, rel_tol=1e-9, abs_tol=1e-15), (section, key)
+            else:
+                assert live_value == recorded_value, (section, key)
