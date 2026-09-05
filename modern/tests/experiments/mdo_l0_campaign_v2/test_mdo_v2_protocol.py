@@ -10,10 +10,12 @@ from pathlib import Path
 
 import pytest
 
-from cft_revival.experiment_runtime import semantic_sha256
+from cft_revival.experiment_runtime import semantic_sha256, strict_json_file
+from cft_revival.provenance import blob_exists
 
 from experiments.mdo_l0_campaign_v2 import experiment, model, optimizers as opt
 from experiments.mdo_l0_campaign_v2.experiment import (
+    EXPERIMENT,
     MODERN,
     PROTOCOL_PATH,
     REPOSITORY,
@@ -30,6 +32,18 @@ from experiments.mdo_l0_campaign_v2.experiment import (
 )
 
 CLASSIFICATION = "l0_model_optimisation_over_screened_design_catalogue_with_test_particle_wall_loss_closure_not_thruster_performance"
+RESULTS = EXPERIMENT / "results"
+README_PATH = EXPERIMENT / "README.md"
+# the commit the immutable execution lock names (preregistration = execution commit of v2)
+EXECUTION_COMMIT = "99914dc2fdbe88d18ab11ca86acad634129b4e08"
+# Repository files the campaign imports today that the sealed hash scope does not name. Every
+# entry was added to a shared package AFTER the execution (no blob at EXECUTION_COMMIT) and is
+# disclosed in README.md under "Post-hoc audit notes"; the sealed protocol, authorities and bundle
+# are untouched. Growth that is not both post hoc and disclosed fails the import-trace test.
+POST_HOC_IMPORTED_SHARED_MODULES = {
+    # fail-closed manifest recovery for the geometry-screening-v2 EMFILE, re-exported by experiment_runtime/__init__.py
+    "modern/src/cft_revival/experiment_runtime/recovery.py": "bb756418",
+}
 
 
 def test_protocol_is_strict_lf_json_and_consistent_with_modules() -> None:
@@ -184,10 +198,25 @@ def test_import_trace_in_a_fresh_interpreter_equals_the_hash_scope() -> None:
     completed = subprocess.run([sys.executable, "-c", script], cwd=MODERN, env=env, capture_output=True, text=True, timeout=600)
     assert completed.returncode == 0, completed.stderr[-2000:]
     report = json.loads(completed.stdout.strip().splitlines()[-1])
-    assert report["matches"], report
-    assert report["imported_not_in_scope"] == [] and report["in_scope_not_imported"] == []
+    assert report["in_scope_not_imported"] == []
     assert "modern/experiments/mdo_l0_campaign_v2/run.py" in report["imported"]
     assert "modern/src/cft_revival/experiment_runtime/canonical.py" in report["imported"]
+    # The scope is sealed (protocol.json semantic hash in authorities.json) and was exact when the
+    # campaign executed: the recorded binding gate says so. Growth of the live import graph since
+    # then is allowed only when it is post hoc (no blob at the execution commit) AND disclosed.
+    growth = report["imported_not_in_scope"]
+    assert set(growth) == set(POST_HOC_IMPORTED_SHARED_MODULES), growth
+    assert report["matches"] is (growth == [])
+    readme = README_PATH.read_text(encoding="utf-8")
+    for path, commit in POST_HOC_IMPORTED_SHARED_MODULES.items():
+        assert not blob_exists(REPOSITORY, EXECUTION_COMMIT, path), f"{path} existed at the execution commit: a sealing omission, not post-hoc growth"
+        assert (REPOSITORY / path).is_file(), path
+        assert path.rsplit("/", 1)[1] in readme and commit in readme, f"{path} is not disclosed in README.md"
+    lock = strict_json_file(RESULTS / "execution-lock.json")
+    assert lock["commit"] == EXECUTION_COMMIT and lock["immutable"] is True
+    recorded = strict_json_file(RESULTS / "artifacts" / "gates.json")["binding"]["code_hash_scope_matches_imports"]
+    assert recorded["passed"] is True and recorded["imported_not_in_scope"] == [] and recorded["in_scope_not_imported"] == []
+    assert recorded["imported_count"] == len(protocol()["code_contract"]["source_hash_scope"]) == len(report["declared"])
 
 
 def test_in_process_import_scope_report_shape() -> None:

@@ -63,3 +63,21 @@ $py = "..\.venv-sota\Scripts\python.exe"
 
 Tests: `tests/experiments/mdo_l0_campaign_v2` (system Python runs the torch-free subset).
 Dashboard: `visualization/mdo-l0-campaign-v2.html` (after the record).
+
+## Post-hoc audit notes
+
+### Import scope grew after the execution (disclosed here, never resealed)
+
+The sealed `code_contract.source_hash_scope` (28 files; `protocol.json`, frozen by its semantic
+hash in `authorities.json`) was exact when the campaign was preregistered and executed at
+`99914dc2`: the recorded binding gate `code_hash_scope_matches_imports` in
+`results/artifacts/gates.json` reads `imported_not_in_scope: []`, `in_scope_not_imported: []`.
+At `bb756418` (2026-09-03, after this record) the shared runtime gained
+`modern/src/cft_revival/experiment_runtime/recovery.py` — the fail-closed manifest recovery for the
+geometry-screening-v2 EMFILE publication failure — and `experiment_runtime/__init__.py` re-exports
+it, so a fresh-interpreter import trace of this campaign now lists that one file outside the sealed
+scope. Nothing in the protocol, the authorities or the bundle was edited; the sealed hashes are
+unchanged. The import-trace test (`test_import_trace_in_a_fresh_interpreter_equals_the_hash_scope`)
+binds the growth to this note: every file it finds outside the scope must have **no blob at the
+execution commit** (post-hoc growth, not a sealing omission) and must be named here. Any further
+growth fails the test until it is disclosed in this section.
