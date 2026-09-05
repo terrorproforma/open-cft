@@ -393,6 +393,26 @@
   peak n_e at finer grid = less finite-grid heating; the shifts point in the W x0.7 direction at ~2x
   its size, so grid and particle-weight effects are entangled — a W-only follow-up is still owed.
   "Converged" may not be said of either grid until the 25 um point (v5) reports.
+- [tool] (2026-09-05 15:40) The LOCAL `main` ref in the main checkout was stale at the original baseline
+  7ca3dc2d (324 behind origin/main) because every ff to main was pushed as `feat/sota-foundation:main`
+  without moving the local ref. `git branch --no-merged main` then lied (every branch "unmerged", 2.8M-line
+  diffs). Always audit merges against `origin/main` (or `git branch -f main origin/main` first — main is
+  never checked out, so it's safe). After the ff: genuinely unmerged = `feat/hybrid-l2-v2` (6 commits,
+  PARKED record); the 4 "unmerged" pic-2d patches were a `git cherry` FALSE POSITIVE (their equivalents
+  2b3372a0/eb8585c3/ad5be433/4dc40390 sit in the branch's OWN ancestry via merge-backs; `git range-diff`
+  pairs all four `=`). Rule: confirm any `git cherry +` with `git range-diff A^..A B^..B` before porting.
+- [self] (2026-09-05 16:20) CORRECTION: the `exp/*` lock branches (`l1a-field-surrogate-v3..v10`,
+  `cft-orbit-wall-loss-v1..v3`, `cft-wall-cusp-validation-v3..v7`) are the SOLE copies of those
+  `modern/experiments/<name>/` records — main never held those directories; it cites them by branch + SHA
+  (p2-field-authority spec, ROADMAP_AUDIT, blockers doc). Never delete/rewrite those branches; never
+  "merge" them either (each = old main ancestor + its experiment dir).
+- [self] Checked-in dashboards must rebuild from the TRACKED record only (inputs == `git ls-files`); a
+  generator reading untracked inputs passes on the author's machine and errors in every clean checkout
+  (hybrid L2 dashboard: 4 errors, fixed a19d8dbd).
+- [tool] `git worktree add <path> <branch>` fails when the branch is checked out in the main tree; use
+  `git worktree add --detach <path> <sha>` then `git push origin HEAD:refs/heads/<branch>`. PowerShell:
+  no heredocs, `<` reserved, piping paths into `git check-ignore --stdin` appends `\r`; use `-F <file>`
+  for commit messages and pass paths as arguments.
 - [self] (frozen-contract fix, 2026-09-05 15:30) Post-execution verifiers must recompute sealed digests from
   the RECORD'S OWN INVENTORY at the lock commit (`cft_revival.provenance`: batch `git cat-file`, fail-closed
   on unreachable commit / missing blob / CR) and RECORD live-tree drift (added/removed/changed) — never

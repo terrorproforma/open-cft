@@ -1581,6 +1581,38 @@ commit SHA(s) — headline numbers. Detail, validation and per-entry follow-ups:
 - Follow-ups: apply `frozen_contract` to l1b_hemp_confirmation v1/v1.1 and MDO v1's hash-scoped live assertions
   before the next shared-package commit; orbit_mc `warp_status().reason` "Warp initialized" when CUDA absent (v1.8).
 
+## 2026-09-05 15:40 AEST — "commit and merge all changes to main": branch audit
+
+- Working tree clean; `origin/main == origin/feat/sota-foundation == af783dda` (memory ledgers committed). Found the
+  local `main` ref stale at the baseline 7ca3dc2d (324 behind) — fast-forwarded with `git branch -f main origin/main`.
+- Unmerged-into-main audit (against origin/main): every local branch exists on origin. Content-merged (`git cherry`
+  nonequiv=0): exp/l1b-hemp-confirmation-v1, audit/mdo-l0-v1-posthoc, docs/literature-*, feat/plasma-network-v2-sheath,
+  feat/wall-loss-v4-dashboard, paper/*-claim. Lock-commit-only (keep as refs): exp/cft-orbit-wall-loss-v1..v3,
+  exp/cft-wall-cusp-validation-v3..v7, exp/l1a-field-surrogate-v3..v10. Genuinely unmerged: feat/hybrid-l2-v2
+  (6 commits, PARKED honest record) and 4 non-equivalent patches on origin/feat/pic-2d-axisymmetric (978000c4,
+  c6219bf3, 0f583df9, 3fe66bde — believed re-applied as PIC v2.0). Merge agent launched: merge hybrid (--no-ff, adapt
+  to API drift, frozen_contract if needed), prove/port the pic-2d hunks, full suite green, ff both branches.
+
+## 2026-09-05 16:24 AEST — everything merged: main == feat/sota-foundation == a19d8dbd
+
+- `3d7ffccf` merge commit (parents af783dda + 277fc911 `feat/hybrid-l2-v2`): the PARKED hybrid L2 v2 (per-cell hybrid
+  package, experiment `hybrid_l2_v2`, runner, dashboard, honest "NOT admitted" record) now lives on main; one
+  `.gitignore` conflict (both sides appended an experiment block); every hybrid record/protocol/sidecar tree identical
+  to 277fc911; 96 hybrid tests passed unchanged (no API drift; no sealed-digest-vs-live-tree assertion → no
+  frozen_contract needed). `a19d8dbd` fix: the dashboard generator read `series.npz` for all finished cases but the
+  record tracks it for the base case only → FileNotFoundError in a clean checkout (branch-intrinsic, 4 test errors);
+  generator now reads only the tracked record, HTML regenerated (only the four non-base `series` payloads dropped;
+  verdict/hashes/tables identical), disclosed in the README "Post-hoc audit note".
+- pic-2d: NOTHING to port — the 4 `git cherry +` commits are byte-identical (`git range-diff` `=`) to main's
+  2b3372a0/eb8585c3/ad5be433/4dc40390, which the branch had merged back in (false positive). Attempt-3/4 result
+  trees byte-identical on main (main a superset: + ledger-corrected sidecars); neutrals.py / spec / protocol /
+  README semantics present, superseded by v2.0.3 / v2.3.0 wording.
+- `modern/tests` 2716 passed / 0 failed / 130 skipped (25.1 min, CPU-only; +32 hybrid tests). `paper/` untouched.
+- FINDING: the `exp/*` lock branches are the only home of `l1a_field_surrogate_v3..v10`, `cft_orbit_wall_loss_v1..v3`,
+  `cft_wall_cusp_validation_v3..v7` records (main cites them by branch + SHA). Left as refs, never merged.
+- Suggested (not done): one-line index entries for `docs/hybrid-l2-v2.md` / `hybrid-l2-v2.html` in modern/README and the
+  visualization index so the PARKED record is findable; `hybrid/pb_solver.py` E741 is branch baseline.
+
 ## Open follow-ups
 
 Every `Follow-up notes / risks` bullet of the archived devlog, verbatim (2 literal duplicates dropped),
