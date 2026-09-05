@@ -655,3 +655,14 @@ preflight for both channel options, run / launch guards, shrunk-cadence protocol
   2.07-transit stop; budget until ~01:20 AEST 6 Sep). The sweep-wide assessment and the final design-vs-rho table therefore wait for 056; the
   dashboard `modern/visualization/pic2d-design-mini-sweep-v1.html` (next entry) carries the three plateaus and 056's launch-1 record flagged as
   a gate-stopped interim, and re-renders itself from `results/l1a-gs-v3-056-effcbc8686-channel-33um/` once that record lands.
+* **2026-09-05 11:00 AEST - sweep dashboard** `modern/visualization/pic2d-design-mini-sweep-v1.html` (generator
+  `generate_pic2d_design_mini_sweep_v1.py`, anchor sidecar, 9 tests in `tests/pic2d/test_pic2d_design_mini_sweep_dashboard.py`): the design-vs-rho
+  trend table (I_d, I_beam, S, utilisation, n_g, peak n_e, T_e,peak, wall currents, ion wall-loss fraction, ionisation centroid; relative to the
+  reference with the recorded seed-b / W x 0.7 spread as the design-effect band), the per-design acceptance on the corrected ledger, the ledger
+  table, the closure targets (recorded data only) and the ss-v4 reference-grid verdict in both readings; every input hash-bound. Trend as it
+  stands (047 / reference / 009 / 056-interim): I_d 1.925 / 3.805 / 4.408 / (5.41) mA; I_beam 0.655 / 2.465 / 1.818 / (4.88) mA; S 1.46 / 3.60 /
+  3.36 / (4.32) e16 /s; utilisation 0.316 / 0.421 / 0.491 / (0.311); n_g 3.76 / 3.18 / 2.80 / (3.79) e19; peak n_e 7.8 / 12.8 / 8.0 / (5.6) e17; ion
+  wall loss / ionisation 0.70 / 0.53 / 0.64 / (0.17); ionisation centroid 0.65 / 0.61 / 0.70 / (0.56) of the channel length; corrected residual +0.9 /
+  +2.5 / +0.3 / (+0.6) %. Reading (provisional, three plateaus): I_d and utilisation rise with rho from 0.38 to 0.92 while the reference's peak
+  density is the highest of the three and the low-rho design loses the largest fraction of its ions to the walls; the HEMP-like design's interim
+  state (5.4 mA, 4.9 mA beam, 17 % ion wall loss, ionisation upstream of the others) awaits its launch-2 plateau before it is a data point.
