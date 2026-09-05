@@ -1,0 +1,209 @@
+{
+ "anode_edge_band_m": 0.00025,
+ "anode_edge_electron_wall_current_a": 1.7318788120743802e-06,
+ "anode_edge_note": "wall electron current within anode_edge_band_m of the anode plane outside every cusp window (part of the diffuse current); the disclosed 047 anode-edge boundary cusp lives here",
+ "cells": [
+  {
+   "cell_id": "cell-01",
+   "density_weighted_electron_temperature_ev": 9.837252872473007,
+   "density_weighted_potential_v": 308.7624232274818,
+   "electron_inventory": 1555619212.6221013,
+   "electron_wall_current_a": 7.192256194460431e-05,
+   "ion_wall_current_a": 7.225062709402811e-05,
+   "ion_wall_loss_fraction": 0.13058346979429603,
+   "ionisation_current_a": 0.0005532907588367978,
+   "ionisation_rate_per_s": 3453369292095155.0,
+   "ionisation_share": 0.09566603912149625,
+   "kind": "anode_partial",
+   "peak_electron_density_per_m3": 2.894729913196916e+17,
+   "z_end_m": 0.006028062818933392,
+   "z_start_m": 0.001
+  },
+  {
+   "cell_id": "cell-02",
+   "density_weighted_electron_temperature_ev": 6.357520843897664,
+   "density_weighted_potential_v": 211.80138816299342,
+   "electron_inventory": 11588996027.705103,
+   "electron_wall_current_a": 0.0006323493902253782,
+   "ion_wall_current_a": 0.0006320060662317953,
+   "ion_wall_loss_fraction": 0.484131409815336,
+   "ionisation_current_a": 0.0013054432193789361,
+   "ionisation_rate_per_s": 8147935699946902.0,
+   "ionisation_share": 0.22571600935202799,
+   "kind": "interior",
+   "peak_electron_density_per_m3": 6.808567757915383e+17,
+   "z_end_m": 0.012000005466825737,
+   "z_start_m": 0.006028062818933392
+  },
+  {
+   "cell_id": "cell-03",
+   "density_weighted_electron_temperature_ev": 6.419119118238717,
+   "density_weighted_potential_v": 160.46969872173108,
+   "electron_inventory": 21970436327.947506,
+   "electron_wall_current_a": 0.001105457482804869,
+   "ion_wall_current_a": 0.0011027566673886824,
+   "ion_wall_loss_fraction": 0.4839467625185847,
+   "ionisation_current_a": 0.0022786735087339982,
+   "ionisation_rate_per_s": 1.4222361382496596e+16,
+   "ionisation_share": 0.39399116206089396,
+   "kind": "interior",
+   "peak_electron_density_per_m3": 1.2769654654691154e+18,
+   "z_end_m": 0.01797206288202682,
+   "z_start_m": 0.012000005466825737
+  },
+  {
+   "cell_id": "cell-04",
+   "density_weighted_electron_temperature_ev": 13.564804677609422,
+   "density_weighted_potential_v": 96.2768963443898,
+   "electron_inventory": 57870807.85273352,
+   "electron_wall_current_a": 1.4801078834468272e-05,
+   "ion_wall_current_a": 1.4373831198009396e-05,
+   "ion_wall_loss_fraction": 0.3443970403784705,
+   "ionisation_current_a": 4.173622160693793e-05,
+   "ionisation_rate_per_s": 260497005893408.44,
+   "ionisation_share": 0.007216348629112898,
+   "kind": "exit_partial",
+   "peak_electron_density_per_m3": 2.6222897787923952e+17,
+   "z_end_m": 0.018,
+   "z_start_m": 0.01797206288202682
+  }
+ ],
+ "cusp_half_width_m": 0.001,
+ "cusp_source": "catalogue entry (P2 level-1 v3.1)",
+ "cusps": [
+  {
+   "axis_electron_temperature_ev": 41.02447066927329,
+   "axis_potential_v": 257.36172454811026,
+   "electron_wall_current_a": 0.00047133806665701814,
+   "electron_wall_mean_energy_ev": 29.86822346306261,
+   "ion_wall_current_a": 0.0004700944708580396,
+   "leak_width_fwhm_m": 0.0003333333333333334,
+   "near_wall_drop_v": 27.173077056593883,
+   "near_wall_electron_density_per_m3": 5.744587071360961e+16,
+   "near_wall_electron_temperature_ev": 4.980027339436531,
+   "near_wall_potential_v": 184.39347670056398,
+   "sheath_drop_over_near_wall_temperature": 20.10858938687488,
+   "sheath_drop_v": 100.14132490414016,
+   "wall_potential_v": 157.2203996439701,
+   "window_half_width_m": 0.001,
+   "z_c_m": 0.006028062818933392
+  },
+  {
+   "axis_electron_temperature_ev": 38.76963793780948,
+   "axis_potential_v": 215.99895562502752,
+   "electron_wall_current_a": 0.0010900460502040307,
+   "electron_wall_mean_energy_ev": 29.168193927639823,
+   "ion_wall_current_a": 0.0010888406015154503,
+   "leak_width_fwhm_m": 0.00043333333333333337,
+   "near_wall_drop_v": 30.397833699921108,
+   "near_wall_electron_density_per_m3": 1.3222221583150602e+17,
+   "near_wall_electron_temperature_ev": 5.145325806667155,
+   "near_wall_potential_v": 137.44698360726997,
+   "sheath_drop_over_near_wall_temperature": 21.174520295003447,
+   "sheath_drop_v": 108.94980571767866,
+   "wall_potential_v": 107.04914990734886,
+   "window_half_width_m": 0.001,
+   "z_c_m": 0.012000005466825737
+  },
+  {
+   "axis_electron_temperature_ev": 52.09630894779369,
+   "axis_potential_v": 175.95608389497596,
+   "electron_wall_current_a": 0.0007040516922239568,
+   "electron_wall_mean_energy_ev": 11.947742631064298,
+   "ion_wall_current_a": 0.0007012890510620213,
+   "leak_width_fwhm_m": 0.0009666666666666667,
+   "near_wall_drop_v": 24.834652923127187,
+   "near_wall_electron_density_per_m3": 8.464244168728365e+16,
+   "near_wall_electron_temperature_ev": 5.336190285082605,
+   "near_wall_potential_v": 42.25477548993906,
+   "sheath_drop_over_near_wall_temperature": 29.709577968265787,
+   "sheath_drop_v": 158.5359613281641,
+   "wall_potential_v": 17.42012256681187,
+   "window_half_width_m": 0.001,
+   "z_c_m": 0.01797206288202682
+  }
+ ],
+ "design_id": "divergent-exit-stack",
+ "diffuse_non_cusp_electron_wall_current_a": 0.0007890731934065669,
+ "kornfeld_chain": {
+  "cusps_exit_to_anode": [
+   {
+    "effective_loss_frequency_per_s": 75933708.01195262,
+    "electron_wall_current_a": 0.0007040516922239568,
+    "je_arriving_a": 0.0013843466603348025,
+    "p_transit": 0.5085804823292475,
+    "z_c_m": 0.01797206288202682
+   },
+   {
+    "effective_loss_frequency_per_s": 309667.601151559,
+    "electron_wall_current_a": 0.0010900460502040307,
+    "je_arriving_a": 0.002958968476844844,
+    "p_transit": 0.3683871790909884,
+    "z_c_m": 0.012000005466825737
+   },
+   {
+    "effective_loss_frequency_per_s": 253849.49767396972,
+    "electron_wall_current_a": 0.00047133806665701814,
+    "je_arriving_a": 0.0031743656460197496,
+    "p_transit": 0.14848260068842922,
+    "z_c_m": 0.006028062818933392
+   }
+  ],
+  "electron_current_reaching_anode_cell_a": 0.0032563183381995294,
+  "entering_electron_current_a": 0.0013426104387278645,
+  "note": "Kornfeld per-transit probabilities from window currents: p_k = L_k / je_arriving,k; the model's je_k = je_{k-1}(1-p_k) + I_k"
+ },
+ "kornfeld_mapping": {
+  "cells_anode_to_exit": [
+   {
+    "cell_id": "cell-01",
+    "kind": "anode_partial",
+    "z_end_m": 0.006028062818933392,
+    "z_start_m": 0.001
+   },
+   {
+    "cell_id": "cell-02",
+    "kind": "interior",
+    "z_end_m": 0.012000005466825737,
+    "z_start_m": 0.006028062818933392
+   },
+   {
+    "cell_id": "cell-03",
+    "kind": "interior",
+    "z_end_m": 0.01797206288202682,
+    "z_start_m": 0.012000005466825737
+   },
+   {
+    "cell_id": "cell-04",
+    "kind": "exit_partial",
+    "z_end_m": 0.018,
+    "z_start_m": 0.01797206288202682
+   }
+  ],
+  "cusp_slots_z_m": {
+   "cusp_1": null,
+   "cusp_2": 0.01797206288202682,
+   "cusp_3": 0.012000005466825737,
+   "cusp_4_anode": 0.006028062818933392
+  },
+  "model_cell_of_catalogue_cell": {
+   "cell-01": "model cell 4",
+   "cell-02": "model cell 3",
+   "cell-03": "model cell 2",
+   "cell-04": "model cell 1"
+  },
+  "note": "model cell 1 = exit-side partial cell + cone + plume; model cell N = anode-side partial cell; cusps numbered from the exit (Kornfeld)"
+ },
+ "phi_max_v": 328.96719419558974,
+ "phi_min_v": -10.48176739128271,
+ "potential_steps_v": [
+  -96.96103506448839,
+  -51.33168944126234,
+  -64.19280237734128
+ ],
+ "stop_reason": "plateau_reached_after_min_transit_times",
+ "total_ionisation_rate_per_s": 3.609817364456118e+16,
+ "total_wall_electron_current_a": 0.0030545090024915724,
+ "total_wall_ion_current_a": 0.003047829940639997,
+ "window_steps": 400000
+}
