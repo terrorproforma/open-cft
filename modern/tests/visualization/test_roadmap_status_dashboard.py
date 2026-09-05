@@ -40,7 +40,7 @@ NODE_MODULES = BUILD_DIR / "node_modules"
 ROW_COUNT = 44
 # Flipped to True by the commit that records origin/main's fast-forward onto feat/sota-foundation
 # (mergeTruth.mainMergedAt = mergeTruth.mainHead in the canvas); the fourth chip follows it.
-MAIN_FAST_FORWARDED = False
+MAIN_FAST_FORWARDED = True
 EXPECTED_CHIPS = (
     "0/44 externally validated",
     "17 in the paper",

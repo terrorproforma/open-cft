@@ -31,6 +31,14 @@ dashboards keep their own logs next to their generators.
   rows, first row expands, no runtime errors) when the pinned toolchain is installed.
 - Headless Edge (`--headless=new`, 1500 px) renders the Overview from `file://` with the dark
   theme, chips, stage strip and tables; screenshot `%TEMP%\roadmap-status-shot.png`.
+- 14:15 AEST: origin/main fast-forwarded 7ca3dc2d..16fea450 onto feat/sota-foundation (317 commits)
+  after the full CPU-only suite (modern/tests 2671 passed / 7 failed / 128 skipped in 31.5 min - the
+  7 are pre-existing live-worktree-vs-frozen-contract tests that fail identically at cdb452b8;
+  check_paper passed; paper/tests 285 OK). Canvas data updated (`mergeTruth.mainHead` /
+  `mainMergedAt` = 16fea450, `mainBehind` 0, `HEAD_NOW`), rebuilt: `roadmap-status.html`
+  2,409,332 bytes, chips `0/44 externally validated · 17 in the paper · 36/44 merged · 36/44 on main`
+  (jsdom + headless Edge), test flag `MAIN_FAST_FORWARDED = True`; this rebuild commit goes to both
+  branches, so main ends one commit past the SHA the canvas names.
 
 ## 2026-09-03 21:30 AEST - L1a geometry sweep v3 dashboard (HEMP-like regime)
 

@@ -1,11 +1,11 @@
 {
  "schema": "cft-roadmap-status-dashboard-anchor/1.0.0",
  "html_file": "roadmap-status.html",
- "html_sha256": "f5a4690880d9f463a7c9f711ea7166a2aba6069aff51df1a29621cf907c5a2f0",
- "html_bytes": 2407224,
+ "html_sha256": "dd829770bbef28d233435cf9e661ad058cb84f8c7cfb85ec1570fc917d4ce985",
+ "html_bytes": 2409332,
  "canvas_file": "roadmap-status/roadmap-status.canvas.tsx",
- "canvas_sha256": "677a2f55694c3d51a79381ada264fa54dfa9749f5e2c79e00e72b3ea55ee4190",
- "canvas_bytes": 2378577,
+ "canvas_sha256": "a4bfba8ff5c74e9033d4ecdff4b7863ed0a74f71d15ab248a145a9b4e65880c3",
+ "canvas_bytes": 2380723,
  "shim_file": "roadmap-status/cursor-canvas.tsx",
  "shim_sha256": "62b455c15fe5a1dbdabc48263fc8a85e2ac41b123165129876675a46df0e6f96",
  "toolchain": {
