@@ -1535,6 +1535,52 @@ commit SHA(s) — headline numbers. Detail, validation and per-entry follow-ups:
   clients, pe/fp queues, ~30 box-hours). Counts N 44; 7: 17 (14) · 6: 2 (2) · 5: 8 (6) · 4: 12 (6) · 1: 5 (2); RUNNING
   5; FAILED GATES 8; chips 0/44 · 17 · 36/44 · 0.
 
+## 2026-09-05 14:21 AEST — roadmap canvas made permanent in the repo; everything committed; main fast-forwarded
+
+- `modern/visualization/roadmap-status.html` (2,409,332 B, sha256 `dd829770…`, UTF-8/LF, one inline script: React
+  19.2.8 + ReactDOM + the compiled canvas via esbuild 0.28.2; dark theme; no CDN — only github commit anchors and
+  React's namespace strings; opens from file://). Build tree `modern/visualization/roadmap-status/`: verbatim canvas
+  copy (CRLF → LF), `cursor-canvas.tsx` shim (19 primitives + `useHostTheme()` dark tokens), `entry.tsx`,
+  `template.html`, `build.mjs` (`--sync` copies the live canvas; byte-deterministic), `verify.mjs` (jsdom),
+  `tsconfig.json`, pinned `package.json`/lock (esbuild 0.28.2, react/react-dom 19.2.8, jsdom 30.0.1, typescript
+  5.9.3), README; sidecar `roadmap-status.anchor-platform.json`. Verified: headless Edge from file://, jsdom (chips,
+  9 tabs, 44 rows, expand, 0 errors), `node --check`. Test `test_roadmap_status_dashboard.py` (9; 7 + 2 skips without
+  `npm ci`). Index entries in README.md, modern/README.md, modern/visualization/DEVLOG.md.
+- Canvas edit (live + repo copy): `mergeTruth.mainMergedAt`; `headlineCounts().onMain` = feature-merged rows when
+  `mainHead === mainMergedAt`; chips now `0/44 externally validated · 17 in the paper · 36/44 merged · 36/44 on main`.
+- Commits: `20babd50` dashboard + build tree + test + index; `16fea450` `.cursor/memory/` committed (4 files, LF, no
+  BOM; `.gitignore` `!.cursor/memory/` + node_modules ignore); `3aa7b0fb` post-merge rebuild. ff pushes
+  `cdb452b8..16fea450` (feat), `7ca3dc2d..16fea450` (main, 317 commits), then `16fea450..3aa7b0fb` both → **main ==
+  feat/sota-foundation == 3aa7b0fb**; GitHub accepted (no protection).
+- Full suite (CUDA hidden, single process): `modern/tests` 2671 passed / **7 failed (pre-existing, identical at
+  cdb452b8)** / 128 skipped (31.5 min); `check_paper` passed (189 s); `paper/tests` 285 OK. The 7: wall-loss v4
+  manufactured preflight; `test_verify_shakedown_record_rejects_tampering` ×3 (topology v3 / v3.1 / sweep v3 —
+  `dependency_source_sha256_current` drift vs the live tree); MDO v1 document table + prereg hash chain; MDO v2 import
+  trace (`recovery.py` outside the sealed scope). Fix agent launched (bind frozen contracts to the frozen commit's
+  blobs; report live-tree drift instead of failing; disclosed scope growth).
+
+## 2026-09-05 15:30 AEST — the 7 red tests fixed by design; suite GREEN; main == feat == 7ad350e5
+
+- `modern/tests` 2684 passed / 0 failed / 130 skipped (27.5 min, CPU-only); `paper/tests` 285 OK; `check_paper`
+  passed (126 s). Commits `dec836c4` (`cft_revival.provenance`: batch `git cat-file --batch`, fail-closed), `222971bd`
+  (cts v3 / v3.1 / sweep v3 `frozen_contract.py`), `c3d1099e` (MDO v1), `e84c26e5` (MDO v2), `7ad350e5` (wall-loss v4);
+  ff-pushed to feat/sota-foundation AND main (identical at 7ad350e5).
+- Root causes / fixes: (1–3) `verify_shakedown_record` compared the sealed `dependency_source_sha256` with the live
+  tree; `experiment_runtime` moved at `bb756418` (EMFILE fix). Proven from Git blobs that every sealed digest
+  recomputes exactly at each lock commit (69159934 / 1600cfd3 / 1923ef76) — seals honest. New non-sealed
+  `frozen_contract.verify_recorded_shakedown` recomputes from the frozen commit using the records' own inventories
+  and RECORDS live drift (`live_tree.*_current`, `drift`, added/removed/changed); tests split into frozen-binding +
+  tamper (7 fields + unreachable commit → refuse). The sealed verifier is unchanged (its strict live-tree semantics
+  are right for `prepare`/`execute`; `strict_live_tree=True` mode). README "Post-hoc audit note" per experiment.
+  (4–5) MDO v1: `audit_replay.py` records the drift file list + frozen fact `non_scoped_dependencies_unchanged_prereg_
+  to_result`; the doc table compared clause-wise (the paper pins the POSTHOC_AUDIT.md blob). (6) MDO v2: every
+  `imported_not_in_scope` file must have NO blob at the execution commit 99914dc2 (post-hoc growth) and be disclosed
+  in the README; sealed hashes untouched. (7) wall-loss v4: `backend_parity("cuda:0")` is `not_evaluated` with CUDA
+  hidden — the test now requires hardware-independent gates to pass, the CPU-only case to fail closed, CUDA parity
+  bound to the recorded `manufactured-gates.json`, manufactured solutions replayed at rel 1e-9.
+- Follow-ups: apply `frozen_contract` to l1b_hemp_confirmation v1/v1.1 and MDO v1's hash-scoped live assertions
+  before the next shared-package commit; orbit_mc `warp_status().reason` "Warp initialized" when CUDA absent (v1.8).
+
 ## Open follow-ups
 
 Every `Follow-up notes / risks` bullet of the archived devlog, verbatim (2 literal duplicates dropped),

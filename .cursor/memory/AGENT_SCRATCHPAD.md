@@ -393,6 +393,25 @@
   peak n_e at finer grid = less finite-grid heating; the shifts point in the W x0.7 direction at ~2x
   its size, so grid and particle-weight effects are entangled — a W-only follow-up is still owed.
   "Converged" may not be said of either grid until the 25 um point (v5) reports.
+- [self] (frozen-contract fix, 2026-09-05 15:30) Post-execution verifiers must recompute sealed digests from
+  the RECORD'S OWN INVENTORY at the lock commit (`cft_revival.provenance`: batch `git cat-file`, fail-closed
+  on unreachable commit / missing blob / CR) and RECORD live-tree drift (added/removed/changed) — never
+  assert live == sealed after execution; the sealed `*_current` verifier stays for the pre-execution
+  lifecycle (`prepare` / `execute`), and editing it would itself change `experiment_code_sha256`. Audit
+  documents pinned by the paper are immutable: compare doc tables clause-wise, not verbatim. A gate that
+  can be `not_evaluated` (CUDA hidden) must fail CLOSED in tests — bind to the recorded gate file instead.
+  Same time bomb remains in l1b_hemp_confirmation (v1/v1.1) and MDO v1's hash-scoped live assertions —
+  apply `frozen_contract.py` before the next shared-package commit. `rg` from the root skips .worktrees/
+  (`--no-ignore`).
+- [user] (2026-09-05 13:12) The roadmap canvas is now PERMANENT in the repo: `modern/visualization/
+  roadmap-status.html` (self-contained React build) generated from `modern/visualization/roadmap-status/
+  roadmap-status.canvas.tsx` by `build.mjs --sync` (copies the live canvas). Every canvas fold must now
+  ALSO run the build, update the anchor sidecar and commit the HTML + canvas copy. `.cursor/memory/` is
+  COMMITTED from now on (16fea450) — edits to the scratchpad/devlog show as modified files; commit them at
+  milestones. main == feat/sota-foundation (fast-forward 317 commits at 16fea450; both 3aa7b0fb); keep
+  main fast-forwarded after each green milestone (`git push origin feat/sota-foundation:main`).
+- [tool] Full CPU-only suite: `modern/tests` ~32 min single-process (pytest-xdist not installed), `paper/tests`
+  285, `check_paper` ~190 s. Always `CUDA_VISIBLE_DEVICES=-1` locally.
 - [user] (2026-09-05 01:49) FIXED ORDER: (1) finish the 2-D PIC physics, (2) design the 3-D PIC and
   VERIFY it works, (3) then the AI run. The surrogate architecture reference is Arena Physica's
   Heaviside-1 / RF Studio (transformer-core physics operator; "much closer to what we are doing") —
