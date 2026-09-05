@@ -79,6 +79,13 @@ EXPECTED_NON_RESULTS_FILES_IN_RESULT_COMMIT = (
     "modern/spec/optimization/mdo-l0-campaign-v1.json",
     "modern/tests/experiments/mdo_l0_campaign_v1/test_mdo_v1_results.py",
 )
+# packages the campaign imports but the frozen hash scope never bound (disclosure F10)
+NON_SCOPED_DEPENDENCY_PATHS = (
+    "modern/src/cft_revival/experiment_runtime",
+    "modern/src/cft_revival/models.py",
+    "modern/src/cft_revival/kernels.py",
+    "modern/src/cft_revival/kernels",
+)
 
 # ---- independent evaluation chain (no cft_revival import) ---------------------
 ELEMENTARY_CHARGE_C = 1.602176634e-19
@@ -483,7 +490,13 @@ def preregistration_integrity(bundle: Bundle) -> dict[str, Any]:
         ]
         git["hashed_sources_untouched_since_prereg"] = _git("log", "--oneline", f"{PREREGISTRATION_COMMIT}..HEAD", "--", *scope_paths) == ""
         git["frozen_files_untouched_since_prereg"] = _git("log", "--oneline", f"{PREREGISTRATION_COMMIT}..HEAD", "--", f"{EXPERIMENT_REL}/protocol.json", f"{EXPERIMENT_REL}/authorities.json", f"{EXPERIMENT_REL}/shakedown.json") == ""
-        git["non_scoped_dependencies_unchanged_since_prereg"] = _git("diff", "--stat", PREREGISTRATION_COMMIT, "HEAD", "--", "modern/src/cft_revival/experiment_runtime", "modern/src/cft_revival/models.py", "modern/src/cft_revival/kernels.py", "modern/src/cft_revival/kernels") == ""
+        # Imported-but-not-hash-bound packages (disclosure F10). Whether they moved between the
+        # preregistration and the RESULT commit is a frozen fact about the evidence; whether they
+        # have moved in the CHECKOUT since then is a live-tree fact that legitimately changes
+        # (experiment_runtime did at bb756418) and is therefore RECORDED, never asserted.
+        git["non_scoped_dependencies_unchanged_prereg_to_result"] = _git("diff", "--name-only", PREREGISTRATION_COMMIT, RESULT_COMMIT, "--", *NON_SCOPED_DEPENDENCY_PATHS) == ""
+        git["non_scoped_dependencies_changed_since_prereg"] = _git("diff", "--name-only", PREREGISTRATION_COMMIT, "HEAD", "--", *NON_SCOPED_DEPENDENCY_PATHS).splitlines()
+        git["non_scoped_dependencies_unchanged_since_prereg"] = git["non_scoped_dependencies_changed_since_prereg"] == []
         source_hashes = {}
         for commit in (PREREGISTRATION_COMMIT, RESULT_COMMIT, DASHBOARD_COMMIT, PAPER_COMMIT):
             digest, entries = source_hash_from_git(protocol_value, commit)
@@ -741,7 +754,6 @@ def _front_ids(rows: Mapping[str, tuple[float, ...]]) -> set[str]:
 
 def independent_replay(bundle: Bundle) -> dict[str, Any]:
     started = time.perf_counter()
-    protocol_value = json.loads((EXPERIMENT / "protocol.json").read_bytes())
     sealed_sample = bundle.load("artifacts/uncertain-sample.json")
     sample = qmc_sample()
     nominal = nominal_theta()

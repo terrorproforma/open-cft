@@ -14,6 +14,7 @@ import hashlib
 import importlib.util
 import json
 import os
+import re
 import subprocess
 from pathlib import Path
 
@@ -50,6 +51,13 @@ ALLOWED_OVERLAY = {
 EXPECTED_DISCLOSURES = {"F9", "F10", "F22", "F26", "F27", "F28"}
 # rows whose observed text depends on the machine or on the optional ML stages
 ENVIRONMENT_DEPENDENT_ROWS = {"F3", "F24"}
+# F8's observed text ends with a statement about the CHECKOUT ("non-scoped deps unchanged=..."):
+# whether the imported-but-not-hash-bound packages (F10) have moved since the preregistration.
+# It was True when the document was written (e9f9af16) and has been False since bb756418 moved
+# cft_revival.experiment_runtime; the document is a frozen record (its blob is pinned by the
+# paper), so that clause is compared as a recorded live-tree fact and every other clause of the
+# row must still match verbatim. The frozen facts behind F8 are asserted in the hash-chain test.
+HEAD_DEPENDENT_CLAUSES = {"F8": re.compile(r", non-scoped deps unchanged=(True|False)")}
 HAS_PYMOO = importlib.util.find_spec("pymoo") is not None
 HAS_TORCH = importlib.util.find_spec("torch") is not None and importlib.util.find_spec("botorch") is not None
 
@@ -93,6 +101,15 @@ def test_document_table_matches_live_recomputation(report: dict) -> None:
         row_id = line.split("|")[1].strip()
         if row_id in ENVIRONMENT_DEPENDENT_ROWS:
             assert f"| {row_id} |" in text, row_id
+            continue
+        if row_id in HEAD_DEPENDENT_CLAUSES:
+            clause = HEAD_DEPENDENT_CLAUSES[row_id]
+            documented = [item for item in text.splitlines() if item.startswith(f"| {row_id} |")]
+            assert len(documented) == 1, row_id
+            assert clause.search(line) and clause.search(documented[0]), row_id
+            assert clause.sub("", line) == clause.sub("", documented[0]), line
+            drift = report["preregistration"]["git"]["non_scoped_dependencies_changed_since_prereg"]
+            assert clause.search(line).group(1) == str(drift == []), drift
             continue
         assert line in text, line
     for needle in (
@@ -222,7 +239,14 @@ def test_preregistration_hash_chain(report: dict) -> None:
     assert git["results_worktree_clean"] and git["results_worktree_lf"]
     assert git["frozen_blobs_unchanged"]
     assert git["hashed_sources_untouched_since_prereg"] and git["frozen_files_untouched_since_prereg"]
-    assert git["non_scoped_dependencies_unchanged_since_prereg"]
+    # imported-but-not-hash-bound packages (F10): frozen between preregistration and result ...
+    assert git["non_scoped_dependencies_unchanged_prereg_to_result"] is True
+    # ... while their movement in the checkout since then is recorded, not asserted (they moved
+    # at bb756418; the package replays above are the evidence that the movement is inert here)
+    drift = git["non_scoped_dependencies_changed_since_prereg"]
+    assert isinstance(drift, list) and all(item.startswith("modern/src/cft_revival/") for item in drift)
+    assert git["non_scoped_dependencies_unchanged_since_prereg"] is (drift == [])
+    assert _git("diff", "--name-only", PREREGISTRATION_COMMIT, "HEAD", "--", *audit_module.NON_SCOPED_DEPENDENCY_PATHS).splitlines() == drift
     assert set(git["source_hash_from_blobs"]) == {"4898d0fd", "c553124b", "e642f38c", "ba6875f6"}
     assert all(item["equals_authorities"] and item["entries_equal_authorities"] and item["files"] == 37 for item in git["source_hash_from_blobs"].values())
     assert git["shakedown_head_available"] is True
