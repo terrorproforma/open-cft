@@ -3,9 +3,10 @@
 **Status: PREREGISTERED `057841cf`; AMENDMENT 1 recorded (§7, §9); launch 1 (α = 1/16) RECORDED as `results/alpha-1over16/` —
 the discharge EXTINGUISHED under the closure (drift-member triad stop at 1.00 transit; `no_plateau`; not relaunched); launch 2
 (α = 1/64) RECORDED as `results/alpha-1over64/` — EXTINGUISHED as well, stopped by the amendment's ignition gate at 2.0 µs
-(`no_ignition`; `no_plateau`; not relaunched; §10); launch 3 (α = 0.345) running under the amendment. Series verdict as it stands
+(`no_ignition`; `no_plateau`; not relaunched; §10); launch 3 (α = 0.345) RECORDED as `results/alpha-0.345/` — EXTINGUISHED fastest,
+stopped by the ignition gate at 1.0 µs (`no_ignition`; `no_plateau`; §10). ALL THREE CASES TERMINAL. Final series verdict
 (`results/series-assessment.json`): `inconclusive` by the predeclared rule — no self-sustained discharge for any α ≥ 1/64 at this
-operating point (§10).** Three one-shot executions of the reference design at 33 µm with the
+operating point; the trend hypothesis is contradicted (§10).** Three one-shot executions of the reference design at 33 µm with the
 Bohm-type anomalous transport closure at α ∈ {1/64, 1/16, 0.345}; the α = 0 point of the series is the RECORDED ss-v4 plateau
 (`pic2d_cft_steady_state_v4/results`, `0d228ad2`), which is not re-run.
 
@@ -196,11 +197,17 @@ Launch order (one H100 MPS slot each, as the scheduler frees them): `alpha-1over
   (`results/alpha-1over64/`, executed under the amended seal `cb8fb8da…`; the record is the v4 contract — summary / run_state / series.npz /
   maps.npz / checkpoint-final.json + sidecars, execution lock, status.jsonl — plus `assessment.json`; frames, checkpoint arrays, field anchor
   and `series.jsonl` stay in the job worktree on the box).
-- **LAUNCH 3 — `alpha-0.345`: PID 58055, 23:42 UTC 2026-09-04 (09:42 AEST 5 Sep)** by the slot-waiter (`r1-queue` "queue done" 23:45 UTC), at
-  `33be2a89`, `results/alpha-0.345/`; the ignition gate's 1.0 µs check falls ≈ 01:15 UTC (11:15 AEST), the 2.0 µs check ≈ 02:30 UTC. Its
-  record and the final `assess --series` follow when it stops.
-- **`assess --series` as it stands** (`results/series-assessment.json`, written at this commit with 1/64 and 1/16 assessed, 0.345 pending):
-  **`inconclusive`** — reached points {α = 0} only; unreached {1/64, 1/16, 0.345}; no monotonicity is evaluable. §10 states what that means.
+- **LAUNCH 3 — `alpha-0.345`: PID 58055, 23:42:35 UTC 2026-09-04 (09:42 AEST 5 Sep)** by the slot-waiter (`r1-queue` "queue done" 23:45 UTC), at
+  `33be2a89` (protocol `7c6f288e…`, config `8ea882736213…`), `results/alpha-0.345/`, three other MPS clients (ss25-base, sweep-056-launch2,
+  ss33-fast); 4.2–4.3 ms/step at the seed load.
+- **LAUNCH 3 STOPPED — ≈ 00:35 UTC 2026-09-05 (10:35 AEST): `no_ignition`** at the amendment's **1.0 µs** check (step 720 000 = 1.008 µs =
+  **0.42 transits**): N_e/N_ref **0.18** (minimum 0.6), S/S_ref **0.11** (minimum 0.3). 3110 s wall (0.86 h; 9.4 of the 10.3 h budget saved),
+  exit 0, finalizer OK (36 frames), no Xid. **DIAGNOSIS (§10): EXTINCTION, the fastest of the three** (N_e e-fold 0.47 µs; residual +0.13 %,
+  peak 0.52 cells/λ_D; the hook at 0.345 ω_ce at ⟨|B|⟩ 0.15 T). `assess --case alpha-0.345` → **`no_plateau`** ((a) False, (b) True at
+  +0.13 %). NOT relaunched (bitwise replay). The record follows the 1/64 contract (frames, checkpoint arrays, field anchor and `series.jsonl`
+  stay in `jobs/at-alpha-0.345/tree` on the box). The slot went to the physics-effects queue (`pe-see-bn` launched ≈ 00:41 UTC).
+- **FINAL `assess --series`** (`results/series-assessment.json`; every case terminal): **`inconclusive`** by the predeclared rule — reached
+  points {α = 0} only; 1/64, 1/16 and 0.345 are all `no_plateau`; no monotonicity is evaluable. §10 states what that means in words.
 
 ## 8. Claim boundary
 
@@ -269,7 +276,9 @@ if launch 2 stops on the drift members with a re-equilibrating discharge, a laun
 the v2.1.1 latch + an ignition gate calibrated for the 20 µm / 2e20 seed transient; if it extinguishes, the stop is the recorded outcome
 (as here). Recorded in the ext-val README §13.
 
-## 10. Launch 2 (α = 1/64) — extinction caught by the ignition gate; the series verdict as it stands (2026-09-05 10:30 AEST)
+## 10. Launches 2 and 3 (α = 1/64, α = 0.345) — extinctions caught by the ignition gate; the FINAL series verdict (2026-09-05 10:30–11:15 AEST)
+
+### 10.1 Launch 2, α = 1/64
 
 **What stopped the run.** The amendment-1 `ignition_gate` (§9): at its 2.0 µs check the trailing-0.15 µs ionisation rate read **S/S_ref =
 0.204** against the minimum 0.4 (N_e/N_ref 0.652 against 0.6; reference window 0.05–0.2 µs: N_e 5.22e5 macro, S 2.83e16 /s). The 1.0 µs
@@ -312,19 +321,47 @@ trailing window, unlike the 1/16 run's; the hook rate is the declared one); **(d
 2.0 µs instead of letting it run 10 h to its budget — and the 1.0 µs check was too early for THIS decay rate (0.947 / 0.481 pass), which
 is why the two-checkpoint design exists.
 
-**The series verdict as it stands** (`results/series-assessment.json`; α = 0.345 pending): by the predeclared rule **`inconclusive`** — only
-the α = 0 point has reached (a); 1/64 and 1/16 are `no_plateau` and contribute no trend. What the record says in words: **no self-sustained
-discharge exists for any α ≥ 1/64 at this operating point** (the 0-D gas at n_g0 = 5.5e19 m⁻³, v1.3 closure, exit-plane 3 mA / 2 eV injection,
-dielectric walls without SEE) — the weakest Bohm leak tested (D⊥ = kT_e/64eB, a quarter of the 1/16 value, 1/22 of Brandt's 0.345) already
-removes the electron confinement this discharge sustains itself with; the decay time scales with 1/α as the cross-field loss estimate
-predicts (0.88 µs → 2.4 µs). **The trend hypothesis ("I_d up +20…+60 % at 1/16", monotone in α) is CONTRADICTED** — not as a sign reversal
-of a shifted plateau but as the absence of any plateau at α > 0; the sign hypotheses on S / peak n_e / T_e are not testable here. If
-α = 0.345 also extinguishes (expected: D⊥ 5× the 1/16 value; the 1.0 µs check should fire), the final `assess --series` returns
-`inconclusive` and the recorded finding is the sentence above. Consequence already acted on: the ext-val `bohm-0.4` run at Brandt's
-operating point (α = 0.345, static 2e20 = 4× our gas density) sustained a marginal discharge past 1 transit before its own stop (ext-val
-README §14) — the operating point, not the closure alone, decides — and the full-physics campaign (`pic2d_full_physics_v1`, `b45f6728`:
-Knudsen spatial neutrals at 4.5× the 0-D channel-mean density + SEE + Coulomb + the α closure at 0.345 / 0 / 1/16) is the follow-up in
-which the α-dependence is to be re-tested at the denser operating point. No α is "chosen"; α stays a declared closure parameter.
+### 10.2 Launch 3, α = 0.345 (Brandt's coefficient) — the fastest extinction
+
+**What stopped the run.** The ignition gate at its **1.0 µs** check (step 720 000 = 1.008 µs = 0.42 transits): N_e/N_ref **0.181** (minimum 0.6),
+S/S_ref **0.108** (minimum 0.3); reference window 0.05–0.2 µs: N_e 3.97e5 macro, S 1.03e16 /s. Drift members unarmed (0.42 transits; I_d drift
+−1.03 — a collapsing current, not a settling one); physics protections: windowed residual **+0.13 %** (cumulative −0.20 %), accumulated-floor
+peak **0.52 cells/λ_D** (max 2.32 in the seed record; 38 450 resolved nodes). 3110 s wall, 4.3 ms/step, 36 frames.
+
+| t (µs) | N_e (macro) | I_d (mA) | exit-plane e⁻ return (mA) of 3.0 | wall e⁻ / Xe⁺ (mA) | S (/s) | n_g (m⁻³) | α = 0: N_e / I_d / S |
+|---|---|---|---|---|---|---|---|
+| 0 (seed) | 6.04e5 | — | — | — | 7.1e15 | 5.50e19 | 6.06e5 / — / 7.2e15 |
+| 0.05 | 4.48e5 | 3.62 | 0.00 | 4.6 / 7.6 | 1.58e16 | 4.51e19 | 5.45e5 / 1.02 / 1.6e16 |
+| 0.1 | 4.14e5 | 3.37 | 0.05 | 4.1 / 5.3 | 1.13e16 | 4.67e19 | 5.51e5 / 1.05 / 1.5e16 |
+| 0.3 | 2.86e5 | 2.73 | 0.69 | 3.0 / 4.0 | 8.2e15 | 5.06e19 | 6.02e5 / 1.19 / 1.8e16 |
+| 0.5 | 1.84e5 | 2.79 | 1.51 | 2.9 / 2.9 | 5.3e15 | 5.07e19 | 6.54e5 / 1.10 / 1.6e16 |
+| 0.75 | 1.02e5 | 1.22 | 1.88 | 1.4 / 1.7 | 3.0e15 | 5.26e19 | 7.25e5 / 1.28 / 1.8e16 |
+| 1.0 | 6.3e4 | 0.23 | 2.44 | 0.5 / 0.9 | 2.9e14 | 5.45e19 | 7.97e5 / 1.40 / 1.8e16 |
+| 1.008 (stop) | 6.2e4 | 0.44 | 2.50 | 0.4 / 1.0 | 3.8e14 | 5.46e19 | — |
+
+N_e fell from the seed with an **e-fold of 0.47 µs** over the last half-microsecond (1/16: 0.88 µs; 1/64: 2.4 µs); 2.5 of the injected 3.0 mA
+returned through the exit plane at the stop; n_g back at n_g0 (5.46e19); the hook ran at **9.0e9 events per electron per second = 0.345 ω_ce
+at ⟨|B|⟩ 0.15 T** (21.7× the 1/64 rate, as declared). Trailing-window values (`assessment.json`; the 0.6–1.0 µs window of a dying discharge,
+no trend contribution): I_d 1.10 mA (−71 %: CONTRADICTING), I_beam 0.07 mA (−97 %), S 1.3e15 /s (−96 %), utilisation 0.015 (−96 %), n_g 5.39e19
+(+69 %), peak n_e 5.5e16 (−96 %), T_e,peak 4.24 eV (−24 %). Classification as in §10.1: not heating, not re-equilibration, not an artefact
+(the gate reads N_e and S; the hook rate is the declared one) — **(d) EXTINCTION under the closure**; `no_plateau`; NOT relaunched.
+
+### 10.3 The FINAL series verdict
+
+`results/series-assessment.json` (every case terminal): by the predeclared rule **`inconclusive`** — only the α = 0 point has reached (a);
+1/64, 1/16 and 0.345 are `no_plateau` and contribute no trend. What the record says in words: **no self-sustained discharge exists for any
+α ≥ 1/64 at this operating point** (the 0-D gas at n_g0 = 5.5e19 m⁻³, v1.3 closure, exit-plane 3 mA / 2 eV injection, dielectric walls
+without SEE) — the weakest Bohm leak tested (D⊥ = kT_e/64eB, a quarter of the 1/16 value, 1/22 of Brandt's 0.345) already removes the
+electron confinement this discharge sustains itself with, and the decay time shortens monotonically with α (e-fold 2.4 → 0.88 → 0.47 µs for
+D⊥/(kT_e/eB) = 0.0156 → 0.0623 → 0.308; ∝ D⊥^−0.55, flatter than the pure cross-field estimate because the ionisation and the returning
+injected current set the late-time balance). **The trend hypothesis ("I_d up +20…+60 % at 1/16", monotone in α) is CONTRADICTED** — not as
+a sign reversal of a shifted plateau but as the absence of any plateau at α > 0; the sign hypotheses on S / peak n_e / T_e are not testable
+here. Consequence already acted on: the ext-val `bohm-0.4` run at Brandt's operating point (α = 0.345, static 2e20 = 4× our gas density)
+sustained a marginal discharge past 1 transit before its own stop (ext-val README §14) — the operating point, not the closure alone,
+decides — and the full-physics campaign (`pic2d_full_physics_v1`, `b45f6728`: Knudsen spatial neutrals at 4.5× the 0-D channel-mean
+density + SEE + Coulomb + the α closure at 0.345 / 0 / 1/16; its 0.14 µs shakedowns did NOT decay at either α) is the follow-up in which the
+α-dependence is to be re-tested at the denser operating point. No α is "chosen"; α stays a declared closure parameter. The three cases
+used 2.18 + 1.90 + 0.86 h of the 31 h budgeted — the ignition gate of amendment 1 saved ≈ 18 GPU-hours on the two cases it stopped.
 
 **Claim boundary of this record**: one seed, one design, one operating point, the reference itself heating at +2.46 % on the corrected
 ledger; a statement about THIS model at THIS operating point, not about the device; not validated against experiment.
