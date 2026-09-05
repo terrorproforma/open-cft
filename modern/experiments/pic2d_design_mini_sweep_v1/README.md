@@ -424,12 +424,18 @@ Up to model v2.0.5 the energy ledger's `inelastic_loss_j` lacked the macro weigh
 |---|---|---|---|---|
 | 047 (plateau, 3.003 transits) | `results/l1a-gs-v2-047-e3196a8aa5-channel-33um/ledger-corrected.json` | -7.1 % -> **+0.9 %** | -7.3 % -> +0.7 % | pass -> pass |
 | 056 launch 1 (triad stop, shot noise) | `results/l1a-gs-v3-056-effcbc8686-channel-33um-launch1-triad-gate-stop/ledger-corrected.json` | -7.6 % -> **+0.6 %** | -8.9 % -> +0.5 % | pass -> pass |
-| 009, reference, 056 launch 2 | results not committed at 036bd679 - run the tool when they land | | | |
+| 009 (plateau, 3.022 transits) | `results/l1a-gs-v3-009-d0c686b4aa-channel-33um/ledger-corrected.json` | -7.6 % -> **+0.3 %** | -8.3 % -> +0.1 % | pass -> pass |
+| reference (plateau, 3.057 transits) | `results/divergent-exit-stack-channel-33um/ledger-corrected.json` | -7.7 % -> **+2.5 %** | -9.1 % -> +1.8 % | pass -> **FAIL** |
+| 056 launch 2 | running (3.9 transits at 10:10 AEST 5 Sep, no plateau declared yet) - run the tool when it lands | | | |
 
-Both corrected trajectories are flat (047 +0.0 % at 0.62 us -> +0.9 % at 7.78 us; 056 L1 +0.5 -> +0.6 %), well inside the 5 % gate and the 2 %
-acceptance. The running / pending designs (009, reference, 056 launch 2) execute pre-v2.0.6 code in their locked worktrees: their recorded
-`grid_heating_triad.windowed_energy_residual_over_electrode_work` stays biased by about -8 % and acceptance (b) must be evaluated on the
-sidecar written by the tool. The whole-sweep `assess` should cite the sidecars.
+The corrected trajectories of 047, 056 L1 and 009 are flat (047 +0.0 % at 0.62 us -> +0.9 % at 7.78 us; 056 L1 +0.5 -> +0.6 %; 009 +0.3 % with a
+maximum of +0.32 % over the complete windows), well inside the 5 % gate and the 2 % acceptance. The **reference** design (= the ss-v4 identity
+re-run under MPS) reads **+2.47 %** at its plateau (maximum +2.48 % at 7.11 us; the corrected statistic first exceeded 2 % at the 4.93 us
+checkpoint): it FAILS acceptance (b) on the corrected ledger exactly as ss-v4 does (+2.46 %), so the sweep's reference is `plateau_with_heating`
+while 047 and 009 are `closure_quotable` - the reference is the least conservative of the three plateaus at this grid. The running design (056
+launch 2) executes pre-v2.0.6 code in its locked worktree: its recorded `grid_heating_triad.windowed_energy_residual_over_electrode_work` stays
+biased by about -8 % and acceptance (b) must be evaluated on the sidecar written by the tool. `run.py assess` reads each run's sidecar
+(`b_residual_power.corrected`, the decisive reading) and keeps the recorded value beside it.
 
 ### Corrected-ledger re-read of the recorded acceptances (2026-09-05)
 
@@ -597,3 +603,55 @@ preflight for both channel options, run / launch guards, shrunk-cadence protocol
   on the plateau rule at ~23:59 AEST (step 4 920 000 = 6.888 us = 3.02 transits, exit 0)** - its record commit is not part of
   this entry; the reference at 2.92 transits (~10 min to 3). Do NOT kill any process (section 8.3); the sweep-wide `assess`
   (citing v4's `resolution_limited`) runs after the reference and 056 launch 2 finish.
+* **2026-09-04 14:00:46 UTC (2026-09-05 00:00:46 AEST) - design 009 FINISHED on the plateau rule (launch 1, PID 20189, a valid record).**
+  `results/l1a-gs-v3-009-d0c686b4aa-channel-33um/` (results-only commit, the 047 contract; 246 frames, the 152 MB checkpoint arrays, the field
+  anchor and the 103 MB `series.jsonl` stay in `jobs/sweep-009/tree` on the box; bytes verified against the box's `sha256sum`). Stop
+  `plateau_reached_after_min_transit_times` at step 4,920,000 = 6.888 us = **3.022 transits** (2.279 us a priori), 29,068 s wall = 8.07 h,
+  5.91 ms/step mean under MPS-4 (exit 0, `finished: true`, one session). Lock: commit `291a9227`, protocol `eb54049c6d84`, config
+  `fba041575d99`. Plateau block: I_d drift +2.5 %, N_e +1.8 %, n_g -2.6 % (threshold 5 %), triad soft ok (S +2.6 %, T_e,dense -0.6 %, omega_pe dt
+  -0.0 %), peak-Debye soft ok. Trailing-window values: **I_d 4.408 mA** (anode e- 4.440, anode ions 0.032), I_beam 1.818 mA, exit electrons 0.410 mA,
+  wall e-/ions 3.458 / 3.451 mA, **S 3.357e16 /s**, n_g 2.80e19 (fixed point 2.80e19; feed 6.83e16 atoms/s), gross = net **utilisation 0.491**,
+  N_e 1.86 M / N_i 1.92 M (the 6.67 M projection 3.6x too high), peak n_e (window maps, argmax) 8.02e17 at node (42, 594) = z 19.8 mm,
+  T_e,peak 5.60 eV, T_e,dense 5.71 eV, Delta/lambda_D window 1.72 at the stop (max 1.72), windowed energy residual **-7.62 % recorded ->
+  +0.31 % corrected** (`ledger-corrected.json`; cumulative -8.3 -> +0.1 %; the 5 % gate never fires, 2 % never crossed), raw single-node
+  omega_pe dt max 0.113 (limit 0.2; the raw-statistic disclosure of the 047 entry applies: this run's code reads the RAW statistic in the gate
+  and the triad member, trailing mean 0.077, no artefact). GPU sampler 97 samples, no Xid. **`assess` -> `closure_quotable`** ((a) plateau,
+  (b) +0.31 % on the corrected statistic; v4 verdict cited `resolution_limited` as recorded / `refinement_heating` on the corrected ledger
+  -> "at 33 um, uncertified": the values are the resolved numbers with no grid band of their own). `targets` -> `closure-targets.json` (RECORDED
+  DATA ONLY: the user dropped 0-D model development on 2026-09-04 21:23, so the plasma-network v2 mapping these targets were designed for has no
+  consumer; they stay as the per-design measurements they are): Kornfeld chain exit -> anode p 0.236 / 0.084 / 0.042 at the 17.05 / 11.39 / 5.74 mm
+  cusps (material-aware level-0 topology), cusp electron wall currents 1.27 / 0.47 / 0.25 mA, diffuse non-cusp 1.46 mA of 3.46 mA total,
+  potential steps -76.5 / -54.8 / -67.6 V, phi_max 317.6 V.
+* **2026-09-04 14:24:37 UTC (2026-09-05 00:24:37 AEST) - the REFERENCE design FINISHED on the plateau rule (launch 1, PID 19764, a valid
+  record).** `results/divergent-exit-stack-channel-33um/` (results-only commit, the 047 contract; 262 frames, the 161 MB checkpoint arrays,
+  the field anchor and the 110 MB `series.jsonl` stay in `jobs/sweep-reference/tree`; bytes verified). Stop `plateau_reached_after_min_transit_times`
+  at step 5,240,000 = 7.336 us = **3.057 transits**, 30,745 s wall = 8.54 h, 5.87 ms/step mean under MPS-4 (exit 0, `finished: true`, one session).
+  Lock: commit `291a9227`, protocol `ec8baa2aa38d`, config `fc788b7eac22`. Plateau block: I_d drift +3.7 %, N_e +5.0 % (at the threshold), n_g
+  -0.7 %, triad soft ok (S +0.9 %, T_e,dense -2.3 %, omega_pe dt +2.2 %), peak-Debye soft ok. Trailing-window values: **I_d 3.805 mA** (anode e-
+  3.863, anode ions 0.058), I_beam 2.465 mA, exit electrons 1.657 mA, wall e-/ions 3.038 / 3.031 mA, **S 3.602e16 /s**, n_g 3.18e19 (fixed point
+  3.18e19; feed 8.55e16 atoms/s), **utilisation 0.421**, N_e 1.99 M / N_i 2.01 M, peak n_e 1.277e18 at node (21, 418) = z 13.9 mm, T_e,peak
+  5.57 eV, T_e,dense 6.05 eV, Delta/lambda_D window 2.17 at the stop (trailing mean 2.10; max 2.17), windowed energy residual **-7.66 % recorded
+  -> +2.47 % corrected** (cumulative -9.1 -> +1.8 %; the corrected statistic first exceeded 2 % at the 4.93 us checkpoint, maximum +2.48 % at
+  7.11 us; the 5 % gate never fires), raw omega_pe dt max 0.133 (limit 0.2; trailing mean 0.097). GPU sampler 103 samples, no Xid. This run is
+  the ss-v4 identity re-executed as an MPS client (same design, grid, dt, W, seed, closure, gates; the sweep's composer, so a different
+  protocol / config hash): it reproduces ss-v4's plateau to within its own drifts (I_d 3.805 vs 3.801 mA, S 3.60 vs 3.60e16, utilisation 0.421
+  vs 0.420, n_g 3.18 vs 3.19e19, I_beam 2.465 vs 2.459, peak n_e 1.28 vs 1.29e18, T_e,peak 5.57 vs 5.58 eV, residual +2.47 vs +2.46 %) - a
+  same-seed replay to 3.06 vs 3.03 transits. **`assess` -> `plateau_with_heating`** ((a) plateau, (b) FAILS at +2.47 % on the corrected
+  statistic, as the ss-v4 record does at +2.46 %; the recorded -7.66 % is kept beside it). Consequence: the sweep's own reference is NOT a clean
+  plateau; 047 (+0.9 %) and 009 (+0.3 %) are cleaner than the reference at this grid. `targets` -> `closure-targets.json` (recorded data only,
+  as above): Kornfeld chain p 0.509 / 0.368 / 0.148 at the 17.97 / 12.00 / 6.03 mm cusps (catalogue P2 level-1 topology; the exit cusp at
+  17.97 mm sits 28 um from the 18 mm channel end, so its "cell" is 1 cell wide and its loss frequency is not comparable), cusp electron wall
+  currents 0.70 / 1.09 / 0.47 mA, diffuse 0.79 mA of 3.05 mA, potential steps -97.0 / -51.3 / -64.2 V, phi_max 329.0 V.
+* **2026-09-05 10:30 AEST - 047 `assess` / `targets` executed** (deferred from its record entry to a checkout carrying the ss-v4
+  `assessment.json` + `assessment-corrected-ledger.json`; `0d228ad2` / `6bd12470` are in this tree): **`closure_quotable`** ((a) plateau at
+  3.003 transits; (b) +0.91 % on the corrected statistic, recorded -7.11 % beside it; v4 cited as above). `closure-targets.json`: Kornfeld chain
+  p 0.343 / 0.218 / 0.153 / 0.009 at the 19.31 / 12.96 / 6.61 / 0.07 mm cusps (the 0.07 mm entry IS the disclosed anode-edge boundary cusp: its
+  window overlaps the anode plane, electron wall current 0.017 mA), cusp electron wall currents 0.65 / 0.41 / 0.30 mA, diffuse 0.28 mA of
+  1.65 mA, potential steps +2.8 / -72.3 / -46.0 / -49.7 V, phi_max 324.2 V. Peak n_e by the maps argmax 7.84e17 at node (16, 660) = z 22.0 mm,
+  T_e,peak 5.43 eV (the launch-log entry's 8.83e17 / 5.86 eV is the runner's window peak-node statistic under its >= 32-macro-electron floor;
+  both readings are the exit-side partial cell).
+* **Sweep state at 10:30 AEST 5 Sep**: three of the four primary designs have terminal plateau records (047, reference, 009); **056 launch 2 is
+  still running** (PID 38282; 4.77 M steps = 6.69 us = 3.92 transits at 10:10 AEST, no plateau declared yet - N_e was still filling at launch 1's
+  2.07-transit stop; budget until ~01:20 AEST 6 Sep). The sweep-wide assessment and the final design-vs-rho table therefore wait for 056; the
+  dashboard `modern/visualization/pic2d-design-mini-sweep-v1.html` (next entry) carries the three plateaus and 056's launch-1 record flagged as
+  a gate-stopped interim, and re-renders itself from `results/l1a-gs-v3-056-effcbc8686-channel-33um/` once that record lands.
